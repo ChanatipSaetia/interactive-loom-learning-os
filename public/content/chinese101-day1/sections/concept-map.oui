@@ -1,0 +1,27 @@
+root = ConceptMap(
+  "ภาพรวมภาษาจีน",
+  [pinyin, tones, characters, greeting, numbers, selfIntro, topic, comment, sentence],
+  [
+    ConceptLink(pinyin, tones, "ใช้ระบุ"),
+    ConceptLink(pinyin, characters, "อ่าน"),
+    ConceptLink(characters, tones, "มี"),
+    ConceptLink(greeting, characters, "ประกอบด้วย"),
+    ConceptLink(numbers, characters, "ประกอบด้วย"),
+    ConceptLink(selfIntro, characters, "ประกอบด้วย"),
+    ConceptLink(topic, sentence, "สร้าง"),
+    ConceptLink(comment, sentence, "สร้าง"),
+    ConceptLink(sentence, greeting, "ใช้"),
+    ConceptLink(sentence, selfIntro, "ใช้"),
+  ],
+  "แนวคิดพื้นฐานของภาษาจีนกลาง",
+)
+
+pinyin = Concept("pinyin", "พินอิน (拼音)", "concept")
+tones = Concept("tones", "4 เสียง (声调)", "concept")
+characters = Concept("characters", "อักษรจีน (汉字)", "concept")
+greeting = Concept("greeting", "คำทักทาย", "phrase")
+numbers = Concept("numbers", "ตัวเลข 1-10", "phrase")
+selfIntro = Concept("self-intro", "แนะนำตัวเอง", "phrase")
+topic = Concept("topic", "ประธาน", "grammar")
+comment = Concept("comment", "ขยายความ", "grammar")
+sentence = Concept("sentence", "ประโยคพื้นฐาน", "grammar")

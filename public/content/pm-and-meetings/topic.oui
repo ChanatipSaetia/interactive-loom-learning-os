@@ -1,0 +1,22 @@
+root = Topic(
+  "IT Project Management & Meetings",
+  "Project Management",
+  "Learn why project management is necessary and how to run effective, lean meetings without wasting developers' focus time.",
+  [
+    SectionRef("intro"),
+    SectionRef("flashcards"),
+    SectionRef("concept-map"),
+    SectionRef("taxonomy"),
+    SectionRef("flowchart"),
+    SectionRef("quiz"),
+    SectionRef("tradeoffs"),
+    SectionRef("reflection-sequence"),
+    SectionRef("formula-sandbox"),
+    SectionRef("reflection-template"),
+    SectionRef("scenario-schedule"),
+    SectionRef("scenario-meeting-bloat"),
+    SectionRef("decision-tree-channel"),
+    SectionRef("decision-tree-estimation"),
+  ],
+  ["project-management", "agile", "meetings", "productivity"],
+)

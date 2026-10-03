@@ -1,0 +1,17 @@
+root = Topic(
+  "ทุเรียนทอด (Fried Durian)",
+  "Cooking",
+  "เรียนรู้วิธีทำขนมทุเรียนทอดกรอบอร่อยแบบไทย",
+  [
+    SectionRef("intro"),
+    SectionRef("concept-map"),
+    SectionRef("flashcards"),
+    SectionRef("taxonomy"),
+    SectionRef("ingredients"),
+    SectionRef("flowchart"),
+    SectionRef("quiz"),
+    SectionRef("tradeoffs"),
+    SectionRef("decision-tree"),
+  ],
+  ["durian", "fried-durian", "cooking", "thai-snack", "thai"],
+)

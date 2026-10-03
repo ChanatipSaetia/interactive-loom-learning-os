@@ -1,0 +1,125 @@
+root = Flowchart(
+  "วัฏจักรเครื่องยนต์ 4 จังหวะ",
+  [rider],
+  [carburetor, engine, transmission],
+  [throttle, intake, compression, combustion, exhaust, transmission2],
+  [journey4StrokeCycle],
+)
+
+rider = Actor("rider", "ผู้ขับขี่ (Rider)", "ผู้ใช้งานมอเตอร์ไซค์")
+
+carburetor = System(
+  "carburetor",
+  "คาร์บูเรเตอร์ (Carburetor)",
+  "ระบบผสมน้ำมันและอากาศด้วยกลไก (รถรุ่นเก่า)",
+  "aggregate",
+)
+
+engine = System("engine", "กระบอกสูบ (Cylinder / Engine)", "เครื่องยนต์", "aggregate")
+transmission = System(
+  "transmission",
+  "เกียร์และโซ่ (Transmission)",
+  "ระบบส่งกำลังสู่ล้อ",
+  "aggregate",
+)
+
+throttle = Step(
+  "throttle",
+  "เริ่มวัฏจักรดูด (Start Intake)",
+  "บิดคันเร่ง",
+  carburetor,
+  [Event("fuel_mix", "จ่ายน้ำมันและอากาศ", "ผสมเชื้อเพลิงเข้าเครื่อง")],
+  rider,
+  null,
+  "intake",
+)
+
+intake = Step(
+  "intake",
+  "เริ่มวัฏจักรดูด (Start Intake)",
+  "ดูดไอดี (Intake)",
+  engine,
+  [Event("intake", "ไอดีเต็มกระบอกสูบ", "ดูดไอดีเสร็จสิ้น")],
+  null,
+  null,
+  "compression",
+)
+
+compression = Step(
+  "compression",
+  "เริ่มวัฏจักรอัด (Start Comp)",
+  "อัดไอดี (Compression)",
+  engine,
+  [Event("comp", "แรงดันถึงจุดสูงสุด", "อัดไอดีเสร็จสิ้น")],
+  null,
+  null,
+  "combustion",
+)
+
+combustion = Step(
+  "combustion",
+  "สั่งจุดระเบิด (Start Comb)",
+  "จุดระเบิด (Combustion)",
+  engine,
+  [Event("comb", "แรงระเบิดดันลูกสูบ", "การระเบิดเสร็จสิ้น")],
+  null,
+  null,
+  "exhaust",
+)
+
+exhaust = Step(
+  "exhaust",
+  "เริ่มวัฏจักรคาย (Start Exh)",
+  "คายไอเสีย (Exhaust)",
+  engine,
+  [Event("power_transfer", "ส่งกำลังลงข้อเหวี่ยง", "สร้างแรงบิด (Power Transfer)")],
+  null,
+  null,
+  "transmission",
+)
+
+transmission2 = Step(
+  "transmission",
+  "เริ่มส่งกำลัง (Start Transmission)",
+  "ส่งกำลังทดรอบ (Shift Gear)",
+  transmission,
+  [Event("wheel_spin", "ล้อหมุนขับเคลื่อน", "รถเคลื่อนที่")],
+)
+
+journey4StrokeCycle = Journey(
+  "4-stroke-cycle",
+  "วัฏจักรเครื่องยนต์ 4 จังหวะ และการส่งกำลัง",
+  "ขั้นตอนการทำงานตั้งแต่บิดคันเร่งจนถึงการส่งกำลังไปที่ล้อ",
+  [
+    JourneyStep(
+      throttle,
+      "บิดคันเร่ง",
+      "ผู้ขับขี่บิดคันเร่งเพื่อสั่งให้เครื่องยนต์เพิ่มรอบและสร้างกำลัง",
+    ),
+    JourneyStep(
+      intake,
+      "จังหวะดูด",
+      "ลูกสูบเคลื่อนลง วาล์วน้ำมันเปิด ผสมอากาศ-น้ำมันไหลเข้ากระบอกสูบ",
+    ),
+    JourneyStep(
+      compression,
+      "จังหวะอัด",
+      "ลูกสูบเคลื่อนขึ้น วาล์วปิดทั้งสองข้าง อัดส่วนผสมให้มีความหนาแน่นสูง",
+    ),
+    JourneyStep(
+      combustion,
+      "จังหวะระเบิด",
+      "หัวเทียนจุดระเบิด ส่วนผสมถูกอัดจนระเบิด ผลักลูกสูบลง สร้างกำลังขับเคลื่อน",
+    ),
+    JourneyStep(
+      exhaust,
+      "จังหวะไอเสีย",
+      "วาล์วไอเสียเปิด ลูกสูบเคลื่อนขึ้น ผลักไอเสียที่ถูกเผาไหม้ออก",
+    ),
+    JourneyStep(
+      transmission2,
+      "ส่งกำลัง",
+      "กำลังจากการระเบิดถูกส่งผ่านคลัตช์ เกียร์ และโซ่ ไปยังล้อหลัง",
+    ),
+  ],
+)

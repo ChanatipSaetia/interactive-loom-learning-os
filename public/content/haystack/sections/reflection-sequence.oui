@@ -1,0 +1,25 @@
+root = ReflectionSequence("Search Query Pipeline Sequence", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Arrange the components of a RAG query pipeline in the correct chronological execution order (Part 1):",
+  [userQuery, textEmbedder, vectorRetriever, promptBuilder, llmGenerator],
+  [userQuery, textEmbedder, vectorRetriever, promptBuilder, llmGenerator],
+)
+
+userQuery = SequenceItem("user_query", "User Query Ingest")
+textEmbedder = SequenceItem("text_embedder", "Sentence Embedder (Vectorize)")
+vectorRetriever = SequenceItem("vector_retriever", "Vector Retriever Lookup")
+promptBuilder = SequenceItem("prompt_builder", "Prompt Builder (Format Context)")
+llmGenerator = SequenceItem("llm_generator", "LLM Answer Generation")
+
+challenge2 = SequenceChallenge(
+  "Arrange the components of a RAG indexing pipeline in the correct chronological execution order (Part 2):",
+  [sourceDocs, textConverter, docSplitter, docEmbedder, docWriter],
+  [sourceDocs, textConverter, docSplitter, docEmbedder, docWriter],
+)
+
+sourceDocs = SequenceItem("source_docs", "Source Document Load")
+textConverter = SequenceItem("text_converter", "Text Converter Extraction")
+docSplitter = SequenceItem("doc_splitter", "Document Splitter (Chunking)")
+docEmbedder = SequenceItem("doc_embedder", "Document Embedder (Vectorize)")
+docWriter = SequenceItem("doc_writer", "Document Writer (Save Store)")

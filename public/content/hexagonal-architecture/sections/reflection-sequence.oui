@@ -1,0 +1,29 @@
+root = ReflectionSequence(
+  "Order Flow Sequencing Challenge",
+  [challenge1],
+  null,
+  Lead(
+    "Active recall ordering challenge testing your understanding of Hexagonal Architecture flow.",
+    "Verifies that you understand the exact order of execution across Ports and Adapters.",
+    "Next: Compare Hexagonal Architecture in the Tradeoff Sandbox.",
+  ),
+)
+
+challenge1 = SequenceChallenge(
+  "Arrange the execution steps of a Hexagonal Architecture request in correct chronological order from HTTP entry to Database persistence:",
+  [step1, step2, step3, step4, step5],
+  [step1, step2, step3, step4, step5],
+)
+
+step1 = SequenceItem("step-1", "HTTP REST Controller (Driving Adapter) receives JSON request")
+step2 = SequenceItem("step-2", "Driving Adapter invokes CreateOrderPort interface method")
+step3 = SequenceItem("step-3", "Application Core instantiates and executes Order Aggregate logic")
+step4 = SequenceItem(
+  "step-4",
+  "Application Core calls OrderRepositoryPort (Driven Port) save interface",
+)
+
+step5 = SequenceItem(
+  "step-5",
+  "PostgresOrderAdapter (Driven Adapter) converts entity to SQL and executes DB Insert",
+)

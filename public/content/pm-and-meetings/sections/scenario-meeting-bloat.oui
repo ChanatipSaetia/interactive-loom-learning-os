@@ -1,0 +1,98 @@
+root = Scenario(
+  "Interactive Scenario: Taming Meeting Bloat",
+  "meeting_bloat",
+  [
+    start,
+    nextGuidelineStep,
+    outcomeJoinMeetings,
+    outcomeBlockMeetings,
+    outcomeAsyncUnblocked,
+    outcomeHuddleSuccess,
+  ],
+  "A developer on your team, Alex, is highly talented but schedules a 30-minute meeting for every minor technical question, interrupting multiple senior developers. How do you handle this?",
+  null,
+  "Taming Meeting Bloat",
+)
+
+start = ScenarioNode(
+  "start",
+  "What is your initial response?",
+  [
+    ScenarioChoice(
+      "join_meetings",
+      "Attend all of Alex's meetings to monitor and guide the discussion.",
+      "outcome_join_meetings",
+    ),
+    ScenarioChoice(
+      "set_guidelines",
+      "Set a clear policy on Slack: questions must be written in public channels first before scheduling a meeting.",
+      "next_guideline_step",
+    ),
+    ScenarioChoice(
+      "block_meetings",
+      "Tell Alex that developers are banned from scheduling meetings without your approval.",
+      "outcome_block_meetings",
+    ),
+  ],
+)
+
+nextGuidelineStep = ScenarioNode(
+  "next_guideline_step",
+  "Alex posts a complex question on Slack but doesn't get a reply for 2 hours. He is getting restless. What do you do?",
+  [
+    ScenarioChoice(
+      "async_reminder",
+      "Gently ping the team in public to reply, or answer it yourself in text.",
+      "outcome_async_unblocked",
+    ),
+    ScenarioChoice(
+      "quick_huddle",
+      "Launch a 5-minute huddle on Slack with just Alex to resolve it directly.",
+      "outcome_huddle_success",
+    ),
+  ],
+)
+
+outcomeJoinMeetings = ScenarioNode(
+  "outcome_join_meetings",
+  null,
+  null,
+  Outcome(
+    "You spent half your day in micro-meetings. Senior developers are still being disrupted, and you have no time left for project management.",
+    "Attending meetings doesn't solve the root cause. You must establish communication guidelines to protect team time.",
+    "c",
+  ),
+)
+
+outcomeBlockMeetings = ScenarioNode(
+  "outcome_block_meetings",
+  null,
+  null,
+  Outcome(
+    "Alex felt micromanaged and stopped asking questions. He built the wrong database design, which required 3 days of refactoring later.",
+    "Banning meetings entirely creates communication silos and high rework costs. Transition them to async or micro-sync huddles instead.",
+    "c",
+  ),
+)
+
+outcomeAsyncUnblocked = ScenarioNode(
+  "outcome_async_unblocked",
+  null,
+  null,
+  Outcome(
+    "Alex was unblocked asynchronously. The entire solution was documented in public Slack for others to read, and no meetings were held.",
+    "Public async channels build a searchable knowledge base and prevent redundant meetings.",
+    "a",
+  ),
+)
+
+outcomeHuddleSuccess = ScenarioNode(
+  "outcome_huddle_success",
+  null,
+  null,
+  Outcome(
+    "The 5-minute huddle quickly unblocked Alex. The discussion was timeboxed, only involved the necessary person, and saved hours of focus time.",
+    "Focused huddles are an excellent tool to resolve complex technical blockers quickly without scheduling a calendar invite.",
+    "a",
+  ),
+)

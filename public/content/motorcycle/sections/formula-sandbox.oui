@@ -1,0 +1,39 @@
+root = FormulaSandbox(
+  "Engine Displacement & Performance Sandbox",
+  [
+    FormulaVariable("bore_size", "Cylinder Bore Size (mm)", 50, 100, 2, 54),
+    FormulaVariable("stroke_length", "Piston Stroke Length (mm)", 40, 90, 2, 54),
+    FormulaVariable("rpm", "Engine Speed (RPM)", 1000, 12000, 500, 6000),
+  ],
+  [recall, latency, cost],
+)
+
+recall = FormulaMetric(
+  "recall",
+  "Engine Displacement (cc)",
+  "Math.round(Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10))",
+  "The total volume swept by the piston within the cylinder block.",
+  "Cup volume. A larger diameter cup holds more liquid with every scoop.",
+  ["Cylinder swept volume"],
+  ["Combustion chamber clearance volume"],
+)
+
+latency = FormulaMetric(
+  "latency",
+  "Calculated Horsepower (hp)",
+  "Math.round((Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10)) * (rpm / 16000))",
+  "Estimated mechanical power produced by the engine at this speed.",
+  "Speed times load. The faster and harder you pull a cart, the more work you do.",
+  ["Volumetric efficiency proxy"],
+  ["Drivetrain transmission losses"],
+)
+
+cost = FormulaMetric(
+  "cost",
+  "Fuel Efficiency (km/L)",
+  "Math.round(Math.max(10, 80 - (bore_size * 0.4) - (rpm / 250)))",
+  "Estimated travel distance covered per liter of fuel burned.",
+  "Caloric burn. A larger runner sprinting faster consumes calories much quicker.",
+  ["Thermal fuel combustion rates"],
+  ["Wind resistance and rider weight factors"],
+)

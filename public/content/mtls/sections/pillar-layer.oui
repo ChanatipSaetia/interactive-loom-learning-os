@@ -1,0 +1,151 @@
+root = PillarLayer(
+  "mTLS Security Architecture Stack",
+  [lApp, lTls, lTcp, lPki],
+  [
+    bGrpcClient,
+    bHttp2Ingress,
+    bTlsHandshake,
+    bCipherEngine,
+    bTcpSocket,
+    bCaTrustStore,
+    bSpiffeValidator,
+    bVaultPki,
+    bHsmModule,
+  ],
+  "Layer stack map of application transport protocols, TLS 1.3 cryptographic handshakes, and PKI identity verification.",
+  "mTLS Protocol & Security Architecture Stack",
+  null,
+  Lead(
+    "Layer stack mapping application transport, TLS 1.3 cryptographic handshakes, and PKI identity verification.",
+    "Shows how gRPC clients, Envoy proxies, TLS 1.3 socket streams, and Vault PKI certificate authorities connect.",
+    "Next: Explore the mTLS handshake sequence flowchart.",
+  ),
+)
+
+lApp = Layer(
+  "l-app",
+  "1. Application Transport Layer",
+  "High-level RPC and REST protocols requesting secure transport.",
+)
+
+lTls = Layer(
+  "l-tls",
+  "2. TLS 1.3 Handshake & Cipher Layer",
+  "Cryptographic negotiation, key exchange, and record protocol.",
+)
+
+lTcp = Layer(
+  "l-tcp",
+  "3. Transport & Socket Layer",
+  "Reliable stream transport sockets and connection state.",
+)
+
+lPki = Layer(
+  "l-pki",
+  "4. PKI Certificate & Identity Layer",
+  "X.509 certificate authority chain and SPIFFE identity validation.",
+)
+
+bGrpcClient = MatrixBlock(
+  "b-grpc-client",
+  "gRPC Microservice Client",
+  lApp,
+  0,
+  2,
+  null,
+  "Initiates mutual TLS RPC calls.",
+  "blue",
+  ["b-tls-handshake"],
+)
+
+bHttp2Ingress = MatrixBlock(
+  "b-http2-ingress",
+  "Envoy Ingress Gateway",
+  lApp,
+  2,
+  2,
+  null,
+  "Terminates inbound mTLS and validates SAN identity.",
+  "mauve",
+  ["b-cipher-engine", "b-spiffe-validator"],
+)
+
+bTlsHandshake = MatrixBlock(
+  "b-tls-handshake",
+  "TLS 1.3 Handshake Controller",
+  lTls,
+  0,
+  2,
+  null,
+  "Exchanges ClientHello and ServerHello Certificate messages.",
+  "peach",
+  ["b-tcp-socket", "b-spiffe-validator"],
+)
+
+bCipherEngine = MatrixBlock(
+  "b-cipher-engine",
+  "AES-256-GCM Cipher Engine",
+  lTls,
+  2,
+  2,
+  null,
+  "Provides authenticated symmetric encryption for records.",
+  "teal",
+  ["b-tcp-socket"],
+)
+
+bTcpSocket = MatrixBlock(
+  "b-tcp-socket",
+  "TCP Connection Socket",
+  lTcp,
+  0,
+  4,
+  null,
+  "Provides reliable byte stream transport over port 443/8443.",
+  "green",
+  ["b-ca-trust-store", "b-vault-pki"],
+)
+
+bCaTrustStore = MatrixBlock(
+  "b-ca-trust-store",
+  "Root CA Trust Store",
+  lPki,
+  0,
+  1,
+  null,
+  "Stores trusted Root & Intermediate Certificate Authority PEMs.",
+  "sapphire",
+)
+
+bSpiffeValidator = MatrixBlock(
+  "b-spiffe-validator",
+  "SPIFFE / SPIRE Workload ID",
+  lPki,
+  1,
+  1,
+  null,
+  "Validates URI SAN identity (spiffe://cluster.local/ns/prod/sa/order).",
+  "lavender",
+)
+
+bVaultPki = MatrixBlock(
+  "b-vault-pki",
+  "HashiCorp Vault PKI Engine",
+  lPki,
+  2,
+  1,
+  null,
+  "Issues short-lived X.509 client certificates dynamically.",
+  "red",
+)
+
+bHsmModule = MatrixBlock(
+  "b-hsm-module",
+  "Hardware Security Module (HSM)",
+  lPki,
+  3,
+  1,
+  null,
+  "Hardware key storage protecting Root CA private keys.",
+  "yellow",
+)

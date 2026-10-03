@@ -1,0 +1,63 @@
+root = ConceptMap(
+  "Concept Map",
+  [
+    component,
+    pipeline,
+    documentStore,
+    document,
+    retriever,
+    embedder,
+    ranker,
+    indexingPipeline,
+    queryPipeline,
+    rag,
+    metadataFiltering,
+    customComponent,
+    supercomponent,
+    bm25,
+    vectorSearch,
+    hybridRetrieval,
+    asyncPipeline,
+  ],
+  [
+    ConceptLink(component, pipeline, "wired into"),
+    ConceptLink(pipeline, documentStore, "accesses"),
+    ConceptLink(documentStore, document, "stores"),
+    ConceptLink(retriever, documentStore, "queries"),
+    ConceptLink(retriever, document, "returns"),
+    ConceptLink(embedder, document, "embeds"),
+    ConceptLink(ranker, document, "re-scores"),
+    ConceptLink(indexingPipeline, embedder, "uses"),
+    ConceptLink(indexingPipeline, documentStore, "writes to"),
+    ConceptLink(queryPipeline, retriever, "uses"),
+    ConceptLink(queryPipeline, ranker, "uses"),
+    ConceptLink(queryPipeline, embedder, "uses"),
+    ConceptLink(rag, queryPipeline, "extends"),
+    ConceptLink(metadataFiltering, documentStore, "filters"),
+    ConceptLink(customComponent, component, "is a"),
+    ConceptLink(supercomponent, pipeline, "wraps"),
+    ConceptLink(bm25, retriever, "strategy"),
+    ConceptLink(vectorSearch, retriever, "strategy"),
+    ConceptLink(hybridRetrieval, bm25, "combines"),
+    ConceptLink(hybridRetrieval, vectorSearch, "combines"),
+    ConceptLink(asyncPipeline, pipeline, "extends"),
+  ],
+)
+
+component = Concept("component", "Component", "mechanism")
+pipeline = Concept("pipeline", "Pipeline", "mechanism")
+documentStore = Concept("document-store", "Document Store", "system")
+document = Concept("document", "Document", "data")
+retriever = Concept("retriever", "Retriever", "mechanism")
+embedder = Concept("embedder", "Embedder", "mechanism")
+ranker = Concept("ranker", "Ranker", "mechanism")
+indexingPipeline = Concept("indexing-pipeline", "Indexing Pipeline", "process")
+queryPipeline = Concept("query-pipeline", "Query Pipeline", "process")
+rag = Concept("rag", "RAG", "pattern")
+metadataFiltering = Concept("metadata-filtering", "Metadata Filtering", "mechanism")
+customComponent = Concept("custom-component", "Custom Component", "concept")
+supercomponent = Concept("supercomponent", "SuperComponent", "concept")
+bm25 = Concept("bm25", "BM25", "pattern")
+vectorSearch = Concept("vector-search", "Vector Search", "pattern")
+hybridRetrieval = Concept("hybrid-retrieval", "Hybrid Retrieval", "pattern")
+asyncPipeline = Concept("async-pipeline", "AsyncPipeline", "mechanism")

@@ -1,0 +1,63 @@
+root = Scenario(
+  "Combat Scenario",
+  "boss-encounter",
+  [start, fourPointResult, spellResult, defenseResult],
+  "You face a massive elemental-resistant boss in a narrow chamber. Your party is low on healing. What's your strategy?",
+  null,
+  "Boss Encounter",
+)
+
+start = ScenarioNode(
+  "start",
+  "The boss has resistance to Fire and Cold. Your Ki pool is full (5 Ki). What's your opening move?",
+  [
+    ScenarioChoice(
+      "four_point_open",
+      "All-in with Four Point Attack — four guaranteed elemental hits bypass resistance splitting",
+      "four_point-result",
+    ),
+    ScenarioChoice(
+      "spell_open",
+      "Cast Call Lightning — lightning damage ignores the boss's fire/cold resistance",
+      "spell-result",
+    ),
+    ScenarioChoice(
+      "defense_open",
+      "Flowing Barrier first — survive the boss's opening barrage",
+      "defense-result",
+    ),
+  ],
+)
+
+fourPointResult = ScenarioNode(
+  "four_point-result",
+  null,
+  null,
+  Outcome(
+    "Four Point Attack devastates the boss with four different elements. Even with two resistances, Lightning and Acid hit full damage.",
+    "Four Point Attack's strength is resistance coverage. Four elements mean at most two are resisted.",
+    "a",
+  ),
+)
+
+spellResult = ScenarioNode(
+  "spell-result",
+  null,
+  null,
+  Outcome(
+    "Call Lightning deals solid lightning damage, but you spent Ki and your action. The boss closes distance and hits your party hard.",
+    "Single-element spells are predictable. Bosses often resist one or two elements, making single-element focus risky.",
+    "b-plus",
+  ),
+)
+
+defenseResult = ScenarioNode(
+  "defense-result",
+  null,
+  null,
+  Outcome(
+    "Flowing Barrier absorbs the boss's attacks, but you lost a turn dealing damage. The fight drags on longer.",
+    "Defense-first is safe but passive. Four Element Monk excels at overwhelming damage — use it.",
+    "c",
+  ),
+)

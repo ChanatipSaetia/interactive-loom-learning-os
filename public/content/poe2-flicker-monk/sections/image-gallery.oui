@@ -1,0 +1,47 @@
+root = ImageGallery(
+  "Skill & Mechanic Showcase",
+  [
+    GalleryImage(
+      "flicker-strike-art",
+      "https://cdn.mobalytics.gg/cdn-cgi/image/format=auto,width=96/assets/poe-2/images/game/Art/2DArt/SkillIcons/MonkFlickerStrikeTeleport.webp",
+      "Flicker Strike — teleport through packs dealing melee physical damage",
+      "Source: Mobalytics / Grinding Gear Games",
+    ),
+    GalleryImage(
+      "monk-portrait",
+      "https://www.poe2wiki.net/images/e/e9/Monk_portrait.png",
+      "Monk — agile INT/DEX class wielding Quarterstaves and elemental disciplines",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "falling-thunder-icon",
+      "https://www.poe2wiki.net/images/a/a9/Falling_Thunder_inventory_icon.png",
+      "Falling Thunder — fires one lightning projectile per Power Charge consumed",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "tempest-bell-icon",
+      "https://www.poe2wiki.net/images/c/c9/Tempest_Bell_inventory_icon.png",
+      "Tempest Bell — summon a bell; strike it to trigger a shockwave dealing lightning damage",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "whirling-assault-icon",
+      "https://www.poe2wiki.net/images/c/c4/Whirling_Assault_inventory_icon.png",
+      "Whirling Assault — gap-closer that builds Combo for Power Charge generation",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "killing-palm-icon",
+      "https://www.poe2wiki.net/images/c/c2/Killing_Palm_inventory_icon.png",
+      "Killing Palm — culling strike that also generates Power Charges near Hollow Focus Bell",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "flicker-strike-icon",
+      "https://www.poe2wiki.net/images/3/3c/Flicker_Strike_inventory_icon.png",
+      "Flicker Strike inventory icon — links with Perpetual Charge for extended duration",
+      "Source: poe2wiki.net",
+    ),
+  ],
+)

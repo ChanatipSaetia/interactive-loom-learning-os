@@ -1,0 +1,38 @@
+root = ReflectionTemplate("RAG Synthesis Self-Explanation", [challenge1, challenge2])
+
+challenge1 = TemplateChallenge(
+  "Complete the statement explaining chunk size and overlap properties (Part 1):",
+  "Reducing chunk size results in {zone-1} individual content segments. This allows semantic matching algorithms to find {zone-2} refined context points, which improves precision. However, it also demands {zone-3} overlap percentages to prevent split-sentence data loss, which subsequently {zone-4} total RAG ingestion cost.",
+  [
+    Chip("chip-smaller", "smaller"),
+    Chip("chip-larger", "larger"),
+    Chip("chip-more", "more precise"),
+    Chip("chip-less", "coarser"),
+    Chip("chip-higher", "higher"),
+    Chip("chip-lower", "lower"),
+    Chip("chip-increases", "increases"),
+    Chip("chip-decreases", "decreases"),
+  ],
+  {
+    "zone-1": "chip-smaller",
+    "zone-2": "chip-more",
+    "zone-3": "chip-higher",
+    "zone-4": "chip-increases",
+  },
+  "<strong>Correct! Excellent RAG tradeoff analysis.</strong><br/>By dropping the chunk size, you query <em>smaller</em> segments. This gives <em>more precise</em> matching vectors. However, you must increase overlap percentage (<em>higher</em>) to keep from cutting sentences in half. In turn, you send more text to context window, which <em>increases</em> final token costs.",
+)
+
+challenge2 = TemplateChallenge(
+  "Complete the statement explaining larger chunk sizes (Part 2):",
+  "Increasing chunk size yields {zone-1} individual database entries. This leads to {zone-2} context windows filled with broader themes, but potentially {zone-3} overall vector search matching accuracy.",
+  [
+    Chip("chip-fewer", "fewer"),
+    Chip("chip-more-entries", "more"),
+    Chip("chip-wider", "wider"),
+    Chip("chip-narrower", "narrower"),
+    Chip("chip-higher-acc", "higher"),
+    Chip("chip-lower-acc", "lower"),
+  ],
+  {"zone-1": "chip-fewer", "zone-2": "chip-wider", "zone-3": "chip-lower-acc"},
+  "<strong>Correct!</strong> Larger chunks result in <em>fewer</em> segments. They cover <em>wider</em> themes, but reduce specific matching precision, leading to <em>lower</em> search accuracy.",
+)

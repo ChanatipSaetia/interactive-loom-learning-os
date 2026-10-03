@@ -1,0 +1,193 @@
+root = TradeoffSandbox("Deployment Trade-offs", [deployCloud, deployOnprem])
+
+deployCloud = TradeoffScenario(
+  "deploy-cloud",
+  "Cloud PaaS Deployment",
+  [
+    TradeoffMetric("cost", "Cost Efficiency", 50, 0, 100, "higher"),
+    TradeoffMetric("latency", "Response Latency", 50, 0, 100, "higher"),
+    TradeoffMetric("control", "Customization Control", 30, 0, 100, "higher"),
+    TradeoffMetric("ops-overhead", "Operational Overhead", 60, 0, 100, "lower"),
+  ],
+  [compute, llmAccess],
+  "Deploy the agent platform on a managed cloud platform (AWS, GCP, Azure). Evaluate trade-offs between managed services vs self-hosted components.",
+)
+
+compute = TradeoffStep(
+  "compute",
+  "Compute Strategy",
+  [containers, serverless],
+  "How to run agent orchestration logic.",
+  "serverless",
+)
+
+containers = TradeoffChoice(
+  "containers",
+  "Managed Containers",
+  "Kubernetes or ECS for always-on agent processes.",
+  {cost: -10, latency: 15, control: 20, "ops-overhead": 10},
+  [
+    ProCon("Persistent state", "Agents stay warm, no cold start penalty"),
+    ProCon("Full control", "Configure memory, CPU, networking"),
+  ],
+  [
+    ProCon("Higher base cost", "Always-running instances cost money even idle"),
+    ProCon("Scaling complexity", "Must configure autoscaling policies"),
+  ],
+  null,
+  "When agents need persistent connections or low-latency responses.",
+)
+
+serverless = TradeoffChoice(
+  "serverless",
+  "Serverless Functions",
+  "Event-driven execution with auto-scaling.",
+  {cost: 20, latency: -10, control: -10, "ops-overhead": -20},
+  [
+    ProCon("Pay per use", "No cost when idle, scales to zero"),
+    ProCon("Zero ops", "Platform handles scaling and availability"),
+  ],
+  [
+    ProCon("Cold starts", "First invocation after idle has latency penalty"),
+    ProCon("Execution limits", "Time and memory caps constrain complex agents"),
+  ],
+  "Most agent workloads are bursty — serverless matches the cost profile and eliminates ops overhead for intermittent tasks.",
+)
+
+llmAccess = TradeoffStep(
+  "llm-access",
+  "LLM Access Pattern",
+  [directApi, apiGateway],
+  "How agents reach the language model.",
+  "api-gateway",
+)
+
+directApi = TradeoffChoice(
+  "direct-api",
+  "Direct API Calls",
+  "Agent functions call LLM provider directly.",
+  {cost: -5, latency: 10, control: 5, "ops-overhead": -5},
+  [
+    ProCon("Simplest setup", "No middleware to configure"),
+    ProCon("Lower latency", "Fewer network hops"),
+  ],
+  [
+    ProCon("No rate limiting", "Must implement in each agent function"),
+    ProCon("Key management", "API keys embedded in each function"),
+  ],
+  null,
+  "For prototypes and single-agent deployments.",
+)
+
+apiGateway = TradeoffChoice(
+  "api-gateway",
+  "API Gateway Proxy",
+  "Centralized proxy with rate limiting and caching.",
+  {cost: 5, latency: -5, control: 15, "ops-overhead": 5},
+  [
+    ProCon("Centralized control", "Rate limits, caching, retries in one place"),
+    ProCon("Key isolation", "Single proxy holds API credentials"),
+  ],
+  [
+    ProCon("Added latency", "One extra network hop per call"),
+    ProCon("Single point of failure", "Gateway outage blocks all agents"),
+  ],
+  "Multi-agent systems benefit from centralized rate limiting, cost tracking, and credential management.",
+)
+
+deployOnprem = TradeoffScenario(
+  "deploy-onprem",
+  "On-Premises Deployment",
+  [
+    TradeoffMetric("cost", "Cost Efficiency", 40, 0, 100, "higher"),
+    TradeoffMetric("security", "Data Sovereignty", 70, 0, 100, "higher"),
+    TradeoffMetric("scalability", "Scalability", 30, 0, 100, "higher"),
+    TradeoffMetric("time-to-market", "Time to Production", 20, 0, 100, "higher"),
+  ],
+  [llmHosting, infraManagement],
+  "Self-host the agent platform in a private data center. Evaluate trade-offs around data sovereignty, hardware requirements, and maintenance burden.",
+)
+
+llmHosting = TradeoffStep(
+  "llm-hosting",
+  "LLM Hosting",
+  [openSourceLocal, remoteApi],
+  "Where the language model runs.",
+  "open-source-local",
+)
+
+openSourceLocal = TradeoffChoice(
+  "open-source-local",
+  "Open-Source Model (Local)",
+  "Run open-weight models on local GPUs (Llama, Mistral, Mixtral).",
+  {cost: 5, security: 30, scalability: -10, "time-to-market": 10},
+  [
+    ProCon("Full data privacy", "No data leaves your infrastructure"),
+    ProCon("No API costs", "One-time GPU investment, unlimited inference"),
+    ProCon("Model customization", "Fine-tune on domain-specific data"),
+  ],
+  [
+    ProCon("GPU costs", "High-end GPUs are expensive to buy and maintain"),
+    ProCon("Smaller model capacity", "Local models are smaller than cloud flagship models"),
+  ],
+  "When data sovereignty is non-negotiable (healthcare, finance, government), local models are the only viable option.",
+)
+
+remoteApi = TradeoffChoice(
+  "remote-api",
+  "Remote LLM API",
+  "Call cloud LLMs from on-prem agents (OpenAI, Anthropic).",
+  {cost: 10, security: -30, scalability: 20, "time-to-market": 25},
+  [
+    ProCon("Best model quality", "Access to state-of-the-art models"),
+    ProCon("Simplest to start", "No GPU infrastructure needed"),
+  ],
+  [
+    ProCon("Data leaves premises", "All prompts and responses go to cloud provider"),
+    ProCon("API dependency", "Outages or rate limits affect availability"),
+  ],
+  null,
+  "When model quality matters more than data privacy.",
+)
+
+infraManagement = TradeoffStep(
+  "infra-management",
+  "Infrastructure Management",
+  [bareMetal, kubernetes],
+  "How to manage the on-prem agent platform.",
+  "kubernetes",
+)
+
+bareMetal = TradeoffChoice(
+  "bare-metal",
+  "Bare Metal + Scripts",
+  "Manual deployment with shell scripts and systemd.",
+  {cost: 15, security: 10, scalability: -15, "time-to-market": -10},
+  [
+    ProCon("Maximum control", "Every component is visible and configurable"),
+    ProCon("No abstraction overhead", "No container runtime or orchestration layer"),
+  ],
+  [
+    ProCon("No auto-healing", "Crashed services stay down until noticed"),
+    ProCon("Scaling is manual", "Adding capacity means provisioning new servers"),
+  ],
+  null,
+  "For small teams with stable, low-traffic agent workloads.",
+)
+
+kubernetes = TradeoffChoice(
+  "kubernetes",
+  "Kubernetes",
+  "Container orchestration with auto-scaling and self-healing.",
+  {cost: -10, security: 5, scalability: 25, "time-to-market": -5},
+  [
+    ProCon("Auto-healing", "Crashed pods restart automatically"),
+    ProCon("Horizontal scaling", "Scale agent replicas by CPU/memory metrics"),
+    ProCon("Rolling updates", "Zero-downtime deployments"),
+  ],
+  [
+    ProCon("Complexity", "Steep learning curve for operators"),
+    ProCon("Resource overhead", "Control plane and sidecars consume GPU/memory"),
+  ],
+  "Production agent platforms need reliability and scaling that Kubernetes provides out of the box.",
+)

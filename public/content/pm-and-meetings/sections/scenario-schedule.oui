@@ -1,0 +1,98 @@
+root = Scenario(
+  "Interactive Scenario: Slipping Schedule",
+  "slipping_schedule",
+  [
+    start,
+    nextAuditStep,
+    outcomeStatusMeeting,
+    outcomeMicromanage,
+    outcomeFocusedHuddle,
+    outcomeWeeklySync,
+  ],
+  "A critical release is scheduled in 2 weeks, but progress has slowed down. Features are piling up, and developers seem blocked. As the team lead, how do you handle this?",
+  null,
+  "Saving a Slipping Schedule",
+)
+
+start = ScenarioNode(
+  "start",
+  "What is your first move to identify the issue?",
+  [
+    ScenarioChoice(
+      "status_meeting",
+      "Schedule a 1-hour status meeting with all 10 developers.",
+      "outcome_status_meeting",
+    ),
+    ScenarioChoice(
+      "async_audit",
+      "Audit the board asynchronously, review PR blockers, and post a Slack thread.",
+      "next_audit_step",
+    ),
+    ScenarioChoice(
+      "micromanage",
+      "Ask for daily status emails from every engineer detailing what they did each hour.",
+      "outcome_micromanage",
+    ),
+  ],
+)
+
+nextAuditStep = ScenarioNode(
+  "next_audit_step",
+  "You found that 2 backend engineers are blocked waiting for database schema approval. How do you resolve this?",
+  [
+    ScenarioChoice(
+      "schema_huddle",
+      "Call a focused, 15-minute huddle with the DB admin and the blocked backend engineers.",
+      "outcome_focused_huddle",
+    ),
+    ScenarioChoice(
+      "company_meeting",
+      "Add database schema review to the agenda of the next weekly team sync.",
+      "outcome_weekly_sync",
+    ),
+  ],
+)
+
+outcomeStatusMeeting = ScenarioNode(
+  "outcome_status_meeting",
+  null,
+  null,
+  Outcome(
+    "The 1-hour meeting cost 10 engineering hours. Developers spent most of the time listening to updates irrelevant to them.",
+    "Status meetings with large groups waste valuable coding time. Keep status updates async and meetings small.",
+    "c",
+  ),
+)
+
+outcomeMicromanage = ScenarioNode(
+  "outcome_micromanage",
+  null,
+  null,
+  Outcome(
+    "Writing hourly reports added administrative burden and destroyed developer morale. Several developers started looking for new jobs.",
+    "Micromanagement breeds distrust and wastes time. Trust your developers and monitor work deliverables, not hours.",
+    "c",
+  ),
+)
+
+outcomeFocusedHuddle = ScenarioNode(
+  "outcome_focused_huddle",
+  null,
+  null,
+  Outcome(
+    "The 15-minute focused huddle successfully unblocked the backend team. The database schema was approved immediately, and the feature was delivered on time.",
+    "Targeted huddles with only the necessary people resolve blocks quickly without disrupting the wider team.",
+    "a",
+  ),
+)
+
+outcomeWeeklySync = ScenarioNode(
+  "outcome_weekly_sync",
+  null,
+  null,
+  Outcome(
+    "Waiting for the weekly sync delayed the backend engineers by 4 days, causing the release to slip.",
+    "Blockers should be resolved immediately. Delaying resolution to fit standard meeting schedules hurts momentum.",
+    "b-minus",
+  ),
+)

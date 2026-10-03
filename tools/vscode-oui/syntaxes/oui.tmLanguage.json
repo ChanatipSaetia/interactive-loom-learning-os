@@ -1,0 +1,113 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "OpenUI Lang (Loom)",
+  "scopeName": "source.oui",
+  "fileTypes": ["oui"],
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#statement" },
+    { "include": "#expression" }
+  ],
+  "repository": {
+    "comment": {
+      "match": "//.*$",
+      "name": "comment.line.double-slash.oui"
+    },
+    "statement": {
+      "patterns": [
+        {
+          "match": "^\\s*(root)\\s*(=)(?!=)",
+          "captures": {
+            "1": { "name": "keyword.other.root.oui" },
+            "2": { "name": "keyword.operator.assignment.oui" }
+          }
+        },
+        {
+          "match": "^\\s*(\\$[A-Za-z_]\\w*)\\s*(=)(?!=)",
+          "captures": {
+            "1": { "name": "variable.other.state.definition.oui" },
+            "2": { "name": "keyword.operator.assignment.oui" }
+          }
+        },
+        {
+          "match": "^\\s*([A-Za-z_]\\w*)\\s*(=)(?!=)",
+          "captures": {
+            "1": { "name": "entity.name.variable.definition.oui" },
+            "2": { "name": "keyword.operator.assignment.oui" }
+          }
+        }
+      ]
+    },
+    "expression": {
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#string" },
+        { "include": "#number" },
+        { "include": "#constant" },
+        { "include": "#builtin" },
+        { "include": "#state" },
+        { "include": "#component-call" },
+        { "include": "#object-key" },
+        { "include": "#reference" },
+        { "include": "#operator" },
+        { "include": "#punctuation" }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.oui",
+          "begin": "\"",
+          "end": "\"|$",
+          "patterns": [{ "match": "\\\\.", "name": "constant.character.escape.oui" }]
+        },
+        {
+          "name": "string.quoted.single.oui",
+          "begin": "'",
+          "end": "'|$",
+          "patterns": [{ "match": "\\\\.", "name": "constant.character.escape.oui" }]
+        }
+      ]
+    },
+    "number": {
+      "match": "(?<![\\w$@])-?\\d+(?:\\.\\d+)?\\b",
+      "name": "constant.numeric.oui"
+    },
+    "constant": {
+      "match": "\\b(true|false|null)\\b",
+      "name": "constant.language.oui"
+    },
+    "builtin": {
+      "match": "(@[A-Za-z_]\\w*)(?=\\s*\\()",
+      "captures": { "1": { "name": "support.function.builtin.oui" } }
+    },
+    "state": {
+      "match": "\\$[A-Za-z_]\\w*",
+      "name": "variable.other.state.oui"
+    },
+    "component-call": {
+      "match": "\\b([A-Za-z_]\\w*)(?=\\s*\\()",
+      "captures": { "1": { "name": "entity.name.function.component.oui" } }
+    },
+    "object-key": {
+      "match": "\\b([A-Za-z_][\\w-]*)\\s*(?=:)",
+      "captures": { "1": { "name": "variable.other.property.oui" } }
+    },
+    "reference": {
+      "match": "\\b[A-Za-z_]\\w*\\b",
+      "name": "variable.other.reference.oui"
+    },
+    "operator": {
+      "match": "==|!=|>=|<=|&&|\\|\\||[+\\-*/%<>!?:]",
+      "name": "keyword.operator.oui"
+    },
+    "punctuation": {
+      "patterns": [
+        { "match": ",", "name": "punctuation.separator.comma.oui" },
+        { "match": "[()]", "name": "punctuation.brackets.round.oui" },
+        { "match": "[\\[\\]]", "name": "punctuation.brackets.square.oui" },
+        { "match": "[{}]", "name": "punctuation.brackets.curly.oui" }
+      ]
+    }
+  }
+}

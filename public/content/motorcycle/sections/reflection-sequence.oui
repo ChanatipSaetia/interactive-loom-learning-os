@@ -1,0 +1,23 @@
+root = ReflectionSequence("4-Stroke Engine Combustion Cycle", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Order the stages of a 4-Stroke internal combustion engine cycle chronologically (Part 1):",
+  [intakeStroke, compressionStroke, powerStroke, exhaustStroke],
+  [intakeStroke, compressionStroke, powerStroke, exhaustStroke],
+)
+
+intakeStroke = SequenceItem("intake_stroke", "Intake Stroke")
+compressionStroke = SequenceItem("compression_stroke", "Compression Stroke")
+powerStroke = SequenceItem("power_stroke", "Power Stroke")
+exhaustStroke = SequenceItem("exhaust_stroke", "Exhaust Stroke")
+
+challenge2 = SequenceChallenge(
+  "เรียงลำดับขั้นตอนการเปลี่ยนน้ำมันเครื่องมอเตอร์ไซค์ให้ถูกต้อง (Part 2):",
+  [warmEngine, drainOil, changeFilter, fillOil],
+  [warmEngine, drainOil, changeFilter, fillOil],
+)
+
+warmEngine = SequenceItem("warm_engine", "สตาร์ทเครื่องยนต์เพื่ออุ่นเครื่อง (Warm Up)")
+drainOil = SequenceItem("drain_oil", "ถอดน็อตถ่ายน้ำมันเพื่อระบายน้ำมันเก่า (Drain)")
+changeFilter = SequenceItem("change_filter", "เปลี่ยนกรองน้ำมันเครื่องใหม่ (Replace Filter)")
+fillOil = SequenceItem("fill_oil", "เติมน้ำมันเครื่องใหม่ตามปริมาณที่กำหนด (Refill)")

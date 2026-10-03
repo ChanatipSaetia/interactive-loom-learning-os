@@ -1,0 +1,79 @@
+root = Quiz("Knowledge Check", [qParkinsonsLaw, qAsyncFirst, qStandupRule])
+
+qParkinsonsLaw = QuizQuestion(
+  "q_parkinsons_law",
+  "What is Parkinson's Law, and why does it matter for meetings?",
+  [
+    QuizChoice(
+      "a",
+      "Work expands to fill the time available for its completion.",
+      true,
+      "Exactly! If you schedule a 60-minute meeting, the discussion will fill all 60 minutes, even if the actual problem could have been solved in 15 minutes.",
+    ),
+    QuizChoice(
+      "b",
+      "Every project requirement will double in size once code starts being written.",
+      false,
+      "This describes Scope Creep or planning optimism, not Parkinson's Law.",
+    ),
+    QuizChoice(
+      "c",
+      "Meetings double in attendance size when project deadlines are missed.",
+      false,
+      "While common in high-overhead projects, this is not the definition of Parkinson's Law.",
+    ),
+  ],
+  "Think about how meetings stretch out to fit calendar blocks.",
+)
+
+qAsyncFirst = QuizQuestion(
+  "q_async_first",
+  "When is an asynchronous design document (RFC) better than a synchronous meeting?",
+  [
+    QuizChoice(
+      "a",
+      "When the problem is well-defined and we need technical feedback from multiple engineers.",
+      true,
+      "Yes! Writing down solutions and soliciting comments asynchronously protects engineering focus and creates a permanent record of decisions.",
+    ),
+    QuizChoice(
+      "b",
+      "When there is a critical database incident and the site is down.",
+      false,
+      "An active incident requires immediate high-bandwidth real-time syncs, not waiting for async comments.",
+    ),
+    QuizChoice(
+      "c",
+      "When team members have low alignment and conflict needs to be resolved.",
+      false,
+      "Conflicting viewpoints are best aligned in a brief, focused live discussion to avoid long, exhausting text arguments.",
+    ),
+  ],
+  "Think about protecting maker focus time vs resolving urgent issues.",
+)
+
+qStandupRule = QuizQuestion(
+  "q_standup_rule",
+  "What is the primary rule of an effective Daily Standup (Sync) meeting?",
+  [
+    QuizChoice(
+      "a",
+      "Focus strictly on identifying blockers and alignment, keeping the duration under 15 minutes.",
+      true,
+      "Correct! The standup is a quick checkpoint, not a technical deep-dive. Detail troubleshooting should be pushed to separate sub-group discussions.",
+    ),
+    QuizChoice(
+      "b",
+      "Every developer must walk through their code changes line-by-line.",
+      false,
+      "Doing code review in a daily sync wastes everyone else's time and disrupts the meeting's speed.",
+    ),
+    QuizChoice(
+      "c",
+      "Use the meeting to update task tracking software boards live.",
+      false,
+      "Updating Jira or boards live during the call slows down momentum and is boring for the team.",
+    ),
+  ],
+  "The meeting should feel like a quick sports team huddle.",
+)

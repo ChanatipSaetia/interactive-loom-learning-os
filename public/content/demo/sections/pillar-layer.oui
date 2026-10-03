@@ -1,0 +1,151 @@
+root = PillarLayer(
+  "Microservice Platform Layer Stack",
+  [lClients, lGateway, lServices, lInfra],
+  [
+    bWebClient,
+    bMobileApp,
+    bEnvoyGateway,
+    bAuthService,
+    bOrderService,
+    bPostgresDb,
+    bRedisCache,
+    bKafkaBus,
+    bSendgridApi,
+  ],
+  "Reference architecture stack map of client applications, API gateways, microservices, and database adapters.",
+  null,
+  null,
+  Lead(
+    "Reference architecture stack map of client applications, API gateways, microservices, and database adapters.",
+    "Demonstrates clean multi-tier decoupling between presentation, gateway routing, domain logic, and infrastructure.",
+    "Next: Test your understanding with the knowledge check quiz.",
+  ),
+)
+
+lClients = Layer(
+  "l-clients",
+  "1. Presentation & Client Layer",
+  "Web SPAs, mobile apps, and third-party API clients.",
+)
+
+lGateway = Layer(
+  "l-gateway",
+  "2. API Gateway & Ingress Layer",
+  "Routing, rate limiting, and authentication gateways.",
+)
+
+lServices = Layer(
+  "l-services",
+  "3. Domain Microservices Tier",
+  "Core business domain logic and service orchestrators.",
+)
+
+lInfra = Layer(
+  "l-infra",
+  "4. Infrastructure & Database Adapters",
+  "Relational DBs, cache nodes, event buses, and external APIs.",
+)
+
+bWebClient = MatrixBlock(
+  "b-web-client",
+  "React SPA Web Client",
+  lClients,
+  0,
+  2,
+  null,
+  "Next.js frontend application consuming REST APIs.",
+  "blue",
+  ["b-envoy-gateway"],
+)
+
+bMobileApp = MatrixBlock(
+  "b-mobile-app",
+  "iOS / Android Native App",
+  lClients,
+  2,
+  2,
+  null,
+  "Mobile application using gRPC-Web streams.",
+  "mauve",
+  ["b-envoy-gateway"],
+)
+
+bEnvoyGateway = MatrixBlock(
+  "b-envoy-gateway",
+  "Envoy API Gateway",
+  lGateway,
+  0,
+  4,
+  null,
+  "Handles TLS termination, JWT validation, and CORS.",
+  "peach",
+  ["b-auth-service", "b-order-service"],
+)
+
+bAuthService = MatrixBlock(
+  "b-auth-service",
+  "Auth & Identity Service",
+  lServices,
+  0,
+  2,
+  null,
+  "Issues JWT access tokens and manages user sessions.",
+  "teal",
+  ["b-postgres-db", "b-redis-cache"],
+)
+
+bOrderService = MatrixBlock(
+  "b-order-service",
+  "Order Fulfillment Service",
+  lServices,
+  2,
+  2,
+  null,
+  "Processes checkout transactions and inventory checks.",
+  "green",
+  ["b-postgres-db", "b-kafka-bus"],
+)
+
+bPostgresDb = MatrixBlock(
+  "b-postgres-db",
+  "PostgreSQL Database",
+  lInfra,
+  0,
+  1,
+  null,
+  "Primary ACID relational store for user profiles and orders.",
+  "sapphire",
+)
+
+bRedisCache = MatrixBlock(
+  "b-redis-cache",
+  "Redis Cluster Cache",
+  lInfra,
+  1,
+  1,
+  null,
+  "In-memory cache for user sessions and rate limits.",
+  "red",
+)
+
+bKafkaBus = MatrixBlock(
+  "b-kafka-bus",
+  "Apache Kafka Event Bus",
+  lInfra,
+  2,
+  1,
+  null,
+  "Distributed event streaming for order status topics.",
+  "yellow",
+)
+
+bSendgridApi = MatrixBlock(
+  "b-sendgrid-api",
+  "SendGrid Email API",
+  lInfra,
+  3,
+  1,
+  null,
+  "Outbound HTTP API for order confirmation emails.",
+  "pink",
+)

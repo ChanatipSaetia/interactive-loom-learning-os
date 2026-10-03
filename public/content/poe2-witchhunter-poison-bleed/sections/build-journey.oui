@@ -1,0 +1,127 @@
+root = Scenario(
+  "Build Progression Scenario",
+  "league-journey",
+  [
+    start,
+    bowFound,
+    treeFirstBad,
+    dotReady,
+    rawDamagePath,
+    smoothSailing,
+    defensiveClunky,
+    mediocre,
+    struggle,
+  ],
+  "You've chosen the Poison + Bleed Witchhunter build for this league. Your decisions will shape your success.",
+  null,
+  "Your Witchhunter Journey",
+)
+
+start = ScenarioNode(
+  "start",
+  "League day 1. You've created your Witchhunter. What's your first priority?",
+  [
+    ScenarioChoice("get-bow", "Find a Bow with Attack Speed and Physical Damage", "bow-found"),
+    ScenarioChoice(
+      "tree-first",
+      "Rush to the passive tree for Poison and Bleed clusters",
+      "tree-first-bad",
+    ),
+  ],
+)
+
+bowFound = ScenarioNode(
+  "bow-found",
+  "You have a decent bow. What support gems are you linking?",
+  [
+    ScenarioChoice(
+      "dot-supports",
+      "Poison 3 + Bleed 3 + At Mixture for dual DoT synergy",
+      "dot-ready",
+    ),
+    ScenarioChoice("raw-damage", "Raw damage supports like Elemental Damage", "raw-damage-path"),
+  ],
+)
+
+treeFirstBad = ScenarioNode(
+  "tree-first-bad",
+  "You skipped gearing and went straight to the tree. Your attacks tickle without proper damage.",
+  [
+    ScenarioChoice("backtrack-gear", "Go back and get proper weapon and DoT supports", "bow-found"),
+    ScenarioChoice("push-anyway", "Push through with physical damage", "struggle"),
+  ],
+)
+
+dotReady = ScenarioNode(
+  "dot-ready",
+  "Dual DoTs are ticking beautifully. What's your endgame defense strategy?",
+  [
+    ScenarioChoice(
+      "ward-movement",
+      "Sorcery Ward + constant movement for evasion",
+      "smooth-sailing",
+    ),
+    ScenarioChoice(
+      "stack-defenses",
+      "Ignore Obsessive Rituals and stack Armour/Evasion",
+      "defensive-clunky",
+    ),
+  ],
+)
+
+rawDamagePath = ScenarioNode(
+  "raw-damage-path",
+  "Your hits hard but you're missing the dual DoT synergy multiplier.",
+  [
+    ScenarioChoice(
+      "switch-dot",
+      "Reroll gems to include At Mixture and dual ailment supports",
+      "dot-ready",
+    ),
+    ScenarioChoice("stay-raw", "Keep raw damage approach", "mediocre"),
+  ],
+)
+
+smoothSailing = ScenarioNode(
+  "smooth-sailing",
+  null,
+  null,
+  Outcome(
+    "You're clearing maps with screens of poison clouds while bleed melts bosses. No Mercy shreds enemies as their Concentration drops.",
+    "Dual DoT synergy + defensive mobility = optimal Witchhunter playstyle.",
+    "a",
+  ),
+)
+
+defensiveClunky = ScenarioNode(
+  "defensive-clunky",
+  null,
+  null,
+  Outcome(
+    "Stacking defenses works but wastes the Obsessive Rituals node's offensive potential. Your damage output suffers.",
+    "Witchhunter's Obsessive Rituals is a trade-off — embrace the fragility for massive damage.",
+    "b-plus",
+  ),
+)
+
+mediocre = ScenarioNode(
+  "mediocre",
+  null,
+  null,
+  Outcome(
+    "Raw damage clears content but you're missing the exponential scaling from dual ailment synergy.",
+    "At Mixture + Poison 3 + Bleed 3 is mandatory for this build. Single DoT is always weaker.",
+    "b-minus",
+  ),
+)
+
+struggle = ScenarioNode(
+  "struggle",
+  null,
+  null,
+  Outcome(
+    "Physical hits without DoT supports make you irrelevant in endgame. Maps take forever to clear.",
+    "This build is DoT-focused. Skipping ailment supports defeats the entire purpose.",
+    "c",
+  ),
+)

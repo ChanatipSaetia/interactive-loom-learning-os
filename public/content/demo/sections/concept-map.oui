@@ -1,0 +1,56 @@
+root = ConceptMap(
+  "AI Agent Architecture — Knowledge Graph",
+  [
+    orchestrator,
+    workers,
+    reactLoop,
+    memory,
+    tools,
+    planner,
+    critic,
+    promptTemplate,
+    contextWindow,
+    feedbackLoop,
+    benchmark,
+    metric,
+    humanEval,
+    automatedEval,
+    rewardModel,
+  ],
+  [
+    ConceptLink(orchestrator, workers, "delegates to"),
+    ConceptLink(orchestrator, planner, "uses"),
+    ConceptLink(workers, reactLoop, "executes"),
+    ConceptLink(workers, tools, "invokes"),
+    ConceptLink(reactLoop, memory, "reads from"),
+    ConceptLink(reactLoop, feedbackLoop, "forms"),
+    ConceptLink(planner, contextWindow, "constrained by"),
+    ConceptLink(critic, workers, "reviews"),
+    ConceptLink(critic, feedbackLoop, "feeds into"),
+    ConceptLink(promptTemplate, orchestrator, "configures"),
+    ConceptLink(promptTemplate, workers, "guides"),
+    ConceptLink(memory, contextWindow, "fits within"),
+    ConceptLink(feedbackLoop, orchestrator, "informs"),
+    ConceptLink(benchmark, metric, "defines"),
+    ConceptLink(humanEval, metric, "produces"),
+    ConceptLink(automatedEval, metric, "produces"),
+    ConceptLink(rewardModel, automatedEval, "powers"),
+    ConceptLink(rewardModel, benchmark, "trained on"),
+  ],
+)
+
+orchestrator = Concept("orchestrator", "Orchestrator", "pattern")
+workers = Concept("workers", "Workers", "pattern")
+reactLoop = Concept("react_loop", "ReAct Loop", "mechanism")
+memory = Concept("memory", "Memory", "system")
+tools = Concept("tools", "Tools", "concept")
+planner = Concept("planner", "Planner", "role")
+critic = Concept("critic", "Critic", "role")
+promptTemplate = Concept("prompt_template", "Prompt Template", "data")
+contextWindow = Concept("context_window", "Context Window", "concept")
+feedbackLoop = Concept("feedback_loop", "Feedback Loop", "mechanism")
+benchmark = Concept("benchmark", "Benchmark", "concept")
+metric = Concept("metric", "Metric", "data")
+humanEval = Concept("human_eval", "Human Evaluation", "process")
+automatedEval = Concept("automated_eval", "Automated Evaluation", "process")
+rewardModel = Concept("reward_model", "Reward Model", "system")

@@ -1,0 +1,38 @@
+root = FormulaSandbox(
+  "Haystack Retrieval Parameter Sandbox",
+  [
+    FormulaVariable("top_k", "Top K Documents Retrieved", 1, 20, 1, 5),
+    FormulaVariable("document_overlap", "Document Chunk Overlap (chars)", 0, 500, 50, 100),
+  ],
+  [recall, latency, cost],
+)
+
+recall = FormulaMetric(
+  "recall",
+  "Retrieval Recall Rate",
+  "Math.round(50 + (top_k * 2.2) + (document_overlap / 15))",
+  "The percentage of relevant documents successfully fetched from the Document Store.",
+  "Like casting a wider net—the larger K is, the more fish (information) you bring in.",
+  ["Retrieved chunk coverage"],
+  ["LLM reasoning capacity"],
+)
+
+latency = FormulaMetric(
+  "latency",
+  "Generation Latency (ms)",
+  "Math.round(150 + (top_k * 65) + (document_overlap * 0.3))",
+  "The time elapsed before the generator API finishes writing the final response tokens.",
+  "Reading speed. If you give a student 20 pages of text, they will take longer to summarize it than 2 pages.",
+  ["Token processing latency"],
+  ["Database indexing time"],
+)
+
+cost = FormulaMetric(
+  "cost",
+  "Estimated Ingest API Cost ($)",
+  "Math.round(top_k * 3.5 + (document_overlap / 25))",
+  "Financial projection of prompt tokens processed by external generator APIs.",
+  "Toll fee. You pay per word of context sent to the API.",
+  ["Prompt context tokens cost"],
+  ["Vector database storage costs"],
+)

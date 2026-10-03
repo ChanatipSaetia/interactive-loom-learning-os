@@ -1,0 +1,122 @@
+root = TaxonomyBrowser(
+  "Subclass Features",
+  [
+    elementalAttunement,
+    twinElementalWrath,
+    fourPointAttack,
+    flowingBarrier,
+    elementalMastery,
+    emptyBody,
+  ],
+)
+
+elementalAttunement = TaxonomyCategory(
+  "Elemental Attunement",
+  "Monk Level 3",
+  "Flame",
+  "red",
+  "Gain one cantrip from each elemental school: Fire, Cold, Lightning, and Acid.",
+  "Starting cantrips: Produce Flame (Fire), Ray of Frost (Cold), Shocking Grasp (Lightning), Acid Splash (Acid). At Monk 11, you can change each cantrip to another option from the same school on a Long Rest. Cantrips scale with character level, not Monk level.",
+  "Like having four elemental toolkits you can swap between.",
+  "Baseline spellcasting access without spell slots",
+  [
+    "Produce Flame / Burning Hands (Fire)",
+    "Ray of Frost / Cone of Cold (Cold at 11)",
+    "Shocking Grasp / Lightning Bolt (Lightning at 11)",
+    "Acid Splash / Chromatic Orb (Acid at 11)",
+  ],
+  ["Non-elemental cantrips like Mage Hand"],
+)
+
+twinElementalWrath = TaxonomyCategory(
+  "Twin Elemental Wrath",
+  "Monk Level 3",
+  "Swords",
+  "yellow",
+  "Spend 1 Ki to infuse two unarmed strikes with elemental damage.",
+  "Choose two elements from Fire (1d6), Cold (1d6), Lightning (1d6), or Acid (1d6). Each attuned strike deals its elemental damage on top of normal unarmed strike damage. Lasts until the end of your next turn. Can pick the same element twice for doubled damage on one type.",
+  "Temporarily charging your fists with elemental energy before a combo.",
+  "Consistent per-hit elemental damage amplification",
+  [
+    "Any two elements from the four schools",
+    "Stacks with unarmed strike damage dice",
+    "Works with Patient-0 gauntlet procs",
+    "Triggers on opportunity attacks",
+  ],
+  ["Does not work with weapon attacks", "Does not stack with itself (re-cast replaces)"],
+)
+
+fourPointAttack = TaxonomyCategory(
+  "Four Point Attack",
+  "Monk Level 11",
+  "Zap",
+  "sky",
+  "Spend 4 Ki for four guaranteed elemental strikes, one per element.",
+  "Each of four unarmed strikes automatically hits and deals 1d6 of a different elemental damage (Fire, Cold, Lightning, Acid). Cannot miss. Each strike can target a different enemy within reach. This is the build's ultimate ability, consuming your entire Ki pool at most levels.",
+  "A four-elemental combo that guarantees hits regardless of AC.",
+  "Maximum guaranteed burst damage",
+  [
+    "Four separate strike instances",
+    "Each can target a different enemy",
+    "Bypasses AC — always hits",
+    "Triggers elemental vulnerability on targets",
+  ],
+  ["Cannot be used if you have fewer than 4 Ki", "Only works at close range"],
+)
+
+flowingBarrier = TaxonomyCategory(
+  "Flowing Barrier",
+  "Monk Level 7",
+  "Shield",
+  "teal",
+  "Spend Ki to boost your Armor Class defensively.",
+  "As a bonus action, spend 1 or more Ki points to gain +1 AC per Ki spent until the start of your next turn. At Monk 7, this provides crucial survivability against high-damage enemies. Combine with high Dexterity for AC 20+ temporarily.",
+  "Hardening your body like a force field for one turn.",
+  "Defensive Ki investment for survivability",
+  [
+    "Scales with Ki invested (1 Ki = +1 AC)",
+    "Bonus action to activate",
+    "Lasts until start of next turn",
+    "Stacks with Dexterity and monk AC",
+  ],
+  [
+    "Does not stack with itself (re-cast replaces)",
+    "Not useful in turns where you need Ki for offense",
+  ],
+)
+
+elementalMastery = TaxonomyCategory(
+  "Elemental Mastery",
+  "Monk Level 15",
+  "Sparkles",
+  "green",
+  "Elemental spells no longer consume Ki points to cast.",
+  "At Monk 15, casting elemental spells from your attuned schools costs 0 Ki. You can still voluntarily spend Ki to cast them at a higher level. This transforms the build's resource economy, allowing free spell spam while reserving Ki for Twin Elemental Wrath and Four Point Attack.",
+  "Your elemental magic becomes an infinite resource.",
+  "Ki economy transformation at endgame",
+  [
+    "All elemental spells cast for 0 Ki base cost",
+    "Optional Ki spend for higher-level casting",
+    "Enables Conjure Flame spam in every fight",
+    "Ice Knife and Call Lightning become free utilities",
+  ],
+  ["Non-elemental spells still cost Ki", "Still limited by spell slot availability for multiclass"],
+)
+
+emptyBody = TaxonomyCategory(
+  "Empty Body",
+  "Monk Level 14",
+  "Ghost",
+  "mauve",
+  "Spend 4 Ki to cast Mirror Image or Teleport at will.",
+  "At Monk 14, spend 4 Ki to cast either Mirror Image (three illusory copies that absorb hits) or Teleport (instant movement to any visible location). These are monk abilities, not spell slots. Teleport is invaluable for repositioning, flanking, and escaping dangerous situations.",
+  "Phasing in and out of reality to control the battlefield.",
+  "Mobility and defensive utility",
+  [
+    "Mirror Image for hit avoidance",
+    "Teleport for repositioning and flanking",
+    "No spell slot consumption",
+    "Refreshes on Short Rest with Ki",
+  ],
+  ["Costs 4 Ki each cast", "Cannot cast both in the same activation"],
+)

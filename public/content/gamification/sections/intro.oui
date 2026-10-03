@@ -1,0 +1,92 @@
+root = Intro(
+  "",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "The Psychology of Motivation",
+      "text",
+      "Intrinsic vs extrinsic motivation, Self-Determination Theory, and the overjustification effect.",
+      "psychology",
+    ),
+    RoadmapStep(
+      "Core Mechanics",
+      "bullets",
+      "Points, badges, leaderboards, streaks, and the extended mechanic toolkit.",
+      "core-mechanics",
+    ),
+    RoadmapStep(
+      "Octalysis: 8 Core Drives",
+      "taxonomy-browser",
+      "Browse the 8 core drives of human motivation — white hat and black hat.",
+      "octalysis",
+    ),
+    RoadmapStep(
+      "The Reward Loop",
+      "flowchart",
+      "Event Storming view of how a gamified system detects, rewards, and reinforces behavior.",
+      "reward-loop",
+    ),
+    RoadmapStep(
+      "Reward Design Trade-offs",
+      "tradeoff-sandbox",
+      "Experiment with reward types, schedules, and social comparison in a sandbox.",
+      "tradeoffs",
+    ),
+    RoadmapStep(
+      "Mechanic Fit Advisor",
+      "decision-tree",
+      "Answer questions to find the right mechanic for your goal.",
+      "decision-tree",
+    ),
+    RoadmapStep(
+      "The Gamification Dilemma",
+      "scenario",
+      "A branching scenario — design a reward system and see the consequences.",
+      "scenario",
+    ),
+    RoadmapStep(
+      "Hook Loop Builder",
+      "reflection-sequence",
+      "Reassemble the Hook Model loop in the correct order.",
+      "reflection-sequence",
+    ),
+    RoadmapStep(
+      "Key Vocabulary",
+      "flashcards",
+      "Flip-card drill of essential gamification terminology.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Knowledge Check",
+      "quiz",
+      "Test your understanding of motivation and reward design.",
+      "quiz",
+    ),
+    RoadmapStep(
+      "Concept Map",
+      "concept-map",
+      "See how gamification concepts interconnect.",
+      "concept-map",
+    ),
+  ],
+  null,
+  "8 min read",
+  11,
+)
+
+what = IntroWhat(
+  "A guided tour of why games are engaging, the psychology of motivation behind them, and how to design reward systems that build real habits instead of hollow point-farming.",
+  "Gamification is the use of game design elements and principles — points, levels, challenges, feedback, and narrative — in non-game contexts to motivate, engage, and sustain behavior.",
+  [
+    "Intrinsic vs extrinsic motivation and the overjustification trap",
+    "The Octalysis framework — 8 core drives of human motivation",
+    "Reward loop design: trigger, action, variable reward, investment",
+  ],
+  ["Behavioral Design", "Motivation Psychology", "Reward Systems", "Octalysis"],
+)
+
+why = IntroWhy(
+  "Most gamification fails because teams bolt on points, badges, and leaderboards without understanding what actually motivates people. Superficial PBL decay within weeks.",
+  "Understanding core motivation drives lets designers choose mechanics that sustain engagement, build habits, and respect users instead of manipulating them.",
+)

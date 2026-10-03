@@ -1,0 +1,165 @@
+root = TradeoffSandbox("Build Trade-offs", [pureMonk, multiclassSorcerer])
+
+pureMonk = TradeoffScenario(
+  "pure-monk",
+  "Pure Monk 12-13",
+  [
+    TradeoffMetric("ki-economy", "Ki Economy", 75, 0, 100, "higher"),
+    TradeoffMetric("spell-power", "Spell Power", 50, 0, 100, "higher"),
+    TradeoffMetric("survivability", "Survivability", 70, 0, 100, "higher"),
+    TradeoffMetric("flexibility", "Build Flexibility", 40, 0, 100, "higher"),
+  ],
+  [kiManagement, gearFocus],
+  "Maximum Ki pool and monk features. Best Four Point Attack access and Flowing Barrier.",
+)
+
+kiManagement = TradeoffStep(
+  "ki-management",
+  "Ki Point Strategy",
+  [balancedSpend, allInNuke, spellHeavy],
+  "With 5 Ki at Monk 13, how do you allocate resources?",
+  "balanced-spend",
+)
+
+balancedSpend = TradeoffChoice(
+  "balanced-spend",
+  "Balanced — 1 Ki Wrath + 1 Ki Barrier",
+  "Spend 1 Ki for Twin Elemental Wrath, 1 Ki for Flowing Barrier, reserve rest.",
+  {"ki-economy": 10, "spell-power": 0, survivability: 10, flexibility: 5},
+  [ProCon("Sustainable", "Maintains both offense and defense every fight")],
+  [ProCon("No Four Point Attack", "Leaves only 3 Ki — not enough for Four Point Attack")],
+  "Best general approach. Keeps you alive and damaging without going all-in.",
+)
+
+allInNuke = TradeoffChoice(
+  "all-in-nuke",
+  "All-In — Four Point Attack Nuke",
+  "Save 4 Ki for Four Point Attack burst.",
+  {"ki-economy": -10, "spell-power": 15, survivability: -15, flexibility: -5},
+  [ProCon("Maximum burst", "Four guaranteed hits melt bosses")],
+  [ProCon("Leaves you vulnerable", "Only 1 Ki left for defense after nuking")],
+  null,
+  "Boss fights where you need maximum damage output.",
+)
+
+spellHeavy = TradeoffChoice(
+  "spell-heavy",
+  "Spell Heavy — Cast multiple spells",
+  "Spend Ki on multiple elemental spells per turn.",
+  {"ki-economy": -5, "spell-power": 15, survivability: -5, flexibility: 10},
+  [ProCon("Range and AoE", "Covers areas melee can't reach")],
+  [ProCon("Burns Ki fast", "Running out of Ki leaves you as a basic monk")],
+  null,
+  "Fights with ranged enemies or large groups.",
+)
+
+gearFocus = TradeoffStep(
+  "gear-focus",
+  "Gear Priority",
+  [patientZeroFirst, cloakFirst],
+  "Which legendary items matter most?",
+  "patient-zero-first",
+)
+
+patientZeroFirst = TradeoffChoice(
+  "patient-zero-first",
+  "Patient-0 Gauntlets First",
+  "Prioritize Act 2 gauntlets for damage amplification.",
+  {"ki-economy": 5, "spell-power": 5, survivability: 0, flexibility: 5},
+  [ProCon("Massive damage boost", "Amplifies every unarmed strike")],
+  [ProCon("Act 2 locked", "Can't access until Act 2")],
+  "Best damage investment. Every attack benefits from Patient-0.",
+)
+
+cloakFirst = TradeoffChoice(
+  "cloak-first",
+  "Strix Cove Cloak First",
+  "Prioritize Act 3 cloak for out-of-combat utility.",
+  {"ki-economy": 0, "spell-power": 5, survivability: 5, flexibility: 15},
+  [ProCon("Full utility", "Casting spells outside combat changes everything")],
+  [ProCon("Act 3 locked", "Can't access until Act 3")],
+  null,
+  "Late-game builds that value exploration utility.",
+)
+
+multiclassSorcerer = TradeoffScenario(
+  "multiclass-sorcerer",
+  "Monk/Sorcerer Multiclass",
+  [
+    TradeoffMetric("ki-economy", "Ki Economy", 55, 0, 100, "higher"),
+    TradeoffMetric("spell-power", "Spell Power", 70, 0, 100, "higher"),
+    TradeoffMetric("survivability", "Survivability", 55, 0, 100, "higher"),
+    TradeoffMetric("flexibility", "Build Flexibility", 70, 0, 100, "higher"),
+  ],
+  [dipDepth, metamagicChoice],
+  "Dip into Sorcerer for Metamagic. Trades some Ki for Twinned Spell and spell slots.",
+)
+
+dipDepth = TradeoffStep(
+  "dip-depth",
+  "Sorcerer Dip Depth",
+  [dip2, dip4, dip1],
+  "How many Sorcerer levels to take?",
+  "dip-2",
+)
+
+dip2 = TradeoffChoice(
+  "dip-2",
+  "Sorcerer 2 — Metamagic Adept",
+  "Minimum dip for Twinned Spell and one other metamagic.",
+  {"ki-economy": 5, "spell-power": 10, survivability: -5, flexibility: 15},
+  [ProCon("Best value", "Gets Twinned Spell with minimal level loss")],
+  [ProCon("Delayed monk features", "Missing one level of monk progression")],
+  "Optimal dip. Twinned Spell alone justifies the investment.",
+)
+
+dip4 = TradeoffChoice(
+  "dip-4",
+  "Sorcerer 4 — Extra Spell Slots",
+  "Deeper dip for 3rd level spell slots and more metamagic points.",
+  {"ki-economy": -10, "spell-power": 15, survivability: -10, flexibility: 5},
+  [ProCon("3rd level spells", "Access to Fireball, Call Lightning, and more")],
+  [ProCon("Significant monk delay", "Missing Four Point Attack and Empty Body progression")],
+  null,
+  "When spell diversity matters more than monk abilities.",
+)
+
+dip1 = TradeoffChoice(
+  "dip-1",
+  "Sorcerer 1 — Spellcasting Only",
+  "Just get spell slots without Metamagic.",
+  {"ki-economy": 5, "spell-power": 0, survivability: -5, flexibility: -5},
+  [ProCon("Minimal delay", "Only one level behind monk progression")],
+  [ProCon("No Metamagic", "Missing the key synergy that makes multiclassing worthwhile")],
+  null,
+  "Not recommended. The value is too low without Metamagic.",
+)
+
+metamagicChoice = TradeoffStep(
+  "metamagic-choice",
+  "Metamagic Selection",
+  [twinQuick, twinEmpower],
+  "Which two metamagics to prioritize?",
+  "twin-quick",
+)
+
+twinQuick = TradeoffChoice(
+  "twin-quick",
+  "Twinned + Quickened",
+  "Dual-target spells and spell + attack same turn.",
+  {"ki-economy": 0, "spell-power": 15, survivability: 0, flexibility: 15},
+  [ProCon("Maximum versatility", "Twinned doubles target count, Quickened enables hybrid turns")],
+  [ProCon("Sorcery point management", "Limited metamagic uses per Short Rest")],
+  "The gold standard combo for Four Element Monk.",
+)
+
+twinEmpower = TradeoffChoice(
+  "twin-empower",
+  "Twinned + Empowered",
+  "Dual-target spells with reroll damage.",
+  {"ki-economy": 0, "spell-power": 10, survivability: 0, flexibility: 10},
+  [ProCon("Consistent damage", "Empowered smooths out dice variance")],
+  [ProCon("Less tactical", "Missing Quickened's action economy benefits")],
+  null,
+  "When you prefer consistent damage over tactical flexibility.",
+)

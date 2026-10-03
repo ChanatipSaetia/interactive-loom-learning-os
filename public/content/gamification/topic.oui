@@ -1,0 +1,21 @@
+root = Topic(
+  "Gamification",
+  "Behavioral Design",
+  "The psychology of motivation, Octalysis core drives, and reward system design that builds real habits",
+  [
+    SectionRef("intro"),
+    SectionRef("psychology"),
+    SectionRef("core-mechanics"),
+    SectionRef("flashcards"),
+    SectionRef("octalysis"),
+    SectionRef("concept-map"),
+    SectionRef("reward-loop"),
+    SectionRef("tradeoffs"),
+    SectionRef("decision-tree"),
+    SectionRef("scenario"),
+    SectionRef("reflection-sequence"),
+    SectionRef("reflection-template"),
+    SectionRef("quiz"),
+  ],
+  ["gamification", "behavioral-design", "motivation", "reward-systems"],
+)

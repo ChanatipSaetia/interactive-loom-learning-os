@@ -1,0 +1,23 @@
+root = ReflectionSequence("Skill Combination Sequence Challenge", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Order the combat skills in the correct sequence to maximize lightning conversion and trigger Falling Thunder Nova (Part 1):",
+  [castTempest, stackCharges, executeFlicker, triggerThunder],
+  [castTempest, stackCharges, executeFlicker, triggerThunder],
+)
+
+castTempest = SequenceItem("cast_tempest", "Cast Tempest (Create Lightning Zone)")
+stackCharges = SequenceItem("stack_charges", "Generate Power Charges")
+executeFlicker = SequenceItem("execute_flicker", "Execute Flicker Strike")
+triggerThunder = SequenceItem("trigger_thunder", "Trigger Falling Thunder Nova")
+
+challenge2 = SequenceChallenge(
+  "Order the preparation stages to activate your defensive auras before entering combat (Part 2):",
+  [reserveSpirit, graceAura, tempestShield, wrathAura],
+  [reserveSpirit, graceAura, tempestShield, wrathAura],
+)
+
+reserveSpirit = SequenceItem("reserve_spirit", "Reserve Mana & Spirit")
+graceAura = SequenceItem("grace_aura", "Enable Grace (Evasion Boost)")
+tempestShield = SequenceItem("tempest_shield", "Cast Tempest Shield (Block/Shock)")
+wrathAura = SequenceItem("wrath_aura", "Activate Wrath (Lightning Damage)")

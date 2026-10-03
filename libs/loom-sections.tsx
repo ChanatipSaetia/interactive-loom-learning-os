@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createRoot, type Root } from 'react-dom/client'
-import { useMemo, useEffect, type ComponentType } from 'react'
+import { useMemo, type ComponentType } from 'react'
 import type { SectionConfig } from '../src/core/learning-engine/registry'
 import { bundleToSections } from '../src/core/learning-engine/composition/okf/sections'
 import { HUDProvider, useHUD } from '../src/core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../src/core/supporting/learner-progress'
-import { EditorProvider, useEditor, useEditorSafe } from '../src/core/learning-engine/composition/context/EditorContext'
-import { EditSectionToggle } from '../src/core/delivery/web-app-shell/EditSectionToggle'
-import { SplitPaneLayout } from '../src/core/delivery/web-app-shell/SplitPaneLayout'
-import { EditorPanel, useSectionEditorBuffer } from '../src/core/supporting/authoring-editor'
-import { ToastProvider, useToast } from '../src/core/ui-system/primitives/Toast'
 import { SoundProvider } from '../src/core/ui-system/sensory/SoundContext'
 import { AudioToggle } from '../src/core/delivery/web-app-shell/AudioToggle'
 import { ThemeToggle } from '../src/core/ui-system/motion/theme-toggle'
@@ -111,11 +106,12 @@ export interface RenderOptions {
    */
   theme?: BuiltInTheme | Record<string, string>
   /**
-   * Enable OKF section editing (default: true).
+   * @deprecated In-page editing was removed; author content with Loom Studio
+   * (studio.html). Passing `true` logs a warning and is otherwise ignored.
    */
   editable?: boolean
   /**
-   * Topic ID for disk save API calls (default: '.').
+   * @deprecated Only used by the removed in-page editor.
    */
   topicId?: string
   /**
@@ -181,125 +177,17 @@ function HUDDrawer() {
   )
 }
 
-// --- Live Editor Mode View ---
-
-function LivePreviewSection({ config }: { config: SectionConfig }) {
-  const { activeSectionIndex } = useEditor()
-  return (
-    <div className="editor-preview-wrapper" data-testid="editor-preview-wrapper">
-      <SectionRenderer config={config} sectionIndex={activeSectionIndex ?? 0} />
-    </div>
-  )
-}
-
-function EditorModeView({ topicLabel, topicId }: { topicLabel: string; topicId: string }) {
-  const { activeSection, activeSectionIndex } = useEditor()
-  const { showToast } = useToast()
-
-  const {
-    data: editedData,
-    rawText,
-    validationDiagnostics,
-    isDirty,
-    isSaving,
-    setVisualFormField,
-    setRawText,
-    saveToDisk,
-    downloadFiles,
-  } = useSectionEditorBuffer(activeSection)
-
-  useEffect(() => {
-    if (activeSection && editedData) {
-      activeSection.data = editedData
-    }
-  }, [activeSection, editedData])
-
-  const previewConfig = useMemo(() => {
-    if (!activeSection) return null
-    const original = bundleToSections([activeSection])[0]
-    return {
-      type: original.type,
-      props: { ...original.props, ...editedData },
-    }
-  }, [activeSection, editedData])
-
-  const sectionName = useMemo(() => {
-    if (!activeSection) return ''
-    return activeSection.sectionFolder ?? `section-${activeSectionIndex ?? 0}`
-  }, [activeSection, activeSectionIndex])
-
-  const handleSave = async () => {
-    if (!sectionName || !isDirty) return
-    try {
-      await saveToDisk(topicId, sectionName)
-      showToast('success', 'Section saved to disk')
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e)
-      showToast('error', `Save failed: ${msg}. Downloading files instead...`)
-      downloadFiles()
-    }
-  }
-
-  const handleDownload = () => {
-    downloadFiles()
-  }
-
-  if (!activeSection || !previewConfig) {
-    return null
-  }
-
-  return (
-    <div>
-      <div className="editor-mode-header">
-        <h2 className="topic-page-title">{topicLabel}</h2>
-        <EditSectionToggle />
-      </div>
-      <SplitPaneLayout
-        leftPanel={
-          <EditorPanel
-            sectionData={editedData}
-            validationDiagnostics={validationDiagnostics}
-            onVisualFormChange={setVisualFormField}
-            onRawTextChange={setRawText}
-            rawText={rawText}
-            isDirty={isDirty}
-            isSaving={isSaving}
-            onSave={handleSave}
-            onDownload={handleDownload}
-          />
-        }
-        rightPanel={<LivePreviewSection config={previewConfig} />}
-      />
-      <HUDDrawer />
-    </div>
-  )
-}
-
 // --- Main App Content ---
 
 function LoomAppContent({
   sections,
   title,
-  topicId,
-  editable,
   header,
 }: {
   sections: SectionConfig[]
   title?: string
-  topicId: string
-  editable: boolean
   header?: boolean | HeaderOptions
 }) {
-  const editor = useEditorSafe()
-  const editMode = editor?.editMode ?? false
-  const bundle = editor?.bundle
-
-  const displaySections = useMemo(() => {
-    if (bundle && bundle.length > 0) {
-      return bundleToSections(bundle)
-    }
-    return sections
-  }, [bundle, sections])
 
   const headerConfig = useMemo(() => {
     if (!header) return null
@@ -322,21 +210,13 @@ function LoomAppContent({
     <div className="topic-page topic-container">
       {title && <PageHeader title={title} />}
       <div className="loom-sections-container topic-content topic-container-content">
-        {displaySections.map((section, idx) => (
+        {sections.map((section, idx) => (
           <SectionRenderer key={`${section.type}-${idx}`} config={section} sectionIndex={idx} />
         ))}
       </div>
       <HUDDrawer />
     </div>
   )
-
-  if (editable && editMode) {
-    return (
-      <div className="topic-page editor-mode">
-        <EditorModeView topicLabel={title || 'Section Editor'} topicId={topicId} />
-      </div>
-    )
-  }
 
   if (headerConfig) {
     return (
@@ -409,43 +289,20 @@ const LoomSections: LoomSectionsAPI = {
     }
 
     const title = options?.title
-    const editable = options?.editable ?? true
-    const topicId = options?.topicId ?? '.'
-    const bundleOption = options?.bundle
     const headerOption = options?.header
-
-    const App = () => {
-      const syntheticBundle: OKFBundled = useMemo(() => {
-        if (bundleOption) return bundleOption
-        return sections.map((sec, idx) => ({
-          meta: { type: sec.type, title: (sec.props?.title as string) || sec.type, resource: '.' },
-          data: { type: sec.type, ...sec.props } as any,
-          sectionFolder: `section-${idx}`,
-          sectionBody: '',
-        }))
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [sections])
-
-      return (
-        <SoundProvider>
-          <ProgressProvider>
-            <HUDProvider>
-              <ToastProvider>
-                <EditorProvider bundle={syntheticBundle}>
-                  <LoomAppContent
-                    sections={sections}
-                    title={title}
-                    topicId={topicId}
-                    editable={editable}
-                    header={headerOption}
-                  />
-                </EditorProvider>
-              </ToastProvider>
-            </HUDProvider>
-          </ProgressProvider>
-        </SoundProvider>
-      )
+    if (options?.editable) {
+      console.warn('LoomSections: the "editable" option is no longer supported. Author content with Loom Studio (studio.html).')
     }
+
+    const App = () => (
+      <SoundProvider>
+        <ProgressProvider>
+          <HUDProvider>
+            <LoomAppContent sections={sections} title={title} header={headerOption} />
+          </HUDProvider>
+        </ProgressProvider>
+      </SoundProvider>
+    )
 
     root = createRoot(container)
     root.render(<App />)
@@ -457,11 +314,7 @@ const LoomSections: LoomSectionsAPI = {
 
   renderOKF(container: HTMLElement, bundle: OKFBundled, options?: RenderOptions) {
     const sections = bundleToSections(bundle)
-    return LoomSections.render(container, sections, {
-      ...options,
-      bundle,
-      editable: options?.editable ?? true,
-    })
+    return LoomSections.render(container, sections, { ...options, bundle })
   },
 
   renderThemeSelector(
@@ -489,11 +342,7 @@ const LoomSections: LoomSectionsAPI = {
       (window as any).__OKF_BASE_OVERRIDE__ = okfBaseUrl
     }
     const bundle = await singleEmbedAdapter.runtime.loadTopicBundle(topicId)
-    return LoomSections.renderOKF(container, bundle, {
-      ...options,
-      topicId,
-      editable: options?.editable ?? true,
-    })
+    return LoomSections.renderOKF(container, bundle, { ...options, topicId })
   },
 
   validateSection(data: unknown, metaType?: string) {

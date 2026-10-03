@@ -1,0 +1,11 @@
+root = Topic(
+  "Mutual TLS (mTLS) Security & Protocol Architecture",
+  "Architecture",
+  "Mutual authentication, TLS 1.3 handshakes, and SPIFFE identity",
+  [
+    SectionRef("pillar-layer"),
+    SectionRef("flowchart-handshake"),
+    SectionRef("concept-map"),
+    SectionRef("alternatives"),
+  ],
+)

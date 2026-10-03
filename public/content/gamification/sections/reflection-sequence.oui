@@ -1,0 +1,31 @@
+root = ReflectionSequence("Hook Loop Builder", [challenge1, challenge2])
+
+challenge1 = SequenceChallenge(
+  "Arrange the four stages of Nir Eyal's Hook Model in the correct order:",
+  [hookTrigger, hookAction, hookVariable, hookInvest],
+  [hookTrigger, hookAction, hookVariable, hookInvest],
+)
+
+hookTrigger = SequenceItem(
+  "hook-trigger",
+  "A cue appears — notification, habit, or context (Trigger)",
+)
+
+hookAction = SequenceItem("hook-action", "The user performs the simplest possible action (Action)")
+hookVariable = SequenceItem("hook-variable", "A variable reward is delivered (Variable Reward)")
+hookInvest = SequenceItem(
+  "hook-invest",
+  "The user invests data, effort, or reputation (Investment)",
+)
+
+challenge2 = SequenceChallenge(
+  "Arrange the reward feedback loop of a gamified learning app in the correct order:",
+  [rwSubmit, rwNotify, rwAward, rwGrade, rwBadge],
+  [rwSubmit, rwGrade, rwAward, rwBadge, rwNotify],
+)
+
+rwSubmit = SequenceItem("rw-submit", "Learner submits an answer")
+rwNotify = SequenceItem("rw-notify", "A notification celebrates the milestone")
+rwAward = SequenceItem("rw-award", "XP is awarded and the progress bar advances")
+rwGrade = SequenceItem("rw-grade", "The answer is graded and XP value is computed")
+rwBadge = SequenceItem("rw-badge", "The badge threshold check unlocks a badge")

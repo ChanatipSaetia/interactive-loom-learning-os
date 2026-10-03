@@ -1,0 +1,286 @@
+root = Flowchart(
+  "AI Agent Architecture",
+  [devUser, qaUser],
+  [orchAgent, toolsRouter, llm, mcpServers, subagents],
+  [runAgent, callLlm, reasonBranch, eval, notifyBranch, provideFeedback, qaBranch],
+  [happyPath, feedbackLoop, directLlm],
+)
+
+devUser = Actor(
+  "dev_user",
+  "Developer (Initiator)",
+  "The developer initiating instructions and goals.",
+)
+
+qaUser = Actor("qa_user", "QA Engineer", "The QA engineer reviewing results.")
+
+orchAgent = System(
+  "orch_agent",
+  "Agent Orchestrator",
+  "Manages step coordination, memory updates, and loop state.",
+  "aggregate",
+  StateMachine(
+    [
+      MachineState("IDLE", "Idle", "var(--ctp-overlay1)"),
+      MachineState("THINKING", "Thinking", "var(--ctp-blue)"),
+      MachineState("EXECUTING_TOOL", "Executing Tool", "var(--ctp-green)"),
+      MachineState("WAITING_FEEDBACK", "Waiting Feedback", "var(--ctp-peach)"),
+      MachineState("COMPLETED", "Completed", "var(--ctp-teal)"),
+    ],
+    "IDLE",
+  ),
+)
+
+toolsRouter = System(
+  "tools_router",
+  "Tools Router",
+  "Handles command routing and executes operations.",
+  "aggregate",
+)
+
+llm = System(
+  "llm",
+  "LLM",
+  "Generates execution plans, makes tool decisions, and synthesizes answers.",
+  "external",
+)
+
+mcpServers = System(
+  "mcp_servers",
+  "MCP Servers",
+  "Model Context Protocol servers providing structured tools.",
+  "external",
+)
+
+subagents = System(
+  "subagents",
+  "Subagent Pool",
+  "Dynamic spawned subagents delegated to run isolated journeys concurrently.",
+  "external",
+)
+
+runAgent = Step(
+  "run_agent",
+  "Trigger Planning",
+  "Run Agent",
+  orchAgent,
+  [
+    Event("started", "Agent Started", "Task received, environment setup complete."),
+    Event("session_created", "Session Created", "A new agent session ID was allocated."),
+  ],
+  devUser,
+  null,
+  "call_llm",
+)
+
+callLlm = Step(
+  "call_llm",
+  "Trigger Planning",
+  "Call LLM",
+  llm,
+  [
+    Event(
+      "reasoned",
+      "LLM Response Generated",
+      "Thinking thoughts and requested tool calls retrieved.",
+    ),
+  ],
+  null,
+  null,
+  "reason-branch",
+)
+
+reasonBranch = Branch("reason-branch", "reasoned", [executeTool, callMcp, directComplete])
+
+executeTool = BranchOption(
+  "execute_tool",
+  "Needs Tool",
+  "Trigger Tool Call",
+  "Execute Tool",
+  toolsRouter,
+  [
+    Event(
+      "tool_executed",
+      "Tool Executed",
+      "Result status and stdout output returned from execution.",
+    ),
+    Event("subagent_spawned", "Subagent Spawned", "Background task delegated."),
+  ],
+  null,
+  null,
+  subagents,
+  "eval",
+)
+
+callMcp = BranchOption(
+  "call_mcp",
+  "Needs MCP",
+  "Trigger MCP Call",
+  "Call MCP",
+  mcpServers,
+  [Event("mcp_called", "MCP Server Called", "External API hit through MCP.")],
+  null,
+  null,
+  null,
+  "eval",
+)
+
+directComplete = BranchOption(
+  "direct_complete",
+  "Final Answer",
+  "Trigger Completion",
+  "Complete Task",
+  llm,
+  [Event("done", "Task Completed", "Agent finishes loops and returns the verified solution.")],
+  null,
+  null,
+  null,
+  "qa_review",
+)
+
+eval = Step(
+  "eval",
+  "Trigger Evaluation",
+  "Compile Answer",
+  llm,
+  [Event("done", "Task Completed", "Agent finishes loops and returns the verified solution.")],
+  null,
+  null,
+  "notify-branch",
+)
+
+notifyBranch = Branch("notify-branch", "tool_executed", [sendMessage])
+
+sendMessage = BranchOption(
+  "send_message",
+  "Needs Input",
+  "Trigger User Notification",
+  "Send Message",
+  orchAgent,
+  [Event("message_sent", "Message Sent", "User is notified and presented with input prompt.")],
+  null,
+  null,
+  null,
+  "provide_feedback",
+)
+
+provideFeedback = Step(
+  "provide_feedback",
+  "Trigger Planning",
+  "Provide Feedback",
+  orchAgent,
+  [Event("feedback_received", "Feedback Received", "User provided new input to correct course.")],
+  devUser,
+  null,
+  "call_llm",
+)
+
+qaBranch = Branch("qa-branch", "done", [qaReview])
+
+qaReview = BranchOption(
+  "qa_review",
+  "Ready for QA",
+  "Trigger QA Review",
+  "Review Result",
+  orchAgent,
+  [
+    Event("qa_approved", "QA Approved", "The output passed QA standards."),
+    Event("qa_rejected", "QA Rejected", "The output failed QA standards."),
+  ],
+  null,
+  null,
+  "qa_user",
+)
+
+happyPath = Journey(
+  "happy-path",
+  "Happy Path",
+  "Agent uses tools successfully and passes QA.",
+  [
+    JourneyStep(
+      runAgent,
+      "Launch Agent",
+      "Developer submits a task. Orchestrator agent starts a new session and begins planning.",
+      "planning",
+    ),
+    JourneyStep(
+      callLlm,
+      "LLM Planning",
+      "Agent sends the task context to the LLM for reasoning. LLM decides whether to use tools, call MCP, or finish.",
+      "planning",
+    ),
+    JourneyStep(
+      executeTool,
+      "Execute Tool",
+      "LLM requests a tool. Tools router dispatches and runs it, returning the output back to the agent.",
+      "execution",
+    ),
+    JourneyStep(
+      callMcp,
+      "Call MCP Server",
+      "LLM requests an external API via MCP protocol. MCP server processes the call and returns the result.",
+      "execution",
+    ),
+    JourneyStep(
+      eval,
+      "Compile Answer",
+      "LLM integrates all tool results and MCP responses into a coherent final answer.",
+      "evaluation",
+    ),
+    JourneyStep(
+      qaReview,
+      "QA Review",
+      "Orchestrator agent reviews the final output against QA standards before delivery.",
+    ),
+  ],
+)
+
+feedbackLoop = Journey(
+  "feedback-loop",
+  "Feedback Loop",
+  "Agent needs more info from same actor.",
+  [
+    JourneyStep(
+      executeTool,
+      "Execute Tool",
+      "LLM requests a tool. Tools router dispatches and runs it, but the result indicates missing input.",
+      "execution",
+    ),
+    JourneyStep(
+      sendMessage,
+      "Request Input",
+      "Orchestrator agent detects missing information and sends a notification to the user.",
+    ),
+    JourneyStep(
+      provideFeedback,
+      "Provide Feedback",
+      "Developer responds with the requested information. Orchestrator captures the feedback and resumes.",
+    ),
+    JourneyStep(
+      callLlm,
+      "LLM Re-Planning",
+      "Agent re-sends the task context with the new feedback to the LLM for updated reasoning.",
+      "planning",
+    ),
+  ],
+)
+
+directLlm = Journey(
+  "direct-llm",
+  "Direct LLM Answer",
+  "No tools needed.",
+  [
+    JourneyStep(
+      callLlm,
+      "LLM Planning",
+      "Agent sends the task to the LLM. The LLM determines no tools are needed and generates a direct answer.",
+      "planning",
+    ),
+    JourneyStep(
+      directComplete,
+      "Complete Task",
+      "LLM produces the final answer directly, skipping tool execution and MCP calls.",
+      "evaluation",
+    ),
+  ],
+)

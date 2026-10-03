@@ -9,7 +9,7 @@ export function FrontmatterFormEditor({ meta, onChange }: FrontmatterFormEditorP
   return (
     <div className="frontmatter-editor-block mb-4 p-3 border border-border rounded-md bg-surface0/30" data-testid="frontmatter-editor-block">
       <div className="text-xs font-semibold uppercase text-subtext0 tracking-wider mb-2">
-        Section Frontmatter Metadata (section.md)
+        Section Settings
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>

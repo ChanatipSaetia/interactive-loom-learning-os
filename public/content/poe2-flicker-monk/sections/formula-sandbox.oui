@@ -1,0 +1,39 @@
+root = FormulaSandbox(
+  "Flicker Monk DPS & Stats Calculator",
+  [
+    FormulaVariable("attack_speed", "Attack Speed (Attacks / sec)", 2, 10, 0.5, 4.5),
+    FormulaVariable("crit_chance", "Critical Strike Chance (%)", 5, 100, 5, 40),
+    FormulaVariable("lightning_damage", "Base Lightning Damage", 100, 2000, 50, 400),
+  ],
+  [recall, latency, cost],
+)
+
+recall = FormulaMetric(
+  "recall",
+  "Estimated Build DPS",
+  "Math.round(attack_speed * lightning_damage * (1 + (crit_chance / 100) * 1.5))",
+  "Calculates the total damage output per second of Flicker Strike incorporating attack speed, flat damage, and critical multiplier.",
+  "Like striking multiple times with high accuracy—if you swing fast and hit critical pressure points, the total force multiplies exponentially.",
+  ["Critical strike multiplier factor", "Flat lightning base hits"],
+  ["Monster elemental resistances"],
+)
+
+latency = FormulaMetric(
+  "latency",
+  "Spirit Mana Reservation",
+  "Math.round(150 + (attack_speed * 15))",
+  "The total Spirit resource reserved to maintain persistent aura builds (like Wrath and Grace) at this rate of attack speed.",
+  "The background energy required to sustain a continuous sprint—the faster you move, the more oxygen you reserve constantly.",
+  ["Aura reservation costs"],
+  ["Direct action mana costs"],
+)
+
+cost = FormulaMetric(
+  "cost",
+  "Shock Infliction Chance (%)",
+  "Math.round(crit_chance * 0.9)",
+  "The likelihood of applying the Shock elemental ailment on target hits, increasing their damage taken by up to 50%.",
+  "Static build-up. The more consistently you strike metal, the more sparks ignite the target.",
+  ["Shock application chance"],
+  ["Shock damage amplification calculations"],
+)

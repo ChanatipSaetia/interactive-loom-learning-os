@@ -1,0 +1,35 @@
+root = ImageGallery(
+  "Skill & Mechanic Showcase",
+  [
+    GalleryImage(
+      "mercenary-portrait",
+      "https://www.poe2wiki.net/images/9/93/Mercenary_portrait.png",
+      "Mercenary — ranged STR/DEX class wielding Crossbows and grenades",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "gas-grenade-icon",
+      "https://www.poe2wiki.net/images/6/60/Gas_Grenade_inventory_icon.png",
+      "Gas Grenade — bouncing canister that leaves an expanding poison cloud on impact",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "barrage-icon",
+      "https://www.poe2wiki.net/images/8/86/Barrage_inventory_icon.png",
+      "Barrage — rapid volley of projectiles, each hit applying Bleed and Poison",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "poison-ailment",
+      "https://www.poe2wiki.net/images/d/d3/Poisoned_debuff_icon.png",
+      "Poison — chaos damage over time, 20% of Physical+Chaos hit damage per tick",
+      "Source: poe2wiki.net",
+    ),
+    GalleryImage(
+      "at-mixture-icon",
+      "https://www.poe2wiki.net/images/3/34/At_Mixture_inventory_icon.png",
+      "At Mixture — +20% Bleed magnitude vs poisoned targets and +20% Poison vs bleeding",
+      "Source: poe2wiki.net",
+    ),
+  ],
+)

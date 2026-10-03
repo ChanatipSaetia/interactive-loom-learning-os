@@ -1,0 +1,235 @@
+root = PillarLayer(
+  "Port & Adapter Layer Stack",
+  [lDrivingAdapters, lDrivingPorts, lDomainKernel, lDrivenPorts, lDrivenAdapters],
+  [
+    bHttpAdapter,
+    bCliAdapter,
+    bWebhookAdapter,
+    bOrderUsecasePort,
+    bPaymentPort,
+    bOrderAggregate,
+    bPricingPolicy,
+    bRepoPort,
+    bCachePort,
+    bEventPort,
+    bEmailPort,
+    bPostgresAdapter,
+    bRedisAdapter,
+    bKafkaAdapter,
+    bSendgridAdapter,
+  ],
+  "5-Tier layer stack showing how Driving Inbound Adapters, Port Contracts, Domain Kernel, and individual Driven Storage/Infrastructure Adapters stack together.",
+  "Hexagonal Architecture (Ports & Adapters) 5-Tier Stack",
+  null,
+  Lead(
+    "Interactive 2D spatial layout mapping primary driving entrypoints, pure domain hexagon kernel, and outbound driven infrastructure adapters.",
+    "Provides a structural blueprint showing how Dependency Inversion decouples business rules from databases, frameworks, and protocol drivers.",
+    "Next: Test your understanding with the knowledge check quiz.",
+  ),
+)
+
+lDrivingAdapters = Layer(
+  "l-driving-adapters",
+  "1. Driving (Inbound) Adapters",
+  "External entrypoints that translate HTTP, CLI, or Webhook requests into domain calls.",
+)
+
+lDrivingPorts = Layer(
+  "l-driving-ports",
+  "2. Driving Input Port Contracts",
+  "Inbound interface contracts defined by the domain and invoked by driving adapters.",
+)
+
+lDomainKernel = Layer(
+  "l-domain-kernel",
+  "3. Hexagon Core Domain Kernel",
+  "Pure business rules, aggregates, entities, and calculation policies.",
+)
+
+lDrivenPorts = Layer(
+  "l-driven-ports",
+  "4. Driven Output Port Contracts",
+  "Outbound interface contracts defined by the domain for persistence, messaging, and notifications.",
+)
+
+lDrivenAdapters = Layer(
+  "l-driven-adapters",
+  "5. Driven (Outbound) Adapters & Infrastructure",
+  "Pluggable infrastructure adapters (PostgreSQL, Redis, Kafka, SendGrid) implementing output ports.",
+)
+
+bHttpAdapter = MatrixBlock(
+  "b-http-adapter",
+  "HTTP REST API Controller",
+  lDrivingAdapters,
+  0,
+  1,
+  1,
+  "Parses REST/JSON requests and invokes the OrderUseCasePort.",
+  "blue",
+  ["b-order-usecase-port"],
+)
+
+bCliAdapter = MatrixBlock(
+  "b-cli-adapter",
+  "CLI Command Runner",
+  lDrivingAdapters,
+  1,
+  1,
+  1,
+  "Executes terminal commands against input ports.",
+  "sky",
+  ["b-order-usecase-port"],
+)
+
+bWebhookAdapter = MatrixBlock(
+  "b-webhook-adapter",
+  "Webhook Ingress Listener",
+  lDrivingAdapters,
+  2,
+  2,
+  1,
+  "Handles asynchronous inbound webhooks from third-party partners.",
+  "sapphire",
+  ["b-payment-port"],
+)
+
+bOrderUsecasePort = MatrixBlock(
+  "b-order-usecase-port",
+  "OrderUseCasePort (Inbound Contract)",
+  lDrivingPorts,
+  0,
+  2,
+  1,
+  "Primary interface defining order placement and management capabilities.",
+  "mauve",
+  ["b-order-aggregate"],
+)
+
+bPaymentPort = MatrixBlock(
+  "b-payment-port",
+  "PaymentServicePort (Inbound Contract)",
+  lDrivingPorts,
+  2,
+  2,
+  1,
+  "Interface contract for initiating payment authorization flows.",
+  "lavender",
+  ["b-pricing-policy"],
+)
+
+bOrderAggregate = MatrixBlock(
+  "b-order-aggregate",
+  "Order Aggregate & Entities",
+  lDomainKernel,
+  0,
+  3,
+  1,
+  "Encapsulates order invariants, item line validation, and state changes.",
+  "green",
+  ["b-repo-port", "b-event-port"],
+)
+
+bPricingPolicy = MatrixBlock(
+  "b-pricing-policy",
+  "Pricing & Discount Policy",
+  lDomainKernel,
+  3,
+  1,
+  1,
+  "Stateless domain rules for volume discounts and tax calculations.",
+  "teal",
+  ["b-cache-port", "b-email-port"],
+)
+
+bRepoPort = MatrixBlock(
+  "b-repo-port",
+  "OrderRepositoryPort",
+  lDrivenPorts,
+  0,
+  1,
+  1,
+  "Driven port interface for persistent storage operations.",
+  "peach",
+  ["b-postgres-adapter"],
+)
+
+bCachePort = MatrixBlock(
+  "b-cache-port",
+  "CachePort",
+  lDrivenPorts,
+  1,
+  1,
+  1,
+  "Driven port interface for fast key-value session caching.",
+  "yellow",
+  ["b-redis-adapter"],
+)
+
+bEventPort = MatrixBlock(
+  "b-event-port",
+  "EventPublisherPort",
+  lDrivenPorts,
+  2,
+  1,
+  1,
+  "Driven port interface for publishing domain events.",
+  "maroon",
+  ["b-kafka-adapter"],
+)
+
+bEmailPort = MatrixBlock(
+  "b-email-port",
+  "NotificationPort",
+  lDrivenPorts,
+  3,
+  1,
+  1,
+  "Driven port interface for sending customer notifications.",
+  "pink",
+  ["b-sendgrid-adapter"],
+)
+
+bPostgresAdapter = MatrixBlock(
+  "b-postgres-adapter",
+  "PostgreSQL Order Repository (DB 1)",
+  lDrivenAdapters,
+  0,
+  1,
+  1,
+  "Relational database persistence adapter implementing OrderRepositoryPort.",
+  "blue",
+)
+
+bRedisAdapter = MatrixBlock(
+  "b-redis-adapter",
+  "Redis Cache & Session Adapter (DB 2)",
+  lDrivenAdapters,
+  1,
+  1,
+  1,
+  "In-memory caching adapter implementing CachePort.",
+  "red",
+)
+
+bKafkaAdapter = MatrixBlock(
+  "b-kafka-adapter",
+  "Kafka Event Stream Publisher (Broker)",
+  lDrivenAdapters,
+  2,
+  1,
+  1,
+  "Message streaming adapter implementing EventPublisherPort.",
+  "mauve",
+)
+
+bSendgridAdapter = MatrixBlock(
+  "b-sendgrid-adapter",
+  "SendGrid Email Dispatcher (SaaS)",
+  lDrivenAdapters,
+  3,
+  1,
+  1,
+  "Outbound notification adapter implementing NotificationPort.",
+  "green",
+)

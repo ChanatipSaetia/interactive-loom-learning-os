@@ -1,0 +1,27 @@
+root = ReflectionTemplate("Retrieval Evaluation Template", [challenge1, challenge2])
+
+challenge1 = TemplateChallenge(
+  "Complete the statement explaining Top K retrieval characteristics (Part 1):",
+  "Increasing Top K in a Haystack query pipeline leads to {zone-1} retrieval recall, because the retriever fetches more candidate text blocks. However, this also causes {zone-2} generation latency and {zone-3} API token cost.",
+  [
+    Chip("chip-higher", "higher"),
+    Chip("chip-lower", "lower"),
+    Chip("chip-increased", "increased"),
+    Chip("chip-decreased", "decreased"),
+  ],
+  {"zone-1": "chip-higher", "zone-2": "chip-increased", "zone-3": "chip-increased"},
+  "<strong>Correct!</strong> Fetching more candidate files raises search recall rate but also forces the LLM generator to read more context, multiplying API cost and duration latency.",
+)
+
+challenge2 = TemplateChallenge(
+  "Complete the statement explaining chunk overlaps (Part 2):",
+  "Adding larger chunk overlaps helps prevent semantic {zone-1} at text boundaries. However, it also duplicate text segments, which {zone-2} total context length and {zone-3} cost.",
+  [
+    Chip("chip-loss", "information loss"),
+    Chip("chip-gain", "gains"),
+    Chip("chip-raises", "raises"),
+    Chip("chip-drops", "drops"),
+  ],
+  {"zone-1": "chip-loss", "zone-2": "chip-raises", "zone-3": "chip-raises"},
+  "<strong>Correct!</strong> Overlaps block boundary sentence splits, but they add duplicate strings that cost more to send to generator APIs.",
+)

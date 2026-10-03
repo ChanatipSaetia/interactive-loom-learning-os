@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "studio": "vite --open /studio.html",
     "build": "tsc -b && vite build",
     "build:lib": "BUILD_MODE=lib vite build",
     "build:all": "tsc -b && BUILD_MODE=lib vite build && vite build",
@@ -13,9 +14,19 @@
     "test:e2e": "playwright test",
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "okf:validate": "npx -y tsx scripts/validate-okf.ts"
+    "okf:validate": "npx -y tsx scripts/validate-okf.ts",
+    "oui:convert": "npx -y tsx scripts/okf-to-oui.ts"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^6.20.3",
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/lint": "^6.9.7",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.13",
+    "@lezer/highlight": "^1.2.5",
+    "@openuidev/lang-core": "^0.3.0",
+    "@openuidev/react-lang": "^0.3.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "animejs": "^4.2.1",
     "clsx": "^2.1.1",

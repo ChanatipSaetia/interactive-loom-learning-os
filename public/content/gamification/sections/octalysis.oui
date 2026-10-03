@@ -1,0 +1,133 @@
+root = TaxonomyBrowser(
+  "Octalysis: The 8 Core Drives",
+  [
+    epicMeaningPurpose,
+    developmentAccomplishment,
+    empowermentOfCreativityFeedback,
+    ownershipPossession,
+    socialInfluenceRelatedness,
+    scarcityImpatience,
+    unpredictabilityCuriosity,
+    lossAvoidance,
+  ],
+)
+
+epicMeaningPurpose = TaxonomyCategory(
+  "Epic Meaning & Purpose",
+  "Core Drive 1 — White Hat",
+  "Compass",
+  "sky",
+  "Believing you are doing something greater than yourself — a moral or higher purpose. The most powerful drive for long-term commitment.",
+  "Use narrative framing that connects routine tasks to a mission: 'you are saving the environment', not 'click this button'. Works best with community and visible impact.",
+  "Like a volunteer feeling their small task feeds a bigger cause.",
+  "Mission, cause, and moral framing",
+  [
+    "Story arcs tied to real impact",
+    "Community missions and shared goals",
+    "Volunteering and civic engagement apps",
+  ],
+  ["Purely transactional point farming", "Mechanics that contradict the stated mission"],
+)
+
+developmentAccomplishment = TaxonomyCategory(
+  "Development & Accomplishment",
+  "Core Drive 2 — White Hat",
+  "TrendingUp",
+  "green",
+  "The drive to make progress, develop skills, and overcome challenges. The most common drive in gamification — it powers points, badges, levels, and progress bars.",
+  "Every point and badge must map to genuine progress or mastery. Pair with clear goals and visible progress bars; static counters without meaning decay within weeks.",
+  "Like watching a progress bar fill toward the next level.",
+  "Progress, mastery, and visible achievement",
+  ["XP and level systems", "Milestone badges and achievements", "Progress bars and skill trees"],
+  ["Badges for trivial actions", "Points that can be farmed without skill"],
+)
+
+empowermentOfCreativityFeedback = TaxonomyCategory(
+  "Empowerment of Creativity & Feedback",
+  "Core Drive 3 — White Hat",
+  "Lightbulb",
+  "yellow",
+  "The drive to experiment, make decisions, and get feedback that validates improvement. People engage when they can try new approaches and see the results.",
+  "Offer choice (multiple solutions, customization) and immediate, informative feedback. The feedback loop — act, see result, adjust — is what keeps experimentation alive.",
+  "Like a designer iterating on a mockup and watching it get better.",
+  "Choice, experimentation, and feedback loops",
+  [
+    "Multiple solution paths",
+    "User customization and expression",
+    "Immediate results and analytics feedback",
+  ],
+  ["Single-rail experiences with no choice", "Delayed or opaque feedback"],
+)
+
+ownershipPossession = TaxonomyCategory(
+  "Ownership & Possession",
+  "Core Drive 4 — White Hat",
+  "Package",
+  "peach",
+  "The drive to own, improve, and complete something. People care more about what is 'theirs' — their inventory, their profile, their virtual home.",
+  "Give users assets they accumulate and personalize, and make improvements visible. Completion drives (checklists, collection goals) tap the same ownership psychology.",
+  "Like decorating your own room — you polish it because it is yours.",
+  "Assets, customization, and completion",
+  [
+    "Inventory and collection systems",
+    "Profile and avatar customization",
+    "Personal dashboards and achievements",
+  ],
+  ["Ephemeral assets that disappear", "Locked content with no path to ownership"],
+)
+
+socialInfluenceRelatedness = TaxonomyCategory(
+  "Social Influence & Relatedness",
+  "Core Drive 5 — White Hat",
+  "Users",
+  "mauve",
+  "The drive to connect with others — role models, mentorship, friendship, competition, cooperation, and shared recognition.",
+  "Add a social layer: teams, peer recognition, mentors, or cooperative quests. Social mechanics multiply engagement but must be opt-in, or they become pressure.",
+  "Like training with a friend who expects you to show up.",
+  "Connection, cooperation, and healthy competition",
+  ["Teams and cooperative quests", "Peer recognition and shout-outs", "Mentorship and role models"],
+  ["Shaming mechanics", "Forced social exposure for introverts"],
+)
+
+scarcityImpatience = TaxonomyCategory(
+  "Scarcity & Impatience",
+  "Core Drive 6 — Black Hat",
+  "Hourglass",
+  "red",
+  "The drive toward limited-quantity or limited-time opportunities. 'Only 3 left' and 'ends tonight' create urgency and fear of missing out.",
+  "Use sparingly for genuinely limited opportunities. Fabricated scarcity is a dark pattern — it works once and destroys trust when users see through it.",
+  "Like a flash sale that ends at midnight.",
+  "Urgency and limited opportunities",
+  ["Genuine limited-time events", "Seasonal challenges", "Exclusive early access"],
+  ["Fake countdown timers", "Manufactured scarcity that resets daily"],
+)
+
+unpredictabilityCuriosity = TaxonomyCategory(
+  "Unpredictability & Curiosity",
+  "Core Drive 7 — Black Hat",
+  "Dice5",
+  "rose",
+  "The drive to satisfy curiosity and enjoy the unknown — variable rewards, surprise bonuses, and open loops that make people want to know what happens next.",
+  "Randomize reward magnitude (variable-ratio reinforcement) and use narrative open loops. This is the strongest short-term hook — but overuse creates a slot-machine dynamic that users eventually resent.",
+  "Like opening a loot crate and not knowing what is inside.",
+  "Surprise, curiosity, and variable rewards",
+  ["Randomized bonus XP", "Mystery rewards and loot", "Narrative open loops and teasers"],
+  ["Randomizing core skill progression", "Loot-box mechanics in regulated contexts"],
+)
+
+lossAvoidance = TaxonomyCategory(
+  "Loss & Avoidance",
+  "Core Drive 8 — Black Hat",
+  "ShieldOff",
+  "teal",
+  "The drive to avoid losing what you have — loss aversion. Streaks, expiring items, and demotion threats all exploit the pain of loss, which outweighs the joy of gain.",
+  "Streaks are the canonical example: powerful habit builders, but a snapped streak feels like a loss and can trigger quit. Always pair pressure with an escape valve (freezes, grace periods) or users will burn out.",
+  "Like guarding a 30-day streak — the fear of losing it keeps you coming back.",
+  "Loss aversion, streaks, and threat of demotion",
+  [
+    "Streaks with freeze/give-away safety valves",
+    "Progress at risk framing",
+    "Demotion warnings in leagues",
+  ],
+  ["Guilt-tripping notifications", "Punitive resets with no recovery path"],
+)

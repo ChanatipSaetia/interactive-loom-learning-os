@@ -1,0 +1,52 @@
+root = FormulaSandbox(
+  "DoT Damage Calculator",
+  [
+    FormulaVariable("attack_speed", "Attacks per Second", 1, 8, 0.25, 3.5),
+    FormulaVariable("physical_damage", "Physical Damage per Hit", 100, 3000, 50, 800),
+    FormulaVariable("chaos_damage", "Chaos Damage per Hit", 0, 2000, 50, 400),
+    FormulaVariable("bleed_magnitude", "% Bleed Magnitude", 15, 200, 5, 60),
+    FormulaVariable("poison_magnitude", "% Poison Magnitude", 20, 250, 5, 75),
+    FormulaVariable("dot_duration", "DoT Duration (seconds)", 3, 12, 0.5, 6),
+  ],
+  [bleedDps, poisonDps, totalDotDps, hitsToFill],
+)
+
+bleedDps = FormulaMetric(
+  "bleed_dps",
+  "Bleed DPS",
+  "Math.round((physical_damage * bleed_magnitude / 100) * (attack_speed / dot_duration) * 5)",
+  "Physical damage per second from bleeding. Base magnitude is 15% of physical hit damage, scaled by your bleed magnitude modifiers. Multiplied by 5x for average map damage over duration.",
+  "Like a deep wound that won't stop flowing—the deeper the cut and the slower the healing, the more blood pours out over time.",
+  ["Bleed magnitude scaling", "Physical damage conversion to bleed"],
+  ["Bleed chance on hit", "Monster bleed resistance"],
+)
+
+poisonDps = FormulaMetric(
+  "poison_dps",
+  "Poison DPS",
+  "Math.round(((physical_damage + chaos_damage) * poison_magnitude / 100) * (attack_speed / dot_duration) * 3)",
+  "Chaos damage per second from poison. Base magnitude is 20% of combined Physical + Chaos hit damage, scaled by poison magnitude modifiers.",
+  "A spreading toxin that eats away at health—the more potent the venom and the longer it lingers, the greater the toll.",
+  ["Poison magnitude scaling", "Combined physical and chaos damage"],
+  ["Poison chance on hit", "Monster chaos resistance"],
+)
+
+totalDotDps = FormulaMetric(
+  "total_dot_dps",
+  "Total DoT DPS",
+  "bleed_dps + poison_dps",
+  "Combined damage per second from both poison and bleed ticking simultaneously on the target.",
+  "Two wounds working in concert—each independently draining, together overwhelming the target's recovery.",
+  ["Simultaneous bleed and poison ticks"],
+  ["Direct hit damage", "Other ailment sources"],
+)
+
+hitsToFill = FormulaMetric(
+  "hits_to_fill",
+  "Hits to Fill Poison Slots",
+  "Math.ceil(6 / attack_speed)",
+  "Number of hits needed to fill all 6 default poison slots on a target. Higher attack speed means faster slot fill.",
+  "Loading six darts into a spinning wheel—each hit places one dart, and faster spinning means the wheel fills quicker.",
+  ["Default 6 poison slot limit", "Attack speed to slot fill rate"],
+  ["Increased poison slots from items or skills", "Poison tick rate modifications"],
+)

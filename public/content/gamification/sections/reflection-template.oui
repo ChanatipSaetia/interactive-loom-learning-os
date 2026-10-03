@@ -1,0 +1,27 @@
+root = ReflectionTemplate("Motivation Self-Explanation", [challenge1, challenge2])
+
+challenge1 = TemplateChallenge(
+  "Complete the statement about the overjustification effect:",
+  "The overjustification effect warns that adding {zone-1} rewards to an activity people already enjoy can {zone-2} their intrinsic motivation.",
+  [
+    Chip("chip-extrinsic", "extrinsic"),
+    Chip("chip-intrinsic", "intrinsic"),
+    Chip("chip-increase", "increase"),
+    Chip("chip-undermine", "undermine"),
+  ],
+  {"zone-1": "chip-extrinsic", "zone-2": "chip-undermine"},
+  "<strong>Correct!</strong> When a reward explains the behavior, people shift their attribution from 'I do this because it's fun' to 'I do this for the reward' — and intrinsic motivation drops once the reward disappears.",
+)
+
+challenge2 = TemplateChallenge(
+  "Complete the statement about the Octalysis white hat / black hat split:",
+  "Octalysis's white hat drives are {zone-1} and empowering, while black hat drives rely on pressure such as {zone-2}.",
+  [
+    Chip("chip-intrinsic", "intrinsic"),
+    Chip("chip-extrinsic", "extrinsic"),
+    Chip("chip-loss-aversion", "loss aversion"),
+    Chip("chip-mastery", "mastery"),
+  ],
+  {"zone-1": "chip-intrinsic", "zone-2": "chip-loss-aversion"},
+  "<strong>Correct!</strong> White hat drives (meaning, mastery, creativity, ownership, relatedness) empower users; black hat drives (scarcity, unpredictability, loss) create urgency through pressure. Sustainable design leans on white hat and uses black hat sparingly.",
+)

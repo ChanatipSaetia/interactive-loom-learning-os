@@ -1,0 +1,18 @@
+root = Bullets(
+  "Key Agent Capabilities",
+  [
+    Bullet(
+      "Tool use — call external APIs, run code, browse the web",
+      [
+        Bullet("Web search (Tavily, Brave, Google)"),
+        Bullet("Code execution (sandboxed interpreter)"),
+        Bullet("Browser automation (Playwright)"),
+      ],
+    ),
+    Bullet("Long-horizon planning via chain-of-thought or ReAct"),
+    Bullet("Persistent memory across sessions (vector store)"),
+    Bullet("Self-evaluation and automatic re-planning on failure"),
+    Bullet("Multi-agent coordination (delegating sub-tasks)"),
+  ],
+  false,
+)

@@ -1,0 +1,117 @@
+root = TaxonomyBrowser(
+  "AI Agent Capability Taxonomy",
+  [
+    hierarchicalOrchestration,
+    memoryContext,
+    peerCollaboration,
+    reasoningPlanning,
+    selfEvaluation,
+    sequentialChoreography,
+    supervisorRouter,
+    toolUse,
+  ],
+)
+
+hierarchicalOrchestration = TaxonomyCategory(
+  "Hierarchical Orchestration",
+  "Orchestrator-Workers",
+  "GitFork",
+  "mauve",
+  "A central manager agent (orchestrator) decomposes goals, delegates tasks to specialized worker agents, collects results, and synthesizes the final output.",
+  "Ideal for complex, multi-step workflows requiring strict quality control, consensus, or routing.",
+  "Like a software engineering manager delegating backend, frontend, and QA tasks to developers.",
+  "Task decomposition, delegation, and output synthesis",
+  ["Central director", "Specialized sub-agents", "Dynamic task routing"],
+  ["Peer-to-peer unstructured negotiation"],
+)
+
+memoryContext = TaxonomyCategory(
+  "Memory & Context",
+  "State Management",
+  "Database",
+  "blue",
+  "The agent stores and retrieves information across interactions, maintaining context through vector embeddings, conversation history, and external knowledge bases.",
+  "Memory systems include short-term (working memory within a session), long-term (persisted across sessions via embeddings), and external memory (RAG over documents).",
+  "Like a researcher who takes notes, bookmarks references, and builds a personal knowledge base over years.",
+  "Context retention, retrieval, and working memory management",
+  ["Vector embeddings", "Conversation history", "RAG retrieval", "Working memory"],
+  ["One-shot generation without memory"],
+)
+
+peerCollaboration = TaxonomyCategory(
+  "Peer Collaboration",
+  "Decentralized Network",
+  "Users",
+  "green",
+  "Independent agents interact directly, negotiate, and collaborate to solve a problem without a centralized manager.",
+  "Useful for negotiation, multi-perspective debates, or open-ended creative tasks.",
+  "A brainstorming session among design peers sharing ideas, voting, and converging on a solution.",
+  "Peer negotiation, debate, and consensus mechanisms",
+  ["Debate loops", "Voting consensus", "Agent-to-agent negotiation"],
+  ["Rigid hierarchical command lines"],
+)
+
+reasoningPlanning = TaxonomyCategory(
+  "Reasoning & Planning",
+  "Core Intelligence",
+  "Brain",
+  "mauve",
+  "The agent decomposes goals into actionable plans, reasons through chain-of-thought, and adapts strategies when encountering obstacles.",
+  "Planning encompasses ReAct loops, tree-of-thought search, and self-refinement patterns.",
+  "Like a project manager breaking down an epic into sprint tasks and adjusting when blockers appear.",
+  "Goal decomposition and step-by-step execution",
+  ["Chain-of-thought", "ReAct loops", "Self-correction"],
+  ["Raw text generation without planning"],
+)
+
+selfEvaluation = TaxonomyCategory(
+  "Self-Evaluation",
+  "Quality Assurance",
+  "Scale",
+  "peach",
+  "The agent evaluates its own output against success criteria, identifies failures, and triggers re-planning or correction loops.",
+  "Self-evaluation can be rule-based (checklist), LLM-based (self-critique), or hybrid (automated tests + LLM judgment).",
+  "A developer reviewing their own code before submitting a PR.",
+  "Output validation and autonomous correction",
+  ["Self-critique", "Automated testing", "Success criteria checking", "Re-planning on failure"],
+  ["Blind execution without verification"],
+)
+
+sequentialChoreography = TaxonomyCategory(
+  "Sequential Choreography",
+  "Chain of Agents",
+  "Shuffle",
+  "blue",
+  "Agents work in a pipeline, passing data sequentially. Each agent receives input from the previous step, performs its specialized task, and hands off to the next.",
+  "Best for structured pipelines where steps are predictable (e.g. Code Gen -> Lint -> Test -> Fix).",
+  "An assembly line in a factory where each worker installs a specific part of a car.",
+  "Linear hand-offs and deterministic stage-gate processing",
+  ["Sequential pipeline", "Stage-gate validation", "Incremental improvement"],
+  ["Dynamic backtracking or ad-hoc loops"],
+)
+
+supervisorRouter = TaxonomyCategory(
+  "Supervisor Router",
+  "Dynamic Routing",
+  "ShieldCheck",
+  "peach",
+  "A supervisor agent monitors shared state, routes tasks dynamically to appropriate workers based on the current state, and decides when the overall goal is achieved.",
+  "Best for open-ended problem solving where the path to the solution is non-linear and depends on intermediate findings.",
+  "A triage doctor in an emergency room routing patients to specialists based on their symptoms.",
+  "State-based routing and completion evaluation",
+  ["State-driven routing", "Dynamic task assignment", "Supervisor evaluations"],
+  ["Deterministic linear pipelines"],
+)
+
+toolUse = TaxonomyCategory(
+  "Tool Use",
+  "Action Execution",
+  "Wrench",
+  "green",
+  "The agent invokes external tools — APIs, code interpreters, web browsers, file systems — to extend its capabilities beyond pure text generation.",
+  "Tool use transforms the agent from a passive text generator into an active agent that can modify its environment.",
+  "Like a developer using CLI tools, IDE features, and version control to complete a task.",
+  "External tool invocation and result integration",
+  ["API calls", "Code execution", "Web browsing", "File I/O"],
+  ["Pure text completion"],
+)

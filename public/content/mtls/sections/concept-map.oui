@@ -1,0 +1,68 @@
+root = ConceptMap(
+  "mTLS Concept Map",
+  [
+    mtls,
+    tls,
+    certificate,
+    ca,
+    pki,
+    clientCertificate,
+    serverCertificate,
+    spiffe,
+    spire,
+    jwt,
+    oauth2,
+    zeroTrust,
+    serviceMesh,
+    certificateChain,
+    keyPair,
+    trustStore,
+    workloadIdentity,
+    mutualAuthentication,
+  ],
+  [
+    ConceptLink(mtls, tls, "extends"),
+    ConceptLink(mtls, mutualAuthentication, "realizes"),
+    ConceptLink(mtls, clientCertificate, "requires"),
+    ConceptLink(mtls, serverCertificate, "requires"),
+    ConceptLink(mtls, zeroTrust, "enables"),
+    ConceptLink(certificate, pki, "part of"),
+    ConceptLink(ca, certificate, "issues"),
+    ConceptLink(ca, pki, "core of"),
+    ConceptLink(clientCertificate, certificate, "type of"),
+    ConceptLink(serverCertificate, certificate, "type of"),
+    ConceptLink(certificate, keyPair, "binds"),
+    ConceptLink(certificate, certificateChain, "linked in"),
+    ConceptLink(certificateChain, trustStore, "validated by"),
+    ConceptLink(spiffe, workloadIdentity, "standardizes"),
+    ConceptLink(spire, spiffe, "implements"),
+    ConceptLink(spiffe, mtls, "uses"),
+    ConceptLink(spiffe, jwt, "issues"),
+    ConceptLink(jwt, mtls, "alternative to"),
+    ConceptLink(oauth2, jwt, "issues"),
+    ConceptLink(oauth2, mtls, "alternative to"),
+    ConceptLink(serviceMesh, mtls, "deploys"),
+    ConceptLink(serviceMesh, zeroTrust, "enforces"),
+    ConceptLink(trustStore, ca, "anchors at"),
+    ConceptLink(mutualAuthentication, zeroTrust, "supports"),
+  ],
+)
+
+mtls = Concept("mtls", "mTLS", "pattern")
+tls = Concept("tls", "TLS", "pattern")
+certificate = Concept("certificate", "Certificate", "data")
+ca = Concept("ca", "CA (Certificate Authority)", "system")
+pki = Concept("pki", "PKI", "system")
+clientCertificate = Concept("client_certificate", "Client Certificate", "data")
+serverCertificate = Concept("server_certificate", "Server Certificate", "data")
+spiffe = Concept("spiffe", "SPIFFE", "pattern")
+spire = Concept("spire", "SPIRE", "system")
+jwt = Concept("jwt", "JWT", "data")
+oauth2 = Concept("oauth2", "OAuth2", "pattern")
+zeroTrust = Concept("zero_trust", "Zero Trust", "concept")
+serviceMesh = Concept("service_mesh", "Service Mesh", "system")
+certificateChain = Concept("certificate_chain", "Certificate Chain", "data")
+keyPair = Concept("key_pair", "Key Pair", "data")
+trustStore = Concept("trust_store", "Trust Store", "system")
+workloadIdentity = Concept("workload_identity", "Workload Identity", "concept")
+mutualAuthentication = Concept("mutual_authentication", "Mutual Authentication", "process")

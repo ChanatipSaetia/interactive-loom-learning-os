@@ -1,0 +1,14 @@
+root = Topic(
+  "ภาษาจีนเบื้องต้น (Day 1) — Chinese 101",
+  "Language",
+  "เริ่มเรียนภาษาจีนด้วยคำทักทาย ตัวเลข และประโยคพื้นฐาน",
+  [
+    SectionRef("intro"),
+    SectionRef("flashcards"),
+    SectionRef("concept-map"),
+    SectionRef("quiz"),
+    SectionRef("scenario"),
+    SectionRef("reflection-sequence"),
+  ],
+  ["chinese", "mandarin", "hsk1", "beginner"],
+)

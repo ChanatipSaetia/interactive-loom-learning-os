@@ -1,0 +1,63 @@
+root = TaxonomyBrowser(
+  "Adapter Taxonomies & Patterns",
+  [primaryDrivingAdapters, secondaryDrivenAdapters, testingMocksInMemoryAdapters],
+  null,
+  Lead(
+    "Categorized breakdown of Primary (Driving) vs Secondary (Driven) adapters.",
+    "Helps developers classify adapters by their role in driving execution or providing infrastructure services.",
+    "Next: Read the Core Explanation of Dependency Inversion.",
+  ),
+)
+
+primaryDrivingAdapters = TaxonomyCategory(
+  "Primary (Driving) Adapters",
+  "Inbound Request Adapters",
+  "LayoutGrid",
+  "mauve",
+  "Adapters that drive application execution by taking external user or system inputs and calling Driving Ports.",
+  "Driving Adapters sit at the entry edge of the Hexagon. They convert transport-level payloads (JSON over HTTP, CLI arguments, gRPC messages) into domain commands or queries, then invoke the application's Driving Ports.",
+  "Like a TV Remote Control or Game Controller sending user inputs to the internal console.",
+  "Translating external triggers into internal domain use case calls.",
+  [
+    "REST API Controllers (Express / NestJS / Spring MVC)",
+    "CLI Handlers (Commander / Cobra)",
+    "gRPC Service Handlers",
+    "GraphQL Query / Mutation Resolvers",
+  ],
+  ["Database Repositories", "Outbound HTTP API Clients", "ORM Schema Mappers"],
+)
+
+secondaryDrivenAdapters = TaxonomyCategory(
+  "Secondary (Driven) Adapters",
+  "Outbound Infrastructure Adapters",
+  "Database",
+  "sky",
+  "Adapters that are driven by the Application Core to interact with external storage, APIs, and infrastructure.",
+  "Driven Adapters implement Secondary Ports defined by the domain. They handle SQL/NoSQL persistence, third-party REST API integrations, and event publishing.",
+  "Like a Power Adapter or Cable converting wall outlet electricity into what your device needs.",
+  "Fulfilling data persistence and external infrastructure contracts defined by the domain.",
+  [
+    "SQL Repositories (Prisma / TypeORM / Hibernate)",
+    "NoSQL Stores (Redis / Mongo / DynamoDB)",
+    "Third-party payment gateway clients (Stripe / PayPal)",
+    "Event Bus Publishers (Kafka / RabbitMQ / SQS)",
+  ],
+  ["HTTP Route Controllers", "UI Views and Form State"],
+)
+
+testingMocksInMemoryAdapters = TaxonomyCategory(
+  "Testing Mocks & In-Memory Adapters",
+  "In-Memory Test Doubles",
+  "CheckCircle",
+  "green",
+  "Lightweight in-memory adapter implementations designed for fast unit/integration testing.",
+  "Test Adapters implement Driven Ports using in-memory HashMaps or mocks. They allow running 100% of domain use cases without booting databases, Docker containers, or network connections.",
+  "Like a flight simulator providing realistic controls without burning jet fuel.",
+  "Enabling fast, deterministic, zero-dependency unit tests for business logic.",
+  [
+    "InMemoryOrderRepository implementing OrderRepositoryPort",
+    "MockNotificationService implementing NotificationPort",
+    "StubPaymentGateway returning static success responses",
+  ],
+  ["Production SQL Connection Pools"],
+)

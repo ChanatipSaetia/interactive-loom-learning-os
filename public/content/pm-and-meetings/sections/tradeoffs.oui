@@ -1,0 +1,257 @@
+root = TradeoffSandbox(
+  "Management & Sync Trade-offs",
+  [communicationStrategy, processOverhead, estimationsAndPlanning],
+)
+
+communicationStrategy = TradeoffScenario(
+  "communication-strategy",
+  "Communication Strategy",
+  [
+    TradeoffMetric("velocity", "Team Velocity", 50, 0, 100, "higher"),
+    TradeoffMetric("overhead", "Process Overhead", 40, 0, 100, "lower"),
+    TradeoffMetric("alignment", "Team Alignment", 50, 0, 100, "higher"),
+    TradeoffMetric("maker_time", "Maker Focus Time", 60, 0, 100, "higher"),
+  ],
+  [commsChannel],
+  "Select the primary channel for design feedback and general updates. Evaluate how choices affect velocity, alignment, overhead, and focus time.",
+)
+
+commsChannel = TradeoffStep(
+  "comms_channel",
+  "Primary Design Loop Channel",
+  [meetingSync, asyncDoc, chatThreads],
+  "Choose how the engineering team reviews technical proposals and updates.",
+  "async_doc",
+)
+
+meetingSync = TradeoffChoice(
+  "meeting_sync",
+  "Synchronous Meetings",
+  "Schedule recurring meetings for all status updates and design discussions.",
+  {velocity: -10, overhead: 25, alignment: 15, maker_time: -25},
+  [
+    ProCon("Immediate Feedback", "Questions are resolved instantly on the call."),
+    ProCon("High Alignment", "Easier to resolve heated arguments in real-time."),
+  ],
+  [
+    ProCon("Context Switching", "Breaks developers' coding flow repeatedly."),
+    ProCon("Poor Record Keeping", "Decisions are lost if not explicitly documented afterward."),
+  ],
+  null,
+  "Best for highly ambiguous, urgent incidents or critical cross-team alignments.",
+)
+
+asyncDoc = TradeoffChoice(
+  "async_doc",
+  "Async Design Docs (RFCs)",
+  "Write structural proposals and request comments asynchronously.",
+  {velocity: 15, overhead: -15, alignment: 10, maker_time: 25},
+  [
+    ProCon("No Interruption", "Team reviews proposals on their own schedule."),
+    ProCon("High Focus", "Written feedback is usually more detailed and thoughtful."),
+    ProCon("Permanent Archive", "Comments and reasoning remain saved as future reference."),
+  ],
+  [
+    ProCon("Slower Alignment Loop", "It takes 24-48 hours to collect feedback."),
+    ProCon("Passive Reading Overhead", "Requires writing discipline from authors."),
+  ],
+  "Async design docs protect valuable focus time, improve discussion quality, and establish a permanent knowledge base.",
+)
+
+chatThreads = TradeoffChoice(
+  "chat_threads",
+  "Slack Chat Threads",
+  "Discuss design plans inside ad-hoc Slack threads.",
+  {velocity: 5, overhead: 5, alignment: -10, maker_time: -10},
+  [
+    ProCon("Fast Discussion", "Quick comments can be posted within minutes."),
+    ProCon("Low Friction", "No need to write structured documentation."),
+  ],
+  [
+    ProCon("Chat Fatigue", "Engineers feel pressured to monitor Slack constantly."),
+    ProCon("Lost Context", "Important decisions get buried in chat history."),
+  ],
+  null,
+  "Best for small, simple details or casual peer-to-peer alignment.",
+)
+
+processOverhead = TradeoffScenario(
+  "process-overhead",
+  "PM Framework Overhead",
+  [
+    TradeoffMetric("velocity", "Team Velocity", 50, 0, 100, "higher"),
+    TradeoffMetric("overhead", "Process Overhead", 40, 0, 100, "lower"),
+    TradeoffMetric("alignment", "Team Alignment", 50, 0, 100, "higher"),
+    TradeoffMetric("maker_time", "Maker Focus Time", 60, 0, 100, "higher"),
+  ],
+  [pmFramework],
+  "Select the process framework for task management and iteration planning.",
+)
+
+pmFramework = TradeoffStep(
+  "pm_framework",
+  "Process Ceremony Level",
+  [heavyScrum, kanbanAsync],
+  "Determine how tasks are assigned and tracked.",
+  "kanban_async",
+)
+
+heavyScrum = TradeoffChoice(
+  "heavy_scrum",
+  "High-Ceremony Scrum",
+  "Strict two-week sprints with daily syncs, planning, refinement, and retrospectives.",
+  {velocity: 5, overhead: 30, alignment: 20, maker_time: -25},
+  [
+    ProCon("High Predictability", "Clear sprint commitments help forecast releases."),
+    ProCon("Structured feedback", "Retrospectives and reviews occur on a set cadence."),
+  ],
+  [
+    ProCon("Ceremony Bloat", "Up to 10-15% of sprint capacity is consumed in meetings."),
+    ProCon("Rigid Timelines", "Changing direction mid-sprint is discouraged."),
+  ],
+  null,
+  "Necessary for large enterprises with multiple team dependencies and strict delivery schedules.",
+)
+
+kanbanAsync = TradeoffChoice(
+  "kanban_async",
+  "Lean/Async Kanban",
+  "Continuous workflow tracked on a visual board, with async updates and huddles.",
+  {velocity: 15, overhead: -20, alignment: -5, maker_time: 25},
+  [
+    ProCon("Low Overhead", "Minimizes meetings, maximizing developers' focus blocks."),
+    ProCon("Dynamic Scope", "Priorities can be adjusted instantly as business needs change."),
+  ],
+  [
+    ProCon("Lower Predictability", "Harder to forecast exact release dates far in advance."),
+    ProCon("High Discipline Needed", "Engineers must proactively update their task cards."),
+  ],
+  "For small to mid-sized engineering teams, a lean Kanban approach keeps meetings low, maximizing developer throughput and focus.",
+)
+
+estimationsAndPlanning = TradeoffScenario(
+  "estimations-and-planning",
+  "Planning & Estimations",
+  [
+    TradeoffMetric("velocity", "Team Velocity", 50, 0, 100, "higher"),
+    TradeoffMetric("overhead", "Process Overhead", 40, 0, 100, "lower"),
+    TradeoffMetric("alignment", "Team Alignment", 50, 0, 100, "higher"),
+    TradeoffMetric("maker_time", "Maker Focus Time", 60, 0, 100, "higher"),
+  ],
+  [estimationMethod, planningHorizon],
+  "Select the estimation methodology and planning horizon for your team. Analyze the impact on velocity, alignment, focus time, and overhead.",
+)
+
+estimationMethod = TradeoffStep(
+  "estimation_method",
+  "Estimation Sizing",
+  [exactMandays, rangeDays, storyPoints],
+  "How does the team size upcoming tasks?",
+  "range_days",
+)
+
+exactMandays = TradeoffChoice(
+  "exact_mandays",
+  "Exact Man-Days",
+  "Estimate tasks to the exact day/hour count (e.g. 'This task takes exactly 4 days').",
+  {velocity: -5, overhead: 20, alignment: 10, maker_time: -15},
+  [
+    ProCon("Apparent Clarity", "Stakeholders get a precise date/timeline quickly."),
+    ProCon("Easy Budgeting", "Direct mapping of time to project cost."),
+  ],
+  [
+    ProCon(
+      "The Planning Fallacy",
+      "Software engineering has high unknowns; exact day counts are rarely accurate.",
+    ),
+    ProCon(
+      "Pressure & Cutting Corners",
+      "Engineers rush code or skip testing to hit arbitrary date estimates.",
+    ),
+  ],
+  null,
+  "Useful when building standard, highly repetitive tasks with zero technical risk.",
+)
+
+rangeDays = TradeoffChoice(
+  "range_days",
+  "Range-based Estimations",
+  "Estimate tasks in ranges (e.g., 2-4 days) based on technical confidence.",
+  {velocity: 10, overhead: 5, alignment: 15, maker_time: 15},
+  [
+    ProCon("Accurate Uncertainty", "Ranges honestly communicate technical risk to stakeholders."),
+    ProCon("Reduces Planning Pressure", "Engineers have a buffer for testing and bug fixing."),
+  ],
+  [
+    ProCon(
+      "Vague Timelines",
+      "Project roadmaps become probabilistic ranges rather than fixed lines.",
+    ),
+  ],
+  "Range-based estimates balance stakeholder expectations with technical realities, reducing rushed delivery and protecting code quality.",
+)
+
+storyPoints = TradeoffChoice(
+  "story_points",
+  "Relative Story Points",
+  "Size tasks relatively using Fibonacci numbers (1, 2, 3, 5, 8) representing complexity, not time.",
+  {velocity: 15, overhead: 10, alignment: 20, maker_time: 10},
+  [
+    ProCon("Focus on Complexity", "Decouples planning from time constraints, focusing on effort."),
+    ProCon(
+      "Predictable Velocity",
+      "Planning improves as team averages points completed over cycles.",
+    ),
+  ],
+  [
+    ProCon(
+      "Stakeholder Confusion",
+      "Requires training stakeholders to understand points instead of dates.",
+    ),
+  ],
+  null,
+  "Best for mature Agile teams working in stable environments.",
+)
+
+planningHorizon = TradeoffStep(
+  "planning_horizon",
+  "Planning Horizon",
+  [ganttUpfront, rollingWave],
+  "How far in advance are feature roadmaps locked?",
+  "rolling_wave",
+)
+
+ganttUpfront = TradeoffChoice(
+  "gantt_upfront",
+  "Upfront Gantt Planning",
+  "Map out the entire 6-month project backlog with detailed dependencies upfront.",
+  {velocity: -15, overhead: 30, alignment: 5, maker_time: -20},
+  [ProCon("Clear Roadmap", "Full visibility of all planned milestones for the business.")],
+  [
+    ProCon(
+      "High Planning Waste",
+      "Upfront plans degrade as requirements change, requiring heavy re-planning sessions.",
+    ),
+    ProCon("Ignores Reality", "Assumes technical requirements won't change mid-project."),
+  ],
+  null,
+  "Only appropriate for physical infrastructure integrations or fixed-price contracts.",
+)
+
+rollingWave = TradeoffChoice(
+  "rolling_wave",
+  "Rolling Wave Planning",
+  "Plan the next milestone in detail, while keeping long-term goals high-level.",
+  {velocity: 10, overhead: -10, alignment: 15, maker_time: 20},
+  [
+    ProCon("Low Overhead", "Zero time spent planning details that will change anyway."),
+    ProCon("High Adaptability", "Easily pivot features based on feedback from the current cycle."),
+  ],
+  [
+    ProCon(
+      "Reduced Long-Term View",
+      "Stakeholders must tolerate flexible scopes for future quarters.",
+    ),
+  ],
+  "Rolling wave planning minimizes upfront waste, keeping plans aligned with live learnings while preserving developer focus.",
+)

@@ -1,0 +1,88 @@
+root = DecisionTree(
+  "Advisor: Sizing & Estimations",
+  "estimation_advisor",
+  "task_nature",
+  [taskNature, novelUncertainty, leafRangeDays, leafStoryPoints, leafSpikeTask],
+  "Task Sizing & Estimation Advisor",
+)
+
+taskNature = DecisionNode(
+  "task_nature",
+  "What kind of task are you estimating?",
+  [
+    DecisionChoice(
+      "repetitive",
+      "Repetitive, standard work (e.g. adding a standard CRUD endpoint)",
+      "leaf_range_days",
+      "Familiar tasks have low risk and are easy to estimate in days.",
+    ),
+    DecisionChoice(
+      "novel",
+      "Novel, complex work (e.g. integrating a new third-party system)",
+      "novel_uncertainty",
+      "Complex tasks have unknowns that make day-based estimates highly inaccurate.",
+      true,
+    ),
+  ],
+)
+
+novelUncertainty = DecisionNode(
+  "novel_uncertainty",
+  "How well-understood are the requirements and integration details?",
+  [
+    DecisionChoice(
+      "well_understood",
+      "We know what to do, but it requires substantial architectural effort",
+      "leaf_story_points",
+      "Relative sizing (story points) helps compare effort without locking dates.",
+      true,
+    ),
+    DecisionChoice(
+      "high_unknowns",
+      "We have high uncertainty and don't know the API capabilities",
+      "leaf_spike_task",
+      "Do not estimate tasks with high unknowns. Run a spike first.",
+    ),
+  ],
+)
+
+leafRangeDays = DecisionNode(
+  "leaf_range_days",
+  null,
+  null,
+  DecisionLeaf(
+    "Use Range-based Man-Days (e.g., 1-2 days).",
+    "Since the task is standard, a range of man-days is simple to communicate and carries low risk.",
+    ["Easy for stakeholders to understand", "Protects team if minor bugs occur"],
+  ),
+)
+
+leafStoryPoints = DecisionNode(
+  "leaf_story_points",
+  null,
+  null,
+  DecisionLeaf(
+    "Use Relative Story Points (e.g. 5 or 8 points).",
+    "Use relative sizing to compare the task's complexity against a reference task. This decouples effort from exact calendar days.",
+    [
+      "Avoids micro-managing deadlines",
+      "Leverages historical velocity for forecasting",
+      "May confuse stakeholders unfamiliar with Agile points",
+    ],
+  ),
+)
+
+leafSpikeTask = DecisionNode(
+  "leaf_spike_task",
+  null,
+  null,
+  DecisionLeaf(
+    "Schedule a timeboxed research Spike (1 man-day maximum).",
+    "Stop trying to estimate the feature. Schedule a 1-day spike task to write a prototype, test the API, and document findings. After the spike is done, estimate the feature.",
+    [
+      "Saves hours of wrong estimations",
+      "Creates a clear path forward before committing",
+      "Adds minor planning delay",
+    ],
+  ),
+)

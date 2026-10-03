@@ -1,0 +1,62 @@
+root = Intro(
+  "",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Knowledge Graph",
+      "concept-map",
+      "Map spatial relationships between agent components, memory modules, and tools.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Vocabulary Drill",
+      "flashcards",
+      "Master essential terminology and system definitions.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Capability Taxonomy",
+      "taxonomy-browser",
+      "Browse architectural patterns, scopes, and analogies.",
+      "taxonomy",
+    ),
+    RoadmapStep(
+      "Event Storming Flow",
+      "flowchart",
+      "Trace dynamic execution loops, policies, and async commands.",
+      "flowchart",
+    ),
+    RoadmapStep(
+      "Trade-off Sandbox",
+      "tradeoff-sandbox",
+      "Evaluate latency, throughput, and cost parameters.",
+      "tradeoffs",
+    ),
+    RoadmapStep(
+      "Assessment Quiz",
+      "quiz",
+      "Validate understanding and key architectural concepts.",
+      "quiz",
+    ),
+  ],
+  null,
+  "8 min read",
+  6,
+)
+
+what = IntroWhat(
+  "Comprehensive conceptual and interactive guide to building stateful, resilient AI agent systems.",
+  "An AI Agent is an autonomous goal-directed software system that uses LLMs to perceive environment state, reason over goals, select tools, and execute multi-step workflows.",
+  [
+    "Event-driven policy, command, and result event loops",
+    "Spatial knowledge graph of components, memory, and tools",
+    "Quantitative trade-off analysis balancing latency, cost, and reliability",
+  ],
+  ["Event Storming", "Knowledge Graph", "Trade-off Sandbox", "Decision Advisor"],
+)
+
+why = IntroWhy(
+  "Single-prompt LLM wrappers break when tasked with complex multi-step enterprise workflows requiring memory and tool selection.",
+  "Agentic architectures introduce dynamic policy execution, self-evaluation, and deterministic failure recovery.",
+)

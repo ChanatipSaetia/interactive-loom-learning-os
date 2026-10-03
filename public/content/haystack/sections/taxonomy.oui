@@ -1,0 +1,165 @@
+root = TaxonomyBrowser(
+  "Haystack Component Taxonomy",
+  [
+    indexingPipeline,
+    queryPipeline,
+    documentStore,
+    customComponents,
+    indexingPipeline2,
+    queryPipeline2,
+    documentStore2,
+    customComponents2,
+  ],
+)
+
+indexingPipeline = TaxonomyCategory(
+  "Indexing Pipeline",
+  "Offline ETL Processing",
+  "Folder",
+  "blue",
+  "An Indexing Pipeline processes raw data (PDFs, HTML, Markdown) into structured, searchable Documents. It runs offline or as a batch job, converting files, splitting text, computing embeddings, and writing to the Document Store.",
+  "The indexing pipeline is strictly decoupled from the query pipeline. It runs independently and its output is the Document Store. Common components: FileConverter → TextSplitter → DocumentEmbedder → DocumentWriter.",
+  "Like a library cataloging system — books are received, classified, tagged, and shelved before anyone can search for them.",
+  "File conversion, text chunking, embedding computation, and document persistence.",
+  [
+    "PDF/HTML/Markdown conversion",
+    "Text splitting and chunking",
+    "Embedding computation",
+    "Metadata extraction",
+    "Duplicate detection",
+  ],
+  ["Real-time query processing", "LLM answer generation", "User-facing search"],
+)
+
+queryPipeline = TaxonomyCategory(
+  "Query Pipeline",
+  "Real-Time Retrieval",
+  "Folder",
+  "green",
+  "A Query Pipeline executes in real-time to answer user queries. It embeds the query, retrieves relevant documents, optionally ranks them, and may invoke an LLM for RAG-based answering.",
+  "Query pipelines are latency-sensitive. They typically chain: TextEmbedder → Retriever → Ranker → PromptBuilder → LLM. The pipeline can be simplified to just Retriever for pure search without LLM generation.",
+  "Like a librarian who receives your question, finds relevant books from the catalog, and presents the most relevant pages.",
+  "Query embedding, document retrieval, ranking, and LLM-powered answer generation.",
+  [
+    "Query embedding",
+    "Semantic search",
+    "Hybrid retrieval (BM25 + vectors)",
+    "Document ranking",
+    "RAG prompt assembly",
+  ],
+  ["File conversion", "Batch indexing", "Document persistence"],
+)
+
+documentStore = TaxonomyCategory(
+  "Document Store",
+  "Persistent Storage",
+  "Folder",
+  "mauve",
+  "The Document Store is the central persistence layer where indexed Documents live. It is not a pipeline component but a database accessed by pipeline components. Haystack supports multiple backends with different capabilities.",
+  "Choose InMemoryDocumentStore for prototyping. For production, OpenSearchDocumentStore and ElasticsearchDocumentStore offer hybrid search (BM25 + vectors + metadata filtering). Vector-only stores like Chroma and Weaviate are suitable for pure embedding search.",
+  "Like the physical shelves of a library — where all the cataloged books are stored and retrieved from.",
+  "Document persistence, vector indexing, keyword indexing, and metadata filtering.",
+  [
+    "Vector similarity search",
+    "BM25 keyword search",
+    "Metadata filtering",
+    "Duplicate policies (OVERWRITE, SKIP, FAIL)",
+    "Custom document schemas",
+  ],
+  ["Text conversion", "Embedding computation", "Prompt templating"],
+)
+
+customComponents = TaxonomyCategory(
+  "Custom Components",
+  "Extensibility Layer",
+  "Folder",
+  "peach",
+  "Custom Components let you inject any Python logic into a Haystack pipeline. You define inputs, outputs, and the processing logic, then the framework handles serialization, type validation, and pipeline wiring.",
+  "A custom component requires the @component decorator, a run() method with typed inputs, and output type declarations. Use dataclasses.replace() for document mutations and copy.deepcopy() for nested structures. Components can be packaged and shared as integrations.",
+  "Like building a custom shelf unit for your library — you design it to fit your specific storage needs, then plug it into the existing cataloging system.",
+  "Custom preprocessing, proprietary algorithms, external API integrations, and specialized ranking logic.",
+  [
+    "@component decorator pattern",
+    "Typed input/output sockets",
+    "Pipeline serialization compatibility",
+    "Component testing",
+    "Integration packaging",
+  ],
+  ["Built-in component replacement", "Document Store implementation", "Pipeline orchestration"],
+)
+
+indexingPipeline2 = TaxonomyCategory(
+  "Indexing Pipeline",
+  "Offline ETL Processing",
+  "Layers",
+  "blue",
+  "An Indexing Pipeline processes raw data (PDFs, HTML, Markdown) into structured, searchable Documents. It runs offline or as a batch job, converting files, splitting text, computing embeddings, and writing to the Document Store.",
+  "The indexing pipeline is strictly decoupled from the query pipeline. It runs independently and its output is the Document Store. Common components: FileConverter → TextSplitter → DocumentEmbedder → DocumentWriter.",
+  "Like a library cataloging system — books are received, classified, tagged, and shelved before anyone can search for them.",
+  "File conversion, text chunking, embedding computation, and document persistence.",
+  [
+    "PDF/HTML/Markdown conversion",
+    "Text splitting and chunking",
+    "Embedding computation",
+    "Metadata extraction",
+    "Duplicate detection",
+  ],
+  ["Real-time query processing", "LLM answer generation", "User-facing search"],
+)
+
+queryPipeline2 = TaxonomyCategory(
+  "Query Pipeline",
+  "Real-Time Retrieval",
+  "Zap",
+  "green",
+  "A Query Pipeline executes in real-time to answer user queries. It embeds the query, retrieves relevant documents, optionally ranks them, and may invoke an LLM for RAG-based answering.",
+  "Query pipelines are latency-sensitive. They typically chain: TextEmbedder → Retriever → Ranker → PromptBuilder → LLM. The pipeline can be simplified to just Retriever for pure search without LLM generation.",
+  "Like a librarian who receives your question, finds relevant books from the catalog, and presents the most relevant pages.",
+  "Query embedding, document retrieval, ranking, and LLM-powered answer generation.",
+  [
+    "Query embedding",
+    "Semantic search",
+    "Hybrid retrieval (BM25 + vectors)",
+    "Document ranking",
+    "RAG prompt assembly",
+  ],
+  ["File conversion", "Batch indexing", "Document persistence"],
+)
+
+documentStore2 = TaxonomyCategory(
+  "Document Store",
+  "Persistent Storage",
+  "Database",
+  "mauve",
+  "The Document Store is the central persistence layer where indexed Documents live. It is not a pipeline component but a database accessed by pipeline components. Haystack supports multiple backends with different capabilities.",
+  "Choose InMemoryDocumentStore for prototyping. For production, OpenSearchDocumentStore and ElasticsearchDocumentStore offer hybrid search (BM25 + vectors + metadata filtering). Vector-only stores like Chroma and Weaviate are suitable for pure embedding search.",
+  "Like the physical shelves of a library — where all the cataloged books are stored and retrieved from.",
+  "Document persistence, vector indexing, keyword indexing, and metadata filtering.",
+  [
+    "Vector similarity search",
+    "BM25 keyword search",
+    "Metadata filtering",
+    "Duplicate policies (OVERWRITE, SKIP, FAIL)",
+    "Custom document schemas",
+  ],
+  ["Text conversion", "Embedding computation", "Prompt templating"],
+)
+
+customComponents2 = TaxonomyCategory(
+  "Custom Components",
+  "Extensibility Layer",
+  "GitBranch",
+  "peach",
+  "Custom Components let you inject any Python logic into a Haystack pipeline. You define inputs, outputs, and the processing logic, then the framework handles serialization, type validation, and pipeline wiring.",
+  "A custom component requires the @component decorator, a run() method with typed inputs, and output type declarations. Use dataclasses.replace() for document mutations and copy.deepcopy() for nested structures. Components can be packaged and shared as integrations.",
+  "Like building a custom shelf unit for your library — you design it to fit your specific storage needs, then plug it into the existing cataloging system.",
+  "Custom preprocessing, proprietary algorithms, external API integrations, and specialized ranking logic.",
+  [
+    "@component decorator pattern",
+    "Typed input/output sockets",
+    "Pipeline serialization compatibility",
+    "Component testing",
+    "Integration packaging",
+  ],
+  ["Built-in component replacement", "Document Store implementation", "Pipeline orchestration"],
+)

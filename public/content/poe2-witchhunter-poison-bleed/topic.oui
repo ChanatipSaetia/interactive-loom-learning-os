@@ -1,0 +1,26 @@
+root = Topic(
+  "PoE 2 Witchhunter Poison + Bleed",
+  "Gaming",
+  "Dual DoT Mercenary build combining Poison and Bleed ailments in Path of Exile 2 v0.5",
+  [
+    SectionRef("intro"),
+    SectionRef("flashcards"),
+    SectionRef("taxonomy"),
+    SectionRef("combat-flow"),
+    SectionRef("image-gallery"),
+    SectionRef("dot-calculator"),
+    SectionRef("gear-tradeoffs"),
+    SectionRef("build-journey"),
+    SectionRef("setup-advisor"),
+  ],
+  [
+    "path-of-exile-2",
+    "poe2",
+    "witchhunter",
+    "mercenary",
+    "poison",
+    "bleeding",
+    "dot",
+    "dual-ailment",
+  ],
+)

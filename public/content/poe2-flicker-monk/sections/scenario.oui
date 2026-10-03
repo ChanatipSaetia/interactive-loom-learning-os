@@ -1,0 +1,155 @@
+root = Scenario(
+  "Build Progression Scenario",
+  "build-journey",
+  [
+    start,
+    staffFound,
+    dreamingDisaster,
+    weakClear,
+    ciReady,
+    glassCannon,
+    balancedPath,
+    ciViable,
+    ciDeath,
+    smoothEndgame,
+    budgetEndgame,
+  ],
+  "You've decided to play the Flicker Strike Monk. How you gear up determines your endgame ceiling. Make choices through the league and see where they lead.",
+  null,
+  "Your League Journey",
+)
+
+start = ScenarioNode(
+  "start",
+  "League day 1. You've picked Martial Artist Monk. What's your first priority?",
+  [
+    ScenarioChoice(
+      "get-staff",
+      "Find a Quarterstaff (not Dreaming) with Lightning Damage",
+      "staff-found",
+    ),
+    ScenarioChoice(
+      "grab-dreaming",
+      "Grab the shiny Dreaming Quarterstaff you found",
+      "dreaming-disaster",
+    ),
+    ScenarioChoice("skip-weapon", "Focus on defenses first, weapon later", "weak-clear"),
+  ],
+)
+
+staffFound = ScenarioNode(
+  "staff-found",
+  "You have a decent Quarterstaff. Act 2 is progressing. What's next?",
+  [
+    ScenarioChoice("build-es", "Gear toward 4000 ES for Chaos Inoculation", "ci-ready"),
+    ScenarioChoice(
+      "chase-damage",
+      "Chase damage gear — Stonefist gloves with flat damage",
+      "glass-cannon",
+    ),
+    ScenarioChoice("balanced", "Balance ES/Evasion armor with Stonefist gloves", "balanced-path"),
+  ],
+)
+
+dreamingDisaster = ScenarioNode(
+  "dreaming-disaster",
+  null,
+  null,
+  Outcome(
+    "Your Cast on Critical never triggers. Charge generation is dead. The build doesn't function.",
+    "Dreaming Quarterstaff has 0% base Crit Chance, which breaks every crit-dependent mechanic. Always use a non-Dreaming Quarterstaff.",
+    "c",
+  ),
+)
+
+weakClear = ScenarioNode(
+  "weak-clear",
+  null,
+  null,
+  Outcome(
+    "You survive but clear maps painfully slow. Without a proper staff, Falling Thunder lacks damage.",
+    "Weapon is the foundation. Get a Quarterstaff with Lightning Damage first, then layer defenses.",
+    "c",
+  ),
+)
+
+ciReady = ScenarioNode(
+  "ci-ready",
+  "You hit 4000 ES. Time to take Chaos Inoculation. What's your recovery plan?",
+  [
+    ScenarioChoice("shavronnes", "Get Shavronne's Satchel with Instant Life Flask", "ci-viable"),
+    ScenarioChoice("skip-shavronnes", "CI without Shavronne's — I'll manage", "ci-death"),
+  ],
+)
+
+glassCannon = ScenarioNode(
+  "glass-cannon",
+  null,
+  null,
+  Outcome(
+    "High damage but one-shot by chaos hits. Without CI or proper defenses, you die in juiced maps.",
+    "Damage without survivability is meaningless. Balance offense and defense — get ES/Evasion hybrid armor and plan for CI.",
+    "c",
+  ),
+)
+
+balancedPath = ScenarioNode(
+  "balanced-path",
+  "Good balance. Mid-league, you face a choice: invest in Ailith's Chimes or keep the budget setup?",
+  [
+    ScenarioChoice(
+      "buy-ailiths",
+      "Buy Ailith's Chimes for instant Combo-to-charge conversion",
+      "smooth-endgame",
+    ),
+    ScenarioChoice(
+      "keep-budget",
+      "Stick with Hollow Focus + Killing Palm — it works fine",
+      "budget-endgame",
+    ),
+  ],
+)
+
+ciViable = ScenarioNode(
+  "ci-viable",
+  null,
+  null,
+  Outcome(
+    "With Shavronne's Satchel and Instant Life Flask, you recover ES instantly after hits. CI is now safe.",
+    "Shavronne's Satchel is mandatory for CI builds. The Instant Life Flask heals ES on use, preventing death from big hits.",
+    "a",
+  ),
+)
+
+ciDeath = ScenarioNode(
+  "ci-death",
+  null,
+  null,
+  Outcome(
+    "A big chaos hit (now blocked by CI) was survivable before, but a physical hit melts your raw ES without Life buffer. You die repeatedly.",
+    "Never take CI without Shavronne's Satchel. Instant recovery is the difference between life and death.",
+    "c",
+  ),
+)
+
+smoothEndgame = ScenarioNode(
+  "smooth-endgame",
+  null,
+  null,
+  Outcome(
+    "Ailith's Chimes transforms boss fights. Build 20 Combo, click, get charges, one-shot bosses. Clean endgame.",
+    "Ailith's Chimes is the best mid-to-late league investment. The quality of life upgrade for charge generation is enormous.",
+    "a",
+  ),
+)
+
+budgetEndgame = ScenarioNode(
+  "budget-endgame",
+  null,
+  null,
+  Outcome(
+    "Hollow Focus + Killing Palm works but feels manual. You clear endgame content but boss fights take longer.",
+    "Budget charge generation is viable but clunky. Ailith's Chimes is worth buying when prices drop mid-league.",
+    "b-plus",
+  ),
+)

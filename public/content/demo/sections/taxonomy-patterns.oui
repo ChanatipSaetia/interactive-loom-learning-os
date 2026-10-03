@@ -1,0 +1,72 @@
+root = TaxonomyBrowser(
+  "Agent Design Patterns",
+  [reActReasonAct, planAndExecute, mapReduceAgent, reflexionAgent],
+)
+
+reActReasonAct = TaxonomyCategory(
+  "ReAct (Reason + Act)",
+  "Thought-Action-Observation Loop",
+  "Cpu",
+  "sky",
+  "The agent alternates between reasoning (Thought) and taking action (Act), then observes the result (Observation) to inform the next reasoning step.",
+  "Each cycle: the agent thinks about what to do, executes a tool call or generates text, reads the result, and decides the next step. This loop continues until the goal is achieved or a max iteration limit is reached.",
+  "Like a scientist who hypothesizes, runs an experiment, observes results, and revises the hypothesis.",
+  "Step-by-step reasoning with tool grounding",
+  [
+    "Thought chain before each action",
+    "Tool execution and observation",
+    "Self-correction based on observations",
+  ],
+  ["Parallel task execution", "Long-term memory across sessions"],
+)
+
+planAndExecute = TaxonomyCategory(
+  "Plan-and-Execute",
+  "Separate Planning from Execution",
+  "ListTodo",
+  "green",
+  "The agent first creates a detailed step-by-step plan, then executes each step sequentially, checking off completion and adjusting as needed.",
+  "Planning phase generates a structured list of subtasks with dependencies. Execution phase processes each subtask, marking completion. If a step fails, the agent can replan just that step without redoing the entire plan.",
+  "Like a project manager who writes a Gantt chart before the team starts working.",
+  "Structured multi-step task decomposition",
+  [
+    "Explicit plan generation before execution",
+    "Sequential step processing",
+    "Plan adjustment on failure",
+  ],
+  ["Reactive, unplanned behavior", "Real-time streaming responses"],
+)
+
+mapReduceAgent = TaxonomyCategory(
+  "Map-Reduce Agent",
+  "Parallel Processing with Aggregation",
+  "GitMerge",
+  "violet",
+  "The problem is decomposed into independent sub-problems, each solved by a separate agent instance in parallel, then results are combined by a reduce step.",
+  "Map phase: the orchestrator splits the task and spawns parallel workers. Each worker solves its subtask independently. Reduce phase: a final aggregation step merges all results into a coherent answer.",
+  "Like dividing a book among multiple proofreaders, then compiling their notes into one edit list.",
+  "Parallel independent task processing",
+  [
+    "Task decomposition into independent units",
+    "Parallel worker execution",
+    "Result aggregation and synthesis",
+  ],
+  ["Tasks with inter-step dependencies", "Sequential reasoning chains"],
+)
+
+reflexionAgent = TaxonomyCategory(
+  "Reflexion Agent",
+  "Self-Reflection with Memory",
+  "ArrowLeftRight",
+  "rose",
+  "The agent attempts a task, then reflects on what went wrong, stores lessons learned in a memory buffer, and uses those lessons to improve the next attempt.",
+  "Unlike ReAct which observes immediate tool outputs, Reflexion maintains a persistent memory of past failures. Each retry incorporates the accumulated reflection log, allowing the agent to avoid repeating the same mistakes.",
+  "Like a chess player who reviews game replays to identify recurring tactical errors.",
+  "Learning from past failures across attempts",
+  [
+    "Failure analysis and reflection",
+    "Persistent memory of lessons learned",
+    "Iterative improvement across retries",
+  ],
+  ["Single-pass task completion", "Tasks where failure is not informative"],
+)

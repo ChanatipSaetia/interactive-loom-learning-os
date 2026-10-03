@@ -1,0 +1,209 @@
+root = Flashcards(
+  "Key Vocabulary",
+  [
+    kiPoints,
+    elementalAttunement,
+    twinElementalWrath,
+    fourPointAttack,
+    elementalMastery,
+    flowingBarrier,
+    emptyBody,
+    strixCoveCloak,
+    patient0,
+    sorcererMulticlass,
+    dragonClawGloves,
+    staffWoodlandRomance,
+  ],
+)
+
+kiPoints = Flashcard(
+  "ki-points",
+  "Ki Points",
+  "key POINTS",
+  "mechanic",
+  "Resource pool spent on monk abilities and elemental spellcasting.",
+  "Ki Points are the core resource for Four Element Monk. They scale with Monk level (starting at 2 at level 2, reaching 5 at level 13). Elemental spells cost Ki to cast, Twin Elemental Wrath costs 1 Ki, and Four Point Attack costs 4 Ki. Ki refreshes on a Short Rest.",
+  "Every aspect of the build revolves around Ki economy. Managing Ki spending between combat rounds determines your damage output and survivability.",
+  null,
+  Dialogue(
+    "How many Ki do I get?",
+    "Player needs Ki scaling info.",
+    "Ki scales with Monk level: 2 at lvl 2, 3 at lvl 5, 4 at lvl 11, 5 at lvl 13. All refresh on Short Rest.",
+  ),
+)
+
+elementalAttunement = Flashcard(
+  "elemental-attunement",
+  "Elemental Attunement",
+  "el-uh-MEN-tul uhn-TOO-neh-ment",
+  "feature",
+  "Gain cantrips from all four elemental schools.",
+  "At Monk 3, you gain access to one cantrip from each elemental school: Fire (Produce Flame), Cold (Ray of Frost), Lightning (Shocking Grasp), and Acid (Acid Splash). At Monk 11, you can change these cantrips on a Long Rest.",
+  "Your baseline damage options. Acid Splash is especially valuable since it hits multiple targets.",
+  null,
+  Dialogue(
+    "What cantrips do I get?",
+    "Player needs cantrip list.",
+    "Produce Flame, Ray of Frost, Shocking Grasp, and Acid Splash. Swap on Long Rest at Monk 11+.",
+  ),
+)
+
+twinElementalWrath = Flashcard(
+  "twin-elemental-wrath",
+  "Twin Elemental Wrath",
+  "TWIN el-uh-MEN-tul RATH",
+  "feature",
+  "Infuse unarmed strikes with two elemental damages for 1 Ki.",
+  "At Monk 3, spend 1 Ki to attune two unarmed strikes with elemental damage. Choose two elements from Fire, Cold, Lightning, or Acid. Each attuned strike deals 1d6 of the chosen elemental damage on top of your normal unarmed strike damage. Attunements last until end of next turn.",
+  "Your most-used combat ability. Consistent elemental damage on every attack, triggering elemental resistances and vulnerabilities.",
+  null,
+  Dialogue(
+    "Should I use Twin Elemental Wrath every fight?",
+    "Player needs usage guidance.",
+    "Yes — 1 Ki for two 1d6-infused strikes is excellent value. Pair with high-Dexterity builds for maximum hit rate.",
+  ),
+)
+
+fourPointAttack = Flashcard(
+  "four-point-attack",
+  "Four Point Attack",
+  "four point uh-TACK",
+  "feature",
+  "Make four unarmed strikes, each infused with a different element for 4 Ki.",
+  "At Monk 11, spend 4 Ki to make four unarmed strikes. Each strike is automatically attuned to a different element (one Fire, one Cold, one Lightning, one Acid), dealing 1d6 extra elemental damage per strike. Cannot miss — each strike automatically hits a target within reach.",
+  "Your ultimate nuke. Bypasses resistance splitting and guarantees four elemental hits. Devastating against single targets or groups.",
+  null,
+  Dialogue(
+    "Is Four Point Attack worth 4 Ki?",
+    "Player weighs Ki cost.",
+    "Four guaranteed hits with different elements — it shredssingle targets and ignores resistance. Best saved for bosses.",
+  ),
+)
+
+elementalMastery = Flashcard(
+  "elemental-mastery",
+  "Elemental Mastery",
+  "el-uh-MEN-tul MAS-ter-ee",
+  "feature",
+  "Cast elemental spells without spending Ki points.",
+  "At Monk 15, your elemental spells no longer consume Ki points. You can still spend Ki to cast them at a higher level, but the base cast is free. This transforms your Ki economy dramatically.",
+  "Game-changing at level 15. You can spam Conjure Flame, Ice Knife, and Call Lightning without touching your Ki pool.",
+  null,
+  Dialogue(
+    "What changes at Monk 15?",
+    "Player needs late-game info.",
+    "Elemental Mastery makes your spells free to cast. Save Ki for Twin Elemental Wrath and Four Point Attack.",
+  ),
+)
+
+flowingBarrier = Flashcard(
+  "flowing-barrier",
+  "Flowing Barrier",
+  "FLOW-ing BAR-ee-er",
+  "feature",
+  "Spend Ki to temporarily boost AC.",
+  "At Monk 7, spend Ki points to increase your AC. Each Ki point spent adds +1 to your AC until the start of your next turn. This stacks with your existing Dexterity-based AC calculation.",
+  "Critical survivability tool. Spending 2-3 Ki can raise your AC to 20+, making you nearly unhittable for a round.",
+  null,
+  Dialogue(
+    "How do I survive boss fights?",
+    "Player needs defense options.",
+    "Flowing Barrier + Patient Defense + high Dexterity. Stack to AC 20+ and use Step of the Wind to reposition.",
+  ),
+)
+
+emptyBody = Flashcard(
+  "empty-body",
+  "Empty Body",
+  "EMP-tee BOD-ee",
+  "feature",
+  "Cast Mirror Image and Teleport without spell slots.",
+  "At Monk 14, you can spend 4 Ki to cast Mirror Image or Teleport at will. These spells don't consume spell slots since they're monk abilities, not spellcasting.",
+  "Teleport is invaluable for repositioning, escaping grapple ranges, and flanking. Mirror Image provides massive AC soft cap.",
+  null,
+  Dialogue(
+    "Can I teleport in combat?",
+    "Player needs mobility info.",
+    "Yes — Empty Body lets you Teleport for 4 Ki. Use it to flank, escape, or reposition for Four Point Attack.",
+  ),
+)
+
+strixCoveCloak = Flashcard(
+  "strix-cove-cloak",
+  "Strix Cove Monk Cloak",
+  "striks KOV monk CLOAK",
+  "gear",
+  "Legendary cloak granting monk features and out-of-combat spellcasting.",
+  "A legendary item found in Act 3 that grants access to monk features and lets Four Element Monk cast spells outside of combat. Normally, monks can only cast elemental spells during combat. This cloak removes that restriction and saves an equipment Quiver slot.",
+  "Best-in-slot item for this build. Enables exploration utility from spells like Conjure Flame for light and Ice Knife for crowd control outside combat.",
+  null,
+  Dialogue(
+    "Can I cast spells outside combat?",
+    "Player needs cloak info.",
+    "Only with the Strix Cove Monk Cloak from Act 3. It's mandatory for full build flexibility.",
+  ),
+)
+
+patient0 = Flashcard(
+  "patient-0",
+  "Patient-0",
+  "PAY-shunt ZERO",
+  "gear",
+  "Legendary gauntlets that boost damage when Ki is spent.",
+  "Legendary gauntlets found in Act 2 that increase unarmed strike damage and gain additional effects when Ki abilities are used. Synergizes perfectly with Four Element Monk's Ki-heavy playstyle.",
+  "Massive damage multiplier for unarmed strikes. Combined with Twin Elemental Wrath, each hit deals significantly more damage.",
+  null,
+  Dialogue(
+    "What gauntlets should I use?",
+    "Player needs gear recommendations.",
+    "Patient-0 gauntlets are best-in-slot. They amplify unarmed strike damage and trigger on Ki abilities.",
+  ),
+)
+
+sorcererMulticlass = Flashcard(
+  "sorcerer-multiclass",
+  "Sorcerer Multiclass",
+  "sore-SAIR-er mul-tee-KLAS",
+  "class",
+  "Take Sorcerer levels for Metamagic and spell slot flexibility.",
+  "Dipping into Sorcerer (typically 2-4 levels) grants Metamagic Adept feat-equivalent abilities. Twinned Spell lets you target two enemies with single-target spells. Quickened Spell allows casting a spell and attacking in the same turn.",
+  "Twinned Spell with Conjure Flame or Ice Knife doubles your AoE potential. Sorcerer spell slots supplement monk casting.",
+  null,
+  Dialogue(
+    "Should I multiclass into Sorcerer?",
+    "Player weighs multiclass value.",
+    "Sorcerer 2-4 is the optimal dip. Twinned Spell alone transforms single-target spells into dual-target nukes.",
+  ),
+)
+
+dragonClawGloves = Flashcard(
+  "dragon-claw-gloves",
+  "Dragon's Claw Gloves",
+  "DRAG-ons CLOE GLOVZ",
+  "gear",
+  "Rare gloves that add elemental damage to unarmed strikes.",
+  "Rare gauntlets that add elemental damage to unarmed strikes. Synergizes with Twin Elemental Wrath by adding an additional layer of elemental damage on top of the monk's infused strikes.",
+  "Stacks with Twin Elemental Wrath for triple-layered elemental damage on unarmed strikes.",
+  null,
+  Dialogue(
+    "What gloves stack with Twin Elemental Wrath?",
+    "Player wants damage synergy.",
+    "Dragon's Claw Gloves add elemental damage that stacks with your monk infusion.",
+  ),
+)
+
+staffWoodlandRomance = Flashcard(
+  "staff-woodland-romance",
+  "Staff of the Woodland Romance",
+  "STAF of the WOOD-land rom-UHNS",
+  "gear",
+  "Spellcasting staff boosting spell damage and granting spell attacks.",
+  "A powerful spellcasting staff that enhances spell attack rolls and damage. Provides spellcasting stat bonuses and additional spell effects that complement the Four Element Monk's spell-heavy gameplay.",
+  "Boosts spell attack rolls and damage for your elemental spells, increasing both hit rate and damage output.",
+  null,
+  Dialogue(
+    "Do I need a staff?",
+    "Player needs weapon guidance.",
+    "A spellcasting staff boosts your spell attacks. The Staff of the Woodland Romance is a strong option in Act 2.",
+  ),
+)

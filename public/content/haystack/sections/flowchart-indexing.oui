@@ -1,0 +1,160 @@
+root = Flowchart(
+  "Indexing Pipeline",
+  [devUser],
+  [fileConverter, textSplitter, docEmbedder, embeddingModel, docWriter, docStore],
+  [startIndexing, convertFiles, splitTexts, computeEmbeddings, writeDocs],
+  [indexingFlow],
+)
+
+devUser = Actor("dev_user", "Developer", "Initiates the indexing process with raw data files.")
+
+fileConverter = System(
+  "file_converter",
+  "File Converter",
+  "Converts PDF, HTML, Markdown, or other formats into Document objects.",
+  "aggregate",
+)
+
+textSplitter = System(
+  "text_splitter",
+  "Text Splitter",
+  "Breaks large documents into smaller, semantically coherent chunks.",
+  "aggregate",
+)
+
+docEmbedder = System(
+  "doc_embedder",
+  "Document Embedder",
+  "Computes dense vector embeddings for each text chunk.",
+  "aggregate",
+)
+
+embeddingModel = System(
+  "embedding_model",
+  "Embedding Model",
+  "External model (SentenceTransformers, OpenAI, etc.) that generates vector embeddings.",
+  "external",
+)
+
+docWriter = System(
+  "doc_writer",
+  "Document Writer",
+  "Writes or overwrites documents into the Document Store.",
+  "aggregate",
+)
+
+docStore = System(
+  "doc_store",
+  "Document Store",
+  "Persistent database (OpenSearch, Elasticsearch, Chroma, etc.) storing indexed documents.",
+  "external",
+)
+
+startIndexing = Step(
+  "start_indexing",
+  "Trigger Conversion",
+  "Start Indexing",
+  fileConverter,
+  [Event("files_loaded", "Files Loaded", "Raw data files are available for processing.")],
+  devUser,
+  null,
+  "convert_files",
+)
+
+convertFiles = Step(
+  "convert_files",
+  "Trigger Conversion",
+  "Convert Files",
+  fileConverter,
+  [
+    Event(
+      "docs_converted",
+      "Documents Converted",
+      "Raw files transformed into structured Document objects.",
+    ),
+  ],
+  null,
+  null,
+  "split_texts",
+)
+
+splitTexts = Step(
+  "split_texts",
+  "Trigger Splitting",
+  "Split Texts",
+  textSplitter,
+  [Event("texts_chunked", "Texts Chunked", "Documents split into smaller, searchable chunks.")],
+  null,
+  null,
+  "compute_embeddings",
+)
+
+computeEmbeddings = Step(
+  "compute_embeddings",
+  "Trigger Embedding",
+  "Compute Embeddings",
+  docEmbedder,
+  [
+    Event(
+      "embeddings_ready",
+      "Embeddings Computed",
+      "Dense vectors attached to each document chunk.",
+    ),
+  ],
+  null,
+  embeddingModel,
+  "write_docs",
+)
+
+writeDocs = Step(
+  "write_docs",
+  "Trigger Write",
+  "Write Documents",
+  docWriter,
+  [
+    Event(
+      "docs_indexed",
+      "Documents Indexed",
+      "All documents stored and searchable in the Document Store.",
+    ),
+  ],
+  null,
+  docStore,
+)
+
+indexingFlow = Journey(
+  "indexing-flow",
+  "Indexing Pipeline",
+  "Raw files are converted, chunked, embedded, and stored.",
+  [
+    JourneyStep(
+      startIndexing,
+      "Start Indexing",
+      "Files are loaded from a document directory. Indexing begins by reading all supported file formats.",
+    ),
+    JourneyStep(
+      convertFiles,
+      "Convert to Text",
+      "Documents in various formats (PDF, DOCX, TXT) are converted to plain text for uniform processing.",
+      "execution",
+    ),
+    JourneyStep(
+      splitTexts,
+      "Split into Chunks",
+      "Large text documents are split into smaller, overlapping chunks to fit model context windows.",
+      "execution",
+    ),
+    JourneyStep(
+      computeEmbeddings,
+      "Compute Embeddings",
+      "Each text chunk is passed through an embedding model to produce a vector representation for semantic search.",
+      "execution",
+    ),
+    JourneyStep(
+      writeDocs,
+      "Store in Document Store",
+      "Chunks and their embeddings are saved to the document store (e.g., SQLite, FAISS) for later retrieval.",
+      "execution",
+    ),
+  ],
+)

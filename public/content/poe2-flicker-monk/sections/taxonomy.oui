@@ -1,0 +1,77 @@
+root = TaxonomyBrowser(
+  "Skill Arsenal",
+  [mainDamageSkills, supportBuffSkills, heraldsUtility, defenseLayers],
+)
+
+mainDamageSkills = TaxonomyCategory(
+  "Main Damage Skills",
+  "Falling Thunder & Flicker Strike",
+  "Zap",
+  "yellow",
+  "Your two primary skills that clear maps and melt bosses.",
+  "Falling Thunder fires lightning projectiles per Power Charge consumed in a 360-degree burst. Flicker Strike dashes through enemies, teleporting you while dealing damage. Both scale with Power Charges and critical strikes.",
+  "Falling Thunder is your area denial, Flicker Strike is your mobility tool — but both kill.",
+  "Power Charge consumption and critical strike damage",
+  [
+    "Falling Thunder (Lv20) + Elemental Armament, Nova Projectiles, Ricochet, Pinpoint Critical, Ice Bite",
+    "Flicker Strike (Lv20) + Blindside, Concentrated Area, Close Combat, Perpetual Charge, Hit and Run",
+    "Both socketed in Quarterstaff",
+  ],
+  ["Single-target focused attacks without AoE potential"],
+)
+
+supportBuffSkills = TaxonomyCategory(
+  "Support & Buff Skills",
+  "Charged Staff, Whirling Assault, Cast on Critical",
+  "Sparkles",
+  "sky",
+  "Skills that buff your main attacks and sustain Power Charges during mapping.",
+  "Charged Staff consumes Power Charges for a massive Lightning damage buff to attacks. Whirling Assault builds Combo for charge generation. Cast on Critical triggers Profane Ritual on crits to sustain Power Charges during mapping.",
+  "These are your backstage crew — they make the main skills shine.",
+  "Charge sustainability and damage multiplication",
+  [
+    "Charged Staff (Lv20) + Prolonged Duration, Innervate, Culling Strike",
+    "Whirling Assault (Lv20) + Practiced Combo, Rage III, Pinpoint Critical, Magnified Area, Oisin's Oath",
+    "Cast on Critical (Lv20) + Profane Ritual Lv7, Charge Profusion, Overabundance, Boundless Energy, Energy Retention",
+    "Oisin's Oath converts Elemental Damage to Mana Leech (requires Leech Phys Damage as Mana on gear)",
+  ],
+  ["Direct damage dealing in isolation"],
+)
+
+heraldsUtility = TaxonomyCategory(
+  "Heralds & Utility",
+  "Herald of Thunder, Herald of Ice, Mantra of Destruction",
+  "Shield",
+  "rose",
+  "Heralds mark enemies for elemental explosions. Utility skills enable boss strategies.",
+  "Herald of Thunder and Herald of Ice mark enemies for lightning and cold explosions. Mantra of Destruction holds Combo stacks for charge generation. Hand of Chayula marks bosses for additional charge generation with Culmination II.",
+  "Heralds are sticky notes on enemies saying 'explode next time you get hit.'",
+  "Explosion triggers and boss-fight charge generation",
+  [
+    "Herald of Thunder — lightning explosion on marked enemies",
+    "Herald of Ice — freeze + cold explosion, enables Herald of Ice explosions via Chaos Damage + Armor Break",
+    "Mantra of Destruction + Prolonged Duration, Charge Profusion, Ailith's Chimes, Delayed Gratification",
+    "Hand of Chayula + Culmination II as alternative charge generation",
+  ],
+  ["Herald of Ash (used by Whirling Assault variant, not this build)"],
+)
+
+defenseLayers = TaxonomyCategory(
+  "Defense Layers",
+  "ES/Evasion Hybrid, CI, Deflection",
+  "HeartPulse",
+  "green",
+  "Multi-layered defense combining Energy Shield, Evasion, Deflection, and Chaos Inoculation.",
+  "The build uses ES/Evasion hybrid bases across all armor, Subterfuge Mask for bonus Evasion from helmet ES, Deflection on body armor and boots, and Chaos Inoculation for chaos immunity at endgame. Ghost Dance provides ES recovery.",
+  "Defense in layers — if one fails, the next catches you.",
+  "Survivability through stacking complementary defenses",
+  [
+    "ES/Evasion hybrid gear (Sleek Jacket body base)",
+    "Chaos Inoculation at ~4000+ ES",
+    "Subterfuge Mask — +2 Evasion per 1 ES on helmet",
+    "Deflection suffix on body armor and boots",
+    "Stun Threshold passive nodes",
+    "Ghost Dance for ES recovery (essential with CI)",
+  ],
+  ["Armour-based defenses", "Block-based defenses"],
+)

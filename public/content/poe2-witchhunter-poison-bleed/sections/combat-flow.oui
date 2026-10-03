@@ -1,0 +1,188 @@
+root = Flowchart(
+  "Combat Engagement Flow",
+  [player, pack, boss],
+  [gasGrenade, barrage, dotSystem, noMercy, sorceryWard],
+  [stepPoisonPack, stepBleedPack, stepDotsPack, stepClearBranch, stepBleedBoss, stepDotsBoss],
+  [journeyPackClear, journeyBossFight],
+)
+
+player = Actor(
+  "player",
+  "Witchhunter Player",
+  "Witchhunter controlling Gas Grenade, Barrage, and ascendancy buffs",
+)
+
+pack = Actor("pack", "Mob Pack", "Group of regular map enemies")
+boss = Actor("boss", "Map Boss", "Map boss or league boss encounter")
+
+gasGrenade = System(
+  "gas_grenade",
+  "Gas Grenade",
+  "Projectile skill deploying poison cloud on ground for area DoT",
+  "aggregate",
+)
+
+barrage = System(
+  "barrage",
+  "Barrage",
+  "Rapid-hit projectile skill applying bleed through multiple attack hits",
+  "aggregate",
+)
+
+dotSystem = System(
+  "dot_system",
+  "DoT System",
+  "Game damage-over-time system ticking poison and bleed simultaneously",
+  "aggregate",
+)
+
+noMercy = System(
+  "no_mercy",
+  "No Mercy",
+  "Ascendancy buff granting damage multiplier based on missing Concentration",
+  "external",
+)
+
+sorceryWard = System(
+  "sorcery_ward",
+  "Sorcery Ward",
+  "Ward-based barrier absorbing incoming damage as defense layer",
+  "external",
+)
+
+stepPoisonPack = Step(
+  "step_poison_pack",
+  "On Pack Encounter",
+  "Engage Pack with Gas Grenade",
+  gasGrenade,
+  [Event("evt_poison_deployed", "Poison Cloud Deployed")],
+  player,
+  "pack",
+  "step_bleed_pack",
+)
+
+stepBleedPack = Step(
+  "step_bleed_pack",
+  "After Poison Cloud Deployed",
+  "Apply Bleed with Barrage",
+  barrage,
+  [Event("evt_ailments_active", "Both Ailments Active")],
+  null,
+  null,
+  "step_dots_pack",
+)
+
+stepDotsPack = Step(
+  "step_dots_pack",
+  "With Both Poison and Bleed Applied",
+  "Let DoTs Deal Damage",
+  dotSystem,
+  [Event("evt_pack_melted", "Pack Melted")],
+  null,
+  null,
+  "step_clear_branch",
+)
+
+stepClearBranch = Branch("step_clear_branch", "evt_pack_melted", [branchNextPack, branchBoss])
+
+branchNextPack = BranchOption(
+  "branch_next_pack",
+  "Move to Next Pack",
+  "If More Packs Remain",
+  "Proceed to Next Pack",
+  gasGrenade,
+  [Event("evt_loop_pack", "Loop Back to Clear More")],
+  true,
+)
+
+branchBoss = BranchOption(
+  "branch_boss",
+  "Boss Fight",
+  "If Boss Encountered",
+  "Begin Boss Engagement",
+  gasGrenade,
+  [Event("evt_boss_poisoned", "Boss Poisoned")],
+  null,
+  null,
+  "boss",
+  "step_bleed_boss",
+)
+
+stepBleedBoss = Step(
+  "step_bleed_boss",
+  "After Boss Poisoned",
+  "Apply Bleed to Boss with Barrage",
+  barrage,
+  [Event("evt_boss_dual_ailmented", "Boss Dual Ailmented")],
+  null,
+  noMercy,
+  "step_dots_boss",
+)
+
+stepDotsBoss = Step(
+  "step_dots_boss",
+  "With Both Poison and Bleed on Boss",
+  "Let DoTs Tick on Boss",
+  dotSystem,
+  [Event("evt_boss_defeated", "Boss Defeated")],
+  null,
+  sorceryWard,
+)
+
+journeyPackClear = Journey(
+  "journey_pack_clear",
+  "Pack Clearing Flow",
+  "Engage a mob pack with Gas Grenade for poison, layer Barrage for bleed, then let dual DoTs melt the pack",
+  [
+    JourneyStep(
+      stepPoisonPack,
+      "Deploy Poison Cloud",
+      "Throw Gas Grenade at the mob pack to deploy a poison cloud",
+      "planning",
+    ),
+    JourneyStep(
+      stepBleedPack,
+      "Apply Bleed",
+      "Fire Barrage into the pack to layer bleed on top of poison",
+      "execution",
+    ),
+    JourneyStep(
+      stepDotsPack,
+      "DoTs Melt Pack",
+      "Poison and bleed tick simultaneously for rapid pack clear",
+      "execution",
+    ),
+    JourneyStep(
+      branchNextPack,
+      "Move to Next Pack",
+      "Loop back to engage the next mob pack",
+      "evaluation",
+    ),
+  ],
+)
+
+journeyBossFight = Journey(
+  "journey_boss_fight",
+  "Boss Fight Flow",
+  "Apply dual ailments to a boss with Gas Grenade and Barrage, then let sustained DoTs defeat the boss",
+  [
+    JourneyStep(
+      branchBoss,
+      "Begin Boss Engagement",
+      "Throw Gas Grenade at the boss to apply poison cloud",
+      "planning",
+    ),
+    JourneyStep(
+      stepBleedBoss,
+      "Apply Bleed to Boss",
+      "Fire Barrage at the boss to layer bleed on top of poison",
+      "execution",
+    ),
+    JourneyStep(
+      stepDotsBoss,
+      "DoTs Tick on Boss",
+      "Sustained poison and bleed ticks steadily damage the boss until defeated",
+      "execution",
+    ),
+  ],
+)

@@ -1,0 +1,230 @@
+root = Flowchart(
+  "The Lean Project Lifecycle",
+  [pm, dev],
+  [backlog, slackChannel, devWorkspace, standupTool, issueTracker, retroBoard],
+  [requestFeature, planSprint, dailyExecution, syncBranch, resolveBlocker, reviewCycle],
+  [happyPath, blockedPath],
+)
+
+pm = Actor(
+  "pm",
+  "Project Manager",
+  "Responsible for goal setting, prioritization, and removing blockers.",
+)
+
+dev = Actor(
+  "dev",
+  "Software Engineer",
+  "Responsible for technical execution, writing code, and surfacing blockers.",
+)
+
+backlog = System(
+  "backlog",
+  "Task Backlog",
+  "The single source of truth for prioritized feature requests and bug fixes.",
+  "aggregate",
+)
+
+slackChannel = System(
+  "slack_channel",
+  "Slack Workspace",
+  "Team communication tool for sharing async updates and huddles.",
+  "external",
+)
+
+devWorkspace = System(
+  "dev_workspace",
+  "Developer Workspace",
+  "IDE and local build environment for executing code changes.",
+  "aggregate",
+)
+
+standupTool = System(
+  "standup_tool",
+  "Standup Board",
+  "Team standup and blocker tracking system.",
+  "aggregate",
+)
+
+issueTracker = System(
+  "issue_tracker",
+  "Issue Tracker",
+  "Project management system for tracking and resolving blockers.",
+  "aggregate",
+)
+
+retroBoard = System(
+  "retro_board",
+  "Retrospective Board",
+  "Feedback and action item board for cycle retrospectives.",
+  "aggregate",
+)
+
+requestFeature = Step(
+  "request_feature",
+  "Align with Product Vision",
+  "Define Feature Request",
+  backlog,
+  [
+    Event(
+      "evt_request_defined",
+      "Feature Request Logged",
+      "Requirements and user stories defined.",
+    ),
+  ],
+  pm,
+  null,
+  "plan_sprint",
+)
+
+planSprint = Step(
+  "plan_sprint",
+  "Trigger Cycle Planning",
+  "Plan Sprint Tasks",
+  backlog,
+  [
+    Event(
+      "evt_sprint_planned",
+      "Sprint Backlog Ready",
+      "Tasks committed and assigned for the cycle.",
+    ),
+  ],
+  pm,
+  null,
+  "daily_execution",
+)
+
+dailyExecution = Step(
+  "daily_execution",
+  "Trigger Daily Execution",
+  "Deliver Code Changes",
+  devWorkspace,
+  [Event("evt_work_in_progress", "Work In Progress", "Code being written, tests running.")],
+  dev,
+  null,
+  "sync_branch",
+)
+
+syncBranch = Branch("sync_branch", "evt_work_in_progress", [branchNoBlocker, branchBlocked])
+
+branchNoBlocker = BranchOption(
+  "branch_no_blocker",
+  "No Blockers",
+  "On Daily Sync",
+  "Provide Async Update",
+  slackChannel,
+  [Event("evt_async_updated", "Async Update Logged", "Focus maintained, status updated.")],
+  null,
+  null,
+  null,
+  "review_cycle",
+)
+
+branchBlocked = BranchOption(
+  "branch_blocked",
+  "Blocked Work",
+  "On Blocker Encountered",
+  "Raise Blocker in Standup",
+  standupTool,
+  [Event("evt_blocker_raised", "Blocker Raised", "Dependency, bug, or clarity issue flagged.")],
+  null,
+  null,
+  null,
+  "resolve_blocker",
+)
+
+resolveBlocker = Step(
+  "resolve_blocker",
+  "Trigger Blocker Resolution",
+  "Unblock Team Member",
+  issueTracker,
+  [Event("evt_blocker_resolved", "Blocker Resolved", "Solution provided, work can resume.")],
+  pm,
+  null,
+  "daily_execution",
+)
+
+reviewCycle = Step(
+  "review_cycle",
+  "On Cycle End",
+  "Conduct Retrospective",
+  retroBoard,
+  [
+    Event(
+      "evt_retro_completed",
+      "Retrospective Logged",
+      "Action items captured for continuous improvement.",
+    ),
+  ],
+  dev,
+)
+
+happyPath = Journey(
+  "happy-path",
+  "Happy Path (Lean & Async)",
+  "Features delivered smoothly using written updates and zero focus disruption.",
+  [
+    JourneyStep(
+      requestFeature,
+      "Log Feature",
+      "Project Manager defines and documents the feature request in the backlog.",
+      "planning",
+    ),
+    JourneyStep(
+      planSprint,
+      "Commit to Sprint",
+      "The team defines goals and commits tasks from backlog to the sprint.",
+      "planning",
+    ),
+    JourneyStep(
+      dailyExecution,
+      "Coding and Testing",
+      "Engineers write code and run test suites locally and in CI.",
+      "execution",
+    ),
+    JourneyStep(
+      branchNoBlocker,
+      "Provide Async Update",
+      "Because there are no blockers, engineers submit status updates via Slack, protecting maker time.",
+      "execution",
+    ),
+    JourneyStep(
+      reviewCycle,
+      "Conduct Retrospective",
+      "At the end of the sprint, the team reflects and logs improvements.",
+      "evaluation",
+    ),
+  ],
+)
+
+blockedPath = Journey(
+  "blocked-path",
+  "Blocked Path (Fast Resolution)",
+  "Blocker encountered, raised in sync, and unblocked immediately by the PM.",
+  [
+    JourneyStep(
+      dailyExecution,
+      "Coding and Testing",
+      "Engineers write code but hit an unexpected dependency blocker.",
+      "execution",
+    ),
+    JourneyStep(
+      branchBlocked,
+      "Raise Blocker",
+      "The engineer flags the blocker immediately in the standup channel.",
+      "execution",
+    ),
+    JourneyStep(
+      resolveBlocker,
+      "Unblock Developer",
+      "The Project Manager coordinates with the external team to resolve the dependency.",
+      "execution",
+    ),
+    JourneyStep(
+      dailyExecution,
+      "Resume Execution",
+      "Once unblocked, the engineer resumes code development.",
+      "execution",
+    ),
+  ],
+)

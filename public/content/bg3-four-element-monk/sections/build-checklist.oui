@@ -1,0 +1,76 @@
+root = Bullets(
+  "Build Checklist",
+  [
+    Bullet(
+      "Ability Scores — Prioritize Dexterity (17+), Constitution (14+), Wisdom (13+)",
+      [
+        Bullet("Dexterity drives AC, hit rate, and unarmed strike damage"),
+        Bullet("Constitution boosts HP and concentration saves"),
+        Bullet("Wisdom scales Ki pool and monk features"),
+      ],
+    ),
+    Bullet(
+      "Core Subclass — Monk of the Four Elements (available at Monk 3)",
+      [
+        Bullet("Select Elemental Attunement for cantrip access"),
+        Bullet("Use Twin Elemental Wrath every combat"),
+        Bullet("Save Four Point Attack for bosses at Monk 11+"),
+      ],
+    ),
+    Bullet(
+      "Essential Gear — Patient-0 Gauntlets (Act 2)",
+      [
+        Bullet("Amplifies unarmed strike damage significantly"),
+        Bullet("Synergizes with Ki spending for bonus effects"),
+      ],
+    ),
+    Bullet(
+      "Essential Gear — Strix Cove Monk Cloak (Act 3)",
+      [
+        Bullet("Enables spellcasting outside of combat"),
+        Bullet("Grants monk features if multiclassing"),
+      ],
+    ),
+    Bullet(
+      "Recommended Feats — Metamagic Adept",
+      [
+        Bullet("Twinned Spell doubles single-target spell targets"),
+        Bullet("Quickened Spell enables spell + attack same turn"),
+        Bullet("Available through feat or Sorcerer 2 multiclass"),
+      ],
+    ),
+    Bullet(
+      "Recommended Feats — Elemental Attunement",
+      [Bullet("Adds resistance to one element"), Bullet("Increases damage for that same element")],
+    ),
+    Bullet(
+      "Recommended Feat — Resilient (Constitution)",
+      [
+        Bullet("Ensures concentration spell survival"),
+        Bullet("Critical for maintaining Conjure Flame and Call Lightning"),
+      ],
+    ),
+    Bullet(
+      "Spell Priority — Conjure Flame (cantrip)",
+      [
+        Bullet("Persistent zone damage for area control"),
+        Bullet("Free at Monk 15 with Elemental Mastery"),
+      ],
+    ),
+    Bullet(
+      "Spell Priority — Ice Knife (2nd level)",
+      [
+        Bullet("Two-part pierce + AoE burst damage"),
+        Bullet("Twinned Spell targets two enemies simultaneously"),
+      ],
+    ),
+    Bullet(
+      "Spell Priority — Call Lightning (3rd level)",
+      [
+        Bullet("Sustained multi-round damage zone"),
+        Bullet("Bonus action lightning strikes each turn"),
+      ],
+    ),
+  ],
+  true,
+)

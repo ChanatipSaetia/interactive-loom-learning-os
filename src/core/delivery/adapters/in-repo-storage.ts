@@ -6,9 +6,9 @@
  * existing reader cache for `readSection` to avoid duplicating multi-file
  * section loading logic.
  */
-import type { OKFStoragePort } from '../ports'
+import { READ_ONLY_CONTENT_MESSAGE, type OKFStoragePort } from '../ports'
 import type { OKFBundledSection, OKFSectionMeta, OKFSectionData } from '../../learning-engine/composition/okf/types'
-import { loadOKFBundle, clearOKFCache } from '../../learning-engine/composition/okf/reader'
+import { loadOKFBundle } from '../../learning-engine/composition/okf/reader'
 import * as yaml from 'js-yaml'
 
 function getOkfBase(): string {
@@ -55,38 +55,11 @@ export class InRepoStorageAdapter implements OKFStoragePort {
   }
 
   /**
-   * Persist an OKF section back to disk via the Vite dev-server endpoint.
-   *
-   * `rawText` is the reconstructed section.md with YAML frontmatter.
-   * `data` is serialized to YAML for data.yaml.
-   *
-   * In production (non-dev) environments this will throw since the
-   * /api/okf/save-section middleware only exists in the dev server.
+   * Read-only: the learning app no longer writes content. Edit topic folders
+   * with Loom Studio instead.
    */
-  async saveSection(
-    topicId: string,
-    sectionFolder: string,
-    data: OKFSectionData,
-    rawText: string
-  ): Promise<void> {
-    const dataYaml = yaml.dump(data, { lineWidth: -1, noRefs: true })
-    const res = await fetch('/api/okf/save-section', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        topicId,
-        sectionName: sectionFolder,
-        sectionMd: rawText,
-        dataYaml,
-      }),
-    })
-
-    if (!res.ok) {
-      const errorBody = await res.text()
-      throw new Error(`Failed to save section: ${errorBody}`)
-    }
-
-    clearOKFCache()
+  async saveSection(): Promise<void> {
+    throw new Error(READ_ONLY_CONTENT_MESSAGE)
   }
 
   /**

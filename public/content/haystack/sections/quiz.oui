@@ -1,0 +1,222 @@
+root = Quiz("Knowledge Check", [q1, q2, q3, q4, q5, q6, q7, q8])
+
+q1 = QuizQuestion(
+  "q1",
+  "What is a Haystack Pipeline?",
+  [
+    QuizChoice(
+      "a",
+      "A linear sequence of function calls",
+      false,
+      "Pipelines are more flexible than linear sequences — they support branching and loops.",
+    ),
+    QuizChoice(
+      "b",
+      "A directed multigraph of components with typed connections",
+      true,
+      "Correct. A Pipeline connects Components via typed input/output sockets and validates type compatibility at connection time.",
+    ),
+    QuizChoice(
+      "c",
+      "A database schema for storing documents",
+      false,
+      "That describes a Document Store, not a Pipeline.",
+    ),
+    QuizChoice(
+      "d",
+      "A YAML configuration file format",
+      false,
+      "Pipelines can be serialized to YAML, but they are runtime objects, not file formats.",
+    ),
+  ],
+  "Think about how components are connected.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Which component is NOT part of a Pipeline?",
+  [
+    QuizChoice(
+      "a",
+      "Retriever",
+      false,
+      "Retrievers are pipeline components that query a Document Store.",
+    ),
+    QuizChoice(
+      "b",
+      "Embedder",
+      false,
+      "Embedders are pipeline components that convert text to vectors.",
+    ),
+    QuizChoice(
+      "c",
+      "Document Store",
+      true,
+      "Correct. The Document Store is an external database accessed by components, not a pipeline component itself.",
+    ),
+    QuizChoice("d", "Ranker", false, "Rankers are pipeline components that re-score documents."),
+  ],
+  "One of these lives outside the pipeline graph.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "What is the primary advantage of hybrid retrieval?",
+  [
+    QuizChoice(
+      "a",
+      "It is faster than any single retrieval method",
+      false,
+      "Hybrid retrieval actually runs two passes, so it has slightly higher latency.",
+    ),
+    QuizChoice(
+      "b",
+      "It eliminates the need for embeddings",
+      false,
+      "Hybrid retrieval still requires embeddings for the dense vector side.",
+    ),
+    QuizChoice(
+      "c",
+      "It catches both exact keyword matches and semantic similarities",
+      true,
+      "Correct. Hybrid retrieval combines BM25 (exact keyword) with dense vectors (semantic) using Reciprocal Rank Fusion.",
+    ),
+    QuizChoice(
+      "d",
+      "It requires less infrastructure than single-method retrieval",
+      false,
+      "Hybrid retrieval needs both keyword and vector indexes, requiring more infrastructure.",
+    ),
+  ],
+  "Hybrid combines two approaches.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "What does a SuperComponent do?",
+  [
+    QuizChoice(
+      "a",
+      "Speeds up pipeline execution",
+      false,
+      "SuperComponents are for organization, not performance.",
+    ),
+    QuizChoice(
+      "b",
+      "Wraps a sub-pipeline into a single reusable component",
+      true,
+      "Correct. A SuperComponent hides internal wiring behind a clean interface, making complex graphs easier to manage.",
+    ),
+    QuizChoice(
+      "c",
+      "Converts between document formats",
+      false,
+      "That is the job of converter components.",
+    ),
+    QuizChoice(
+      "d",
+      "Provides backup for failed components",
+      false,
+      "SuperComponents don't handle failover; they organize pipeline structure.",
+    ),
+  ],
+  "Think about code organization.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "Which Document Store backend supports native hybrid search?",
+  [
+    QuizChoice("a", "Chroma", false, "Chroma is vector-only and does not support BM25."),
+    QuizChoice(
+      "b",
+      "InMemoryDocumentStore",
+      false,
+      "While it supports both BM25 and vectors, it is meant for prototyping, not production hybrid search.",
+    ),
+    QuizChoice(
+      "c",
+      "OpenSearch",
+      true,
+      "Correct. OpenSearch provides native hybrid search with BM25 + vectors + RRF fusion in a single query.",
+    ),
+    QuizChoice(
+      "d",
+      "Weaviate",
+      false,
+      "Weaviate is primarily a vector database with limited keyword search support.",
+    ),
+  ],
+  "Look for backends that combine BM25 and vectors.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "What is the purpose of a Ranker in Haystack?",
+  [
+    QuizChoice("a", "To convert documents to embeddings", false, "That is the job of an Embedder."),
+    QuizChoice(
+      "b",
+      "To re-score and re-order retrieved documents by relevance",
+      true,
+      "Correct. Rankers take documents from a Retriever and apply more sophisticated scoring models.",
+    ),
+    QuizChoice(
+      "c",
+      "To store documents in the Document Store",
+      false,
+      "That is the job of a DocumentWriter.",
+    ),
+    QuizChoice("d", "To split text into chunks", false, "That is the job of a TextSplitter."),
+  ],
+  "Rankers come after Retrievers.",
+)
+
+q7 = QuizQuestion(
+  "q7",
+  "When should you use AsyncPipeline over a standard Pipeline?",
+  [
+    QuizChoice(
+      "a",
+      "Always, since it is faster",
+      false,
+      "AsyncPipeline adds complexity. Use it only when parallel execution provides benefit.",
+    ),
+    QuizChoice(
+      "b",
+      "When your pipeline has independent branches that benefit from parallel execution",
+      true,
+      "Correct. AsyncPipeline runs independent branches concurrently, reducing latency for pipelines with fan-out patterns.",
+    ),
+    QuizChoice(
+      "c",
+      "When you need loop support",
+      false,
+      "Loops are supported in the standard Pipeline, not only AsyncPipeline.",
+    ),
+    QuizChoice(
+      "d",
+      "When working with InMemoryDocumentStore",
+      false,
+      "The choice of Document Store doesn't determine whether to use AsyncPipeline.",
+    ),
+  ],
+  "Consider execution patterns.",
+)
+
+q8 = QuizQuestion(
+  "q8",
+  "What field in a Haystack Document enables metadata filtering?",
+  [
+    QuizChoice("a", "content", false, "The content field holds the text, not metadata."),
+    QuizChoice("b", "embedding", false, "The embedding field holds the vector representation."),
+    QuizChoice(
+      "c",
+      "metadata",
+      true,
+      "Correct. The metadata field is a dict of key-value pairs that enables structured filtering.",
+    ),
+    QuizChoice("d", "score", false, "The score field holds the relevance score from retrieval."),
+  ],
+  "Documents carry more than just text and embeddings.",
+)

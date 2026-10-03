@@ -1,0 +1,72 @@
+root = ConceptMap(
+  "Concept Map",
+  [
+    engine,
+    piston,
+    crankshaft,
+    carburetor,
+    injector,
+    ecu,
+    sparkPlug,
+    intakeValve,
+    exhaustValve,
+    transmission,
+    sprocket,
+    brakeDisc,
+    brakeCaliper,
+    brakeMaster,
+    choke,
+    gasket,
+    fourStroke,
+    fuelSystem,
+    brakeSystem,
+    drivetrain,
+    brakeFade,
+  ],
+  [
+    ConceptLink(piston, crankshaft, "หมุน"),
+    ConceptLink(crankshaft, transmission, "ส่งกำลัง"),
+    ConceptLink(transmission, sprocket, "ส่งถึง"),
+    ConceptLink(carburetor, engine, "จ่ายน้ำมัน"),
+    ConceptLink(injector, engine, "จ่ายน้ำมัน"),
+    ConceptLink(ecu, injector, "ควบคุม"),
+    ConceptLink(sparkPlug, engine, "จุดระเบิด"),
+    ConceptLink(intakeValve, engine, "รับอากาศเข้า"),
+    ConceptLink(exhaustValve, engine, "ปล่อยไอเสียออก"),
+    ConceptLink(fourStroke, piston, "กำหนดจังหวะ"),
+    ConceptLink(fuelSystem, carburetor, "ใช้"),
+    ConceptLink(fuelSystem, injector, "ใช้"),
+    ConceptLink(choke, carburetor, "ปรับ"),
+    ConceptLink(brakeSystem, brakeDisc, "ใช้"),
+    ConceptLink(brakeSystem, brakeCaliper, "ใช้"),
+    ConceptLink(brakeSystem, brakeMaster, "ใช้"),
+    ConceptLink(brakeCaliper, brakeDisc, "ประกบ"),
+    ConceptLink(brakeMaster, brakeCaliper, "ส่งแรงดัน"),
+    ConceptLink(brakeFade, brakeDisc, "เกิดจากความร้อน"),
+    ConceptLink(gasket, engine, "ซีล"),
+    ConceptLink(drivetrain, transmission, "รวม"),
+    ConceptLink(drivetrain, sprocket, "รวม"),
+  ],
+)
+
+engine = Concept("engine", "เครื่องยนต์ (Engine)", "system")
+piston = Concept("piston", "ลูกสูบ (Piston)", "mechanism")
+crankshaft = Concept("crankshaft", "เพลาข้อเหวี่ยง (Crankshaft)", "mechanism")
+carburetor = Concept("carburetor", "คาร์บูเรเตอร์ (Carburetor)", "mechanism")
+injector = Concept("injector", "หัวฉีด (Fuel Injector)", "mechanism")
+ecu = Concept("ecu", "กล่อง ECU", "system")
+sparkPlug = Concept("spark-plug", "หัวเทียน (Spark Plug)", "mechanism")
+intakeValve = Concept("intake-valve", "วาล์วไอดี (Intake Valve)", "mechanism")
+exhaustValve = Concept("exhaust-valve", "วาล์วไอเสีย (Exhaust Valve)", "mechanism")
+transmission = Concept("transmission", "ระบบเกียร์ (Transmission)", "system")
+sprocket = Concept("sprocket", "สเตอร์ (Sprocket)", "mechanism")
+brakeDisc = Concept("brake-disc", "จานเบรก (Brake Disc)", "mechanism")
+brakeCaliper = Concept("brake-caliper", "แคลิเพอร์เบรก (Brake Caliper)", "mechanism")
+brakeMaster = Concept("brake-master", "กระปุกเบรก (Master Cylinder)", "mechanism")
+choke = Concept("choke", "โช้ค (Choke)", "mechanism")
+gasket = Concept("gasket", "ปะเก็น (Gasket)", "mechanism")
+fourStroke = Concept("four-stroke", "4 จังหวะ", "process")
+fuelSystem = Concept("fuel-system", "ระบบน้ำมัน", "concept")
+brakeSystem = Concept("brake-system", "ระบบเบรก", "concept")
+drivetrain = Concept("drivetrain", "ระบบส่งกำลัง", "concept")
+brakeFade = Concept("brake-fade", "เบรกจม (Brake Fade)", "concept")

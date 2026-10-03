@@ -1,0 +1,147 @@
+root = DecisionTree(
+  "Choose Your Haystack Setup",
+  "haystack-advisor",
+  "goal",
+  [goal, dataSize, ragComplexity, agentRec, recSimple, recProduction, recRagBasic, recRagAdvanced],
+  "Haystack Setup Advisor",
+)
+
+goal = DecisionNode(
+  "goal",
+  "What are you building?",
+  [
+    DecisionChoice(
+      "simple-search",
+      "Simple document search (no LLM answers)",
+      "data-size",
+      "Pure search is the most straightforward Haystack use case.",
+    ),
+    DecisionChoice(
+      "rag-system",
+      "RAG system (LLM answers from documents)",
+      "rag-complexity",
+      "RAG adds LLM components but Haystack pipelines make it straightforward.",
+      true,
+    ),
+    DecisionChoice(
+      "agentic",
+      "Agentic system (tools, loops, multi-agent)",
+      "agent-rec",
+      "Agentic systems require loop pipelines and the Agent component.",
+    ),
+  ],
+)
+
+dataSize = DecisionNode(
+  "data-size",
+  "How many documents?",
+  [
+    DecisionChoice(
+      "small",
+      "Under 10,000 documents",
+      "rec-simple",
+      "Smaller datasets work well with simpler setups.",
+    ),
+    DecisionChoice(
+      "large",
+      "10,000+ documents",
+      "rec-production",
+      "Large datasets need production-grade infrastructure.",
+    ),
+  ],
+)
+
+ragComplexity = DecisionNode(
+  "rag-complexity",
+  "How complex are the queries?",
+  [
+    DecisionChoice(
+      "straightforward",
+      "Straightforward questions with clear answers in documents",
+      "rec-rag-basic",
+      "Most RAG systems start with a basic pipeline.",
+      true,
+    ),
+    DecisionChoice(
+      "complex",
+      "Complex reasoning requiring multi-step retrieval",
+      "rec-rag-advanced",
+      "Complex queries may need ranking, multi-retriever, or agent patterns.",
+    ),
+  ],
+)
+
+agentRec = DecisionNode(
+  "agent-rec",
+  null,
+  null,
+  DecisionLeaf(
+    "Use the Agent component with a loop-enabled Pipeline.",
+    "Haystack's Agent component provides a ReAct loop. Combine it with custom tools and a Document Store for agentic search.",
+    [
+      "Higher latency from multiple LLM calls",
+      "Requires max iteration limits to prevent infinite loops",
+      "More expensive due to token usage",
+    ],
+  ),
+)
+
+recSimple = DecisionNode(
+  "rec-simple",
+  null,
+  null,
+  DecisionLeaf(
+    "Start with InMemoryDocumentStore + BM25Retriever in a Standard Pipeline.",
+    "For small datasets, the in-memory store gives zero setup and fast prototyping. BM25 handles keyword search without embedding overhead.",
+    [
+      "No persistence across restarts",
+      "No semantic search capability",
+      "Upgrade to a production Document Store when scaling",
+    ],
+  ),
+)
+
+recProduction = DecisionNode(
+  "rec-production",
+  null,
+  null,
+  DecisionLeaf(
+    "Use OpenSearchDocumentStore with HybridRetriever and AsyncPipeline.",
+    "OpenSearch provides native hybrid search at scale. AsyncPipeline parallelizes independent branches for lower latency on large datasets.",
+    [
+      "Requires running OpenSearch infrastructure",
+      "Higher initial setup complexity",
+      "AsyncPipeline adds debugging complexity",
+    ],
+  ),
+)
+
+recRagBasic = DecisionNode(
+  "rec-rag-basic",
+  null,
+  null,
+  DecisionLeaf(
+    "Standard Pipeline: TextEmbedder → EmbeddingRetriever → Ranker → PromptBuilder → LLM.",
+    "This is the canonical RAG pipeline in Haystack. Wire the components in sequence and the framework handles type validation and execution.",
+    [
+      "Single retrieval pass may miss edge cases",
+      "No self-correction on bad answers",
+      "Consider multi-retriever or agent patterns for higher accuracy",
+    ],
+  ),
+)
+
+recRagAdvanced = DecisionNode(
+  "rec-rag-advanced",
+  null,
+  null,
+  DecisionLeaf(
+    "Multi-retriever pipeline with Ranker + Agent with self-correction loop.",
+    "Use multiple Retrievers (BM25 + Embedding), fuse with ReciprocalRankFusion, add a Ranker, then route to an Agent for multi-step reasoning.",
+    [
+      "Highest latency from multiple retrieval + agent iterations",
+      "Most expensive setup with multiple LLM calls",
+      "Best accuracy for complex, multi-hop questions",
+    ],
+  ),
+)

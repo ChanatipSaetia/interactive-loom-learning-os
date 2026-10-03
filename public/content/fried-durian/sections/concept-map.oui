@@ -1,0 +1,61 @@
+root = ConceptMap(
+  "แผนที่แนวคิดทุเรียนทอด",
+  [
+    durianRaw,
+    durianFlesh,
+    oil,
+    saltWater,
+    sugar,
+    pan,
+    slicing,
+    frying,
+    draining,
+    coating,
+    crispy,
+    golden,
+    aroma,
+    plainFried,
+    sugarCoated,
+    jemutJemut,
+  ],
+  [
+    ConceptLink(durianRaw, durianFlesh, "แยกเนื้อ"),
+    ConceptLink(durianFlesh, slicing, "ผ่านขั้นตอน"),
+    ConceptLink(slicing, frying, "นำไป"),
+    ConceptLink(oil, frying, "ใช้"),
+    ConceptLink(saltWater, frying, "เติมตอนทอด"),
+    ConceptLink(pan, frying, "ใช้"),
+    ConceptLink(frying, draining, "แล้ว"),
+    ConceptLink(draining, crispy, "ได้"),
+    ConceptLink(draining, golden, "ได้"),
+    ConceptLink(frying, aroma, "เกิด"),
+    ConceptLink(draining, plainFried, "สำเร็จเป็น"),
+    ConceptLink(sugar, coating, "ใช้"),
+    ConceptLink(draining, coating, "นำไป"),
+    ConceptLink(coating, sugarCoated, "สำเร็จเป็น"),
+    ConceptLink(durianFlesh, jemutJemut, "นวด+ทอดเป็น"),
+  ],
+  null,
+  Lead(
+    "แผนภาพแสดงความสัมพันธ์ระหว่างวัตถุดิบ กระบวนการทอด และผลลัพธ์ของทุเรียนทอด",
+    "การสร้างแผนที่ความคิดช่วยให้เห็นภาพรวมก่อนลงรายละเอียด",
+    "ถัดไป: เรียนรู้คำศัพท์สำคัญกับ Flashcards",
+  ),
+)
+
+durianRaw = Concept("durian_raw", "ทุเรียนดิบ/อ่อน", "ingredient")
+durianFlesh = Concept("durian_flesh", "เนื้อทุเรียน", "ingredient")
+oil = Concept("oil", "น้ำมันพืช", "ingredient")
+saltWater = Concept("salt_water", "น้ำเกลือ", "ingredient")
+sugar = Concept("sugar", "น้ำตาลทราย/ปี๊บ", "ingredient")
+pan = Concept("pan", "กระทะ", "tool")
+slicing = Concept("slicing", "หั่นชิ้นบาง", "process")
+frying = Concept("frying", "ทอด", "process")
+draining = Concept("draining", "สะเด็ดน้ำมัน", "process")
+coating = Concept("coating", "เคลือบน้ำตาล", "process")
+crispy = Concept("crispy", "กรอบ", "quality")
+golden = Concept("golden", "สีทอง", "quality")
+aroma = Concept("aroma", "กลิ่นหอมทุเรียน", "quality")
+plainFried = Concept("plain_fried", "ทุเรียนทอดเปล่า", "result")
+sugarCoated = Concept("sugar_coated", "ทุเรียนทอดเคลือบน้ำตาล", "result")
+jemutJemut = Concept("jemut_jemut", "เจมุดเจมุดทุเรียน", "result")

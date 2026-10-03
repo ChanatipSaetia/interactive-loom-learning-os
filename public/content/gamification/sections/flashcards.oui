@@ -1,0 +1,175 @@
+root = Flashcards(
+  "Key Vocabulary",
+  [
+    gamification,
+    intrinsicMotivation,
+    extrinsicMotivation,
+    pbl,
+    octalysis,
+    overjustification,
+    variableReward,
+    streak,
+    flow,
+    darkPattern,
+  ],
+)
+
+gamification = Flashcard(
+  "gamification",
+  "Gamification",
+  "gam-ih-fih-KAY-shun",
+  "concept",
+  "Using game design elements in non-game contexts to motivate behavior.",
+  "Coined in 2002 and defined academically by Deterding et al. (2011) as 'the use of game design elements in non-game contexts'. It covers everything from points and badges to narrative, feedback loops, and social dynamics.",
+  "It is the umbrella term for the whole discipline - every mechanic and framework in this topic serves it.",
+  null,
+  Dialogue(
+    "Can we just add points to our onboarding?",
+    "They're thinking about one mechanic, not a system. Points alone decay fast.",
+    "What behavior do you want to sustain, and which motivation drive would actually sustain it - before we pick any mechanic?",
+  ),
+)
+
+intrinsicMotivation = Flashcard(
+  "intrinsic-motivation",
+  "Intrinsic Motivation",
+  "in-TRINS-ik mo-tuh-VAY-shun",
+  "motivation",
+  "Doing something because it is inherently interesting or satisfying.",
+  "The internal fuel of long-term engagement: curiosity, enjoyment, mastery. It is what makes people keep doing an activity long after external rewards stop arriving.",
+  "Intrinsic motivation is the most durable kind - but it is fragile and can be undermined by poorly designed rewards.",
+  null,
+  Dialogue(
+    "Users love the sandbox mode way more than the main campaign.",
+    "Sandbox mode is open-ended - they choose, they experiment. That's intrinsic fuel.",
+    "What makes the sandbox feel free - and can the main campaign give that same sense of choice?",
+  ),
+)
+
+extrinsicMotivation = Flashcard(
+  "extrinsic-motivation",
+  "Extrinsic Motivation",
+  "ek-STRINS-ik mo-tuh-VAY-shun",
+  "motivation",
+  "Doing something for separable outcomes - rewards, grades, or avoiding punishment.",
+  "Behavior driven by external consequences: points, money, recognition, deadlines. Powerful for short-term behavior change, but fragile - it fades when the reward stops.",
+  "Most naive gamification is pure extrinsic motivation, which is why it decays within weeks.",
+  null,
+  Dialogue(
+    "Let's pay users 5 dollars per completed tutorial.",
+    "Cash rewards are the strongest extrinsic motivator - and the fastest to corrupt intrinsic interest.",
+    "Will users still complete tutorials for the joy of it once the payments stop?",
+  ),
+)
+
+pbl = Flashcard(
+  "pbl",
+  "PBL (Points, Badges, Leaderboards)",
+  "P-B-L",
+  "mechanism",
+  "The classic trio of gamification mechanics.",
+  "Points track progress, badges symbolize accomplishment, leaderboards enable social comparison. Cheap to implement, but they address only one core drive - Development & Accomplishment.",
+  "PBL is the default first move of most teams and the most common cause of 'sprinkles and donuts' failure.",
+  null,
+  Dialogue(
+    "Ship the PBL layer this sprint, we'll think about the rest later.",
+    "PBL is the easy 10% - but engagement will decay the moment novelty fades.",
+    "Which core drives beyond accomplishment do we actually need for this product?",
+  ),
+)
+
+octalysis = Flashcard(
+  "octalysis",
+  "Octalysis",
+  "ok-TAL-sis",
+  "framework",
+  "Yu-kai Chou's framework of 8 core drives of human motivation.",
+  "Maps all motivation into 8 drives: Epic Meaning, Development, Creativity, Ownership, Social Influence (white hat), and Scarcity, Unpredictability, Loss (black hat). Used by Google, LEGO, and Tesla.",
+  "It forces designers to ask 'which drive am I targeting?' before choosing a mechanic.",
+  null,
+  Dialogue(
+    "Our app has badges, XP, and streaks.",
+    "That's three mechanics all hitting the same drive - Development & Accomplishment, plus a dose of Loss.",
+    "Which of the other six drives is missing, and which one would move engagement next?",
+  ),
+)
+
+overjustification = Flashcard(
+  "overjustification",
+  "Overjustification Effect",
+  "oh-ver-JUS-tih-fih-KAY-shun",
+  "psychology",
+  "Extrinsic rewards can undermine intrinsic motivation for an activity.",
+  "Demonstrated in the 1970s (Lepper, Greene & Nisbett): children paid to draw a picture drew less for free afterwards. The reward re-attributed their behavior from enjoyment to payment.",
+  "The single biggest trap in gamifying anything people already find enjoyable.",
+  null,
+  Dialogue(
+    "Our forum members post constantly - let's reward the best posts with gift cards.",
+    "They post because the community is interesting. Gift cards shift the reason to the gift card.",
+    "What will the posting rate look like the month the gift cards run out?",
+  ),
+)
+
+variableReward = Flashcard(
+  "variable-reward",
+  "Variable Reward",
+  "VARY-uh-bul RIRD",
+  "mechanism",
+  "An unpredictable outcome that keeps users wanting to try again.",
+  "The variable-ratio reinforcement schedule behind slot machines, loot boxes, and surprise XP bonuses. Because the reward is uncertain, the brain stays engaged between attempts.",
+  "The strongest short-term engagement hook - and the most ethically delicate one.",
+  null,
+  Dialogue(
+    "Randomize the bonus XP on every lesson.",
+    "Randomity boosts completion in the short term, but it can create a slot-machine dynamic.",
+    "Are we randomizing the reward on top of skill, or replacing skill assessment with luck?",
+  ),
+)
+
+streak = Flashcard(
+  "streak",
+  "Streak",
+  "STREEK",
+  "mechanism",
+  "A consecutive-day (or consecutive-action) counter that builds habits.",
+  "Converts progress into something you can lose, weaponizing loss aversion. Duolingo's streak is the canonical example - and its streak freezes are the escape valve that prevents all-or-nothing collapse.",
+  "The most effective habit mechanic ever shipped at scale - and the most common source of user burnout.",
+  null,
+  Dialogue(
+    "Users are quitting the day their streak breaks.",
+    "Classic streak anxiety - the loss pain outweighs the gain joy, and one bad day ends weeks of progress.",
+    "What escape valve - freeze, repair card, or weekly goal - fits our users' lives?",
+  ),
+)
+
+flow = Flashcard(
+  "flow",
+  "Flow",
+  "FLOH",
+  "psychology",
+  "Deep engagement when challenge matches skill (Csikszentmihalyi).",
+  "The state of absorbed focus that happens when a task is neither too easy nor too hard. Games sustain flow by dynamically tuning difficulty; gamified systems should do the same.",
+  "No amount of points compensates for a system that pushes users out of flow.",
+  null,
+  Dialogue(
+    "New users churn on day 3 - the early lessons are too hard.",
+    "Challenge exceeds skill, so they never enter flow and never get the first reward hit.",
+    "How do we tune early difficulty so the first win is near-certain, then ramp gradually?",
+  ),
+)
+
+darkPattern = Flashcard(
+  "dark-pattern",
+  "Dark Pattern (in gamification)",
+  "DAARK PATE-rn",
+  "ethics",
+  "A manipulation tactic disguised as a game mechanic.",
+  "Manufactured scarcity, guilt-tripping notifications, fake countdowns, and punitive resets. They exploit black hat drives to extract behavior the user wouldn't choose freely.",
+  "Dark patterns win short-term metrics and destroy long-term trust - and some are now regulated.",
+  null,
+  Dialogue(
+    "Let's send a sad-owl notification when users break their streak.",
+    "Guilt as a retention tactic is a textbook dark pattern - it converts anxiety into DAU.",
+    "Would the user say this nudge respects their autonomy, or pressures them?",
+  ),
+)

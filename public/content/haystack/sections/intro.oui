@@ -1,0 +1,56 @@
+root = Intro(
+  "",
+  what,
+  why,
+  [
+    RoadmapStep(
+      "Knowledge Graph",
+      "concept-map",
+      "Map spatial relationships between DocumentStores, Retrievers, and Generators.",
+      "concept-map",
+    ),
+    RoadmapStep(
+      "Key Vocabulary",
+      "flashcards",
+      "Master Haystack terminology and component definitions.",
+      "flashcards",
+    ),
+    RoadmapStep(
+      "Component Taxonomy",
+      "taxonomy-browser",
+      "Explore retrievers, rankers, prompt builders, and LLM integrators.",
+      "taxonomy",
+    ),
+    RoadmapStep(
+      "Query Pipeline Flow",
+      "flowchart",
+      "Trace event storming step execution in query and indexing pipelines.",
+      "flowchart-query",
+    ),
+    RoadmapStep(
+      "RAG Trade-off Sandbox",
+      "tradeoff-sandbox",
+      "Balance chunk sizes, top-k retrieval, embedding dimensions, and cost.",
+      "tradeoffs",
+    ),
+  ],
+  null,
+  "7 min read",
+  10,
+)
+
+what = IntroWhat(
+  "Comprehensive guide to Haystack 2.x — the open-source LLM orchestration and RAG pipeline framework.",
+  "Haystack 2.x is an open-source Python framework designed to build composable, production-grade LLM applications, semantic search, and RAG pipelines.",
+  [
+    "Pipeline DAG architecture for DocumentStores, Retrievers, and Generators",
+    "Hybrid search combining BM25 keyword matching and dense vector embeddings",
+    "Production component validation, error handling, and latency optimization",
+  ],
+  ["Haystack 2.x", "RAG Pipelines", "Vector Search", "LLM Orchestration"],
+)
+
+why = IntroWhy(
+  "Basic RAG tutorials break down in production due to static chunking, retriever mismatch, and unhandled component state errors.",
+  "Haystack 2.x provides modular component validation, typed pipeline connections, and seamless model switching.",
+)

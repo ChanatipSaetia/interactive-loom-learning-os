@@ -1,0 +1,193 @@
+root = Quiz("Knowledge Check", [q1, q2, q3, q4, q5, q6])
+
+q1 = QuizQuestion(
+  "q1",
+  "According to Deterding et al. (2011), gamification is...",
+  [
+    QuizChoice(
+      "a",
+      "The creation of full games for educational purposes",
+      false,
+      "That describes game-based learning. Gamification applies game design elements to non-game contexts — it does not require building a game.",
+    ),
+    QuizChoice(
+      "b",
+      "The use of game design elements in non-game contexts",
+      true,
+      "Correct. This is the standard academic definition — note 'elements', not whole games.",
+    ),
+    QuizChoice(
+      "c",
+      "Adding points to any software product",
+      false,
+      "Points are just one element among many. The definition covers any game design element used in a non-game context.",
+    ),
+    QuizChoice(
+      "d",
+      "Making work feel like a video game",
+      false,
+      "Close, but imprecise. The context does not need to feel like a game — it borrows game design elements.",
+    ),
+  ],
+  "Focus on the word 'elements', not 'games'.",
+)
+
+q2 = QuizQuestion(
+  "q2",
+  "Self-Determination Theory holds that intrinsic motivation depends on satisfying three basic needs. Which is NOT one of them?",
+  [
+    QuizChoice(
+      "a",
+      "Autonomy",
+      false,
+      "Autonomy is one of the three needs — feeling in control of your own behavior.",
+    ),
+    QuizChoice(
+      "b",
+      "Competence",
+      false,
+      "Competence is one of the three needs — feeling effective and growing.",
+    ),
+    QuizChoice(
+      "c",
+      "Obedience",
+      true,
+      "Correct. Obedience is not a basic psychological need in SDT. The third need is relatedness.",
+    ),
+    QuizChoice(
+      "d",
+      "Relatedness",
+      false,
+      "Relatedness is one of the three needs — feeling connected to others.",
+    ),
+  ],
+  "Think: control, effectiveness, connection.",
+)
+
+q3 = QuizQuestion(
+  "q3",
+  "What is the overjustification effect?",
+  [
+    QuizChoice(
+      "a",
+      "The tendency to overrate a reward when it is unexpected",
+      false,
+      "That describes surprise reward salience, not overjustification.",
+    ),
+    QuizChoice(
+      "b",
+      "Extrinsic rewards undermining intrinsic motivation for an activity",
+      true,
+      "Correct. When the reward explains the behavior, people shift attribution from enjoyment to payment — and intrinsic motivation drops when the reward stops.",
+    ),
+    QuizChoice(
+      "c",
+      "Users farming more points than they actually earned",
+      false,
+      "That is point-farming — a metric-gaming behavior, not a motivation effect.",
+    ),
+    QuizChoice(
+      "d",
+      "Justifying poor design choices with metrics",
+      false,
+      "That is post-hoc rationalization in product teams, not a documented motivation effect.",
+    ),
+  ],
+  "Think about what happens when you pay someone for something they already enjoy.",
+)
+
+q4 = QuizQuestion(
+  "q4",
+  "In Octalysis, a user's fear of breaking a 100-day streak is an example of which Core Drive?",
+  [
+    QuizChoice(
+      "a",
+      "Development & Accomplishment",
+      false,
+      "Accomplishment is about gaining progress — the fear of losing it belongs to a different drive.",
+    ),
+    QuizChoice(
+      "b",
+      "Scarcity & Impatience",
+      false,
+      "Scarcity is about limited quantity or time, not about losing accumulated progress.",
+    ),
+    QuizChoice(
+      "c",
+      "Loss & Avoidance",
+      true,
+      "Correct. Core Drive 8 — loss aversion. The streak converts your progress into something you can lose, and the pain of loss outweighs the joy of gain.",
+    ),
+    QuizChoice(
+      "d",
+      "Epic Meaning & Purpose",
+      false,
+      "Meaning is about a higher purpose — unrelated to the fear of losing a streak.",
+    ),
+  ],
+  "It is about losing what you have, not gaining what you don't.",
+)
+
+q5 = QuizQuestion(
+  "q5",
+  "Why do global top-10 leaderboards tend to demotivate most users?",
+  [
+    QuizChoice(
+      "a",
+      "Rendering ten rows is expensive for the app",
+      false,
+      "Ten rows are trivial to render. The problem is psychological, not technical.",
+    ),
+    QuizChoice(
+      "b",
+      "The gap between most users and the top feels unreachable",
+      true,
+      "Correct. When the target is out of reach, effort collapses. Nearest-competitor boards fix this by showing a small, winnable gap.",
+    ),
+    QuizChoice(
+      "c",
+      "Users dislike seeing other people's names",
+      false,
+      "Names are not the issue — the unreachable distance is.",
+    ),
+    QuizChoice(
+      "d",
+      "Leaderboards are inherently dark patterns",
+      false,
+      "Leaderboards are not inherently dark patterns — poorly designed ones (global top-10 as a default) can be demotivating.",
+    ),
+  ],
+  "Ask what a user in the bottom 99% sees.",
+)
+
+q6 = QuizQuestion(
+  "q6",
+  "Why did Duolingo add streak freezes?",
+  [
+    QuizChoice(
+      "a",
+      "To reduce the server cost of streak calculations",
+      false,
+      "Freezes are a behavioral design feature, not a cost optimization.",
+    ),
+    QuizChoice(
+      "b",
+      "To provide an escape valve so one missed day doesn't collapse weeks of progress",
+      true,
+      "Correct. Freezes keep the motivating power of loss aversion while preventing streak anxiety from turning into quitting — pairing pressure with relief.",
+    ),
+    QuizChoice(
+      "c",
+      "Because app stores require them",
+      false,
+      "No such requirement exists — it was a deliberate retention design decision.",
+    ),
+    QuizChoice(
+      "d",
+      "To make streaks longer and more impressive",
+      false,
+      "Freezes don't make streaks longer — they reduce the penalty of a missed day so users keep coming back.",
+    ),
+  ],
+  "Think about what happens the day after a user misses one day.",
+)

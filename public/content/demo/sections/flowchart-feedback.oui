@@ -1,0 +1,147 @@
+root = Flowchart(
+  "Agent Feedback Loop",
+  [devUser, qaUser],
+  [orchFeedback, evaluator, llmFeedback, memoryStore],
+  [fbCheck, fbDecision, fbStore, fbRerun],
+  [fbJourneyPass, fbJourneyRevise],
+)
+
+devUser = Actor("dev_user", "Developer (Feedback Source)", "Provides feedback on agent output")
+qaUser = Actor("qa_user", "QA Reviewer", "Evaluates agent output quality")
+
+orchFeedback = System(
+  "orch_feedback",
+  "Agent Orchestrator",
+  "Receives feedback and triggers re-planning",
+  "aggregate",
+)
+
+evaluator = System(
+  "evaluator",
+  "Self-Evaluator",
+  "Checks output against success criteria",
+  "aggregate",
+)
+
+llmFeedback = System("llm_feedback", "LLM", "Re-generates output based on feedback", "external")
+memoryStore = System(
+  "memory_store",
+  "Memory Store",
+  "Stores failed attempts for context",
+  "external",
+)
+
+fbCheck = Step(
+  "fb_check",
+  "",
+  "cmd_evaluate",
+  evaluator,
+  [Event("fb_evaluated", "Output Evaluated")],
+  qaUser,
+  null,
+  "fb_decision",
+)
+
+fbDecision = Branch("fb_decision", "fb_evaluated", [fbPass, fbFail])
+
+fbPass = BranchOption(
+  "fb_pass",
+  "Pass",
+  "fb_accept",
+  "cmd_accept",
+  orchFeedback,
+  [Event("fb_accepted", "Output Accepted")],
+)
+
+fbFail = BranchOption(
+  "fb_fail",
+  "Needs Revision",
+  "fb_revise",
+  "cmd_revise",
+  orchFeedback,
+  [Event("fb_revision", "Revision Triggered")],
+  true,
+  null,
+  "dev_user",
+  "fb_store",
+)
+
+fbStore = Step(
+  "fb_store",
+  "fb_revision",
+  "cmd_store_failure",
+  memoryStore,
+  [Event("fb_stored", "Failure Context Stored")],
+  null,
+  null,
+  "fb_rerun",
+)
+
+fbRerun = Step(
+  "fb_rerun",
+  "fb_stored",
+  "cmd_rerun",
+  llmFeedback,
+  [Event("fb_regenerated", "Output Regenerated")],
+  null,
+  null,
+  "fb_check",
+)
+
+fbJourneyPass = Journey(
+  "fb_journey_pass",
+  "QA Pass",
+  "Output passes evaluation on first attempt",
+  [
+    JourneyStep(
+      fbCheck,
+      "Evaluate Output",
+      "QA evaluator reviews the output against quality criteria.",
+      "evaluation",
+    ),
+    JourneyStep(
+      fbPass,
+      "Accept Output",
+      "Output meets all criteria and is approved without revision.",
+      "evaluation",
+    ),
+  ],
+)
+
+fbJourneyRevise = Journey(
+  "fb_journey_revise",
+  "Revision Loop",
+  "Output fails evaluation, triggering a revision cycle",
+  [
+    JourneyStep(
+      fbCheck,
+      "Evaluate Output",
+      "QA evaluator reviews the output and finds it does not meet criteria.",
+      "evaluation",
+    ),
+    JourneyStep(
+      fbFail,
+      "Trigger Revision",
+      "Output fails evaluation. Revision flag is raised to start the correction cycle.",
+      "escalation",
+    ),
+    JourneyStep(
+      fbStore,
+      "Store Failure Context",
+      "Failure details and feedback are stored in memory so the LLM can reference them during revision.",
+      "execution",
+    ),
+    JourneyStep(
+      fbRerun,
+      "Regenerate with Context",
+      "LLM receives the stored failure context and regenerates the output with corrections.",
+      "planning",
+    ),
+    JourneyStep(
+      fbCheck,
+      "Re-Evaluate",
+      "Revised output is evaluated again to check if it now meets quality criteria.",
+      "evaluation",
+    ),
+  ],
+)

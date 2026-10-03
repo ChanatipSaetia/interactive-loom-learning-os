@@ -1,0 +1,53 @@
+root = Bullets(
+  "The Core Mechanics Toolkit",
+  [
+    Bullet(
+      "Points & XP — a mathematical counter that makes invisible progress visible",
+      [
+        Bullet("Experience points (XP) level up as users complete actions"),
+        Bullet(
+          "Points need a clear purpose: status, exchangeable currency, or progress — never all three",
+        ),
+        Bullet("Warning: unmoored points decay fast and invite point-farming over real skill"),
+      ],
+    ),
+    Bullet(
+      "Badges & Achievements — symbolic markers of accomplishment",
+      [
+        Bullet("Milestone badges: first lesson, 100 lessons, streak records"),
+        Bullet("Badges must represent genuine accomplishments the user cares about"),
+        Bullet("A badge for 'opened the app once' signals nothing and erodes trust"),
+      ],
+    ),
+    Bullet(
+      "Leaderboards — social comparison and competition",
+      [
+        Bullet("Global top-10 boards create prestige but demotivate the bottom 99%"),
+        Bullet("Nearest-competitor boards (showing peers just above and below you) sustain effort"),
+        Bullet("Team leaderboards convert zero-sum competition into cooperation"),
+      ],
+    ),
+    Bullet(
+      "Progression structures — levels, ranks, and tiers",
+      [
+        Bullet("Levels chunk a long journey into reachable milestones"),
+        Bullet("Rank tiers (Bronze → Silver → Gold) make status legible"),
+        Bullet("Progress bars toward the next level are the most underestimated motivator"),
+      ],
+    ),
+    Bullet(
+      "Extended toolkit — streaks, quests, and beyond",
+      [
+        Bullet("Streaks: consecutive-day counters that weaponize loss aversion to build habits"),
+        Bullet("Quests & challenges: time-boxed goals with narrative framing"),
+        Bullet("Variable rewards: surprise bonuses and loot-style randomness for peak engagement"),
+        Bullet(
+          "Narrative & identity: avatars, titles, and story arcs that give the activity meaning",
+        ),
+        Bullet("Social layers: cooperation, recognition, and shared celebrations"),
+      ],
+    ),
+  ],
+  false,
+  "The building blocks — from PBL to the extended toolkit",
+)

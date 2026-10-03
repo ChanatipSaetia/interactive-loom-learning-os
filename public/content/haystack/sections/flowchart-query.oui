@@ -1,0 +1,203 @@
+root = Flowchart(
+  "Query Pipeline (RAG)",
+  [endUser],
+  [
+    textEmbedder,
+    queryEmbeddingModel,
+    retriever,
+    docStore,
+    ranker,
+    promptBuilder,
+    llmGenerator,
+    llmApi,
+  ],
+  [submitQuery, embedQuery, retrieve, rank, buildPrompt, generateAnswer],
+  [ragQuery, simpleRetrieval],
+)
+
+endUser = Actor("end_user", "End User", "Submits a natural-language query to the search system.")
+
+textEmbedder = System(
+  "text_embedder",
+  "Text Embedder",
+  "Converts the user query into a dense vector for semantic search.",
+  "aggregate",
+)
+
+queryEmbeddingModel = System(
+  "query_embedding_model",
+  "Embedding Model",
+  "External model that generates query embeddings.",
+  "external",
+)
+
+retriever = System(
+  "retriever",
+  "Retriever",
+  "Searches the Document Store for relevant documents.",
+  "aggregate",
+)
+
+docStore = System(
+  "doc_store",
+  "Document Store",
+  "Stores indexed documents for retrieval.",
+  "external",
+)
+
+ranker = System(
+  "ranker",
+  "Ranker",
+  "Re-ranks retrieved documents by relevance to the query.",
+  "aggregate",
+)
+
+promptBuilder = System(
+  "prompt_builder",
+  "Prompt Builder",
+  "Assembles retrieved documents into an LLM prompt template.",
+  "aggregate",
+)
+
+llmGenerator = System(
+  "llm_generator",
+  "LLM Generator",
+  "Generates the final answer from the prompt using an LLM.",
+  "aggregate",
+)
+
+llmApi = System("llm_api", "LLM API", "External LLM service (OpenAI, Anthropic, etc.).", "external")
+
+submitQuery = Step(
+  "submit_query",
+  "Embed Query",
+  "Submit Query",
+  textEmbedder,
+  [Event("query_received", "Query Received", "Natural-language question enters the system.")],
+  endUser,
+  null,
+  "embed_query",
+)
+
+embedQuery = Step(
+  "embed_query",
+  "Embed Query",
+  "Embed Query",
+  textEmbedder,
+  [Event("query_embedded", "Query Embedded", "Query converted to dense vector representation.")],
+  null,
+  queryEmbeddingModel,
+  "retrieve",
+)
+
+retrieve = Step(
+  "retrieve",
+  "Retrieve",
+  "Retrieve Documents",
+  retriever,
+  [
+    Event(
+      "docs_retrieved",
+      "Documents Retrieved",
+      "Candidate documents fetched from Document Store.",
+    ),
+  ],
+  null,
+  docStore,
+  "rank",
+)
+
+rank = Step(
+  "rank",
+  "Rank",
+  "Rank Documents",
+  ranker,
+  [Event("docs_ranked", "Documents Ranked", "Documents sorted by relevance score.")],
+  null,
+  null,
+  "build_prompt",
+)
+
+buildPrompt = Step(
+  "build_prompt",
+  "RAG Assembly",
+  "Build Prompt",
+  promptBuilder,
+  [Event("prompt_ready", "Prompt Assembled", "Context and query combined into LLM prompt.")],
+  null,
+  null,
+  "generate_answer",
+)
+
+generateAnswer = Step(
+  "generate_answer",
+  "Generate",
+  "Generate Answer",
+  llmGenerator,
+  [Event("answer_generated", "Answer Generated", "LLM produces final response.")],
+  null,
+  llmApi,
+)
+
+ragQuery = Journey(
+  "rag-query",
+  "RAG Query Pipeline",
+  "Query is embedded, documents retrieved, ranked, and LLM generates answer.",
+  [
+    JourneyStep(
+      submitQuery,
+      "Submit Query",
+      "User types a question into the chat interface. The query enters the RAG pipeline.",
+    ),
+    JourneyStep(
+      embedQuery,
+      "Embed Query",
+      "The query text is passed through the same embedding model used during indexing, producing a vector for comparison.",
+      "planning",
+    ),
+    JourneyStep(
+      retrieve,
+      "Retrieve Documents",
+      "The query vector is compared against stored document embeddings using similarity search. Top-k matching chunks are returned.",
+      "execution",
+    ),
+    JourneyStep(
+      rank,
+      "Rank Results",
+      "Retrieved chunks are re-scored and ranked by a cross-encoder model for higher precision.",
+      "evaluation",
+    ),
+    JourneyStep(
+      buildPrompt,
+      "Build Prompt",
+      "Ranked chunks are combined with the original query into a prompt template for the LLM.",
+      "planning",
+    ),
+    JourneyStep(
+      generateAnswer,
+      "Generate Answer",
+      "LLM reads the enriched prompt and generates a grounded answer based on the retrieved context.",
+      "execution",
+    ),
+  ],
+)
+
+simpleRetrieval = Journey(
+  "simple-retrieval",
+  "Simple Retrieval (No LLM)",
+  "Query is embedded and documents retrieved directly without RAG.",
+  [
+    JourneyStep(
+      embedQuery,
+      "Embed Query",
+      "The query is converted to a vector using the embedding model.",
+      "planning",
+    ),
+    JourneyStep(
+      retrieve,
+      "Retrieve Documents",
+      "Vector similarity search finds matching document chunks, which are returned directly without LLM generation.",
+      "execution",
+    ),
+  ],
+)
