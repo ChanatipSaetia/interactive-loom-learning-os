@@ -30,6 +30,8 @@ body {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
   transition: background 120ms, border-color 120ms;
 }
 .studio-button:hover:not(:disabled) { background: var(--ctp-surface1); }
@@ -71,6 +73,7 @@ body {
 }
 .studio-landing-card h1 { margin: 16px 0 8px; font-size: 26px; }
 .studio-landing-card p { color: var(--ctp-subtext0); line-height: 1.55; margin: 0 0 20px; }
+.studio-landing-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* --- Shell ------------------------------------------------------------------ */
 
@@ -87,7 +90,7 @@ body {
 .studio-header-topic { display: flex; align-items: baseline; gap: 10px; min-width: 0; flex: 1; }
 .studio-header-title { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .studio-header-folder { color: var(--ctp-overlay1); font-family: var(--font-mono, monospace); font-size: 12px; }
-.studio-header-actions { display: flex; align-items: center; gap: 8px; }
+.studio-header-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
 
 .studio-status { font-size: 12px; }
 .studio-status--ok { color: var(--ctp-green); }

@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeAll } from 'vitest'
+import { describe, it, expect, beforeAll, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { StudioWorkspace } from '../../../src/studio/components/StudioWorkspace'
 import { StudioApp } from '../../../src/studio/StudioApp'
-import { TopicWorkspace, memoryFolder } from '../../../src/core/supporting/authoring-editor/workspace'
+import { TopicWorkspace, createTopicBundle, memoryFolder, parseTopicBundle } from '../../../src/core/supporting/authoring-editor/workspace'
 import { registerCoreSections } from '../../../src/core/learning-engine/registry/register-core-sections'
 
 const files = () => ({
@@ -14,7 +14,7 @@ const files = () => ({
 async function renderWorkspace() {
   const folder = memoryFolder('demo', files())
   const workspace = await TopicWorkspace.open(folder)
-  const utils = render(<StudioWorkspace workspace={workspace} onOpenFolder={() => {}} />)
+  const utils = render(<StudioWorkspace workspace={workspace} onOpenFolder={() => {}} onReload={async () => {}} />)
   return { folder, workspace, ...utils }
 }
 
@@ -97,5 +97,50 @@ describe('Loom Studio', () => {
     fireEvent.change(screen.getByTestId('studio-topic-title'), { target: { value: 'Demo 2' } })
     fireEvent.click(screen.getByTestId('studio-save'))
     await waitFor(() => expect(folder.files.get('topic.oui')).toContain('"Demo 2"'))
+  })
+
+  it('exports all sections to a single file and as a zip', async () => {
+    const blobs: Blob[] = []
+    const createObjectURL = vi.fn((blob: Blob) => {
+      blobs.push(blob)
+      return 'blob:export'
+    })
+    Object.assign(URL, { createObjectURL, revokeObjectURL: vi.fn() })
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+    const { workspace } = await renderWorkspace()
+    act(() => workspace.setSource('intro', 'root = Text("Intro", ["Unsaved."])\n'))
+
+    fireEvent.click(screen.getByTestId('studio-export-bundle'))
+    expect(screen.getByTestId('studio-status').textContent).toContain('demo.loom.json')
+    const reader = new FileReader()
+    const text = await new Promise<string>((resolve) => {
+      reader.onload = () => resolve(reader.result as string)
+      reader.readAsText(blobs[0])
+    })
+    expect(parseTopicBundle(text)[0].files['sections/intro.oui']).toContain('Unsaved.')
+
+    fireEvent.click(screen.getByTestId('studio-export-zip'))
+    expect(screen.getByTestId('studio-status').textContent).toContain('demo.zip')
+    expect(blobs[1].type).toBe('application/zip')
+    expect(click).toHaveBeenCalledTimes(2)
+    click.mockRestore()
+  })
+
+  it('imports a single-file bundle into the folder after confirming', async () => {
+    const folder = memoryFolder('demo', files())
+    const workspace = await TopicWorkspace.open(folder)
+    const onReload = vi.fn(async () => {})
+    render(<StudioWorkspace workspace={workspace} onOpenFolder={() => {}} onReload={onReload} />)
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
+    const bundle = createTopicBundle([{
+      topicId: 'demo',
+      files: { 'topic.oui': 'root = Topic("Imported", "Cat", "", [SectionRef("only")])\n', 'sections/only.oui': 'root = Text("Only", ["Hi."])\n' },
+    }])
+    const file = { name: 'demo.loom.json', arrayBuffer: async () => new TextEncoder().encode(bundle).buffer }
+    fireEvent.change(screen.getByTestId('studio-import-input'), { target: { files: [file] } })
+    await waitFor(() => expect(onReload).toHaveBeenCalled())
+    expect(confirm.mock.calls[0][0]).toMatch(/Import "demo" \(1 section\)/)
+    expect([...folder.files.keys()].sort()).toEqual(['sections/only.oui', 'topic.oui'])
+    confirm.mockRestore()
   })
 })

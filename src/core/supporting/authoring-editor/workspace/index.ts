@@ -8,3 +8,15 @@ export { SECTION_TEMPLATES, getSectionTemplate, humanize, newTopicSource } from 
 export type { SectionTemplate } from './templates'
 export { TopicWorkspace, WorkspaceError, compileForForm } from './workspace'
 export type { SectionState, TopicMetadata, WorkspaceSnapshot } from './workspace'
+export {
+  BUNDLE_EXTENSION,
+  TopicArchiveError,
+  createTopicBundle,
+  createTopicZip,
+  groupTopicFiles,
+  parseTopicBundle,
+  readTopicArchive,
+  readTopicFolderFiles,
+  readZipEntries,
+} from './archive'
+export type { TopicFiles } from './archive'
