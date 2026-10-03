@@ -110,6 +110,11 @@ export default defineConfig(({ mode }) => {
       react(),
       contentCatalogPlugin(),
     ],
+    optimizeDeps: {
+      // Pre-bundle the lazily loaded OpenUI renderer at server start; otherwise the
+      // dev server discovers it on the first `openui` section and reloads the page.
+      include: ['@openuidev/react-ui/genui-lib'],
+    },
     server: {
       port: Number(env.VITE_PORT) || 5173,
       open: false

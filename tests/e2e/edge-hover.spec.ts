@@ -4,7 +4,8 @@ test.describe('Flowchart Edge Hover & Tap Interaction', () => {
   test('expands full edge label on hover and click', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
     const svg = page.getByTestId('flowchart-svg-EVENT_STORMING').first()
-    await expect(svg).toBeVisible()
+    // Generous: a cold dev server pre-bundles dependencies before serving the first page.
+    await expect(svg).toBeVisible({ timeout: 30000 })
 
     // Locate the first edge element in the flowchart
     const edge = page.locator('[data-testid^="flowchart-edge-EVENT_STORMING-"]').first()
