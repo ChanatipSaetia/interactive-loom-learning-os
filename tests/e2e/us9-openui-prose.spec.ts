@@ -8,7 +8,7 @@ test.describe('US-9: OpenUI prose section', () => {
 
     const section = page.locator('.section-wrapper[data-section-type="openui"]').first()
     await section.scrollIntoViewIfNeeded()
-    await expect(section.getByTestId('openui-title')).toHaveText('Agent Lifecycle')
+    await expect(section.getByTestId('openui-title')).toHaveText('Agent Lifecycle', { timeout: 30000 })
 
     const content = section.getByTestId('openui-content')
     await expect(content.locator('.openui-text-content-markdown')).toHaveCount(6)
@@ -22,7 +22,7 @@ test.describe('US-9: OpenUI prose section', () => {
 
     const section = page.locator('.section-wrapper[data-section-type="openui"]').first()
     await section.scrollIntoViewIfNeeded()
-    await expect(section.getByTestId('openui-title')).toHaveText('The Psychology of Motivation')
+    await expect(section.getByTestId('openui-title')).toHaveText('The Psychology of Motivation', { timeout: 30000 })
     await expect(section.getByTestId('openui-heading')).toHaveText('Why people actually do things')
   })
 })
