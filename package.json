@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "studio": "vite --open /studio.html",
     "build": "tsc -b && vite build",
     "build:lib": "BUILD_MODE=lib vite build",
     "build:all": "tsc -b && BUILD_MODE=lib vite build && vite build",

@@ -215,6 +215,11 @@ export default defineConfig(({ mode }) => {
     build: {
       chunkSizeWarningLimit: 1200,
       rollupOptions: {
+        // Two pages: the learning app and Loom Studio (authoring).
+        input: {
+          main: path.resolve(process.cwd(), 'index.html'),
+          studio: path.resolve(process.cwd(), 'studio.html'),
+        },
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
