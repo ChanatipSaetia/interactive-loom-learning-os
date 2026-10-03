@@ -1,12 +1,14 @@
 /**
  * OpenUI Lang language spec for editor tooling.
  *
- * Derived entirely from the Loom OpenUI library's JSON Schema, so
- * completions, signature help and hovers always match the components the
- * compiler accepts.
+ * Derived entirely from an OpenUI library's JSON Schema, so completions,
+ * signature help and hovers always match the components the compiler
+ * accepts: the Loom library for Loom files, the standard `@openuidev/react-ui`
+ * library for `// @openui` section files.
  */
-import { ACTION_NAMES, BUILTINS } from '@openuidev/lang-core'
+import { ACTION_NAMES, BUILTINS, type ComponentGroup } from '@openuidev/lang-core'
 import { getLoomOUIJSONSchema, loomOUILibrary, OUI_SECTION_TYPES } from '../../../learning-engine/composition/oui/library'
+import { isOpenUISource, standardOpenUISchema, standardOpenUISpec } from '../../../learning-engine/sub-contexts/progressive-content/openui-standard'
 
 type JSONSchema = {
   type?: string | string[]
@@ -127,16 +129,37 @@ function paramSpec(name: string, schema: JSONSchema, optional: boolean): OUIPara
 }
 
 let cached: OUILanguageSpec | null = null
+let cachedStandard: OUILanguageSpec | null = null
 
-/** Build (once) the language spec from the Loom OpenUI library. */
-export function getOUILanguageSpec(): OUILanguageSpec {
-  if (cached) return cached
-  const schema = getLoomOUIJSONSchema() as unknown as { $defs: Record<string, JSONSchema> }
-  const prompts = loomOUILibrary.toSpec().components as Record<string, { signature: string; description: string }>
+/** Suggested roots of a standard OpenUI section, in order. */
+const STANDARD_ROOTS = ['Card', 'Stack', 'Tabs', 'Accordion', 'Steps', 'Table', 'Carousel']
+
+/**
+ * Build (once) the language spec for a source: the standard OpenUI library
+ * when it starts with an `// @openui` directive, else the Loom library.
+ */
+export function getOUILanguageSpec(source?: string): OUILanguageSpec {
+  if (source !== undefined && isOpenUISource(source)) {
+    cachedStandard ??= buildSpec(standardOpenUISchema, standardOpenUISpec.components, standardOpenUISpec.componentGroups, STANDARD_ROOTS)
+    return cachedStandard
+  }
+  cached ??= buildSpec(
+    getLoomOUIJSONSchema(),
+    loomOUILibrary.toSpec().components as PromptSpecs,
+    loomOUILibrary.componentGroups ?? [],
+    [...OUI_SECTION_TYPES.keys()],
+  )
+  return cached
+}
+
+type PromptSpecs = Record<string, { signature: string; description: string }>
+
+function buildSpec(jsonSchema: unknown, prompts: PromptSpecs, componentGroups: ComponentGroup[], roots: string[]): OUILanguageSpec {
+  const schema = jsonSchema as { $defs: Record<string, JSONSchema> }
   const groups = new Map<string, string>()
-  for (const g of loomOUILibrary.componentGroups ?? []) g.components.forEach((c) => groups.set(c, g.name))
+  for (const g of componentGroups) g.components.forEach((c) => groups.set(c, g.name))
 
-  const sectionComponents = [...OUI_SECTION_TYPES.keys()]
+  const sectionComponents = roots.filter((name) => prompts[name])
 
   const components = new Map<string, OUIComponentSpec>()
   for (const [name, def] of Object.entries(schema.$defs)) {
@@ -163,6 +186,5 @@ export function getOUILanguageSpec(): OUILanguageSpec {
     description: 'Render template once per element; the loop variable is only available inside the template.',
   })
 
-  cached = { components, builtins, sectionComponents }
-  return cached
+  return { components, builtins, sectionComponents }
 }

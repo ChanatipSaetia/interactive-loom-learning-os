@@ -16,6 +16,7 @@ Each section type has its own dedicated reference document. Each doc covers:
 |---|---|---|---|
 | `intro` | [intro.md](intro.md) | Topic hero overview, rationale & learning roadmap | `progressive-content` |
 | `text` | [text.md](text.md) | Anchored conceptual narrative | `progressive-content` |
+| `openui` | [openui.md](openui.md) | Free-form layout from standard OpenUI components | `progressive-content` |
 | `bullets` | [bullets.md](bullets.md) | Hierarchical taxonomy / breakdown | `progressive-content` |
 | `concept-map` | [concept-map.md](concept-map.md) | Semantic relationships & groupings | `practice-assessment` |
 | `flashcards` | [flashcards.md](flashcards.md) | Vocabulary recall & dialogue | `practice-assessment` |

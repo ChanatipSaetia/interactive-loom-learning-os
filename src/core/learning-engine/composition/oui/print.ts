@@ -16,6 +16,7 @@ import type { OUICall, OUIRef, OUIValue } from '../../sub-contexts/openui-kernel
 import type { OKFSectionData, OKFSectionMeta } from '../okf/types'
 import { Catalog, getLoomOUIComponent, LOOM_OUI_COMPONENTS, SectionRef, Topic, TopicRef } from './library'
 import type { OUITopicManifest } from './compile'
+import { OPENUI_SECTION_TYPE, printOpenUISection } from '../../sub-contexts/progressive-content/openui-standard'
 
 export interface OUIPrintOptions {
   /** Preferred maximum line width. Default 100. */
@@ -181,6 +182,7 @@ const SECTION_BY_TYPE = new Map(LOOM_OUI_COMPONENTS.filter((c) => c.sectionType)
 /** Print a section (OKF-compatible meta + data) as a `.oui` file. */
 export function printOUISection(meta: OKFSectionMeta, data: OKFSectionData, options?: OUIPrintOptions): string {
   const type = data.type ?? meta.type
+  if (data.type === OPENUI_SECTION_TYPE) return printOpenUISection(data.source, meta.title ?? '', meta.heading)
   const component = SECTION_BY_TYPE.get(type)
   if (!component?.fromData) throw new Error(`No OpenUI section component for type "${type}"`)
   return printOUIProgram(component.fromData(data as unknown as Record<string, unknown>, meta), options)

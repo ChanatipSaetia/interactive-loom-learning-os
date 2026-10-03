@@ -124,6 +124,7 @@ export { validateReflectionSynthesisTier3 } from './reflection-synthesis'
 // ─── Progressive Loom Content Presentation ─────────────────────────────
 export {
   TextSectionSchema,
+  OpenUISectionSchema,
   IntroSectionSchema,
   BulletsSectionSchema,
   TaxonomyBrowserSectionSchema,
@@ -133,6 +134,7 @@ export {
 
 export type {
   TextSectionData,
+  OpenUISectionData,
   IntroSectionData,
   IntroRoadmapStep,
   BulletsSectionData,
@@ -148,6 +150,18 @@ export type {
 
 export { TextSection, TextHelpModal } from './progressive-content'
 export type { TextSectionProps } from './progressive-content'
+
+export { OpenUISection, OpenUIHelpModal } from './progressive-content'
+export type { OpenUISectionProps, OpenUIDirective, StandardOpenUISpec } from './progressive-content'
+export {
+  OPENUI_SECTION_TYPE,
+  standardOpenUISchema,
+  standardOpenUISpec,
+  readOpenUIDirective,
+  isOpenUISource,
+  openUIProgramOf,
+  printOpenUISection,
+} from './progressive-content'
 
 export { IntroSection, IntroHelpModal } from './progressive-content'
 export type { IntroSectionProps } from './progressive-content'
@@ -169,6 +183,7 @@ export type { PillarLayerSectionProps } from './progressive-content'
 
 export {
   TextFormEditor,
+  OpenUIFormEditor,
   IntroFormEditor,
   BulletsFormEditor,
   TaxonomyBrowserFormEditor,

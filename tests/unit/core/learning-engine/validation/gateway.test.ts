@@ -868,8 +868,8 @@ describe('KNOWN_SECTION_TYPES', () => {
     expect(KNOWN_SECTION_TYPES.has('bullets')).toBe(true)
   })
 
-  it('has 16 section types', () => {
-    expect(KNOWN_SECTION_TYPES.size).toBe(16)
+  it('has 17 section types', () => {
+    expect(KNOWN_SECTION_TYPES.size).toBe(17)
   })
 })
 

@@ -11,6 +11,12 @@ root = Text("Overview", [
   "Second paragraph.",
 ])
 `,
+  openui: `
+// @openui "Plans" "Pick one"
+root = Card([header, tabs])
+header = CardHeader("Plans", "Compare what you get")
+tabs = Tabs([TabItem("free", "Free", [TextContent("Up to **3** projects.")]), TabItem("pro", "Pro", [Callout("info", "Pro", "Unlimited projects.")])])
+`,
   bullets: `
 root = Bullets("Capabilities", [Bullet("Tool use", [Bullet("Search"), Bullet("Code")]), Bullet("Memory")], true)
 `,

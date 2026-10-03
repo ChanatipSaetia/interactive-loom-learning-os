@@ -1,5 +1,6 @@
 export {
   TextSectionSchema,
+  OpenUISectionSchema,
   IntroSectionSchema,
   BulletsSectionSchema,
   TaxonomyBrowserSectionSchema,
@@ -8,6 +9,7 @@ export {
 } from './schema'
 export type {
   TextSectionData,
+  OpenUISectionData,
   IntroSectionData,
   IntroRoadmapStep,
   BulletsSectionData,
@@ -23,6 +25,19 @@ export type {
 
 export { TextSection, TextHelpModal } from './components/TextSection'
 export type { TextSectionProps } from './components/TextSection'
+
+export { OpenUISection, OpenUIHelpModal } from './components/OpenUISection'
+export type { OpenUISectionProps } from './components/OpenUISection'
+export {
+  OPENUI_SECTION_TYPE,
+  standardOpenUISchema,
+  standardOpenUISpec,
+  readOpenUIDirective,
+  isOpenUISource,
+  openUIProgramOf,
+  printOpenUISection,
+} from './openui-standard'
+export type { OpenUIDirective, StandardOpenUISpec } from './openui-standard'
 
 export { IntroSection, IntroHelpModal } from './components/IntroSection'
 export type { IntroSectionProps } from './components/IntroSection'
@@ -41,6 +56,7 @@ export type { PillarLayerSectionProps } from './components/PillarLayerSection'
 export { PillarLayerHelpModal } from './components/pillar-layer/PillarLayerHelpModal'
 
 export { TextFormEditor } from './components/text/TextFormEditor'
+export { OpenUIFormEditor } from './components/openui/OpenUIFormEditor'
 export { IntroFormEditor } from './components/intro/IntroFormEditor'
 export { BulletsFormEditor } from './components/bullets/BulletsFormEditor'
 export { TaxonomyBrowserFormEditor } from './components/taxonomy-browser/TaxonomyBrowserFormEditor'

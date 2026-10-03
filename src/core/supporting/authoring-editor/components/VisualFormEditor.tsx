@@ -10,6 +10,7 @@ import {
   FlowchartFormEditor,
   IntroFormEditor,
   TextFormEditor,
+  OpenUIFormEditor,
   BulletsFormEditor,
   TaxonomyBrowserFormEditor,
   PillarLayerFormEditor,
@@ -71,6 +72,10 @@ export function VisualFormEditor({ data, meta, onChange, onMetaChange }: VisualF
 
     if (isType(data, 'text')) {
       return <TextFormEditor data={data} onChange={onChange} />
+    }
+
+    if (isType(data, 'openui')) {
+      return <OpenUIFormEditor data={data} onChange={onChange} />
     }
 
     if (isType(data, 'bullets')) {

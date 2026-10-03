@@ -15,7 +15,8 @@
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "okf:validate": "npx -y tsx scripts/validate-okf.ts",
-    "oui:convert": "npx -y tsx scripts/okf-to-oui.ts"
+    "oui:convert": "npx -y tsx scripts/okf-to-oui.ts",
+    "openui:gen": "npx -y tsx scripts/gen-openui-standard.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",
@@ -26,7 +27,9 @@
     "@codemirror/view": "^6.43.13",
     "@lezer/highlight": "^1.2.5",
     "@openuidev/lang-core": "^0.3.0",
+    "@openuidev/react-headless": "^0.16.3",
     "@openuidev/react-lang": "^0.3.0",
+    "@openuidev/react-ui": "^0.16.3",
     "@radix-ui/react-dialog": "^1.1.15",
     "animejs": "^4.2.1",
     "clsx": "^2.1.1",
@@ -41,7 +44,8 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
     "tailwind-merge": "^3.6.0",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "zustand": "^4.5.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

@@ -23,6 +23,7 @@ import type {
 } from '../../sub-contexts/reflection-synthesis'
 import type {
   TextSectionData,
+  OpenUISectionData,
   IntroSectionData,
   BulletsSectionData,
   TaxonomyBrowserSectionData,
@@ -73,6 +74,7 @@ export interface OKFSectionMeta {
 export type OKFSectionData =
   | IntroSectionData
   | TextSectionData
+  | OpenUISectionData
   | BulletsSectionData
   | FlowchartSectionData
   | TradeoffSandboxSectionData
@@ -90,6 +92,7 @@ export type OKFSectionData =
 
 export type OKFIntroSectionData = IntroSectionData
 export type OKFTextSectionData = TextSectionData
+export type OKFOpenUISectionData = OpenUISectionData
 export type OKFBulletSectionData = BulletsSectionData
 export type OKFFlowSectionData = FlowchartSectionData
 export type OKFTradeoffSectionData = TradeoffSandboxSectionData

@@ -161,7 +161,7 @@ Each section is a folder with a `section.md` manifest (YAML frontmatter) and dat
 
 | Field | Required | Description |
 |---|---|---|
-| `type` | yes | Section renderer: `text`, `bullets`, `flowchart`, `tradeoff-sandbox`, `taxonomy-browser`, `flashcards`, `quiz`, `concept-map`, `scenario`, `decision-tree` |
+| `type` | yes | Section renderer: `text`, `openui`, `bullets`, `flowchart`, `tradeoff-sandbox`, `taxonomy-browser`, `flashcards`, `quiz`, `concept-map`, `scenario`, `decision-tree` |
 | `title` | yes | Display title shown above the section content |
 | `resource` | yes | `"."` for directory (multiple data files), or `"filename.yaml"` for a single file |
 | `heading` | no | Sub-heading displayed below the title |

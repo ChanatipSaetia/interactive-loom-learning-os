@@ -20,6 +20,7 @@ import type {
 } from '../../sub-contexts/reflection-synthesis'
 import type {
   TextSectionData,
+  OpenUISectionData,
   IntroSectionData,
   BulletsSectionData,
   TaxonomyBrowserSectionData,
@@ -190,6 +191,8 @@ async function loadSectionResource(
       return loadIntroSection(basePath, resource)
     case 'text':
       return loadTextSection(basePath, resource, sectionBody)
+    case 'openui':
+      return loadOpenUISection(basePath, resource)
     case 'bullets':
       return loadBulletsSection(basePath, resource, resourceFiles)
     case 'flowchart':
@@ -233,6 +236,11 @@ async function loadTextSection(basePath: string, resource: string, sectionBody: 
     const paragraphs = parseParagraphs(sectionBody)
     return { type: 'text', paragraphs }
   }
+}
+
+async function loadOpenUISection(basePath: string, resource: string): Promise<OpenUISectionData> {
+  const programFile = resource !== '.' ? resource : 'view.oui'
+  return { type: 'openui', source: await fetchText(`${basePath}/${programFile}`) }
 }
 
 async function loadBulletsSection(basePath: string, resource: string, resourceFiles: string[]): Promise<BulletsSectionData> {
