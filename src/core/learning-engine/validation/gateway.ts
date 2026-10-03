@@ -257,7 +257,7 @@ export function tier2Validate(
 
 // --- Tier 3: Semantic Reference Integrity ---
 
-function tier3Validate(
+export function tier3Validate(
   data: Record<string, unknown>,
   sectionType: string,
   context?: ValidationContext

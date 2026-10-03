@@ -1,6 +1,6 @@
 # Grill Log — OpenUI Lang Replaces OKF
 
-Status: **Decisions recorded — Phase 1 not started**
+Status: **Phase 1 complete — Phase 2 (author tooling) next**
 
 ## Goal
 
@@ -43,6 +43,53 @@ Zod schemas (`defineComponent` / `createLibrary`).
 4. Migrate remaining 11 topics.
 5. Section Editor: raw OpenUI tab, Visual Form ↔ OpenUI printer, save middleware for `.oui`.
 6. Delete OKF code, `public/okf/`, and update docs (`AGENTS.md`, `docs/creating-topics.md`, `docs/agents/domain.md`).
+
+## Phase 1 — Implementation Notes
+
+What landed (additive; the app still renders OKF until Phase 3 switches it over):
+
+| Piece | Location |
+|---|---|
+| Shared kernel (`defineOUIComponent`, `defineOUISection`, `Lead`, `refOrId`, `idOf`) | `src/core/learning-engine/sub-contexts/openui-kernel.ts` |
+| Per-subdomain vocabularies (co-located, own `toData` mappers) | `src/core/learning-engine/sub-contexts/<subdomain>/openui.ts` |
+| Library assembly + `Topic` / `SectionRef` / `Catalog` / `TopicRef` | `src/core/learning-engine/composition/oui/library.ts` |
+| Compiler (parse → evaluate `$state` → `toData`, statement→line source map) | `src/core/learning-engine/composition/oui/compile.ts` |
+| Content reader (`public/content/…`) | `src/core/learning-engine/composition/oui/reader.ts` |
+| `@openuidev/react-lang` `<Renderer>` bridge | `src/core/learning-engine/composition/oui/react.tsx` |
+| Validation Gateway for `.oui` | `src/core/learning-engine/validation/oui-gateway.ts` |
+| Storage adapter (`OKFStoragePort`) | `src/core/delivery/adapters/oui-storage.ts` |
+| Dev-server save endpoint `POST /api/content/save-section` | `vite.config.ts` (`ouiSavePlugin`) |
+
+Content layout:
+
+```
+public/content/index.oui                    root = Catalog([TopicRef("demo"), …])
+public/content/<topic>/topic.oui            root = Topic("Title", "Category", "Description", [SectionRef("intro"), …])
+public/content/<topic>/sections/<name>.oui  root = Quiz(…) | Flowchart(…) | …
+```
+
+`public/content/` rather than `public/topics/`, so static files never shadow the SPA route `/topics/:id`.
+
+Conventions settled while implementing:
+
+- **Signatures:** every section component takes `title` first and ends with the shared optional `heading` and `lead` (`Lead(what?, why?, next?)`, which replaces the frontmatter `intro`). Component names are unique and prefixed where they would clash (`QuizChoice`, `ScenarioChoice`, `DecisionChoice`, `TradeoffChoice`).
+- **References:** where the graph cannot loop, props take a reference *or* an ID (`string | Actor`), e.g. `handledBy`, `initiatedBy`, `JourneyStep.step`, `ConceptLink.from`, `MatrixBlock.layer`. Where it can loop (scenario and decision-tree `next`), only string IDs are accepted.
+- **`null`** in an optional position means "omitted", so later optional arguments can be given.
+- **Records:** keyed collections (scenario/decision nodes, concepts) are written as arrays of components with `id` and compiled to records.
+- **`$state` / `@builtins`:** evaluated with the declared `$state` defaults when a file is loaded, so the compiled section data is static. `<Renderer>` (react bridge) keeps live reactivity for future streaming/LLM use.
+- **Tier mapping:** T1 = `parse-failed`, `parse-exception`, `incomplete`, `unknown-component`, `unresolved-reference`, `inline-reserved`, `wrong-root`, unsupported `Query`/`Mutation`. T2 = `missing-required`, `null-required`, `excess-args`, `type-mismatch`, `runtime-error`, plus the subdomain Zod schema. T3 = subdomain semantic checks plus `unused-statement` (defined but never referenced). Every diagnostic carries the source line of its statement; Zod and T3 paths are mapped back to lines through the compiled-object source map.
+- **Load policy:** a section that compiles loads even with T2/T3 diagnostics, which travel with the bundle. A file that hits T1 rejects with `OUILoadError`.
+- **Telemetry:** `@openuidev/lang-core` sends anonymous install telemetry from `postinstall`; set `OPENUI_TELEMETRY_DISABLED=1` (or `DO_NOT_TRACK=1`) to opt out. Runtime telemetry is opt-in and server-side only. `<Renderer>` is called with `publishObservability={false}`.
+
+Example section:
+
+```
+root = Flowchart("Checkout", [buyer], [orders], [place], [happy])
+buyer = Actor("buyer", "Buyer", "Person placing the order")
+orders = System("orders", "Order Service", "Owns orders", "aggregate")
+place = Step("place-order", "When cart is submitted", "PlaceOrder", orders, [Event("order-placed", "Order Placed")], buyer)
+happy = Journey("happy", "Happy path", "Order goes through", [JourneyStep(place, "Place order", "Buyer submits the cart")])
+```
 
 ## Open Questions
 

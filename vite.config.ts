@@ -69,6 +69,63 @@ function okfSavePlugin(): Plugin {
   }
 }
 
+const CONTENT_ID = /^[a-z0-9][a-z0-9_-]*$/
+
+/**
+ * Dev-server endpoint for saving OpenUI Lang section sources:
+ * POST /api/content/save-section { topicId, sectionName, source }
+ * → validates via the OpenUI Validation Gateway, then writes
+ *   public/content/<topicId>/sections/<sectionName>.oui
+ */
+function ouiSavePlugin(): Plugin {
+  return {
+    name: 'oui-save-plugin',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.method !== 'POST' || req.url !== '/api/content/save-section') {
+          next()
+          return
+        }
+        let body = ''
+        req.on('data', (chunk) => { body += chunk })
+        req.on('end', async () => {
+          const send = (status: number, payload: unknown) => {
+            res.writeHead(status, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify(payload))
+          }
+          try {
+            const { topicId, sectionName, source } = JSON.parse(body)
+            if (typeof source !== 'string' || !CONTENT_ID.test(topicId ?? '') || !CONTENT_ID.test(sectionName ?? '')) {
+              send(400, { error: 'Expected { topicId, sectionName, source } with lowercase IDs ([a-z0-9_-]).' })
+              return
+            }
+
+            const { validateOUISection } = await server.ssrLoadModule('/src/core/learning-engine/validation/oui-gateway.ts')
+            const file = `${topicId}/sections/${sectionName}.oui`
+            const result = validateOUISection(source, { topicId, sectionName, file })
+            if (result.status === 'error') {
+              send(422, {
+                ok: false,
+                validationStatus: result.status,
+                diagnostics: result.diagnostics,
+                error: `Validation failed with ${result.diagnostics.length} diagnostic(s). Fix issues before saving.`,
+              })
+              return
+            }
+
+            const target = path.resolve(process.cwd(), 'public', 'content', file)
+            fs.mkdirSync(path.dirname(target), { recursive: true })
+            fs.writeFileSync(target, source, 'utf-8')
+            send(200, result.status === 'warning' ? { ok: true, warnings: result.diagnostics } : { ok: true })
+          } catch (e: unknown) {
+            send(500, { error: e instanceof Error ? e.message : String(e) })
+          }
+        })
+      })
+    },
+  }
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const isLib = env.BUILD_MODE === 'lib'
@@ -114,6 +171,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       okfSavePlugin(),
+      ouiSavePlugin(),
     ],
     server: {
       port: Number(env.VITE_PORT) || 5173,

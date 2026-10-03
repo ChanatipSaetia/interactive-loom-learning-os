@@ -6,6 +6,7 @@ export type {
 } from './ports'
 
 export { InRepoStorageAdapter } from './adapters/in-repo-storage'
+export { OUIStorageAdapter, ouiStorage, OUI_SAVE_ENDPOINT } from './adapters/oui-storage'
 export { WebAppRuntimeAdapter } from './adapters/web-app-runtime'
 export {
   SingleHTMLEmbedAdapter,

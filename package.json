@@ -16,6 +16,8 @@
     "okf:validate": "npx -y tsx scripts/validate-okf.ts"
   },
   "dependencies": {
+    "@openuidev/lang-core": "^0.3.0",
+    "@openuidev/react-lang": "^0.3.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "animejs": "^4.2.1",
     "clsx": "^2.1.1",
