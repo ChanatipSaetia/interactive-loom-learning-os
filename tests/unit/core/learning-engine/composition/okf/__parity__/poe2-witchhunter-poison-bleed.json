@@ -609,6 +609,32 @@
                 "title": "DoTs Melt Pack"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_boss_fight",
+                      "label": "Boss Fight",
+                      "nodeIds": [
+                        "pol_branch_boss",
+                        "cmd_branch_boss",
+                        "gas_grenade3",
+                        "boss",
+                        "evt_evt_boss_poisoned"
+                      ],
+                      "optionId": "branch_boss",
+                      "stepIndex": 0
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_pack_melted",
+                    "pol_step_dots_pack",
+                    "cmd_step_dots_pack",
+                    "dot_system",
+                    "evt_evt_pack_melted"
+                  ],
+                  "label": "Move to Next Pack",
+                  "optionId": "branch_next_pack"
+                },
                 "nodeIds": [
                   "pol_branch_next_pack",
                   "cmd_branch_next_pack",
@@ -627,6 +653,31 @@
             "label": "Boss Fight Flow",
             "steps": [
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_pack_clear",
+                      "label": "Move to Next Pack",
+                      "nodeIds": [
+                        "pol_branch_next_pack",
+                        "cmd_branch_next_pack",
+                        "gas_grenade2",
+                        "evt_evt_loop_pack"
+                      ],
+                      "optionId": "branch_next_pack",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_pack_melted",
+                    "pol_step_dots_pack",
+                    "cmd_step_dots_pack",
+                    "dot_system",
+                    "evt_evt_pack_melted"
+                  ],
+                  "label": "Boss Fight",
+                  "optionId": "branch_boss"
+                },
                 "nodeIds": [
                   "pol_branch_boss",
                   "cmd_branch_boss",

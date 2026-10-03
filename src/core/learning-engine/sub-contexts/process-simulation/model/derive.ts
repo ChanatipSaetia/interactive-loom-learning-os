@@ -2,7 +2,7 @@
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
 import { isLinearStep, isBranchStep } from './types';
 import { TYPES } from '../components/flowchart/types';
-import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, ProcessGroup } from '../components/flowchart/types';
+import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, ProcessGroup, FlowchartStepBranchInfo } from '../components/flowchart/types';
 
 /**
  * Maps entity IDs to their canonical representative based on (title, type) grouping.
@@ -116,21 +116,62 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   }
 
   // --- Phase 4: Build journeys ---
+  const nodeIdsForStep = (stepId: string): string[] => {
+    const stepData = findStepById(stepId, steps);
+    return stepData
+      ? collectNodeIds(stepId, stepData, entities, idMap, stepHandlerMap.get(stepId))
+      : [resolveNodeId(stepId, idMap)];
+  };
+
+  // Where each branch option is taken across journeys, for "other path" links
+  const optionTakenAt = new Map<string, { journeyId: string; stepIndex: number }[]>();
+  journeysList.forEach(j => (j.steps || []).forEach((s, idx) => {
+    optionTakenAt.set(s.stepId, [...(optionTakenAt.get(s.stepId) ?? []), { journeyId: j.id, stepIndex: idx }]);
+  }));
+
+  // Only real forks (2+ options) get branch info; a single labeled option is just a continuation
+  const branchInfoFor = (stepId: string, journeyId: string, stepIndex: number): FlowchartStepBranchInfo | undefined => {
+    const fork = steps.find((st): st is BranchStep => isBranchStep(st) && st.branches.some(b => b.id === stepId));
+    if (!fork || fork.branches.length < 2) return undefined;
+    const taken = fork.branches.find(b => b.id === stepId)!;
+    // The step (or option) whose result event is the fork's branching event
+    const producer = steps
+      .flatMap((st): Array<LinearStep | BranchOption> => (isBranchStep(st) ? st.branches : [st]))
+      .find(st => st.resultEvents.some(evt => evt.id === fork.event));
+    return {
+      optionId: taken.id,
+      label: taken.label,
+      forkNodeIds: [resolveNodeId(fork.event, idMap), ...(producer ? nodeIdsForStep(producer.id) : [])],
+      alternatives: fork.branches
+        .filter(b => b.id !== stepId)
+        .map(b => {
+          // Prefer another journey; fall back to another point of this one
+          const places = optionTakenAt.get(b.id) ?? [];
+          const takenBy = places.find(t => t.journeyId !== journeyId)
+            ?? places.find(t => t.stepIndex !== stepIndex);
+          return {
+            optionId: b.id,
+            label: b.label,
+            nodeIds: nodeIdsForStep(b.id),
+            ...(takenBy ? { journeyId: takenBy.journeyId, stepIndex: takenBy.stepIndex } : {}),
+          };
+        }),
+    };
+  };
+
   const journeys = journeysList.map(j => ({
     id: j.id,
     label: j.label,
     description: j.description,
-    steps: (j.steps || []).map(s => {
-      const stepData = findStepById(s.stepId, steps);
-      const nodeIds = stepData
-        ? collectNodeIds(s.stepId, stepData, entities, idMap, stepHandlerMap.get(s.stepId))
-        : [resolveNodeId(s.stepId, idMap)];
+    steps: (j.steps || []).map((s, idx) => {
+      const branch = branchInfoFor(s.stepId, j.id, idx);
       return {
-        nodeIds,
+        nodeIds: nodeIdsForStep(s.stepId),
         title: s.name,
         reason: s.description,
         // Topic-specific phase labels have no state mapping; PROCESS_GROUP_STATE_MAP lookups fall back to null.
         processGroup: s.processGroup as ProcessGroup | undefined,
+        ...(branch ? { branch } : {}),
       };
     }),
   }));

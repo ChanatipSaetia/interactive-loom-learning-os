@@ -910,6 +910,42 @@
                 "title": "Combat Start"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "label": "Spell Opening",
+                      "nodeIds": [
+                        "pol_branch_spell",
+                        "cmd_branch_spell",
+                        "elemental_engine",
+                        "evt_evt_spell_cast"
+                      ],
+                      "optionId": "branch_spell"
+                    },
+                    {
+                      "journeyId": "journey_defensive",
+                      "label": "Defensive Opening",
+                      "nodeIds": [
+                        "pol_branch_defense",
+                        "cmd_branch_defense",
+                        "ki_pool2",
+                        "evt_evt_barrier_up"
+                      ],
+                      "optionId": "branch_defense",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_combat_start",
+                    "player",
+                    "pol_step_1",
+                    "cmd_step_1",
+                    "ki_pool",
+                    "evt_evt_combat_start"
+                  ],
+                  "label": "Offensive Opening",
+                  "optionId": "branch_offense"
+                },
                 "nodeIds": [
                   "pol_branch_offense",
                   "cmd_branch_offense",
@@ -934,6 +970,54 @@
                 "title": "Elemental Damage"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_boss",
+                      "label": "Boss Fight — Full Nuke",
+                      "nodeIds": [
+                        "pol_branch_four_point",
+                        "cmd_branch_four_point",
+                        "four_point_handler",
+                        "evt_evt_four_point"
+                      ],
+                      "optionId": "branch_four_point",
+                      "stepIndex": 3
+                    },
+                    {
+                      "journeyId": "journey_defensive",
+                      "label": "Defensive Pivot",
+                      "nodeIds": [
+                        "pol_branch_defensive",
+                        "cmd_branch_defensive",
+                        "defense_system",
+                        "evt_evt_defensive"
+                      ],
+                      "optionId": "branch_defensive",
+                      "stepIndex": 2
+                    },
+                    {
+                      "label": "End Combat — Short Rest",
+                      "nodeIds": [
+                        "pol_branch_short_rest",
+                        "cmd_branch_short_rest",
+                        "ki_pool3",
+                        "evt_evt_ki_restored"
+                      ],
+                      "optionId": "branch_short_rest"
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_damage_dealt",
+                    "evt_evt_wrath_active",
+                    "pol_step_attack_loop",
+                    "cmd_step_attack_loop",
+                    "unarmed_combat",
+                    "evt_evt_damage_dealt"
+                  ],
+                  "label": "Sustain Combat",
+                  "optionId": "branch_sustain"
+                },
                 "nodeIds": [
                   "pol_branch_sustain",
                   "cmd_branch_sustain",
@@ -964,6 +1048,42 @@
                 "title": "Combat Start"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "label": "Spell Opening",
+                      "nodeIds": [
+                        "pol_branch_spell",
+                        "cmd_branch_spell",
+                        "elemental_engine",
+                        "evt_evt_spell_cast"
+                      ],
+                      "optionId": "branch_spell"
+                    },
+                    {
+                      "journeyId": "journey_defensive",
+                      "label": "Defensive Opening",
+                      "nodeIds": [
+                        "pol_branch_defense",
+                        "cmd_branch_defense",
+                        "ki_pool2",
+                        "evt_evt_barrier_up"
+                      ],
+                      "optionId": "branch_defense",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_combat_start",
+                    "player",
+                    "pol_step_1",
+                    "cmd_step_1",
+                    "ki_pool",
+                    "evt_evt_combat_start"
+                  ],
+                  "label": "Offensive Opening",
+                  "optionId": "branch_offense"
+                },
                 "nodeIds": [
                   "pol_branch_offense",
                   "cmd_branch_offense",
@@ -988,6 +1108,54 @@
                 "title": "Initial Damage"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_offense",
+                      "label": "Sustain Combat",
+                      "nodeIds": [
+                        "pol_branch_sustain",
+                        "cmd_branch_sustain",
+                        "twisted_wrath_handler2",
+                        "evt_evt_loop"
+                      ],
+                      "optionId": "branch_sustain",
+                      "stepIndex": 3
+                    },
+                    {
+                      "journeyId": "journey_defensive",
+                      "label": "Defensive Pivot",
+                      "nodeIds": [
+                        "pol_branch_defensive",
+                        "cmd_branch_defensive",
+                        "defense_system",
+                        "evt_evt_defensive"
+                      ],
+                      "optionId": "branch_defensive",
+                      "stepIndex": 2
+                    },
+                    {
+                      "label": "End Combat — Short Rest",
+                      "nodeIds": [
+                        "pol_branch_short_rest",
+                        "cmd_branch_short_rest",
+                        "ki_pool3",
+                        "evt_evt_ki_restored"
+                      ],
+                      "optionId": "branch_short_rest"
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_damage_dealt",
+                    "evt_evt_wrath_active",
+                    "pol_step_attack_loop",
+                    "cmd_step_attack_loop",
+                    "unarmed_combat",
+                    "evt_evt_damage_dealt"
+                  ],
+                  "label": "Boss Fight — Full Nuke",
+                  "optionId": "branch_four_point"
+                },
                 "nodeIds": [
                   "pol_branch_four_point",
                   "cmd_branch_four_point",
@@ -1018,6 +1186,43 @@
                 "title": "Combat Start"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_offense",
+                      "label": "Offensive Opening",
+                      "nodeIds": [
+                        "pol_branch_offense",
+                        "cmd_branch_offense",
+                        "twisted_wrath_handler",
+                        "enemy",
+                        "evt_evt_wrath_active"
+                      ],
+                      "optionId": "branch_offense",
+                      "stepIndex": 1
+                    },
+                    {
+                      "label": "Spell Opening",
+                      "nodeIds": [
+                        "pol_branch_spell",
+                        "cmd_branch_spell",
+                        "elemental_engine",
+                        "evt_evt_spell_cast"
+                      ],
+                      "optionId": "branch_spell"
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_combat_start",
+                    "player",
+                    "pol_step_1",
+                    "cmd_step_1",
+                    "ki_pool",
+                    "evt_evt_combat_start"
+                  ],
+                  "label": "Defensive Opening",
+                  "optionId": "branch_defense"
+                },
                 "nodeIds": [
                   "pol_branch_defense",
                   "cmd_branch_defense",
@@ -1029,6 +1234,54 @@
                 "title": "Flowing Barrier"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_boss",
+                      "label": "Boss Fight — Full Nuke",
+                      "nodeIds": [
+                        "pol_branch_four_point",
+                        "cmd_branch_four_point",
+                        "four_point_handler",
+                        "evt_evt_four_point"
+                      ],
+                      "optionId": "branch_four_point",
+                      "stepIndex": 3
+                    },
+                    {
+                      "journeyId": "journey_offense",
+                      "label": "Sustain Combat",
+                      "nodeIds": [
+                        "pol_branch_sustain",
+                        "cmd_branch_sustain",
+                        "twisted_wrath_handler2",
+                        "evt_evt_loop"
+                      ],
+                      "optionId": "branch_sustain",
+                      "stepIndex": 3
+                    },
+                    {
+                      "label": "End Combat — Short Rest",
+                      "nodeIds": [
+                        "pol_branch_short_rest",
+                        "cmd_branch_short_rest",
+                        "ki_pool3",
+                        "evt_evt_ki_restored"
+                      ],
+                      "optionId": "branch_short_rest"
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_damage_dealt",
+                    "evt_evt_wrath_active",
+                    "pol_step_attack_loop",
+                    "cmd_step_attack_loop",
+                    "unarmed_combat",
+                    "evt_evt_damage_dealt"
+                  ],
+                  "label": "Defensive Pivot",
+                  "optionId": "branch_defensive"
+                },
                 "nodeIds": [
                   "pol_branch_defensive",
                   "cmd_branch_defensive",

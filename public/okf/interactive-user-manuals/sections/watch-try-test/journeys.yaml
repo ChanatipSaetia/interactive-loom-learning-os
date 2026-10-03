@@ -2,19 +2,19 @@
   label: "Happy Path: Watch → Try → Test"
   description: "The learner watches, practises with hints, then passes the unguided test"
   steps:
-    - stepId: evt_demo_watched
+    - stepId: step_watch
       name: "Watch"
       description: "Watch mode demonstrates the task once"
-    - stepId: evt_step_attempted
+    - stepId: step_try
       name: "Try"
       description: "Try mode lets the learner do each step, with hints available"
-    - stepId: evt_try_completed
+    - stepId: branch_correct
       name: "Guided practice done"
       description: "Every step was performed correctly with support"
-    - stepId: evt_test_submitted
+    - stepId: step_test
       name: "Test"
       description: "Test mode removes hints: an unguided assessment"
-    - stepId: evt_result_recorded
+    - stepId: step_record
       name: "Recorded"
       description: "The score and wrong clicks go to the LMS"
 
@@ -22,12 +22,12 @@
   label: "Wrong Click in Try Mode"
   description: "A wrong action gets immediate, specific feedback instead of silence"
   steps:
-    - stepId: evt_demo_watched
+    - stepId: step_watch
       name: "Watch"
       description: "The learner watches the demo"
-    - stepId: evt_step_attempted
+    - stepId: step_try
       name: "Try"
       description: "The learner clicks the wrong control"
-    - stepId: evt_feedback_shown
+    - stepId: branch_wrong
       name: "Feedback"
       description: "The player explains why that was wrong and gives a hint, then the learner tries again"

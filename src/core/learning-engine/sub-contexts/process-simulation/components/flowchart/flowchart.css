@@ -45,6 +45,16 @@
   font-family: var(--font-body);
 }
 
+/* Focusable for the playback keyboard shortcuts */
+.flowchart-canvas-wrapper:focus {
+  outline: none;
+}
+
+.flowchart-canvas-wrapper:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
 .react-flow {
   font-family: var(--font-body) !important;
 }
@@ -500,6 +510,10 @@
 
 .flowchart-playback .flowchart-btn {
   @apply h-7 w-7 p-1;
+}
+
+.flowchart-playback .flowchart-btn-toggle {
+  color: var(--secondary);
 }
 
 .flowchart-btn {
@@ -1199,6 +1213,46 @@
   @apply flex items-center gap-0.5;
 }
 
+.flowchart-mini-journey {
+  @apply ml-1.5 max-w-[160px] truncate rounded-[var(--radius-xs)] border-none bg-transparent px-1.5 py-1 text-xs font-semibold cursor-pointer;
+  font-family: var(--font-body);
+  color: var(--ctp-blue);
+  transition: background-color 0.15s ease;
+}
+
+.flowchart-mini-journey:hover {
+  background-color: var(--ctp-surface0);
+}
+
+/* Journey picker in the mini player, same look as the panel heading but compact */
+.flowchart-mini-journey-picker {
+  @apply ml-1 min-w-0;
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-dropdown {
+  @apply min-w-0 sm:min-w-0;
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-select {
+  @apply h-8 min-w-0 max-w-[180px] gap-1 px-2 py-1 text-xs font-semibold border-transparent bg-transparent rounded-full;
+  width: max-content;
+  color: var(--ctp-blue);
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-select:hover,
+.flowchart-mini-journey-picker .flowchart-journey-select[aria-expanded="true"] {
+  background-color: var(--ctp-surface0);
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-select::after {
+  content: none;
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-options {
+  @apply w-auto min-w-[220px] max-w-[min(320px,80vw)];
+  margin-bottom: 10px;
+}
+
 .flowchart-mini-player .flowchart-btn {
   @apply h-8 w-8 p-1;
 }
@@ -1310,6 +1364,27 @@
 /* One-line description; full text in the tooltip */
 .flowchart-dock-steps .flowchart-journey-description {
   @apply truncate border-l-0 px-2;
+}
+
+/* End of journey: completion note and a jump to the next journey */
+.flowchart-journey-complete {
+  @apply flex items-center gap-1.5 px-2 text-xs;
+  font-family: var(--font-body);
+  color: var(--ctp-green);
+}
+
+.flowchart-journey-complete-label {
+  @apply font-semibold;
+}
+
+.flowchart-journey-complete-next {
+  @apply ml-auto flex items-center gap-1 rounded-[var(--radius-xs)] border-none bg-transparent px-2 py-0.5 text-xs font-semibold cursor-pointer truncate;
+  color: var(--secondary);
+  transition: background-color 0.15s ease;
+}
+
+.flowchart-journey-complete-next:hover {
+  background-color: color-mix(in srgb, var(--secondary) 12%, transparent);
 }
 
 /* Mobile responsive: icon-only tabs, dynamic journey height */
@@ -1677,3 +1752,285 @@
   font-size: 11px;
 }
 
+
+/* ---- Step caption: narration floating under the focused nodes ---- */
+.flowchart-step-caption {
+  @apply absolute z-[15] flex flex-col gap-1 rounded-[var(--radius-sm)] border px-3 py-2 shadow-lg backdrop-blur-md;
+  background-color: color-mix(in srgb, var(--ctp-mantle) 92%, transparent);
+  border-color: color-mix(in srgb, var(--secondary) 45%, var(--border-light));
+  font-family: var(--font-body);
+  animation: flowchart-caption-in 0.25s ease-out;
+}
+
+.flowchart-step-caption[data-typing="true"] {
+  cursor: pointer;
+}
+
+/* No node to anchor to (e.g. the sequence view): top-right corner, clear of
+   the view switcher and of the participant headers on the left */
+.flowchart-step-caption[data-placement="pinned"] {
+  top: 52px;
+  right: 12px;
+  max-width: calc(100% - 24px);
+}
+
+.flowchart-step-caption-header {
+  @apply flex items-baseline gap-2 min-w-0;
+}
+
+.flowchart-step-caption-index {
+  @apply shrink-0 text-[10px] font-bold uppercase tracking-wider;
+  color: var(--secondary);
+}
+
+.flowchart-step-caption-title {
+  @apply truncate text-[13px] font-semibold;
+  color: var(--ctp-text);
+}
+
+.flowchart-step-caption-text {
+  @apply m-0 text-xs leading-[1.5];
+  color: var(--ctp-subtext1);
+}
+
+/* Untyped text still takes its space so the box never resizes while typing */
+.flowchart-step-caption-pending {
+  color: transparent;
+}
+
+/* Zero-width so the caret never pushes text onto another line */
+.flowchart-step-caption-caret {
+  @apply relative inline-block w-0;
+}
+
+.flowchart-step-caption-caret::after {
+  content: '';
+  @apply absolute left-0 w-[2px];
+  top: -0.85em;
+  height: 1.05em;
+  background-color: var(--secondary);
+  animation: flowchart-caret-blink 0.9s steps(1) infinite;
+}
+
+@keyframes flowchart-caret-blink {
+  50% { opacity: 0; }
+}
+
+@keyframes flowchart-caption-in {
+  from { opacity: 0; translate: 0 4px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowchart-step-caption,
+  .flowchart-step-caption-caret::after {
+    animation: none;
+  }
+}
+
+/* ---- Forks in the story ---- */
+
+/* Caption: which option this step takes, and links to the other paths */
+.flowchart-step-caption-branch {
+  @apply ml-auto inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-px text-[10px] font-semibold;
+  max-width: 45%;
+  color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
+}
+
+.flowchart-step-caption-alts {
+  @apply flex flex-wrap items-center gap-1.5 pt-1 text-[11px];
+  border-top: 1px dashed var(--border-light);
+}
+
+.flowchart-step-caption-alts-label {
+  @apply font-semibold uppercase tracking-wider text-[9.5px];
+  color: var(--ctp-overlay1);
+}
+
+.flowchart-step-caption-alt {
+  @apply inline-flex items-center gap-1 rounded-full border bg-transparent px-2 py-0.5 text-[11px] font-medium;
+  font-family: var(--font-body);
+  color: var(--ctp-subtext1);
+  border-color: var(--border-light);
+}
+
+button.flowchart-step-caption-alt {
+  @apply cursor-pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+button.flowchart-step-caption-alt:hover {
+  color: var(--ctp-peach);
+  border-color: color-mix(in srgb, var(--ctp-peach) 50%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-peach) 10%, transparent);
+}
+
+.flowchart-step-caption-alt[data-disabled="true"] {
+  @apply border-dashed;
+  color: var(--ctp-overlay1);
+}
+
+/* Step card: fork badge next to the phase number */
+.flowchart-step-card-branch {
+  @apply inline-flex min-w-0 items-center gap-0.5 truncate rounded px-1 text-[8.5px] font-bold;
+  max-width: 60%;
+  color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+}
+
+/* Mini player: fork steps are diamonds instead of dots */
+.flowchart-mini-dot[data-branch="true"]::before {
+  @apply rounded-[1px];
+  transform: rotate(45deg) scale(1.15);
+  outline: 1px solid color-mix(in srgb, var(--secondary) 60%, transparent);
+}
+
+.flowchart-mini-dot[data-branch="true"][data-state="current"]::before {
+  @apply w-1.5;
+  transform: rotate(45deg) scale(1.5);
+}
+
+/* Canvas: the condition taken is lit by the step highlight; the paths not
+   taken pulse once in peach so you notice them, then stay dimmed */
+.flowchart-edge-group[data-fork="taken"] .flowchart-edge-label-pill {
+  stroke-width: 1.5;
+}
+
+.flowchart-edge-group[data-fork="alt"] {
+  animation: flowchart-fork-alt 1.6s ease-out forwards;
+}
+
+.flowchart-edge-group[data-fork="alt"] .flowchart-edge {
+  stroke: var(--ctp-peach);
+  stroke-dasharray: 4 4;
+}
+
+.flowchart-edge-group[data-fork="alt"] .flowchart-edge-label-pill {
+  stroke: var(--ctp-peach);
+  stroke-dasharray: 3 2;
+}
+
+.flowchart-edge-group[data-fork="alt"] .flowchart-edge-label-text {
+  fill: var(--ctp-peach);
+}
+
+.flowchart-node-group[data-fork="alt"] {
+  animation: flowchart-fork-alt-node 1.6s ease-out forwards;
+}
+
+.flowchart-node-group[data-fork="alt"] .flowchart-node-rect {
+  stroke: var(--ctp-peach);
+  stroke-dasharray: 5 3;
+}
+
+@keyframes flowchart-fork-alt {
+  0%, 40% { opacity: 1; }
+  20% { opacity: 0.55; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes flowchart-fork-alt-node {
+  0%, 40% { opacity: 1; }
+  20% { opacity: 0.6; }
+  100% { opacity: 0.4; }
+}
+
+/* Sequence view: the alt frame taken is lit, the others fade */
+.flowchart-seq-group[data-fork="taken"] {
+  opacity: 1;
+}
+
+.flowchart-seq-group[data-fork="taken"] rect {
+  stroke: var(--secondary);
+  fill: color-mix(in srgb, var(--secondary) 10%, transparent);
+}
+
+.flowchart-seq-group[data-fork="taken"] text {
+  fill: var(--secondary);
+}
+
+.flowchart-seq-group[data-fork="alt"] {
+  animation: flowchart-fork-alt-node 1.6s ease-out forwards;
+}
+
+.flowchart-seq-group[data-fork="alt"] rect {
+  stroke: var(--ctp-peach);
+}
+
+.flowchart-seq-group[data-fork="alt"] text {
+  fill: var(--ctp-peach);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowchart-edge-group[data-fork="alt"],
+  .flowchart-node-group[data-fork="alt"],
+  .flowchart-seq-group[data-fork="alt"] {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+/* ---- Route views (System Architecture): the journey as numbered hand-offs ---- */
+
+/* Lines off the story fade right back so the bundle stops competing;
+   hovering one still brings it up to read */
+.flowchart-edge-group[data-route="off"] {
+  opacity: 0.15;
+}
+
+.flowchart-edge-group[data-route="off"]:hover {
+  opacity: 0.8;
+}
+
+/* Hand-offs already walked stay visible as a soft trail */
+.flowchart-edge-group[data-route="trail"] {
+  opacity: 0.5;
+}
+
+/* The step's main line: thick and solid, carries the label and the moving dot */
+.flowchart-edge-group[data-route="primary"] .flowchart-edge {
+  stroke-width: 3.5;
+  stroke-dasharray: none;
+}
+
+/* Other lines of the same step stay thin so the main one is unmistakable */
+.flowchart-edge-group[data-route="current"] .flowchart-edge {
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  filter: none !important;
+}
+
+.flowchart-edge-group[data-route="trail"] .flowchart-edge {
+  stroke: color-mix(in srgb, var(--secondary) 45%, var(--ctp-overlay1));
+  stroke-width: 2;
+}
+
+.flowchart-route-label-pill {
+  fill: var(--ctp-base);
+  stroke: var(--secondary);
+  stroke-width: 1.5;
+}
+
+.flowchart-route-badge {
+  fill: var(--secondary);
+}
+
+.flowchart-edge-group[data-route="trail"] .flowchart-route-badge {
+  fill: color-mix(in srgb, var(--secondary) 55%, var(--ctp-surface1));
+}
+
+.flowchart-route-badge-text {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  fill: var(--ctp-base);
+}
+
+.flowchart-route-label-text {
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  fill: var(--secondary);
+}

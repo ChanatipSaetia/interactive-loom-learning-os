@@ -917,6 +917,30 @@
                 "title": "Generate Power Charges"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "label": "Flicker Strike (mobility)",
+                      "nodeIds": [
+                        "pol_branch_fs",
+                        "cmd_branch_fs",
+                        "flicker_strike",
+                        "hollow_focus",
+                        "evt_evt_repositioned"
+                      ],
+                      "optionId": "branch_fs"
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_power_charges",
+                    "pol_step_charges",
+                    "cmd_step_charges",
+                    "cast_on_crit",
+                    "evt_evt_power_charges"
+                  ],
+                  "label": "Falling Thunder (dense packs)",
+                  "optionId": "branch_ft"
+                },
                 "nodeIds": [
                   "pol_branch_ft",
                   "cmd_branch_ft",
@@ -940,6 +964,32 @@
                 "title": "Trigger Herald Explosions"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_boss",
+                      "label": "Boss Fight",
+                      "nodeIds": [
+                        "pol_branch_boss",
+                        "cmd_branch_boss",
+                        "mantra_destruction",
+                        "boss",
+                        "evt_evt_combo_ready"
+                      ],
+                      "optionId": "branch_boss",
+                      "stepIndex": 0
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_explosions",
+                    "pol_step_heralds",
+                    "cmd_step_heralds",
+                    "heralds",
+                    "evt_evt_explosions"
+                  ],
+                  "label": "Continue Mapping",
+                  "optionId": "branch_mapping"
+                },
                 "nodeIds": [
                   "pol_branch_mapping",
                   "cmd_branch_mapping",
@@ -958,6 +1008,31 @@
             "label": "Boss Fight Flow",
             "steps": [
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_mapping",
+                      "label": "Continue Mapping",
+                      "nodeIds": [
+                        "pol_branch_mapping",
+                        "cmd_branch_mapping",
+                        "whirling_assault2",
+                        "evt_evt_mapping_loop"
+                      ],
+                      "optionId": "branch_mapping",
+                      "stepIndex": 4
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_explosions",
+                    "pol_step_heralds",
+                    "cmd_step_heralds",
+                    "heralds",
+                    "evt_evt_explosions"
+                  ],
+                  "label": "Boss Fight",
+                  "optionId": "branch_boss"
+                },
                 "nodeIds": [
                   "pol_branch_boss",
                   "cmd_branch_boss",
@@ -993,6 +1068,30 @@
                 "title": "Activate Charged Staff"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "label": "Flicker Strike Boss",
+                      "nodeIds": [
+                        "pol_branch_fs_boss",
+                        "cmd_branch_fs_boss",
+                        "flicker_strike2",
+                        "evt_evt_boss_dead"
+                      ],
+                      "optionId": "branch_fs_boss"
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_buffed",
+                    "pol_step_boss_nuke",
+                    "cmd_step_boss_nuke",
+                    "charged_staff",
+                    "ci",
+                    "evt_evt_buffed"
+                  ],
+                  "label": "Falling Thunder Boss",
+                  "optionId": "branch_ft_boss"
+                },
                 "nodeIds": [
                   "pol_branch_ft_boss",
                   "cmd_branch_ft_boss",

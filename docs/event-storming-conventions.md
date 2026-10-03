@@ -107,6 +107,17 @@ A flowchart should contain one or more journeys (`journeys.yaml`) that serve as 
 - Each journey must follow **exactly one branch path** from start to finish. Never jump between parallel branches.
 - Include a **Happy Path** journey as the baseline progression.
 - Create secondary journeys for error loops, exceptions, or alternative execution flows.
+- Each journey step's `stepId` must be a **linear step `id` or a branch option `id`** from `steps.yaml` — never a `resultEvents` id or a branch step's own `id`. Playback highlights and frames that step's whole cycle (actor → policy → command → handler → result events); pointing at an event would show that single event only. The validator flags it with the producing step as the fix hint.
+
+```yaml
+- stepId: step_draft     # ✅ the step that produces evt_draft_opened
+  name: "Draft"
+  description: "The writer opens a pull request"
+- stepId: branch_pass    # ✅ one option of a branch step
+  name: "Editorial review"
+  description: "Structure, style and terms are checked"
+# - stepId: evt_draft_opened   ❌ a result event
+```
 
 ---
 

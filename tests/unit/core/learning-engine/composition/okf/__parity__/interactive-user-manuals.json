@@ -1933,6 +1933,10 @@
             "steps": [
               {
                 "nodeIds": [
+                  "learner",
+                  "pol_step_watch",
+                  "cmd_step_watch",
+                  "sim_player",
                   "evt_evt_demo_watched"
                 ],
                 "reason": "Watch mode demonstrates the task once",
@@ -1940,13 +1944,46 @@
               },
               {
                 "nodeIds": [
+                  "learner2",
+                  "pol_step_try",
+                  "cmd_step_try",
+                  "sim_player2",
                   "evt_evt_step_attempted"
                 ],
                 "reason": "Try mode lets the learner do each step, with hints available",
                 "title": "Try"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_wrong_click",
+                      "label": "Wrong click",
+                      "nodeIds": [
+                        "pol_branch_wrong",
+                        "cmd_branch_wrong",
+                        "sim_player4",
+                        "evt_evt_feedback_shown"
+                      ],
+                      "optionId": "branch_wrong",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_step_attempted",
+                    "learner2",
+                    "pol_step_try",
+                    "cmd_step_try",
+                    "sim_player2",
+                    "evt_evt_step_attempted"
+                  ],
+                  "label": "Correct action",
+                  "optionId": "branch_correct"
+                },
                 "nodeIds": [
+                  "pol_branch_correct",
+                  "cmd_branch_correct",
+                  "sim_player3",
                   "evt_evt_try_completed"
                 ],
                 "reason": "Every step was performed correctly with support",
@@ -1954,6 +1991,10 @@
               },
               {
                 "nodeIds": [
+                  "learner3",
+                  "pol_step_test",
+                  "cmd_step_test",
+                  "sim_player5",
                   "evt_evt_test_submitted"
                 ],
                 "reason": "Test mode removes hints: an unguided assessment",
@@ -1961,6 +2002,10 @@
               },
               {
                 "nodeIds": [
+                  "pol_step_record",
+                  "cmd_step_record",
+                  "sim_player6",
+                  "lms",
                   "evt_evt_result_recorded"
                 ],
                 "reason": "The score and wrong clicks go to the LMS",
@@ -1975,6 +2020,10 @@
             "steps": [
               {
                 "nodeIds": [
+                  "learner",
+                  "pol_step_watch",
+                  "cmd_step_watch",
+                  "sim_player",
                   "evt_evt_demo_watched"
                 ],
                 "reason": "The learner watches the demo",
@@ -1982,13 +2031,46 @@
               },
               {
                 "nodeIds": [
+                  "learner2",
+                  "pol_step_try",
+                  "cmd_step_try",
+                  "sim_player2",
                   "evt_evt_step_attempted"
                 ],
                 "reason": "The learner clicks the wrong control",
                 "title": "Try"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_happy",
+                      "label": "Correct action",
+                      "nodeIds": [
+                        "pol_branch_correct",
+                        "cmd_branch_correct",
+                        "sim_player3",
+                        "evt_evt_try_completed"
+                      ],
+                      "optionId": "branch_correct",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_step_attempted",
+                    "learner2",
+                    "pol_step_try",
+                    "cmd_step_try",
+                    "sim_player2",
+                    "evt_evt_step_attempted"
+                  ],
+                  "label": "Wrong click",
+                  "optionId": "branch_wrong"
+                },
                 "nodeIds": [
+                  "pol_branch_wrong",
+                  "cmd_branch_wrong",
+                  "sim_player4",
                   "evt_evt_feedback_shown"
                 ],
                 "reason": "The player explains why that was wrong and gives a hint, then the learner tries again",

@@ -1335,6 +1335,10 @@
             "steps": [
               {
                 "nodeIds": [
+                  "doc_writer",
+                  "pol_step_commit",
+                  "cmd_step_commit",
+                  "git_repo",
                   "evt_evt_committed"
                 ],
                 "reason": "The technical writer commits a manual update to the Git repository",
@@ -1342,6 +1346,10 @@
               },
               {
                 "nodeIds": [
+                  "pol_step_preview",
+                  "cmd_step_preview",
+                  "ci_pipeline",
+                  "preview_host",
                   "evt_evt_preview"
                 ],
                 "reason": "CI builds a preview site so the proposed manual can be clicked through",
@@ -1349,13 +1357,46 @@
               },
               {
                 "nodeIds": [
+                  "reviewer",
+                  "pol_step_review",
+                  "cmd_step_review",
+                  "preview_host2",
                   "evt_evt_reviewed"
                 ],
                 "reason": "An engineering reviewer checks commands and screenshots against the real system",
                 "title": "Review Completed"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_revision",
+                      "label": "Changes requested",
+                      "nodeIds": [
+                        "pol_branch_revise",
+                        "cmd_branch_revise",
+                        "git_repo2",
+                        "evt_evt_revised"
+                      ],
+                      "optionId": "branch_revise",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_reviewed",
+                    "reviewer",
+                    "pol_step_review",
+                    "cmd_step_review",
+                    "preview_host2",
+                    "evt_evt_reviewed"
+                  ],
+                  "label": "Approved",
+                  "optionId": "branch_publish"
+                },
                 "nodeIds": [
+                  "pol_branch_publish",
+                  "cmd_branch_publish",
+                  "docs_site",
                   "evt_evt_published"
                 ],
                 "reason": "The docs web app ships the new version under a permanent permalink",
@@ -1370,6 +1411,10 @@
             "steps": [
               {
                 "nodeIds": [
+                  "doc_writer",
+                  "pol_step_commit",
+                  "cmd_step_commit",
+                  "git_repo",
                   "evt_evt_committed"
                 ],
                 "reason": "A manual update lands in the repository",
@@ -1377,6 +1422,10 @@
               },
               {
                 "nodeIds": [
+                  "pol_step_preview",
+                  "cmd_step_preview",
+                  "ci_pipeline",
+                  "preview_host",
                   "evt_evt_preview"
                 ],
                 "reason": "CI deploys the ephemeral preview for inspection",
@@ -1384,13 +1433,46 @@
               },
               {
                 "nodeIds": [
+                  "reviewer",
+                  "pol_step_review",
+                  "cmd_step_review",
+                  "preview_host2",
                   "evt_evt_reviewed"
                 ],
                 "reason": "The reviewer spots a command that no longer matches the system",
                 "title": "Review Completed"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_publish",
+                      "label": "Approved",
+                      "nodeIds": [
+                        "pol_branch_publish",
+                        "cmd_branch_publish",
+                        "docs_site",
+                        "evt_evt_published"
+                      ],
+                      "optionId": "branch_publish",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_reviewed",
+                    "reviewer",
+                    "pol_step_review",
+                    "cmd_step_review",
+                    "preview_host2",
+                    "evt_evt_reviewed"
+                  ],
+                  "label": "Changes requested",
+                  "optionId": "branch_revise"
+                },
                 "nodeIds": [
+                  "pol_branch_revise",
+                  "cmd_branch_revise",
+                  "git_repo2",
                   "evt_evt_revised"
                 ],
                 "reason": "Content returns to the writer for revision instead of publishing",

@@ -1151,6 +1151,10 @@
             "steps": [
               {
                 "nodeIds": [
+                  "learner",
+                  "pol_step_predict",
+                  "cmd_step_predict",
+                  "explainer",
                   "evt_evt_predicted"
                 ],
                 "reason": "'Anna will see one project.'",
@@ -1158,13 +1162,46 @@
               },
               {
                 "nodeIds": [
+                  "learner2",
+                  "pol_step_observe",
+                  "cmd_step_observe",
+                  "explainer2",
                   "evt_evt_observed"
                 ],
                 "reason": "Anna sees all five Sales projects.",
                 "title": "Observe"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_match",
+                      "label": "Prediction was right",
+                      "nodeIds": [
+                        "pol_branch_match",
+                        "cmd_branch_match",
+                        "explainer3",
+                        "evt_evt_model_confirmed"
+                      ],
+                      "optionId": "branch_match",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_observed",
+                    "learner2",
+                    "pol_step_observe",
+                    "cmd_step_observe",
+                    "explainer2",
+                    "evt_evt_observed"
+                  ],
+                  "label": "Prediction was wrong",
+                  "optionId": "branch_mismatch"
+                },
                 "nodeIds": [
+                  "pol_branch_mismatch",
+                  "cmd_branch_mismatch",
+                  "explainer4",
                   "evt_evt_model_corrected"
                 ],
                 "reason": "The learner explains the difference: permissions flow down from the workspace.",
@@ -1179,6 +1216,10 @@
             "steps": [
               {
                 "nodeIds": [
+                  "learner",
+                  "pol_step_predict",
+                  "cmd_step_predict",
+                  "explainer",
                   "evt_evt_predicted"
                 ],
                 "reason": "'Anna will see all five projects.'",
@@ -1186,13 +1227,46 @@
               },
               {
                 "nodeIds": [
+                  "learner2",
+                  "pol_step_observe",
+                  "cmd_step_observe",
+                  "explainer2",
                   "evt_evt_observed"
                 ],
                 "reason": "She does.",
                 "title": "Observe"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_mismatch",
+                      "label": "Prediction was wrong",
+                      "nodeIds": [
+                        "pol_branch_mismatch",
+                        "cmd_branch_mismatch",
+                        "explainer4",
+                        "evt_evt_model_corrected"
+                      ],
+                      "optionId": "branch_mismatch",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_observed",
+                    "learner2",
+                    "pol_step_observe",
+                    "cmd_step_observe",
+                    "explainer2",
+                    "evt_evt_observed"
+                  ],
+                  "label": "Prediction was right",
+                  "optionId": "branch_match"
+                },
                 "nodeIds": [
+                  "pol_branch_match",
+                  "cmd_branch_match",
+                  "explainer3",
                   "evt_evt_model_confirmed"
                 ],
                 "reason": "The explanation confirms why.",

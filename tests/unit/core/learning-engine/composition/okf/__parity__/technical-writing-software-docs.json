@@ -1926,6 +1926,10 @@
             "steps": [
               {
                 "nodeIds": [
+                  "writer",
+                  "pol_step_draft",
+                  "cmd_step_draft",
+                  "docs_repo",
                   "evt_evt_draft_opened"
                 ],
                 "reason": "The writer opens a pull request",
@@ -1933,6 +1937,10 @@
               },
               {
                 "nodeIds": [
+                  "sme",
+                  "pol_step_sme",
+                  "cmd_step_sme",
+                  "docs_repo2",
                   "evt_evt_facts_checked"
                 ],
                 "reason": "A subject-matter expert checks the facts against how the app really works",
@@ -1940,13 +1948,46 @@
               },
               {
                 "nodeIds": [
+                  "tester",
+                  "pol_step_test",
+                  "cmd_step_test",
+                  "staging_app",
                   "evt_evt_steps_tested"
                 ],
                 "reason": "Someone follows every step in staging exactly as written",
                 "title": "Step test"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_rewrite",
+                      "label": "A step failed",
+                      "nodeIds": [
+                        "pol_branch_fail",
+                        "cmd_branch_fail",
+                        "docs_repo3",
+                        "evt_evt_rewrite_requested"
+                      ],
+                      "optionId": "branch_fail",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_steps_tested",
+                    "tester",
+                    "pol_step_test",
+                    "cmd_step_test",
+                    "staging_app",
+                    "evt_evt_steps_tested"
+                  ],
+                  "label": "Every step worked",
+                  "optionId": "branch_pass"
+                },
                 "nodeIds": [
+                  "pol_branch_pass",
+                  "cmd_branch_pass",
+                  "vale_ci",
                   "evt_evt_edit_done"
                 ],
                 "reason": "Structure, style and terms are checked, with Vale doing the mechanical part",
@@ -1954,6 +1995,10 @@
               },
               {
                 "nodeIds": [
+                  "writer2",
+                  "pol_step_publish",
+                  "cmd_step_publish",
+                  "docs_site",
                   "evt_evt_published"
                 ],
                 "reason": "The page goes live",
@@ -1968,6 +2013,10 @@
             "steps": [
               {
                 "nodeIds": [
+                  "writer",
+                  "pol_step_draft",
+                  "cmd_step_draft",
+                  "docs_repo",
                   "evt_evt_draft_opened"
                 ],
                 "reason": "The writer opens a pull request",
@@ -1975,6 +2024,10 @@
               },
               {
                 "nodeIds": [
+                  "sme",
+                  "pol_step_sme",
+                  "cmd_step_sme",
+                  "docs_repo2",
                   "evt_evt_facts_checked"
                 ],
                 "reason": "The facts look right on paper",
@@ -1982,13 +2035,46 @@
               },
               {
                 "nodeIds": [
+                  "tester",
+                  "pol_step_test",
+                  "cmd_step_test",
+                  "staging_app",
                   "evt_evt_steps_tested"
                 ],
                 "reason": "Step 3 says Export, but the button now lives in the ⋯ menu",
                 "title": "Step test"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_publish",
+                      "label": "Every step worked",
+                      "nodeIds": [
+                        "pol_branch_pass",
+                        "cmd_branch_pass",
+                        "vale_ci",
+                        "evt_evt_edit_done"
+                      ],
+                      "optionId": "branch_pass",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_steps_tested",
+                    "tester",
+                    "pol_step_test",
+                    "cmd_step_test",
+                    "staging_app",
+                    "evt_evt_steps_tested"
+                  ],
+                  "label": "A step failed",
+                  "optionId": "branch_fail"
+                },
                 "nodeIds": [
+                  "pol_branch_fail",
+                  "cmd_branch_fail",
+                  "docs_repo3",
                   "evt_evt_rewrite_requested"
                 ],
                 "reason": "The page goes back to the writer before any user sees it",

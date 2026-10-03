@@ -1128,6 +1128,43 @@
                 "title": "LLM Planning"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "happy-path",
+                      "label": "Needs MCP",
+                      "nodeIds": [
+                        "pol_call_mcp",
+                        "cmd_call_mcp",
+                        "mcp_servers",
+                        "evt_mcp_called"
+                      ],
+                      "optionId": "call_mcp",
+                      "stepIndex": 3
+                    },
+                    {
+                      "journeyId": "direct-llm",
+                      "label": "Final Answer",
+                      "nodeIds": [
+                        "pol_direct_complete",
+                        "cmd_direct_complete",
+                        "llm2",
+                        "evt_done"
+                      ],
+                      "optionId": "direct_complete",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_reasoned",
+                    "pol_call_llm",
+                    "cmd_call_llm",
+                    "llm",
+                    "evt_reasoned"
+                  ],
+                  "label": "Needs Tool",
+                  "optionId": "execute_tool"
+                },
                 "nodeIds": [
                   "pol_execute_tool",
                   "cmd_execute_tool",
@@ -1141,6 +1178,45 @@
                 "title": "Execute Tool"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "feedback-loop",
+                      "label": "Needs Tool",
+                      "nodeIds": [
+                        "pol_execute_tool",
+                        "cmd_execute_tool",
+                        "tools_router",
+                        "subagents",
+                        "evt_tool_executed",
+                        "evt_subagent_spawned"
+                      ],
+                      "optionId": "execute_tool",
+                      "stepIndex": 0
+                    },
+                    {
+                      "journeyId": "direct-llm",
+                      "label": "Final Answer",
+                      "nodeIds": [
+                        "pol_direct_complete",
+                        "cmd_direct_complete",
+                        "llm2",
+                        "evt_done"
+                      ],
+                      "optionId": "direct_complete",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_reasoned",
+                    "pol_call_llm",
+                    "cmd_call_llm",
+                    "llm",
+                    "evt_reasoned"
+                  ],
+                  "label": "Needs MCP",
+                  "optionId": "call_mcp"
+                },
                 "nodeIds": [
                   "pol_call_mcp",
                   "cmd_call_mcp",
@@ -1182,6 +1258,43 @@
             "label": "Feedback Loop",
             "steps": [
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "happy-path",
+                      "label": "Needs MCP",
+                      "nodeIds": [
+                        "pol_call_mcp",
+                        "cmd_call_mcp",
+                        "mcp_servers",
+                        "evt_mcp_called"
+                      ],
+                      "optionId": "call_mcp",
+                      "stepIndex": 3
+                    },
+                    {
+                      "journeyId": "direct-llm",
+                      "label": "Final Answer",
+                      "nodeIds": [
+                        "pol_direct_complete",
+                        "cmd_direct_complete",
+                        "llm2",
+                        "evt_done"
+                      ],
+                      "optionId": "direct_complete",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_reasoned",
+                    "pol_call_llm",
+                    "cmd_call_llm",
+                    "llm",
+                    "evt_reasoned"
+                  ],
+                  "label": "Needs Tool",
+                  "optionId": "execute_tool"
+                },
                 "nodeIds": [
                   "pol_execute_tool",
                   "cmd_execute_tool",
@@ -1245,6 +1358,45 @@
                 "title": "LLM Planning"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "happy-path",
+                      "label": "Needs Tool",
+                      "nodeIds": [
+                        "pol_execute_tool",
+                        "cmd_execute_tool",
+                        "tools_router",
+                        "subagents",
+                        "evt_tool_executed",
+                        "evt_subagent_spawned"
+                      ],
+                      "optionId": "execute_tool",
+                      "stepIndex": 2
+                    },
+                    {
+                      "journeyId": "happy-path",
+                      "label": "Needs MCP",
+                      "nodeIds": [
+                        "pol_call_mcp",
+                        "cmd_call_mcp",
+                        "mcp_servers",
+                        "evt_mcp_called"
+                      ],
+                      "optionId": "call_mcp",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_reasoned",
+                    "pol_call_llm",
+                    "cmd_call_llm",
+                    "llm",
+                    "evt_reasoned"
+                  ],
+                  "label": "Final Answer",
+                  "optionId": "direct_complete"
+                },
                 "nodeIds": [
                   "pol_direct_complete",
                   "cmd_direct_complete",
@@ -2008,6 +2160,33 @@
                 "title": "Evaluate Output"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "fb_journey_revise",
+                      "label": "Needs Revision",
+                      "nodeIds": [
+                        "pol_fb_fail",
+                        "cmd_fb_fail",
+                        "orch_feedback2",
+                        "dev_user",
+                        "evt_fb_revision"
+                      ],
+                      "optionId": "fb_fail",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_fb_evaluated",
+                    "qa_user",
+                    "pol_fb_check",
+                    "cmd_fb_check",
+                    "evaluator",
+                    "evt_fb_evaluated"
+                  ],
+                  "label": "Pass",
+                  "optionId": "fb_pass"
+                },
                 "nodeIds": [
                   "pol_fb_pass",
                   "cmd_fb_pass",
@@ -2038,6 +2217,32 @@
                 "title": "Evaluate Output"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "fb_journey_pass",
+                      "label": "Pass",
+                      "nodeIds": [
+                        "pol_fb_pass",
+                        "cmd_fb_pass",
+                        "orch_feedback",
+                        "evt_fb_accepted"
+                      ],
+                      "optionId": "fb_pass",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_fb_evaluated",
+                    "qa_user",
+                    "pol_fb_check",
+                    "cmd_fb_check",
+                    "evaluator",
+                    "evt_fb_evaluated"
+                  ],
+                  "label": "Needs Revision",
+                  "optionId": "fb_fail"
+                },
                 "nodeIds": [
                   "pol_fb_fail",
                   "cmd_fb_fail",

@@ -1005,6 +1005,32 @@
                 "title": "Submit Answers"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "retry-loop",
+                      "label": "Answer Wrong",
+                      "nodeIds": [
+                        "pol_show_hint",
+                        "cmd_show_hint",
+                        "lesson_engine2",
+                        "evt_hint_shown"
+                      ],
+                      "optionId": "show_hint",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_exercise_graded",
+                    "learner2",
+                    "pol_submit_answers",
+                    "cmd_submit_answers",
+                    "grading_service",
+                    "evt_exercise_graded"
+                  ],
+                  "label": "Answer Correct",
+                  "optionId": "award_xp"
+                },
                 "nodeIds": [
                   "pol_award_xp",
                   "cmd_award_xp",
@@ -1016,6 +1042,31 @@
                 "title": "Award XP"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "retry-loop",
+                      "label": "No Badge Yet",
+                      "nodeIds": [
+                        "pol_continue_lesson",
+                        "cmd_continue_lesson",
+                        "lesson_engine3",
+                        "evt_lesson_continued"
+                      ],
+                      "optionId": "continue_lesson",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_progress_updated",
+                    "pol_update_progress",
+                    "cmd_update_progress",
+                    "progress_store",
+                    "evt_progress_updated"
+                  ],
+                  "label": "Threshold Reached",
+                  "optionId": "unlock_badge"
+                },
                 "nodeIds": [
                   "pol_unlock_badge",
                   "cmd_unlock_badge",
@@ -1027,6 +1078,31 @@
                 "title": "Unlock Badge"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "retry-loop",
+                      "label": "Goal Missed",
+                      "nodeIds": [
+                        "pol_freeze_streak",
+                        "cmd_freeze_streak",
+                        "streak_tracker3",
+                        "evt_streak_frozen"
+                      ],
+                      "optionId": "freeze_streak",
+                      "stepIndex": 4
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_goal_evaluated",
+                    "pol_streak_update",
+                    "cmd_streak_update",
+                    "streak_tracker",
+                    "evt_goal_evaluated"
+                  ],
+                  "label": "Goal Met",
+                  "optionId": "extend_streak"
+                },
                 "nodeIds": [
                   "pol_extend_streak",
                   "cmd_extend_streak",
@@ -1049,6 +1125,31 @@
                 "title": "Recalculate Standings"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "retry-loop",
+                      "label": "No Notable Change",
+                      "nodeIds": [
+                        "pol_silent_update",
+                        "cmd_silent_update",
+                        "league_service2",
+                        "evt_update_logged"
+                      ],
+                      "optionId": "silent_update",
+                      "stepIndex": 6
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_standings_updated",
+                    "pol_update_league",
+                    "cmd_update_league",
+                    "league_service",
+                    "evt_standings_updated"
+                  ],
+                  "label": "Badge or Promotion",
+                  "optionId": "send_notification"
+                },
                 "nodeIds": [
                   "pol_send_notification",
                   "cmd_send_notification",
@@ -1079,6 +1180,32 @@
                 "title": "Submit Answers"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "happy-path",
+                      "label": "Answer Correct",
+                      "nodeIds": [
+                        "pol_award_xp",
+                        "cmd_award_xp",
+                        "reward_engine",
+                        "evt_xp_awarded"
+                      ],
+                      "optionId": "award_xp",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_exercise_graded",
+                    "learner2",
+                    "pol_submit_answers",
+                    "cmd_submit_answers",
+                    "grading_service",
+                    "evt_exercise_graded"
+                  ],
+                  "label": "Answer Wrong",
+                  "optionId": "show_hint"
+                },
                 "nodeIds": [
                   "pol_show_hint",
                   "cmd_show_hint",
@@ -1090,6 +1217,32 @@
                 "title": "Show Hint"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "retry-loop",
+                      "label": "Answer Wrong",
+                      "nodeIds": [
+                        "pol_show_hint",
+                        "cmd_show_hint",
+                        "lesson_engine2",
+                        "evt_hint_shown"
+                      ],
+                      "optionId": "show_hint",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_exercise_graded",
+                    "learner2",
+                    "pol_submit_answers",
+                    "cmd_submit_answers",
+                    "grading_service",
+                    "evt_exercise_graded"
+                  ],
+                  "label": "Answer Correct",
+                  "optionId": "award_xp"
+                },
                 "nodeIds": [
                   "pol_award_xp",
                   "cmd_award_xp",
@@ -1101,6 +1254,31 @@
                 "title": "Award XP"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "happy-path",
+                      "label": "Threshold Reached",
+                      "nodeIds": [
+                        "pol_unlock_badge",
+                        "cmd_unlock_badge",
+                        "reward_engine2",
+                        "evt_badge_unlocked"
+                      ],
+                      "optionId": "unlock_badge",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_progress_updated",
+                    "pol_update_progress",
+                    "cmd_update_progress",
+                    "progress_store",
+                    "evt_progress_updated"
+                  ],
+                  "label": "No Badge Yet",
+                  "optionId": "continue_lesson"
+                },
                 "nodeIds": [
                   "pol_continue_lesson",
                   "cmd_continue_lesson",
@@ -1112,6 +1290,31 @@
                 "title": "Continue Lesson"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "happy-path",
+                      "label": "Goal Met",
+                      "nodeIds": [
+                        "pol_extend_streak",
+                        "cmd_extend_streak",
+                        "streak_tracker2",
+                        "evt_streak_extended"
+                      ],
+                      "optionId": "extend_streak",
+                      "stepIndex": 4
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_goal_evaluated",
+                    "pol_streak_update",
+                    "cmd_streak_update",
+                    "streak_tracker",
+                    "evt_goal_evaluated"
+                  ],
+                  "label": "Goal Missed",
+                  "optionId": "freeze_streak"
+                },
                 "nodeIds": [
                   "pol_freeze_streak",
                   "cmd_freeze_streak",
@@ -1134,6 +1337,31 @@
                 "title": "Recalculate Standings"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "happy-path",
+                      "label": "Badge or Promotion",
+                      "nodeIds": [
+                        "pol_send_notification",
+                        "cmd_send_notification",
+                        "push_service",
+                        "evt_notification_sent"
+                      ],
+                      "optionId": "send_notification",
+                      "stepIndex": 6
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_standings_updated",
+                    "pol_update_league",
+                    "cmd_update_league",
+                    "league_service",
+                    "evt_standings_updated"
+                  ],
+                  "label": "No Notable Change",
+                  "optionId": "silent_update"
+                },
                 "nodeIds": [
                   "pol_silent_update",
                   "cmd_silent_update",

@@ -1,29 +1,50 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { animate } from 'animejs';
 import * as Icons from 'lucide-react';
 
 import { ZoomToolbar } from '../zoom-toolbar';
-import { useCamera } from '../useCamera';
-import { NODE_W, NODE_H, ICONS, COLORS, TYPES } from '../types';
+import { useCamera, getNodesBBox, type CaptionPlacement } from '../useCamera';
+import { StepCaption, type StepCaptionData } from '../step-caption';
+import type { ForkHighlights } from '../fork-highlights';
+import { STORY_ROUTE_VIEWS, type StoryRoute } from '../story-route';
+import { ICONS, COLORS } from '../types';
 import type { UnifiedFlowchartSchema } from '../types';
 
-// Views whose timeline reads left-to-right. In these, edges between flow nodes
-// (Command/Event/Policy and their per-view equivalents) should leave the
-// right side of the source and enter the left side of the target.
-const HORIZONTAL_FLOW_VIEWS = new Set(['EVENT_STORMING', 'SWIMLANES', 'DATA_FLOW']);
-
-// The per-view node types that participate in the horizontal timeline flow.
-const FLOW_TYPES_BY_VIEW: Record<string, Set<string>> = {
-  EVENT_STORMING: new Set([TYPES.COMMAND, TYPES.EVENT, TYPES.POLICY]),
-  SWIMLANES: new Set([TYPES.PROCESS, TYPES.DECISION]),
-  DATA_FLOW: new Set([TYPES.DATA_OBJECT, TYPES.DECISION]),
-};
-import { computeDynamicSpacing, routeManhattanPath, disambiguateAndBridgePaths } from './layout-utils';
+import { getViewSpacing, positionViewNodes, routeViewRelations } from './geometry';
 import { SequenceView } from './sequence-view';
 import { StandardView } from './standard-view';
 
 const Workflow = Icons.Workflow;
+
+/** Screen gap between the focused nodes and the caption under them. */
+const CAPTION_GAP = 14;
+const CAPTION_MAX_W = 360;
+/** Keeps the caption off the canvas edges. */
+const CAPTION_EDGE = 12;
+/**
+ * Room kept for the caption when the camera holds still: one fixed size for
+ * every step, so a longer description never shifts the diagram.
+ */
+const FIXED_CAPTION_MIN_H = 150;
+/** A whole map may be framed closer than a single step. */
+const FIXED_CAMERA_MAX_SCALE = 1;
+
+/**
+ * Screen pixels of the SVG covered by the section's floating view switcher
+ * (top) and journey dock (bottom), so the camera frames the free area between.
+ */
+function measureOverlayInsets(svg: SVGSVGElement | null) {
+  const wrapper = svg?.closest('.flowchart-canvas-wrapper');
+  if (!svg || !wrapper) return undefined;
+  const svgRect = svg.getBoundingClientRect();
+  const menu = wrapper.querySelector('.flowchart-view-menu')?.getBoundingClientRect();
+  const dock = wrapper.querySelector('.flowchart-controls-dock')?.getBoundingClientRect();
+  return {
+    top: menu && menu.height > 0 ? Math.max(0, menu.bottom - svgRect.top) : 0,
+    bottom: dock && dock.height > 0 ? Math.max(0, svgRect.bottom - dock.top) : 0,
+  };
+}
 
 export interface FlowchartViewProps {
   viewKey: string;
@@ -49,6 +70,13 @@ export interface FlowchartViewProps {
   focusAfterViewSwitch?: string | null;
   onCameraFocused?: () => void;
   onCameraControls?: (controls: { handleZoomIn: () => void; handleZoomOut: () => void; handleFitToScreen: () => void } | null) => void;
+  /** Narration for the current journey step, shown next to the focused nodes. */
+  stepCaption?: StepCaptionData | null;
+  /** The fork the current step passes through, resolved for this view. */
+  forkHighlights?: ForkHighlights | null;
+  /** Route views: the journey as hand-offs between systems. */
+  storyRoute?: StoryRoute | null;
+  onSwitchPath?: (journeyId: string, stepIndex: number) => void;
 }
 
 export function FlowchartView({
@@ -69,35 +97,18 @@ export function FlowchartView({
   onEnterFullscreen,
   focusAfterViewSwitch,
   onCameraFocused,
-  onCameraControls
+  onCameraControls,
+  stepCaption,
+  forkHighlights,
+  storyRoute,
+  onSwitchPath
 }: FlowchartViewProps) {
   const view = schema.views![viewKey];
   const isSequenceView = viewKey === 'SEQUENCE';
 
-  const spacing = useMemo(() => {
-    if (!view) return { colSpacing: 140, rowSpacing: 150, offsetX: 100, offsetY: 100 };
-    const defaults: Record<string, { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number }> = {
-      EVENT_STORMING: { colSpacing: 140, rowSpacing: 160, offsetX: 60, offsetY: 50 },
-      STATE_MACHINE: { colSpacing: 140, rowSpacing: 150, offsetX: 60, offsetY: 80 },
-      SYS_ARCH: { colSpacing: 140, rowSpacing: 130, offsetX: 80, offsetY: 100 },
-      DATA_FLOW: { colSpacing: 140, rowSpacing: 130, offsetX: 100, offsetY: 100 },
-      SWIMLANES: { colSpacing: 110, rowSpacing: 100, offsetX: 160, offsetY: 75 },
-      SEQUENCE: { colSpacing: 100, rowSpacing: 48, offsetX: 60, offsetY: 80 },
-    };
-    const base = defaults[viewKey] || { colSpacing: 140, rowSpacing: 150, offsetX: 100, offsetY: 100 };
-    return view.layoutInfo
-      ? computeDynamicSpacing(view.layoutInfo, base, viewKey)
-      : base;
-  }, [view, viewKey]);
+  const spacing = useMemo(() => getViewSpacing(view, viewKey), [view, viewKey]);
 
-  const positioned = useMemo(() => {
-    if (!view || isSequenceView) return [];
-    return view.nodes.map(n => ({
-      ...n,
-      x: n.grid ? n.grid[0] * spacing.colSpacing + spacing.offsetX : (n.x !== undefined ? n.x : 0),
-      y: n.grid ? n.grid[1] * spacing.rowSpacing + spacing.offsetY : (n.y !== undefined ? n.y : 0)
-    }));
-  }, [view, spacing, isSequenceView]);
+  const positioned = useMemo(() => positionViewNodes(view, spacing, isSequenceView), [view, spacing, isSequenceView]);
 
   const nodeMap = useMemo(() => {
     const map = new Map();
@@ -105,233 +116,10 @@ export function FlowchartView({
     return map;
   }, [positioned]);
 
-  const routedRelations = useMemo(() => {
-    if (!view || isSequenceView) return [];
-    const activeRelations = schema.relations.filter(r => r.views?.includes(viewKey));
-
-    // Map of occupied grid cells -> node id, so a port can avoid exiting or
-    // entering through a side where an adjacent node sits (which would make the
-    // edge cross through that neighbour). Cells are quantised to the nearest
-    // half-row/half-col to catch the fractional offsets used by handlers/dbs.
-    const cellKey = (col: number, row: number) => `${Math.round(col * 2)},${Math.round(row * 2)}`;
-    const occupied = new Map<string, string>();
-    positioned.forEach(n => {
-      if (n.grid) occupied.set(cellKey(n.grid[0], n.grid[1]), n.id);
-    });
-    // Is the cell immediately on `side` of (col,row) taken by a node other than
-    // `selfId` and `otherId` (the two endpoints of the edge being routed)?
-    const sideBlocked = (
-      col: number, row: number, side: string, selfId: string, otherId: string,
-    ): boolean => {
-      let dc = 0, dr = 0;
-      if (side === 'R') dc = 1;
-      else if (side === 'L') dc = -1;
-      else if (side === 'T') dr = -1;
-      else if (side === 'B') dr = 1;
-      const occ = occupied.get(cellKey(col + dc, row + dr));
-      return occ !== undefined && occ !== selfId && occ !== otherId;
-    };
-
-    const relSides = activeRelations.map(rel => {
-      const fromNode = nodeMap.get(rel.from);
-      const toNode = nodeMap.get(rel.to);
-      if (!fromNode || !toNode) return null;
-
-      const colA = fromNode.grid ? fromNode.grid[0] : Math.round(((fromNode.x || 0) - spacing.offsetX) / spacing.colSpacing);
-      const rowA = fromNode.grid ? fromNode.grid[1] : Math.round(((fromNode.y || 0) - spacing.offsetY) / spacing.rowSpacing);
-      const colB = toNode.grid ? toNode.grid[0] : Math.round(((toNode.x || 0) - spacing.offsetX) / spacing.colSpacing);
-      const rowB = toNode.grid ? toNode.grid[1] : Math.round(((toNode.y || 0) - spacing.offsetY) / spacing.rowSpacing);
-
-      const startPts = [
-        { side: 'T', x: fromNode.x, y: fromNode.y - NODE_H / 2 },
-        { side: 'R', x: fromNode.x + NODE_W / 2, y: fromNode.y },
-        { side: 'B', x: fromNode.x, y: fromNode.y + NODE_H / 2 },
-        { side: 'L', x: fromNode.x - NODE_W / 2, y: fromNode.y }
-      ];
-
-      const endPts = [
-        { side: 'T', x: toNode.x, y: toNode.y - NODE_H / 2 },
-        { side: 'R', x: toNode.x + NODE_W / 2, y: toNode.y },
-        { side: 'B', x: toNode.x, y: toNode.y + NODE_H / 2 },
-        { side: 'L', x: toNode.x - NODE_W / 2, y: toNode.y }
-      ];
-
-      let minPenalty = Infinity;
-      let startPt = startPts[0];
-      let endPt = endPts[0];
-
-      startPts.forEach(sp => {
-        endPts.forEach(ep => {
-          const dx = ep.x - sp.x;
-          const dy = ep.y - sp.y;
-          const dist = Math.abs(dx) + Math.abs(dy);
-          let penalty = dist;
-
-          if (sp.side === 'R' && dx < 0) penalty += 500;
-          if (sp.side === 'L' && dx > 0) penalty += 500;
-          if (sp.side === 'T' && dy > 0) penalty += 500;
-          if (sp.side === 'B' && dy < 0) penalty += 500;
-
-          if (ep.side === 'R' && dx > 0) penalty += 500;
-          if (ep.side === 'L' && dx < 0) penalty += 500;
-          if (ep.side === 'T' && dy < 0) penalty += 500;
-          if (ep.side === 'B' && dy > 0) penalty += 500;
-
-          // Strongly discourage ports on a side that an adjacent in-grid node
-          // occupies: tunnelling an edge straight through a neighbouring node is
-          // worse than taking a slightly longer route, so this outweighs the
-          // directional penalty above and pushes the port to a clear side.
-          if (sideBlocked(colA, rowA, sp.side, rel.from, rel.to)) penalty += 800;
-          if (sideBlocked(colB, rowB, ep.side, rel.to, rel.from)) penalty += 800;
-
-          if (penalty < minPenalty) {
-            minPenalty = penalty;
-            startPt = sp;
-            endPt = ep;
-          }
-        });
-      });
-
-      let sideFrom = startPt.side;
-      let sideTo = endPt.side;
-
-      // In the horizontal timeline views, force flow-node edges to exit the
-      // right of the source and enter the left of the target so Command →
-      // Event → Policy chains read cleanly left-to-right. Only applies when the
-      // target sits to the right of the source (forward flow); backward edges
-      // keep the distance-optimised sides to avoid crossing through nodes.
-      if (HORIZONTAL_FLOW_VIEWS.has(viewKey)) {
-        const flowTypes = FLOW_TYPES_BY_VIEW[viewKey];
-        const typeOf = (id: string) => {
-          const e = schema.entities[id];
-          return e?.viewTypes?.[viewKey] || e?.type || 'default';
-        };
-        const bothFlow = flowTypes.has(typeOf(rel.from)) && flowTypes.has(typeOf(rel.to));
-        if (bothFlow && colB > colA) {
-          sideFrom = 'R';
-          sideTo = 'L';
-        }
-      }
-
-      const finalToId = rel.to;
-      const finalToNode = toNode;
-
-      return {
-        rel,
-        fromId: rel.from,
-        toId: finalToId,
-        sideFrom,
-        sideTo,
-        fromNode,
-        toNode: finalToNode,
-        colA, rowA, colB, rowB
-      };
-    }).filter(Boolean) as any[];
-
-    const nodeSideConns: Record<string, Record<string, any[]>> = {};
-    positioned.forEach(n => {
-      nodeSideConns[n.id] = { 'T': [], 'R': [], 'B': [], 'L': [] };
-    });
-
-    relSides.forEach((entry, index) => {
-      if (nodeSideConns[entry.fromId]) {
-        nodeSideConns[entry.fromId][entry.sideFrom].push({
-          relId: entry.rel.id,
-          role: 'from',
-          otherNodeId: entry.toId,
-          relIndex: index
-        });
-      }
-      if (nodeSideConns[entry.toId]) {
-        nodeSideConns[entry.toId][entry.sideTo].push({
-          relId: entry.rel.id,
-          role: 'to',
-          otherNodeId: entry.fromId,
-          relIndex: index
-        });
-      }
-    });
-
-    const relPorts: Record<string, any> = {};
-    positioned.forEach(node => {
-      ['T', 'R', 'B', 'L'].forEach(side => {
-        const conns = nodeSideConns[node.id][side];
-        if (conns.length === 0) return;
-
-        conns.sort((a, b) => {
-          const nodeA = nodeMap.get(a.otherNodeId);
-          const nodeB = nodeMap.get(b.otherNodeId);
-          if (!nodeA || !nodeB) return 0;
-          if (side === 'T' || side === 'B') {
-            return (nodeA.x || 0) - (nodeB.x || 0);
-          } else {
-            return (nodeA.y || 0) - (nodeB.y || 0);
-          }
-        });
-
-        const K = conns.length;
-        conns.forEach((conn, i) => {
-          let px = node.x || 0;
-          let py = node.y || 0;
-
-          if (side === 'L') {
-            px -= NODE_W / 2;
-            py = py - NODE_H / 2 + (i + 1) * NODE_H / (K + 1);
-          } else if (side === 'R') {
-            px += NODE_W / 2;
-            py = py - NODE_H / 2 + (i + 1) * NODE_H / (K + 1);
-          } else if (side === 'T') {
-            py -= NODE_H / 2;
-            px = px - NODE_W / 2 + (i + 1) * NODE_W / (K + 1);
-          } else if (side === 'B') {
-            py += NODE_H / 2;
-            px = px - NODE_W / 2 + (i + 1) * NODE_W / (K + 1);
-          }
-
-          if (!relPorts[conn.relId]) relPorts[conn.relId] = {};
-          if (conn.role === 'from') {
-            relPorts[conn.relId].startX = px;
-            relPorts[conn.relId].startY = py;
-            relPorts[conn.relId].sideFrom = side;
-          } else {
-            relPorts[conn.relId].endX = px;
-            relPorts[conn.relId].endY = py;
-            relPorts[conn.relId].sideTo = side;
-          }
-        });
-      });
-    });
-
-    const rawRoutes = relSides.map(entry => {
-      const ports = relPorts[entry.rel.id];
-      if (!ports) return null;
-
-      const { startX, startY, endX, endY, sideFrom, sideTo } = ports;
-      const { pathD, points, midX, midY, incomingSide } = routeManhattanPath(
-        startX, startY, endX, endY,
-        sideFrom, sideTo,
-        entry.fromNode, entry.toNode,
-        positioned, spacing
-      );
-
-      return {
-        ...entry.rel,
-        pathD,
-        points,
-        startX, startY, endX, endY,
-        midX, midY,
-        incomingSide
-      };
-    }).filter(Boolean) as any[];
-
-    const bridgedRoutes = disambiguateAndBridgePaths(rawRoutes);
-
-    return bridgedRoutes.map(r => ({
-      ...r,
-      path: r.pathD
-    })) as (any & { path: string })[];
-
-  }, [view, schema.relations, positioned, viewKey, spacing, nodeMap, isSequenceView]);
+  const routedRelations = useMemo(
+    () => routeViewRelations(view, viewKey, schema, positioned, spacing, isSequenceView),
+    [view, viewKey, schema, positioned, spacing, isSequenceView]
+  );
 
   const minX = isSequenceView ? 0 : Math.min(...positioned.map(n => n.x || 0));
   const maxX = isSequenceView ? 800 : Math.max(...positioned.map(n => n.x || 0));
@@ -351,17 +139,56 @@ export function FlowchartView({
 
   const { focusOnNodes, handleZoomIn, handleZoomOut, fitToScreen } = camera;
 
+  // Route views keep the whole map in frame so systems stay put while the story
+  // moves between them; timeline views follow the current step.
+  const fixedCamera = STORY_ROUTE_VIEWS.has(viewKey);
+  const allNodeIds = useMemo(() => positioned.map(n => n.id), [positioned]);
+
+  // Nodes the camera frames for the current step
+  const focusNodeIds = useMemo(() => {
+    if (viewKey === 'STATE_MACHINE') return highlightedNodeId ? [highlightedNodeId] : null;
+    if (!activeNodeIds || activeNodeIds.length === 0) return null;
+    return fixedCamera ? allNodeIds : activeNodeIds;
+  }, [viewKey, activeNodeIds, highlightedNodeId, fixedCamera, allNodeIds]);
+
+  const focusBBox = useMemo(
+    () => (focusNodeIds ? getNodesBBox(positioned, focusNodeIds) : null),
+    [focusNodeIds, positioned]
+  );
+
+  // The caption is already laid out at its final size when this runs, so the
+  // camera can leave room for it and pick the side where it fits best.
+  const captionRef = useRef<HTMLDivElement | null>(null);
+
+  // Re-frame when the canvas changes size (fullscreen, window resize)
+  const [viewportSize, setViewportSize] = useState('');
   useEffect(() => {
-    if (viewKey === 'STATE_MACHINE') {
-      if (highlightedNodeId) {
-        focusOnNodes([highlightedNodeId]);
-      }
-    } else {
-      if (activeNodeIds && activeNodeIds.length > 0) {
-        focusOnNodes(activeNodeIds);
-      }
-    }
-  }, [viewKey, activeNodeIds, highlightedNodeId, focusOnNodes]);
+    const el = camera.svgRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(([entry]) => {
+      setViewportSize(`${Math.round(entry.contentRect.width)}x${Math.round(entry.contentRect.height)}`);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [camera.svgRef]);
+  const [captionPlacement, setCaptionPlacement] = useState<CaptionPlacement>('below');
+  useEffect(() => {
+    if (!focusNodeIds) return;
+    const captionEl = stepCaption ? captionRef.current : null;
+    const captionH = captionEl?.offsetHeight ?? 0;
+    const placement = focusOnNodes(focusNodeIds, {
+      insets: measureOverlayInsets(camera.svgRef.current),
+      maxScale: fixedCamera ? FIXED_CAMERA_MAX_SCALE : undefined,
+      caption: captionEl && captionH > 0
+        ? {
+            width: captionEl.offsetWidth,
+            height: fixedCamera ? Math.max(captionH, FIXED_CAPTION_MIN_H) : captionH,
+            gap: CAPTION_GAP,
+          }
+        : undefined,
+    });
+    if (placement) setCaptionPlacement(placement);
+  }, [focusNodeIds, focusOnNodes, stepCaption, camera.svgRef, fixedCamera, viewportSize]);
 
   const hasFocusedRef = useRef(false);
   useEffect(() => {
@@ -389,11 +216,17 @@ export function FlowchartView({
     particlesRef.current = [];
 
     if (!activeNodeIds || activeNodeIds.length === 0) return;
-    if (currentStep === 0) return;
     if (isSequenceView) return;
 
     let targetEdgeIdxs: number[] = [];
-    if (currentJourneyId && schema.journeys) {
+    if (storyRoute) {
+      // Route views: run along the step's main line only, including the first step
+      targetEdgeIdxs = storyRoute.labelEdgeId
+        ? [routedRelations.findIndex(r => r.id === storyRoute.labelEdgeId)].filter(idx => idx !== -1)
+        : [];
+    } else if (currentStep === 0) {
+      return;
+    } else if (currentJourneyId && schema.journeys) {
       const journey = schema.journeys.find(j => j.id === currentJourneyId);
       if (journey && journey.steps[currentStep - 1]) {
         const step = journey.steps[currentStep - 1] as any;
@@ -411,7 +244,8 @@ export function FlowchartView({
       const rel = routedRelations[idx];
       if (!rel) return;
       const edgeEl = document.querySelector(`[data-testid="flowchart-edge-${viewKey}-${idx}"]`) as SVGPathElement;
-      if (!edgeEl) return;
+      // Skip where SVG geometry is unavailable (e.g. non-browser renderers)
+      if (!edgeEl || typeof edgeEl.getTotalLength !== 'function') return;
       const edgeId = `edge-${rel.id}`;
       const particleEl = document.querySelector(`circle[data-edge-id="${edgeId}"]`) as SVGCircleElement;
       if (!particleEl) return;
@@ -419,24 +253,30 @@ export function FlowchartView({
       const pathLength = edgeEl.getTotalLength();
       if (!pathLength) return;
 
+      // Travel along the drawn line (through its bends), not straight from end to end
       const p0 = edgeEl.getPointAtLength(0);
       particleEl.setAttribute('cx', p0.x.toString());
       particleEl.setAttribute('cy', p0.y.toString());
       particleEl.setAttribute('opacity', '1');
 
-      const p1 = edgeEl.getPointAtLength(pathLength);
-      const anim = animate(particleEl, {
-        cx: [p0.x, p1.x],
-        cy: [p0.y, p1.y],
+      const progress = { t: 0 };
+      const anim = animate(progress, {
+        t: 1,
         easing: 'easeInOutSine',
-        duration: 1000,
+        // Longer lines take a little longer so the speed stays readable
+        duration: Math.min(1600, Math.max(700, pathLength * 2)),
+        onUpdate: () => {
+          const pt = edgeEl.getPointAtLength(progress.t * pathLength);
+          particleEl.setAttribute('cx', pt.x.toString());
+          particleEl.setAttribute('cy', pt.y.toString());
+        },
         onComplete: () => {
           particleEl.setAttribute('opacity', '0');
         }
       });
       particlesRef.current.push({ id: edgeId, anim });
     });
-  }, [currentStep, prevHighlightedNodeId, highlightedNodeId, viewKey, nodeMap, schema.relations, view, currentJourneyId, schema.journeys, routedRelations, isSequenceView]);
+  }, [currentStep, prevHighlightedNodeId, highlightedNodeId, viewKey, nodeMap, schema.relations, view, currentJourneyId, schema.journeys, routedRelations, isSequenceView, storyRoute]);
 
   if (!view) {
     return (
@@ -576,6 +416,7 @@ export function FlowchartView({
                   activeNodeIds={activeNodeIds}
                   activeRelationIds={activeRelationIds}
                   highlightedNodeId={highlightedNodeId}
+                  forkHighlights={forkHighlights}
                 />
               ) : (
                 <StandardView 
@@ -593,10 +434,63 @@ export function FlowchartView({
                  setActiveNodePopup={setActiveNodePopup}
                  handleNodeClick={handleNodeClick}
                  isFullscreen={isFullscreen}
+                 forkHighlights={forkHighlights}
+                 storyRoute={storyRoute}
                />
              )}
           </g>
         </svg>
+
+        {stepCaption && (() => {
+          const viewportW = camera.svgRef.current?.clientWidth ?? 0;
+          const width = viewportW > 0 ? Math.min(CAPTION_MAX_W, viewportW - CAPTION_EDGE * 2) : CAPTION_MAX_W;
+          if (!focusBBox) {
+            return (
+              <StepCaption
+                key={stepCaption.id}
+                ref={captionRef}
+                caption={stepCaption}
+                placement="pinned"
+                onSwitchPath={onSwitchPath}
+                style={{ width }}
+              />
+            );
+          }
+          // Project the focus box into screen space; the caption rides along
+          // with the camera while it animates or the user pans.
+          const { scale, translateX, translateY } = camera.transform;
+          const box = {
+            left: focusBBox.minX * scale + translateX,
+            right: focusBBox.maxX * scale + translateX,
+            top: focusBBox.minY * scale + translateY,
+            bottom: focusBBox.maxY * scale + translateY,
+          };
+          const clampLeft = (x: number) => viewportW > 0
+            ? Math.min(Math.max(x, CAPTION_EDGE), viewportW - width - CAPTION_EDGE)
+            : x;
+          const style = captionPlacement === 'right'
+            ? {
+                width,
+                left: clampLeft(box.right + CAPTION_GAP),
+                top: (box.top + box.bottom) / 2,
+                transform: 'translateY(-50%)',
+              }
+            : {
+                width,
+                left: clampLeft((box.left + box.right) / 2 - width / 2),
+                top: box.bottom + CAPTION_GAP,
+              };
+          return (
+            <StepCaption
+              key={stepCaption.id}
+              ref={captionRef}
+              caption={stepCaption}
+              placement={captionPlacement}
+              onSwitchPath={onSwitchPath}
+              style={style}
+            />
+          );
+        })()}
 
         {isGridMode && onEnterFullscreen && !isFullscreen && (() => {
           const Maximize2 = Icons.Maximize2;

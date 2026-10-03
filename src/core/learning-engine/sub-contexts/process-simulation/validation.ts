@@ -85,6 +85,45 @@ export function validateProcessSimulationTier3(
 
       const entityIds = new Set(Object.keys(entities))
 
+      // Journey steps must reference a step: a linear step id or a branch option id.
+      // Anything else silently degrades to a single highlighted node.
+      const rawFlow = (data.flow as any) || (data.steps ? data : null)
+      if (rawFlow && Array.isArray(rawFlow.steps)) {
+        const stepIds = new Set<string>()
+        const eventToSteps = new Map<string, string[]>()
+        for (const step of rawFlow.steps as any[]) {
+          if (!step || typeof step !== 'object') continue
+          const targets = step.type === 'branch' ? (Array.isArray(step.branches) ? step.branches : []) : [step]
+          for (const t of targets) {
+            if (!t || typeof t.id !== 'string') continue
+            stepIds.add(t.id)
+            for (const evt of Array.isArray(t.resultEvents) ? t.resultEvents : []) {
+              if (evt && typeof evt.id === 'string') eventToSteps.set(evt.id, [...(eventToSteps.get(evt.id) ?? []), t.id])
+            }
+          }
+        }
+        const rawJourneys = Array.isArray(rawFlow.journeys) ? rawFlow.journeys : []
+        for (const [jIdx, journey] of rawJourneys.entries()) {
+          const jSteps = Array.isArray(journey?.steps) ? journey.steps : []
+          for (const [sIdx, ref] of jSteps.entries()) {
+            const stepId = ref?.stepId
+            if (typeof stepId !== 'string' || stepIds.has(stepId)) continue
+            const producers = eventToSteps.get(stepId)
+            diagnostics.push({
+              tier: 3,
+              field: `journeys[${jIdx}].steps[${sIdx}].stepId`,
+              message: producers
+                ? `Journey "${journey.id ?? jIdx}" step "${ref.name ?? sIdx}" references result event "${stepId}" instead of a step, so playback highlights only that event.`
+                : `Journey "${journey.id ?? jIdx}" step "${ref.name ?? sIdx}" references unknown step "${stepId}".`,
+              fixHint: producers
+                ? `Use the step that produces it: stepId: ${producers.join(' or stepId: ')}`
+                : `Use a linear step id or branch option id: [${[...stepIds].map((id) => `"${id}"`).join(', ')}]`,
+              ...ctx,
+            })
+          }
+        }
+      }
+
       for (const [idx, rel] of relations.entries()) {
         if (!rel || typeof rel !== 'object') continue
         if (rel.from && !entityIds.has(String(rel.from))) {

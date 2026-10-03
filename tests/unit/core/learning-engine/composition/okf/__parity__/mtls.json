@@ -438,6 +438,32 @@
                 "title": "Client Certificate"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "mtls_rejected_path",
+                      "label": "Invalid Certificate",
+                      "nodeIds": [
+                        "pol_verify_rejected",
+                        "cmd_verify_rejected",
+                        "server5",
+                        "evt_connection_terminated"
+                      ],
+                      "optionId": "verify_rejected",
+                      "stepIndex": 5
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_client_cert_sent",
+                    "pol_client_cert_step",
+                    "cmd_client_cert_step",
+                    "client2",
+                    "key_store",
+                    "evt_client_cert_sent"
+                  ],
+                  "label": "Valid Certificate",
+                  "optionId": "verify_happy"
+                },
                 "nodeIds": [
                   "pol_verify_happy",
                   "cmd_verify_happy",
@@ -548,6 +574,33 @@
                 "title": "Client Certificate"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "mtls_happy_path",
+                      "label": "Valid Certificate",
+                      "nodeIds": [
+                        "pol_verify_happy",
+                        "cmd_verify_happy",
+                        "server4",
+                        "ca_service",
+                        "evt_client_cert_verified"
+                      ],
+                      "optionId": "verify_happy",
+                      "stepIndex": 5
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_client_cert_sent",
+                    "pol_client_cert_step",
+                    "cmd_client_cert_step",
+                    "client2",
+                    "key_store",
+                    "evt_client_cert_sent"
+                  ],
+                  "label": "Invalid Certificate",
+                  "optionId": "verify_rejected"
+                },
                 "nodeIds": [
                   "pol_verify_rejected",
                   "cmd_verify_rejected",

@@ -1221,6 +1221,31 @@
                 "title": "พ่นหัวฉีด"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "fuel-injection-cold",
+                      "label": "เครื่องเย็น",
+                      "nodeIds": [
+                        "pol_inject_cold",
+                        "cmd_inject_cold",
+                        "fuel_injector3",
+                        "evt_inject_cold_auto"
+                      ],
+                      "optionId": "inject_cold",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_fuel_atomized",
+                    "pol_inject_fuel",
+                    "cmd_inject_fuel",
+                    "fuel_injector",
+                    "evt_fuel_atomized"
+                  ],
+                  "label": "ปกติ",
+                  "optionId": "precise_mix"
+                },
                 "nodeIds": [
                   "pol_precise_mix",
                   "cmd_precise_mix",
@@ -1259,6 +1284,31 @@
                 "title": "พ่นหัวฉีด"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "fuel-injection-normal",
+                      "label": "ปกติ",
+                      "nodeIds": [
+                        "pol_precise_mix",
+                        "cmd_precise_mix",
+                        "fuel_injector2",
+                        "evt_precise_mix"
+                      ],
+                      "optionId": "precise_mix",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_fuel_atomized",
+                    "pol_inject_fuel",
+                    "cmd_inject_fuel",
+                    "fuel_injector",
+                    "evt_fuel_atomized"
+                  ],
+                  "label": "เครื่องเย็น",
+                  "optionId": "inject_cold"
+                },
                 "nodeIds": [
                   "pol_inject_cold",
                   "cmd_inject_cold",
@@ -1608,6 +1658,32 @@
                 "title": "เปิดโช้ค"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "choke-forgot-off",
+                      "label": "ลืมปิดโช้ค",
+                      "nodeIds": [
+                        "pol_ride_choke",
+                        "cmd_ride_choke",
+                        "choke_valve2",
+                        "evt_choke_forget"
+                      ],
+                      "optionId": "ride_choke",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_rich_mix",
+                    "rider",
+                    "pol_choke_on",
+                    "cmd_choke_on",
+                    "choke_valve",
+                    "evt_rich_mix"
+                  ],
+                  "label": "สตาร์ทเครื่อง",
+                  "optionId": "cold_start"
+                },
                 "nodeIds": [
                   "pol_cold_start",
                   "cmd_cold_start",
@@ -1646,6 +1722,32 @@
                 "title": "เปิดโช้ค"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "choke-cold-start",
+                      "label": "สตาร์ทเครื่อง",
+                      "nodeIds": [
+                        "pol_cold_start",
+                        "cmd_cold_start",
+                        "engine_warm",
+                        "evt_engine_warm"
+                      ],
+                      "optionId": "cold_start",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_rich_mix",
+                    "rider",
+                    "pol_choke_on",
+                    "cmd_choke_on",
+                    "choke_valve",
+                    "evt_rich_mix"
+                  ],
+                  "label": "ลืมปิดโช้ค",
+                  "optionId": "ride_choke"
+                },
                 "nodeIds": [
                   "pol_ride_choke",
                   "cmd_ride_choke",
@@ -2011,6 +2113,32 @@
                 "title": "แคลิเพอร์ประกบจาน"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "brake-fade",
+                      "label": "ร้อนเกินไป",
+                      "nodeIds": [
+                        "pol_brake_fade",
+                        "cmd_brake_fade",
+                        "brake_caliper3",
+                        "evt_brake_fade"
+                      ],
+                      "optionId": "brake_fade",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_brake_heat",
+                    "pol_caliper_squeeze",
+                    "cmd_caliper_squeeze",
+                    "brake_caliper",
+                    "evt_wheel_slowed",
+                    "evt_brake_heat"
+                  ],
+                  "label": "ปกติ",
+                  "optionId": "brake_normal"
+                },
                 "nodeIds": [
                   "pol_brake_normal",
                   "cmd_brake_normal",
@@ -2050,6 +2178,32 @@
                 "title": "แคลิเพอร์ประกบจาน"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "brake-normal",
+                      "label": "ปกติ",
+                      "nodeIds": [
+                        "pol_brake_normal",
+                        "cmd_brake_normal",
+                        "brake_caliper2",
+                        "evt_brake_normal"
+                      ],
+                      "optionId": "brake_normal",
+                      "stepIndex": 2
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_brake_heat",
+                    "pol_caliper_squeeze",
+                    "cmd_caliper_squeeze",
+                    "brake_caliper",
+                    "evt_wheel_slowed",
+                    "evt_brake_heat"
+                  ],
+                  "label": "ร้อนเกินไป",
+                  "optionId": "brake_fade"
+                },
                 "nodeIds": [
                   "pol_brake_fade",
                   "cmd_brake_fade",

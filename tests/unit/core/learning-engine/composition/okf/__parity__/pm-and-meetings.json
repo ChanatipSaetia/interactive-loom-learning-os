@@ -560,6 +560,32 @@
                 "title": "Coding and Testing"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "blocked-path",
+                      "label": "Blocked Work",
+                      "nodeIds": [
+                        "pol_branch_blocked",
+                        "cmd_branch_blocked",
+                        "standup_tool",
+                        "evt_evt_blocker_raised"
+                      ],
+                      "optionId": "branch_blocked",
+                      "stepIndex": 1
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_work_in_progress",
+                    "dev",
+                    "pol_daily_execution",
+                    "cmd_daily_execution",
+                    "dev_workspace",
+                    "evt_evt_work_in_progress"
+                  ],
+                  "label": "No Blockers",
+                  "optionId": "branch_no_blocker"
+                },
                 "nodeIds": [
                   "pol_branch_no_blocker",
                   "cmd_branch_no_blocker",
@@ -602,6 +628,32 @@
                 "title": "Coding and Testing"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "happy-path",
+                      "label": "No Blockers",
+                      "nodeIds": [
+                        "pol_branch_no_blocker",
+                        "cmd_branch_no_blocker",
+                        "slack_channel",
+                        "evt_evt_async_updated"
+                      ],
+                      "optionId": "branch_no_blocker",
+                      "stepIndex": 3
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_work_in_progress",
+                    "dev",
+                    "pol_daily_execution",
+                    "cmd_daily_execution",
+                    "dev_workspace",
+                    "evt_evt_work_in_progress"
+                  ],
+                  "label": "Blocked Work",
+                  "optionId": "branch_blocked"
+                },
                 "nodeIds": [
                   "pol_branch_blocked",
                   "cmd_branch_blocked",

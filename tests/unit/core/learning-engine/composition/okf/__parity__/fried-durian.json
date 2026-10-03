@@ -660,6 +660,33 @@
                 "title": "สะเด็ดน้ำมัน"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_sugar",
+                      "label": "เคลือบน้ำตาล",
+                      "nodeIds": [
+                        "pol_branch_sugar",
+                        "cmd_branch_sugar",
+                        "sugar_bowl",
+                        "eater2",
+                        "evt_evt_sugar_done"
+                      ],
+                      "optionId": "branch_sugar",
+                      "stepIndex": 5
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_drained",
+                    "cook5",
+                    "pol_step_5",
+                    "cmd_step_5",
+                    "knife2",
+                    "evt_evt_drained"
+                  ],
+                  "label": "แบบเปล่า",
+                  "optionId": "branch_plain"
+                },
                 "nodeIds": [
                   "pol_branch_plain",
                   "cmd_branch_plain",
@@ -739,6 +766,33 @@
                 "title": "สะเด็ดน้ำมัน"
               },
               {
+                "branch": {
+                  "alternatives": [
+                    {
+                      "journeyId": "journey_plain",
+                      "label": "แบบเปล่า",
+                      "nodeIds": [
+                        "pol_branch_plain",
+                        "cmd_branch_plain",
+                        "durian_raw2",
+                        "eater",
+                        "evt_evt_plain_done"
+                      ],
+                      "optionId": "branch_plain",
+                      "stepIndex": 5
+                    }
+                  ],
+                  "forkNodeIds": [
+                    "evt_evt_drained",
+                    "cook5",
+                    "pol_step_5",
+                    "cmd_step_5",
+                    "knife2",
+                    "evt_evt_drained"
+                  ],
+                  "label": "เคลือบน้ำตาล",
+                  "optionId": "branch_sugar"
+                },
                 "nodeIds": [
                   "pol_branch_sugar",
                   "cmd_branch_sugar",

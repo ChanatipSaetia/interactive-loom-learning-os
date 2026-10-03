@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useId, useRef, useState, type ComponentType } from 'react';
+import { useCallback, useEffect, useMemo, useId, useRef, useState, type ComponentType, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import * as Icons from 'lucide-react';
 import { Button } from '../../../../../ui-system/motion/button';
 import { Dropdown } from '../../../../../ui-system/motion/dropdown';
@@ -11,6 +11,9 @@ import { FlowchartView } from './views';
 import { PlaybackControls } from './playback-controls';
 import { MiniPlayer } from './mini-player';
 import { StepCarousel } from './step-carousel';
+import type { StepCaptionData } from './step-caption';
+import { computeForkHighlights } from './fork-highlights';
+import { computeStoryRoute } from './story-route';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
 import { buildCanonicalIdMapper, deriveSchema } from '../../model/derive';
@@ -203,6 +206,32 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
     };
   }, [playback.activeNodeIds, localSchema.entities, localSchema.relations, activeViewKey]);
 
+  // The fork the current step passes through, resolved for the active view
+  const currentJourneyStep = playback.currentStep >= 0 ? playback.currentJourney?.steps[playback.currentStep] : undefined;
+  const forkHighlights = useMemo(
+    () => computeForkHighlights(localSchema, activeViewKey, currentJourneyStep?.branch, currentJourneyStep?.nodeIds ?? []),
+    [localSchema, activeViewKey, currentJourneyStep]
+  );
+
+  // Architecture view: the journey as a route of hand-offs between systems
+  const storyRoute = useMemo(
+    () => computeStoryRoute(localSchema, activeViewKey, playback.currentJourney?.steps, playback.currentStep),
+    [localSchema, activeViewKey, playback.currentJourney, playback.currentStep]
+  );
+
+  // The edge into the path taken, and the current hand-off, light up like the rest of the step
+  const activeRelationIds = useMemo(() => {
+    const extra = [...(forkHighlights?.takenRelationIds ?? []), ...(storyRoute?.currentEdgeIds ?? [])];
+    if (extra.length === 0) return resolvedHighlights.activeRelationIds;
+    return [...new Set([...(resolvedHighlights.activeRelationIds ?? []), ...extra])];
+  }, [resolvedHighlights.activeRelationIds, forkHighlights, storyRoute]);
+
+  // Both ends of a hand-off are lit, not just the step's own systems
+  const activeNodeIds = useMemo(() => {
+    if (!storyRoute || !resolvedHighlights.activeNodeIds) return resolvedHighlights.activeNodeIds;
+    return [...new Set([...resolvedHighlights.activeNodeIds, ...storyRoute.currentNodeIds])];
+  }, [resolvedHighlights.activeNodeIds, storyRoute]);
+
   // Sync active step with current playback step
   const activeSteps = useMemo(() => {
     if (activeView.steps && activeView.steps.length > 0) {
@@ -215,6 +244,7 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
         nodeIds: step.nodeIds,
         title: step.title,
         reason: step.reason,
+        branchLabel: step.branch?.label,
       }));
     }
     return [];
@@ -229,6 +259,32 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
       setActiveStep(activeSteps[playback.currentStep] ?? null);
     }
   }, [playback.currentStep, activeSteps]);
+
+  // Narration shown next to the focused nodes
+  // (derived from the step index directly so it lands in the same render as the camera focus)
+  const stepCaption = useMemo<StepCaptionData | null>(() => {
+    const step = playback.currentStep >= 0 ? activeSteps[playback.currentStep] : undefined;
+    if (!step || step.type !== 'linear' || !step.reason) return null;
+    const branch = currentJourneyStep?.branch;
+    return {
+      id: `${playback.currentJourneyId}:${step.id}`,
+      index: playback.currentStep,
+      total: activeSteps.length,
+      title: step.title,
+      text: step.reason,
+      ...(branch ? {
+        branch: {
+          label: branch.label,
+          alternatives: branch.alternatives.map(alt => ({
+            label: alt.label,
+            journeyId: alt.journeyId,
+            journeyLabel: localSchema.journeys.find(j => j.id === alt.journeyId)?.label,
+            stepIndex: alt.stepIndex,
+          })),
+        },
+      } : {}),
+    };
+  }, [activeSteps, playback.currentJourneyId, playback.currentStep, currentJourneyStep, localSchema.journeys]);
 
   // Scroll carousel to keep active step visible
   useEffect(() => {
@@ -401,19 +457,18 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
     }
   }, [activeViewKey, localSchema.entities, localSchema.views!, isFullscreen, sidebarManuallyClosed]);
 
+  // Clicking a card focuses that step; clicking the active one just holds it there
   const handleStepClick = (step: FlowchartStepLinear | FlowchartStepBranchOption) => {
-    if (activeStep?.id === step.id) {
-      playback.resetAll();
-    } else {
-      const stepIdx = activeSteps.findIndex(s => s.id === step.id);
-      if (stepIdx !== -1) {
-        playback.setCurrentStep(stepIdx);
-        playback.handlePause();
-      }
+    playback.handlePause();
+    if (activeStep?.id === step.id) return;
+    const stepIdx = activeSteps.findIndex(s => s.id === step.id);
+    if (stepIdx !== -1) {
+      playback.setCurrentStep(stepIdx);
     }
   };
 
-  const [isDockCollapsed, setIsDockCollapsed] = useState(false);
+  // Starts as the mini player so the canvas stays clear; expand for the step cards
+  const [isDockCollapsed, setIsDockCollapsed] = useState(true);
   const [cameraControls, setCameraControls] = useState<{
     handleZoomIn: () => void;
     handleZoomOut: () => void;
@@ -462,9 +517,59 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
   const currentJourney = playback.currentJourney;
   const hasDock = activeSteps.length > 0;
 
+  const selectJourney = (journeyId: string) => {
+    playback.setCurrentJourneyId(journeyId);
+    setActiveStep(null);
+  };
+
   const selectJourneyStep = (stepIndex: number) => {
     playback.setCurrentStep(stepIndex);
     playback.handlePause();
+  };
+
+  // The journey after the current one (wrapping), offered when playback finishes
+  const nextJourney = useMemo(() => {
+    if (journeys.length < 2) return undefined;
+    const idx = journeys.findIndex(j => j.id === playback.currentJourneyId);
+    return journeys[(idx + 1) % journeys.length];
+  }, [journeys, playback.currentJourneyId]);
+
+  const isJourneyComplete = !!currentJourney
+    && !playback.isPlaying
+    && playback.currentStep === currentJourney.steps.length - 1;
+
+  // Space play/pause, arrows step, Home back to the overview. Form fields and
+  // the view tabs keep their own keys; Space on a button keeps activating it.
+  const handlePlaybackKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (!currentJourney || e.altKey || e.ctrlKey || e.metaKey) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('input, select, textarea, [contenteditable="true"], [role="tablist"], [role="dialog"], [role="listbox"], [aria-haspopup="listbox"]')) return;
+
+    switch (e.key) {
+      case ' ':
+        if (target.closest('button')) return;
+        e.preventDefault();
+        if (playback.isPlaying) {
+          playback.handlePause();
+        } else {
+          playback.handlePlay();
+        }
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        playback.handlePause();
+        playback.handleNext();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        playback.handlePause();
+        if (playback.currentStep > 0) playback.handlePrev();
+        break;
+      case 'Home':
+        e.preventDefault();
+        playback.handleReset();
+        break;
+    }
   };
 
   const journeyPanel = (
@@ -476,10 +581,7 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
               {journeys.length > 1 ? (
                 <Dropdown
                   value={playback.currentJourneyId}
-                  onChange={(val) => {
-                    playback.setCurrentJourneyId(val);
-                    setActiveStep(null);
-                  }}
+                  onChange={selectJourney}
                   options={journeys.map(j => ({ value: j.id, label: j.label }))}
                   data-testid="flowchart-journey-select"
                   triggerTestId="flowchart-journey-trigger"
@@ -534,6 +636,24 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
               {currentJourney.description}
             </div>
           )}
+          {isJourneyComplete && (
+            <div className="flowchart-journey-complete animate-fade-in" data-testid="flowchart-journey-complete" role="status">
+              <Icons.CircleCheck size={14} className="flowchart-journey-complete-icon" />
+              <span className="flowchart-journey-complete-label">Journey complete</span>
+              {nextJourney && (
+                <button
+                  type="button"
+                  className="flowchart-journey-complete-next"
+                  onClick={() => playback.startJourney(nextJourney.id)}
+                  data-testid="flowchart-next-journey"
+                  title={nextJourney.description}
+                >
+                  Next: {nextJourney.label}
+                  <Icons.ArrowRight size={12} />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
       <StepCarousel
@@ -547,16 +667,26 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
   );
 
   return (
-    <div className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`} data-testid="flowchart-section">
+    <div
+      className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`}
+      data-testid="flowchart-section"
+      onKeyDown={handlePlaybackKeyDown}
+    >
       <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FlowchartHelpModal} titleTestId="flowchart-title" />
 
       {/* Canvas View */}
-      <div className="flowchart-canvas-wrapper" style={{ position: 'relative' }}>
+      <div
+        className="flowchart-canvas-wrapper"
+        style={{ position: 'relative' }}
+        tabIndex={currentJourney ? 0 : undefined}
+        aria-label={currentJourney ? 'Flowchart canvas. Space plays or pauses the journey, arrow keys step through it, Home returns to the overview.' : undefined}
+        data-testid="flowchart-canvas-wrapper"
+      >
         <FlowchartView
           viewKey={activeViewKey}
           schema={localSchema}
-          activeNodeIds={resolvedHighlights.activeNodeIds}
-          activeRelationIds={resolvedHighlights.activeRelationIds}
+          activeNodeIds={activeNodeIds}
+          activeRelationIds={activeRelationIds}
           highlightedNodeId={highlightedNodeId}
           prevHighlightedNodeId={prevHighlightedNodeId}
           currentStep={playback.currentStep}
@@ -571,6 +701,10 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
           focusAfterViewSwitch={focusAfterViewSwitch}
           onCameraFocused={() => setFocusAfterViewSwitch(null)}
           onCameraControls={setCameraControls}
+          stepCaption={stepCaption}
+          forkHighlights={forkHighlights}
+          storyRoute={storyRoute}
+          onSwitchPath={playback.jumpTo}
         />
 
         {/* Canvas tools - fullscreen + zoom, stacked vertically top-left */}
@@ -708,6 +842,10 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
                   handleReset={playback.handleReset}
                   onSelectStep={selectJourneyStep}
                   onExpand={() => setIsDockCollapsed(false)}
+                  nextJourney={nextJourney}
+                  onStartJourney={playback.startJourney}
+                  journeys={journeys}
+                  onSelectJourney={selectJourney}
                 />
               </motion.div>
             ) : (

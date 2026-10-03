@@ -261,6 +261,30 @@ export interface FlowchartViewGroup {
 
 export type ProcessGroup = 'planning' | 'execution' | 'evaluation' | 'escalation';
 
+/** One option at a fork that the current journey step did not take. */
+export interface FlowchartBranchAlternative {
+  /** Branch option id from steps.yaml. */
+  optionId: string;
+  /** The option's edge label ("A step failed"). */
+  label: string;
+  /** Node chain of that option (policy, command, handler, events). */
+  nodeIds: string[];
+  /** Another journey that takes this option, and the step index where it does. */
+  journeyId?: string;
+  stepIndex?: number;
+}
+
+/** Set on a journey step whose stepId is a branch option: the fork it passes through. */
+export interface FlowchartStepBranchInfo {
+  /** Branch option id taken by this step. */
+  optionId: string;
+  /** The taken option's edge label ("Every step worked"). */
+  label: string;
+  /** Where the flow forks: the branching event and the chain of the step that emitted it. */
+  forkNodeIds: string[];
+  alternatives: FlowchartBranchAlternative[];
+}
+
 export interface FlowchartStep {
   /** All node IDs in the referenced step's chain, populated by derivation. */
   nodeIds: string[];
@@ -269,6 +293,8 @@ export interface FlowchartStep {
   /** Long description from the journey step. */
   reason: string;
   processGroup?: ProcessGroup;
+  /** Present when the step takes one option of a branch. */
+  branch?: FlowchartStepBranchInfo;
 }
 
 export interface FlowchartStepLinear {
@@ -277,6 +303,8 @@ export interface FlowchartStepLinear {
   nodeIds?: string[];
   title: string;
   reason: string;
+  /** Condition label when this step takes one option of a fork. */
+  branchLabel?: string;
 }
 
 export interface FlowchartStepBranchOption {

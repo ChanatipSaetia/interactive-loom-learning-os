@@ -1,4 +1,4 @@
-import { Play, Pause, SkipForward, SkipBack, RotateCcw } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, RotateCcw, Square } from 'lucide-react';
 import { Button } from '../../../../../ui-system/motion/button';
 import type { FlowchartJourney } from './types';
 import { useSound } from '../../../../../ui-system/sensory/SoundContext';
@@ -18,6 +18,7 @@ export interface PlaybackControlsProps {
 export function usePlaybackSoundHandlers({
   currentJourney,
   currentStep,
+  isPlaying,
   handlePlay,
   handlePause,
   handleNext,
@@ -25,6 +26,8 @@ export function usePlaybackSoundHandlers({
   handleReset
 }: PlaybackControlsProps) {
   const { playSound } = useSound();
+
+  const atEnd = currentStep >= currentJourney.steps.length - 1;
 
   const onPrevClick = () => {
     playSound('stepPrev');
@@ -40,14 +43,14 @@ export function usePlaybackSoundHandlers({
     handleNext();
   };
 
-  const onPlayClick = () => {
+  // One button for play, pause and replay (play at the last step starts over)
+  const onToggleClick = () => {
     playSound('click');
-    handlePlay();
-  };
-
-  const onPauseClick = () => {
-    playSound('click');
-    handlePause();
+    if (isPlaying) {
+      handlePause();
+    } else {
+      handlePlay();
+    }
   };
 
   const onResetClick = () => {
@@ -55,12 +58,15 @@ export function usePlaybackSoundHandlers({
     handleReset();
   };
 
-  return { onPrevClick, onNextClick, onPlayClick, onPauseClick, onResetClick };
+  const toggleLabel = isPlaying ? 'Pause' : atEnd ? 'Replay' : 'Play';
+  const ToggleIcon = isPlaying ? Pause : atEnd ? RotateCcw : Play;
+
+  return { atEnd, toggleLabel, ToggleIcon, onPrevClick, onNextClick, onToggleClick, onResetClick };
 }
 
 export function PlaybackControls(props: PlaybackControlsProps) {
-  const { currentJourney, currentStep, isPlaying } = props;
-  const { onPrevClick, onNextClick, onPlayClick, onPauseClick, onResetClick } = usePlaybackSoundHandlers(props);
+  const { currentJourney, currentStep } = props;
+  const { atEnd, toggleLabel, ToggleIcon, onPrevClick, onNextClick, onToggleClick, onResetClick } = usePlaybackSoundHandlers(props);
 
   return (
     <div className="flowchart-playback animate-fade-in" data-testid="flowchart-playback">
@@ -72,39 +78,30 @@ export function PlaybackControls(props: PlaybackControlsProps) {
         onClick={onPrevClick}
         data-testid="flowchart-btn-prev"
         aria-label="Previous"
+        title="Previous (←)"
       >
         <SkipBack size={16} className="flowchart-btn-icon" />
       </Button>
       <Button
         size="icon"
         variant="ghost"
-        className="flowchart-btn"
-        disabled={isPlaying || currentStep >= currentJourney.steps.length - 1}
-        onClick={onPlayClick}
-        data-testid="flowchart-btn-play"
-        aria-label="Play"
+        className="flowchart-btn flowchart-btn-toggle"
+        onClick={onToggleClick}
+        data-testid="flowchart-btn-toggle"
+        aria-label={toggleLabel}
+        title={`${toggleLabel} (Space)`}
       >
-        <Play size={16} className="flowchart-btn-icon" />
+        <ToggleIcon size={16} className="flowchart-btn-icon" />
       </Button>
       <Button
         size="icon"
         variant="ghost"
         className="flowchart-btn"
-        disabled={!isPlaying}
-        onClick={onPauseClick}
-        data-testid="flowchart-btn-pause"
-        aria-label="Pause"
-      >
-        <Pause size={16} className="flowchart-btn-icon" />
-      </Button>
-      <Button
-        size="icon"
-        variant="ghost"
-        className="flowchart-btn"
-        disabled={currentStep >= currentJourney.steps.length - 1}
+        disabled={atEnd}
         onClick={onNextClick}
         data-testid="flowchart-btn-next"
         aria-label="Next"
+        title="Next (→)"
       >
         <SkipForward size={16} className="flowchart-btn-icon" />
       </Button>
@@ -112,17 +109,17 @@ export function PlaybackControls(props: PlaybackControlsProps) {
         size="icon"
         variant="ghost"
         className="flowchart-btn"
-        disabled={currentStep <= 0}
+        disabled={currentStep < 0}
         onClick={onResetClick}
         data-testid="flowchart-btn-reset"
-        aria-label="Reset"
+        aria-label="Stop"
+        title="Stop and show the overview (Home)"
       >
-        <RotateCcw size={16} className="flowchart-btn-icon" />
+        <Square size={14} className="flowchart-btn-icon" />
       </Button>
-      <span className="flowchart-progress" data-testid="flowchart-progress">
+      <span className="flowchart-progress" data-testid="flowchart-progress" aria-live="polite">
         {currentStep === -1 ? 0 : currentStep + 1} / {currentJourney.steps.length}
       </span>
     </div>
   );
 }
-
