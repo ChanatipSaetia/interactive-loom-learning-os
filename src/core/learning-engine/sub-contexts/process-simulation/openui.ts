@@ -153,7 +153,7 @@ function toRef(value: unknown) {
 
 export const Step = defineOUIComponent({
   name: 'Step',
-  description: 'Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls.',
+  description: 'Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.',
   props: z.object({
     id: z.string(),
     ...handlerProps,

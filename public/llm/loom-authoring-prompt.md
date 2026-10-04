@@ -163,7 +163,7 @@ MachineState(id: string, label: string, color: string) — A state of a system s
   - id: State ID, unique within the state machine.
   - label: State name shown in the state machine view.
   - color: CSS colour for the state, e.g. "var(--ctp-green)" or "#a6d189".
-Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls.
+Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.
   - id: Step ID, unique within the flowchart; journeys and `continuesAs` refer to it.
   - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
   - command: Command the policy issues, in imperative form (e.g. "PlaceOrder").
@@ -442,7 +442,7 @@ root = Flowchart("Brewing Flow", [brewer], [kettle, teapot], [heat, brew], [happ
 brewer = Actor("brewer", "Brewer", "Person making the tea")
 kettle = System("kettle", "Kettle", "Heats water to a set temperature", "external")
 teapot = System("teapot", "Teapot", "Holds leaf and water while it steeps", "aggregate")
-heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves")
+heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves", null, teapot)
 brew = Step("steep-leaves", "When water is ready", "SteepLeaves", teapot, [Event("tea-steeped", "Tea Steeped")])
 happy = Journey("happy", "Balanced cup", "Heat, steep and pour on time", [JourneyStep(heat, "Heat water", "The kettle stops at 75 °C instead of boiling."), JourneyStep(brew, "Steep", "Two minutes, then pour off all the water.")])
 

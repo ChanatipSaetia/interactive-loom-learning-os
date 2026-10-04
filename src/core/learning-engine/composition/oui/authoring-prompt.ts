@@ -149,7 +149,7 @@ root = Flowchart("Brewing Flow", [brewer], [kettle, teapot], [heat, brew], [happ
 brewer = Actor("brewer", "Brewer", "Person making the tea")
 kettle = System("kettle", "Kettle", "Heats water to a set temperature", "external")
 teapot = System("teapot", "Teapot", "Holds leaf and water while it steeps", "aggregate")
-heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves")
+heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves", null, teapot)
 brew = Step("steep-leaves", "When water is ready", "SteepLeaves", teapot, [Event("tea-steeped", "Tea Steeped")])
 happy = Journey("happy", "Balanced cup", "Heat, steep and pour on time", [JourneyStep(heat, "Heat water", "The kettle stops at 75 °C instead of boiling."), JourneyStep(brew, "Steep", "Two minutes, then pour off all the water.")])
 
