@@ -74,6 +74,24 @@ body {
 .studio-landing-card h1 { margin: 16px 0 8px; font-size: 26px; }
 .studio-landing-card p { color: var(--ctp-subtext0); line-height: 1.55; margin: 0 0 20px; }
 .studio-landing-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.studio-paste { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.studio-paste textarea {
+  width: 100%;
+  min-height: 160px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--ctp-surface1);
+  border-radius: 8px;
+  background: var(--ctp-base);
+  color: var(--ctp-text);
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+}
+.studio-paste textarea:focus { outline: 2px solid var(--ctp-blue); outline-offset: 1px; }
+.studio-paste .studio-hint { margin: 0; font-size: 13px; }
+.studio-paste .studio-button { align-self: flex-start; }
 
 /* --- Shell ------------------------------------------------------------------ */
 

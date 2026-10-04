@@ -27,6 +27,41 @@ describe('Loom Studio', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/Chromium-based browser/)
   })
 
+  it('creates a new topic from pasted text in an empty folder and opens it', async () => {
+    const folder = memoryFolder('gundam-00', {})
+    render(<StudioApp pickFolder={async () => folder} />)
+    fireEvent.click(screen.getByTestId('studio-paste-toggle'))
+    expect(screen.getByTestId('studio-paste-create')).toBeDisabled()
+    // Markers written the way chats often do: no "===", a topic-folder prefix.
+    const pasted = '```\n// @loom-topic gundam-00\n// topic.oui\nroot = Topic("Gundam 00", "Anime", "Mobile suits", [SectionRef("intro"), SectionRef("quiz")])\n'
+      + '// --- gundam-00/sections/intro.oui ---\nroot = Text("Intro", ["Celestial Being."])\n'
+      + '// File: sections/quiz.oui\nroot = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Who?", [QuizChoice("a", "Setsuna", true, "Yes")])\n```'
+    fireEvent.change(screen.getByTestId('studio-paste-input'), { target: { value: pasted } })
+    fireEvent.click(screen.getByTestId('studio-paste-create'))
+    await waitFor(() => expect(screen.getByTestId('studio-section-quiz')).toBeInTheDocument())
+    expect([...folder.files.keys()].sort()).toEqual(['sections/intro.oui', 'sections/quiz.oui', 'topic.oui'])
+    expect(folder.files.get('sections/intro.oui')).toBe('root = Text("Intro", ["Celestial Being."])\n')
+  })
+
+  it('asks before replacing a topic in a non-empty folder, and shows parse errors without picking', async () => {
+    const folder = memoryFolder('demo', files())
+    const pickFolder = vi.fn(async () => folder)
+    render(<StudioApp pickFolder={pickFolder} />)
+    fireEvent.click(screen.getByTestId('studio-paste-toggle'))
+    fireEvent.change(screen.getByTestId('studio-paste-input'), { target: { value: 'root = Topic("Only", "C", "", [SectionRef("a")])' } })
+    fireEvent.click(screen.getByTestId('studio-paste-create'))
+    expect((await screen.findByRole('alert')).textContent).toMatch(/only a topic.oui/)
+    expect(pickFolder).not.toHaveBeenCalled()
+
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    fireEvent.change(screen.getByTestId('studio-paste-input'), { target: { value: 'root = Text("Solo", ["One section."])' } })
+    fireEvent.click(screen.getByTestId('studio-paste-create'))
+    await waitFor(() => expect(confirm).toHaveBeenCalled())
+    expect(confirm.mock.calls[0][0]).toMatch(/already has a topic/)
+    expect(folder.files.get('topic.oui')).toBe(files()['topic.oui'])
+    confirm.mockRestore()
+  })
+
   it('lists sections with their types and opens the first one', async () => {
     await renderWorkspace()
     expect(screen.getByTestId('studio-section-intro').textContent).toContain('text')
