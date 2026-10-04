@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/learning-engine/registry'
 import BulletsSection, { type BulletItem } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/bullets'
 
@@ -46,7 +46,7 @@ describe('Bullets Section', () => {
     expect(screen.queryByTestId('bullets-title')).not.toBeInTheDocument()
   })
 
-  it('renders nested children items', () => {
+  it('starts with sub-points collapsed and opens them on tap', () => {
     const nestedItems: BulletItem[] = [
       {
         text: 'Parent item',
@@ -58,6 +58,11 @@ describe('Bullets Section', () => {
     ]
     render(<BulletsSection items={nestedItems} animate={false} />)
     expect(screen.getByTestId('bullet-text-0')).toHaveTextContent('Parent item')
+    const header = screen.getByRole('button', { name: /Parent item/ })
+    expect(header).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByTestId('bullet-children-0')).not.toBeInTheDocument()
+    fireEvent.click(header)
+    expect(header).toHaveAttribute('aria-expanded', 'true')
     const children = screen.getByTestId('bullet-children-0')
     expect(children).toBeInTheDocument()
     expect(screen.getByTestId('bullet-text-0-0')).toHaveTextContent('Child one')

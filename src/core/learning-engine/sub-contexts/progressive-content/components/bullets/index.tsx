@@ -36,7 +36,8 @@ function BulletItemRow({
   animate: boolean
   parentAccent?: string
 }) {
-  const [isExpanded, setIsExpanded] = useState(true)
+  // Cards with sub-points start collapsed; the reader opens the ones they want
+  const [isExpanded, setIsExpanded] = useState(false)
   const hasChildren = item.children && item.children.length > 0
   const isTopLevel = depth === 0
 
