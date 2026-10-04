@@ -4,7 +4,7 @@
  * build serves them next to the app. Shared with the unit test that keeps the
  * committed files fresh.
  */
-import { LOOM_PAGES_URL, getLoomAuthoringPrompt } from './authoring-prompt'
+import { LOOM_PAGES_URL, OPENUI_LANG_DOCS_URL, OPENUI_REACT_UI_DOCS_URL, getLoomAuthoringPrompt } from './authoring-prompt'
 import { getLoomOUIJSONSchema } from './library'
 
 const PROMPT_PATH = 'llm/loom-authoring-prompt.md'
@@ -20,6 +20,11 @@ function llmsTxt(): string {
 
 - [Loom authoring prompt](${LOOM_PAGES_URL}${PROMPT_PATH}): system prompt for writing a topic: layout, output formats, every component and prop, rules and an example.
 - [Loom OpenUI JSON Schema](${LOOM_PAGES_URL}${SCHEMA_PATH}): JSON Schema of every component's props, with descriptions.
+
+## OpenUI
+
+- [OpenUI Lang specification](${OPENUI_LANG_DOCS_URL}): the language every \`.oui\` file is written in.
+- [OpenUI react-ui components](${OPENUI_REACT_UI_DOCS_URL}): the standard component library used by \`// @openui\` sections.
 
 ## Tools
 

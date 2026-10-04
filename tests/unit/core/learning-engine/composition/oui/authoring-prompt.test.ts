@@ -16,12 +16,13 @@ describe('Loom authoring prompt', () => {
       const file = `sections/${name}.oui`
       expect(validateOUISection(files[file], { topicId, sectionName: name, file }).diagnostics, file).toEqual([])
     }
+    expect(validateOUISection(files['sections/steep-guide.oui']).payload?.data.type).toBe('openui')
   })
 
   it('explains the topic layout and the three output formats around the OpenUI Lang spec', () => {
     const prompt = getLoomAuthoringPrompt()
     for (const text of ['## Topic Layout', '## Output Formats', '// @loom-topic <topic-id>', '<topic-id>/sections/<name>.oui',
-      '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Loom Authoring Rules']) {
+      '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Standard OpenUI Sections', '// @openui "<Section title>"', 'https://openui.com/docs/api-reference/react-ui', '## Loom Authoring Rules']) {
       expect(prompt, text).toContain(text)
     }
     expect(prompt).not.toMatch(/streaming|charts for trends|every program must define `root = Topic|\.loom\.json|JSON bundle/i)

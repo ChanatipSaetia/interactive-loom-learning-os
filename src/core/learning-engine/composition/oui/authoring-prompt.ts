@@ -12,6 +12,10 @@ import { getLoomOUIPrompt } from './library'
 /** Where the GitHub Pages build serves the app (vite `base` on CI). */
 export const LOOM_PAGES_URL = 'https://chanatipsaetia.github.io/interactive-loom-learning-os/'
 
+/** Official OpenUI docs (linked from the @openuidev package READMEs). */
+export const OPENUI_LANG_DOCS_URL = 'https://openui.com/docs/openui-lang'
+export const OPENUI_REACT_UI_DOCS_URL = 'https://openui.com/docs/api-reference/react-ui'
+
 const PREAMBLE = `You write learning topics for Interactive Loom, an interactive learning app. Content is written in openui-lang, a small declarative language described below.
 
 ## Topic Layout
@@ -19,7 +23,7 @@ const PREAMBLE = `You write learning topics for Interactive Loom, an interactive
 A topic is a folder named after its topic ID (lowercase letters, digits, \`-\` and \`_\`, e.g. \`http-caching\`):
 
 - \`topic.oui\`: \`root = Topic(...)\`, the catalog metadata and the ordered list of \`SectionRef("<name>")\`.
-- \`sections/<name>.oui\`: one section per file, \`root = <Section>(...)\` where \`<Section>\` is a section component (Intro, Text, Bullets, Flowchart, Quiz, …).
+- \`sections/<name>.oui\`: one section per file, \`root = <Section>(...)\` where \`<Section>\` is a section component (Intro, Text, Bullets, Flowchart, Quiz, …), or a standard OpenUI section (see Standard OpenUI Sections).
 
 Every file is its own openui-lang program: it has its own \`root\` and its own statement names, so names may repeat across files.
 In the rules below, "program" means one file. The \`root\` of \`topic.oui\` is \`Topic(...)\`; the \`root\` of a section file is a section component.
@@ -42,6 +46,18 @@ Answer in the format the user asks for. If they do not say, use the single .oui 
 
 The user opens the result in Loom Viewer (${LOOM_PAGES_URL}viewer.html) or imports it into Loom Studio. Outside the code block(s), say nothing or at most one short sentence.`
 
+const STANDARD_OPENUI = `## Standard OpenUI Sections
+
+When no Loom section fits (a comparison table, a chart, KPI cards, free-form tabs), a section file can instead be a standard OpenUI program:
+
+- Its first line is \`// @openui "<Section title>" "<optional heading>"\`.
+- The rest is openui-lang written with the standard OpenUI component library (\`@openuidev/react-ui\`: Stack, Card, CardHeader, TextContent, Callout, Tabs, TabItem, Accordion, Steps, Table, Col, BarChart, LineChart, PieChart, …), not the Loom components above. Its \`root\` is usually Card, Stack or Tabs.
+- Component reference: ${OPENUI_REACT_UI_DOCS_URL}. Language specification: ${OPENUI_LANG_DOCS_URL}.
+- Content is static: no Query(), Mutation(), tools or actions (there is no backend).
+- List it in topic.oui with \`SectionRef\` like any other section. Prefer Loom sections; use standard OpenUI for the few parts that need a free-form layout.
+
+The \`sections/steep-guide.oui\` file in the example above is a standard OpenUI section.`
+
 const AUTHORING_RULES = [
   'Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.',
   'Start with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.',
@@ -56,7 +72,7 @@ const AUTHORING_RULES = [
 /** A complete, valid topic in the single-file format (checked by unit tests). */
 export const AUTHORING_EXAMPLE = `// @loom-topic green-tea
 // === topic.oui ===
-root = Topic("Brewing Green Tea", "Food & Drink", "Water temperature, steep time and leaf ratio for a sweet, balanced cup of green tea.", [SectionRef("intro"), SectionRef("vocabulary"), SectionRef("brewing-flow"), SectionRef("knowledge-check")], ["tea", "brewing"], "beginner")
+root = Topic("Brewing Green Tea", "Food & Drink", "Water temperature, steep time and leaf ratio for a sweet, balanced cup of green tea.", [SectionRef("intro"), SectionRef("vocabulary"), SectionRef("brewing-flow"), SectionRef("steep-guide"), SectionRef("knowledge-check")], ["tea", "brewing"], "beginner")
 
 // === sections/intro.oui ===
 root = Intro("Brewing Green Tea", what, why, [RoadmapStep("Vocabulary", "flashcards", "Learn the words tea brewers use.", "vocabulary"), RoadmapStep("Brewing flow", "flowchart", "Follow one brew from kettle to cup.", "brewing-flow"), RoadmapStep("Knowledge check", "quiz", "Test what you learned.", "knowledge-check")], "Cooler water, shorter steeps", "10 min", 3)
@@ -76,6 +92,12 @@ teapot = System("teapot", "Teapot", "Holds leaf and water while it steeps", "agg
 heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves")
 brew = Step("steep-leaves", "When water is ready", "SteepLeaves", teapot, [Event("tea-steeped", "Tea Steeped")])
 happy = Journey("happy", "Balanced cup", "Heat, steep and pour on time", [JourneyStep(heat, "Heat water", "The kettle stops at 75 °C instead of boiling."), JourneyStep(brew, "Steep", "Two minutes, then pour off all the water.")])
+
+// === sections/steep-guide.oui ===
+// @openui "Steep Guide" "Starting points by tea"
+root = Card([table, tip])
+table = Table([Col("Tea", ["Sencha", "Gyokuro", "Matcha"]), Col("Water (°C)", [75, 60, 80], "number"), Col("Steep", ["1–2 min", "2 min", "Whisk 15 s"])])
+tip = Callout("info", "Adjust to taste", "Bitter? Cooler water or a shorter steep. Flat? The opposite.")
 
 // === sections/knowledge-check.oui ===
 root = Quiz("Knowledge Check", [q1])
@@ -131,5 +153,5 @@ export function getLoomAuthoringPrompt(): string {
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)
   prompt = dropStreamingNotes(prompt)
-  return `${prompt.trimEnd()}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
+  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
 }
