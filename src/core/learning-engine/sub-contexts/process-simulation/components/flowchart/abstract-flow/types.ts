@@ -13,6 +13,8 @@ export interface ResultEvent {
   desc?: string;
   /** State the flow's state machine enters when this event happens (a MachineState ID). */
   enters?: string;
+  /** What data the event carries (e.g. "Order ID, total, line items"); names its Data Flow data object. */
+  data?: string;
 }
 
 /** Base for any flow step. */

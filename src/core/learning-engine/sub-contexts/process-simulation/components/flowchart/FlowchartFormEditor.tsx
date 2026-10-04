@@ -1212,6 +1212,20 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                       data-testid={`flowchart-step-${idx}-evt-${eIdx}-desc`}
                                     />
                                   </div>
+                                  <label className="visual-form-label">
+                                    <OUIFieldKey of={OUI.Event} field="data">Data</OUIFieldKey>
+                                    <input
+                                      className="visual-form-input"
+                                      value={evt.data || ''}
+                                      onChange={(e) => {
+                                        const newEvts = [...linearStep.resultEvents]
+                                        newEvts[eIdx] = { ...evt, data: e.target.value || undefined }
+                                        handleStepChange(idx, { ...linearStep, resultEvents: newEvts })
+                                      }}
+                                      placeholder="Data it carries (optional, e.g. Order ID, total)"
+                                      data-testid={`flowchart-step-${idx}-evt-${eIdx}-data`}
+                                    />
+                                  </label>
                                   {machineStates.length > 0 && (
                                     <label className="visual-form-label">
                                       <OUIFieldKey of={OUI.Event} field="enters">Enters State</OUIFieldKey>
@@ -1567,6 +1581,20 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                                 data-testid={`flowchart-step-${idx}-branch-${bIdx}-evt-${eIdx}-desc`}
                                               />
                                             </div>
+                                            <label className="visual-form-label">
+                                              <OUIFieldKey of={OUI.Event} field="data">Data</OUIFieldKey>
+                                              <input
+                                                className="visual-form-input"
+                                                value={evt.data || ''}
+                                                onChange={(e) => {
+                                                  const newEvts = [...bOpt.resultEvents]
+                                                  newEvts[eIdx] = { ...evt, data: e.target.value || undefined }
+                                                  handleBranchOptionChange(idx, bIdx, { ...bOpt, resultEvents: newEvts })
+                                                }}
+                                                placeholder="Data it carries (optional, e.g. Order ID, total)"
+                                                data-testid={`flowchart-step-${idx}-branch-${bIdx}-evt-${eIdx}-data`}
+                                              />
+                                            </label>
                                             {machineStates.length > 0 && (
                                               <label className="visual-form-label">
                                                 <OUIFieldKey of={OUI.Event} field="enters">Enters State</OUIFieldKey>

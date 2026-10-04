@@ -103,7 +103,7 @@ export function deriveDataFlow(
   // When multiple edges exist between the same pair of nodes, keep only the one
   // that goes through an aggregate (its label contains "[aggregate]", "[db]", or "[external]").
   const dedupedDfRelations = dfRelations.filter(rel => {
-    const hasComponent = rel.label && /\[(aggregate|db|external)\]/.test(rel.label);
+    const hasComponent = rel.label && /\[(aggregate|service|db|external)\]/.test(rel.label);
     if (hasComponent) return true;
 
     // Check if another relation between the same pair exists with a component.
@@ -111,7 +111,7 @@ export function deriveDataFlow(
       other !== rel &&
       other.from === rel.from &&
       other.to === rel.to &&
-      other.label && /\[(aggregate|db|external)\]/.test(other.label)
+      other.label && /\[(aggregate|service|db|external)\]/.test(other.label)
     );
     return !dominated;
   });

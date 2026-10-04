@@ -110,12 +110,14 @@ export const Event = defineOUIComponent({
     title: z.string(),
     desc: z.string().optional(),
     enters: z.string().optional(),
+    data: z.string().optional(),
   }),
   fields: {
     id: 'Event ID, unique within the flowchart.',
     title: 'Event name in past tense (e.g. "Order Placed").',
     desc: 'Optional detail about the event.',
     enters: 'Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these.',
+    data: 'Optional description of the data the event carries (e.g. "Order ID, total, line items"); the Data Flow view names the data object with it instead of the event title.',
   },
 })
 
@@ -275,7 +277,7 @@ function refId(value: unknown): string | undefined {
 }
 
 function eventCalls(events: ResultEvent[] | undefined): OUIValue[] {
-  return (events ?? []).map((e) => call(Event, { id: e.id, title: e.title, desc: e.desc, enters: e.enters }))
+  return (events ?? []).map((e) => call(Event, { id: e.id, title: e.title, desc: e.desc, enters: e.enters, data: e.data }))
 }
 
 function chainProps(step: { initiatedBy?: unknown; delegatesTo?: unknown; sendsTo?: unknown; continuesAs?: string; description?: string }) {

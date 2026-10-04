@@ -1105,6 +1105,10 @@
         "enters": {
           "type": "string",
           "description": "Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these."
+        },
+        "data": {
+          "type": "string",
+          "description": "Optional description of the data the event carries (e.g. \"Order ID, total, line items\"); the Data Flow view names the data object with it instead of the event title."
         }
       },
       "required": [

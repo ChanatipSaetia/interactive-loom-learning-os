@@ -36,4 +36,12 @@ describe('system kinds', () => {
     const seq = schema.relations.filter(r => r.views?.includes('SEQUENCE'));
     expect(seq.some(r => r.label === 'Save Record' && r.to === 'store')).toBe(true);
   });
+
+  it('names an event\'s Data Flow data object with its data', () => {
+    const withData = source.replace('Event("saved", "Record Saved")', 'Event("saved", "Record Saved", null, null, "Record ID + timestamp")');
+    const f = (compileOUISection(withData).value!.data as { flow: AbstractFlow }).flow;
+    const s = autoDeriveViews(deriveSchema(f));
+    expect(s.entities.evt_saved.viewTitles?.DATA_FLOW).toBe('Record ID + timestamp');
+    expect(s.entities.evt_saved.title).toBe('Record Saved');
+  });
 });

@@ -149,6 +149,7 @@ A YAML **list** of step objects. Two step types exist: `linear` and `branch`.
 | `title` | `string` | Yes | Event display name |
 | `desc` | `string` | No | Event description |
 | `enters` | `string` | No | MachineState ID the system's state machine enters when this event happens. The State Machine view draws a transition from each state to the next state an event enters, labelled with the command that produced that event; with no `enters`, the view shows the states without transitions. In `.oui` it is the fourth `Event` argument. |
+| `data` | `string` | No | What data the event carries (e.g. `Order ID, total, line items`). The Data Flow view names the event's data object with it instead of the event title. In `.oui` it is the fifth `Event` argument. |
 
 ### Branch step
 
