@@ -65,7 +65,7 @@ How to work with me:
 - Put the whole topic in ONE ${document} as a single .loom.oui file: the first line is \`// @loom-topic <topic-id>\`, then every file after a \`// === <path> ===\` marker line. Do not repeat the topic as inline code in the chat.
 - When I ask for changes, update that same ${document} so it always holds the complete, current topic.
 - When I paste errors from Loom Viewer, fix only what they point at and keep everything else unchanged.
-- After the ${document}, write one line: "Save it as <topic-id>.loom.oui and open it in Loom Viewer: ${LOOM_PAGES_URL}viewer.html"
+- After the ${document}, write one line: "Copy it and paste it into Loom Viewer (Paste text): ${LOOM_PAGES_URL}viewer.html"
 `
 }
 
