@@ -5,9 +5,10 @@
  * committed files fresh.
  */
 import { LOOM_PAGES_URL, OPENUI_LANG_DOCS_URL, OPENUI_REACT_UI_DOCS_URL, getLoomAuthoringPrompt } from './authoring-prompt'
+import { LOOM_PROMPT_PATH } from './llm-guide'
 import { getLoomOUIJSONSchema } from './library'
 
-const PROMPT_PATH = 'llm/loom-authoring-prompt.md'
+const PROMPT_PATH = LOOM_PROMPT_PATH
 const SCHEMA_PATH = 'llm/loom-oui.schema.json'
 
 /** `llms.txt` (https://llmstxt.org) index pointing LLM tools at the files. */
@@ -28,6 +29,7 @@ function llmsTxt(): string {
 
 ## Tools
 
+- [Create with AI](${LOOM_PAGES_URL}create.html): copy or download the prompt and set up a Claude Project or Gemini Gem, step by step.
 - [Loom Viewer](${LOOM_PAGES_URL}viewer.html): opens a \`.loom.oui\` file, a \`.zip\` or a topic folder, read-only.
 - [Loom Studio](${LOOM_PAGES_URL}studio.html): edits a topic folder with code, form and live preview.
 `

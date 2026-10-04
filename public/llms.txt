@@ -14,5 +14,6 @@
 
 ## Tools
 
+- [Create with AI](https://chanatipsaetia.github.io/interactive-loom-learning-os/create.html): copy or download the prompt and set up a Claude Project or Gemini Gem, step by step.
 - [Loom Viewer](https://chanatipsaetia.github.io/interactive-loom-learning-os/viewer.html): opens a `.loom.oui` file, a `.zip` or a topic folder, read-only.
 - [Loom Studio](https://chanatipsaetia.github.io/interactive-loom-learning-os/studio.html): edits a topic folder with code, form and live preview.

@@ -4,13 +4,13 @@
  *
  * It is the Loom OpenUI Lang prompt (lang-core's prompt with every prop
  * described, see `getLoomOUIPrompt`) with a Loom preamble (topic layout and
- * the three output formats), authoring rules and a worked example.
+ * the output formats), authoring rules and a worked example.
  * `npm run oui:schema` publishes it as `public/llm/loom-authoring-prompt.md`.
  */
+import { LOOM_PAGES_URL } from './llm-guide'
 import { getLoomOUIPrompt } from './library'
 
-/** Where the GitHub Pages build serves the app (vite `base` on CI). */
-export const LOOM_PAGES_URL = 'https://chanatipsaetia.github.io/interactive-loom-learning-os/'
+export { LOOM_PAGES_URL }
 
 /** Official OpenUI docs (linked from the @openuidev package READMEs). */
 export const OPENUI_LANG_DOCS_URL = 'https://openui.com/docs/openui-lang'
