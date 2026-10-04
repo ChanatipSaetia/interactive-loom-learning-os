@@ -1,11 +1,11 @@
 import { useCallback, useInsertionEffect, useState } from 'react'
 import { Renderer, type ActionEvent, type OpenUIError } from '@openuidev/react-lang'
-import { openuiLibrary } from '@openuidev/react-ui/genui-lib'
 import '@openuidev/react-ui/components.css'
 import { ScrollReveal } from '../../../../../ui-system/motion/scroll-reveal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
 import { OpenUIHelpModal } from './OpenUIHelpModal'
 import { ensureLoomOpenUITheme } from './theme'
+import { loomOpenUILibrary } from './themed-charts'
 import './openui.css'
 
 export interface OpenUISectionProps {
@@ -48,7 +48,7 @@ function OpenUISection({ title, heading, source, animate = false, sectionIndex =
       <div className="loom-openui-scope openui-section-body" data-testid="openui-content">
         <Renderer
           response={source}
-          library={openuiLibrary}
+          library={loomOpenUILibrary}
           onAction={handleAction}
           onError={onError}
           publishObservability={false}
