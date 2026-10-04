@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { Sparkles, BookOpen, Target, Lightbulb, MapPin, Plus, Trash2, HelpCircle } from 'lucide-react'
 import type { OKFIntroSectionData, OKFIntroRoadmapStep } from '../../../../composition/okf/types'
 import { IntroHelpModal } from './IntroHelpModal'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface IntroFormEditorProps {
   data: OKFIntroSectionData
@@ -149,7 +151,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
           <div className="visual-form-grid-2">
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Module Title</span>
+                <OUIFieldKey of={OUI.Intro} field="displayTitle">Module Title</OUIFieldKey>
                 <input
                   className="visual-form-input"
                   value={data.title || ''}
@@ -161,7 +163,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
             </div>
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Subtitle</span>
+                <OUIFieldKey of={OUI.Intro} field="subtitle">Subtitle</OUIFieldKey>
                 <input
                   className="visual-form-input"
                   value={data.subtitle || ''}
@@ -175,7 +177,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
           <div className="visual-form-grid-2">
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Estimated Time</span>
+                <OUIFieldKey of={OUI.Intro} field="estimatedTime">Estimated Time</OUIFieldKey>
                 <input
                   className="visual-form-input"
                   value={data.estimatedTime || ''}
@@ -187,7 +189,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
             </div>
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Module Count</span>
+                <OUIFieldKey of={OUI.Intro} field="moduleCount">Module Count</OUIFieldKey>
                 <input
                   type="number"
                   className="visual-form-input"
@@ -217,7 +219,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
         <div className="visual-form-card-body">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Formal Definition (what.definition)</span>
+              <OUIFieldKey of={OUI.IntroWhat} field="definition">Formal Definition (what.definition)</OUIFieldKey>
               <textarea
                 className="visual-form-textarea"
                 value={what.definition || ''}
@@ -241,7 +243,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
         <div className="visual-form-card-body">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Summary (what.summary)</span>
+              <OUIFieldKey of={OUI.IntroWhat} field="summary">Summary (what.summary)</OUIFieldKey>
               <textarea
                 className="visual-form-textarea"
                 value={what.summary || ''}
@@ -256,7 +258,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
           {/* Bullets List */}
           <div className="visual-form-field">
             <div className="visual-form-section-header">
-              <span className="visual-form-key">Bullet Points ({(what.bullets || []).length})</span>
+              <OUIFieldKey of={OUI.IntroWhat} field="bullets">Bullet Points ({(what.bullets || []).length})</OUIFieldKey>
               <button
                 className="form-add-btn form-add-btn--sm"
                 onClick={handleAddBullet}
@@ -297,7 +299,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
           {/* Tags List */}
           <div className="visual-form-field">
             <div className="visual-form-section-header">
-              <span className="visual-form-key">Topic Tags ({(what.tags || []).length})</span>
+              <OUIFieldKey of={OUI.IntroWhat} field="tags">Topic Tags ({(what.tags || []).length})</OUIFieldKey>
               <button
                 className="form-add-btn form-add-btn--sm"
                 onClick={handleAddTag}
@@ -347,7 +349,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
         <div className="visual-form-card-body">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Rationale (why.summary)</span>
+              <OUIFieldKey of={OUI.IntroWhy} field="summary">Rationale (why.summary)</OUIFieldKey>
               <textarea
                 className="visual-form-textarea"
                 value={why.summary || ''}
@@ -360,7 +362,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Key Takeaway (why.impact)</span>
+              <OUIFieldKey of={OUI.IntroWhy} field="impact">Key Takeaway (why.impact)</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={why.impact || ''}
@@ -410,7 +412,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
                   <div className="visual-form-grid-3">
                     <div className="visual-form-field">
                       <label className="visual-form-label">
-                        <span className="visual-form-key">Section ID</span>
+                        <OUIFieldKey of={OUI.RoadmapStep} field="sectionId">Section ID</OUIFieldKey>
                         <input
                           className="visual-form-input"
                           value={step.sectionId || ''}
@@ -427,7 +429,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
                     </div>
                     <div className="visual-form-field">
                       <label className="visual-form-label">
-                        <span className="visual-form-key">Title</span>
+                        <OUIFieldKey of={OUI.RoadmapStep} field="title">Title</OUIFieldKey>
                         <input
                           className="visual-form-input"
                           value={step.title}
@@ -444,7 +446,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
                     </div>
                     <div className="visual-form-field">
                       <label className="visual-form-label">
-                        <span className="visual-form-key">Type</span>
+                        <OUIFieldKey of={OUI.RoadmapStep} field="type">Type</OUIFieldKey>
                         <input
                           className="visual-form-input"
                           value={step.type}
@@ -462,7 +464,7 @@ export function IntroFormEditor({ data, onChange }: IntroFormEditorProps) {
                   </div>
                   <div className="visual-form-field">
                     <label className="visual-form-label">
-                      <span className="visual-form-key">Description</span>
+                      <OUIFieldKey of={OUI.RoadmapStep} field="description">Description</OUIFieldKey>
                       <input
                         className="visual-form-input"
                         value={step.description}

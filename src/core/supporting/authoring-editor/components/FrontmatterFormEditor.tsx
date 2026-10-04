@@ -1,4 +1,6 @@
 import type { OKFSectionMeta } from '../../../learning-engine/composition/okf/types'
+import { LOOM_OUI_COMPONENTS } from '../../../learning-engine/composition/oui/library'
+import { OUIFieldHelp } from '../../../learning-engine/sub-contexts'
 
 interface FrontmatterFormEditorProps {
   meta: OKFSectionMeta
@@ -6,6 +8,8 @@ interface FrontmatterFormEditorProps {
 }
 
 export function FrontmatterFormEditor({ meta, onChange }: FrontmatterFormEditorProps) {
+  // `title` / `heading` are shared by every section component; any one documents them.
+  const section = LOOM_OUI_COMPONENTS.find((c) => c.sectionType === meta.type)
   return (
     <div className="frontmatter-editor-block mb-4 p-3 border border-border rounded-md bg-surface0/30" data-testid="frontmatter-editor-block">
       <div className="text-xs font-semibold uppercase text-subtext0 tracking-wider mb-2">
@@ -14,7 +18,7 @@ export function FrontmatterFormEditor({ meta, onChange }: FrontmatterFormEditorP
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-text mb-1" htmlFor="meta-title-input">
-            Section Title (title)
+            Section Title (title){section && <OUIFieldHelp of={section} field="title" />}
           </label>
           <input
             id="meta-title-input"
@@ -28,7 +32,7 @@ export function FrontmatterFormEditor({ meta, onChange }: FrontmatterFormEditorP
         </div>
         <div>
           <label className="block text-xs font-medium text-text mb-1" htmlFor="meta-heading-input">
-            Section Heading (heading)
+            Section Heading (heading){section && <OUIFieldHelp of={section} field="heading" />}
           </label>
           <input
             id="meta-heading-input"

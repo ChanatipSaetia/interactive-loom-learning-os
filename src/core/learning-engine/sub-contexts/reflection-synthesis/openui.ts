@@ -6,7 +6,7 @@
  *   a = SequenceItem("plan", "Plan")
  */
 import { z } from 'zod'
-import { call, defineOUIComponent, defineOUISection, idOf, refOrId, refTo, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
+import { call, defineOUIComponent, defineOUISection, idOf, refOrId, refTo, sectionFields, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
 import type {
   ReflectionSequenceChallenge,
   ReflectionSequenceSectionData,
@@ -24,6 +24,11 @@ export const SequenceItem = defineOUIComponent({
     text: z.string(),
     icon: z.string().optional(),
   }),
+  fields: {
+    id: 'Item ID, unique within the challenge; `solution` refers to it.',
+    text: 'Text shown on the draggable card.',
+    icon: 'Optional icon name (reserved; not shown yet).',
+  },
 })
 
 export const SequenceChallenge = defineOUIComponent({
@@ -34,6 +39,11 @@ export const SequenceChallenge = defineOUIComponent({
     items: z.array(SequenceItem.ref),
     solution: z.array(refOrId(SequenceItem)),
   }),
+  fields: {
+    prompt: 'Instruction shown above the items, e.g. "Put the steps in order".',
+    items: 'The items to order, as SequenceItem references, in the order they are first shown (not the solution order).',
+    solution: 'The same items (references or IDs) in the correct order.',
+  },
   toData: (p) => ({ prompt: p.prompt, items: p.items, solution: (p.solution as unknown[]).map(idOf) }),
 })
 
@@ -46,6 +56,10 @@ export const ReflectionSequence: LoomOUIComponent = defineOUISection({
     challenges: z.array(SequenceChallenge.ref),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    challenges: 'The challenges, as SequenceChallenge references, in order.',
+  },
   toData: (p) => ({ type: 'reflection-sequence', challenges: p.challenges as unknown as ReflectionSequenceChallenge[] }),
   fromData: (data: ReflectionSequenceSectionData, meta) => call(ReflectionSequence, {
     title: meta.title ?? '',
@@ -67,6 +81,10 @@ export const Chip = defineOUIComponent({
     id: z.string(),
     text: z.string(),
   }),
+  fields: {
+    id: 'Chip ID, unique within the challenge; `solution` refers to it.',
+    text: 'Word or phrase shown on the chip.',
+  },
 })
 
 export const TemplateChallenge = defineOUIComponent({
@@ -79,6 +97,13 @@ export const TemplateChallenge = defineOUIComponent({
     solution: z.record(z.string(), z.string()),
     explanation: z.string().optional(),
   }),
+  fields: {
+    prompt: 'Instruction shown above the template.',
+    template: 'Sentence with {zone-id} blanks, e.g. "A cache trades {zone-1} for {zone-2}."',
+    chips: 'Chips the learner can drop into blanks, as Chip references (may include distractors).',
+    solution: 'Correct chip per blank: an object of zone ID → chip ID, e.g. {"zone-1": "chip-a"}.',
+    explanation: 'Optional explanation shown once the template is solved.',
+  },
 })
 
 export const ReflectionTemplate: LoomOUIComponent = defineOUISection({
@@ -90,6 +115,10 @@ export const ReflectionTemplate: LoomOUIComponent = defineOUISection({
     challenges: z.array(TemplateChallenge.ref),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    challenges: 'The challenges, as TemplateChallenge references, in order.',
+  },
   toData: (p) => ({ type: 'reflection-template', challenges: p.challenges as unknown as ReflectionTemplateChallenge[] }),
   fromData: (data: ReflectionTemplateSectionData, meta) => call(ReflectionTemplate, {
     title: meta.title ?? '',

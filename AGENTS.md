@@ -62,6 +62,7 @@ When refactoring or extending core sections, follow the Strategic & Tactical DDD
 - Dynamic OKF parsing and loading pipeline lives in `src/core/okf/reader.ts` and `src/core/okf/sections.ts` (using delivery adapters).
 - The learning app and embeds are read-only. Content is authored in **Loom Studio** (`npm run studio`, `studio.html`, `src/studio/`), which opens one topic folder (`public/content/<topic>/`) via the File System Access API and edits OpenUI Lang (`.oui`) files with code + visual form + live preview. Studio exports a topic as a single `.loom.json` file or a `.zip` and imports either back; **Loom Viewer** (`viewer.html`, `src/viewer/`) shows a `.loom.json`, `.zip` or picked folder read-only with the app themes. See [grill-log-openui-input.md](grill-log-openui-input.md).
 - Errors in OpenUI syntax or schema validation must present non-blocking inline diagnostics while the preview keeps the last valid version (`lastValid`).
+- Every OUI component prop has a one-sentence description in `fields` (next to `props` in `src/core/learning-engine/sub-contexts/<subdomain>/openui.ts`). It feeds VS Code and Studio hovers, Studio form tooltips (`OUIFieldKey` / `OUIFieldHelp`) and the LLM prompt. After changing a component, run `npm run oui:schema` to refresh `schemas/oui/loom-oui.prompt.md` (the prompt to give an LLM writing `.oui`) and `schemas/oui/loom-oui.schema.json`. See decisions 28–31 in [grill-log-openui-input.md](grill-log-openui-input.md).
 
 ## Working on Topics & Flowcharts
 

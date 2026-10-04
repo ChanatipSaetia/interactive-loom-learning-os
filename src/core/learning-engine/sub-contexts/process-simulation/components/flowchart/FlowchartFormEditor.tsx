@@ -15,6 +15,8 @@ import type {
   ResultEvent,
 } from './abstract-flow/types'
 import { ref } from './abstract-flow/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface FlowchartFormEditorProps {
   data: OKFFlowSectionData
@@ -556,7 +558,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
         <div className="flowchart-tab-content" data-testid="flowchart-content-actors">
           <div className="visual-form-field visual-form-field--array">
             <div className="visual-form-section-header">
-              <span className="visual-form-key">Declared Actors ({Object.keys(actors).length})</span>
+              <OUIFieldKey of={OUI.Flowchart} field="actors">Declared Actors ({Object.keys(actors).length})</OUIFieldKey>
               <button
                 className="form-add-btn"
                 onClick={handleAddActor}
@@ -588,7 +590,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                     <div className="visual-form-grid-2">
                       <div className="visual-form-field">
                         <label className="visual-form-label">
-                          <span className="visual-form-key">ID / Key</span>
+                          <OUIFieldKey of={OUI.Actor} field="id">ID / Key</OUIFieldKey>
                           <input
                             className="visual-form-input"
                             value={key}
@@ -599,7 +601,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                       </div>
                       <div className="visual-form-field">
                         <label className="visual-form-label">
-                          <span className="visual-form-key">Title</span>
+                          <OUIFieldKey of={OUI.Actor} field="title">Title</OUIFieldKey>
                           <input
                             className="visual-form-input"
                             value={actor.title}
@@ -611,7 +613,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                     </div>
                     <div className="visual-form-field">
                       <label className="visual-form-label">
-                        <span className="visual-form-key">Description</span>
+                        <OUIFieldKey of={OUI.Actor} field="desc">Description</OUIFieldKey>
                         <input
                           className="visual-form-input"
                           value={actor.desc}
@@ -633,7 +635,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
         <div className="flowchart-tab-content" data-testid="flowchart-content-systems">
           <div className="visual-form-field visual-form-field--array">
             <div className="visual-form-section-header">
-              <span className="visual-form-key">Declared Systems ({Object.keys(systems).length})</span>
+              <OUIFieldKey of={OUI.Flowchart} field="systems">Declared Systems ({Object.keys(systems).length})</OUIFieldKey>
               <button
                 className="form-add-btn"
                 onClick={handleAddSystem}
@@ -665,7 +667,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                     <div className="visual-form-grid-3">
                       <div className="visual-form-field">
                         <label className="visual-form-label">
-                          <span className="visual-form-key">ID / Key</span>
+                          <OUIFieldKey of={OUI.System} field="id">ID / Key</OUIFieldKey>
                           <input
                             className="visual-form-input"
                             value={key}
@@ -676,7 +678,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                       </div>
                       <div className="visual-form-field">
                         <label className="visual-form-label">
-                          <span className="visual-form-key">Title</span>
+                          <OUIFieldKey of={OUI.System} field="title">Title</OUIFieldKey>
                           <input
                             className="visual-form-input"
                             value={sys.title}
@@ -687,7 +689,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                       </div>
                       <div className="visual-form-field">
                         <label className="visual-form-label">
-                          <span className="visual-form-key">System Type</span>
+                          <OUIFieldKey of={OUI.System} field="kind">System Type</OUIFieldKey>
                           <select
                             className="visual-form-select"
                             value={sys.type}
@@ -707,7 +709,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                     </div>
                     <div className="visual-form-field">
                       <label className="visual-form-label">
-                        <span className="visual-form-key">Description</span>
+                        <OUIFieldKey of={OUI.System} field="desc">Description</OUIFieldKey>
                         <input
                           className="visual-form-input"
                           value={sys.desc}
@@ -720,9 +722,9 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                     {/* --- System State Machine Section --- */}
                     <div className="visual-form-field visual-form-field--sub">
                       <div className="visual-form-section-header">
-                        <span className="visual-form-key">
+                        <OUIFieldKey of={OUI.System} field="stateMachine">
                           State Machine ({sys.stateMachine ? `${sys.stateMachine.states.length} states` : 'Disabled'})
-                        </span>
+                        </OUIFieldKey>
                         <button
                           className="form-add-btn form-add-btn--sm"
                           onClick={() => handleToggleStateMachine(key)}
@@ -738,7 +740,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                           <div className="visual-form-grid-2">
                             <div className="visual-form-field">
                               <label className="visual-form-label">
-                                <span className="visual-form-key">Initial State ID</span>
+                                <OUIFieldKey of={OUI.StateMachine} field="initialState">Initial State ID</OUIFieldKey>
                                 <select
                                   className="visual-form-select"
                                   value={sys.stateMachine.initialState}
@@ -763,7 +765,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                             </div>
                             <div className="visual-form-field">
                               <div className="visual-form-section-header" style={{ marginBottom: 0 }}>
-                                <span className="visual-form-key">States ({sys.stateMachine.states.length})</span>
+                                <OUIFieldKey of={OUI.StateMachine} field="states">States ({sys.stateMachine.states.length})</OUIFieldKey>
                                 <button
                                   className="form-add-btn form-add-btn--sm"
                                   onClick={() => handleAddSystemState(key)}
@@ -869,7 +871,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
         <div className="flowchart-tab-content" data-testid="flowchart-content-steps">
           <div className="visual-form-field visual-form-field--array">
             <div className="visual-form-section-header">
-              <span className="visual-form-key">Flow Steps ({steps.length})</span>
+              <OUIFieldKey of={OUI.Flowchart} field="steps">Flow Steps ({steps.length})</OUIFieldKey>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   className="form-add-btn"
@@ -918,7 +920,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                       <div className="visual-form-grid-3">
                         <div className="visual-form-field">
                           <label className="visual-form-label">
-                            <span className="visual-form-key">Step ID</span>
+                            <OUIFieldKey of={OUI.Step} field="id">Step ID</OUIFieldKey>
                             <input
                               className="visual-form-input"
                               value={step.id}
@@ -949,7 +951,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
 
                         <div className="visual-form-field">
                           <label className="visual-form-label">
-                            <span className="visual-form-key">Continues As (Next Step)</span>
+                            <OUIFieldKey of={OUI.Step} field="continuesAs">Continues As (Next Step)</OUIFieldKey>
                             <select
                               className="visual-form-select"
                               value={step.continuesAs || ''}
@@ -978,7 +980,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                           <div className="visual-form-grid-2">
                             <div className="visual-form-field">
                               <label className="visual-form-label">
-                                <span className="visual-form-key">Policy</span>
+                                <OUIFieldKey of={OUI.Step} field="policy">Policy</OUIFieldKey>
                                 <input
                                   className="visual-form-input"
                                   value={linearStep.policy}
@@ -994,7 +996,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                             </div>
                             <div className="visual-form-field">
                               <label className="visual-form-label">
-                                <span className="visual-form-key">Command</span>
+                                <OUIFieldKey of={OUI.Step} field="command">Command</OUIFieldKey>
                                 <input
                                   className="visual-form-input"
                                   value={linearStep.command}
@@ -1012,7 +1014,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
 
                           <div className="visual-form-field">
                             <label className="visual-form-label">
-                              <span className="visual-form-key">Description (Optional)</span>
+                              <OUIFieldKey of={OUI.Step} field="description">Description (Optional)</OUIFieldKey>
                               <input
                                 className="visual-form-input"
                                 value={linearStep.description || ''}
@@ -1031,7 +1033,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                           <div className="visual-form-grid-3">
                             <div className="visual-form-field">
                               <label className="visual-form-label">
-                                <span className="visual-form-key">Initiated By (Actor)</span>
+                                <OUIFieldKey of={OUI.Step} field="initiatedBy">Initiated By (Actor)</OUIFieldKey>
                                 <select
                                   className="visual-form-select"
                                   value={linearStep.initiatedBy?.id || ''}
@@ -1056,7 +1058,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                             </div>
                             <div className="visual-form-field">
                               <label className="visual-form-label">
-                                <span className="visual-form-key">Handled By (System)</span>
+                                <OUIFieldKey of={OUI.Step} field="handledBy">Handled By (System)</OUIFieldKey>
                                 <select
                                   className="visual-form-select"
                                   value={linearStep.handledBy?.id || ''}
@@ -1079,7 +1081,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                             </div>
                             <div className="visual-form-field">
                               <label className="visual-form-label">
-                                <span className="visual-form-key">Delegates To (Secondary)</span>
+                                <OUIFieldKey of={OUI.Step} field="delegatesTo">Delegates To (Secondary)</OUIFieldKey>
                                 <select
                                   className="visual-form-select"
                                   value={linearStep.delegatesTo?.id || ''}
@@ -1107,9 +1109,9 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                           {/* Result Events List */}
                           <div className="visual-form-field">
                             <div className="visual-form-section-header">
-                              <span className="visual-form-key">
+                              <OUIFieldKey of={OUI.Step} field="events">
                                 Result Events ({(linearStep.resultEvents || []).length})
-                              </span>
+                              </OUIFieldKey>
                               <button
                                 className="form-add-btn form-add-btn--sm"
                                 onClick={() => handleAddLinearResultEvent(idx)}
@@ -1197,7 +1199,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                           <div className="visual-form-grid-2">
                             <div className="visual-form-field">
                               <label className="visual-form-label">
-                                <span className="visual-form-key">Triggering Event ID</span>
+                                <OUIFieldKey of={OUI.Branch} field="event">Triggering Event ID</OUIFieldKey>
                                 <input
                                   className="visual-form-input"
                                   value={branchStep.event || ''}
@@ -1217,9 +1219,9 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                           {/* Branch Options List */}
                           <div className="visual-form-field">
                             <div className="visual-form-section-header">
-                              <span className="visual-form-key">
+                              <OUIFieldKey of={OUI.Branch} field="options">
                                 Branch Paths ({(branchStep.branches || []).length})
-                              </span>
+                              </OUIFieldKey>
                               <button
                                 className="form-add-btn form-add-btn--sm"
                                 onClick={() => handleAddBranchOption(idx)}
@@ -1257,7 +1259,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                     <div className="visual-form-grid-3">
                                       <div className="visual-form-field">
                                         <label className="visual-form-label">
-                                          <span className="visual-form-key">Path ID</span>
+                                          <OUIFieldKey of={OUI.BranchOption} field="id">Path ID</OUIFieldKey>
                                           <input
                                             className="visual-form-input"
                                             value={bOpt.id}
@@ -1273,7 +1275,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                       </div>
                                       <div className="visual-form-field">
                                         <label className="visual-form-label">
-                                          <span className="visual-form-key">Label</span>
+                                          <OUIFieldKey of={OUI.BranchOption} field="label">Label</OUIFieldKey>
                                           <input
                                             className="visual-form-input"
                                             value={bOpt.label}
@@ -1301,7 +1303,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                             }
                                             data-testid={`flowchart-step-${idx}-branch-${bIdx}-dashed`}
                                           />
-                                          <span className="visual-form-key">Dashed Line</span>
+                                          <OUIFieldKey of={OUI.BranchOption} field="dashed">Dashed Line</OUIFieldKey>
                                         </label>
                                       </div>
                                     </div>
@@ -1309,7 +1311,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                     <div className="visual-form-grid-2">
                                       <div className="visual-form-field">
                                         <label className="visual-form-label">
-                                          <span className="visual-form-key">Policy</span>
+                                          <OUIFieldKey of={OUI.BranchOption} field="policy">Policy</OUIFieldKey>
                                           <input
                                             className="visual-form-input"
                                             value={bOpt.policy}
@@ -1325,7 +1327,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                       </div>
                                       <div className="visual-form-field">
                                         <label className="visual-form-label">
-                                          <span className="visual-form-key">Command</span>
+                                          <OUIFieldKey of={OUI.BranchOption} field="command">Command</OUIFieldKey>
                                           <input
                                             className="visual-form-input"
                                             value={bOpt.command}
@@ -1344,7 +1346,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                     <div className="visual-form-grid-3">
                                       <div className="visual-form-field">
                                         <label className="visual-form-label">
-                                          <span className="visual-form-key">Handled By (System)</span>
+                                          <OUIFieldKey of={OUI.BranchOption} field="handledBy">Handled By (System)</OUIFieldKey>
                                           <select
                                             className="visual-form-select"
                                             value={bOpt.handledBy?.id || ''}
@@ -1367,7 +1369,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                       </div>
                                       <div className="visual-form-field">
                                         <label className="visual-form-label">
-                                          <span className="visual-form-key">Delegates To (Secondary)</span>
+                                          <OUIFieldKey of={OUI.BranchOption} field="delegatesTo">Delegates To (Secondary)</OUIFieldKey>
                                           <select
                                             className="visual-form-select"
                                             value={bOpt.delegatesTo?.id || ''}
@@ -1390,7 +1392,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                       </div>
                                       <div className="visual-form-field">
                                         <label className="visual-form-label">
-                                          <span className="visual-form-key">Continues As (Next Step)</span>
+                                          <OUIFieldKey of={OUI.BranchOption} field="continuesAs">Continues As (Next Step)</OUIFieldKey>
                                           <select
                                             className="visual-form-select"
                                             value={bOpt.continuesAs || ''}
@@ -1416,9 +1418,9 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                     {/* Branch Result Events */}
                                     <div className="visual-form-field">
                                       <div className="visual-form-section-header">
-                                        <span className="visual-form-key">
+                                        <OUIFieldKey of={OUI.BranchOption} field="events">
                                           Result Events ({(bOpt.resultEvents || []).length})
-                                        </span>
+                                        </OUIFieldKey>
                                         <button
                                           className="form-add-btn form-add-btn--sm"
                                           onClick={() => handleAddBranchResultEvent(idx, bIdx)}
@@ -1519,7 +1521,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
         <div className="flowchart-tab-content" data-testid="flowchart-content-journeys">
           <div className="visual-form-field visual-form-field--array">
             <div className="visual-form-section-header">
-              <span className="visual-form-key">Flow Journeys ({journeys.length})</span>
+              <OUIFieldKey of={OUI.Flowchart} field="journeys">Flow Journeys ({journeys.length})</OUIFieldKey>
               <button
                 className="form-add-btn"
                 onClick={handleAddJourney}
@@ -1552,7 +1554,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                     <div className="visual-form-grid-2">
                       <div className="visual-form-field">
                         <label className="visual-form-label">
-                          <span className="visual-form-key">ID</span>
+                          <OUIFieldKey of={OUI.Journey} field="id">ID</OUIFieldKey>
                           <input
                             className="visual-form-input"
                             value={j.id}
@@ -1565,7 +1567,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                       </div>
                       <div className="visual-form-field">
                         <label className="visual-form-label">
-                          <span className="visual-form-key">Label</span>
+                          <OUIFieldKey of={OUI.Journey} field="label">Label</OUIFieldKey>
                           <input
                             className="visual-form-input"
                             value={j.label}
@@ -1579,7 +1581,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                     </div>
                     <div className="visual-form-field">
                       <label className="visual-form-label">
-                        <span className="visual-form-key">Description</span>
+                        <OUIFieldKey of={OUI.Journey} field="description">Description</OUIFieldKey>
                         <input
                           className="visual-form-input"
                           value={j.description}
@@ -1594,7 +1596,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                     {/* Journey Steps List */}
                     <div className="visual-form-field">
                       <div className="visual-form-section-header">
-                        <span className="visual-form-key">Journey Steps ({j.steps.length})</span>
+                        <OUIFieldKey of={OUI.Journey} field="steps">Journey Steps ({j.steps.length})</OUIFieldKey>
                         <button
                           className="form-add-btn form-add-btn--sm"
                           onClick={() => {
@@ -1644,7 +1646,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                               <div className="visual-form-grid-3">
                                 <div className="visual-form-field">
                                   <label className="visual-form-label">
-                                    <span className="visual-form-key">Ref Step ID</span>
+                                    <OUIFieldKey of={OUI.JourneyStep} field="step">Ref Step ID</OUIFieldKey>
                                     <select
                                       className="visual-form-select"
                                       value={js.stepId}
@@ -1667,7 +1669,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
 
                                 <div className="visual-form-field">
                                   <label className="visual-form-label">
-                                    <span className="visual-form-key">Display Name</span>
+                                    <OUIFieldKey of={OUI.JourneyStep} field="name">Display Name</OUIFieldKey>
                                     <input
                                       className="visual-form-input"
                                       value={js.name}
@@ -1684,7 +1686,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
 
                                 <div className="visual-form-field">
                                   <label className="visual-form-label">
-                                    <span className="visual-form-key">Process Group</span>
+                                    <OUIFieldKey of={OUI.JourneyStep} field="processGroup">Process Group</OUIFieldKey>
                                     <select
                                       className="visual-form-select"
                                       value={js.processGroup || ''}
@@ -1710,7 +1712,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
 
                               <div className="visual-form-field">
                                 <label className="visual-form-label">
-                                  <span className="visual-form-key">Playback Description</span>
+                                  <OUIFieldKey of={OUI.JourneyStep} field="description">Playback Description</OUIFieldKey>
                                   <textarea
                                     className="visual-form-textarea"
                                     value={js.description}

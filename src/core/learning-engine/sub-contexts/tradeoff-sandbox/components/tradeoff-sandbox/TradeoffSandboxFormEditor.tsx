@@ -3,6 +3,8 @@ import { Sliders, ListChecks, Plus, Trash2, ThumbsUp, ThumbsDown, HelpCircle, Co
 import { TradeoffHelpModal } from './TradeoffHelpModal'
 import type { OKFTradeoffSectionData } from '../../../../composition/okf/types'
 import type { TradeoffScenario, TradeoffStep, TradeoffChoice, MetricDef, TradeoffProCon } from '.'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface TradeoffSandboxFormEditorProps {
   data: OKFTradeoffSectionData
@@ -54,7 +56,7 @@ function MetricEditor({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.TradeoffMetric} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={metric.id}
@@ -65,7 +67,7 @@ function MetricEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Label</span>
+              <OUIFieldKey of={OUI.TradeoffMetric} field="label">Label</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={metric.label}
@@ -79,7 +81,7 @@ function MetricEditor({
         <div className="visual-form-grid-3">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Base Value</span>
+              <OUIFieldKey of={OUI.TradeoffMetric} field="baseValue">Base Value</OUIFieldKey>
               <input
                 className="visual-form-input"
                 type="number"
@@ -91,7 +93,7 @@ function MetricEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Min</span>
+              <OUIFieldKey of={OUI.TradeoffMetric} field="min">Min</OUIFieldKey>
               <input
                 className="visual-form-input"
                 type="number"
@@ -107,7 +109,7 @@ function MetricEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Max</span>
+              <OUIFieldKey of={OUI.TradeoffMetric} field="max">Max</OUIFieldKey>
               <input
                 className="visual-form-input"
                 type="number"
@@ -125,7 +127,7 @@ function MetricEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Direction</span>
+            <OUIFieldKey of={OUI.TradeoffMetric} field="direction">Direction</OUIFieldKey>
             <select
               className="visual-form-select"
               value={metric.direction ?? 'higher'}
@@ -180,7 +182,7 @@ function ProConEditor({
       <div className="visual-form-card-body">
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Title</span>
+            <OUIFieldKey of={OUI.ProCon} field="title">Title</OUIFieldKey>
             <input
               className="visual-form-input"
               value={item.title}
@@ -191,7 +193,7 @@ function ProConEditor({
         </div>
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Description</span>
+            <OUIFieldKey of={OUI.ProCon} field="description">Description</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={item.description}
@@ -273,7 +275,7 @@ function ChoiceEditor({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.TradeoffChoice} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={choice.id}
@@ -284,7 +286,7 @@ function ChoiceEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Label</span>
+              <OUIFieldKey of={OUI.TradeoffChoice} field="label">Label</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={choice.label}
@@ -297,7 +299,7 @@ function ChoiceEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Description</span>
+            <OUIFieldKey of={OUI.TradeoffChoice} field="description">Description</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={choice.description}
@@ -311,7 +313,7 @@ function ChoiceEditor({
         {/* Metric Deltas */}
         {metrics.length > 0 && (
           <div className="visual-form-field">
-            <span className="visual-form-key">Metric Deltas</span>
+            <OUIFieldKey of={OUI.TradeoffChoice} field="metrics">Metric Deltas</OUIFieldKey>
             <div className="visual-form-grid-2">
               {metrics.map((m) => (
                 <div key={m.id} className="visual-form-field">
@@ -334,7 +336,7 @@ function ChoiceEditor({
         {/* Why This Fits */}
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Why This Fits (optional)</span>
+            <OUIFieldKey of={OUI.TradeoffChoice} field="whyThisFits">Why This Fits (optional)</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={choice.whyThisFits ?? ''}
@@ -349,7 +351,7 @@ function ChoiceEditor({
         {/* When To Use */}
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">When To Use (optional)</span>
+            <OUIFieldKey of={OUI.TradeoffChoice} field="whenToUse">When To Use (optional)</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={choice.whenToUse ?? ''}
@@ -365,7 +367,7 @@ function ChoiceEditor({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <div className="visual-form-section-header">
-              <span className="visual-form-key" style={{ color: 'var(--ctp-green)' }}>Pros ({choice.pros.length})</span>
+              <OUIFieldKey of={OUI.TradeoffChoice} field="pros" style={{ color: 'var(--ctp-green)' }}>Pros ({choice.pros.length})</OUIFieldKey>
               <button
                 className="form-add-btn form-add-btn--sm"
                 onClick={() => {
@@ -400,7 +402,7 @@ function ChoiceEditor({
 
           <div className="visual-form-field">
             <div className="visual-form-section-header">
-              <span className="visual-form-key" style={{ color: 'var(--ctp-red)' }}>Cons ({choice.cons.length})</span>
+              <OUIFieldKey of={OUI.TradeoffChoice} field="cons" style={{ color: 'var(--ctp-red)' }}>Cons ({choice.cons.length})</OUIFieldKey>
               <button
                 className="form-add-btn form-add-btn--sm"
                 onClick={() => {
@@ -487,7 +489,7 @@ function StepEditor({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.TradeoffStep} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={step.id}
@@ -498,7 +500,7 @@ function StepEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Title</span>
+              <OUIFieldKey of={OUI.TradeoffStep} field="title">Title</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={step.title}
@@ -511,7 +513,7 @@ function StepEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Description</span>
+            <OUIFieldKey of={OUI.TradeoffStep} field="description">Description</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={step.description}
@@ -525,9 +527,9 @@ function StepEditor({
         {/* Recommended Choice */}
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <OUIFieldKey of={OUI.TradeoffStep} field="recommended" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <Star size={12} style={{ color: 'var(--ctp-yellow)' }} /> Recommended Choice (optional)
-            </span>
+            </OUIFieldKey>
             <select
               className="visual-form-select"
               value={step.recommended ?? ''}
@@ -547,7 +549,7 @@ function StepEditor({
         {/* Choices */}
         <div className="visual-form-field visual-form-field--array">
           <div className="visual-form-section-header">
-            <span className="visual-form-key">Choices ({step.choices.length})</span>
+            <OUIFieldKey of={OUI.TradeoffStep} field="choices">Choices ({step.choices.length})</OUIFieldKey>
             <button
               className="form-add-btn form-add-btn--sm"
               onClick={() => {
@@ -659,7 +661,7 @@ function ScenarioEditor({
           <div className="visual-form-grid-2">
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">ID</span>
+                <OUIFieldKey of={OUI.TradeoffScenario} field="id">ID</OUIFieldKey>
                 <input
                   className="visual-form-input"
                   value={scenario.id}
@@ -670,7 +672,7 @@ function ScenarioEditor({
             </div>
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Title</span>
+                <OUIFieldKey of={OUI.TradeoffScenario} field="title">Title</OUIFieldKey>
                 <input
                   className="visual-form-input"
                   value={scenario.title}
@@ -683,7 +685,7 @@ function ScenarioEditor({
 
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Description</span>
+              <OUIFieldKey of={OUI.TradeoffScenario} field="description">Description</OUIFieldKey>
               <textarea
                 className="visual-form-textarea"
                 value={scenario.description}
@@ -697,7 +699,7 @@ function ScenarioEditor({
           {/* Steps */}
           <div className="visual-form-field visual-form-field--array">
             <div className="visual-form-section-header">
-              <span className="visual-form-key">Steps ({scenario.steps.length})</span>
+              <OUIFieldKey of={OUI.TradeoffScenario} field="steps">Steps ({scenario.steps.length})</OUIFieldKey>
               <button
                 className="form-add-btn form-add-btn--sm"
                 onClick={() => {
@@ -886,7 +888,7 @@ export function TradeoffSandboxFormEditor({ data, onChange }: TradeoffSandboxFor
       {activeTab === 'scenarios' && (
         <div className="visual-form-field visual-form-field--array" data-testid="to-scenarios-tab-content">
           <div className="visual-form-section-header">
-            <span className="visual-form-key">Trade-off Scenarios ({data.scenarios.length})</span>
+            <OUIFieldKey of={OUI.TradeoffSandbox} field="scenarios">Trade-off Scenarios ({data.scenarios.length})</OUIFieldKey>
             <button
               className="form-add-btn"
               onClick={handleAddScenario}
@@ -937,7 +939,7 @@ export function TradeoffSandboxFormEditor({ data, onChange }: TradeoffSandboxFor
                 </div>
                 <div className="visual-form-card-body">
                   <div className="visual-form-section-header">
-                    <span className="visual-form-key">Metrics ({scenario.metrics.length})</span>
+                    <OUIFieldKey of={OUI.TradeoffScenario} field="metrics">Metrics ({scenario.metrics.length})</OUIFieldKey>
                     <button
                       className="form-add-btn form-add-btn--sm"
                       onClick={() => handleAddScenarioMetric(si)}

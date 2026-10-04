@@ -6,7 +6,7 @@
  *   perf = TradeoffMetric("performance", "Performance", 50, 0, 100, "higher")
  */
 import { z } from 'zod'
-import { byId, call, defineOUIComponent, defineOUISection, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
+import { byId, call, defineOUIComponent, defineOUISection, sectionFields, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
 import type {
   DecisionTreeNode,
   DecisionTreeSectionData,
@@ -30,6 +30,14 @@ export const TradeoffMetric = defineOUIComponent({
     max: z.number().optional(),
     direction: z.enum(['higher', 'lower']).optional(),
   }),
+  fields: {
+    id: 'Metric ID, unique within the scenario; choices refer to it in `metrics`.',
+    label: 'Metric name shown on its bar (e.g. "Latency").',
+    baseValue: 'Starting value before any choice is made.',
+    min: 'Optional lowest value the bar shows (default 0).',
+    max: 'Optional highest value the bar shows (default 100).',
+    direction: 'Optional "higher" or "lower": which way is better.',
+  },
 })
 
 export const ProCon = defineOUIComponent({
@@ -39,6 +47,10 @@ export const ProCon = defineOUIComponent({
     title: z.string(),
     description: z.string().optional(),
   }),
+  fields: {
+    title: 'Short pro or con statement.',
+    description: 'Optional detail behind the statement.',
+  },
 })
 
 export const TradeoffChoice = defineOUIComponent({
@@ -54,6 +66,16 @@ export const TradeoffChoice = defineOUIComponent({
     whyThisFits: z.string().optional(),
     whenToUse: z.string().optional(),
   }),
+  fields: {
+    id: 'Choice ID, unique within the step; `recommended` refers to it.',
+    label: 'Option name shown on the choice card.',
+    description: 'What picking this option means.',
+    metrics: 'Delta per metric ID when picked, e.g. {performance: 10, cost: -5}.',
+    pros: 'Advantages, as ProCon references.',
+    cons: 'Drawbacks, as ProCon references.',
+    whyThisFits: 'Optional reason this option fits the scenario.',
+    whenToUse: 'Optional guidance on when to choose this option in practice.',
+  },
 })
 
 export const TradeoffStep = defineOUIComponent({
@@ -66,6 +88,13 @@ export const TradeoffStep = defineOUIComponent({
     description: z.string().optional(),
     recommended: z.string().optional(),
   }),
+  fields: {
+    id: 'Step ID, unique within the scenario.',
+    title: 'The decision to make at this step.',
+    choices: 'The options, as TradeoffChoice references.',
+    description: 'Optional context for the decision.',
+    recommended: 'Optional ID of the recommended choice.',
+  },
 })
 
 export const TradeoffScenario = defineOUIComponent({
@@ -78,6 +107,13 @@ export const TradeoffScenario = defineOUIComponent({
     steps: z.array(TradeoffStep.ref),
     description: z.string().optional(),
   }),
+  fields: {
+    id: 'Scenario ID, unique within the sandbox.',
+    title: 'Scenario name shown in the scenario picker.',
+    metrics: 'Metrics to watch, as TradeoffMetric references.',
+    steps: 'Decisions in order, as TradeoffStep references.',
+    description: 'Optional scenario summary.',
+  },
 })
 
 export const TradeoffSandbox: LoomOUIComponent = defineOUISection({
@@ -89,6 +125,10 @@ export const TradeoffSandbox: LoomOUIComponent = defineOUISection({
     scenarios: z.array(TradeoffScenario.ref),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    scenarios: 'The scenarios, as TradeoffScenario references.',
+  },
   toData: (p) => ({ type: 'tradeoff-sandbox', scenarios: p.scenarios as unknown as TradeoffScenarioData[] }),
   fromData: (data: TradeoffSandboxSectionData, meta) => call(TradeoffSandbox, {
     title: meta.title ?? '',
@@ -131,6 +171,14 @@ export const FormulaVariable = defineOUIComponent({
     step: z.number(),
     defaultValue: z.number(),
   }),
+  fields: {
+    id: 'Variable ID, used by name inside formulas (letters, digits, _).',
+    label: 'Slider label.',
+    min: 'Slider minimum.',
+    max: 'Slider maximum.',
+    step: 'Slider increment.',
+    defaultValue: 'Initial slider value.',
+  },
 })
 
 export const FormulaMetric = defineOUIComponent({
@@ -145,6 +193,15 @@ export const FormulaMetric = defineOUIComponent({
     inScope: z.array(z.string()).optional(),
     outOfScope: z.array(z.string()).optional(),
   }),
+  fields: {
+    id: 'Metric ID, unique within the sandbox.',
+    label: 'Metric name shown on its card.',
+    formula: 'JavaScript expression over variable IDs, e.g. "Math.round(chunk_size * (1 + overlap / 70))".',
+    description: 'What the metric measures.',
+    analogy: 'Optional everyday analogy shown in the metric details.',
+    inScope: 'Optional list of what the metric covers.',
+    outOfScope: 'Optional list of what the metric does not cover.',
+  },
 })
 
 export const FormulaSandbox: LoomOUIComponent = defineOUISection({
@@ -157,6 +214,11 @@ export const FormulaSandbox: LoomOUIComponent = defineOUISection({
     metrics: z.array(FormulaMetric.ref),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    variables: 'Slider inputs, as FormulaVariable references.',
+    metrics: 'Computed outputs, as FormulaMetric references.',
+  },
   toData: (p) => ({
     type: 'formula-sandbox',
     variables: p.variables as unknown as FormulaVariableData[],
@@ -182,6 +244,11 @@ export const DecisionLeaf = defineOUIComponent({
     explanation: z.string(),
     tradeoffs: z.array(z.string()).optional(),
   }),
+  fields: {
+    recommendation: 'The recommended option at the end of this path.',
+    explanation: 'Why this is recommended.',
+    tradeoffs: 'Optional list of trade-offs to keep in mind.',
+  },
 })
 
 export const DecisionChoice = defineOUIComponent({
@@ -194,6 +261,13 @@ export const DecisionChoice = defineOUIComponent({
     rationale: z.string().optional(),
     recommended: z.boolean().optional(),
   }),
+  fields: {
+    id: 'Choice ID, unique within its node.',
+    text: 'Answer text shown on the button.',
+    next: 'ID of the DecisionNode this answer leads to.',
+    rationale: 'Optional reason for taking this branch.',
+    recommended: 'Optional: true highlights this answer as recommended.',
+  },
 })
 
 export const DecisionNode = defineOUIComponent({
@@ -205,6 +279,12 @@ export const DecisionNode = defineOUIComponent({
     choices: z.array(DecisionChoice.ref).optional(),
     leaf: DecisionLeaf.ref.optional(),
   }),
+  fields: {
+    id: 'Node ID, unique within the tree; choices point at it with `next`.',
+    prompt: 'Question asked at this node (question nodes).',
+    choices: 'Answers, as DecisionChoice references (question nodes).',
+    leaf: 'DecisionLeaf(...) recommendation (leaf nodes, instead of prompt/choices).',
+  },
 })
 
 export const DecisionTree: LoomOUIComponent = defineOUISection({
@@ -219,6 +299,13 @@ export const DecisionTree: LoomOUIComponent = defineOUISection({
     displayTitle: z.string().optional(),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    id: 'Tree ID, unique within the topic.',
+    root: 'ID of the first DecisionNode.',
+    nodes: 'All nodes, as DecisionNode references.',
+    displayTitle: 'Optional title shown inside the guide instead of `title`.',
+  },
   toData: (p) => ({
     type: 'decision-tree',
     id: p.id,

@@ -257,3 +257,6 @@ export type {
 } from './practice-assessment'
 export { validatePracticeAssessmentTier3 } from './practice-assessment'
 
+
+// ─── OUI field descriptions (form tooltips) ────────────────────────────
+export { OUIFieldHelp, OUIFieldKey } from './OUIFieldKey'

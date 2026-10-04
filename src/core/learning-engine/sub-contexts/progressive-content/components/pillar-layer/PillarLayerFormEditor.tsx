@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, Rows, Grid } from 'lucide-react'
 import { PillarLayerHelpModal } from './PillarLayerHelpModal'
 import type { OKFPillarLayerSectionData } from '../../../../composition/okf/types'
+import { OUIFieldHelp } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 import { PILLAR_LAYER_BLOCK_COLORS, type PillarLayerLayer, type PillarLayerBlock, type PillarLayerBlockColor } from '../../schema'
 
 interface PillarLayerFormEditorProps {
@@ -98,7 +100,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
       {/* Basic Metadata */}
       <div className="space-y-2">
         <div>
-          <label className="text-[10px] text-muted-foreground block mb-1">Section Title</label>
+          <label className="text-[10px] text-muted-foreground block mb-1">Section Title<OUIFieldHelp of={OUI.PillarLayer} field="displayTitle" /></label>
           <input
             type="text"
             value={data.title || ''}
@@ -108,7 +110,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
           />
         </div>
         <div>
-          <label className="text-[10px] text-muted-foreground block mb-1">Description</label>
+          <label className="text-[10px] text-muted-foreground block mb-1">Description<OUIFieldHelp of={OUI.PillarLayer} field="description" /></label>
           <textarea
             value={data.description || ''}
             onChange={(e) => onChange({ ...data, description: e.target.value })}
@@ -149,7 +151,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
       {activeTab === 'layers' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-muted-foreground">Architectural Layers</span>
+            <span className="text-[11px] font-medium text-muted-foreground">Architectural Layers<OUIFieldHelp of={OUI.PillarLayer} field="layers" /></span>
             <button
               type="button"
               onClick={handleAddLayer}
@@ -172,7 +174,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[10px] text-muted-foreground block">ID</label>
+                  <label className="text-[10px] text-muted-foreground block">ID<OUIFieldHelp of={OUI.Layer} field="id" /></label>
                   <input
                     type="text"
                     value={layer.id}
@@ -181,7 +183,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-muted-foreground block">Title</label>
+                  <label className="text-[10px] text-muted-foreground block">Title<OUIFieldHelp of={OUI.Layer} field="title" /></label>
                   <input
                     type="text"
                     value={layer.title}
@@ -199,7 +201,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
       {activeTab === 'blocks' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-muted-foreground">Lego Building Blocks</span>
+            <span className="text-[11px] font-medium text-muted-foreground">Lego Building Blocks<OUIFieldHelp of={OUI.PillarLayer} field="blocks" /></span>
             <button
               type="button"
               onClick={handleAddBlock}
@@ -222,7 +224,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
               </div>
 
               <div>
-                <label className="text-[10px] text-muted-foreground block mb-1">Title</label>
+                <label className="text-[10px] text-muted-foreground block mb-1">Title<OUIFieldHelp of={OUI.MatrixBlock} field="title" /></label>
                 <input
                   type="text"
                   value={block.title}
@@ -232,7 +234,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
               </div>
 
               <div>
-                <label className="text-[10px] text-muted-foreground block mb-1">Description</label>
+                <label className="text-[10px] text-muted-foreground block mb-1">Description<OUIFieldHelp of={OUI.MatrixBlock} field="description" /></label>
                 <textarea
                   value={block.description || ''}
                   onChange={(e) => handleUpdateBlock(idx, { ...block, description: e.target.value })}
@@ -243,7 +245,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[10px] text-muted-foreground block">Layer ID</label>
+                  <label className="text-[10px] text-muted-foreground block">Layer ID<OUIFieldHelp of={OUI.MatrixBlock} field="layer" /></label>
                   <select
                     value={block.layer_id || ''}
                     onChange={(e) => handleUpdateBlock(idx, { ...block, layer_id: e.target.value })}
@@ -257,7 +259,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] text-muted-foreground block">Block Shape</label>
+                  <label className="text-[10px] text-muted-foreground block">Block Shape<OUIFieldHelp of={OUI.MatrixBlock} field="shape" /></label>
                   <select
                     value={block.shape || 'rect'}
                     onChange={(e) =>
@@ -279,7 +281,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="text-[10px] text-muted-foreground block">Col Span</label>
+                  <label className="text-[10px] text-muted-foreground block">Col Span<OUIFieldHelp of={OUI.MatrixBlock} field="colSpan" /></label>
                   <input
                     type="number"
                     min={1}
@@ -291,7 +293,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-muted-foreground block">Row Span</label>
+                  <label className="text-[10px] text-muted-foreground block">Row Span<OUIFieldHelp of={OUI.MatrixBlock} field="rowSpan" /></label>
                   <input
                     type="number"
                     min={1}
@@ -303,7 +305,7 @@ export function PillarLayerFormEditor({ data, onChange }: PillarLayerFormEditorP
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-muted-foreground block">Color Accent</label>
+                  <label className="text-[10px] text-muted-foreground block">Color Accent<OUIFieldHelp of={OUI.MatrixBlock} field="color" /></label>
                   <select
                     value={block.color || 'mauve'}
                     onChange={(e) => handleUpdateBlock(idx, { ...block, color: e.target.value as PillarLayerBlockColor })}

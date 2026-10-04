@@ -189,6 +189,15 @@ Revised remaining phases:
 
 Code: `src/core/supporting/authoring-editor/workspace/archive.ts` (bundle + zip + file grouping), `TopicWorkspace.exportFiles()` / `TopicWorkspace.replaceFolderContents()`, `src/viewer/`.
 
+## Field Descriptions
+
+| # | Topic | Decision |
+|---|---|---|
+| 28 | Where descriptions live | **`fields` next to `props`** in every `defineOUIComponent` / `defineOUISection`: one sentence per prop, and the type check rejects a missing or unknown prop. Not Zod `.describe()`: lang-core builds its JSON Schema with a private registry (dropping it), and describing a `Child.ref` clones the ref, which turns `Child[]` into `{…}[]` in prompt signatures. Section components spread `sectionFields` (`title`, `heading`, `lead`). |
+| 29 | VS Code and the Studio code editor | `getLoomOUIJSONSchema()` copies `fields` onto `$defs.<Component>.properties.<prop>.description`. The shared language service reads it for signature help, argument hovers, and a parameter list in component hovers and completions. The VS Code extension bundles the same service, so it picks this up when rebuilt. |
+| 30 | Studio form tooltips | `OUIFieldKey` (label + icon) and `OUIFieldHelp` (icon only) in `sub-contexts/OUIFieldKey.tsx` take `of={OUI.Component} field="prop"` and show that description in a portalled tooltip. Form editors, the section settings form and the topic settings form use them. |
+| 31 | LLM prompt | `getLoomOUIPrompt()` augments lang-core's own OpenUI Lang prompt (syntax rules, signatures, hoisting) with a `- prop: description` line per prop under each signature. `npm run oui:schema` writes it to `schemas/oui/loom-oui.prompt.md` with the JSON Schema in `schemas/oui/loom-oui.schema.json`. A unit test fails when either file is stale. |
+
 ## Open Questions
 
 _None._

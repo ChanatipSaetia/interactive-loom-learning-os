@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, Type, Bold, Italic, Code, Link as LinkIcon, FileText } from 'lucide-react'
 import { TextHelpModal } from './TextHelpModal'
 import type { OKFTextSectionData } from '../../../../composition/okf/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface TextFormEditorProps {
   data: OKFTextSectionData
@@ -172,7 +174,7 @@ export function TextFormEditor({ data, onChange }: TextFormEditorProps) {
               <div className="visual-form-field">
                 <label className="visual-form-label">
                   <span className="visual-form-key" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>Markdown Prose Content</span>
+                    <OUIFieldKey of={OUI.Text} field="paragraphs">Markdown Prose Content</OUIFieldKey>
                     <span style={{ textTransform: 'none', color: 'var(--ctp-subtext0)' }}>
                       {text.length} chars
                     </span>

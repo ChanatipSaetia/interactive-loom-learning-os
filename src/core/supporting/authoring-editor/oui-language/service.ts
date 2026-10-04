@@ -207,7 +207,11 @@ export function componentSnippet(component: OUIComponentSpec): string {
 }
 
 function componentDoc(component: OUIComponentSpec): string {
-  return `\`\`\`oui\n${component.signature}\n\`\`\`\n${component.description}`
+  const params = component.params
+    .filter((p) => p.description)
+    .map((p) => `- \`${p.name}${p.optional ? '?' : ''}\` — ${p.description}`)
+  const doc = `\`\`\`oui\n${component.signature}\n\`\`\`\n${component.description}`
+  return params.length ? `${doc}\n\n${params.join('\n')}` : doc
 }
 
 function rootSnippets(kind: OUIFileKind, replace: OUIRange, spec: OUILanguageSpec): OUICompletion[] {

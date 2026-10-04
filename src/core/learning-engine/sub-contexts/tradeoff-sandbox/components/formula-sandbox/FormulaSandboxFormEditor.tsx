@@ -6,6 +6,8 @@ import type {
   OKFFormulaVariable,
   OKFFormulaMetric,
 } from '../../../../composition/okf/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface FormulaSandboxFormEditorProps {
   data: OKFFormulaSandboxSectionData
@@ -55,7 +57,7 @@ function FormulaVariableEditor({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.FormulaVariable} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={variable.id}
@@ -66,7 +68,7 @@ function FormulaVariableEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Label</span>
+              <OUIFieldKey of={OUI.FormulaVariable} field="label">Label</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={variable.label}
@@ -80,7 +82,7 @@ function FormulaVariableEditor({
         <div className="visual-form-grid-3">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Min</span>
+              <OUIFieldKey of={OUI.FormulaVariable} field="min">Min</OUIFieldKey>
               <input
                 className="visual-form-input"
                 type="number"
@@ -92,7 +94,7 @@ function FormulaVariableEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Max</span>
+              <OUIFieldKey of={OUI.FormulaVariable} field="max">Max</OUIFieldKey>
               <input
                 className="visual-form-input"
                 type="number"
@@ -104,7 +106,7 @@ function FormulaVariableEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Step</span>
+              <OUIFieldKey of={OUI.FormulaVariable} field="step">Step</OUIFieldKey>
               <input
                 className="visual-form-input"
                 type="number"
@@ -118,7 +120,7 @@ function FormulaVariableEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Default Value</span>
+            <OUIFieldKey of={OUI.FormulaVariable} field="defaultValue">Default Value</OUIFieldKey>
             <input
               className="visual-form-input"
               type="number"
@@ -176,7 +178,7 @@ function FormulaMetricEditor({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.FormulaMetric} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={metric.id}
@@ -187,7 +189,7 @@ function FormulaMetricEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Label</span>
+              <OUIFieldKey of={OUI.FormulaMetric} field="label">Label</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={metric.label}
@@ -200,7 +202,7 @@ function FormulaMetricEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Formula</span>
+            <OUIFieldKey of={OUI.FormulaMetric} field="formula">Formula</OUIFieldKey>
             <input
               className="visual-form-input"
               value={metric.formula}
@@ -212,7 +214,7 @@ function FormulaMetricEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Description</span>
+            <OUIFieldKey of={OUI.FormulaMetric} field="description">Description</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={metric.description}
@@ -226,7 +228,7 @@ function FormulaMetricEditor({
         {metric.analogy !== undefined && (
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Analogy</span>
+              <OUIFieldKey of={OUI.FormulaMetric} field="analogy">Analogy</OUIFieldKey>
               <textarea
                 className="visual-form-textarea"
                 value={metric.analogy}
@@ -347,7 +349,7 @@ export function FormulaSandboxFormEditor({ data, onChange }: FormulaSandboxFormE
       {activeTab === 'variables' && (
         <div className="visual-form-field visual-form-field--array" data-testid="fs-variables-tab-content">
           <div className="visual-form-section-header">
-            <span className="visual-form-key">Variables ({data.variables.length})</span>
+            <OUIFieldKey of={OUI.FormulaSandbox} field="variables">Variables ({data.variables.length})</OUIFieldKey>
             <button
               className="form-add-btn"
               onClick={handleAddVar}
@@ -376,7 +378,7 @@ export function FormulaSandboxFormEditor({ data, onChange }: FormulaSandboxFormE
       {activeTab === 'metrics' && (
         <div className="visual-form-field visual-form-field--array" data-testid="fs-metrics-tab-content">
           <div className="visual-form-section-header">
-            <span className="visual-form-key">Metrics & Formulas ({data.metrics.length})</span>
+            <OUIFieldKey of={OUI.FormulaSandbox} field="metrics">Metrics & Formulas ({data.metrics.length})</OUIFieldKey>
             <button
               className="form-add-btn"
               onClick={handleAddMetric}

@@ -17,6 +17,7 @@
     "okf:validate": "npx -y tsx scripts/validate-okf.ts",
     "oui:convert": "npx -y tsx scripts/okf-to-oui.ts",
     "openui:gen": "npx -y tsx scripts/gen-openui-standard.ts",
+    "oui:schema": "npx -y tsx scripts/gen-oui-schema.ts",
     "hexmap:schema": "npx -y tsx scripts/generate-hexmap-schema.ts",
     "hexmap:validate": "npx -y tsx scripts/validate-hexmaps.ts"
   },
