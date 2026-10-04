@@ -132,7 +132,7 @@ function Landing({ onFile, onFolder, error }: {
           folder (one with a <code>topic.oui</code>, or a folder of several topics). You can also drop a file here.
         </p>
         <p className="viewer-hint">
-          Writing a topic with an LLM chat? Give it the <a href="llm/loom-authoring-prompt.md" target="_blank" rel="noreferrer" data-testid="viewer-llm-prompt">Loom authoring prompt</a>,
+          Writing a topic with Claude, Gemini or another AI chat? <a href="create.html" data-testid="viewer-llm-prompt">Get the Loom prompt and a step-by-step guide</a>,
           then open its answer here.
         </p>
         <div className="viewer-actions">

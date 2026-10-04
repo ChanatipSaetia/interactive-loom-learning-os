@@ -117,11 +117,12 @@ export default defineConfig(({ mode }) => {
     build: {
       chunkSizeWarningLimit: 1200,
       rollupOptions: {
-        // Three pages: the learning app, Loom Studio (authoring) and Loom Viewer.
+        // Four pages: the learning app, Loom Studio (authoring), Loom Viewer and the "Create with Claude" guide.
         input: {
           main: path.resolve(process.cwd(), 'index.html'),
           studio: path.resolve(process.cwd(), 'studio.html'),
           viewer: path.resolve(process.cwd(), 'viewer.html'),
+          create: path.resolve(process.cwd(), 'create.html'),
         },
         output: {
           manualChunks(id, { getModuleInfo }) {
