@@ -108,6 +108,22 @@ export function routeManhattanPath(
     candidateYs.add((r + 0.7) * spacing.rowSpacing + spacing.offsetY);
   }
 
+  // Lanes just beside lines already placed, so a line squeezed between a box
+  // and another line can still turn without running on top of it.
+  // Only the 3-segment routes use them; the safety net below stays on the grid.
+  const LANE_GAP = 12;
+  const midXs = new Set(candidateXs);
+  const midYs = new Set(candidateYs);
+  for (const seg of avoid) {
+    if (seg.a.x === seg.b.x) {
+      midXs.add(seg.a.x - LANE_GAP);
+      midXs.add(seg.a.x + LANE_GAP);
+    } else if (seg.a.y === seg.b.y) {
+      midYs.add(seg.a.y - LANE_GAP);
+      midYs.add(seg.a.y + LANE_GAP);
+    }
+  }
+
   // 1-bend Direct H-V: (startX, startY) -> (endX, startY) -> (endX, endY)
   candidates.push({
     type: '1-bend H-V',
@@ -129,7 +145,7 @@ export function routeManhattanPath(
   });
 
   // 3-segment H-V-H via candidateXs: (startX, startY) -> (midX, startY) -> (midX, endY) -> (endX, endY)
-  candidateXs.forEach(midX => {
+  midXs.forEach(midX => {
     candidates.push({
       type: 'H-V-H',
       points: [
@@ -142,7 +158,7 @@ export function routeManhattanPath(
   });
 
   // 3-segment V-H-V via candidateYs: (startX, startY) -> (startX, midY) -> (endX, midY) -> (endX, endY)
-  candidateYs.forEach(midY => {
+  midYs.forEach(midY => {
     candidates.push({
       type: 'V-H-V',
       points: [

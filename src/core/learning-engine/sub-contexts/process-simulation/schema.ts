@@ -146,6 +146,7 @@ export const FlowchartRawBranchOptionSchema = z.object({
   id: z.string().min(1, { message: 'Branch option id cannot be empty.' }),
   label: z.string().optional(),
   dashed: z.boolean().optional(),
+  initiatedBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   policy: z.string().optional(),
   command: z.string().optional(),
   handledBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),

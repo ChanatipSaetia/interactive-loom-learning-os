@@ -243,6 +243,8 @@ stepBossCommit = Branch(
       "Cast Flicker Strike on Boss",
       flickerStrike,
       [Event("evt_boss_dead", "Boss One-Shotted")],
+      null,
+      player,
     ),
     branchFtBoss,
   ],
@@ -255,6 +257,8 @@ branchFtBoss = BranchOption(
   "Cast Falling Thunder on Boss",
   fallingThunder,
   [Event("evt_boss_dead2", "Boss One-Shotted")],
+  null,
+  player,
 )
 
 journeyMapping = Journey(

@@ -455,6 +455,7 @@ function mapStep(raw: any): import('../../sub-contexts/process-simulation/compon
       id: b.id,
       label: b.label,
       dashed: b.dashed,
+      ...(b.initiatedBy ? { initiatedBy: ref(b.initiatedBy) } : {}),
       policy: b.policy,
       command: b.command,
       handledBy: ref(b.handledBy),

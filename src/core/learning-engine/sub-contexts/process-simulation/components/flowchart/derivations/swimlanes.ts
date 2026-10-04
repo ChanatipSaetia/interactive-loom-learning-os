@@ -130,6 +130,43 @@ function findHandlingEntity(
     return getCollapsedId(userId);
   }
 
+  const isES = (r: FlowchartRelation) => !r.views || r.views.includes('EVENT_STORMING');
+
+  // A command an actor starts (initiatedBy, linked through its policy) is that
+  // actor's action, so it sits in the actor's lane.
+  if (startType === TYPES.COMMAND) {
+    const policyIds = relations
+      .filter(r => isES(r) && r.to === nodeId && getEntityType(entities[r.from]) === TYPES.POLICY)
+      .map(r => r.from);
+    const initiator = relations.find(r =>
+      isES(r) && policyIds.includes(r.to) && getEntityType(entities[r.from]) === TYPES.USER
+    );
+    if (initiator) return getCollapsedId(initiator.from);
+  }
+
+  // Any other command sits in the lane of the system that handles it, not in
+  // the lane of the step before it.
+  const handledBy = relations.find(r => isES(r) && r.from === nodeId && r.handledBy);
+  if (handledBy) return getCollapsedId(handledBy.to);
+
+  // A fork whose every option is started by the same actor is that actor's
+  // decision, so its diamond sits in the actor's lane.
+  if (startType === TYPES.EVENT) {
+    const options = relations.filter(r =>
+      isES(r) && r.from === nodeId && getEntityType(entities[r.to]) === TYPES.POLICY
+    );
+    if (options.length >= 2) {
+      const deciders = new Set(options.map(option => {
+        const actor = relations.find(r =>
+          isES(r) && r.to === option.to && getEntityType(entities[r.from]) === TYPES.USER
+        );
+        return actor ? getCollapsedId(actor.from) : null;
+      }));
+      const [decider] = deciders;
+      if (deciders.size === 1 && decider) return decider;
+    }
+  }
+
   let queue: { id: string; depth: number }[] = [{ id: nodeId, depth: 0 }];
   let visited = new Set<string>([nodeId]);
 
