@@ -101,7 +101,8 @@ export interface JourneyStepRef {
   /** Longer explanation shown below the name during playback. */
   description: string;
   /** Optional process group for state machine mapping. */
-  processGroup?: 'planning' | 'execution' | 'evaluation' | 'escalation';
+  /** Free-text phase label (e.g. "handshake"). */
+  processGroup?: string;
 }
 
 /** A journey through the flow — one path from start to finish. */

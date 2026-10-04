@@ -201,11 +201,11 @@ Journey(id: string, label: string, description: string, steps: JourneyStep[]) �
   - label: Journey name shown in the journey picker (e.g. "Happy path").
   - description: What this journey walks through.
   - steps: The stops in order, as JourneyStep references.
-JourneyStep(step: string | Step | BranchOption, name: string, description: string, processGroup?: string) — A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` groups stops for the state machine (e.g. "planning", "execution").
+JourneyStep(step: string | Step | BranchOption, name: string, description: string, processGroup?: string) — A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` is an optional phase label for the stop (e.g. "planning", "handshake").
   - step: The Step or BranchOption this stop plays (reference or ID).
   - name: Short stop name shown in the journey list.
   - description: Narration shown while the stop is played.
-  - processGroup: Optional phase used by the state machine (e.g. "planning", "execution").
+  - processGroup: Optional free-text phase label for the stop (e.g. "planning", "handshake"); the state-machine state comes from Event `enters`, not from this.
 Scenario(title: string, id: string, nodes: ScenarioNode[], intro?: string, startNode?: string, displayTitle?: string, heading?: string, lead?: Lead) — Branching "what would you do?" scenario. `startNode` defaults to "start". `displayTitle` overrides the title shown inside the scenario.
   - title: Section title, shown in the topic outline and as the section header.
   - id: Scenario ID, unique within the topic.

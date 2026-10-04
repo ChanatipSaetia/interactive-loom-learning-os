@@ -1295,7 +1295,7 @@
         },
         "processGroup": {
           "type": "string",
-          "description": "Optional phase used by the state machine (e.g. \"planning\", \"execution\")."
+          "description": "Optional free-text phase label for the stop (e.g. \"planning\", \"handshake\"); the state-machine state comes from Event `enters`, not from this."
         }
       },
       "required": [
@@ -1304,7 +1304,7 @@
         "description"
       ],
       "additionalProperties": false,
-      "description": "A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` groups stops for the state machine (e.g. \"planning\", \"execution\")."
+      "description": "A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` is an optional phase label for the stop (e.g. \"planning\", \"handshake\")."
     },
     "Scenario": {
       "type": "object",

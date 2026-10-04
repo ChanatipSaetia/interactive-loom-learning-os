@@ -2,7 +2,7 @@
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
 import { isLinearStep, isBranchStep } from './types';
 import { TYPES } from '../types';
-import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, ProcessGroup, FlowchartStepBranchInfo } from '../types';
+import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartStepBranchInfo } from '../types';
 
 /**
  * Maps entity IDs to their canonical representative based on (title, type) grouping.
@@ -179,8 +179,8 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
         } : {}),
         title: s.name,
         reason: s.description,
-        // Topic-specific phase labels have no state mapping; PROCESS_GROUP_STATE_MAP lookups fall back to null.
-        processGroup: s.processGroup as ProcessGroup | undefined,
+        // A free-text phase label; the state-machine state comes from events' `enters`.
+        processGroup: s.processGroup,
         ...(branch ? { branch } : {}),
       };
     }),

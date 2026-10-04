@@ -50,6 +50,7 @@ const mockSchema = {
       title: 'Goal Submitted',
       desc: 'Test',
       viewTypes: { DATA_FLOW: 'Data Object' },
+      entersState: 'PLANNING',
       jsonPayload: { type: 'parsed_request', payload: { goal: 'test' } },
     },
   },
@@ -125,6 +126,7 @@ const detailsSchema: UnifiedFlowchartSchema = {
       title: 'Reasoned',
       desc: 'Agent reasoned over the goal',
       viewTypes: { EVENT_STORMING: 'Event' },
+      entersState: 'THINKING',
     },
   },
   relations: [],
@@ -274,7 +276,7 @@ describe('InspectorSidebar', () => {
     expect(screen.getByTestId('json-payload-viewer')).toBeTruthy();
   });
 
-  it('shows state machine states for orchestrator', () => {
+  it('keeps the state the journey last entered', () => {
     render(
       <InspectorSidebar
         schema={mockSchema as UnifiedFlowchartSchema}
@@ -501,7 +503,7 @@ describe('InspectorSidebar', () => {
     expect(onSwitchView).toHaveBeenCalledWith('STATE_MACHINE', 'orch_agent_state_EXECUTING');
   });
 
-  it('uses event-to-state map to highlight active state (no processGroup)', () => {
+  it('highlights the state the step\'s event enters', () => {
     render(
       <InspectorSidebar
         schema={detailsSchema}

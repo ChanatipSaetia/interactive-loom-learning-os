@@ -234,7 +234,7 @@ export const Branch = defineOUIComponent({
 
 export const JourneyStep = defineOUIComponent({
   name: 'JourneyStep',
-  description: 'A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` groups stops for the state machine (e.g. "planning", "execution").',
+  description: 'A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` is an optional phase label for the stop (e.g. "planning", "handshake").',
   props: z.object({
     step: z.union([z.string(), Step.ref, BranchOption.ref]),
     name: z.string(),
@@ -245,7 +245,7 @@ export const JourneyStep = defineOUIComponent({
     step: 'The Step or BranchOption this stop plays (reference or ID).',
     name: 'Short stop name shown in the journey list.',
     description: 'Narration shown while the stop is played.',
-    processGroup: 'Optional phase used by the state machine (e.g. "planning", "execution").',
+    processGroup: 'Optional free-text phase label for the stop (e.g. "planning", "handshake"); the state-machine state comes from Event `enters`, not from this.',
   },
   toData: (p) => ({ stepId: idOf(p.step), name: p.name, description: p.description, processGroup: p.processGroup }),
 })

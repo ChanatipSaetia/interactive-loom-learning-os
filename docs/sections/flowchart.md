@@ -215,7 +215,7 @@ A YAML **list** of `FlowJourney` objects. A journey groups a named subset of ste
     - stepId: step_enter
       name: "Enter Map"
       description: "Enter map, open with Whirling Assault"
-      processGroup: planning       # planning | execution | evaluation | escalation
+      processGroup: planning       # free-text phase label
 
     - stepId: branch_ft
       name: "Clear with Falling Thunder"
@@ -239,7 +239,7 @@ A YAML **list** of `FlowJourney` objects. A journey groups a named subset of ste
 | `stepId` | `string` | Yes | References a step `id` or branch `id` from `steps.yaml` |
 | `name` | `string` | Yes | Step display name in the journey panel |
 | `description` | `string` | Yes | Narrative description for this step in context |
-| `processGroup` | `"planning" \| "execution" \| "evaluation" \| "escalation"` | No | Groups the step into a swimlane category |
+| `processGroup` | `string` | No | Free-text phase label for the stop (e.g. `planning`, `handshake`). It does not pick the state-machine state: that comes from each event's `enters`. |
 
 ---
 

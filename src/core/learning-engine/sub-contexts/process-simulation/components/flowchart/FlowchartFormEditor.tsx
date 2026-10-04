@@ -1610,6 +1610,11 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
       {/* --- JOURNEYS SUB-TAB --- */}
       {activeSubTab === 'journeys' && (
         <div className="flowchart-tab-content" data-testid="flowchart-content-journeys">
+          <datalist id="flowchart-phase-options">
+            {[...new Set(journeys.flatMap((jr) => jr.steps.map((st) => st.processGroup).filter((g): g is string => !!g)))].map((g) => (
+              <option key={g} value={g} />
+            ))}
+          </datalist>
           <div className="visual-form-field visual-form-field--array">
             <div className="visual-form-section-header">
               <OUIFieldKey of={OUI.Flowchart} field="journeys">Flow Journeys ({journeys.length})</OUIFieldKey>
@@ -1778,25 +1783,18 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                 <div className="visual-form-field">
                                   <label className="visual-form-label">
                                     <OUIFieldKey of={OUI.JourneyStep} field="processGroup">Process Group</OUIFieldKey>
-                                    <select
-                                      className="visual-form-select"
+                                    <input
+                                      className="visual-form-input"
                                       value={js.processGroup || ''}
+                                      list="flowchart-phase-options"
+                                      placeholder="Phase (optional)"
                                       onChange={(e) => {
                                         const updatedSteps = [...j.steps]
-                                        updatedSteps[jsIdx] = {
-                                          ...js,
-                                          processGroup: (e.target.value as JourneyStepRef['processGroup']) || undefined,
-                                        }
+                                        updatedSteps[jsIdx] = { ...js, processGroup: e.target.value || undefined }
                                         handleJourneyChange(idx, { ...j, steps: updatedSteps })
                                       }}
                                       data-testid={`flowchart-journey-${idx}-step-${jsIdx}-processGroup`}
-                                    >
-                                      <option value="">(none)</option>
-                                      <option value="planning">Planning</option>
-                                      <option value="execution">Execution</option>
-                                      <option value="evaluation">Evaluation</option>
-                                      <option value="escalation">Escalation</option>
-                                    </select>
+                                    />
                                   </label>
                                 </div>
                               </div>

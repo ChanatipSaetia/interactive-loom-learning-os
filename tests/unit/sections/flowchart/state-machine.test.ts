@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { parseFlowchart } from './fixtures/parse-flowchart';
 import { deriveSchema } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive';
 import { autoDeriveViews } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/derivations';
+import { stateAtStep } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/state-at-step';
 import { validateOUISection } from '../../../../src/core/learning-engine/validation/oui-gateway';
 
 const raw = (enters: Record<string, string>) => ({
@@ -70,5 +71,13 @@ j = Journey("j", "J", "J", [JourneyStep(place, "Place", "Place")])
     const diag = validateOUISection(source).diagnostics.find(d => d.field?.endsWith('.enters'));
     expect(diag?.message).toContain('"SHIPPED"');
     expect(diag?.fixHint).toContain('"DRAFT"');
+  });
+
+  it('highlights the initial state, then the last state the journey entered', () => {
+    const data = raw({ placed: 'PLACED', paid: 'PAID' }) as any;
+    data.flow.journeys[0].steps = ['place', 'note', 'pay'].map(stepId => ({ stepId, name: stepId, description: stepId }));
+    const schema = deriveSchema(parseFlowchart(data).flow);
+    const steps = schema.journeys[0].steps;
+    expect([-1, 0, 1, 2].map(i => stateAtStep(schema, steps, i))).toEqual(['DRAFT', 'PLACED', 'PLACED', 'PAID']);
   });
 });

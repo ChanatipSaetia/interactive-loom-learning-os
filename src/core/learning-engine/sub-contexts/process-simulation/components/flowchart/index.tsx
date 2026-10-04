@@ -41,10 +41,9 @@ import {
   DYNAMIC_ICONS,
   NODE_W,
   NODE_H,
-  PROCESS_GROUP_STATE_MAP,
-  STEP_EVENT_TO_STATE_MAP,
 } from './types';
 import { INITIAL_SCHEMA } from './initial-schema';
+import { stateAtStep } from './state-at-step';
 
 import type {
   UnifiedFlowchartSchema,
@@ -68,7 +67,7 @@ import './flowchart.css';
 
 const Workflow = Icons.Workflow;
 
-export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA, PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP };
+export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA };
 export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine };
 
 export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: FlowchartProps) {
@@ -306,19 +305,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
   const activeStateId = useMemo(() => {
     const journey = localSchema.journeys.find(j => j.id === playback.currentJourneyId);
     if (!journey || playback.currentStep < 0) return null;
-    const currentStepData = journey.steps[playback.currentStep] as FlowchartStep | undefined;
-    if (!currentStepData) return null;
-
-    // Find any node in nodeIds that maps to a state machine state
-    const matchedNodeId = currentStepData.nodeIds?.find(id => !!STEP_EVENT_TO_STATE_MAP[id]);
-    if (matchedNodeId) {
-      return STEP_EVENT_TO_STATE_MAP[matchedNodeId];
-    }
-
-    if (currentStepData.processGroup) {
-      return PROCESS_GROUP_STATE_MAP[currentStepData.processGroup] ?? null;
-    }
-    return null;
+    return stateAtStep(localSchema, journey.steps as FlowchartStep[], playback.currentStep);
   }, [localSchema, playback.currentJourneyId, playback.currentStep]);
 
   const activeStateMachineAggregateId = useMemo(() => {
@@ -466,14 +453,14 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
   } | null>(null);
 
 
-  // Filter visible view tabs to show EVENT_STORMING, SWIMLANES, SYS_ARCH, DATA_FLOW, SEQUENCE
-  // unless STATE_MACHINE is active, in which case it is rendered temporarily.
+  // View tabs: the five process views, plus State Machine when a system declares one.
   const visibleViewKeys = useMemo(() => {
     return viewKeys.filter(vk => {
       if (vk === activeViewKey) return true;
+      if (vk === 'STATE_MACHINE') return (localSchema.views?.STATE_MACHINE?.nodes.length ?? 0) > 0;
       return vk === 'EVENT_STORMING' || vk === 'SWIMLANES' || vk === 'SYS_ARCH' || vk === 'DATA_FLOW' || vk === 'SEQUENCE';
     });
-  }, [viewKeys, activeViewKey]);
+  }, [viewKeys, activeViewKey, localSchema.views]);
 
   const actionBarItems = useMemo(() => {
     return visibleViewKeys.map(vk => {
