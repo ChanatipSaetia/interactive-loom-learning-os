@@ -356,7 +356,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+/* The bar owns the space under the title; the title's own bottom margin would double it */
+.section-title-bar > .section-title-bar-title {
+  margin-bottom: 0;
 }
 
 .section-title-bar-title {
