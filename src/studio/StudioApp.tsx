@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ClipboardPaste, Eye, FolderOpen, Sparkles } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
+import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import {
   TopicWorkspace,
   fileSystemAccessFolder,
@@ -16,6 +17,7 @@ import {
 } from '../core/supporting/authoring-editor/workspace'
 import { StudioWorkspace } from './components/StudioWorkspace'
 import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
+import '../core/delivery/web-app-shell/layout.css'
 
 declare global {
   interface Window {
@@ -122,63 +124,68 @@ function Landing({ onPick, onCreate, canPick, error }: {
   const [pasting, setPasting] = useState(false)
   const [text, setText] = useState('')
   return (
-    <div className="studio-landing" data-testid="studio-landing">
-      <div className="studio-landing-card">
-        <div className="studio-landing-top">
-          <div className="studio-brand"><Sparkles size={20} /> Loom Studio</div>
+    <div className="app-layout studio-start">
+      <header className="topnav">
+        <span className="topnav-title studio-brand"><Sparkles size={16} /> Loom&nbsp;Studio</span>
+        <div className="studio-nav-actions">
           <LoomToolsNav current="studio" />
+          <ThemeToggle />
         </div>
-        <h1>Edit a topic folder</h1>
-        <p>
-          Open a topic folder, such as <code>public/content/demo</code>, to edit its <code>topic.oui</code> and
-          sections. Pick an empty folder to start a new topic, or paste a topic from your AI chat and choose a folder to save it in.
-        </p>
-        {!canPick && (
-          <p className="studio-warning" role="alert">
-            This browser cannot open local folders. Use a Chromium-based browser such as Chrome or Edge.
+      </header>
+      <main className="studio-landing" data-testid="studio-landing">
+        <div className="studio-landing-card">
+          <h1>Edit a topic folder</h1>
+          <p>
+            Open a topic folder, such as <code>public/content/demo</code>, to edit its <code>topic.oui</code> and
+            sections. Pick an empty folder to start a new topic, or paste a topic from your AI chat and choose a folder to save it in.
           </p>
-        )}
-        <div className="studio-landing-actions">
-          {canPick && (
-            <>
-              <button type="button" className="studio-button studio-button--primary" onClick={onPick} data-testid="studio-open-folder">
-                <FolderOpen size={16} /> Open topic folder
-              </button>
-              <button type="button" className="studio-button" onClick={() => setPasting((p) => !p)} aria-expanded={pasting} data-testid="studio-paste-toggle">
-                <ClipboardPaste size={16} /> New topic from pasted text
-              </button>
-            </>
+          {!canPick && (
+            <p className="studio-warning" role="alert">
+              This browser cannot open local folders. Use a Chromium-based browser such as Chrome or Edge.
+            </p>
           )}
-          <a className="studio-button" href="viewer.html" data-testid="studio-open-viewer">
-            <Eye size={16} /> View an exported topic
-          </a>
+          <div className="studio-landing-actions">
+            {canPick && (
+              <>
+                <button type="button" className="studio-button studio-button--primary" onClick={onPick} data-testid="studio-open-folder">
+                  <FolderOpen size={16} /> Open topic folder
+                </button>
+                <button type="button" className="studio-button" onClick={() => setPasting((p) => !p)} aria-expanded={pasting} data-testid="studio-paste-toggle">
+                  <ClipboardPaste size={16} /> New topic from pasted text
+                </button>
+              </>
+            )}
+            <a className="studio-button" href="viewer.html" data-testid="studio-open-viewer">
+              <Eye size={16} /> View an exported topic
+            </a>
+          </div>
+          {canPick && pasting && (
+            <form
+              className="studio-paste"
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (text.trim()) onCreate(text)
+              }}
+            >
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder={'Paste the topic from your AI chat:\n// @loom-topic my-topic\n// === topic.oui ===\n…'}
+                rows={8}
+                spellCheck={false}
+                aria-label="Topic text"
+                autoFocus
+                data-testid="studio-paste-input"
+              />
+              <p className="studio-hint">Next you choose a folder: pick or create an empty one (its name becomes the topic ID).</p>
+              <button type="submit" className="studio-button studio-button--primary" disabled={!text.trim()} data-testid="studio-paste-create">
+                <FolderOpen size={16} /> Choose folder and create
+              </button>
+            </form>
+          )}
+          {error && <pre className="studio-error" role="alert">{error}</pre>}
         </div>
-        {canPick && pasting && (
-          <form
-            className="studio-paste"
-            onSubmit={(e) => {
-              e.preventDefault()
-              if (text.trim()) onCreate(text)
-            }}
-          >
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder={'Paste the topic from your AI chat:\n// @loom-topic my-topic\n// === topic.oui ===\n…'}
-              rows={8}
-              spellCheck={false}
-              aria-label="Topic text"
-              autoFocus
-              data-testid="studio-paste-input"
-            />
-            <p className="studio-hint">Next you choose a folder: pick or create an empty one (its name becomes the topic ID).</p>
-            <button type="submit" className="studio-button studio-button--primary" disabled={!text.trim()} data-testid="studio-paste-create">
-              <FolderOpen size={16} /> Choose folder and create
-            </button>
-          </form>
-        )}
-        {error && <pre className="studio-error" role="alert">{error}</pre>}
-      </div>
+      </main>
     </div>
   )
 }
