@@ -36,6 +36,17 @@ ssoDirectory = System(
   "SSO Identity Directory",
   "Group-rule automation that mints accounts, licenses, and app entitlements",
   "aggregate",
+  StateMachine(
+    [
+      MachineState("NOT_STARTED", "Not started", "var(--ctp-overlay1)"),
+      MachineState("REQUESTED", "Requested", "var(--ctp-blue)"),
+      MachineState("PROVISIONED", "Provisioned", "var(--ctp-mauve)"),
+      MachineState("PRIVILEGED", "Privileged", "var(--ctp-peach)"),
+      MachineState("ACTIVE", "Active", "var(--ctp-green)"),
+      MachineState("BLOCKED", "Blocked", "var(--ctp-red)"),
+    ],
+    "NOT_STARTED",
+  ),
 )
 
 pamVault = System(
@@ -50,7 +61,7 @@ stepRequest = Step(
   "Before the start date",
   "File joiner request",
   joinerTicket,
-  [Event("evt_requested", "Joiner Request Filed")],
+  [Event("evt_requested", "Joiner Request Filed", null, "REQUESTED")],
   hiringManager,
   null,
   "step_provision",
@@ -63,7 +74,7 @@ stepProvision = Step(
   "On joiner request accepted",
   "Provision accounts via SSO groups",
   ssoDirectory,
-  [Event("evt_provisioned", "Day-Zero Accounts Provisioned")],
+  [Event("evt_provisioned", "Day-Zero Accounts Provisioned", null, "PROVISIONED")],
   null,
   null,
   "step_privileges",
@@ -76,7 +87,7 @@ stepPrivileges = Step(
   "For production-reach roles only",
   "Approve privileged grants",
   pamVault,
-  [Event("evt_privileged", "Privileges Granted")],
+  [Event("evt_privileged", "Privileges Granted", null, "PRIVILEGED")],
   itOperator,
   null,
   "step_smoke",
@@ -105,7 +116,7 @@ stepOutcome = Branch(
       "If day-one login and golden-path tools work",
       "Sign off day-one access",
       ssoDirectory,
-      [Event("evt_verified", "Day-1 Access Verified")],
+      [Event("evt_verified", "Day-1 Access Verified", null, "ACTIVE")],
     ),
     BranchOption(
       "branch_fail",
@@ -113,7 +124,7 @@ stepOutcome = Branch(
       "If the smoke test hits a missing entitlement",
       "Manually fix credential chain",
       pamVault,
-      [Event("evt_denied", "Access Denied — Rework Loop")],
+      [Event("evt_denied", "Access Denied — Rework Loop", null, "BLOCKED")],
       true,
     ),
   ],
