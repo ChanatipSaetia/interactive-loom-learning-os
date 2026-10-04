@@ -21,6 +21,24 @@ const FLOW_TYPES_BY_VIEW: Record<string, Set<string>> = {
   DATA_FLOW: new Set([TYPES.DATA_OBJECT, TYPES.DECISION]),
 };
 
+/**
+ * Widest edge label (px) that can sit centred on (x, y) without running into
+ * a node: the free horizontal room between the nearest boxes on that line.
+ */
+export function edgeLabelRoom(x: number, y: number, nodes: Array<{ x?: number; y?: number }>, halfHeight = 10): number {
+  const MARGIN = 6;
+  let half = Infinity;
+  for (const n of nodes) {
+    if (typeof n.x !== 'number' || typeof n.y !== 'number') continue;
+    if (Math.abs(n.y - y) >= NODE_H / 2 + halfHeight) continue;
+    const left = n.x - NODE_W / 2;
+    const right = n.x + NODE_W / 2;
+    if (x > left && x < right) return 0;
+    half = Math.min(half, x <= left ? left - x : x - right);
+  }
+  return half === Infinity ? Infinity : Math.max(0, 2 * (half - MARGIN));
+}
+
 export interface ViewSpacing { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number }
 export type PositionedNode = FlowchartViewNode & { x: number; y: number };
 
