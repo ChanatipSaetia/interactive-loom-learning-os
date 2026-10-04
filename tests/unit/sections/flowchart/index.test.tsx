@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SectionRegistry } from '../../../../src/core/learning-engine/registry';
@@ -180,9 +180,18 @@ describe('Flowchart journey controls', () => {
     vi.useRealTimers();
   });
 
+  // The dock starts as the mini player; these tests drive the full panel
+  const renderExpanded = () => {
+    const result = render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-dock-expand'));
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    return result;
+  };
+
   it('renders journey selector when journeys provided', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
+    renderExpanded();
     expect(screen.getByTestId('flowchart-journey-select')).toBeInTheDocument();
   });
 
@@ -192,8 +201,7 @@ describe('Flowchart journey controls', () => {
   });
 
   it('renders all journey options', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
+    renderExpanded();
     const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement;
     expect(select.options).toHaveLength(2);
     expect(select.options[0].text).toBe('Journey A');
@@ -201,44 +209,40 @@ describe('Flowchart journey controls', () => {
   });
 
   it('defaults to first journey', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
+    renderExpanded();
     const select = screen.getByTestId('flowchart-journey-select') as HTMLSelectElement;
     expect(select.value).toBe('journey-a');
   });
 
   it('switching journeys resets to overview', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    fireEvent.click(screen.getByTestId('dock-tab-journey'));
+    renderExpanded();
     const select = screen.getByTestId('flowchart-journey-select');
     fireEvent.change(select, { target: { value: 'journey-b' } });
-    fireEvent.click(screen.getByTestId('dock-tab-steps'));
     const progress = screen.getByTestId('flowchart-progress');
     expect(progress.textContent).toBe('0 / 2');
   });
 
   it('renders playback controls', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    expect(screen.getByTestId('flowchart-btn-play')).toBeInTheDocument();
-    expect(screen.getByTestId('flowchart-btn-pause')).toBeInTheDocument();
+    renderExpanded();
+    expect(screen.getByTestId('flowchart-btn-toggle')).toBeInTheDocument();
     expect(screen.getByTestId('flowchart-btn-next')).toBeInTheDocument();
     expect(screen.getByTestId('flowchart-btn-prev')).toBeInTheDocument();
     expect(screen.getByTestId('flowchart-btn-reset')).toBeInTheDocument();
   });
 
   it('renders progress indicator', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     const progress = screen.getByTestId('flowchart-progress');
     expect(progress.textContent).toBe('0 / 3');
   });
 
   it('prev button is disabled at first step', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     expect(screen.getByTestId('flowchart-btn-prev')).toBeDisabled();
   });
 
   it('next button is disabled at last step', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
@@ -248,7 +252,7 @@ describe('Flowchart journey controls', () => {
   });
 
   it('next button advances step', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     const progress = screen.getByTestId('flowchart-progress');
     expect(progress.textContent).toBe('0 / 3');
@@ -257,7 +261,7 @@ describe('Flowchart journey controls', () => {
   });
 
   it('prev button goes back one step', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     const prevBtn = screen.getByTestId('flowchart-btn-prev');
     const progress = screen.getByTestId('flowchart-progress');
@@ -269,7 +273,7 @@ describe('Flowchart journey controls', () => {
   });
 
   it('reset button returns to overview', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     const resetBtn = screen.getByTestId('flowchart-btn-reset');
     const progress = screen.getByTestId('flowchart-progress');
@@ -281,8 +285,8 @@ describe('Flowchart journey controls', () => {
   });
 
   it('play auto-advances through steps', async () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const playBtn = screen.getByTestId('flowchart-btn-play');
+    renderExpanded();
+    const playBtn = screen.getByTestId('flowchart-btn-toggle');
     const progress = screen.getByTestId('flowchart-progress');
     expect(progress.textContent).toBe('0 / 3');
     await act(async () => {
@@ -300,20 +304,21 @@ describe('Flowchart journey controls', () => {
   });
 
   it('pause stops auto-advance', async () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const playBtn = screen.getByTestId('flowchart-btn-play');
-    const pauseBtn = screen.getByTestId('flowchart-btn-pause');
+    renderExpanded();
+    const toggle = screen.getByTestId('flowchart-btn-toggle');
     const progress = screen.getByTestId('flowchart-progress');
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-label', 'Pause');
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-label', 'Play');
     await act(async () => {
-      fireEvent.click(playBtn);
-      fireEvent.click(pauseBtn);
       vi.advanceTimersByTime(2600);
     });
     expect(progress.textContent).toBe('1 / 3');
   });
 
   it('highlights current step node', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     fireEvent.click(nextBtn);
     const svg = screen.getByTestId('flowchart-svg-DEFAULT_VIEW');
@@ -324,7 +329,7 @@ describe('Flowchart journey controls', () => {
   });
 
   it('update highlight when step advances', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     const nextBtn = screen.getByTestId('flowchart-btn-next');
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
@@ -334,28 +339,116 @@ describe('Flowchart journey controls', () => {
     expect(progress.textContent).toBe('2 / 3');
   });
 
-  it('play disabled at last step', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+  it('toggle becomes Replay at the last step and restarts from step 1', () => {
+    renderExpanded();
     const nextBtn = screen.getByTestId('flowchart-btn-next');
-    const playBtn = screen.getByTestId('flowchart-btn-play');
+    const toggle = screen.getByTestId('flowchart-btn-toggle');
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
-    expect(playBtn).toBeDisabled();
+    expect(toggle).toHaveAttribute('aria-label', 'Replay');
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('flowchart-progress').textContent).toBe('1 / 3');
+    expect(toggle).toHaveAttribute('aria-label', 'Pause');
   });
 
-  it('pause disabled when not playing', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    expect(screen.getByTestId('flowchart-btn-pause')).toBeDisabled();
+  it('shows a completion note with the next journey at the end', () => {
+    renderExpanded();
+    expect(screen.queryByTestId('flowchart-journey-complete')).not.toBeInTheDocument();
+    const nextBtn = screen.getByTestId('flowchart-btn-next');
+    fireEvent.click(nextBtn);
+    fireEvent.click(nextBtn);
+    fireEvent.click(nextBtn);
+    expect(screen.getByTestId('flowchart-journey-complete')).toHaveTextContent('Journey complete');
+
+    fireEvent.click(screen.getByTestId('flowchart-next-journey'));
+    expect((screen.getByTestId('flowchart-journey-select') as HTMLSelectElement).value).toBe('journey-b');
+    expect(screen.getByTestId('flowchart-progress').textContent).toBe('1 / 2');
+    expect(screen.getByTestId('flowchart-btn-toggle')).toHaveAttribute('aria-label', 'Pause');
+    expect(screen.queryByTestId('flowchart-journey-complete')).not.toBeInTheDocument();
+  });
+
+  it('clicking the active step card keeps it focused', () => {
+    const { container } = renderExpanded();
+    const card = container.querySelector('[id$="journey-step-1"]') as HTMLElement;
+    fireEvent.click(card);
+    expect(screen.getByTestId('flowchart-progress').textContent).toBe('2 / 3');
+    fireEvent.click(card);
+    expect(screen.getByTestId('flowchart-progress').textContent).toBe('2 / 3');
+  });
+
+  it('keyboard shortcuts drive playback from the canvas', () => {
+    renderExpanded();
+    const canvas = screen.getByTestId('flowchart-canvas-wrapper');
+    const progress = screen.getByTestId('flowchart-progress');
+    const toggle = screen.getByTestId('flowchart-btn-toggle');
+
+    fireEvent.keyDown(canvas, { key: 'ArrowRight' });
+    fireEvent.keyDown(canvas, { key: 'ArrowRight' });
+    expect(progress.textContent).toBe('2 / 3');
+    fireEvent.keyDown(canvas, { key: 'ArrowLeft' });
+    expect(progress.textContent).toBe('1 / 3');
+
+    fireEvent.keyDown(canvas, { key: ' ' });
+    expect(toggle).toHaveAttribute('aria-label', 'Pause');
+    fireEvent.keyDown(canvas, { key: ' ' });
+    expect(toggle).toHaveAttribute('aria-label', 'Play');
+
+    fireEvent.keyDown(canvas, { key: 'Home' });
+    expect(progress.textContent).toBe('0 / 3');
+  });
+
+  it('shows a typed caption for the current step', () => {
+    renderExpanded();
+    expect(screen.queryByTestId('flowchart-step-caption')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('flowchart-btn-next'));
+    const caption = screen.getByTestId('flowchart-step-caption');
+    expect(caption).toHaveTextContent('Step 1 / 3');
+    expect(caption).toHaveTextContent('Step 1');
+    expect(caption).toHaveAttribute('data-typing', 'true');
+    // The full text is laid out from the start, only the typed part is visible
+    expect(caption.querySelector('.flowchart-step-caption-pending')!.textContent).toBe('Journey A Step 1');
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+    expect(caption).toHaveAttribute('data-typing', 'false');
+    expect(caption.querySelector('.flowchart-step-caption-pending')!.textContent).toBe('');
+  });
+
+  it('clicking the caption skips the typing', () => {
+    renderExpanded();
+    fireEvent.click(screen.getByTestId('flowchart-btn-next'));
+    fireEvent.click(screen.getByTestId('flowchart-btn-next'));
+    const caption = screen.getByTestId('flowchart-step-caption');
+    expect(caption).toHaveTextContent('Step 2 / 3');
+    fireEvent.click(caption);
+    expect(caption).toHaveAttribute('data-typing', 'false');
+    expect(screen.getByTestId('flowchart-step-caption-text').textContent).toBe('Journey A Step 2');
+  });
+
+  it('hides the caption back at the overview', () => {
+    renderExpanded();
+    fireEvent.click(screen.getByTestId('flowchart-btn-next'));
+    expect(screen.getByTestId('flowchart-step-caption')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('flowchart-btn-reset'));
+    expect(screen.queryByTestId('flowchart-step-caption')).not.toBeInTheDocument();
+  });
+
+  it('keyboard shortcuts ignore the journey picker', () => {
+    renderExpanded();
+    fireEvent.keyDown(screen.getByTestId('flowchart-journey-select'), { key: 'ArrowRight' });
+    expect(screen.getByTestId('flowchart-progress').textContent).toBe('0 / 3');
   });
 
   it('reset disabled at overview', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    renderExpanded();
     expect(screen.getByTestId('flowchart-btn-reset')).toBeDisabled();
   });
 });
 
-describe('Flowchart particle animation', () => {
+describe('Flowchart collapsible journey dock', () => {
   beforeEach(() => {
     SectionRegistry.clear();
     vi.useFakeTimers();
@@ -365,28 +458,169 @@ describe('Flowchart particle animation', () => {
     vi.useRealTimers();
   });
 
-  it('renders particle circle when journeys provided', () => {
+  // Let the dock's enter/exit animation finish so the next view mounts
+  const settle = async () => {
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+    });
+  };
+
+  const singleJourneySchema = { ...mockSchema, journeys: [mockSchema.journeys[0]] };
+
+  it('starts collapsed as the mini player with a journey picker', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    expect(screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0]).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-mini-player')).toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-mini-journey-trigger')).toHaveTextContent('Journey A');
+    expect(screen.queryByTestId('flowchart-journey-bar')).not.toBeInTheDocument();
   });
 
-  it('does not render particle when no journeys', () => {
-    render(<Flowchart title="Test" schema={mockSchemaNoJourneys} />, { wrapper });
-    expect(screen.queryByTestId('flowchart-particle')).not.toBeInTheDocument();
+  it('switches journeys from the mini player picker', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    fireEvent.change(screen.getByTestId('flowchart-mini-journey-select'), { target: { value: 'journey-b' } });
+    expect(screen.getByTestId('flowchart-mini-journey-trigger')).toHaveTextContent('Journey B');
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('0 / 2');
+    expect(screen.getByTestId('flowchart-mini-player')).toBeInTheDocument();
   });
 
-  it('particle is invisible at step 0', () => {
+  it('arrow keys on the picker do not step the journey', () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const particle = screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0];
-    expect(particle.getAttribute('opacity')).toBe('0');
+    fireEvent.keyDown(screen.getByTestId('flowchart-mini-journey-trigger'), { key: 'ArrowRight' });
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('0 / 3');
   });
 
-  it('particle is present when advancing step', () => {
+  it('shows the name instead of a picker for a single journey', () => {
+    render(<Flowchart title="Test" schema={singleJourneySchema} />, { wrapper });
+    expect(screen.queryByTestId('flowchart-mini-journey-trigger')).not.toBeInTheDocument();
+    expect(screen.getByTestId('flowchart-mini-journey')).toHaveTextContent('Journey A');
+  });
+
+  it('expands to the panel and collapses back', async () => {
     render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const nextBtn = screen.getByTestId('flowchart-btn-next');
-    fireEvent.click(nextBtn);
-    const particle = screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0];
-    expect(particle).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('flowchart-dock-expand'));
+    await settle();
+    expect(screen.getByTestId('flowchart-journey-bar')).toBeInTheDocument();
+    expect(screen.queryByTestId('flowchart-mini-player')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('flowchart-dock-collapse'));
+    await settle();
+    expect(screen.getByTestId('flowchart-mini-player')).toBeInTheDocument();
+    expect(screen.queryByTestId('flowchart-journey-bar')).not.toBeInTheDocument();
+  });
+
+  it('the single journey name opens the panel', async () => {
+    render(<Flowchart title="Test" schema={singleJourneySchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-mini-journey'));
+    await settle();
+    expect(screen.getByTestId('flowchart-journey-bar')).toBeInTheDocument();
+  });
+
+  it('the journey name follows the next journey', () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-mini-dot-2'));
+    fireEvent.click(screen.getByTestId('flowchart-mini-next-journey'));
+    expect(screen.getByTestId('flowchart-mini-journey-trigger')).toHaveTextContent('Journey B');
+  });
+
+  it('mini player steps forward and back', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const progress = screen.getByTestId('flowchart-mini-progress');
+    expect(progress.textContent).toBe('0 / 3');
+    expect(screen.getByTestId('flowchart-mini-prev')).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    expect(progress.textContent).toBe('2 / 3');
+
+    fireEvent.click(screen.getByTestId('flowchart-mini-prev'));
+    expect(progress.textContent).toBe('1 / 3');
+  });
+
+  it('mini player toggle plays and pauses', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    const toggle = screen.getByTestId('flowchart-mini-toggle');
+    expect(toggle).toHaveAttribute('aria-label', 'Play');
+
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 3');
+    expect(toggle).toHaveAttribute('aria-label', 'Pause');
+
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-label', 'Play');
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 3');
+  });
+
+  it('dots mark done / current / upcoming steps and jump on click', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-mini-dot-1'));
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('2 / 3');
+    expect(screen.getByTestId('flowchart-mini-dot-0')).toHaveAttribute('data-state', 'done');
+    expect(screen.getByTestId('flowchart-mini-dot-1')).toHaveAttribute('data-state', 'current');
+    expect(screen.getByTestId('flowchart-mini-dot-1')).toHaveAttribute('aria-current', 'step');
+    expect(screen.getByTestId('flowchart-mini-dot-2')).toHaveAttribute('data-state', 'todo');
+  });
+
+  it('mini toggle becomes Replay at the last step and restarts from step 1', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-mini-dot-2'));
+    const toggle = screen.getByTestId('flowchart-mini-toggle');
+    expect(toggle).toHaveAttribute('aria-label', 'Replay');
+    expect(screen.getByTestId('flowchart-mini-next')).toBeDisabled();
+
+    fireEvent.click(toggle);
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 3');
+    expect(toggle).toHaveAttribute('aria-label', 'Pause');
+  });
+
+  it('mini player offers the next journey at the end', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    expect(screen.queryByTestId('flowchart-mini-next-journey')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('flowchart-mini-dot-2'));
+    fireEvent.click(screen.getByTestId('flowchart-mini-next-journey'));
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 2');
+  });
+
+  it('keeps playback position when collapsing and expanding', async () => {
+    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-dock-expand'));
+    await settle();
+    fireEvent.click(screen.getByTestId('flowchart-btn-next'));
+    fireEvent.click(screen.getByTestId('flowchart-dock-collapse'));
+    await settle();
+    expect(screen.getByTestId('flowchart-mini-progress').textContent).toBe('1 / 3');
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    fireEvent.click(screen.getByTestId('flowchart-dock-expand'));
+    await settle();
+    expect(screen.getByTestId('flowchart-progress').textContent).toBe('2 / 3');
+  });
+});
+
+describe('Flowchart edge highlighting', () => {
+  beforeEach(() => {
+    SectionRegistry.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('draws no moving dots on edges', () => {
+    const { container } = render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    expect(container.querySelector('.flowchart-edge-group circle')).toBeNull();
+  });
+
+  it('marks the edges of the current step as active so they dash', () => {
+    const { container } = render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    expect(container.querySelector('.flowchart-edge-group[data-active="true"]')).toBeNull();
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    expect(container.querySelectorAll('.flowchart-edge-group[data-active="true"]').length).toBeGreaterThan(0);
   });
 });
 
@@ -966,7 +1200,7 @@ describe('Flowchart inspector sidebar', () => {
 
     // Advancing playback should not reopen it
     act(() => {
-      fireEvent.click(screen.getByTestId('flowchart-btn-next'));
+      fireEvent.click(screen.getByTestId('flowchart-mini-next'));
     });
     expect(screen.queryByTestId('inspector-sidebar')).not.toBeInTheDocument();
   });

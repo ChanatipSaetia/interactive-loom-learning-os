@@ -6,7 +6,6 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
   })
 
   test('journey selector renders with all journeys', async ({ page }) => {
-    await page.getByTestId('dock-tab-journey').click()
 
     const select = page.getByTestId('flowchart-journey-select')
     await expect(select).toBeVisible()
@@ -23,7 +22,6 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
   })
 
   test('switching journeys updates description and step counts', async ({ page }) => {
-    await page.getByTestId('dock-tab-journey').click()
     const select = page.getByTestId('flowchart-journey-select')
     const description = page.getByTestId('flowchart-journey-description')
     
@@ -32,14 +30,12 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     await select.selectOption('direct-llm-response')
     await expect(description).toContainText('Follow the fast path where the user asks a question')
     
-    // Switch to steps tab to see step progress count
-    await page.getByTestId('dock-tab-steps').click()
     const progress = page.getByTestId('flowchart-progress')
     await expect(progress).toHaveText('0 / 3')
     
-    // Verify journey title is displayed in Steps tab
-    const title = page.getByTestId('flowchart-dock-journey-title')
-    await expect(title).toHaveText('Direct LLM Response')
+    // Journey picker in the panel header shows the selected journey
+    const trigger = page.getByTestId('flowchart-journey-trigger')
+    await expect(trigger).toHaveText('Direct LLM Response')
   })
 
   test('step through all Agent-Subagent MCP Loop steps with highlights', async ({ page }) => {
@@ -70,7 +66,7 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
   })
 
   test('play auto-advances through journey steps', async ({ page }) => {
-    const playBtn = page.getByTestId('flowchart-btn-play')
+    const playBtn = page.getByTestId('flowchart-btn-toggle')
     const progress = page.getByTestId('flowchart-progress')
 
     await expect(progress).toHaveText('0 / 4')
@@ -85,12 +81,12 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
   })
 
   test('pause stops auto-advance', async ({ page }) => {
-    const playBtn = page.getByTestId('flowchart-btn-play')
-    const pauseBtn = page.getByTestId('flowchart-btn-pause')
+    const toggle = page.getByTestId('flowchart-btn-toggle')
     const progress = page.getByTestId('flowchart-progress')
 
-    await playBtn.click()
-    await pauseBtn.click()
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-label', 'Pause')
+    await toggle.click()
     await page.waitForTimeout(1500)
     await expect(progress).toHaveText('1 / 4')
   })
@@ -134,18 +130,28 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     await expect(page.getByTestId('flowchart-progress')).toHaveText('4 / 4')
   })
 
-  test('play disabled at last step', async ({ page }) => {
+  test('toggle becomes Replay at last step', async ({ page }) => {
     const nextBtn = page.getByTestId('flowchart-btn-next')
-    const playBtn = page.getByTestId('flowchart-btn-play')
+    const toggle = page.getByTestId('flowchart-btn-toggle')
     for (let i = 0; i < 4; i++) {
       await nextBtn.click()
     }
-    await expect(playBtn).toBeDisabled()
+    await expect(toggle).toHaveAttribute('aria-label', 'Replay')
+    await expect(page.getByTestId('flowchart-journey-complete')).toBeVisible()
   })
 
-  test('pause disabled when not playing', async ({ page }) => {
-    const pauseBtn = page.getByTestId('flowchart-btn-pause')
-    await expect(pauseBtn).toBeDisabled()
+  test('keyboard shortcuts drive playback from the canvas', async ({ page }) => {
+    const canvas = page.getByTestId('flowchart-canvas-wrapper')
+    const progress = page.getByTestId('flowchart-progress')
+
+    await canvas.focus()
+    await page.keyboard.press('ArrowRight')
+    await page.keyboard.press('ArrowRight')
+    await expect(progress).toHaveText('2 / 4')
+    await page.keyboard.press('ArrowLeft')
+    await expect(progress).toHaveText('1 / 4')
+    await page.keyboard.press('Home')
+    await expect(progress).toHaveText('0 / 4')
   })
 
   test('reset disabled at overview', async ({ page }) => {
@@ -155,7 +161,7 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
 
   test('clicking stepper card selects step and pauses playback', async ({ page }) => {
     const progress = page.getByTestId('flowchart-progress')
-    const playBtn = page.getByTestId('flowchart-btn-play')
+    const playBtn = page.getByTestId('flowchart-btn-toggle')
     
     // Play first
     await playBtn.click()
@@ -169,9 +175,8 @@ test.describe('Issue #10 Slice 2: Journey selector + step-by-step highlighting +
     // Progress should jump to 3 / 4
     await expect(progress).toHaveText('3 / 4')
     
-    // Playback should be paused (play button enabled, pause button disabled)
-    await expect(playBtn).toBeEnabled()
-    await expect(page.getByTestId('flowchart-btn-pause')).toBeDisabled()
+    // Playback should be paused
+    await expect(playBtn).toHaveAttribute('aria-label', 'Play')
     
     // Wait to verify it doesn't auto-advance (step remains at 3 / 4)
     await page.waitForTimeout(1500)

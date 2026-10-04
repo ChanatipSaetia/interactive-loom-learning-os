@@ -1059,6 +1059,20 @@
         "description": {
           "type": "string",
           "description": "Optional narration of this step, shown when it is highlighted."
+        },
+        "sendsTo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Actor"
+            },
+            {
+              "$ref": "#/$defs/System"
+            }
+          ],
+          "description": "Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client)."
         }
       },
       "required": [
@@ -1191,6 +1205,20 @@
         "description": {
           "type": "string",
           "description": "Optional narration of this step, shown when it is highlighted."
+        },
+        "sendsTo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Actor"
+            },
+            {
+              "$ref": "#/$defs/System"
+            }
+          ],
+          "description": "Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client)."
         }
       },
       "required": [

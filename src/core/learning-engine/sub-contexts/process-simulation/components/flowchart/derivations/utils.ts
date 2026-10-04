@@ -139,10 +139,19 @@ export function deriveRelations(
               ((r.from === collapsedStart && r.to === collapsedNext) || (r.from === collapsedNext && r.to === collapsedStart))
             );
             if (existingRel) {
-              if (existingRel.from !== collapsedStart || existingRel.to !== collapsedNext) {
+              const reverse = existingRel.from !== collapsedStart || existingRel.to !== collapsedNext;
+              if (reverse) {
                 existingRel.bidirectional = true;
               }
-              if (label && existingRel.label && !existingRel.label.includes(label)) {
+              if (viewKey === 'SYS_ARCH') {
+                // One label per direction (the first message each way) instead of
+                // every message between the pair glued into one string
+                if (reverse) {
+                  if (label && !existingRel.reverseLabel) existingRel.reverseLabel = label;
+                } else if (label && !existingRel.label) {
+                  existingRel.label = label;
+                }
+              } else if (label && existingRel.label && !existingRel.label.includes(label)) {
                 existingRel.label = `${existingRel.label} / ${label}`;
               } else if (label && !existingRel.label) {
                 existingRel.label = label;

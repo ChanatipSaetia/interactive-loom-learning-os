@@ -2,7 +2,7 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartEntity } from '../types';
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
 import { getEntityType, deriveRelations, computeLayoutInfo } from './utils';
-import { buildCanonicalIdMapper } from '../abstract-flow/derive';
+import { findEventProducer } from './sequence/commands';
 
 export function deriveSysArch(
   schema: UnifiedFlowchartSchema,
@@ -49,6 +49,32 @@ export function deriveSysArch(
 
   const sysRelations = deriveRelations(schema, 'SYS_ARCH', localAddedNodes, getSysArchLabel);
 
+  // sendsTo messages are not in Event Storming, so add them here: producer → recipient,
+  // labelled with the event (one label per direction, like the other edges)
+  schema.relations.filter(r => r.sendsTo).forEach(link => {
+    const producer = findEventProducer(schema, link.from, getCollapsedId);
+    const recipient = getCollapsedId(link.to);
+    if (!producer || producer === recipient || !localAddedNodes.has(producer) || !localAddedNodes.has(recipient)) return;
+    const label = schema.entities[link.from]?.title ?? '';
+    const same = sysRelations.find(r => r.from === producer && r.to === recipient);
+    const opposite = sysRelations.find(r => r.from === recipient && r.to === producer);
+    if (same) {
+      if (!same.label) same.label = label;
+    } else if (opposite) {
+      opposite.bidirectional = true;
+      if (!opposite.reverseLabel) opposite.reverseLabel = label;
+    } else {
+      sysRelations.push({
+        id: `derived_sys_arch_rel_${producer}_${recipient}`,
+        from: producer,
+        to: recipient,
+        views: ['SYS_ARCH'],
+        label,
+        chronologicalIndex: schema.relations.indexOf(link),
+      });
+    }
+  });
+
   const updatedRelations = [
     ...schema.relations.filter(r => !r.views || !r.views.includes('SYS_ARCH')),
     ...sysRelations
@@ -85,6 +111,63 @@ export function deriveSysArch(
   };
 }
 
+/** Grid units between neighbouring columns (one unit is a node width, so 2 leaves a node-wide channel). */
+const COLUMN_PITCH = 2;
+/** Minimum distance between nodes stacked in the actor or external column (grid rows). */
+const STACK_GAP = 1;
+/**
+ * Canvas the row count is tuned for (px, inline section minus the floating
+ * controls), with the view's column/row pitch and node size, so the chosen
+ * shape is the one that shows largest on screen.
+ */
+const REFERENCE_VIEW = { width: 1100, height: 420 };
+const PITCH_PX = { col: 280, row: 180 };
+const NODE_PX = { w: 140, h: 100 };
+
+/**
+ * How many rows the diagram uses. The block and each side column wrap to that
+ * height (block: ceil(n / rows) columns; a side with k nodes: ceil(k / rows)
+ * columns), so a tall side column makes the block taller rather than leaving
+ * it as a short strip beside a long list. Picks the height whose overall shape
+ * fits the reference view at the largest scale; ties go to fewer rows.
+ */
+function chooseRows(internalCount: number, actorCount: number, externalCount: number) {
+  const most = Math.max(1, internalCount, actorCount, externalCount);
+  let best = { rows: 1, scale: -Infinity };
+  for (let target = 1; target <= most; target++) {
+    const blockCols = internalCount ? Math.ceil(internalCount / target) : 0;
+    const actorCols = actorCount ? Math.ceil(actorCount / target) : 0;
+    const externalCols = externalCount ? Math.ceil(externalCount / target) : 0;
+    const rows = Math.max(
+      1,
+      blockCols ? Math.ceil(internalCount / blockCols) : 0,
+      actorCols ? Math.ceil(actorCount / actorCols) : 0,
+      externalCols ? Math.ceil(externalCount / externalCols) : 0,
+    );
+    const cols = blockCols + actorCols + externalCols;
+    const width = cols * PITCH_PX.col - (PITCH_PX.col - NODE_PX.w);
+    const height = rows * PITCH_PX.row - (PITCH_PX.row - NODE_PX.h);
+    const scale = Math.min(REFERENCE_VIEW.width / width, REFERENCE_VIEW.height / height);
+    if (scale > best.scale + 1e-9) best = { rows: target, scale };
+  }
+  return best.rows;
+}
+
+/**
+ * Lays the architecture view out as three tiers, left to right:
+ *
+ *   actors  │  System Boundary (internal systems)  │  external systems
+ *
+ *  - The diagram height is chosen first (chooseRows): the block and both side
+ *    tiers wrap to it, so their heights match.
+ *  - Internal systems are ordered by flow (each one after the systems that hand
+ *    off to it; loops are set aside first) and wrap into rows that each read
+ *    left to right, so long pipelines become a compact block instead of a strip.
+ *  - Actors and external systems sit level with the systems they connect to
+ *    (average row). A side with more nodes than rows splits into several
+ *    columns, dealt alternately (inner, outer, …) in row order so each node
+ *    stays near its row; then each column is nudged apart so none overlap.
+ */
 export function layoutSysArch(
   nodes: FlowchartViewNode[],
   nodeIds: string[],
@@ -93,230 +176,111 @@ export function layoutSysArch(
   _viewKey: string,
   entities: Record<string, FlowchartEntity>
 ): FlowchartViewNode[] {
-  const getCollapsedId = buildCanonicalIdMapper(entities);
+  const nodeSet = new Set(nodeIds);
+  const typeOf = (id: string) => getEntityType(entities[id]);
+  const actors = nodeIds.filter(id => typeOf(id) === TYPES.USER);
+  const externals = nodeIds.filter(id => typeOf(id) === TYPES.EXTERNAL);
+  const internals = nodeIds.filter(id => typeOf(id) !== TYPES.USER && typeOf(id) !== TYPES.EXTERNAL);
+  const actorSet = new Set(actors);
 
-  const adj = new Map<string, Set<string>>();
-  nodeIds.forEach(id => adj.set(id, new Set<string>()));
+  const edges = relations
+    .filter(r => r.views?.includes('SYS_ARCH') && r.from !== r.to && nodeSet.has(r.from) && nodeSet.has(r.to))
+    .sort((a, b) => (a.chronologicalIndex ?? 999) - (b.chronologicalIndex ?? 999));
 
-  relations.forEach(r => {
-    const isOriginal = !r.views || r.views.includes('EVENT_STORMING') || !r.views.includes('SYS_ARCH');
-    if (!isOriginal) return;
-
-    const fromId = getCollapsedId(r.from);
-    const toId = getCollapsedId(r.to);
-
-    if (adj.has(fromId) && adj.has(toId) && fromId !== toId) {
-      adj.get(fromId)!.add(toId);
-      adj.get(toId)!.add(fromId);
-    }
+  // When the story first touches each node; ties keep declaration order
+  const firstSeen = new Map<string, number>();
+  edges.forEach((e, idx) => {
+    [e.from, e.to].forEach(id => { if (!firstSeen.has(id)) firstSeen.set(id, idx); });
   });
+  const declared = new Map(nodeIds.map((id, idx) => [id, idx]));
+  const byFirstSeen = (a: string, b: string) =>
+    (firstSeen.get(a) ?? Infinity) - (firstSeen.get(b) ?? Infinity) || declared.get(a)! - declared.get(b)!;
 
-  const userNodes = nodeIds.filter(id => {
-    const ent = entities[id];
-    const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
-    return type === TYPES.USER;
-  });
-  userNodes.sort();
-
-  const externalNodes = nodeIds.filter(id => {
-    const ent = entities[id];
-    const type = ent?.type || ent?.viewTypes?.EVENT_STORMING || 'default';
-    return type === TYPES.EXTERNAL;
-  });
-  externalNodes.sort();
-
-  const internalNodeIds = nodeIds.filter(
-    id => !userNodes.includes(id) && !externalNodes.includes(id)
-  );
-
-  const queue: string[] = [];
+  // --- 1. Flow order of systems: longest path over hand-offs, loops removed by DFS ---
+  const systems = nodeIds.filter(id => !actorSet.has(id));
+  const systemEdges = edges.filter(e => !actorSet.has(e.from) && !actorSet.has(e.to));
+  const out = new Map<string, FlowchartRelation[]>(systems.map(id => [id, []]));
+  systemEdges.forEach(e => out.get(e.from)!.push(e));
+  const back = new Set<FlowchartRelation>();
   const visited = new Set<string>();
-  const parent = new Map<string, string>();
-  const hopCount = new Map<string, number>();
+  const onStack = new Set<string>();
+  const visit = (id: string) => {
+    visited.add(id);
+    onStack.add(id);
+    for (const e of out.get(id)!) {
+      if (onStack.has(e.to)) back.add(e);
+      else if (!visited.has(e.to)) visit(e.to);
+    }
+    onStack.delete(id);
+  };
+  [...systems].sort(byFirstSeen).forEach(id => { if (!visited.has(id)) visit(id); });
+  const forward = systemEdges.filter(e => !back.has(e));
+  const layer = new Map<string, number>();
+  const layerOf = (id: string, guard = new Set<string>()): number => {
+    if (layer.has(id)) return layer.get(id)!;
+    guard.add(id);
+    const preds = forward.filter(e => e.to === id && !guard.has(e.from));
+    const value = preds.length === 0 ? 0 : Math.max(...preds.map(e => layerOf(e.from, guard) + 1));
+    layer.set(id, value);
+    return value;
+  };
+  systems.forEach(id => layerOf(id));
 
-  const startNode = internalNodeIds[0] || nodeIds[0] || '';
-  if (startNode) {
-    queue.push(startNode);
-    visited.add(startNode);
-    hopCount.set(startNode, 0);
-  }
+  // --- 2. Internal block: flow order, wrapped into rows that read left to right ---
+  const targetRows = chooseRows(internals.length, actors.length, externals.length);
+  const block = [...internals].sort((a, b) => layer.get(a)! - layer.get(b)! || byFirstSeen(a, b));
+  const blockCols = Math.max(1, Math.ceil(block.length / targetRows));
+  const actorCols = actors.length ? Math.ceil(actors.length / targetRows) : 0;
+  const externalCols = externals.length ? Math.ceil(externals.length / targetRows) : 0;
+  const grid = new Map<string, [number, number]>();
+  const blockLeft = actorCols * COLUMN_PITCH;
+  block.forEach((id, i) => grid.set(id, [blockLeft + (i % blockCols) * COLUMN_PITCH, Math.floor(i / blockCols)]));
+  const blockRight = blockLeft + (blockCols - 1) * COLUMN_PITCH;
 
-  while (queue.length > 0) {
-    const curr = queue.shift()!;
-    const neighbors = adj.get(curr) || new Set<string>();
-    neighbors.forEach(nbr => {
-      if (internalNodeIds.includes(nbr) && !visited.has(nbr)) {
-        visited.add(nbr);
-        parent.set(nbr, curr);
-        hopCount.set(nbr, hopCount.get(curr)! + 1);
-        queue.push(nbr);
-      }
+  // --- 3. Side columns: level with what they connect to, then nudged apart ---
+  const neighbours = new Map<string, string[]>(nodeIds.map(id => [id, []]));
+  edges.forEach(e => {
+    neighbours.get(e.from)!.push(e.to);
+    neighbours.get(e.to)!.push(e.from);
+  });
+  // `cols` runs from the column next to the block outwards
+  const stack = (ids: string[], cols: number[], fallbackOrder: (a: string, b: string) => number) => {
+    const wanted = ids.map(id => {
+      const rows = neighbours.get(id)!.filter(n => grid.has(n)).map(n => grid.get(n)![1]);
+      return { id, row: rows.length ? rows.reduce((sum, r) => sum + r, 0) / rows.length : Infinity };
     });
-  }
+    // Unconnected (or only connected to the other side column) go after the rest
+    const known = wanted.filter(w => isFinite(w.row));
+    const maxKnown = known.length ? Math.max(...known.map(w => w.row)) : -STACK_GAP;
+    wanted.filter(w => !isFinite(w.row)).sort((a, b) => fallbackOrder(a.id, b.id))
+      .forEach((w, i) => { w.row = maxKnown + STACK_GAP * (i + 1); });
+    wanted.sort((a, b) => a.row - b.row || fallbackOrder(a.id, b.id));
 
-  internalNodeIds.forEach(id => {
-    if (!visited.has(id)) {
-      visited.add(id);
-      parent.set(id, startNode);
-      hopCount.set(id, 1);
-    }
-  });
-
-  const childrenOf = new Map<string, string[]>();
-  internalNodeIds.forEach(id => childrenOf.set(id, []));
-  internalNodeIds.forEach(id => {
-    const p = parent.get(id);
-    if (p) {
-      childrenOf.get(p)!.push(id);
-    }
-  });
-  childrenOf.forEach((list) => {
-    list.sort();
-  });
-
-  const relX = new Map<string, number>();
-  const relY = new Map<string, number>();
-  const occupied = new Set<string>();
-
-  const occupy = (id: string, x: number, y: number) => {
-    relX.set(id, x);
-    relY.set(id, y);
-    occupied.add(`${x},${y}`);
+    // Deal into the columns in turn, so every column covers the full height
+    cols.forEach((col, c) => {
+      const inColumn = wanted.filter((_, i) => i % cols.length === c);
+      const placed: number[] = [];
+      inColumn.forEach((w, i) => placed.push(i === 0 ? w.row : Math.max(w.row, placed[i - 1] + STACK_GAP)));
+      // Nudging only pushes down; shift back so the column stays centred on where it wanted to be
+      const drift = inColumn.reduce((sum, w, i) => sum + placed[i] - w.row, 0) / Math.max(1, inColumn.length);
+      inColumn.forEach((w, i) => grid.set(w.id, [col, placed[i] - drift]));
+    });
   };
+  const columnsFrom = (start: number, count: number, step: number) =>
+    Array.from({ length: count }, (_, i) => start + i * step);
+  const actorColumns = columnsFrom(blockLeft - COLUMN_PITCH, actorCols, -COLUMN_PITCH);
+  const externalColumns = columnsFrom(blockRight + COLUMN_PITCH, externalCols, COLUMN_PITCH);
 
-  const relativeOffset = new Map<string, [number, number]>();
-  const dir = new Map<string, [number, number]>();
+  // Externals are placed first when actors talk to them directly, so actors can line up with them too
+  stack(externals, externalColumns, byFirstSeen);
+  stack(actors, actorColumns, byFirstSeen);
+  // Externals chained to each other (A → B) only now see each other's rows; settle once more
+  stack(externals, externalColumns, byFirstSeen);
 
-  if (startNode) {
-    occupy(startNode, 0, 0);
-    dir.set(startNode, [0, 0]);
-  }
-
-  const getOutwardOffsets = (dx: number, dy: number): [number, number][] => {
-    if (dx === 0 && dy === -1) return [[0, -1], [-1, -1], [1, -1], [-2, -1], [2, -1]];
-    if (dx === 0 && dy === 1) return [[0, 1], [-1, 1], [1, 1], [-2, 1], [2, 1]];
-    if (dx === 1 && dy === 0) return [[1, 0], [1, -1], [1, 1], [1, -2], [1, 2]];
-    if (dx === -1 && dy === 0) return [[-1, 0], [-1, -1], [-1, 1], [-1, -2], [-1, 2]];
-    if (dx === 1 && dy === -1) return [[1, -1], [1, 0], [0, -1], [2, -1], [1, -2]];
-    if (dx === 1 && dy === 1) return [[1, 1], [1, 0], [0, 1], [2, 1], [1, 2]];
-    if (dx === -1 && dy === -1) return [[-1, -1], [-1, 0], [0, -1], [-2, -1], [-1, -2]];
-    if (dx === -1 && dy === 1) return [[-1, 1], [-1, 0], [0, 1], [-2, 1], [-1, 2]];
-    return [[dx, dy]];
-  };
-
-  const sortedByHop = [...internalNodeIds].sort((a, b) => (hopCount.get(a) ?? 0) - (hopCount.get(b) ?? 0));
-
-  const firstHopNonUsers = startNode ? (childrenOf.get(startNode) || []) : [];
-  const SECTORS: [number, number][] = [[0, -1], [1, 0], [0, 1], [1, -1], [1, 1], [-1, -1], [-1, 1]];
-  firstHopNonUsers.forEach((id, idx) => {
-    const s = SECTORS[idx % SECTORS.length];
-    dir.set(id, s);
-    relativeOffset.set(id, s);
+  const minRow = Math.min(...[...grid.values()].map(([, r]) => r));
+  const minCol = Math.min(...[...grid.values()].map(([c]) => c));
+  return nodes.map(n => {
+    const [c, r] = grid.get(n.id) ?? [0, 0];
+    return { ...n, grid: [c - minCol, r - minRow] as [number, number] };
   });
-
-  sortedByHop.forEach(id => {
-    if (id === startNode) return;
-    if ((hopCount.get(id) ?? 0) <= 1) return;
-
-    const p = parent.get(id)!;
-    const pDir = dir.get(p) || [0, -1];
-    const siblings = childrenOf.get(p) || [];
-    const idx = siblings.indexOf(id);
-    const offsets = getOutwardOffsets(pDir[0], pDir[1]);
-    const offset = offsets[idx % offsets.length] || pDir;
-
-    relativeOffset.set(id, offset);
-    dir.set(id, [Math.sign(offset[0]), Math.sign(offset[1])]);
-  });
-
-  sortedByHop.forEach(id => {
-    if (id === startNode) return;
-
-    const p = parent.get(id)!;
-    const px = relX.get(p) || 0;
-    const py = relY.get(p) || 0;
-    const offset = relativeOffset.get(id) || dir.get(id) || [0, -1];
-    const tx = px + offset[0];
-    const ty = py + offset[1];
-
-    if (!occupied.has(`${tx},${ty}`)) {
-      occupy(id, tx, ty);
-    } else {
-      let d = 1;
-      let placed = false;
-      const childDir = dir.get(id) || [0, -1];
-
-      while (!placed) {
-        const candidates: [number, number][] = [];
-        for (let ox = -d; ox <= d; ox++) {
-          for (let oy = -d; oy <= d; oy++) {
-            if (Math.max(Math.abs(ox), Math.abs(oy)) === d) {
-              const cx = tx + ox;
-              const cy = ty + oy;
-              if (!occupied.has(`${cx},${cy}`)) {
-                candidates.push([cx, cy]);
-              }
-            }
-          }
-        }
-
-        if (candidates.length > 0) {
-          candidates.sort((a, b) => {
-            const distA = a[0]*a[0] + a[1]*a[1];
-            const distB = b[0]*b[0] + b[1]*b[1];
-            if (distA !== distB) return distB - distA;
-
-            const dotA = a[0] * childDir[0] + a[1] * childDir[1];
-            const dotB = b[0] * childDir[0] + b[1] * childDir[1];
-            return dotB - dotA;
-          });
-
-          const best = candidates[0];
-          occupy(id, best[0], best[1]);
-          placed = true;
-        } else {
-          d++;
-        }
-      }
-    }
-  });
-
-  const internalXs = internalNodeIds.map(id => relX.get(id) ?? 0);
-  const internalYs = internalNodeIds.map(id => relY.get(id) ?? 0);
-  const minInternalX = internalXs.length > 0 ? Math.min(...internalXs) : 0;
-  const maxInternalX = internalXs.length > 0 ? Math.max(...internalXs) : 0;
-  const minInternalY = internalYs.length > 0 ? Math.min(...internalYs) : 0;
-  const maxInternalY = internalYs.length > 0 ? Math.max(...internalYs) : 0;
-
-  const centerY = (minInternalY + maxInternalY) / 2;
-
-  userNodes.forEach((uid, idx) => {
-    const uy = Math.round(centerY + idx - (userNodes.length - 1) / 2);
-    occupy(uid, minInternalX - 1, uy);
-  });
-
-  externalNodes.forEach((eid, idx) => {
-    const ey = Math.round(centerY + idx - (externalNodes.length - 1) / 2);
-    occupy(eid, maxInternalX + 1, ey);
-  });
-
-  const xs = Array.from(relX.values());
-  const ys = Array.from(relY.values());
-  const minX = xs.length > 0 ? Math.min(...xs) : 0;
-  const minY = ys.length > 0 ? Math.min(...ys) : 0;
-
-  const finalCol = new Map<string, number>();
-  const finalRow = new Map<string, number>();
-
-  nodeIds.forEach(id => {
-    const rx = relX.get(id) ?? 0;
-    const ry = relY.get(id) ?? 0;
-    finalCol.set(id, (rx - minX) * 2);
-    finalRow.set(id, ry - minY);
-  });
-
-  return nodes.map(n => ({
-    ...n,
-    grid: [finalCol.get(n.id)!, finalRow.get(n.id)!]
-  }));
 }

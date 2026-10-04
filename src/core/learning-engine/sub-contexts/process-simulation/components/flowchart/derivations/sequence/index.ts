@@ -1,8 +1,8 @@
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode } from '../../types';
 import { TYPES } from '../../types';
 import { getEntityType, computeLayoutInfo } from '../utils';
-import { deriveParticipants, findTargetParticipant } from './participants';
-import { findCommandInitiator } from './commands';
+import { deriveParticipants } from './participants';
+import { findCommandInitiator, findEventRecipient } from './commands';
 import { buildAltGroupRegistry } from './alt-groups';
 
 const MSG_START_Y = 160;
@@ -59,22 +59,25 @@ export function deriveSequence(
       const eventEntity = schema.entities[r.to];
 
       // Find which participant produces this event
-      let producer: string;
+      let producer: string | undefined;
       if (fromType === TYPES.COMMAND) {
         const handledByRel = schema.relations.find(hbr =>
           (!hbr.views || hbr.views.includes('EVENT_STORMING')) &&
           hbr.from === r.from && hbr.handledBy
         );
+        // A command no system runs: the event comes from whoever started the step
         producer = handledByRel
           ? getCollapsedId(handledByRel.to)
-          : getCollapsedId(r.from);
+          : findCommandInitiator(schema, r.from, getCollapsedId) ?? undefined;
       } else {
         producer = getCollapsedId(r.from);
       }
+      if (!producer) return;
 
-      // Find which downstream participant receives this event (via policy chain)
-      const targets = findTargetParticipant(schema, r.to, getCollapsedId);
-      const target = targets.length > 0 ? targets[0] : producer;
+      // An event goes to its declared recipient (sendsTo). Without one it is not
+      // sent anywhere, so it stays on the producer's lifeline instead of being
+      // guessed onto whoever acts next.
+      const target = findEventRecipient(schema, r.to, getCollapsedId) ?? producer;
 
       emit({
         id: `seq_evt_${idx}`,

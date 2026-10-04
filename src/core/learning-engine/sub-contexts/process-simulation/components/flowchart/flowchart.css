@@ -45,6 +45,16 @@
   font-family: var(--font-body);
 }
 
+/* Focusable for the playback keyboard shortcuts */
+.flowchart-canvas-wrapper:focus {
+  outline: none;
+}
+
+.flowchart-canvas-wrapper:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
 .react-flow {
   font-family: var(--font-body) !important;
 }
@@ -502,6 +512,10 @@
   @apply h-7 w-7 p-1;
 }
 
+.flowchart-playback .flowchart-btn-toggle {
+  color: var(--secondary);
+}
+
 .flowchart-btn {
   @apply flex items-center justify-center p-1 border-none rounded-[var(--radius-xs)] bg-transparent cursor-pointer;
   color: var(--ctp-overlay1);
@@ -594,12 +608,27 @@
   animation: flowchart-dash-flow 1.2s linear infinite;
 }
 
-.flowchart-node-highlighted {
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--secondary) 90%, transparent)) drop-shadow(0 0 12px color-mix(in srgb, var(--secondary) 50%, transparent));
+/* Highlighted lines keep dashing, tighter and quicker, so the direction of flow
+   reads from the line itself. The offset equals one dash period (6 + 3). */
+@keyframes flowchart-dash-flow-strict {
+  from { stroke-dashoffset: 9; }
+  to { stroke-dashoffset: 0; }
 }
 
-.flowchart-particle {
-  filter: drop-shadow(0 0 6px var(--secondary));
+.flowchart-edge-group[data-active="true"] .flowchart-edge {
+  stroke-dasharray: 6 3;
+  animation: flowchart-dash-flow-strict 0.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowchart-edge-animated,
+  .flowchart-edge-group[data-active="true"] .flowchart-edge {
+    animation: none;
+  }
+}
+
+.flowchart-node-highlighted {
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--secondary) 90%, transparent)) drop-shadow(0 0 12px color-mix(in srgb, var(--secondary) 50%, transparent));
 }
 
 /* Icon animations */
@@ -988,17 +1017,38 @@
 }
 
 /* Fullscreen toggle button - fixed top-left */
-.flowchart-fullscreen-toggle-btn {
-  @apply absolute top-4 left-4 z-10 flex items-center justify-center w-9 h-9 rounded-[var(--radius-sm)] border border-border cursor-pointer shadow-lg;
+.flowchart-canvas-tools {
+  @apply absolute top-4 left-4 z-10 flex flex-col items-center gap-2;
+}
+
+.flowchart-canvas-tool-group {
+  @apply flex flex-col overflow-hidden rounded-[var(--radius-sm)] border border-border shadow-lg;
+  background: var(--ctp-crust);
+}
+
+.flowchart-canvas-tool-btn {
+  @apply flex items-center justify-center w-9 h-9 border-none cursor-pointer;
   font-family: var(--font-body);
   color: var(--ctp-overlay1);
   background: var(--ctp-crust);
-  transition: opacity 0.2s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.flowchart-fullscreen-toggle-btn:hover {
+/* Standalone tool (fullscreen) gets its own frame; grouped tools share one */
+.flowchart-canvas-tools > .flowchart-canvas-tool-btn {
+  @apply rounded-[var(--radius-sm)] border border-solid border-border shadow-lg;
+}
+
+.flowchart-canvas-tool-group > .flowchart-canvas-tool-btn + .flowchart-canvas-tool-btn {
+  border-top: 1px solid var(--border);
+}
+
+.flowchart-canvas-tool-btn:hover {
   background: var(--ctp-mantle);
   color: var(--ctp-text);
+}
+
+.flowchart-canvas-tools > .flowchart-canvas-tool-btn:hover {
   border-color: var(--ctp-blue);
 }
 
@@ -1125,6 +1175,19 @@
   color: var(--secondary) !important;
 }
 
+/* Floating view switcher — top-center of the canvas */
+.flowchart-view-menu {
+  @apply absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center p-1 rounded-full border shadow-lg backdrop-blur-md;
+  max-width: calc(100% - 128px);
+  background-color: color-mix(in srgb, var(--ctp-mantle) 92%, transparent);
+  border-color: var(--border-light);
+  pointer-events: auto;
+}
+
+.flowchart-view-menu .flowchart-view-tabs {
+  @apply w-auto p-0 border-none bg-transparent shadow-none rounded-none;
+}
+
 /* Floating Combined Controls Dock Overlay inside Canvas */
 .flowchart-controls-dock-container {
   position: absolute;
@@ -1140,16 +1203,121 @@
 }
 
 .flowchart-controls-dock {
+  @apply border backdrop-blur-md;
   pointer-events: auto;
-  background-color: var(--ctp-mantle) !important;
-  border-color: var(--border-light) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  background-color: var(--ctp-mantle);
+  border-color: var(--border-light);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-.flowchart-controls-dock-content {
-  background-color: var(--ctp-base);
-  width: 100%;
+/* Expanded: full journey panel */
+.flowchart-dock-panel {
+  @apply w-full p-3 rounded-[20px];
 }
+
+.flowchart-dock-collapse {
+  @apply ml-1;
+}
+
+/* Collapsed: mini player pill */
+.flowchart-dock-mini {
+  @apply rounded-full px-1.5 py-1;
+}
+
+.flowchart-mini-player {
+  @apply flex items-center gap-0.5;
+}
+
+.flowchart-mini-journey {
+  @apply ml-1.5 max-w-[160px] truncate rounded-[var(--radius-xs)] border-none bg-transparent px-1.5 py-1 text-xs font-semibold cursor-pointer;
+  font-family: var(--font-body);
+  color: var(--ctp-blue);
+  transition: background-color 0.15s ease;
+}
+
+.flowchart-mini-journey:hover {
+  background-color: var(--ctp-surface0);
+}
+
+/* Journey picker in the mini player, same look as the panel heading but compact */
+.flowchart-mini-journey-picker {
+  @apply ml-1 min-w-0;
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-dropdown {
+  @apply min-w-0 sm:min-w-0;
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-select {
+  @apply h-8 min-w-0 max-w-[180px] gap-1 px-2 py-1 text-xs font-semibold border-transparent bg-transparent rounded-full;
+  width: max-content;
+  color: var(--ctp-blue);
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-select:hover,
+.flowchart-mini-journey-picker .flowchart-journey-select[aria-expanded="true"] {
+  background-color: var(--ctp-surface0);
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-select::after {
+  content: none;
+}
+
+.flowchart-mini-journey-picker .flowchart-journey-options {
+  @apply w-auto min-w-[220px] max-w-[min(320px,80vw)];
+  margin-bottom: 10px;
+}
+
+.flowchart-mini-player .flowchart-btn {
+  @apply h-8 w-8 p-1;
+}
+
+.flowchart-mini-player .flowchart-mini-toggle {
+  color: var(--secondary);
+}
+
+.flowchart-mini-player .flowchart-progress {
+  @apply ml-1.5 whitespace-nowrap shrink-0;
+}
+
+.flowchart-mini-dots {
+  @apply flex items-center px-1.5;
+}
+
+/* 16px hit area around a small visible dot */
+.flowchart-mini-dot {
+  @apply relative flex items-center justify-center h-4 w-4 p-0 border-none bg-transparent cursor-pointer;
+}
+
+.flowchart-mini-dot::before {
+  content: '';
+  @apply block h-1.5 w-1.5 rounded-full;
+  background-color: var(--ctp-surface2);
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.flowchart-mini-dot:hover::before {
+  background-color: var(--ctp-overlay1);
+}
+
+.flowchart-mini-dot[data-state="done"]::before {
+  background-color: color-mix(in srgb, var(--secondary) 70%, var(--ctp-surface2));
+}
+
+.flowchart-mini-dot[data-state="current"] {
+  @apply w-5;
+}
+
+.flowchart-mini-dot[data-state="current"]::before {
+  @apply w-3.5;
+  background-color: var(--secondary);
+}
+
+.flowchart-mini-divider {
+  @apply mx-1 h-4 w-px shrink-0;
+  background-color: var(--border-light);
+}
+
 
 .flowchart-dock-playback {
   @apply flex justify-end py-0.5 whitespace-nowrap flex-shrink-0;
@@ -1157,10 +1325,6 @@
 
 .flowchart-dock-playback .flowchart-playback {
   @apply bg-transparent p-0 border-none shadow-none flex-nowrap gap-0.5;
-}
-
-.flowchart-dock-zoom {
-  @apply flex justify-center py-1 w-full whitespace-nowrap;
 }
 
 .flowchart-dock-btn {
@@ -1174,41 +1338,72 @@
   background-color: var(--ctp-surface0) !important;
 }
 
-.flowchart-dock-views {
-  @apply flex justify-center py-1 w-full;
-}
-
-.flowchart-dock-views .flowchart-view-action-bar {
-  @apply border-none bg-transparent shadow-none;
-}
-
-.flowchart-dock-journey {
-  @apply flex flex-col gap-1 py-1 w-full;
-}
-
-.flowchart-dock-journey .flowchart-journey-selector {
-  @apply flex items-center gap-2 justify-center;
-}
-
-.flowchart-dock-journey .flowchart-journey-description {
-  @apply text-center;
-}
-
 .flowchart-dock-steps {
-  @apply flex flex-col gap-0;
+  @apply flex flex-col gap-2;
+}
+
+.flowchart-dock-journey-header {
+  @apply flex flex-col gap-1;
+}
+
+/* Journey picker styled as the panel heading */
+.flowchart-dock-steps .flowchart-journey-dropdown {
+  @apply min-w-0 max-w-full sm:min-w-0;
+}
+
+.flowchart-dock-steps .flowchart-journey-select {
+  @apply h-auto min-w-0 max-w-full gap-1.5 px-2 py-1 text-xs font-bold uppercase border-transparent bg-transparent rounded-[var(--radius-xs)];
+  width: max-content;
+  color: var(--primary);
+  letter-spacing: 0.05em;
+}
+
+.flowchart-dock-steps .flowchart-journey-select:hover,
+.flowchart-dock-steps .flowchart-journey-select[aria-expanded="true"] {
+  border-color: var(--border-light);
+  background-color: var(--ctp-mantle);
+}
+
+.flowchart-dock-steps .flowchart-journey-select > span {
+  flex: 0 1 auto;
+}
+
+.flowchart-dock-steps .flowchart-journey-select::after {
+  content: none;
+}
+
+.flowchart-dock-steps .flowchart-journey-options {
+  @apply w-auto min-w-[240px] max-w-[min(360px,80vw)];
+}
+
+/* One-line description; full text in the tooltip */
+.flowchart-dock-steps .flowchart-journey-description {
+  @apply truncate border-l-0 px-2;
+}
+
+/* End of journey: completion note and a jump to the next journey */
+.flowchart-journey-complete {
+  @apply flex items-center gap-1.5 px-2 text-xs;
+  font-family: var(--font-body);
+  color: var(--ctp-green);
+}
+
+.flowchart-journey-complete-label {
+  @apply font-semibold;
+}
+
+.flowchart-journey-complete-next {
+  @apply ml-auto flex items-center gap-1 rounded-[var(--radius-xs)] border-none bg-transparent px-2 py-0.5 text-xs font-semibold cursor-pointer truncate;
+  color: var(--secondary);
+  transition: background-color 0.15s ease;
+}
+
+.flowchart-journey-complete-next:hover {
+  background-color: color-mix(in srgb, var(--secondary) 12%, transparent);
 }
 
 /* Mobile responsive: icon-only tabs, dynamic journey height */
 @media (max-width: 639px) {
-  .flowchart-controls-dock .expandable-tab-label {
-    display: none !important;
-  }
-
-  /* Show label for active dock tab so user knows which panel is open */
-  .flowchart-controls-dock button[data-active="true"] .expandable-tab-label {
-    display: inline !important;
-  }
-
   .flowchart-view-tab-label {
     display: none !important;
   }
@@ -1218,37 +1413,13 @@
     display: inline !important;
   }
 
-  .flowchart-controls-dock .flowchart-controls-dock-content {
-    min-height: 0;
+  /* Floating view menu is icon-only on mobile; the name is in the tooltip */
+  .flowchart-view-menu .flowchart-view-tab-trigger[aria-selected="true"] .flowchart-view-tab-label {
+    display: none !important;
   }
 
-  .flowchart-controls-dock .flowchart-dock-journey {
-    min-height: auto;
-    padding: 6px 8px 8px;
-  }
-
-  .flowchart-dock-journey .flowchart-journey-selector {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 6px;
-  }
-
-  .flowchart-dock-journey .flowchart-journey-label {
-    font-size: 9px !important;
-  }
-
-  .flowchart-journey-select {
-    min-width: 0 !important;
-    flex: 1 1 auto;
-    max-width: 100%;
-    font-size: 11px;
-    padding: 4px 28px 4px 8px;
-  }
-
-  .flowchart-dock-journey .flowchart-journey-description {
-    font-size: 10px;
-    max-height: none;
-    overflow: visible;
+  .flowchart-view-menu {
+    @apply overflow-x-auto;
   }
 
   .flowchart-dock-steps-controls {
@@ -1265,6 +1436,14 @@
     width: 100%;
     justify-content: flex-start;
   }
+
+  .flowchart-dock-collapse {
+    margin-left: auto;
+  }
+
+  .flowchart-mini-dots {
+    @apply px-0.5;
+  }
 }
 
 .flowchart-dock-steps-controls {
@@ -1280,35 +1459,6 @@
   color: var(--primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-}
-
-.flowchart-dock-journey-title-wrapper:hover .flowchart-dock-journey-tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.flowchart-dock-journey-tooltip {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 0;
-  transform: translateY(4px);
-  background: var(--ctp-mantle);
-  color: var(--ctp-text);
-  border: 1px solid var(--border-light);
-  padding: 4px 8px;
-  border-radius: var(--radius-xs);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: normal;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
-  z-index: 50;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* ==========================================================================
@@ -1617,3 +1767,294 @@
   font-size: 11px;
 }
 
+
+/* ---- Step caption: narration floating under the focused nodes ---- */
+.flowchart-step-caption {
+  @apply absolute z-[15] flex flex-col gap-1 rounded-[var(--radius-sm)] border px-3 py-2 shadow-lg backdrop-blur-md;
+  background-color: color-mix(in srgb, var(--ctp-mantle) 92%, transparent);
+  border-color: color-mix(in srgb, var(--secondary) 45%, var(--border-light));
+  font-family: var(--font-body);
+  animation: flowchart-caption-in 0.25s ease-out;
+}
+
+.flowchart-step-caption[data-typing="true"] {
+  cursor: pointer;
+}
+
+/* No node to anchor to (e.g. the sequence view): top-right corner, clear of
+   the view switcher and of the participant headers on the left */
+.flowchart-step-caption[data-placement="pinned"] {
+  top: 52px;
+  right: 12px;
+  max-width: calc(100% - 24px);
+}
+
+.flowchart-step-caption-header {
+  @apply flex items-baseline gap-2 min-w-0;
+}
+
+.flowchart-step-caption-index {
+  @apply shrink-0 text-[10px] font-bold uppercase tracking-wider;
+  color: var(--secondary);
+}
+
+.flowchart-step-caption-title {
+  @apply truncate text-[13px] font-semibold;
+  color: var(--ctp-text);
+}
+
+.flowchart-step-caption-text {
+  @apply m-0 text-xs leading-[1.5];
+  color: var(--ctp-subtext1);
+}
+
+/* Untyped text still takes its space so the box never resizes while typing */
+.flowchart-step-caption-pending {
+  color: transparent;
+}
+
+/* Zero-width so the caret never pushes text onto another line */
+.flowchart-step-caption-caret {
+  @apply relative inline-block w-0;
+}
+
+.flowchart-step-caption-caret::after {
+  content: '';
+  @apply absolute left-0 w-[2px];
+  top: -0.85em;
+  height: 1.05em;
+  background-color: var(--secondary);
+  animation: flowchart-caret-blink 0.9s steps(1) infinite;
+}
+
+@keyframes flowchart-caret-blink {
+  50% { opacity: 0; }
+}
+
+@keyframes flowchart-caption-in {
+  from { opacity: 0; translate: 0 4px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowchart-step-caption,
+  .flowchart-step-caption-caret::after {
+    animation: none;
+  }
+}
+
+/* ---- Forks in the story ---- */
+
+/* Caption: which option this step takes, and links to the other paths */
+.flowchart-step-caption-branch {
+  @apply ml-auto inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-px text-[10px] font-semibold;
+  max-width: 45%;
+  color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 40%, transparent);
+}
+
+.flowchart-step-caption-alts {
+  @apply flex flex-wrap items-center gap-1.5 pt-1 text-[11px];
+  border-top: 1px dashed var(--border-light);
+}
+
+.flowchart-step-caption-alts-label {
+  @apply font-semibold uppercase tracking-wider text-[9.5px];
+  color: var(--ctp-overlay1);
+}
+
+.flowchart-step-caption-alt {
+  @apply inline-flex items-center gap-1 rounded-full border bg-transparent px-2 py-0.5 text-[11px] font-medium;
+  font-family: var(--font-body);
+  color: var(--ctp-subtext1);
+  border-color: var(--border-light);
+}
+
+button.flowchart-step-caption-alt {
+  @apply cursor-pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+button.flowchart-step-caption-alt:hover {
+  color: var(--ctp-peach);
+  border-color: color-mix(in srgb, var(--ctp-peach) 50%, transparent);
+  background-color: color-mix(in srgb, var(--ctp-peach) 10%, transparent);
+}
+
+.flowchart-step-caption-alt[data-disabled="true"] {
+  @apply border-dashed;
+  color: var(--ctp-overlay1);
+}
+
+/* Step card: fork badge next to the phase number */
+.flowchart-step-card-branch {
+  @apply inline-flex min-w-0 items-center gap-0.5 truncate rounded px-1 text-[8.5px] font-bold;
+  max-width: 60%;
+  color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+}
+
+/* Mini player: fork steps are diamonds instead of dots */
+.flowchart-mini-dot[data-branch="true"]::before {
+  @apply rounded-[1px];
+  transform: rotate(45deg) scale(1.15);
+  outline: 1px solid color-mix(in srgb, var(--secondary) 60%, transparent);
+}
+
+.flowchart-mini-dot[data-branch="true"][data-state="current"]::before {
+  @apply w-1.5;
+  transform: rotate(45deg) scale(1.5);
+}
+
+/* Canvas: the condition taken is lit by the step highlight; the paths not
+   taken pulse once in peach so you notice them, then stay dimmed */
+.flowchart-edge-group[data-fork="taken"] .flowchart-edge-label-pill {
+  stroke-width: 1.5;
+}
+
+.flowchart-edge-group[data-fork="alt"] {
+  animation: flowchart-fork-alt 1.6s ease-out forwards;
+}
+
+.flowchart-edge-group[data-fork="alt"] .flowchart-edge {
+  stroke: var(--ctp-peach);
+  stroke-dasharray: 4 4;
+}
+
+.flowchart-edge-group[data-fork="alt"] .flowchart-edge-label-pill {
+  stroke: var(--ctp-peach);
+  stroke-dasharray: 3 2;
+}
+
+.flowchart-edge-group[data-fork="alt"] .flowchart-edge-label-text {
+  fill: var(--ctp-peach);
+}
+
+.flowchart-node-group[data-fork="alt"] {
+  animation: flowchart-fork-alt-node 1.6s ease-out forwards;
+}
+
+.flowchart-node-group[data-fork="alt"] .flowchart-node-rect {
+  stroke: var(--ctp-peach);
+  stroke-dasharray: 5 3;
+}
+
+@keyframes flowchart-fork-alt {
+  0%, 40% { opacity: 1; }
+  20% { opacity: 0.55; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes flowchart-fork-alt-node {
+  0%, 40% { opacity: 1; }
+  20% { opacity: 0.6; }
+  100% { opacity: 0.4; }
+}
+
+/* Sequence view: the alt frame taken is lit, the others fade */
+.flowchart-seq-group[data-fork="taken"] {
+  opacity: 1;
+}
+
+.flowchart-seq-group[data-fork="taken"] rect {
+  stroke: var(--secondary);
+  fill: color-mix(in srgb, var(--secondary) 10%, transparent);
+}
+
+.flowchart-seq-group[data-fork="taken"] text {
+  fill: var(--secondary);
+}
+
+.flowchart-seq-group[data-fork="alt"] {
+  animation: flowchart-fork-alt-node 1.6s ease-out forwards;
+}
+
+.flowchart-seq-group[data-fork="alt"] rect {
+  stroke: var(--ctp-peach);
+}
+
+.flowchart-seq-group[data-fork="alt"] text {
+  fill: var(--ctp-peach);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowchart-edge-group[data-fork="alt"],
+  .flowchart-node-group[data-fork="alt"],
+  .flowchart-seq-group[data-fork="alt"] {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+/* ---- Route views (System Architecture): the journey as numbered hand-offs ---- */
+
+/* Lines off the story fade right back so the bundle stops competing;
+   hovering one still brings it up to read */
+.flowchart-edge-group[data-route="off"] {
+  opacity: 0.15;
+}
+
+.flowchart-edge-group[data-route="off"]:hover {
+  opacity: 0.8;
+}
+
+/* Hand-offs already walked stay visible as a soft trail */
+.flowchart-edge-group[data-route="trail"] {
+  opacity: 0.5;
+}
+
+/* The step's main line: thick, with the strict marching dash, and carries the label */
+.flowchart-edge-group[data-route="primary"] .flowchart-edge {
+  stroke-width: 3.5;
+}
+
+/* Other lines of the same step stay thin so the main one is unmistakable */
+.flowchart-edge-group[data-route="current"] .flowchart-edge {
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  filter: none !important;
+}
+
+.flowchart-edge-group[data-route="trail"] .flowchart-edge {
+  stroke: color-mix(in srgb, var(--secondary) 45%, var(--ctp-overlay1));
+  stroke-width: 2;
+}
+
+.flowchart-route-label-pill {
+  fill: var(--ctp-base);
+  stroke: var(--secondary);
+  stroke-width: 1.5;
+}
+
+.flowchart-route-badge {
+  fill: var(--secondary);
+}
+
+.flowchart-edge-group[data-route="trail"] .flowchart-route-badge {
+  fill: color-mix(in srgb, var(--secondary) 55%, var(--ctp-surface1));
+}
+
+.flowchart-route-badge-text {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  fill: var(--ctp-base);
+}
+
+.flowchart-route-label-text {
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  fill: var(--secondary);
+}
+
+/* Earlier steps that happened inside a box: muted step numbers on its corner */
+.flowchart-route-node-trail .flowchart-route-badge {
+  fill: color-mix(in srgb, var(--secondary) 55%, var(--ctp-surface1));
+}
+
+/* A step travelling a two-way edge from its far end: dashes march the other way */
+.flowchart-edge-group[data-route-dir="reverse"] .flowchart-edge {
+  animation-direction: reverse;
+}

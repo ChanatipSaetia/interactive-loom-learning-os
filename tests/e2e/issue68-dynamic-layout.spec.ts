@@ -15,7 +15,6 @@ test.describe('Issue #68: Unified flexible layout with dynamic rows', () => {
     await expect(page.getByTestId('demo-topic')).toBeVisible({ timeout: 15000 })
     await expect(page.getByTestId('flowchart-svg-EVENT_STORMING')).toBeVisible({ timeout: 10000 })
 
-    await page.getByTestId('dock-tab-views').click()
     const sysArchTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'System Architecture' })
     await sysArchTab.click()
     await page.waitForTimeout(500)
@@ -29,7 +28,6 @@ test.describe('Issue #68: Unified flexible layout with dynamic rows', () => {
     await expect(page.getByTestId('demo-topic')).toBeVisible({ timeout: 15000 })
     await expect(page.getByTestId('flowchart-svg-EVENT_STORMING')).toBeVisible({ timeout: 10000 })
 
-    await page.getByTestId('dock-tab-views').click()
     const viewTabs = page.getByTestId('flowchart-view-tabs')
     await expect(viewTabs).toBeVisible()
 

@@ -80,6 +80,16 @@ export function StepCarousel({
                 >
                   Phase {idx + 1}
                 </span>
+                {step.branchLabel && (
+                  <span
+                    className="flowchart-step-card-branch"
+                    data-testid="flowchart-step-card-branch"
+                    title={`Fork: this journey takes "${step.branchLabel}"`}
+                  >
+                    <GitBranch size={9} aria-hidden="true" />
+                    {step.branchLabel}
+                  </span>
+                )}
               </div>
               <h3
                 style={{

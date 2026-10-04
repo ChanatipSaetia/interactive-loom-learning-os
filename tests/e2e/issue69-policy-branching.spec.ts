@@ -13,7 +13,6 @@ test.describe('Issue #69: Policy only maps to Decision when branching (2+ outgoi
     await expect(polDefineEs).toBeVisible()
 
     // Switch to SWIMLANES view
-    await page.getByTestId('dock-tab-views').click()
     const swimlanesTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Activity Swimlanes' })
     await swimlanesTab.click()
     await page.waitForTimeout(500)
@@ -38,7 +37,6 @@ test.describe('Issue #69: Policy only maps to Decision when branching (2+ outgoi
     await expect(polPersistEs).toBeVisible()
 
     // Switch to DATA_FLOW view
-    await page.getByTestId('dock-tab-views').click()
     const dataFlowTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Data Flow' })
     await dataFlowTab.click()
     await page.waitForTimeout(500)

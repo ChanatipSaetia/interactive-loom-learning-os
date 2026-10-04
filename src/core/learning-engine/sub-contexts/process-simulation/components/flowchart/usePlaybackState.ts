@@ -1,9 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { typingDuration } from '../../../../../ui-system/motion/use-typewriter';
 import type {
   FlowchartJourney,
   FlowchartStep,
   UnifiedFlowchartSchema
 } from './types';
+
+/** Shortest time autoplay stays on a step. */
+const MIN_STEP_DURATION = 2500;
+/** Reading time after the step caption has finished typing. */
+const READ_PAUSE = 1500;
+
+/** Autoplay waits for the caption to type out, then leaves time to read it. */
+export function stepDuration(step: FlowchartStep | undefined) {
+  return Math.max(MIN_STEP_DURATION, typingDuration(step?.reason ?? '') + READ_PAUSE);
+}
 
 interface UsePlaybackStateOptions {
   schema: UnifiedFlowchartSchema;
@@ -12,6 +23,10 @@ interface UsePlaybackStateOptions {
 interface UsePlaybackStateReturn {
   currentJourneyId: string;
   setCurrentJourneyId: (id: string) => void;
+  /** Switch to a journey and start playing it from the first step. */
+  startJourney: (id: string) => void;
+  /** Switch to a journey at a given step and hold there (used to compare paths at a fork). */
+  jumpTo: (id: string, stepIndex: number) => void;
   currentJourney: FlowchartJourney | undefined;
   currentStep: number;
   setCurrentStep: (step: number) => void;
@@ -53,9 +68,10 @@ export function usePlaybackState({ schema }: UsePlaybackStateOptions): UsePlayba
   // Playback timer loop
   useEffect(() => {
     if (isPlaying && currentJourney && currentStep < currentJourney.steps.length - 1) {
+      const step = currentJourney.steps[currentStep] as FlowchartStep | undefined;
       playTimerRef.current = window.setTimeout(() => {
         setCurrentStep(s => s + 1);
-      }, 2500);
+      }, stepDuration(step));
     } else if (isPlaying) {
       setIsPlaying(false);
     }
@@ -73,6 +89,18 @@ export function usePlaybackState({ schema }: UsePlaybackStateOptions): UsePlayba
     setIsPlaying(false);
   }, []);
 
+  const startJourney = useCallback((id: string) => {
+    setCurrentJourneyIdState(id);
+    setCurrentStep(0);
+    setIsPlaying(true);
+  }, []);
+
+  const jumpTo = useCallback((id: string, stepIndex: number) => {
+    setCurrentJourneyIdState(id);
+    setCurrentStep(stepIndex);
+    setIsPlaying(false);
+  }, []);
+
   const currentStepData = currentJourney?.steps[currentStep] as FlowchartStep | undefined;
   const highlightedNodeId = currentStepData?.nodeIds?.[0] || null;
   const prevStepData = currentStep > 0 ? (currentJourney?.steps[currentStep - 1] as FlowchartStep | undefined) : undefined;
@@ -84,10 +112,11 @@ export function usePlaybackState({ schema }: UsePlaybackStateOptions): UsePlayba
     return currentStepData.nodeIds;
   }, [currentStep, currentStepData]);
 
+  // Play from the overview or from the last step starts the journey over
   const handlePlay = useCallback(() => {
     if (currentJourney) {
       setIsPlaying(true);
-      if (currentStep === -1) {
+      if (currentStep === -1 || currentStep >= currentJourney.steps.length - 1) {
         setCurrentStep(0);
       }
     }
@@ -122,6 +151,8 @@ export function usePlaybackState({ schema }: UsePlaybackStateOptions): UsePlayba
   return {
     currentJourneyId,
     setCurrentJourneyId,
+    startJourney,
+    jumpTo,
     currentJourney,
     currentStep,
     setCurrentStep,

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { usePlaybackState } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/usePlaybackState';
+import { usePlaybackState, stepDuration } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/usePlaybackState';
 import type { UnifiedFlowchartSchema } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/types';
 
 const baseSchema: UnifiedFlowchartSchema = {
@@ -323,5 +323,49 @@ describe('usePlaybackState', () => {
     expect(result.current.currentStep).toBe(1);
     expect(result.current.activeNodeIds).toEqual(['node_b']);
     expect(result.current.highlightedNodeId).toBe('node_b');
+  });
+});
+
+describe('stepDuration', () => {
+  const step = (reason: string) => ({ nodeIds: [], title: 'T', reason });
+
+  it('keeps short steps at the 2.5s minimum', () => {
+    expect(stepDuration(step('Short.'))).toBe(2500);
+    expect(stepDuration(undefined)).toBe(2500);
+  });
+
+  it('waits for the caption to type out plus reading time', () => {
+    // 100 chars x 40ms = 4s typing + 1.5s to read
+    expect(stepDuration(step('x'.repeat(100)))).toBe(5500);
+  });
+
+  it('caps typing time for very long text', () => {
+    expect(stepDuration(step('x'.repeat(1000)))).toBe(5500);
+  });
+});
+
+describe('autoplay timing', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it('stays on a step with a long description until it can be read', () => {
+    const schema: UnifiedFlowchartSchema = {
+      ...baseSchema,
+      journeys: [{
+        id: 'long',
+        label: 'Long',
+        steps: [
+          { nodeIds: ['node_a'], title: 'One', reason: 'x'.repeat(100) },
+          { nodeIds: ['node_b'], title: 'Two', reason: 'Done.' }
+        ]
+      }]
+    };
+    const { result } = renderHook(() => usePlaybackState({ schema }));
+    act(() => result.current.handlePlay());
+    expect(result.current.currentStep).toBe(0);
+    act(() => { vi.advanceTimersByTime(5000); });
+    expect(result.current.currentStep).toBe(0);
+    act(() => { vi.advanceTimersByTime(600); });
+    expect(result.current.currentStep).toBe(1);
   });
 });

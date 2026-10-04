@@ -385,7 +385,7 @@ describe('Dynamic layout (#68)', () => {
   });
 
   describe('SYS_ARCH layout', () => {
-    it('spreads nodes vertically with dynamic row count', () => {
+    it('wraps a chain of internal systems into rows that read left to right', () => {
       const nodes: FlowchartViewNode[] = [
         { id: 'user', grid: [0, 0] },
         { id: 's1', grid: [0, 0] },
@@ -418,16 +418,19 @@ describe('Dynamic layout (#68)', () => {
       );
 
       const result = autoDeriveViews(schema);
-      const sysNodes = result.views!.SYS_ARCH!.nodes;
-      const rowValues = sysNodes.map(n => n.grid![1]);
-      const maxRow = Math.max(...rowValues);
+      const grid = new Map(result.views!.SYS_ARCH!.nodes.map(n => [n.id, n.grid!]));
 
-      // With reduced gap of 1, check that the row indices layout correctly
-      expect(maxRow).toBeGreaterThanOrEqual(2);
-      expect(result.views!.SYS_ARCH!.layoutInfo!.rowCount).toBeGreaterThan(2);
+      // Each system comes after the one that hands off to it, reading rows left to right
+      const chain = ['s1', 's2', 's3', 's4', 's5', 'db'].map(id => grid.get(id)!);
+      chain.slice(1).forEach(([col, row], i) => {
+        const [prevCol, prevRow] = chain[i];
+        expect(row > prevRow || (row === prevRow && col > prevCol)).toBe(true);
+      });
+      // A long chain wraps instead of stretching into one strip
+      expect(Math.max(...chain.map(([, row]) => row))).toBeGreaterThan(0);
     });
 
-    it('places users to the left of other nodes in SYS_ARCH', () => {
+    it('places users in the left column, level with the system they act on', () => {
       const schema = baseSchema(
         {
           user: { title: 'User', desc: '', type: TYPES.USER },
@@ -449,12 +452,38 @@ describe('Dynamic layout (#68)', () => {
       const sysNodes = result.views!.SYS_ARCH!.nodes;
       const nodeMap = new Map(sysNodes.map(n => [n.id, n.grid!]));
 
-      const userCol = nodeMap.get('user')?.[0];
-      const svcCol = nodeMap.get('svc')?.[0];
+      const [userCol, userRow] = nodeMap.get('user')!;
+      const [svcCol, svcRow] = nodeMap.get('svc')!;
 
-      expect(userCol).toBeDefined();
-      expect(svcCol).toBeDefined();
-      expect(userCol).toBeLessThan(svcCol!);
+      expect(userCol).toBeLessThan(svcCol);
+      expect(userRow).toBe(svcRow);
+    });
+  });
+
+  describe('SYS_ARCH tiers', () => {
+    it('puts actors left, internal systems in the middle and external systems right', () => {
+      const schema = baseSchema(
+        {
+          user: { title: 'User', desc: '', type: TYPES.USER },
+          svc: { title: 'Service', desc: '', type: TYPES.AGGREGATE },
+          ext: { title: 'Payments', desc: '', type: TYPES.EXTERNAL }
+        },
+        [
+          { id: 'r1', from: 'user', to: 'svc', views: ['EVENT_STORMING'] },
+          { id: 'r2', from: 'svc', to: 'ext', views: ['EVENT_STORMING'] }
+        ],
+        [
+          { id: 'user', grid: [0, 0] },
+          { id: 'svc', grid: [1, 0] },
+          { id: 'ext', grid: [2, 0] }
+        ]
+      );
+      const grid = new Map(autoDeriveViews(schema).views!.SYS_ARCH!.nodes.map(n => [n.id, n.grid!]));
+      expect(grid.get('user')![0]).toBeLessThan(grid.get('svc')![0]);
+      expect(grid.get('svc')![0]).toBeLessThan(grid.get('ext')![0]);
+      // Each side column lines up with what it connects to
+      expect(grid.get('user')![1]).toBe(grid.get('svc')![1]);
+      expect(grid.get('ext')![1]).toBe(grid.get('svc')![1]);
     });
   });
 

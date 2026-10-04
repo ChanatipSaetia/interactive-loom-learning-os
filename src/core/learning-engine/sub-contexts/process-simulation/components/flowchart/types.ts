@@ -219,8 +219,12 @@ export interface FlowchartRelation {
   views?: string[];
   dashed?: boolean;
   handledBy?: boolean;
+  /** Event → recipient: the step's result is sent to this actor/system. */
+  sendsTo?: boolean;
   bidirectional?: boolean;
   label?: string;
+  /** Derived views: the first label of the reverse direction on a two-way edge. */
+  reverseLabel?: string;
   chronologicalIndex?: number;
   yOffset?: number;
   /** Position in the final ordered sequence array, set during single-pass BFS emission. */
@@ -260,6 +264,30 @@ export interface FlowchartViewGroup {
 
 export type ProcessGroup = 'planning' | 'execution' | 'evaluation' | 'escalation';
 
+/** One option at a fork that the current journey step did not take. */
+export interface FlowchartBranchAlternative {
+  /** Branch option id from steps.yaml. */
+  optionId: string;
+  /** The option's edge label ("A step failed"). */
+  label: string;
+  /** Node chain of that option (policy, command, handler, events). */
+  nodeIds: string[];
+  /** Another journey that takes this option, and the step index where it does. */
+  journeyId?: string;
+  stepIndex?: number;
+}
+
+/** Set on a journey step whose stepId is a branch option: the fork it passes through. */
+export interface FlowchartStepBranchInfo {
+  /** Branch option id taken by this step. */
+  optionId: string;
+  /** The taken option's edge label ("Every step worked"). */
+  label: string;
+  /** Where the flow forks: the branching event and the chain of the step that emitted it. */
+  forkNodeIds: string[];
+  alternatives: FlowchartBranchAlternative[];
+}
+
 export interface FlowchartStep {
   /** All node IDs in the referenced step's chain, populated by derivation. */
   nodeIds: string[];
@@ -268,6 +296,23 @@ export interface FlowchartStep {
   /** Long description from the journey step. */
   reason: string;
   processGroup?: ProcessGroup;
+  /** Present when the step takes one option of a branch. */
+  branch?: FlowchartStepBranchInfo;
+  /** Who does what in this step (per-step entity ids), for views that draw messages. */
+  roles?: FlowchartStepRoles;
+}
+
+export interface FlowchartStepRoles {
+  /** Actor that starts the step (initiatedBy). */
+  initiator?: string;
+  /** System that runs the command (handledBy). */
+  handler?: string;
+  /** System the handler hands work to (delegatesTo). */
+  delegate?: string;
+  /** Actor or system that receives the result (sendsTo). */
+  recipient?: string;
+  /** The command's title. */
+  command: string;
 }
 
 export interface FlowchartStepLinear {
@@ -276,6 +321,8 @@ export interface FlowchartStepLinear {
   nodeIds?: string[];
   title: string;
   reason: string;
+  /** Condition label when this step takes one option of a fork. */
+  branchLabel?: string;
 }
 
 export interface FlowchartStepBranchOption {
