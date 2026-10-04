@@ -150,11 +150,11 @@ Actor(id: string, title: string, desc: string) — A human actor (user role) who
   - id: Actor ID, unique within the flowchart; steps refer to it with `initiatedBy`.
   - title: Actor name shown on its sticky (e.g. "Buyer").
   - desc: What this actor is or wants.
-System(id: string, title: string, desc: string, kind?: "aggregate" | "external", stateMachine?: StateMachine) — A system that handles commands: an "aggregate" (owned domain model) or an "external" service.
+System(id: string, title: string, desc: string, kind?: "aggregate" | "service" | "database" | "external", stateMachine?: StateMachine) — A system that handles commands: an "aggregate" (owned domain model) or an "external" service.
   - id: System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`.
   - title: System name shown on its sticky (e.g. "Order Service").
   - desc: What the system owns or does.
-  - kind: Optional "aggregate" (owned domain model) or "external" (outside service). Default "external".
+  - kind: Optional "aggregate" (owned domain model), "service" (owned component without its own domain model), "database" (data store) or "external" (outside system). Default "external".
   - stateMachine: Optional StateMachine(...) for a system that orchestrates the flow.
 StateMachine(states: MachineState[], initialState: string) — State machine for an orchestrating system. `initialState` is a state ID.
   - states: The states, as MachineState references.
@@ -163,7 +163,7 @@ MachineState(id: string, label: string, color: string) — A state of a system s
   - id: State ID, unique within the state machine.
   - label: State name shown in the state machine view.
   - color: CSS colour for the state, e.g. "var(--ctp-green)" or "#a6d189".
-Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.
+Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System, async?: boolean) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.
   - id: Step ID, unique within the flowchart; journeys and `continuesAs` refer to it.
   - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
   - command: Command the policy issues, in imperative form (e.g. "PlaceOrder").
@@ -174,11 +174,12 @@ Step(id: string, policy: string, command: string, handledBy: string | System, ev
   - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
   - description: Optional narration of this step, shown when it is highlighted.
   - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
+  - async: Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead.
 Branch(id: string, event: string, options: BranchOption[]) — Branching step: one event splits into several policy/command paths.
   - id: Branch ID, unique within the flowchart.
   - event: The event that splits into the options (e.g. "Payment Checked").
   - options: The paths, as BranchOption references.
-BranchOption(id: string, label: string, policy: string, command: string, handledBy: string | System, events: Event[], dashed?: boolean, initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System) — One path of a branch: label, then the same POLICY → COMMAND → system → events cycle as a Step.
+BranchOption(id: string, label: string, policy: string, command: string, handledBy: string | System, events: Event[], dashed?: boolean, initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System, async?: boolean) — One path of a branch: label, then the same POLICY → COMMAND → system → events cycle as a Step.
   - id: Option ID, unique within the flowchart; journeys and `continuesAs` refer to it.
   - label: Label drawn on the branch edge (e.g. "approved").
   - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
@@ -191,20 +192,23 @@ BranchOption(id: string, label: string, policy: string, command: string, handled
   - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
   - description: Optional narration of this step, shown when it is highlighted.
   - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
-Event(id: string, title: string, desc?: string) — A domain event produced by a step (past tense, e.g. "Order Placed").
+  - async: Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead.
+Event(id: string, title: string, desc?: string, enters?: string, data?: string) — A domain event produced by a step (past tense, e.g. "Order Placed").
   - id: Event ID, unique within the flowchart.
   - title: Event name in past tense (e.g. "Order Placed").
   - desc: Optional detail about the event.
+  - enters: Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these.
+  - data: Optional description of the data the event carries (e.g. "Order ID, total, line items"); the Data Flow view names the data object with it instead of the event title.
 Journey(id: string, label: string, description: string, steps: JourneyStep[]) — A guided path through the flow, from start to finish.
   - id: Journey ID, unique within the flowchart.
   - label: Journey name shown in the journey picker (e.g. "Happy path").
   - description: What this journey walks through.
   - steps: The stops in order, as JourneyStep references.
-JourneyStep(step: string | Step | BranchOption, name: string, description: string, processGroup?: string) — A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` groups stops for the state machine (e.g. "planning", "execution").
+JourneyStep(step: string | Step | BranchOption, name: string, description: string, processGroup?: string) — A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` is an optional phase label for the stop (e.g. "planning", "handshake").
   - step: The Step or BranchOption this stop plays (reference or ID).
   - name: Short stop name shown in the journey list.
   - description: Narration shown while the stop is played.
-  - processGroup: Optional phase used by the state machine (e.g. "planning", "execution").
+  - processGroup: Optional free-text phase label for the stop (e.g. "planning", "handshake"); the state-machine state comes from Event `enters`, not from this.
 Scenario(title: string, id: string, nodes: ScenarioNode[], intro?: string, startNode?: string, displayTitle?: string, heading?: string, lead?: Lead) — Branching "what would you do?" scenario. `startNode` defaults to "start". `displayTitle` overrides the title shown inside the scenario.
   - title: Section title, shown in the topic outline and as the section header.
   - id: Scenario ID, unique within the topic.
@@ -527,6 +531,6 @@ tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C a
 - Mix interactive section types. Never build a topic out of Text sections only.
 - Quizzes and reflection challenges only test what an earlier section of the topic teaches. Each QuizQuestion has exactly one choice with `correct` set to true.
 - IDs (`id` props) are unique within their section. Props that point at an ID (`next`, `root`, `startNode`, `recommended`, `solution`, `continuesAs`, `initialState`, `dependsOn`) must name an ID that exists in the same section.
-- Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages.
+- Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages. When a System has a StateMachine, set `enters` on each Event that moves it into a new state (a MachineState ID); the State Machine view draws its transitions only from those. Set `data` on an Event when the data it carries matters to the lesson (e.g. "Query embedding vector"); the Data Flow view names the data with it. Set `async` on a Step or BranchOption whose command is fired without waiting for a reply (e.g. a queued job or a notification).
 - To skip an optional argument and still set a later one, pass `null` in its place, e.g. `Step("s1", "When …", "DoThing", sys, [evt], null, null, "s2")`.
 - Text paragraphs may use inline markdown (**bold**, `code`, [links](url)). Write factual, specific content; no placeholders such as "Lorem ipsum" or "TODO".

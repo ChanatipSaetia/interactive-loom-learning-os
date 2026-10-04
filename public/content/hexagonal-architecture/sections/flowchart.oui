@@ -39,28 +39,28 @@ httpController = System(
   "http_controller",
   "Express HTTP Controller (Driving Adapter)",
   "Receives HTTP REST requests and translates DTOs into domain commands.",
-  "external",
+  "service",
 )
 
 createOrderPort = System(
   "create_order_port",
   "CreateOrderUseCase (Driving Port)",
   "Inbound application port interface exposing order creation operations.",
-  "external",
+  "service",
 )
 
 orderRepoPort = System(
   "order_repo_port",
   "OrderRepositoryPort (Driven Port)",
   "Outbound infrastructure port interface for order persistence.",
-  "external",
+  "service",
 )
 
 postgresAdapter = System(
   "postgres_adapter",
   "PostgresOrderAdapter (Driven Adapter)",
   "Outbound database adapter executing SQL queries against Postgres.",
-  "external",
+  "service",
 )
 
 stepCheckout = Step(
@@ -73,6 +73,8 @@ stepCheckout = Step(
       "evt_checkout_requested",
       "Checkout Requested",
       "Customer submits cart payload via Web UI.",
+      "CREATING",
+      "HTTP POST /orders JSON: customer ID, cart items",
     ),
   ],
   customer,
@@ -92,6 +94,8 @@ stepInvokePort = Step(
       "evt_port_invoked",
       "CreateOrderPort Invoked",
       "Driving Adapter calls CreateOrderUseCase interface method.",
+      "CREATING",
+      "CreateOrderCommand DTO",
     ),
   ],
   null,
@@ -111,6 +115,8 @@ stepDomainLogic = Step(
       "evt_order_created",
       "Order Aggregate Created",
       "Domain Aggregate validates items, price calculations, and stock invariants.",
+      "VALIDATED",
+      "Order entity: ID, items, total",
     ),
   ],
   null,
@@ -130,6 +136,8 @@ stepCallDrivenPort = Step(
       "evt_repo_called",
       "OrderRepositoryPort Called",
       "Outbound interface receives Order entity for persistence.",
+      "PERSISTING",
+      "Order entity to persist",
     ),
   ],
   null,
@@ -149,6 +157,8 @@ stepDbPersist = Step(
       "evt_order_saved",
       "Order Record Saved to Postgres",
       "Postgres database commits transaction successfully.",
+      "PERSISTED",
+      "Inserted order row + generated ID",
     ),
   ],
 )

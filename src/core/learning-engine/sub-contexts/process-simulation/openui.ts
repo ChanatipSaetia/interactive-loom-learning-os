@@ -81,14 +81,14 @@ export const System = defineOUIComponent({
     id: z.string(),
     title: z.string(),
     desc: z.string(),
-    kind: z.enum(['aggregate', 'external']).optional(),
+    kind: z.enum(['aggregate', 'service', 'database', 'external']).optional(),
     stateMachine: StateMachine.ref.optional(),
   }),
   fields: {
     id: 'System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`.',
     title: 'System name shown on its sticky (e.g. "Order Service").',
     desc: 'What the system owns or does.',
-    kind: 'Optional "aggregate" (owned domain model) or "external" (outside service). Default "external".',
+    kind: 'Optional "aggregate" (owned domain model), "service" (owned component without its own domain model), "database" (data store) or "external" (outside system). Default "external".',
     stateMachine: 'Optional StateMachine(...) for a system that orchestrates the flow.',
   },
   toData: (p) => ({
@@ -109,11 +109,15 @@ export const Event = defineOUIComponent({
     id: z.string(),
     title: z.string(),
     desc: z.string().optional(),
+    enters: z.string().optional(),
+    data: z.string().optional(),
   }),
   fields: {
     id: 'Event ID, unique within the flowchart.',
     title: 'Event name in past tense (e.g. "Order Placed").',
     desc: 'Optional detail about the event.',
+    enters: 'Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these.',
+    data: 'Optional description of the data the event carries (e.g. "Order ID, total, line items"); the Data Flow view names the data object with it instead of the event title.',
   },
 })
 
@@ -130,6 +134,7 @@ const optionalChainProps = {
   continuesAs: z.string().optional(),
   description: z.string().optional(),
   sendsTo: z.union([z.string(), Actor.ref, System.ref]).optional(),
+  async: z.boolean().optional(),
 }
 
 const handlerFields = {
@@ -145,6 +150,7 @@ const optionalChainFields = {
   continuesAs: 'Optional ID of the Step, Branch or BranchOption that this path\'s events lead into.',
   description: 'Optional narration of this step, shown when it is highlighted.',
   sendsTo: 'Optional actor or system that receives this step\'s events (e.g. the server sends ServerHello to the client).',
+  async: 'Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead.',
 } as const
 
 function toRef(value: unknown) {
@@ -173,6 +179,7 @@ export const Step = defineOUIComponent({
     handledBy: toRef(p.handledBy),
     delegatesTo: toRef(p.delegatesTo),
     sendsTo: toRef(p.sendsTo),
+    async: p.async,
     resultEvents: p.events,
     continuesAs: p.continuesAs,
     description: p.description,
@@ -206,6 +213,7 @@ export const BranchOption = defineOUIComponent({
     handledBy: toRef(p.handledBy),
     delegatesTo: toRef(p.delegatesTo),
     sendsTo: toRef(p.sendsTo),
+    async: p.async,
     resultEvents: p.events,
     continuesAs: p.continuesAs,
     description: p.description,
@@ -232,7 +240,7 @@ export const Branch = defineOUIComponent({
 
 export const JourneyStep = defineOUIComponent({
   name: 'JourneyStep',
-  description: 'A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` groups stops for the state machine (e.g. "planning", "execution").',
+  description: 'A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` is an optional phase label for the stop (e.g. "planning", "handshake").',
   props: z.object({
     step: z.union([z.string(), Step.ref, BranchOption.ref]),
     name: z.string(),
@@ -243,7 +251,7 @@ export const JourneyStep = defineOUIComponent({
     step: 'The Step or BranchOption this stop plays (reference or ID).',
     name: 'Short stop name shown in the journey list.',
     description: 'Narration shown while the stop is played.',
-    processGroup: 'Optional phase used by the state machine (e.g. "planning", "execution").',
+    processGroup: 'Optional free-text phase label for the stop (e.g. "planning", "handshake"); the state-machine state comes from Event `enters`, not from this.',
   },
   toData: (p) => ({ stepId: idOf(p.step), name: p.name, description: p.description, processGroup: p.processGroup }),
 })
@@ -273,14 +281,15 @@ function refId(value: unknown): string | undefined {
 }
 
 function eventCalls(events: ResultEvent[] | undefined): OUIValue[] {
-  return (events ?? []).map((e) => call(Event, { id: e.id, title: e.title, desc: e.desc }))
+  return (events ?? []).map((e) => call(Event, { id: e.id, title: e.title, desc: e.desc, enters: e.enters, data: e.data }))
 }
 
-function chainProps(step: { initiatedBy?: unknown; delegatesTo?: unknown; sendsTo?: unknown; continuesAs?: string; description?: string }) {
+function chainProps(step: { initiatedBy?: unknown; delegatesTo?: unknown; sendsTo?: unknown; async?: boolean; continuesAs?: string; description?: string }) {
   return {
     initiatedBy: refTo(Actor, refId(step.initiatedBy)),
     delegatesTo: refTo(System, refId(step.delegatesTo)),
     sendsTo: refTo([Actor, System], refId(step.sendsTo)),
+    async: step.async || undefined,
     continuesAs: step.continuesAs,
     description: step.description,
   }

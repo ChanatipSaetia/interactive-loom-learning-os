@@ -2,7 +2,15 @@
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
 import { isLinearStep, isBranchStep } from './types';
 import { TYPES } from '../types';
-import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, ProcessGroup, FlowchartStepBranchInfo } from '../types';
+import type { SystemKind } from './types';
+
+const SYSTEM_KIND_TYPES: Record<SystemKind, string> = {
+  aggregate: TYPES.AGGREGATE,
+  service: TYPES.SERVICE,
+  database: TYPES.DATABASE,
+  external: TYPES.EXTERNAL,
+};
+import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartStepBranchInfo } from '../types';
 
 /**
  * Maps entity IDs to their canonical representative based on (title, type) grouping.
@@ -93,7 +101,7 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
     entities[entityId] = {
       title: sys.title,
       desc: sys.desc,
-      type: sys.type === 'aggregate' ? TYPES.AGGREGATE : TYPES.EXTERNAL,
+      type: SYSTEM_KIND_TYPES[sys.type] ?? TYPES.EXTERNAL,
       stateMachine: sys.stateMachine,
     };
     idMap.set(id, entityId);
@@ -179,8 +187,8 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
         } : {}),
         title: s.name,
         reason: s.description,
-        // Topic-specific phase labels have no state mapping; PROCESS_GROUP_STATE_MAP lookups fall back to null.
-        processGroup: s.processGroup as ProcessGroup | undefined,
+        // A free-text phase label; the state-machine state comes from events' `enters`.
+        processGroup: s.processGroup,
         ...(branch ? { branch } : {}),
       };
     }),
@@ -326,6 +334,7 @@ function processLinearStep(
     title: step.command,
     desc: step.description || step.command,
     type: TYPES.COMMAND,
+    ...(step.async ? { async: true } : {}),
   };
   idMap.set(step.id, cmdId);
 
@@ -396,6 +405,8 @@ function processLinearStep(
         title: evt.title,
         desc: evt.desc || evt.title,
         type: TYPES.EVENT,
+        ...(evt.enters ? { entersState: evt.enters } : {}),
+        ...(evt.data ? { viewTitles: { DATA_FLOW: evt.data } } : {}),
       };
     }
     idMap.set(evt.id, eventId);
@@ -508,6 +519,7 @@ function processBranchStep(
       title: branch.command,
       desc: branch.command,
       type: TYPES.COMMAND,
+      ...(branch.async ? { async: true } : {}),
     };
     idMap.set(branch.id, cmdId);
 
@@ -588,6 +600,8 @@ function processBranchStep(
           title: evt.title,
           desc: evt.desc || evt.title,
           type: TYPES.EVENT,
+          ...(evt.enters ? { entersState: evt.enters } : {}),
+        ...(evt.data ? { viewTitles: { DATA_FLOW: evt.data } } : {}),
         };
       }
       idMap.set(evt.id, eventId);

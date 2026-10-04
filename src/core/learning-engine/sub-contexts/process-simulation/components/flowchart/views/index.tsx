@@ -310,6 +310,9 @@ export function FlowchartView({
                 <marker id={`seq-arrow-evt-${viewInstanceId}`} markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
                   <path d="M 0 0 L 7 3 L 0 6 Z" fill="var(--ctp-peach)" />
                 </marker>
+                <marker id={`seq-arrow-async-${viewInstanceId}`} markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                  <path d="M 0 0 L 7 3 L 0 6" fill="none" stroke="var(--secondary)" strokeWidth="1.2" />
+                </marker>
               </>
             )}
             <pattern

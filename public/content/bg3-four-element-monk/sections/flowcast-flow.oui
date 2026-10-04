@@ -70,6 +70,12 @@ stepOpening = Branch(
       "Cast Elemental Spell",
       elementalEngine,
       [Event("evt_spell_cast", "Spell Damage Dealt")],
+      null,
+      null,
+      null,
+      null,
+      null,
+      enemy,
     ),
     branchDefense,
   ],
@@ -84,7 +90,7 @@ branchOffense = BranchOption(
   [Event("evt_wrath_active", "Elemental Strikes Active")],
   null,
   null,
-  "enemy",
+  null,
   "step_attack_loop",
   null,
   unarmedCombat,
@@ -105,11 +111,11 @@ stepAttackLoop = Step(
   "Make Unarmed Strikes",
   unarmedCombat,
   [Event("evt_damage_dealt", "Elemental Damage Applied")],
-  "evt_wrath_active",
+  player,
   null,
   "step_ki_check",
   null,
-  fourPointHandler,
+  enemy,
 )
 
 stepKiCheck = Branch(
@@ -137,6 +143,12 @@ branchFourPoint = BranchOption(
   "Execute Four Point Attack",
   fourPointHandler,
   [Event("evt_four_point", "Four Elemental Strikes Land")],
+  null,
+  null,
+  null,
+  null,
+  null,
+  enemy,
 )
 
 branchSustain = BranchOption(

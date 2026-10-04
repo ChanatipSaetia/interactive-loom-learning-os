@@ -24,6 +24,17 @@ docsRepo = System(
   "Docs Repository",
   "Markdown pages under version control, reviewed through pull requests",
   "aggregate",
+  StateMachine(
+    [
+      MachineState("WRITING", "Writing", "var(--ctp-overlay1)"),
+      MachineState("IN_REVIEW", "In review", "var(--ctp-blue)"),
+      MachineState("TESTED", "Tested", "var(--ctp-mauve)"),
+      MachineState("APPROVED", "Approved", "var(--ctp-peach)"),
+      MachineState("REWRITE", "Rewrite", "var(--ctp-red)"),
+      MachineState("PUBLISHED", "Published", "var(--ctp-green)"),
+    ],
+    "WRITING",
+  ),
 )
 
 stagingApp = System(
@@ -47,7 +58,7 @@ stepDraft = Step(
   "When a feature changes or a task page is missing",
   "Open a pull request with the draft page",
   docsRepo,
-  [Event("evt_draft_opened", "Draft Opened")],
+  [Event("evt_draft_opened", "Draft Opened", null, "IN_REVIEW")],
   writer,
   null,
   "step_sme",
@@ -63,6 +74,7 @@ stepSme = Step(
       "evt_facts_checked",
       "Technical Review Done",
       "Facts, limits, permissions and behaviour confirmed by a subject-matter expert",
+      "IN_REVIEW",
     ),
   ],
   sme,
@@ -77,7 +89,7 @@ stepTest = Step(
   "After the technical review",
   "Follow every step exactly as written",
   stagingApp,
-  [Event("evt_steps_tested", "Steps Tested")],
+  [Event("evt_steps_tested", "Steps Tested", null, "TESTED")],
   tester,
   null,
   "step_test_outcome",
@@ -100,6 +112,7 @@ stepTestOutcome = Branch(
           "evt_edit_done",
           "Editorial Review Done",
           "Structure, style and terminology checked against the style guide",
+          "APPROVED",
         ),
       ],
       null,
@@ -108,6 +121,7 @@ stepTestOutcome = Branch(
       "step_publish",
       null,
       docsSite,
+      true,
     ),
     BranchOption(
       "branch_fail",
@@ -115,7 +129,7 @@ stepTestOutcome = Branch(
       "If a step didn't work as written",
       "Send the page back for rewrite",
       docsRepo,
-      [Event("evt_rewrite_requested", "Rewrite Requested")],
+      [Event("evt_rewrite_requested", "Rewrite Requested", null, "REWRITE")],
       true,
     ),
   ],
@@ -126,7 +140,7 @@ stepPublish = Step(
   "When all reviews pass",
   "Merge and publish the page",
   docsSite,
-  [Event("evt_published", "Page Published")],
+  [Event("evt_published", "Page Published", null, "PUBLISHED")],
   writer,
 )
 

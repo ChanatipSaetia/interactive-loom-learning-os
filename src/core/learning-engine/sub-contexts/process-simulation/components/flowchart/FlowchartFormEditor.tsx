@@ -34,6 +34,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
   const systems = flow.systems || {}
   const steps = (flow.steps || []) as any[]
   const journeys = (flow.journeys || []) as FlowJourney[]
+  const machineStates = Object.values(systems).flatMap((sys) => sys.stateMachine?.states ?? [])
 
   const updateFlow = useCallback(
     (updater: (prevFlow: AbstractFlow) => AbstractFlow) => {
@@ -696,12 +697,14 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                             onChange={(e) =>
                               handleSystemChange(key, {
                                 ...sys,
-                                type: e.target.value as 'aggregate' | 'external',
+                                type: e.target.value as SystemDecl['type'],
                               })
                             }
                             data-testid={`flowchart-system-${key}-type`}
                           >
                             <option value="aggregate">Aggregate</option>
+                            <option value="service">Service</option>
+                            <option value="database">Database</option>
                             <option value="external">External</option>
                           </select>
                         </label>
@@ -1127,6 +1130,17 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                 </select>
                               </label>
                             </div>
+                            <div className="visual-form-field">
+                              <label className="visual-form-label" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px', marginTop: '20px' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={!!linearStep.async}
+                                  onChange={(e) => handleStepChange(idx, { ...linearStep, async: e.target.checked || undefined })}
+                                  data-testid={`flowchart-step-${idx}-async`}
+                                />
+                                <OUIFieldKey of={OUI.Step} field="async">Async (no reply awaited)</OUIFieldKey>
+                              </label>
+                            </div>
                           </div>
 
                           {/* Result Events List */}
@@ -1209,6 +1223,42 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                       data-testid={`flowchart-step-${idx}-evt-${eIdx}-desc`}
                                     />
                                   </div>
+                                  <label className="visual-form-label">
+                                    <OUIFieldKey of={OUI.Event} field="data">Data</OUIFieldKey>
+                                    <input
+                                      className="visual-form-input"
+                                      value={evt.data || ''}
+                                      onChange={(e) => {
+                                        const newEvts = [...linearStep.resultEvents]
+                                        newEvts[eIdx] = { ...evt, data: e.target.value || undefined }
+                                        handleStepChange(idx, { ...linearStep, resultEvents: newEvts })
+                                      }}
+                                      placeholder="Data it carries (optional, e.g. Order ID, total)"
+                                      data-testid={`flowchart-step-${idx}-evt-${eIdx}-data`}
+                                    />
+                                  </label>
+                                  {machineStates.length > 0 && (
+                                    <label className="visual-form-label">
+                                      <OUIFieldKey of={OUI.Event} field="enters">Enters State</OUIFieldKey>
+                                      <select
+                                        className="visual-form-select"
+                                        value={evt.enters || ''}
+                                        onChange={(e) => {
+                                          const newEvts = [...linearStep.resultEvents]
+                                          newEvts[eIdx] = { ...evt, enters: e.target.value || undefined }
+                                          handleStepChange(idx, { ...linearStep, resultEvents: newEvts })
+                                        }}
+                                        data-testid={`flowchart-step-${idx}-evt-${eIdx}-enters`}
+                                      >
+                                        <option value="">(none - state unchanged)</option>
+                                        {machineStates.map((st) => (
+                                          <option key={st.id} value={st.id}>
+                                            {st.id} ({st.label})
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </label>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -1437,6 +1487,17 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                         </label>
                                       </div>
                                       <div className="visual-form-field">
+                                        <label className="visual-form-label" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px', marginTop: '20px' }}>
+                                          <input
+                                            type="checkbox"
+                                            checked={!!bOpt.async}
+                                            onChange={(e) => handleBranchOptionChange(idx, bIdx, { ...bOpt, async: e.target.checked || undefined })}
+                                            data-testid={`flowchart-step-${idx}-branch-${bIdx}-async`}
+                                          />
+                                          <OUIFieldKey of={OUI.BranchOption} field="async">Async (no reply awaited)</OUIFieldKey>
+                                        </label>
+                                      </div>
+                                      <div className="visual-form-field">
                                         <label className="visual-form-label">
                                           <OUIFieldKey of={OUI.BranchOption} field="continuesAs">Continues As (Next Step)</OUIFieldKey>
                                           <select
@@ -1542,6 +1603,42 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                                 data-testid={`flowchart-step-${idx}-branch-${bIdx}-evt-${eIdx}-desc`}
                                               />
                                             </div>
+                                            <label className="visual-form-label">
+                                              <OUIFieldKey of={OUI.Event} field="data">Data</OUIFieldKey>
+                                              <input
+                                                className="visual-form-input"
+                                                value={evt.data || ''}
+                                                onChange={(e) => {
+                                                  const newEvts = [...bOpt.resultEvents]
+                                                  newEvts[eIdx] = { ...evt, data: e.target.value || undefined }
+                                                  handleBranchOptionChange(idx, bIdx, { ...bOpt, resultEvents: newEvts })
+                                                }}
+                                                placeholder="Data it carries (optional, e.g. Order ID, total)"
+                                                data-testid={`flowchart-step-${idx}-branch-${bIdx}-evt-${eIdx}-data`}
+                                              />
+                                            </label>
+                                            {machineStates.length > 0 && (
+                                              <label className="visual-form-label">
+                                                <OUIFieldKey of={OUI.Event} field="enters">Enters State</OUIFieldKey>
+                                                <select
+                                                  className="visual-form-select"
+                                                  value={evt.enters || ''}
+                                                  onChange={(e) => {
+                                                    const newEvts = [...bOpt.resultEvents]
+                                                    newEvts[eIdx] = { ...evt, enters: e.target.value || undefined }
+                                                    handleBranchOptionChange(idx, bIdx, { ...bOpt, resultEvents: newEvts })
+                                                  }}
+                                                  data-testid={`flowchart-step-${idx}-branch-${bIdx}-evt-${eIdx}-enters`}
+                                                >
+                                                  <option value="">(none - state unchanged)</option>
+                                                  {machineStates.map((st) => (
+                                                    <option key={st.id} value={st.id}>
+                                                      {st.id} ({st.label})
+                                                    </option>
+                                                  ))}
+                                                </select>
+                                              </label>
+                                            )}
                                           </div>
                                         ))}
                                       </div>
@@ -1565,6 +1662,11 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
       {/* --- JOURNEYS SUB-TAB --- */}
       {activeSubTab === 'journeys' && (
         <div className="flowchart-tab-content" data-testid="flowchart-content-journeys">
+          <datalist id="flowchart-phase-options">
+            {[...new Set(journeys.flatMap((jr) => jr.steps.map((st) => st.processGroup).filter((g): g is string => !!g)))].map((g) => (
+              <option key={g} value={g} />
+            ))}
+          </datalist>
           <div className="visual-form-field visual-form-field--array">
             <div className="visual-form-section-header">
               <OUIFieldKey of={OUI.Flowchart} field="journeys">Flow Journeys ({journeys.length})</OUIFieldKey>
@@ -1733,25 +1835,18 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                 <div className="visual-form-field">
                                   <label className="visual-form-label">
                                     <OUIFieldKey of={OUI.JourneyStep} field="processGroup">Process Group</OUIFieldKey>
-                                    <select
-                                      className="visual-form-select"
+                                    <input
+                                      className="visual-form-input"
                                       value={js.processGroup || ''}
+                                      list="flowchart-phase-options"
+                                      placeholder="Phase (optional)"
                                       onChange={(e) => {
                                         const updatedSteps = [...j.steps]
-                                        updatedSteps[jsIdx] = {
-                                          ...js,
-                                          processGroup: (e.target.value as JourneyStepRef['processGroup']) || undefined,
-                                        }
+                                        updatedSteps[jsIdx] = { ...js, processGroup: e.target.value || undefined }
                                         handleJourneyChange(idx, { ...j, steps: updatedSteps })
                                       }}
                                       data-testid={`flowchart-journey-${idx}-step-${jsIdx}-processGroup`}
-                                    >
-                                      <option value="">(none)</option>
-                                      <option value="planning">Planning</option>
-                                      <option value="execution">Execution</option>
-                                      <option value="evaluation">Evaluation</option>
-                                      <option value="escalation">Escalation</option>
-                                    </select>
+                                    />
                                   </label>
                                 </div>
                               </div>

@@ -72,11 +72,13 @@ describe('Flowchart Invariants across all public/okf sections', () => {
           if (step.initiatedBy) referenced.add(getId(step.initiatedBy));
           if (step.handledBy) referenced.add(getId(step.handledBy));
           if (step.delegatesTo) referenced.add(getId(step.delegatesTo));
+          if (step.sendsTo) referenced.add(getId(step.sendsTo));
         } else if (step.type === 'branch') {
           for (const b of step.branches || []) {
             if (b.initiatedBy) referenced.add(getId(b.initiatedBy));
             if (b.handledBy) referenced.add(getId(b.handledBy));
             if (b.delegatesTo) referenced.add(getId(b.delegatesTo));
+            if (b.sendsTo) referenced.add(getId(b.sendsTo));
           }
         }
       }

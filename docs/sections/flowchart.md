@@ -62,7 +62,7 @@ pack:
 
 ## `systems.yaml`
 
-A YAML **mapping** of `systemId → SystemDecl`. Systems can be `aggregate` (internal) or `external` (third-party/passive).
+A YAML **mapping** of `systemId → SystemDecl`. A system is an `aggregate` (owned domain model), a `service` (owned component without its own domain model), a `database` (data store) or `external` (outside system). The first three sit inside the System Boundary in the architecture view. In `.oui` this is `System`'s `kind` argument.
 
 ```yaml
 falling_thunder:
@@ -81,7 +81,7 @@ ailiths_chimes:
 |---|---|---|---|
 | `title` | `string` | Yes | Display name |
 | `desc` | `string` | Yes | Description |
-| `type` | `"aggregate" \| "external"` | Yes | Internal aggregate or external system |
+| `type` | `"aggregate" \| "service" \| "database" \| "external"` | Yes | What kind of system it is (see above) |
 | `stateMachine` | `StateMachine` | No | Optional state machine definition |
 
 `StateMachine`:
@@ -137,7 +137,8 @@ A YAML **list** of step objects. Two step types exist: `linear` and `branch`.
 | `command` | `string` | Yes | Command name being issued |
 | `handledBy` | `string` | Yes | System ID that handles the command |
 | `delegatesTo` | `string` | No | Optional downstream system ID |
-| `sendsTo` | `string` | No | Actor or system ID that receives the result events. The Sequence and System Architecture views draw only declared messages; without it the events stay on the handler's lifeline. In `.oui` it is the last `Step` / `BranchOption` argument. |
+| `sendsTo` | `string` | No | Actor or system ID that receives the result events. The Sequence and System Architecture views draw only declared messages; without it the events stay on the handler's lifeline. Once any step in a flowchart declares `sendsTo`, System Architecture draws lines only from `initiatedBy`, `delegatesTo` and `sendsTo`; a flowchart with no `sendsTo` still gets a line wherever one system's event triggers another system's command. In `.oui` it is the `Step` / `BranchOption` argument after `description`. |
+| `async` | `boolean` | No | `true` when the command is sent without waiting for a reply; the Sequence view draws it with an open arrowhead. In `.oui` it is the argument after `sendsTo`. |
 | `resultEvents` | `ResultEvent[]` | Yes | Events emitted after handling |
 | `continuesAs` | `string` | No | Next step ID (omit for terminal steps) |
 
@@ -148,6 +149,8 @@ A YAML **list** of step objects. Two step types exist: `linear` and `branch`.
 | `id` | `string` | Yes | Unique event ID (referenced by branch steps) |
 | `title` | `string` | Yes | Event display name |
 | `desc` | `string` | No | Event description |
+| `enters` | `string` | No | MachineState ID the system's state machine enters when this event happens. The State Machine view draws a transition from each state to the next state an event enters, labelled with the command that produced that event; with no `enters`, the view shows the states without transitions. In `.oui` it is the fourth `Event` argument. |
+| `data` | `string` | No | What data the event carries (e.g. `Order ID, total, line items`). The Data Flow view names the event's data object with it instead of the event title. In `.oui` it is the fifth `Event` argument. |
 
 ### Branch step
 
@@ -214,7 +217,7 @@ A YAML **list** of `FlowJourney` objects. A journey groups a named subset of ste
     - stepId: step_enter
       name: "Enter Map"
       description: "Enter map, open with Whirling Assault"
-      processGroup: planning       # planning | execution | evaluation | escalation
+      processGroup: planning       # free-text phase label
 
     - stepId: branch_ft
       name: "Clear with Falling Thunder"
@@ -238,7 +241,7 @@ A YAML **list** of `FlowJourney` objects. A journey groups a named subset of ste
 | `stepId` | `string` | Yes | References a step `id` or branch `id` from `steps.yaml` |
 | `name` | `string` | Yes | Step display name in the journey panel |
 | `description` | `string` | Yes | Narrative description for this step in context |
-| `processGroup` | `"planning" \| "execution" \| "evaluation" \| "escalation"` | No | Groups the step into a swimlane category |
+| `processGroup` | `string` | No | Free-text phase label for the stop (e.g. `planning`, `handshake`). It does not pick the state-machine state: that comes from each event's `enters`. |
 
 ---
 

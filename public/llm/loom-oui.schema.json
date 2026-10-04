@@ -934,9 +934,11 @@
           "type": "string",
           "enum": [
             "aggregate",
+            "service",
+            "database",
             "external"
           ],
-          "description": "Optional \"aggregate\" (owned domain model) or \"external\" (outside service). Default \"external\"."
+          "description": "Optional \"aggregate\" (owned domain model), \"service\" (owned component without its own domain model), \"database\" (data store) or \"external\" (outside system). Default \"external\"."
         },
         "stateMachine": {
           "$ref": "#/$defs/StateMachine",
@@ -1073,6 +1075,10 @@
             }
           ],
           "description": "Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client)."
+        },
+        "async": {
+          "type": "boolean",
+          "description": "Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead."
         }
       },
       "required": [
@@ -1099,6 +1105,14 @@
         "desc": {
           "type": "string",
           "description": "Optional detail about the event."
+        },
+        "enters": {
+          "type": "string",
+          "description": "Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these."
+        },
+        "data": {
+          "type": "string",
+          "description": "Optional description of the data the event carries (e.g. \"Order ID, total, line items\"); the Data Flow view names the data object with it instead of the event title."
         }
       },
       "required": [
@@ -1219,6 +1233,10 @@
             }
           ],
           "description": "Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client)."
+        },
+        "async": {
+          "type": "boolean",
+          "description": "Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead."
         }
       },
       "required": [
@@ -1291,7 +1309,7 @@
         },
         "processGroup": {
           "type": "string",
-          "description": "Optional phase used by the state machine (e.g. \"planning\", \"execution\")."
+          "description": "Optional free-text phase label for the stop (e.g. \"planning\", \"handshake\"); the state-machine state comes from Event `enters`, not from this."
         }
       },
       "required": [
@@ -1300,7 +1318,7 @@
         "description"
       ],
       "additionalProperties": false,
-      "description": "A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` groups stops for the state machine (e.g. \"planning\", \"execution\")."
+      "description": "A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` is an optional phase label for the stop (e.g. \"planning\", \"handshake\")."
     },
     "Scenario": {
       "type": "object",

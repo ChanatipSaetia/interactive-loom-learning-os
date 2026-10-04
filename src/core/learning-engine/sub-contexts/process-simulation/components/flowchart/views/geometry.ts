@@ -285,9 +285,22 @@ export function routeViewRelations(
     if (Math.abs(start - finish) < 0.5) return;
     const fromAlone = nodeSideConns[entry.fromId][sideFrom].length === 1;
     const toAlone = nodeSideConns[entry.toId][sideTo].length === 1;
+    // A port on a busy side may still slide into line when it stays clear of
+    // the other ports on that side.
+    const clearOf = (value: number, nodeId: string, side: string) =>
+      nodeSideConns[nodeId][side].every(conn => {
+        if (conn.relId === entry.rel.id) return true;
+        const other = relPorts[conn.relId];
+        const otherValue = other?.[`${conn.role === 'from' ? 'start' : 'end'}${axis}`];
+        return otherValue === undefined || Math.abs(otherValue - value) >= MARGIN;
+      });
     if (toAlone && fits(start, entry.toNode)) {
       ports[`end${axis}`] = start;
     } else if (fromAlone && fits(finish, entry.fromNode)) {
+      ports[`start${axis}`] = finish;
+    } else if (fits(start, entry.toNode) && clearOf(start, entry.toId, sideTo)) {
+      ports[`end${axis}`] = start;
+    } else if (fits(finish, entry.fromNode) && clearOf(finish, entry.fromId, sideFrom)) {
       ports[`start${axis}`] = finish;
     } else {
       const unstaggeredStart = start + ((sideFrom === 'R' || sideFrom === 'B') ? STAGGER : -STAGGER);
@@ -297,6 +310,70 @@ export function routeViewRelations(
         ports[`end${axis}`] = unstaggeredEnd;
       }
     }
+  });
+
+  // Two ports facing each other across an open gap (a right side and a left
+  // side, or a bottom and a top) that land a pixel or two apart send their
+  // lines along one channel. Nudge one of them apart: the one whose own line is
+  // not already straight, when it stays on its box and clear of its neighbours.
+  const NEAR = 4;
+  const NUDGE = 6;
+  type PortRef = { relId: string; end: 'start' | 'end'; nodeId: string; side: string };
+  const portRefs: PortRef[] = [];
+  relSides.forEach(entry => {
+    const ports = relPorts[entry.rel.id];
+    if (!ports) return;
+    portRefs.push({ relId: entry.rel.id, end: 'start', nodeId: entry.fromId, side: ports.sideFrom });
+    portRefs.push({ relId: entry.rel.id, end: 'end', nodeId: entry.toId, side: ports.sideTo });
+  });
+  const axisOf = (side: string) => (side === 'L' || side === 'R' ? 'Y' : 'X');
+  const crossOf = (side: string) => (side === 'L' || side === 'R' ? 'X' : 'Y');
+  const valueOf = (ref: PortRef) => relPorts[ref.relId][`${ref.end}${axisOf(ref.side)}`] as number;
+  const crossValueOf = (ref: PortRef) => relPorts[ref.relId][`${ref.end}${crossOf(ref.side)}`] as number;
+  const isStraight = (relId: string) => {
+    const ports = relPorts[relId];
+    return Math.abs(ports.startX - ports.endX) < 0.5 || Math.abs(ports.startY - ports.endY) < 0.5;
+  };
+  // a is on the right/bottom side, b on the left/top side further along, with no box between
+  const facesAcrossGap = (a: PortRef, b: PortRef) => {
+    const facing = (a.side === 'R' && b.side === 'L') || (a.side === 'B' && b.side === 'T');
+    if (!facing || crossValueOf(a) >= crossValueOf(b)) return false;
+    const level = (valueOf(a) + valueOf(b)) / 2;
+    const [lo, hi] = [crossValueOf(a), crossValueOf(b)];
+    return !positioned.some(n => {
+      if (n.id === a.nodeId || n.id === b.nodeId) return false;
+      const horizontal = a.side === 'R';
+      const along = horizontal ? n.x : n.y;
+      const across = horizontal ? n.y : n.x;
+      const halfAlong = (horizontal ? NODE_W : NODE_H) / 2;
+      const halfAcross = (horizontal ? NODE_H : NODE_W) / 2;
+      return along + halfAlong > lo && along - halfAlong < hi && Math.abs(across - level) < halfAcross;
+    });
+  };
+  const nudge = (ref: PortRef, away: PortRef) => {
+    const axis = axisOf(ref.side);
+    const node = nodeMap.get(ref.nodeId);
+    if (!node) return false;
+    const centre = axis === 'Y' ? node.y : node.x;
+    const half = (axis === 'Y' ? NODE_H : NODE_W) / 2 - MARGIN;
+    const siblings = portRefs.filter(o => o !== ref && o.nodeId === ref.nodeId && o.side === ref.side);
+    const direction = valueOf(ref) >= valueOf(away) ? 1 : -1;
+    for (const sign of [direction, -direction]) {
+      const moved = valueOf(away) + sign * NUDGE;
+      if (Math.abs(moved - centre) <= half && siblings.every(o => Math.abs(valueOf(o) - moved) >= MARGIN)) {
+        relPorts[ref.relId][`${ref.end}${axis}`] = moved;
+        return true;
+      }
+    }
+    return false;
+  };
+  portRefs.forEach(a => {
+    portRefs.forEach(b => {
+      if (a.relId === b.relId || !facesAcrossGap(a, b)) return;
+      if (Math.abs(valueOf(a) - valueOf(b)) >= NEAR) return;
+      if (!isStraight(b.relId) && nudge(b, a)) return;
+      if (!isStraight(a.relId)) nudge(a, b);
+    });
   });
 
   // Route one line at a time so each can steer clear of the lines already placed,

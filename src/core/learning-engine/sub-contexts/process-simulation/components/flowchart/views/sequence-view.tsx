@@ -194,7 +194,9 @@ export const SequenceView = memo(function SequenceView({
 
         const marker = isEvent
           ? `url(#seq-arrow-evt-${viewInstanceId})`
-          : `url(#seq-arrow-cmd-${viewInstanceId})`;
+          : rel.async
+            ? `url(#seq-arrow-async-${viewInstanceId})`
+            : `url(#seq-arrow-cmd-${viewInstanceId})`;
 
         let displayLabel = rel.label || '';
         const segmentLength = isSelf ? COL_W - 40 : Math.abs(x2 - x1);
@@ -245,6 +247,7 @@ export const SequenceView = memo(function SequenceView({
             onClick={toggleSeqEdge}
             onTouchEnd={toggleSeqEdge}
             data-testid={`flowchart-seq-msg-${viewKey}-${idx}`}
+            data-async={rel.async ? 'true' : undefined}
           >
             {isSelf ? (
               <>

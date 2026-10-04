@@ -21,7 +21,7 @@ textEmbedder = System(
   "text_embedder",
   "Text Embedder",
   "Converts the user query into a dense vector for semantic search.",
-  "aggregate",
+  "service",
 )
 
 queryEmbeddingModel = System(
@@ -35,35 +35,35 @@ retriever = System(
   "retriever",
   "Retriever",
   "Searches the Document Store for relevant documents.",
-  "aggregate",
+  "service",
 )
 
 docStore = System(
   "doc_store",
   "Document Store",
   "Stores indexed documents for retrieval.",
-  "external",
+  "database",
 )
 
 ranker = System(
   "ranker",
   "Ranker",
   "Re-ranks retrieved documents by relevance to the query.",
-  "aggregate",
+  "service",
 )
 
 promptBuilder = System(
   "prompt_builder",
   "Prompt Builder",
   "Assembles retrieved documents into an LLM prompt template.",
-  "aggregate",
+  "service",
 )
 
 llmGenerator = System(
   "llm_generator",
   "LLM Generator",
   "Generates the final answer from the prompt using an LLM.",
-  "aggregate",
+  "service",
 )
 
 llmApi = System("llm_api", "LLM API", "External LLM service (OpenAI, Anthropic, etc.).", "external")
@@ -73,7 +73,7 @@ submitQuery = Step(
   "Embed Query",
   "Submit Query",
   textEmbedder,
-  [Event("query_received", "Query Received", "Natural-language question enters the system.")],
+  [Event("query_received", "Query Received", "Natural-language question enters the system.", null, "Query text")],
   endUser,
   null,
   "embed_query",
@@ -84,7 +84,7 @@ embedQuery = Step(
   "Embed Query",
   "Embed Query",
   textEmbedder,
-  [Event("query_embedded", "Query Embedded", "Query converted to dense vector representation.")],
+  [Event("query_embedded", "Query Embedded", "Query converted to dense vector representation.", null, "Query embedding vector")],
   null,
   queryEmbeddingModel,
   "retrieve",
@@ -102,6 +102,8 @@ retrieve = Step(
       "docs_retrieved",
       "Documents Retrieved",
       "Candidate documents fetched from Document Store.",
+      null,
+      "Top-k Documents with scores",
     ),
   ],
   null,
@@ -116,7 +118,7 @@ rank = Step(
   "Rank",
   "Rank Documents",
   ranker,
-  [Event("docs_ranked", "Documents Ranked", "Documents sorted by relevance score.")],
+  [Event("docs_ranked", "Documents Ranked", "Documents sorted by relevance score.", null, "Re-ordered Documents with relevance scores")],
   null,
   null,
   "build_prompt",
@@ -129,7 +131,7 @@ buildPrompt = Step(
   "RAG Assembly",
   "Build Prompt",
   promptBuilder,
-  [Event("prompt_ready", "Prompt Assembled", "Context and query combined into LLM prompt.")],
+  [Event("prompt_ready", "Prompt Assembled", "Context and query combined into LLM prompt.", null, "Prompt string: instructions + context + question")],
   null,
   null,
   "generate_answer",
@@ -142,7 +144,7 @@ generateAnswer = Step(
   "Generate",
   "Generate Answer",
   llmGenerator,
-  [Event("answer_generated", "Answer Generated", "LLM produces final response.")],
+  [Event("answer_generated", "Answer Generated", "LLM produces final response.", null, "Generated replies + token usage")],
   null,
   llmApi,
 )

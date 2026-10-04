@@ -97,6 +97,14 @@ export const MASTER_MAPPING_MATRIX: Record<string, Record<string, string | null>
     DATA_FLOW: null,
     STATE_MACHINE: TYPES.AGGREGATE
   },
+  [TYPES.SERVICE]: {
+    EVENT_STORMING: TYPES.SERVICE,
+    SYS_ARCH: TYPES.SERVICE,
+    SWIMLANES: null,
+    SEQUENCE: TYPES.SERVICE,
+    DATA_FLOW: null,
+    STATE_MACHINE: TYPES.SERVICE
+  },
   [TYPES.DATABASE]: {
     EVENT_STORMING: TYPES.DATABASE,
     SYS_ARCH: TYPES.DATABASE,
@@ -142,45 +150,6 @@ export const MASTER_MAPPING_MATRIX: Record<string, Record<string, string | null>
 export const NODE_W = 140; 
 export const NODE_H = 100;
 
-export const PROCESS_GROUP_STATE_MAP: Record<ProcessGroup, string> = {
-  planning: 'PLANNING',
-  execution: 'EXECUTING',
-  evaluation: 'EVALUATING',
-  escalation: 'ESCALATED',
-};
-
-/** Maps a journey step's event node id to the corresponding state-machine state id. */
-export const STEP_EVENT_TO_STATE_MAP: Record<string, string> = {
-  evt_order_placed: 'PENDING',
-  evt_inventory_locked: 'INVENTORY_LOCKED',
-  evt_payment_authorized: 'PAYMENT_AUTHORIZED',
-  evt_fraud_evaluated: 'FRAUD_CLEARED',
-  evt_fraud_flagged: 'FRAUD_REVIEW',
-  evt_review_decision: 'FRAUD_REVIEW',
-  evt_order_confirmed: 'CONFIRMED',
-  evt_order_approved: 'CONFIRMED',
-  evt_order_cancelled: 'CANCELLED',
-
-  evt_uploaded: 'QUEUED',
-  evt_extracted: 'EXTRACTING',
-  evt_validated: 'VALIDATING',
-  evt_approved: 'HIGH_CONFIDENCE',
-  evt_flagged: 'LOW_CONFIDENCE',
-  evt_audited: 'AUDITED',
-  evt_completed: 'COMPLETED',
-
-  evt_goal: 'IDLE',
-  evt_plan: 'PLANNING',
-  evt_exec: 'EXECUTING',
-  evt_eval: 'EVALUATING',
-  evt_escalate: 'ESCALATED',
-
-  evt_started: 'IDLE',
-  evt_reasoned: 'THINKING',
-  evt_tool_executed: 'EXECUTING_TOOL',
-  evt_done: 'COMPLETED'
-};
-
 export interface FlowchartStateMachineState {
   id: string;
   label: string;
@@ -206,6 +175,10 @@ export interface FlowchartEntity {
   color?: string;
   strokeColor?: string;
   stateMachine?: FlowchartStateMachine;
+  /** On an event: the state-machine state it enters (MachineState ID). */
+  entersState?: string;
+  /** On a command: sent without waiting for a reply. */
+  async?: boolean;
   /** Store branching condition label when multiple policies are merged */
   branchLabel?: string;
   /** Marks this entity as the root/starting point for the Event Storming layout. Set exactly one entity per schema. */
@@ -217,6 +190,8 @@ export interface FlowchartRelation {
   from: string;
   to: string;
   views?: string[];
+  /** Sequence view: an asynchronous message (open arrowhead). */
+  async?: boolean;
   dashed?: boolean;
   handledBy?: boolean;
   /** Event → recipient: the step's result is sent to this actor/system. */
@@ -262,7 +237,8 @@ export interface FlowchartViewGroup {
   seqIndexMax?: number;
 }
 
-export type ProcessGroup = 'planning' | 'execution' | 'evaluation' | 'escalation';
+/** Free-text phase label for a journey stop (e.g. "planning", "handshake"). */
+export type ProcessGroup = string;
 
 /** One option at a fork that the current journey step did not take. */
 export interface FlowchartBranchAlternative {

@@ -26,7 +26,7 @@
       policy: fb_revise
       command: cmd_revise
       handledBy: orch_feedback
-      delegatesTo: dev_user
+      initiatedBy: dev_user
       resultEvents:
         - id: fb_revision
           title: "Revision Triggered"

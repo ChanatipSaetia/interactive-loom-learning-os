@@ -27,8 +27,12 @@ EVENT ──> POLICY ──> COMMAND ──> AGGREGATE/EXTERNAL (handledBy) ─�
    | `handledBy` | System that runs the command | no — omit only for a pure state change no system runs (the command then emits its events directly) |
    | `delegatesTo` | System the handler hands part of the work to (e.g. reading a key store) | no — needs `handledBy` |
    | `sendsTo` | Actor or system that **receives** the step's result (a message) | no |
+   | `async` | `true` when the command is fired without waiting for a reply (a queued job, a notification) | no |
 
-   Declare `sendsTo` whenever the step sends something to someone, especially in protocol flows: the System Architecture and Sequence views draw exactly that message (`handledBy → sendsTo`) and nothing is inferred. A step with no `initiatedBy`, `sendsTo` or `delegatesTo` is drawn as happening inside its handler: its box lights up with the step label, and no line is invented.
+   - `initiatedBy` names an **actor**; `handledBy` and `delegatesTo` name **systems**; `sendsTo` names either. Validation rejects anything else: when an actor receives the result, use `sendsTo`, not `delegatesTo`.
+   - Declare `sendsTo` whenever the step sends something to someone, especially in protocol flows: the System Architecture and Sequence views draw exactly that message (`handledBy → sendsTo`) and nothing is inferred. A step with no `initiatedBy`, `sendsTo` or `delegatesTo` is drawn as happening inside its handler: its box lights up with the step label, and no line is invented.
+   - Once any step of a flowchart declares `sendsTo`, System Architecture draws lines **only** from `initiatedBy`, `delegatesTo` and `sendsTo`. A flowchart with no `sendsTo` still gets a line wherever one system's event triggers another system's command.
+   - When a choice belongs to a person (e.g. the player decides to fight the boss), put the same actor in `initiatedBy` on every option of the fork: the decision diamond then sits in that actor's swimlane.
 
    ```yaml
    - type: linear
@@ -67,36 +71,13 @@ Each branch path must start with its own unique `policy` node. When a single `EV
 
 ---
 
-## 3. Duplicate-and-Collapse for Repeated Handlers
+## 3. Repeated Actors and Systems
 
-To keep the flowchart layout clean while ensuring that the handler execution chain remains structurally complete, follow the **Duplicate-and-Collapse** pattern.
+Declare each actor and system **once** and point every step at that ID (`initiatedBy`, `handledBy`, `delegatesTo`, `sendsTo`). When one is used by several steps, the engine draws a copy per step in the Event Storming view (same title) and collapses them into a single box in System Architecture, Swimlanes, Sequence and Data Flow. Do not declare duplicates yourself.
 
-If a single actor or system handler (`AGGREGATE`, `EXTERNAL`, or `USER`) participates in multiple steps, you must **duplicate the node** for each step it appears in, and map those duplicates back to the canonical parent node using the `collapsedTo` field.
-
-### Example Configuration:
-In `systems.yaml`:
-```yaml
-# Canonical Orchestrator system node
-orch_agent:
-  title: "Agent Orchestrator"
-  desc: "Central coordinator agent"
-  type: "aggregate"
-
-# Duplicates representing the orchestrator in specific steps
-orch_plan:
-  title: "Agent Orchestrator"
-  desc: "Planning and delegation stage"
-  type: "aggregate"
-  collapsedTo: "orch_agent" # Maps back to canonical parent
-
-orch_exec:
-  title: "Agent Orchestrator"
-  desc: "Execution stage"
-  type: "aggregate"
-  collapsedTo: "orch_agent" # Maps back to canonical parent
-```
-
-In `steps.yaml`, point each step's `handledBy` property to the **per-step duplicate** (e.g. `orch_plan` or `orch_exec`), not the canonical node. The renderer will layout these nodes separately in step views but group/collapse them into the canonical `Agent Orchestrator` component in the System Architecture view.
+### Where things are drawn
+- **Swimlanes:** a command an actor starts sits in that actor's lane; any other command sits in the lane of the system that handles it. A fork whose options are all started by the same actor sits in that actor's lane.
+- **Sequence:** one message per command (from `initiatedBy`, else a self-call on the handler) and one per result event (to `sendsTo`, else on the handler's lifeline). Steps appear in declared order, except that a step never comes before the step it follows from. `async` commands get an open arrowhead.
 
 ---
 
@@ -108,14 +89,24 @@ In `steps.yaml`, point each step's `handledBy` property to the **per-step duplic
 | **Event** | State | An outcome or state fact. Written in past tense. | `evt_started`, `evt_failed` |
 | **Command** | Action | An instruction or intent to do work. Written in imperative tense. | `"Call LLM API"`, `"Write File"` |
 | **Policy** | Rule | Business logic or condition triggered by an event. | `"If Review Fails"`, `"On Success"` |
-| **Aggregate** | System | Internal component of the system under discussion. | `orch_agent`, `tools_router` |
-| **External** | System | System outside your immediate boundaries, called via API/network. | `llm_api`, `mcp_server` |
+| **Aggregate** | System | Owned domain model of the system under discussion (`kind: "aggregate"`). | `orch_agent`, `order_aggregate` |
+| **Service** | System | Owned component without its own domain model: a router, a pipeline stage, an adapter (`kind: "service"`). | `tools_router`, `retriever` |
+| **Database** | System | Data store the system reads and writes (`kind: "database"`). | `progress_store`, `key_store` |
+| **External** | System | System outside your immediate boundaries, called via API/network (`kind: "external"`, the default). | `llm_api`, `mcp_server` |
 | **Read Model** | Query | Optimized database view queried by a policy. | `read_review_scores` |
 | **Risk** | Risk | Design blocker, complexity, or system vulnerability. | `unresolved_timeout` |
 
-### Aggregate vs. External System Distinction:
-- **Aggregate**: Systems or modules that belong directly to the codebase/application structure you are designing (e.g. `AgentExecutor` or `StateGraph`).
-- **External**: Real external services outside your control, invoked via network requests (e.g. `LLM API`, `Brave Search Engine`, `SQLite database`).
+### Choosing a system kind:
+- **Aggregate**: the domain model you are designing, which owns state and rules (e.g. `Order`, `StateGraph`).
+- **Service**: other code you own that does work without owning a domain model (e.g. an HTTP controller, a port, a text splitter).
+- **Database**: where data is stored (e.g. Postgres, a document store, a key store).
+- **External**: services outside your control, invoked via network requests (e.g. `LLM API`, `Brave Search Engine`).
+
+Aggregates, services and databases sit inside the System Boundary in the architecture view; external systems sit outside it.
+
+### State machines and event data
+- A system can carry a `StateMachine` (states + `initialState`). Mark each event that moves it into a new state with `enters: <STATE_ID>`. The State Machine view draws one transition per change, labelled with the command that caused it, and playback highlights the state the journey has reached. Without `enters`, the view shows the states with no transitions.
+- Give an event `data` (e.g. `"Order ID, total, line items"`) when what it carries matters to the lesson: the Data Flow view names the event's data object with it.
 
 ---
 
@@ -150,7 +141,8 @@ All flowchart diagrams are automatically validated via the **3-Tier Validation G
 ### Tier 3 Semantic Reference Integrity Rules for Flowcharts:
 1. **Actor & System Attachment to Steps**:
    - Every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`) node declared in `actors.yaml` or `systems.yaml` **MUST be attached to at least one step in steps.yaml** (via `initiatedBy`, `handledBy`, `delegatesTo`, or `sendsTo`).
-   - A `handledBy` MUST name a system defined in `systems.yaml`; a `sendsTo` MUST name a declared actor or system; `delegatesTo` requires `handledBy`.
+   - A `handledBy` and a `delegatesTo` MUST name a declared system; an `initiatedBy` MUST name a declared actor; a `sendsTo` MUST name a declared actor or system; `delegatesTo` requires `handledBy`.
+   - An event's `enters` MUST name a state of a declared `StateMachine`.
    - Every `Actor` and `System` node in the derived graph MUST be connected to an Event node via step relation chains.
 
 2. **Step Link Reference Integrity (`continuesAs`)**:

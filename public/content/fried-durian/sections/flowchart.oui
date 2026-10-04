@@ -79,8 +79,6 @@ step5 = Step(
   cook,
   null,
   "step_branch",
-  null,
-  durianRaw,
 )
 
 stepBranch = Branch("step_branch", "evt_drained", [branchPlain, branchSugar])
@@ -93,8 +91,11 @@ branchPlain = BranchOption(
   durianRaw,
   [Event("evt_plain_done", "ทุเรียนทอดเปล่าพร้อมทาน")],
   null,
+  cook,
   null,
-  "eater",
+  null,
+  null,
+  eater,
 )
 
 branchSugar = BranchOption(
@@ -105,8 +106,11 @@ branchSugar = BranchOption(
   sugarBowl,
   [Event("evt_sugar_done", "ทุเรียนทอดเคลือบน้ำตาลพร้อมทาน")],
   null,
+  cook,
   null,
-  "eater",
+  null,
+  null,
+  eater,
 )
 
 journeyPlain = Journey(

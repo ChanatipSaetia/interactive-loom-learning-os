@@ -11,6 +11,10 @@ export interface ResultEvent {
   id: string;
   title: string;
   desc?: string;
+  /** State the flow's state machine enters when this event happens (a MachineState ID). */
+  enters?: string;
+  /** What data the event carries (e.g. "Order ID, total, line items"); names its Data Flow data object. */
+  data?: string;
 }
 
 /** Base for any flow step. */
@@ -35,6 +39,8 @@ export interface LinearStep extends FlowStepBase {
   delegatesTo?: Ref;
   /** Optional actor or system that receives the step's result (message recipient). */
   sendsTo?: Ref;
+  /** The command is sent without waiting for a reply (fire-and-forget). */
+  async?: boolean;
   /** Resulting event(s). Always an array. */
   resultEvents: ResultEvent[];
   /** Optional description override for this step. */
@@ -65,12 +71,17 @@ export interface BranchOption extends FlowStepBase {
   delegatesTo?: Ref;
   /** Optional actor or system that receives the step's result (message recipient). */
   sendsTo?: Ref;
+  /** The command is sent without waiting for a reply (fire-and-forget). */
+  async?: boolean;
   resultEvents: ResultEvent[];
   /** Optional description for this branch option. */
   description?: string;
 }
 
 export type FlowStep = LinearStep | BranchStep;
+
+/** What kind of system a declared System is. */
+export type SystemKind = 'aggregate' | 'service' | 'database' | 'external';
 
 /** Declared actor (human user). */
 export interface ActorDecl {
@@ -82,7 +93,8 @@ export interface ActorDecl {
 export interface SystemDecl {
   title: string;
   desc: string;
-  type: 'aggregate' | 'external';
+  /** aggregate: owned domain model; service: owned component; database: data store; external: outside system. */
+  type: SystemKind;
   /** Optional state machine for the orchestrator entity. */
   stateMachine?: {
     states: Array<{ id: string; label: string; color: string }>;
@@ -99,7 +111,8 @@ export interface JourneyStepRef {
   /** Longer explanation shown below the name during playback. */
   description: string;
   /** Optional process group for state machine mapping. */
-  processGroup?: 'planning' | 'execution' | 'evaluation' | 'escalation';
+  /** Free-text phase label (e.g. "handshake"). */
+  processGroup?: string;
 }
 
 /** A journey through the flow — one path from start to finish. */

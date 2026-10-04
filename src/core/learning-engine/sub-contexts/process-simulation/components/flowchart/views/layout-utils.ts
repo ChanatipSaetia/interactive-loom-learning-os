@@ -108,6 +108,22 @@ export function routeManhattanPath(
     candidateYs.add((r + 0.7) * spacing.rowSpacing + spacing.offsetY);
   }
 
+  // Lanes just beside lines already placed, so a line squeezed between a box
+  // and another line can still turn without running on top of it.
+  // Only the 3-segment routes use them; the safety net below stays on the grid.
+  const LANE_GAP = 12;
+  const midXs = new Set(candidateXs);
+  const midYs = new Set(candidateYs);
+  for (const seg of avoid) {
+    if (seg.a.x === seg.b.x) {
+      midXs.add(seg.a.x - LANE_GAP);
+      midXs.add(seg.a.x + LANE_GAP);
+    } else if (seg.a.y === seg.b.y) {
+      midYs.add(seg.a.y - LANE_GAP);
+      midYs.add(seg.a.y + LANE_GAP);
+    }
+  }
+
   // 1-bend Direct H-V: (startX, startY) -> (endX, startY) -> (endX, endY)
   candidates.push({
     type: '1-bend H-V',
@@ -129,7 +145,7 @@ export function routeManhattanPath(
   });
 
   // 3-segment H-V-H via candidateXs: (startX, startY) -> (midX, startY) -> (midX, endY) -> (endX, endY)
-  candidateXs.forEach(midX => {
+  midXs.forEach(midX => {
     candidates.push({
       type: 'H-V-H',
       points: [
@@ -142,7 +158,7 @@ export function routeManhattanPath(
   });
 
   // 3-segment V-H-V via candidateYs: (startX, startY) -> (startX, midY) -> (endX, midY) -> (endX, endY)
-  candidateYs.forEach(midY => {
+  midYs.forEach(midY => {
     candidates.push({
       type: 'V-H-V',
       points: [
@@ -388,45 +404,47 @@ export function disambiguateAndBridgePaths(
     points: r.points.map(p => ({ ...p }))
   }));
 
-  // Distribute clustered horizontal segments across offset tracks symmetrically
-  hClusters.forEach(cluster => {
+  // Spread each cluster of parallel segments onto separate tracks. The first
+  // and last segment of a route are pinned to ports (already spread along each
+  // side) and never move; moving one end would slant them. Free segments move
+  // at least a track away from every pinned one; with nothing pinned they
+  // spread symmetrically around where they are.
+  const spreadCluster = (cluster: Array<{ routeIdx: number; segIdx: number }>, axis: 'x' | 'y') => {
     if (cluster.length <= 1) return;
-    const count = cluster.length;
-    cluster.forEach((seg, idx) => {
+    const isPinned = (seg: { routeIdx: number; segIdx: number }) =>
+      seg.segIdx === 0 || seg.segIdx === updatedRoutes[seg.routeIdx].points.length - 2;
+    const coord = (seg: { routeIdx: number; segIdx: number }) => updatedRoutes[seg.routeIdx].points[seg.segIdx][axis];
+    const shift = (seg: { routeIdx: number; segIdx: number }, offset: number) => {
       const pts = updatedRoutes[seg.routeIdx].points;
-      const isStartSeg = seg.segIdx === 0;
-      const isEndSeg = seg.segIdx === pts.length - 2;
-      const offset = (idx - (count - 1) / 2) * TRACK_GAP;
-      if (Math.abs(offset) < 0.1) return;
-
-      // Only interior segments move: the first and last ones are pinned to ports
-      // (already spread along each side), and moving one end would slant them.
-      if (!isStartSeg && !isEndSeg) {
-        pts[seg.segIdx].y += offset;
-        pts[seg.segIdx + 1].y += offset;
-      }
-    });
-  });
-
-  // Distribute clustered vertical segments across offset tracks symmetrically
-  vClusters.forEach(cluster => {
-    if (cluster.length <= 1) return;
-    const count = cluster.length;
-    cluster.forEach((seg, idx) => {
-      const pts = updatedRoutes[seg.routeIdx].points;
-      const isStartSeg = seg.segIdx === 0;
-      const isEndSeg = seg.segIdx === pts.length - 2;
-      const offset = (idx - (count - 1) / 2) * TRACK_GAP;
-      if (Math.abs(offset) < 0.1) return;
-
-      // Only interior segments move: the first and last ones are pinned to ports
-      // (already spread along each side), and moving one end would slant them.
-      if (!isStartSeg && !isEndSeg) {
-        pts[seg.segIdx].x += offset;
-        pts[seg.segIdx + 1].x += offset;
-      }
-    });
-  });
+      pts[seg.segIdx][axis] += offset;
+      pts[seg.segIdx + 1][axis] += offset;
+    };
+    const pinned = cluster.filter(isPinned);
+    const free = cluster.filter(seg => !isPinned(seg));
+    if (pinned.length === 0) {
+      const count = cluster.length;
+      cluster.forEach((seg, idx) => {
+        const offset = (idx - (count - 1) / 2) * TRACK_GAP;
+        if (Math.abs(offset) >= 0.1) shift(seg, offset);
+      });
+      return;
+    }
+    const taken = pinned.map(coord);
+    free
+      .sort((a, b) => coord(a) - coord(b))
+      .forEach(seg => {
+        let target = coord(seg);
+        for (let guard = 0; guard < 8; guard++) {
+          const clash = taken.find(t => Math.abs(t - target) < TRACK_GAP);
+          if (clash === undefined) break;
+          target = clash + (target >= clash ? TRACK_GAP : -TRACK_GAP);
+        }
+        taken.push(target);
+        if (Math.abs(target - coord(seg)) >= 0.1) shift(seg, target - coord(seg));
+      });
+  };
+  hClusters.forEach(cluster => spreadCluster(cluster, 'y'));
+  vClusters.forEach(cluster => spreadCluster(cluster, 'x'));
 
   // 2. Run the bridge arcs generator over the updated routes
   return addBridgeArcsToPaths(updatedRoutes);

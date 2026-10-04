@@ -4,7 +4,7 @@
   command: "Enter Map & Initiate Attack"
   policy: "Trigger Run"
   handledBy: whirling_assault
-  delegatesTo: pack
+  sendsTo: pack
   resultEvents:
     - id: evt_clear_packs
       title: "Clear Packs with Whirling Assault"
@@ -73,7 +73,7 @@
       policy: "If Boss Encountered"
       command: "Build Combo Stacks"
       handledBy: mantra_destruction
-      delegatesTo: boss
+      sendsTo: boss
       resultEvents:
         - id: evt_combo_ready
           title: "20 Combo Stacks Built"

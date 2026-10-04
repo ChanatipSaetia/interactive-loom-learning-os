@@ -67,7 +67,7 @@ export function deriveDataFlow(
     let componentName = '';
     const compNode = pathNodeIds.find(id => {
       const type = getEntityType(schema.entities[id]);
-      return type === TYPES.AGGREGATE || type === TYPES.DATABASE || type === TYPES.EXTERNAL;
+      return type === TYPES.AGGREGATE || type === TYPES.SERVICE || type === TYPES.DATABASE || type === TYPES.EXTERNAL;
     });
 
     if (compNode) {
@@ -75,6 +75,7 @@ export function deriveDataFlow(
       const type = getEntityType(schema.entities[compNode]);
       let typeLabel = 'aggregate';
       if (type === TYPES.DATABASE) typeLabel = 'db';
+      else if (type === TYPES.SERVICE) typeLabel = 'service';
       else if (type === TYPES.EXTERNAL) typeLabel = 'external';
       componentName = `${componentName} [${typeLabel}]`;
     }
@@ -102,7 +103,7 @@ export function deriveDataFlow(
   // When multiple edges exist between the same pair of nodes, keep only the one
   // that goes through an aggregate (its label contains "[aggregate]", "[db]", or "[external]").
   const dedupedDfRelations = dfRelations.filter(rel => {
-    const hasComponent = rel.label && /\[(aggregate|db|external)\]/.test(rel.label);
+    const hasComponent = rel.label && /\[(aggregate|service|db|external)\]/.test(rel.label);
     if (hasComponent) return true;
 
     // Check if another relation between the same pair exists with a component.
@@ -110,7 +111,7 @@ export function deriveDataFlow(
       other !== rel &&
       other.from === rel.from &&
       other.to === rel.to &&
-      other.label && /\[(aggregate|db|external)\]/.test(other.label)
+      other.label && /\[(aggregate|service|db|external)\]/.test(other.label)
     );
     return !dominated;
   });

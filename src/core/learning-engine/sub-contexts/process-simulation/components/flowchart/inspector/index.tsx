@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { StateMachineWidget } from './state-machine-widget';
 import { JsonPayloadViewer } from './json-payload-viewer';
 import { Dropdown } from '../../../../../../ui-system/motion/dropdown';
-import { PROCESS_GROUP_STATE_MAP, STEP_EVENT_TO_STATE_MAP } from '../types';
+import { stateAtStep } from '../state-at-step';
 import { buildCanonicalIdMapper } from '../abstract-flow/derive';
 import type {
   UnifiedFlowchartSchema,
@@ -104,16 +104,9 @@ export function InspectorSidebar({
 
   const activeStateId = useMemo(() => {
     if (!currentStepData) return null;
-    // Try direct event-node → state mapping first, then fall back to processGroup.
-    const matchedNodeId = currentStepData.nodeIds?.find(id => !!STEP_EVENT_TO_STATE_MAP[id]);
-    if (matchedNodeId) {
-      return STEP_EVENT_TO_STATE_MAP[matchedNodeId];
-    }
-    if (currentStepData.processGroup) {
-      return PROCESS_GROUP_STATE_MAP[currentStepData.processGroup] ?? null;
-    }
-    return null;
-  }, [currentStepData]);
+    const journey = schema.journeys.find(j => j.id === currentJourneyId);
+    return stateAtStep(schema, journey?.steps as FlowchartStep[] | undefined, currentStep, selectedEntity?.stateMachine);
+  }, [currentStepData, schema, currentJourneyId, currentStep, selectedEntity]);
 
   const payloadEntity = useMemo((): FlowchartEntity | null => {
     if (!currentStepData) return null;

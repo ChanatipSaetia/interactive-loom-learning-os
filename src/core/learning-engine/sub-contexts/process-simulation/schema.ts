@@ -123,6 +123,8 @@ export const FlowchartResultEventSchema = z.object({
   id: z.string().min(1, { message: 'Result event must have a non-empty id.' }),
   title: z.string().min(1, { message: 'Result event must have a non-empty title.' }),
   desc: z.string().optional(),
+  enters: z.string().optional(),
+  data: z.string().optional(),
 })
 
 export const FlowchartRawLinearStepSchema = z.object({
@@ -135,6 +137,7 @@ export const FlowchartRawLinearStepSchema = z.object({
   delegatesTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   // Optional: who receives the step's result (e.g. the server sends ServerHello to the client)
   sendsTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  async: z.boolean().optional(),
   resultEvents: z.array(FlowchartResultEventSchema).min(1, {
     message: 'Linear step must define at least one result event in resultEvents array.',
   }),
@@ -146,12 +149,14 @@ export const FlowchartRawBranchOptionSchema = z.object({
   id: z.string().min(1, { message: 'Branch option id cannot be empty.' }),
   label: z.string().optional(),
   dashed: z.boolean().optional(),
+  initiatedBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   policy: z.string().optional(),
   command: z.string().optional(),
   handledBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   delegatesTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   // Optional: who receives the step's result (e.g. the server sends ServerHello to the client)
   sendsTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  async: z.boolean().optional(),
   resultEvents: z.array(FlowchartResultEventSchema).min(1, {
     message: 'Branch option step must define at least one result event in resultEvents array.',
   }),

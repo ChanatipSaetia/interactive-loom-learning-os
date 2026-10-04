@@ -41,7 +41,7 @@ gradingService = System(
   "grading_service",
   "Grading Service",
   "Evaluates answers and computes correctness and XP value.",
-  "aggregate",
+  "service",
 )
 
 rewardEngine = System(
@@ -55,7 +55,7 @@ progressStore = System(
   "progress_store",
   "Progress Store",
   "Persists skill progress, levels, and badge thresholds.",
-  "aggregate",
+  "database",
 )
 
 streakTracker = System(
@@ -69,7 +69,7 @@ leagueService = System(
   "league_service",
   "League Service",
   "Computes league ranks, tiers, and promotions.",
-  "aggregate",
+  "service",
 )
 
 pushService = System(
@@ -146,7 +146,7 @@ showHint = BranchOption(
   null,
   "submit_answers",
   null,
-  gradingService,
+  learner,
 )
 
 updateProgress = Step(
@@ -188,7 +188,7 @@ unlockBadge = BranchOption(
   null,
   "streak_update",
   null,
-  streakTracker,
+  learner,
 )
 
 continueLesson = BranchOption(
@@ -307,6 +307,13 @@ sendNotification = BranchOption(
       "Learner notified of the badge or league promotion.",
     ),
   ],
+  null,
+  null,
+  null,
+  null,
+  null,
+  learner,
+  true,
 )
 
 silentUpdate = BranchOption(

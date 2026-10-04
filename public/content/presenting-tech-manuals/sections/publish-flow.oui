@@ -23,6 +23,17 @@ gitRepo = System(
   "Git Repository",
   "Stores manual markdown, OpenAPI specs, and tour files next to the code",
   "external",
+  StateMachine(
+    [
+      MachineState("DRAFT", "Draft", "var(--ctp-overlay1)"),
+      MachineState("COMMITTED", "Committed", "var(--ctp-blue)"),
+      MachineState("PREVIEWED", "Previewed", "var(--ctp-mauve)"),
+      MachineState("REVIEWED", "Reviewed", "var(--ctp-peach)"),
+      MachineState("REVISING", "Revising", "var(--ctp-red)"),
+      MachineState("PUBLISHED", "Published", "var(--ctp-green)"),
+    ],
+    "DRAFT",
+  ),
 )
 
 ciPipeline = System(
@@ -51,7 +62,7 @@ stepCommit = Step(
   "On manual content change",
   "Commit manual update",
   gitRepo,
-  [Event("evt_committed", "Changes Committed")],
+  [Event("evt_committed", "Changes Committed", null, "COMMITTED")],
   docWriter,
   null,
   "step_preview",
@@ -64,12 +75,13 @@ stepPreview = Step(
   "On pull request opened",
   "Build preview site",
   ciPipeline,
-  [Event("evt_preview", "Preview Deployed")],
+  [Event("evt_preview", "Preview Deployed", null, "PREVIEWED")],
   null,
   previewHost,
   "step_review",
   null,
   previewHost,
+  true,
 )
 
 stepReview = Step(
@@ -77,12 +89,12 @@ stepReview = Step(
   "On preview ready",
   "Review pull request",
   previewHost,
-  [Event("evt_reviewed", "Review Completed")],
+  [Event("evt_reviewed", "Review Completed", null, "REVIEWED")],
   reviewer,
   null,
   "step_outcome",
   null,
-  docsSite,
+  docWriter,
 )
 
 stepOutcome = Branch(
@@ -95,7 +107,7 @@ stepOutcome = Branch(
       "If review approved",
       "Publish release",
       docsSite,
-      [Event("evt_published", "Docs Published")],
+      [Event("evt_published", "Docs Published", null, "PUBLISHED")],
     ),
     BranchOption(
       "branch_revise",
@@ -103,7 +115,7 @@ stepOutcome = Branch(
       "If review requests changes",
       "Revise content in repo",
       gitRepo,
-      [Event("evt_revised", "Content Revised")],
+      [Event("evt_revised", "Content Revised", null, "REVISING")],
       true,
     ),
   ],

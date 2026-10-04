@@ -110,7 +110,7 @@
       policy: "Trigger QA Review"
       command: "Review Result"
       handledBy: orch_agent
-      delegatesTo: qa_user
+      initiatedBy: qa_user
       resultEvents:
         - id: qa_approved
           title: "QA Approved"

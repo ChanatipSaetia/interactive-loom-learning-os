@@ -8,8 +8,8 @@ import { loadAllFlowcharts, measureView, slantedSegments, kinkedStraightLines } 
  * change improves it.
  */
 const BUDGETS: Record<string, { through: number; overlap: number; kinked: number }> = {
-  SYS_ARCH: { through: 0, overlap: 0, kinked: 4 },
-  DATA_FLOW: { through: 0, overlap: 0, kinked: 10 },
+  SYS_ARCH: { through: 0, overlap: 0, kinked: 0 },
+  DATA_FLOW: { through: 0, overlap: 0, kinked: 0 },
   SWIMLANES: { through: 0, overlap: 0, kinked: 0 },
   EVENT_STORMING: { through: 4, overlap: 0, kinked: 0 },
   STATE_MACHINE: { through: 0, overlap: 0, kinked: 0 },
