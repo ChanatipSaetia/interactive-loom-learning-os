@@ -247,43 +247,9 @@
   color: var(--body-muted);
 }
 
-.compare-step-prompt {
-  @apply m-0 font-medium;
+.compare-step-hint {
+  @apply m-0 mt-1;
   font-family: var(--font-ui);
-  font-size: 15px;
-  color: var(--ink);
-}
-
-.compare-verdict {
-  @apply rounded-[var(--radius-sm)] px-3.5 py-3 flex flex-col gap-1.5 border-l-4;
-  font-family: var(--font-ui);
-}
-
-.compare-verdict-right {
-  border-color: var(--ctp-green);
-  background-color: var(--pale-green);
-}
-
-.compare-verdict-miss {
-  border-color: var(--coral);
-  background-color: color-mix(in srgb, var(--coral) 12%, transparent);
-}
-
-.compare-verdict-headline {
-  @apply m-0 font-semibold;
-  font-size: 16px;
-  color: var(--ink);
-}
-
-.compare-verdict-text {
-  @apply m-0;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--ink);
-}
-
-.compare-verdict-hint {
-  @apply m-0;
   font-size: 13px;
   color: var(--body-muted);
 }
@@ -301,12 +267,15 @@
 
 .compare-scenarios .compare-card {
   @apply flex flex-col gap-2.5 p-3.5;
-  cursor: pointer;
   font-family: var(--font-ui);
   transition: opacity 0.2s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.compare-scenarios .compare-card:hover {
+.compare-scenarios .compare-card-tappable {
+  cursor: pointer;
+}
+
+.compare-scenarios .compare-card-tappable:hover {
   border-color: var(--secondary);
 }
 
@@ -316,14 +285,6 @@
 
 .compare-card-focused {
   box-shadow: 0 0 0 2px var(--secondary);
-}
-
-.compare-guess-tag {
-  @apply flex-shrink-0 rounded-full px-2 py-0.5 font-semibold;
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--secondary);
-  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
 }
 
 .compare-card-dimmed {

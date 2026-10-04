@@ -218,6 +218,11 @@
   position: relative;
 }
 
+/* Breathing room so one section's controls don't run into the next section's title */
+.section-wrapper + .section-wrapper {
+  @apply mt-16 md:mt-24;
+}
+
 .section-missing {
   @apply text-sm p-4 rounded-xl border shadow-sm;
   color: var(--ctp-red);

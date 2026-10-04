@@ -437,39 +437,18 @@ describe('TradeoffSandbox Section', () => {
     expect(con).toHaveTextContent('Requires SSR for search indexing')
   })
 
-  it('Compare options tab hides the recommended badge until the reader guesses', () => {
+  it('Compare options tab shows recommended badge for recommended choice', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    expect(screen.getByTestId('compare-prompt-0')).toHaveTextContent('Which would you pick?')
-    expect(screen.queryByTestId('compare-recommended-badge-0-ssr')).not.toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('compare-card-0-spa'))
-    expect(screen.queryByTestId('compare-prompt-0')).not.toBeInTheDocument()
     expect(screen.getByTestId('compare-recommended-badge-0-ssr')).toHaveTextContent('Recommended')
+    expect(screen.queryByTestId('compare-recommended-badge-0-spa')).not.toBeInTheDocument()
   })
 
-  it('a wrong guess names the recommended option, the pick\'s catch and why the answer fits', () => {
+  it('tapping an option shows when to use and dims the others; tapping again closes it', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-card-0-spa'))
-    const verdict = screen.getByTestId('compare-verdict-0')
-    expect(verdict).toHaveTextContent('Recommended: SSR')
-    expect(verdict).toHaveTextContent("Your pick's catch: SEO issues.")
-    expect(verdict).toHaveTextContent('Enterprise apps benefit from SSR')
-    expect(screen.getByTestId('compare-guess-tag-0-spa')).toHaveTextContent('Your guess')
-  })
-
-  it('a right guess is confirmed', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-card-0-ssr'))
-    expect(screen.getByTestId('compare-verdict-0')).toHaveTextContent('Good call')
-    expect(screen.getByTestId('compare-verdict-0')).not.toHaveTextContent('catch')
-  })
-
-  it('after guessing, tapping an option shows when to use and dims the others', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-card-0-ssr'))
-    expect(screen.queryByTestId('compare-details-0-spa')).not.toBeInTheDocument()
+    expect(screen.getByTestId('compare-hint-0')).toHaveTextContent('Tap an option')
     fireEvent.click(screen.getByTestId('compare-card-0-spa'))
     expect(screen.getByTestId('compare-details-0-spa')).toHaveTextContent('Internal tools where SEO does not matter.')
-    expect(screen.getByTestId('compare-card-0-spa').classList.contains('compare-card-focused')).toBe(true)
+    expect(screen.getByTestId('compare-card-0-spa')).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByTestId('compare-card-0-ssr').classList.contains('compare-card-dimmed')).toBe(true)
     fireEvent.click(screen.getByTestId('compare-card-0-spa'))
     expect(screen.queryByTestId('compare-details-0-spa')).not.toBeInTheDocument()
@@ -479,7 +458,7 @@ describe('TradeoffSandbox Section', () => {
   it('cards answer to the keyboard', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     fireEvent.keyDown(screen.getByTestId('compare-card-0-ssr'), { key: 'Enter' })
-    expect(screen.getByTestId('compare-verdict-0')).toHaveTextContent('Good call')
+    expect(screen.getByTestId('compare-details-0-ssr')).toHaveTextContent('Enterprise apps benefit from SSR')
   })
 
   it('Compare options tab shows each option\'s summary and effect chips', () => {
@@ -490,13 +469,11 @@ describe('TradeoffSandbox Section', () => {
     expect(effects).toHaveTextContent('Cost −5')
   })
 
-  it('a step without a recommended option skips the guess and shows no verdict', () => {
-    const steps = [{ ...mockSteps[0], recommended: undefined }]
+  it('options without why/when text are not tappable', () => {
+    const steps = [{ ...mockSteps[0], choices: mockSteps[0].choices.map((c) => ({ ...c, whyThisFits: undefined, whenToUse: undefined })) }]
     render(<TradeoffSandboxSection scenarios={[{ ...mockScenarios[0], steps }]} />)
-    expect(screen.queryByTestId('compare-prompt-0')).not.toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('compare-card-0-spa'))
-    expect(screen.queryByTestId('compare-verdict-0')).not.toBeInTheDocument()
-    expect(screen.getByTestId('compare-details-0-spa')).toBeInTheDocument()
+    expect(screen.queryByTestId('compare-hint-0')).not.toBeInTheDocument()
+    expect(screen.getByTestId('compare-card-0-spa')).not.toHaveAttribute('role')
   })
 
   it('chosen choice has Selected badge in the Compare options tab', () => {

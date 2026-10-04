@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, KeyboardEvent } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X, Star, Plus, Info, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '../../../../../ui-system/motion/button'
@@ -630,33 +630,23 @@ function EffectChips({ choice, metrics, testId }: { choice: TradeoffChoice; metr
 }
 
 /**
- * Every step's choices side by side, with what each one gains and costs.
- * When a step has a recommended choice, it stays hidden until the reader taps an option as their guess;
- * after that, tapping an option shows when it fits and dims the others.
+ * Every step's choices side by side, with what each one gains and costs; marks the chosen and recommended ones.
+ * Tapping an option that has "why it fits" or "when to use" text shows it and dims the other options.
  */
 function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; chosenIds: Record<string, string> }) {
   const { playSound } = useSound()
-  const [guesses, setGuesses] = useState<Record<string, string>>({})
   const [focused, setFocused] = useState<Record<string, string | undefined>>({})
 
-  const handleCardTap = (step: TradeoffStep, choiceId: string, revealed: boolean) => {
-    if (!revealed) {
-      setGuesses((prev) => ({ ...prev, [step.id]: choiceId }))
-      playSound(choiceId === step.recommended ? 'success' : 'error')
-      return
-    }
+  const toggleFocus = (stepId: string, choiceId: string) => {
     playSound('click')
-    setFocused((prev) => ({ ...prev, [step.id]: prev[step.id] === choiceId ? undefined : choiceId }))
+    setFocused((prev) => ({ ...prev, [stepId]: prev[stepId] === choiceId ? undefined : choiceId }))
   }
 
   return (
     <div className="compare-scenarios" data-testid="compare-scenarios" data-lenis-prevent>
       {scenario.steps.map((step, sIdx) => {
-        const recommended = step.choices.find((c) => c.id === step.recommended)
-        const guessId = guesses[step.id]
-        const revealed = !recommended || guessId !== undefined
-        const guessed = step.choices.find((c) => c.id === guessId)
         const focusedId = focused[step.id]
+        const hasDetails = step.choices.some((c) => c.whyThisFits || c.whenToUse)
         const columns = step.choices.length === 4 ? 2 : Math.min(step.choices.length, 3)
 
         return (
@@ -671,34 +661,12 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                 {step.title}
               </h5>
               {step.description && <p className="compare-step-desc">{step.description}</p>}
-            </header>
-
-            {!revealed && (
-              <p className="compare-step-prompt" data-testid={`compare-prompt-${sIdx}`}>
-                Which would you pick? Tap an option to lock in your guess.
-              </p>
-            )}
-
-            {recommended && guessed && (
-              <div
-                className={`compare-verdict ${guessed.id === recommended.id ? 'compare-verdict-right' : 'compare-verdict-miss'}`}
-                data-testid={`compare-verdict-${sIdx}`}
-                role="status"
-              >
-                <p className="compare-verdict-headline">
-                  {guessed.id === recommended.id
-                    ? 'Good call: that is the recommended option.'
-                    : `Recommended: ${recommended.label}`}
+              {hasDetails && (
+                <p className="compare-step-hint" data-testid={`compare-hint-${sIdx}`}>
+                  Tap an option to see when it fits.
                 </p>
-                {guessed.id !== recommended.id && guessed.cons.length > 0 && (
-                  <p className="compare-verdict-text">
-                    Your pick's catch: {guessed.cons.map((c) => c.title).join('; ')}.
-                  </p>
-                )}
-                {recommended.whyThisFits && <p className="compare-verdict-text">{recommended.whyThisFits}</p>}
-                <p className="compare-verdict-hint">Tap any option to see when it fits.</p>
-              </div>
-            )}
+              )}
+            </header>
 
             <div
               className="compare-grid"
@@ -707,29 +675,30 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
             >
               {step.choices.map((choice) => {
                 const isChosen = chosenIds[step.id] === choice.id
-                const isRecommended = revealed && step.recommended === choice.id
+                const isRecommended = step.recommended === choice.id
                 const isFocused = focusedId === choice.id
                 const isDimmed = focusedId !== undefined && !isFocused
                 const showDetails = isFocused && (choice.whyThisFits || choice.whenToUse)
                 return (
                   <div
                     key={choice.id}
-                    role="button"
-                    tabIndex={0}
-                    aria-pressed={revealed ? isFocused : guessId === choice.id}
-                    aria-label={revealed ? undefined : `Guess: ${choice.label}`}
-                    onClick={() => handleCardTap(step, choice.id, revealed)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        handleCardTap(step, choice.id, revealed)
-                      }
-                    }}
+                    {...(hasDetails && {
+                      role: 'button',
+                      tabIndex: 0,
+                      'aria-expanded': isFocused,
+                      onClick: () => toggleFocus(step.id, choice.id),
+                      onKeyDown: (e: KeyboardEvent) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          toggleFocus(step.id, choice.id)
+                        }
+                      },
+                    })}
                     className={[
                       'compare-card',
+                      hasDetails && 'compare-card-tappable',
                       isChosen && 'compare-card-chosen',
                       isRecommended && 'compare-card-recommended',
-                      guessId === choice.id && 'compare-card-guessed',
                       isFocused && 'compare-card-focused',
                       isDimmed && 'compare-card-dimmed',
                     ].filter(Boolean).join(' ')}
@@ -742,11 +711,6 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                       >
                         {choice.label}
                       </span>
-                      {guessId === choice.id && (
-                        <span className="compare-guess-tag" data-testid={`compare-guess-tag-${sIdx}-${choice.id}`}>
-                          Your guess
-                        </span>
-                      )}
                       {isRecommended && (
                         <span className="compare-recommended-badge" data-testid={`compare-recommended-badge-${sIdx}-${choice.id}`} title="Recommended">
                           <Star size={14} style={{ fill: 'currentColor' }} />
