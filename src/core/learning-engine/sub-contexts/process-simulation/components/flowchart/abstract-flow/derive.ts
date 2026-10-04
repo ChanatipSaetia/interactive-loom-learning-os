@@ -334,6 +334,7 @@ function processLinearStep(
     title: step.command,
     desc: step.description || step.command,
     type: TYPES.COMMAND,
+    ...(step.async ? { async: true } : {}),
   };
   idMap.set(step.id, cmdId);
 
@@ -518,6 +519,7 @@ function processBranchStep(
       title: branch.command,
       desc: branch.command,
       type: TYPES.COMMAND,
+      ...(branch.async ? { async: true } : {}),
     };
     idMap.set(branch.id, cmdId);
 

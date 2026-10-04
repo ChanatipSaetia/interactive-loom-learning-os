@@ -33,7 +33,7 @@ happy = Journey("happy", "Happy", "Works", [JourneyStep(place, "Place", "Buyer s
 describe('language spec', () => {
   it('derives positional params, kinds and accepted components from the library', () => {
     const step = getOUILanguageSpec().components.get('Step')!
-    expect(step.params.map((p) => p.name)).toEqual(['id', 'policy', 'command', 'handledBy', 'events', 'initiatedBy', 'delegatesTo', 'continuesAs', 'description', 'sendsTo'])
+    expect(step.params.map((p) => p.name)).toEqual(['id', 'policy', 'command', 'handledBy', 'events', 'initiatedBy', 'delegatesTo', 'continuesAs', 'description', 'sendsTo', 'async'])
     const handledBy = step.params[3]
     expect(handledBy).toMatchObject({ type: 'string | System', optional: false, components: ['System'] })
     expect(handledBy.kinds).toEqual(expect.arrayContaining(['string', 'component']))

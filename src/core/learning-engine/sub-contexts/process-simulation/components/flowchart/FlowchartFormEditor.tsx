@@ -1130,6 +1130,17 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                 </select>
                               </label>
                             </div>
+                            <div className="visual-form-field">
+                              <label className="visual-form-label" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px', marginTop: '20px' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={!!linearStep.async}
+                                  onChange={(e) => handleStepChange(idx, { ...linearStep, async: e.target.checked || undefined })}
+                                  data-testid={`flowchart-step-${idx}-async`}
+                                />
+                                <OUIFieldKey of={OUI.Step} field="async">Async (no reply awaited)</OUIFieldKey>
+                              </label>
+                            </div>
                           </div>
 
                           {/* Result Events List */}
@@ -1473,6 +1484,17 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                               </option>
                                             ))}
                                           </select>
+                                        </label>
+                                      </div>
+                                      <div className="visual-form-field">
+                                        <label className="visual-form-label" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px', marginTop: '20px' }}>
+                                          <input
+                                            type="checkbox"
+                                            checked={!!bOpt.async}
+                                            onChange={(e) => handleBranchOptionChange(idx, bIdx, { ...bOpt, async: e.target.checked || undefined })}
+                                            data-testid={`flowchart-step-${idx}-branch-${bIdx}-async`}
+                                          />
+                                          <OUIFieldKey of={OUI.BranchOption} field="async">Async (no reply awaited)</OUIFieldKey>
                                         </label>
                                       </div>
                                       <div className="visual-form-field">

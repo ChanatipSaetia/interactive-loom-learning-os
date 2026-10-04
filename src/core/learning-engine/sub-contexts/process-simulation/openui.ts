@@ -134,6 +134,7 @@ const optionalChainProps = {
   continuesAs: z.string().optional(),
   description: z.string().optional(),
   sendsTo: z.union([z.string(), Actor.ref, System.ref]).optional(),
+  async: z.boolean().optional(),
 }
 
 const handlerFields = {
@@ -149,6 +150,7 @@ const optionalChainFields = {
   continuesAs: 'Optional ID of the Step, Branch or BranchOption that this path\'s events lead into.',
   description: 'Optional narration of this step, shown when it is highlighted.',
   sendsTo: 'Optional actor or system that receives this step\'s events (e.g. the server sends ServerHello to the client).',
+  async: 'Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead.',
 } as const
 
 function toRef(value: unknown) {
@@ -177,6 +179,7 @@ export const Step = defineOUIComponent({
     handledBy: toRef(p.handledBy),
     delegatesTo: toRef(p.delegatesTo),
     sendsTo: toRef(p.sendsTo),
+    async: p.async,
     resultEvents: p.events,
     continuesAs: p.continuesAs,
     description: p.description,
@@ -210,6 +213,7 @@ export const BranchOption = defineOUIComponent({
     handledBy: toRef(p.handledBy),
     delegatesTo: toRef(p.delegatesTo),
     sendsTo: toRef(p.sendsTo),
+    async: p.async,
     resultEvents: p.events,
     continuesAs: p.continuesAs,
     description: p.description,
@@ -280,11 +284,12 @@ function eventCalls(events: ResultEvent[] | undefined): OUIValue[] {
   return (events ?? []).map((e) => call(Event, { id: e.id, title: e.title, desc: e.desc, enters: e.enters, data: e.data }))
 }
 
-function chainProps(step: { initiatedBy?: unknown; delegatesTo?: unknown; sendsTo?: unknown; continuesAs?: string; description?: string }) {
+function chainProps(step: { initiatedBy?: unknown; delegatesTo?: unknown; sendsTo?: unknown; async?: boolean; continuesAs?: string; description?: string }) {
   return {
     initiatedBy: refTo(Actor, refId(step.initiatedBy)),
     delegatesTo: refTo(System, refId(step.delegatesTo)),
     sendsTo: refTo([Actor, System], refId(step.sendsTo)),
+    async: step.async || undefined,
     continuesAs: step.continuesAs,
     description: step.description,
   }

@@ -1075,6 +1075,10 @@
             }
           ],
           "description": "Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client)."
+        },
+        "async": {
+          "type": "boolean",
+          "description": "Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead."
         }
       },
       "required": [
@@ -1229,6 +1233,10 @@
             }
           ],
           "description": "Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client)."
+        },
+        "async": {
+          "type": "boolean",
+          "description": "Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead."
         }
       },
       "required": [

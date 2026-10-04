@@ -313,6 +313,7 @@ sendNotification = BranchOption(
   null,
   null,
   learner,
+  true,
 )
 
 silentUpdate = BranchOption(

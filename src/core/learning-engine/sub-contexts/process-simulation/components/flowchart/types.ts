@@ -177,6 +177,8 @@ export interface FlowchartEntity {
   stateMachine?: FlowchartStateMachine;
   /** On an event: the state-machine state it enters (MachineState ID). */
   entersState?: string;
+  /** On a command: sent without waiting for a reply. */
+  async?: boolean;
   /** Store branching condition label when multiple policies are merged */
   branchLabel?: string;
   /** Marks this entity as the root/starting point for the Event Storming layout. Set exactly one entity per schema. */
@@ -188,6 +190,8 @@ export interface FlowchartRelation {
   from: string;
   to: string;
   views?: string[];
+  /** Sequence view: an asynchronous message (open arrowhead). */
+  async?: boolean;
   dashed?: boolean;
   handledBy?: boolean;
   /** Event → recipient: the step's result is sent to this actor/system. */

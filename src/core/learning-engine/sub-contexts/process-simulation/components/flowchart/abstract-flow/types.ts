@@ -39,6 +39,8 @@ export interface LinearStep extends FlowStepBase {
   delegatesTo?: Ref;
   /** Optional actor or system that receives the step's result (message recipient). */
   sendsTo?: Ref;
+  /** The command is sent without waiting for a reply (fire-and-forget). */
+  async?: boolean;
   /** Resulting event(s). Always an array. */
   resultEvents: ResultEvent[];
   /** Optional description override for this step. */
@@ -69,6 +71,8 @@ export interface BranchOption extends FlowStepBase {
   delegatesTo?: Ref;
   /** Optional actor or system that receives the step's result (message recipient). */
   sendsTo?: Ref;
+  /** The command is sent without waiting for a reply (fire-and-forget). */
+  async?: boolean;
   resultEvents: ResultEvent[];
   /** Optional description for this branch option. */
   description?: string;
