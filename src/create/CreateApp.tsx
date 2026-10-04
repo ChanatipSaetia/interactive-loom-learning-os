@@ -1,8 +1,9 @@
 /**
  * "Create with AI" — a phone-friendly guide page (create.html) for writing
- * Loom topics with Claude or Gemini: copy, download or share the published
- * authoring prompt, set up a Claude Project or Gemini Gem, ask, then open
- * the answer in Loom Viewer. `?ai=gemini` preselects the assistant.
+ * Loom topics with Claude, Gemini or Microsoft 365 Copilot: copy, download
+ * or share the published authoring prompt, set up a Claude Project, Gemini
+ * Gem or Copilot agent, ask, then open the answer in Loom Viewer.
+ * `?ai=gemini` / `?ai=copilot` preselects the assistant.
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Check, Copy, Download, ExternalLink, Eye, Share2, Sparkles } from 'lucide-react'
@@ -44,7 +45,8 @@ function initialAssistant(): AssistantId {
 }
 
 function downloadText(text: string, fileName: string) {
-  const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown' }))
+  const type = fileName.endsWith('.md') ? 'text/markdown' : 'text/plain'
+  const url = URL.createObjectURL(new Blob([text], { type }))
   const link = document.createElement('a')
   link.href = url
   link.download = fileName
@@ -54,8 +56,8 @@ function downloadText(text: string, fileName: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-function promptFile(text: string): File {
-  return new File([text], LOOM_PROMPT_FILE_NAME, { type: 'text/plain' })
+function promptFile(text: string, fileName = LOOM_PROMPT_FILE_NAME): File {
+  return new File([text], fileName, { type: 'text/plain' })
 }
 
 /** True where the browser can share a file (phones: "Save to Files", AirDrop, other apps). */
@@ -137,11 +139,11 @@ export function CreateApp() {
   const share = useCallback(async () => {
     if (text === null) return
     try {
-      await navigator.share({ files: [promptFile(text)], title: LOOM_PROMPT_FILE_NAME })
+      await navigator.share({ files: [promptFile(text, ai.promptFileName)], title: ai.promptFileName })
     } catch (e) {
       if ((e as Error).name !== 'AbortError') setNotice('Sharing did not work here. Use Download instead.')
     }
-  }, [text])
+  }, [text, ai.promptFileName])
 
   const sizeKb = text === null ? null : Math.round(new Blob([text]).size / 1024)
 
@@ -186,8 +188,8 @@ export function CreateApp() {
             </p>
             <div className="create-actions" data-testid="create-prompt-actions">
               <CopyButton text={text} label="Copy prompt" primary testId="create-copy-prompt" />
-              <button type="button" className="create-button" onClick={() => text !== null && downloadText(text, LOOM_PROMPT_FILE_NAME)} disabled={text === null} data-testid="create-download-prompt">
-                <Download size={16} /> Download .md
+              <button type="button" className="create-button" onClick={() => text !== null && downloadText(text, ai.promptFileName)} disabled={text === null} data-testid="create-download-prompt">
+                <Download size={16} /> Download .{ai.promptFileName.split('.').pop()}
               </button>
               {shareable && (
                 <button type="button" className="create-button" onClick={share} disabled={text === null} data-testid="create-share-prompt">
@@ -206,13 +208,14 @@ export function CreateApp() {
           </Step>
 
           <Step n={2} title={`Set up a ${ai.label} ${ai.workspace} (once)`}>
+            {ai.note && <p className="create-tip" data-testid="create-assistant-note">{ai.note}</p>}
             <ol className="create-list">
               <li>
                 {ai.createStep.split(LOOM_ASSISTANT_NAME)[0]}<strong>{LOOM_ASSISTANT_NAME}</strong>{ai.createStep.split(LOOM_ASSISTANT_NAME)[1]}{' '}
                 <a href={ai.url} target="_blank" rel="noreferrer">Open {ai.label} <ExternalLink size={12} /></a>
               </li>
               <li>
-                Add the prompt to the <strong>{ai.knowledge}</strong>: upload the downloaded <code>{LOOM_PROMPT_FILE_NAME}</code>.
+                Add the prompt to the <strong>{ai.knowledge}</strong>: upload the downloaded <code>{ai.promptFileName}</code>.
                 If you can't upload files on your phone, do this step once from a computer, or use the one-off chat below.
               </li>
               <li>
@@ -257,7 +260,7 @@ export function CreateApp() {
           <Step n={5} title="Fix and improve">
             <p>
               If Viewer shows an error for a section, copy the error into the same chat and say <em>"Fix these"</em>. Ask for changes the same
-              way (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). {ai.label} updates the {ai.document}; copy and paste it into Viewer again.
+              way (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). {ai.editsInPlace ? `${ai.label} updates the ${ai.document}` : `${ai.label} writes the whole topic again in a new ${ai.document}`}; copy and paste it into Viewer again.
             </p>
             <p className="create-tip">
               When the Loom prompt is updated, download it again and replace the file in your {ai.workspace}.

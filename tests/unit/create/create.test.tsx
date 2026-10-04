@@ -74,6 +74,21 @@ describe('Create with AI page', () => {
     expect(screen.getByTestId('create-assistant-gemini').getAttribute('aria-checked')).toBe('true')
   })
 
+  it('guides a Microsoft 365 Copilot agent with a .txt prompt and full rewrites', async () => {
+    render(<CreateApp />)
+    fireEvent.click(screen.getByTestId('create-assistant-copilot'))
+    expect(screen.getByRole('heading', { name: /Set up a Copilot agent/ })).toBeInTheDocument()
+    expect(screen.getByTestId('create-assistant-note').textContent).toMatch(/work or school account/)
+    expect(screen.getByTestId('create-download-prompt').textContent).toContain('Download .txt')
+    const instructions = screen.getByTestId('create-instructions').textContent
+    expect(instructions).toContain('The file loom-authoring-prompt.txt in this agent\'s knowledge')
+    expect(instructions).toContain('answer with the complete, updated topic in one new code block')
+    expect(instructions).not.toContain('inline code')
+    expect(window.location.search).toBe('?ai=copilot')
+    fireEvent.click(screen.getByTestId('create-copy-instructions'))
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(assistantInstructions('copilot')))
+  })
+
   it('preselects the assistant from ?ai=', () => {
     localStorage.setItem('loom-create-assistant', 'gemini')
     window.history.replaceState(null, '', '/?ai=claude')

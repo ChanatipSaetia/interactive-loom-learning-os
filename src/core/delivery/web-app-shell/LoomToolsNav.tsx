@@ -27,7 +27,7 @@ export const LOOM_TOOLS: LoomTool[] = [
     label: 'Create with AI',
     short: 'Create',
     file: 'create.html',
-    description: 'Get the Loom prompt and set up Claude or Gemini to write a topic for you.',
+    description: 'Get the Loom prompt and set up Claude, Gemini or Copilot to write a topic for you.',
     icon: Sparkles,
   },
   {

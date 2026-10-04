@@ -29,7 +29,7 @@ function llmsTxt(): string {
 
 ## Tools
 
-- [Create with AI](${LOOM_PAGES_URL}create.html): copy or download the prompt and set up a Claude Project or Gemini Gem, step by step.
+- [Create with AI](${LOOM_PAGES_URL}create.html): copy or download the prompt and set up a Claude Project, Gemini Gem or Copilot agent, step by step.
 - [Loom Viewer](${LOOM_PAGES_URL}viewer.html): opens a \`.loom.oui\` file, a \`.zip\` or a topic folder, read-only.
 - [Loom Studio](${LOOM_PAGES_URL}studio.html): edits a topic folder with code, form and live preview.
 `
