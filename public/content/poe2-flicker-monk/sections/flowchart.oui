@@ -110,10 +110,10 @@ stepEnter = Step(
   whirlingAssault,
   [Event("evt_clear_packs", "Clear Packs with Whirling Assault")],
   player,
-  "pack",
+  null,
   "step_charges",
   null,
-  castOnCrit,
+  pack,
 )
 
 stepCharges = Step(
@@ -189,6 +189,7 @@ branchMapping = BranchOption(
   whirlingAssault,
   [Event("evt_mapping_loop", "Loop Back to Clear More")],
   true,
+  player,
 )
 
 branchBoss = BranchOption(
@@ -199,8 +200,8 @@ branchBoss = BranchOption(
   mantraDestruction,
   [Event("evt_combo_ready", "20 Combo Stacks Built")],
   null,
+  player,
   null,
-  "boss",
   "step_boss_charges",
   null,
   ailithsChimes,
@@ -245,6 +246,10 @@ stepBossCommit = Branch(
       [Event("evt_boss_dead", "Boss One-Shotted")],
       null,
       player,
+      null,
+      null,
+      null,
+      boss,
     ),
     branchFtBoss,
   ],
@@ -259,6 +264,10 @@ branchFtBoss = BranchOption(
   [Event("evt_boss_dead2", "Boss One-Shotted")],
   null,
   player,
+  null,
+  null,
+  null,
+  boss,
 )
 
 journeyMapping = Journey(

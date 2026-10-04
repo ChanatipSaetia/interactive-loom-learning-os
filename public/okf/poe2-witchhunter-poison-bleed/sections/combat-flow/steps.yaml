@@ -4,7 +4,7 @@
   command: "Engage Pack with Gas Grenade"
   policy: "On Pack Encounter"
   handledBy: gas_grenade
-  delegatesTo: pack
+  sendsTo: pack
   resultEvents:
     - id: evt_poison_deployed
       title: "Poison Cloud Deployed"
@@ -48,7 +48,7 @@
       policy: "If Boss Encountered"
       command: "Begin Boss Engagement"
       handledBy: gas_grenade
-      delegatesTo: boss
+      sendsTo: boss
       resultEvents:
         - id: evt_boss_poisoned
           title: "Boss Poisoned"

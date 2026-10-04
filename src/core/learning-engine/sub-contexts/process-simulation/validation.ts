@@ -352,6 +352,30 @@ export function validateProcessSimulationTier3(
               })
             }
           }
+          if (s.initiatedBy && !rawActors[getRefId(s.initiatedBy)]) {
+            const i = getRefId(s.initiatedBy)
+            diagnostics.push({
+              tier: 3,
+              field: `steps.${s.id}.initiatedBy`,
+              message: `${where} is initiatedBy "${i}", which is not a declared actor.`,
+              fixHint: `Use one of: [${Object.keys(rawActors).map((id) => `"${id}"`).join(', ')}], or remove initiatedBy if no actor starts this step.`,
+              ...ctx,
+            })
+          }
+          if (s.delegatesTo && !rawSystems[getRefId(s.delegatesTo)]) {
+            const d = getRefId(s.delegatesTo)
+            diagnostics.push({
+              tier: 3,
+              field: `steps.${s.id}.delegatesTo`,
+              message: rawActors[d]
+                ? `${where} delegates to "${d}", which is an actor; delegatesTo names a system the handler calls.`
+                : `${where} delegates to "${d}", which is not a valid system in systems.yaml.`,
+              fixHint: rawActors[d]
+                ? `To show the result reaching "${d}", use sendsTo instead; to show "${d}" starting the step, use initiatedBy.`
+                : `Use one of: [${Object.keys(rawSystems).map((id) => `"${id}"`).join(', ')}]`,
+              ...ctx,
+            })
+          }
           if (s.delegatesTo && !s.handledBy) {
             diagnostics.push({
               tier: 3,

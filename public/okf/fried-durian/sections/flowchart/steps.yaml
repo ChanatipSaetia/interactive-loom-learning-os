@@ -62,7 +62,7 @@
       policy: "ไม่เคลือบน้ำตาล"
       command: "เสิร์ฟทันที"
       handledBy: durian_raw
-      delegatesTo: eater
+      sendsTo: eater
       resultEvents:
         - id: evt_plain_done
           title: "ทุเรียนทอดเปล่าพร้อมทาน"
@@ -71,7 +71,7 @@
       policy: "เคลือบน้ำตาล"
       command: "熬น้ำตาลแล้วคลุก"
       handledBy: sugar_bowl
-      delegatesTo: eater
+      sendsTo: eater
       resultEvents:
         - id: evt_sugar_done
           title: "ทุเรียนทอดเคลือบน้ำตาลพร้อมทาน"

@@ -285,9 +285,22 @@ export function routeViewRelations(
     if (Math.abs(start - finish) < 0.5) return;
     const fromAlone = nodeSideConns[entry.fromId][sideFrom].length === 1;
     const toAlone = nodeSideConns[entry.toId][sideTo].length === 1;
+    // A port on a busy side may still slide into line when it stays clear of
+    // the other ports on that side.
+    const clearOf = (value: number, nodeId: string, side: string) =>
+      nodeSideConns[nodeId][side].every(conn => {
+        if (conn.relId === entry.rel.id) return true;
+        const other = relPorts[conn.relId];
+        const otherValue = other?.[`${conn.role === 'from' ? 'start' : 'end'}${axis}`];
+        return otherValue === undefined || Math.abs(otherValue - value) >= MARGIN;
+      });
     if (toAlone && fits(start, entry.toNode)) {
       ports[`end${axis}`] = start;
     } else if (fromAlone && fits(finish, entry.fromNode)) {
+      ports[`start${axis}`] = finish;
+    } else if (fits(start, entry.toNode) && clearOf(start, entry.toId, sideTo)) {
+      ports[`end${axis}`] = start;
+    } else if (fits(finish, entry.fromNode) && clearOf(finish, entry.fromId, sideFrom)) {
       ports[`start${axis}`] = finish;
     } else {
       const unstaggeredStart = start + ((sideFrom === 'R' || sideFrom === 'B') ? STAGGER : -STAGGER);

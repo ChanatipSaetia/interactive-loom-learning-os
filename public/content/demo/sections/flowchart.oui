@@ -202,8 +202,7 @@ qaReview = BranchOption(
     Event("qa_rejected", "QA Rejected", "The output failed QA standards."),
   ],
   null,
-  null,
-  "qa_user",
+  qaUser,
 )
 
 happyPath = Journey(

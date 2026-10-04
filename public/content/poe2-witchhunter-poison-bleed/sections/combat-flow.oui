@@ -57,10 +57,10 @@ stepPoisonPack = Step(
   gasGrenade,
   [Event("evt_poison_deployed", "Poison Cloud Deployed")],
   player,
-  "pack",
+  null,
   "step_bleed_pack",
   null,
-  barrage,
+  pack,
 )
 
 stepBleedPack = Step(
@@ -86,7 +86,7 @@ stepDotsPack = Step(
   null,
   "step_clear_branch",
   null,
-  gasGrenade,
+  pack,
 )
 
 stepClearBranch = Branch("step_clear_branch", "evt_pack_melted", [branchNextPack, branchBoss])
@@ -99,6 +99,7 @@ branchNextPack = BranchOption(
   gasGrenade,
   [Event("evt_loop_pack", "Loop Back to Clear More")],
   true,
+  player,
 )
 
 branchBoss = BranchOption(
@@ -109,11 +110,11 @@ branchBoss = BranchOption(
   gasGrenade,
   [Event("evt_boss_poisoned", "Boss Poisoned")],
   null,
+  player,
   null,
-  "boss",
   "step_bleed_boss",
   null,
-  barrage,
+  boss,
 )
 
 stepBleedBoss = Step(
@@ -137,6 +138,9 @@ stepDotsBoss = Step(
   [Event("evt_boss_defeated", "Boss Defeated")],
   null,
   sorceryWard,
+  null,
+  null,
+  boss,
 )
 
 journeyPackClear = Journey(

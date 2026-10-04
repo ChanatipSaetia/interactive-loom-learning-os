@@ -18,7 +18,7 @@
       policy: "If Enemy Within Range"
       command: "Cast Twin Elemental Wrath"
       handledBy: twisted_wrath_handler
-      delegatesTo: enemy
+      sendsTo: enemy
       resultEvents:
         - id: evt_wrath_active
           title: "Elemental Strikes Active"
@@ -42,7 +42,7 @@
 
 - type: linear
   id: step_attack_loop
-  initiatedBy: evt_wrath_active
+  initiatedBy: player
   command: "Make Unarmed Strikes"
   policy: "While Wrath Active"
   handledBy: unarmed_combat
