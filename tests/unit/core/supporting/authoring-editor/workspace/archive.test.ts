@@ -4,10 +4,12 @@ import {
   TopicWorkspace,
   WorkspaceError,
   createTopicBundle,
+  createTopicSource,
   createTopicZip,
   groupTopicFiles,
   memoryFolder,
   parseTopicBundle,
+  parseTopicSource,
   readTopicArchive,
   readTopicFolderFiles,
   readZipEntries,
@@ -92,6 +94,32 @@ describe('single-file bundle', () => {
   })
 })
 
+describe('single-file source', () => {
+  it('round-trips a topic with topic.oui first', () => {
+    const source = createTopicSource(demo())
+    expect(source.startsWith('// @loom-topic demo\n\n// === topic.oui ===\nroot = Topic(')).toBe(true)
+    expect(source.indexOf('// === sections/intro.oui ===')).toBeLessThan(source.indexOf('// === sections/quiz.oui ==='))
+    expect(parseTopicSource(source)).toEqual(demo())
+  })
+
+  it('ignores markdown code fences and takes the ID from the header or the fallback', () => {
+    const fenced = `Here is your topic:\n\n\`\`\`oui\n${createTopicSource(demo())}\`\`\`\n`
+    expect(() => parseTopicSource(fenced)).toThrow(/before the first file marker/)
+    expect(parseTopicSource(`\`\`\`oui\n${createTopicSource(demo())}\`\`\`\n`)).toEqual(demo())
+    const headless = `// === topic.oui ===\n${TOPIC}`
+    expect(parseTopicSource(headless, 'fallback').topicId).toBe('fallback')
+  })
+
+  it('rejects sources that are not single-file topics', () => {
+    expect(() => parseTopicSource(QUIZ)).toThrow(/before the first file marker/)
+    expect(() => parseTopicSource('// just a comment\n')).toThrow(/no file markers/)
+    expect(() => parseTopicSource(`// === sections/intro.oui ===\n${INTRO}`)).toThrow(/no `\/\/ === topic.oui ===` part/)
+    expect(() => parseTopicSource(`// === topic.oui ===\n${TOPIC}// === notes.md ===\nhi\n`)).toThrow(/"notes.md" is not a topic file/)
+    expect(() => parseTopicSource(`// === topic.oui ===\n${TOPIC}// === topic.oui ===\n${TOPIC}`)).toThrow(/appears twice/)
+    expect(() => parseTopicSource(`// @loom-topic Bad-ID\n// === topic.oui ===\n${TOPIC}`)).toThrow(/not a valid topic ID/)
+  })
+})
+
 describe('zip', () => {
   it('stores the topic as a folder, including folder entries', async () => {
     const zip = createTopicZip([demo()])
@@ -138,6 +166,13 @@ describe('reading picked files', () => {
     expect((await readTopicArchive(bundle))[0].files).toEqual(demo().files)
     const zip = pickedFile('demo.zip', createTopicZip([demo()]))
     expect(await readTopicArchive(zip)).toEqual([{ topicId: 'demo', files: demo().files }])
+  })
+
+  it('reads a single-file .oui source and a fenced bundle, as pasted from an LLM chat', async () => {
+    const source = pickedFile('My Topic.loom.oui', `\`\`\`\n${createTopicSource({ ...demo(), topicId: 'x' }).replace('// @loom-topic x\n', '')}\`\`\``)
+    expect(await readTopicArchive(source)).toEqual([{ topicId: 'my-topic', files: demo().files }])
+    const bundle = pickedFile('demo.json', `\`\`\`json\n${createTopicBundle([demo()])}\`\`\`\n`)
+    expect((await readTopicArchive(bundle))[0]).toEqual(demo())
   })
 
   it('reads a picked folder', async () => {

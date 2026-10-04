@@ -1,6 +1,6 @@
 /**
  * Loom Viewer — read-only page that shows topics exported from Loom Studio
- * (a `.loom.json` bundle or a `.zip`) or a topic folder picked from disk,
+ * (a `.loom.json` bundle, a single-file `.loom.oui` or a `.zip`) or a topic folder picked from disk,
  * rendered with the learning app's section components and themes.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
@@ -128,8 +128,12 @@ function Landing({ onFile, onFolder, error }: {
         <BookOpen size={36} className="viewer-drop-icon" />
         <h1>View a topic</h1>
         <p>
-          Open a <code>.loom.json</code> file or <code>.zip</code> exported from Loom Studio, or pick a topic
+          Open a <code>.loom.json</code>, <code>.loom.oui</code> or <code>.zip</code> file exported from Loom Studio, or pick a topic
           folder (one with a <code>topic.oui</code>, or a folder of several topics). You can also drop a file here.
+        </p>
+        <p className="viewer-hint">
+          Writing a topic with an LLM chat? Give it the <a href="llm/loom-authoring-prompt.md" target="_blank" rel="noreferrer" data-testid="viewer-llm-prompt">Loom authoring prompt</a>,
+          then open its answer here.
         </p>
         <div className="viewer-actions">
           <button type="button" className="viewer-button viewer-button--primary" onClick={() => fileInput.current?.click()} data-testid="viewer-open-file">
@@ -142,7 +146,7 @@ function Landing({ onFile, onFolder, error }: {
         <input
           ref={fileInput}
           type="file"
-          accept=".json,.zip,application/json,application/zip"
+          accept=".json,.zip,.oui,application/json,application/zip"
           hidden
           data-testid="viewer-file-input"
           onChange={(e) => {

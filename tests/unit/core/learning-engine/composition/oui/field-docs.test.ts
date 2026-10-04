@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const SCHEMA_FILES = import.meta.glob<string>('/schemas/oui/*', { query: '?raw', import: 'default', eager: true })
+const SCHEMA_FILES = import.meta.glob<string>(['/public/llm/*', '/public/llms.txt'], { query: '?raw', import: 'default', eager: true })
 const SOURCES = import.meta.glob<string>('/src/**/*.tsx', { query: '?raw', import: 'default', eager: true })
 
 type Def = { properties?: Record<string, { description?: string }> }
@@ -45,7 +45,8 @@ describe('OUI field descriptions', () => {
     ].join('\n'))
   })
 
-  it('keeps the committed schema files fresh (npm run oui:schema)', () => {
+  it('keeps the published LLM files fresh (npm run oui:schema)', () => {
+    expect(Object.keys(SCHEMA_FILES).sort()).toEqual(Object.keys(ouiSchemaFiles()).map((p) => `/${p}`).sort())
     for (const [relative, text] of Object.entries(ouiSchemaFiles())) {
       expect(SCHEMA_FILES[`/${relative}`], relative).toBe(text)
     }
