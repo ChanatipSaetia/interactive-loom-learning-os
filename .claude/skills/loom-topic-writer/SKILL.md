@@ -1,6 +1,6 @@
 ---
 name: loom-topic-writer
-description: "Write, extend or fix Interactive Loom learning topics: OpenUI Lang files (topic.oui plus sections/<name>.oui, or one <topic-id>.loom.oui file) with interactive sections such as flowcharts, quizzes, flashcards, trade-off sandboxes, tables and charts. Use when asked to create a Loom topic or lesson, turn notes or docs into a Loom topic, add or change a Loom section, or fix errors reported by Loom Viewer or Loom Studio."
+description: "Write, extend or fix Interactive Loom learning topics: OpenUI Lang topic folders (topic.oui plus sections/<name>.oui) with interactive sections such as flowcharts, quizzes, flashcards, trade-off sandboxes, tables and charts. Use when asked to create a Loom topic or lesson, turn notes or docs into a Loom topic, add or change a Loom section, or fix errors reported by Loom Viewer or Loom Studio."
 ---
 
 # Loom Topic Writer
@@ -15,9 +15,21 @@ Interactive Loom turns OpenUI Lang (`.oui`) files into interactive lessons. `ref
 
 ## Where to write
 
-- **Inside the Interactive Loom repository** (it has `public/content/` and `src/core/learning-engine/`): write a folder `public/content/<topic-id>/` with `topic.oui` and one `sections/<name>.oui` per section. Editing an existing topic: change only the files involved and keep `topic.oui`'s `SectionRef` list in step with the section files.
-- **The user names a folder or a file**: write there, as a topic folder or a single `<topic-id>.loom.oui` file.
-- **Anywhere else**: write one `<topic-id>.loom.oui` file in the current directory (first line `// @loom-topic <topic-id>`, each file after a `// === <path> ===` marker line).
+Always write a **topic folder**, one file per program, using the "Folder of .oui files" format from the reference (not the single `.loom.oui` file it defaults to for chats):
+
+```
+<topic-id>/
+  topic.oui            root = Topic(...) with one SectionRef per section, in reading order
+  sections/
+    intro.oui          root = Intro(...)
+    <name>.oui         one section per file, no // === marker lines
+```
+
+- **Inside the Interactive Loom repository** (it has `public/content/` and `src/core/learning-engine/`): create the folder at `public/content/<topic-id>/`.
+- **The user names a folder**: create `<topic-id>/` inside it, or write straight into it if it is already a topic folder (it has `topic.oui`).
+- **Anywhere else**: create `<topic-id>/` in the current directory.
+- **Editing an existing topic**: change only the files involved and keep `topic.oui`'s `SectionRef` list in step with the section files. Renaming a section means renaming its file and its `SectionRef`.
+- Write a single `<topic-id>.loom.oui` file only when the user asks for one file; if they give you an existing `.loom.oui` file to change, edit that file.
 
 ## Check before you finish
 
@@ -32,6 +44,6 @@ Interactive Loom turns OpenUI Lang (`.oui`) files into interactive lessons. `ref
 ## Validate
 
 - **Inside the Interactive Loom repository**: run `npx vitest run tests/unit/content` (compiles and validates every topic under `public/content/`) and fix every failure.
-- **Elsewhere**: tell the user to open the file or folder in Loom Viewer (https://chanatipsaetia.github.io/interactive-loom-learning-os/viewer.html). Its **Copy errors for your AI chat** button gives a fix request; when the user pastes one, fix only what it points at and keep everything else unchanged.
+- **Elsewhere**: tell the user to open the topic folder in Loom Viewer (https://chanatipsaetia.github.io/interactive-loom-learning-os/viewer.html) with **Open folder**, or in Loom Studio (https://chanatipsaetia.github.io/interactive-loom-learning-os/studio.html) to edit it with a live preview. Its **Copy errors for your AI chat** button gives a fix request; when the user pastes one, fix only what it points at and keep everything else unchanged.
 
-Finish with one or two lines: the files you wrote and how to open them (Loom Viewer, or `npm run dev` in the repository).
+Finish with one or two lines: the topic folder you wrote and how to open it (Loom Viewer's **Open folder**, or `npm run dev` in the repository).

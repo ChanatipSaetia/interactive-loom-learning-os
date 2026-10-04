@@ -14,6 +14,14 @@ describe('Loom agent skill', () => {
     expect(meta.description.length).toBeLessThanOrEqual(1024)
   })
 
+  it('writes topic folders, not a single .loom.oui file, by default', () => {
+    const skill = getLoomSkill()
+    expect(skill).toContain('Always write a **topic folder**')
+    expect(skill).toContain('public/content/<topic-id>/')
+    expect(skill).toContain('Write a single `<topic-id>.loom.oui` file only when the user asks for one file')
+    expect(skill).toContain('**Open folder**')
+  })
+
   it('ships the authoring prompt as its reference, published and in the repo', () => {
     const files = ouiSchemaFiles()
     for (const dir of [`public/llm/skills/${LOOM_SKILL_NAME}`, `.claude/skills/${LOOM_SKILL_NAME}`]) {
