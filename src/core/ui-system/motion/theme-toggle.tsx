@@ -59,7 +59,7 @@ export function ThemeToggle({ className }: { className?: string }) {
           </motion.div>
         </AnimatePresence>
       </div>
-      <span className="truncate">{label}</span>
+      <span className="theme-toggle-label truncate">{label}</span>
     </motion.button>
   );
 }

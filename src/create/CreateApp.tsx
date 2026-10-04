@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Check, Copy, Download, ExternalLink, Eye, Share2, Sparkles } from 'lucide-react'
+import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { copyText } from '../core/ui-system/clipboard'
@@ -152,7 +153,7 @@ export function CreateApp() {
             <Sparkles size={16} /> Loom
           </a>
           <nav className="create-nav">
-            <a className="create-pill" href={VIEWER_URL}><Eye size={15} /> Viewer</a>
+            <LoomToolsNav current="create" />
             <ThemeToggle />
           </nav>
         </header>

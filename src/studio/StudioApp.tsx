@@ -15,6 +15,7 @@ import {
   type TopicFolder,
 } from '../core/supporting/authoring-editor/workspace'
 import { StudioWorkspace } from './components/StudioWorkspace'
+import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 
 declare global {
   interface Window {
@@ -123,7 +124,10 @@ function Landing({ onPick, onCreate, canPick, error }: {
   return (
     <div className="studio-landing" data-testid="studio-landing">
       <div className="studio-landing-card">
-        <div className="studio-brand"><Sparkles size={20} /> Loom Studio</div>
+        <div className="studio-landing-top">
+          <div className="studio-brand"><Sparkles size={20} /> Loom Studio</div>
+          <LoomToolsNav current="studio" />
+        </div>
         <h1>Edit a topic folder</h1>
         <p>
           Open a topic folder, such as <code>public/content/demo</code>, to edit its <code>topic.oui</code> and

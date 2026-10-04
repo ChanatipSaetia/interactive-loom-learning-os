@@ -8,6 +8,7 @@ import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, FileUp, FolderOpe
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
+import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 import { HUDDrawer, SectionRenderer } from '../core/delivery/web-app-shell/TopicShell'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../core/supporting/learner-progress'
@@ -76,6 +77,7 @@ export function ViewerApp() {
             </div>
           )}
           <div className="viewer-nav-actions">
+            <LoomToolsNav current="viewer" />
             {loaded && (
               <button type="button" className="viewer-pill" onClick={() => setLoaded(null)} aria-label="Open another topic" data-testid="viewer-open-another">
                 <FileUp size={14} /> <span className="viewer-pill-label">Open…</span>

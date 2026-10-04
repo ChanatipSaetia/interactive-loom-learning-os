@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { Eye, FileArchive, FileCode, FolderOpen, Save, Sparkles, Upload, X } from 'lucide-react'
+import { FileArchive, FileCode, FolderOpen, Save, Sparkles, Upload, X } from 'lucide-react'
 import { HUDProvider } from '../../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../../core/supporting/learner-progress'
 import {
@@ -10,6 +10,7 @@ import {
   readTopicArchive,
 } from '../../core/supporting/authoring-editor/workspace'
 import { ThemeToggle } from '../../core/ui-system/motion/theme-toggle'
+import { LoomToolsNav } from '../../core/delivery/web-app-shell/LoomToolsNav'
 import { useWorkspace } from '../useWorkspace'
 import { downloadFile } from '../download'
 import { SectionList, TOPIC_ITEM } from './SectionList'
@@ -134,10 +135,8 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
                   {status.text}
                 </span>
               )}
+              <LoomToolsNav current="studio" newTab />
               <ThemeToggle />
-              <a className="studio-button" href="viewer.html" target="_blank" rel="noreferrer" title="Open Loom Viewer to view exported topics">
-                <Eye size={15} /> Viewer
-              </a>
               <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.oui file or a .zip" data-testid="studio-import">
                 <Upload size={15} /> Import
               </button>
