@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { FLOWCHART_VIEW_NAMES } from './components/flowchart/abstract-flow/types'
 
 // --- Flowchart Section Schema ---
 
@@ -202,6 +203,7 @@ export const FlowchartSectionSchema = z.object({
   journeys: z.array(FlowchartRawJourneySchema).optional(),
   steps: z.array(FlowchartRawStepSchema).optional(),
   flow: z.object({
+    initialView: z.enum(FLOWCHART_VIEW_NAMES).optional(),
     actors: z.unknown().optional(),
     systems: z.unknown().optional(),
     steps: z.union([

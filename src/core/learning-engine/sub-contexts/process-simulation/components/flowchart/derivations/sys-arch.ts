@@ -3,6 +3,7 @@ import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, Flow
 import { TYPES, MASTER_MAPPING_MATRIX } from '../types';
 import { getEntityType, deriveRelations, computeLayoutInfo } from './utils';
 import { findEventProducer } from './sequence/commands';
+import { unlinkedStepIds } from '../abstract-flow/derive';
 
 export function deriveSysArch(
   schema: UnifiedFlowchartSchema,
@@ -53,8 +54,12 @@ export function deriveSysArch(
   // event ("A's event triggers B's command") is then not drawn as a line.
   // Flowcharts with no sendsTo keep inferring those hand-offs.
   const declaresRecipients = schema.relations.some(r => r.sendsTo);
+  // Except into a step that declares no link at all: its handler would be left
+  // without a line, so it keeps the hand-off from the system whose event starts it.
+  const unlinked = unlinkedStepIds(schema.rawSteps);
   const throughEvent = (pathNodeIds: string[]) =>
-    pathNodeIds.slice(0, -1).some(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
+    pathNodeIds.slice(0, -1).some(id => getEntityType(schema.entities[id]) === TYPES.EVENT) &&
+    !pathNodeIds.some(id => id.startsWith('pol_') && unlinked.has(id.slice('pol_'.length)));
   const sysRelations = deriveRelations(
     schema, 'SYS_ARCH', localAddedNodes, getSysArchLabel, undefined,
     declaresRecipients ? throughEvent : undefined

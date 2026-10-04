@@ -25,7 +25,7 @@ import {
   type LoomOUIComponent,
   type OUIValue,
 } from '../openui-kernel'
-import { ref } from './components/flowchart/abstract-flow/types'
+import { ref, FLOWCHART_VIEW_NAMES } from './components/flowchart/abstract-flow/types'
 import type { AbstractFlow, ActorDecl, BranchOption as BranchOptionData, FlowJourney, FlowStep, ResultEvent, SystemDecl } from './components/flowchart/abstract-flow/types'
 import type { FlowchartSectionData, ScenarioNode as ScenarioNodeData, ScenarioSectionData } from './schema'
 
@@ -333,9 +333,12 @@ export const Flowchart: LoomOUIComponent = defineOUISection({
     steps: z.array(z.union([Step.ref, Branch.ref])),
     journeys: z.array(Journey.ref),
     ...sectionTailProps,
+    // After heading and lead, so flowcharts that pass those positionally keep working
+    initialView: z.enum(FLOWCHART_VIEW_NAMES).optional(),
   }),
   fields: {
     ...sectionFields,
+    initialView: 'Optional view the section opens on: "event-storming" (default), "architecture", "swimlanes", "sequence", "data-flow" or "state-machine" (needs a system with a StateMachine). Pick the one that shows the lesson best.',
     actors: 'Human actors, as Actor references. Each must start at least one step.',
     systems: 'Systems, as System references. Each must handle or receive at least one step.',
     steps: 'The flow, as Step and Branch references, in order.',
@@ -358,6 +361,7 @@ export const Flowchart: LoomOUIComponent = defineOUISection({
         systems,
         steps: p.steps as unknown as FlowStep[],
         journeys: p.journeys as unknown as FlowJourney[],
+        ...(p.initialView ? { initialView: p.initialView } : {}),
       },
     }
   },
@@ -391,6 +395,7 @@ export const Flowchart: LoomOUIComponent = defineOUISection({
         })),
       }, j.id)),
       ...sectionTail(meta),
+      initialView: flow.initialView,
     })
   },
 })

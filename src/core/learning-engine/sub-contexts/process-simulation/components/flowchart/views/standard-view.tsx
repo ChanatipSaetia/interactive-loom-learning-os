@@ -5,6 +5,11 @@ import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTool
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup } from '../types';
 import type { ForkHighlights } from '../fork-highlights';
 import type { StoryRoute } from '../story-route';
+import { edgeLabelRoom } from './geometry';
+
+/** Edge label pill widths (px): resting, and the most a highlighted one may open to. */
+const COLLAPSED_LABEL_W = 70;
+const EXPANDED_LABEL_MAX_W = 240;
 
 /** Longest hand-off label drawn on the canvas; the full text is in the caption. */
 const ROUTE_LABEL_MAX = 34;
@@ -220,6 +225,12 @@ export const StandardView = memo(function StandardView({
           if (displayLabel.length * 7 + 12 > 70) {
             displayLabel = displayLabel.substring(0, 7) + '...';
           }
+        } else if (displayLabel) {
+          // A highlighted label opens up only as far as the gap between the boxes
+          // beside it; the full text stays in the tooltip
+          const room = Math.min(EXPANDED_LABEL_MAX_W, Math.max(COLLAPSED_LABEL_W, edgeLabelRoom(midX || 0, midY || 0, positioned)));
+          const fits = Math.floor((room - 14) / 7);
+          if (displayLabel.length > fits) displayLabel = `${displayLabel.substring(0, Math.max(2, fits - 1))}…`;
         }
 
         const toggleEdge = (e: React.SyntheticEvent) => {
@@ -298,7 +309,7 @@ export const StandardView = memo(function StandardView({
             )}
             {!isHandledBy && displayLabel && viewKey !== 'SYS_ARCH' && (() => {
                 const rawWidth = displayLabel.length * 7 + 14;
-                const clampedWidth = isExpanded ? rawWidth : Math.min(rawWidth, 70);
+                const clampedWidth = isExpanded ? rawWidth : Math.min(rawWidth, COLLAPSED_LABEL_W);
                 return (
                   <g 
                     transform={`translate(${midX}, ${midY})`} 

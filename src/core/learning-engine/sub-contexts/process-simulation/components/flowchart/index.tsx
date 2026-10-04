@@ -81,7 +81,20 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
   }, [schema]);
 
   const viewKeys = useMemo(() => Object.keys(localSchema.views!), [localSchema]);
-  const [activeViewKey, setActiveViewKey] = useState<string>(viewKeys[0] || 'EVENT_STORMING');
+  // The section opens on the author's initialView when that view has something to show
+  const openingViewKey = useMemo(() => {
+    const wanted = localSchema.initialView;
+    const views = localSchema.views as Record<string, { nodes?: unknown[] }> | undefined;
+    return wanted && viewKeys.includes(wanted) && (views?.[wanted]?.nodes?.length ?? 0) > 0
+      ? wanted
+      : viewKeys[0] || 'EVENT_STORMING';
+  }, [localSchema, viewKeys]);
+  const [activeViewKey, setActiveViewKey] = useState<string>(openingViewKey);
+
+  // A new initialView (e.g. edited in Studio) switches the live preview to it
+  useEffect(() => {
+    setActiveViewKey(openingViewKey);
+  }, [openingViewKey]);
 
   useEffect(() => {
     if (viewKeys.length > 0 && !viewKeys.includes(activeViewKey)) {

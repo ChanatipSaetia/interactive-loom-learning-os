@@ -33,6 +33,23 @@ resource: "."         # loads actors.yaml, systems.yaml, steps.yaml, journeys.ya
 | `title` | `string` | No | Section header |
 | `resource` | `"."` | Yes | Must be `"."` — signals directory-wide load |
 
+### Opening view (`initialView`)
+
+A flowchart opens on Event Storming unless it names another view. In `.oui` it is the last `Flowchart` argument (after `heading` and `lead`); in flow data it is `flow.initialView`.
+
+| Value | Opens on |
+|---|---|
+| `"event-storming"` | Event Storming (default) |
+| `"architecture"` | System Architecture |
+| `"swimlanes"` | Activity Swimlanes |
+| `"sequence"` | Sequence Diagram |
+| `"data-flow"` | Data Flow |
+| `"state-machine"` | State Machine (needs a system with a `StateMachine`; otherwise the section opens on Event Storming and validation warns) |
+
+```
+root = Flowchart("TLS Handshake", [client], [server], [hello, cert], [happy], null, null, "sequence")
+```
+
 ---
 
 ## `actors.yaml`
@@ -137,7 +154,7 @@ A YAML **list** of step objects. Two step types exist: `linear` and `branch`.
 | `command` | `string` | Yes | Command name being issued |
 | `handledBy` | `string` | Yes | System ID that handles the command |
 | `delegatesTo` | `string` | No | Optional downstream system ID |
-| `sendsTo` | `string` | No | Actor or system ID that receives the result events. The Sequence and System Architecture views draw only declared messages; without it the events stay on the handler's lifeline. Once any step in a flowchart declares `sendsTo`, System Architecture draws lines only from `initiatedBy`, `delegatesTo` and `sendsTo`; a flowchart with no `sendsTo` still gets a line wherever one system's event triggers another system's command. In `.oui` it is the `Step` / `BranchOption` argument after `description`. |
+| `sendsTo` | `string` | No | Actor or system ID that receives the result events. The Sequence and System Architecture views draw only declared messages; without it the events stay on the handler's lifeline. Once any step in a flowchart declares `sendsTo`, System Architecture draws lines only from `initiatedBy`, `delegatesTo` and `sendsTo` (a step that declares none of the three still gets the line from the system whose event starts it, so its handler is never left without a line); a flowchart with no `sendsTo` still gets a line wherever one system's event triggers another system's command. In `.oui` it is the `Step` / `BranchOption` argument after `description`. |
 | `async` | `boolean` | No | `true` when the command is sent without waiting for a reply; the Sequence view draws it with an open arrowhead. In `.oui` it is the argument after `sendsTo`. |
 | `resultEvents` | `ResultEvent[]` | Yes | Events emitted after handling |
 | `continuesAs` | `string` | No | Next step ID (omit for terminal steps) |

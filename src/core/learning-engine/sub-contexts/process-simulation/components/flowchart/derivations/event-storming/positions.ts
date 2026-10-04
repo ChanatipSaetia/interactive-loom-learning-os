@@ -341,9 +341,10 @@ function computeWithinGroupPositions(
 
   // --- Column 1: Events stacked vertically below the command row ---
   // Multiple events in the same step are placed in the same column (EVT_COL),
-  // each one row below the previous, so they read top-to-bottom.
+  // each one row below the previous, so they read top-to-bottom. 0.75 of the
+  // 160px row pitch leaves a 20px gap between the 100px boxes.
   const baseEventRow = 2;
-  const EVENT_STACK_GAP = 0.6;
+  const EVENT_STACK_GAP = 0.75;
   g.events.forEach((evt, eIdx) => {
     pos.set(evt, [EVT_COL, baseEventRow + eIdx * EVENT_STACK_GAP]);
   });

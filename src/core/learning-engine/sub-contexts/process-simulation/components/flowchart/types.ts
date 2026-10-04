@@ -287,6 +287,8 @@ export interface FlowchartStepRoles {
   delegate?: string;
   /** Actor or system that receives the result (sendsTo). */
   recipient?: string;
+  /** Handler of the step whose event starts this one; set only when the step declares no link of its own. */
+  triggeredBy?: string;
   /** The command's title. */
   command: string;
 }
@@ -351,6 +353,8 @@ export interface UnifiedFlowchartSchema {
   views?: Record<string, FlowchartViewConfig>;
   journeys: FlowchartJourney[];
   rawSteps?: any[];
+  /** View key the section opens on, e.g. 'SEQUENCE'; falls back to the first view. */
+  initialView?: string;
 }
 
 export interface FlowchartProps {

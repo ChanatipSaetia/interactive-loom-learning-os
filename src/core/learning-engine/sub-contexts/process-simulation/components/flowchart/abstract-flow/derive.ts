@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
-import { isLinearStep, isBranchStep } from './types';
+import { isLinearStep, isBranchStep, FLOWCHART_VIEW_KEYS } from './types';
 import { TYPES } from '../types';
 import type { SystemKind } from './types';
 
@@ -166,6 +166,7 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
     };
   };
 
+  const unlinked = unlinkedStepIds(steps);
   const journeys = journeysList.map(j => ({
     id: j.id,
     label: j.label,
@@ -174,6 +175,9 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
       const branch = branchInfoFor(s.stepId, j.id, idx);
       const stepData = findStepById(s.stepId, steps);
       const participants = stepHandlerMap.get(s.stepId);
+      const triggeredBy = unlinked.has(s.stepId)
+        ? triggeringStepIds(s.stepId, steps).map(id => stepHandlerMap.get(id)?.handler).find(Boolean)
+        : undefined;
       return {
         nodeIds: nodeIdsForStep(s.stepId),
         ...(stepData ? {
@@ -182,6 +186,7 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
             handler: participants?.handler,
             delegate: participants?.delegate,
             recipient: participants?.recipient,
+            ...(triggeredBy ? { triggeredBy } : {}),
             command: stepData.command,
           },
         } : {}),
@@ -213,7 +218,38 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
     relations,
     journeys,
     rawSteps: steps,
+    ...(flow?.initialView && FLOWCHART_VIEW_KEYS[flow.initialView]
+      ? { initialView: FLOWCHART_VIEW_KEYS[flow.initialView] }
+      : {}),
   };
+}
+
+/**
+ * Steps that declare no link of their own (no initiatedBy, delegatesTo or
+ * sendsTo). Once a flowchart declares recipients, lines come only from declared
+ * links, so these steps would leave their handler without a line; views draw
+ * the event hand-off into them instead (producer's handler → this handler).
+ */
+export function unlinkedStepIds(steps: FlowStep[] | undefined): Set<string> {
+  const ids = new Set<string>();
+  (steps ?? [])
+    .flatMap((st): Array<LinearStep | BranchOption> => (isBranchStep(st) ? st.branches : isLinearStep(st) ? [st] : []))
+    .forEach(st => {
+      if (st.handledBy && !st.initiatedBy && !st.delegatesTo && !st.sendsTo) ids.add(st.id);
+    });
+  return ids;
+}
+
+/** Steps (or branch options) whose result events start the given step. */
+function triggeringStepIds(stepId: string, steps: FlowStep[]): string[] {
+  const fork = steps.find((st): st is BranchStep => isBranchStep(st) && st.branches.some(b => b.id === stepId));
+  return steps
+    .flatMap((st): Array<LinearStep | BranchOption> => (isBranchStep(st) ? st.branches : [st]))
+    .filter(st =>
+      st.continuesAs === stepId ||
+      (fork && (st.continuesAs === fork.id || st.resultEvents.some(evt => evt.id === fork.event)))
+    )
+    .map(st => st.id);
 }
 
 function getNextRelId(counter: { current: number }): string {

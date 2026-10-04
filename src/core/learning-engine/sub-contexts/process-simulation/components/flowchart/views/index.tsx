@@ -6,11 +6,11 @@ import { ZoomToolbar } from '../zoom-toolbar';
 import { useCamera, getNodesBBox, type CaptionPlacement } from '../useCamera';
 import { StepCaption, type StepCaptionData } from '../step-caption';
 import type { ForkHighlights } from '../fork-highlights';
-import { STORY_ROUTE_VIEWS, type StoryRoute } from '../story-route';
+import type { StoryRoute } from '../story-route';
 import { ICONS, COLORS } from '../types';
 import type { UnifiedFlowchartSchema } from '../types';
 
-import { getViewSpacing, positionViewNodes, routeViewRelations } from './geometry';
+import { getViewSpacing, positionViewNodes, routeViewRelations, sequenceFocusBBox } from './geometry';
 import { SequenceView } from './sequence-view';
 import { StandardView } from './standard-view';
 
@@ -21,13 +21,6 @@ const CAPTION_GAP = 14;
 const CAPTION_MAX_W = 360;
 /** Keeps the caption off the canvas edges. */
 const CAPTION_EDGE = 12;
-/**
- * Room kept for the caption when the camera holds still: one fixed size for
- * every step, so a longer description never shifts the diagram.
- */
-const FIXED_CAPTION_MIN_H = 150;
-/** A whole map may be framed closer than a single step. */
-const FIXED_CAMERA_MAX_SCALE = 1;
 
 /**
  * Screen pixels of the SVG covered by the section's floating view switcher
@@ -130,23 +123,21 @@ export function FlowchartView({
     positionedNodesRef
   });
 
-  const { focusOnNodes, handleZoomIn, handleZoomOut, fitToScreen } = camera;
+  const { focusOnBox, focusOnNodes, handleZoomIn, handleZoomOut, fitToScreen } = camera;
 
-  // Route views keep the whole map in frame so systems stay put while the story
-  // moves between them; timeline views follow the current step.
-  const fixedCamera = STORY_ROUTE_VIEWS.has(viewKey);
-  const allNodeIds = useMemo(() => positioned.map(n => n.id), [positioned]);
-
-  // Nodes the camera frames for the current step
+  // Nodes the camera frames for the current step, with the caption beside them
   const focusNodeIds = useMemo(() => {
     if (viewKey === 'STATE_MACHINE') return highlightedNodeId ? [highlightedNodeId] : null;
     if (!activeNodeIds || activeNodeIds.length === 0) return null;
-    return fixedCamera ? allNodeIds : activeNodeIds;
-  }, [viewKey, activeNodeIds, highlightedNodeId, fixedCamera, allNodeIds]);
+    return activeNodeIds;
+  }, [viewKey, activeNodeIds, highlightedNodeId]);
 
+  // Sequence messages are not nodes: frame the step's messages instead
   const focusBBox = useMemo(
-    () => (focusNodeIds ? getNodesBBox(positioned, focusNodeIds) : null),
-    [focusNodeIds, positioned]
+    () => (isSequenceView
+      ? (focusNodeIds ? sequenceFocusBBox(schema, view, activeRelationIds, focusNodeIds) : null)
+      : (focusNodeIds ? getNodesBBox(positioned, focusNodeIds) : null)),
+    [isSequenceView, schema, view, activeRelationIds, focusNodeIds, positioned]
   );
 
   // The caption is already laid out at its final size when this runs, so the
@@ -166,22 +157,21 @@ export function FlowchartView({
   }, [camera.svgRef]);
   const [captionPlacement, setCaptionPlacement] = useState<CaptionPlacement>('below');
   useEffect(() => {
-    if (!focusNodeIds) return;
+    if (!focusBBox) return;
     const captionEl = stepCaption ? captionRef.current : null;
     const captionH = captionEl?.offsetHeight ?? 0;
-    const placement = focusOnNodes(focusNodeIds, {
+    const placement = focusOnBox(focusBBox, {
       insets: measureOverlayInsets(camera.svgRef.current),
-      maxScale: fixedCamera ? FIXED_CAMERA_MAX_SCALE : undefined,
       caption: captionEl && captionH > 0
         ? {
             width: captionEl.offsetWidth,
-            height: fixedCamera ? Math.max(captionH, FIXED_CAPTION_MIN_H) : captionH,
+            height: captionH,
             gap: CAPTION_GAP,
           }
         : undefined,
     });
     if (placement) setCaptionPlacement(placement);
-  }, [focusNodeIds, focusOnNodes, stepCaption, camera.svgRef, fixedCamera, viewportSize]);
+  }, [focusBBox, focusOnBox, stepCaption, camera.svgRef, viewportSize]);
 
   const hasFocusedRef = useRef(false);
   useEffect(() => {

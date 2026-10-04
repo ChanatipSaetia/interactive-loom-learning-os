@@ -363,109 +363,104 @@ describe('TradeoffSandbox Section', () => {
     expect(screen.getByTestId('drop-zone-content-0-0')).toBeInTheDocument()
   })
 
-  // ─── Compare All Modal ────────────────────────────────
+  // ─── Compare options / Try it tabs ────────────────────
 
-  it('renders Compare All button', () => {
+  // An inactive tab panel stays in the DOM inside a `hidden` wrapper
+  const isShown = (testId: string) => screen.getByTestId(testId).closest('[hidden]') === null
+
+  it('opens on Compare options, with Try it next to it and no Compare All button or modal', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    expect(screen.getByTestId('compare-all-button')).toBeInTheDocument()
-    expect(screen.getByText('Compare All')).toBeInTheDocument()
+    expect(screen.getAllByRole('tab').map(t => t.textContent)).toEqual(['Compare options', 'Try it'])
+    expect(screen.getByTestId('tradeoff-tab-compare')).toHaveAttribute('aria-selected', 'true')
+    expect(isShown('compare-scenarios')).toBe(true)
+    expect(isShown('metric-dashboard')).toBe(false)
+    expect(screen.queryByTestId('compare-all-button')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('compare-dialog')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('compare-overlay')).not.toBeInTheDocument()
   })
 
-  it('clicking Compare All opens modal', () => {
+  it('Try it shows the sandbox in place of the comparison', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
-    expect(screen.getByTestId('compare-dialog')).toBeInTheDocument()
-    expect(screen.getByTestId('compare-overlay')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('tradeoff-tab-sandbox'))
+    expect(screen.getByTestId('tradeoff-tab-sandbox')).toHaveAttribute('aria-selected', 'true')
+    expect(isShown('metric-dashboard')).toBe(true)
+    expect(isShown('compare-scenarios')).toBe(false)
   })
 
-  it('modal shows step sections', () => {
+  it('keeps the choices made in Try it across tab switches, and marks them in Compare options', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
+    fireEvent.click(screen.getByTestId('tradeoff-tab-sandbox'))
+    selectChoice(0, 0, 'spa')
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
+    expect(screen.getByTestId('compare-badge-0-spa')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('tradeoff-tab-sandbox'))
+    expect(screen.getByTestId('progress-indicator')).toHaveTextContent('1 / ')
+  })
+
+  it('Compare options tab shows step sections', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     expect(screen.getByTestId('compare-step-0')).toBeInTheDocument()
     expect(screen.getByTestId('compare-step-title-0')).toHaveTextContent('Frontend Choice')
   })
 
-  it('modal shows 2-column grid with all choices', () => {
+  it('Compare options tab shows 2-column grid with all choices', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     expect(screen.getByTestId('compare-grid-0')).toBeInTheDocument()
     expect(screen.getByTestId('compare-card-0-spa')).toBeInTheDocument()
     expect(screen.getByTestId('compare-card-0-ssr')).toBeInTheDocument()
   })
 
-  it('modal shows choice labels', () => {
+  it('Compare options tab shows choice labels', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     expect(screen.getByTestId('compare-card-label-0-spa')).toHaveTextContent('SPA')
     expect(screen.getByTestId('compare-card-label-0-ssr')).toHaveTextContent('SSR')
   })
 
-  it('modal shows pros with title and description', () => {
+  it('Compare options tab shows pros with title and description', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     expect(screen.getByTestId('compare-pros-0-spa')).toBeInTheDocument()
     const pro = screen.getByTestId('compare-pro-0-spa-0')
     expect(pro).toHaveTextContent('Fast navigation')
     expect(pro).toHaveTextContent('Smooth client transitions')
   })
 
-  it('modal shows cons with title and description', () => {
+  it('Compare options tab shows cons with title and description', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     expect(screen.getByTestId('compare-cons-0-spa')).toBeInTheDocument()
     const con = screen.getByTestId('compare-con-0-spa-0')
     expect(con).toHaveTextContent('SEO issues')
     expect(con).toHaveTextContent('Requires SSR for search indexing')
   })
 
-  it('modal shows recommended badge for recommended choice', () => {
+  it('Compare options tab shows recommended badge for recommended choice', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     expect(screen.getByTestId('compare-recommended-badge-0-ssr')).toBeInTheDocument()
     expect(screen.getByTestId('compare-recommended-badge-0-ssr')).toHaveTextContent('Recommended')
   })
 
-  it('chosen choice has Selected badge in modal', () => {
+  it('chosen choice has Selected badge in the Compare options tab', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     selectChoice(0, 0, 'spa')
-    fireEvent.click(screen.getByTestId('compare-all-button'))
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     expect(screen.getByTestId('compare-badge-0-spa')).toBeInTheDocument()
     expect(screen.getByTestId('compare-badge-0-spa')).toHaveTextContent('Selected')
     expect(screen.queryByTestId('compare-badge-0-ssr')).not.toBeInTheDocument()
   })
 
-  it('chosen choice card has chosen class in modal', () => {
+  it('chosen choice card has chosen class in the Compare options tab', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     selectChoice(0, 0, 'spa')
-    fireEvent.click(screen.getByTestId('compare-all-button'))
+    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     const chosenCard = screen.getByTestId('compare-card-0-spa')
     expect(chosenCard.classList.contains('compare-card-chosen')).toBe(true)
     const otherCard = screen.getByTestId('compare-card-0-ssr')
     expect(otherCard.classList.contains('compare-card-chosen')).toBe(false)
-  })
-
-  it('modal dismissible with close button', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
-    expect(screen.getByTestId('compare-dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('compare-dialog-close'))
-    expect(screen.queryByTestId('compare-dialog')).not.toBeInTheDocument()
-  })
-
-  it('modal dismissible with Escape key', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
-    expect(screen.getByTestId('compare-dialog')).toBeInTheDocument()
-    fireEvent.keyDown(document.body, { key: 'Escape', code: 'Escape' })
-    expect(screen.queryByTestId('compare-dialog')).not.toBeInTheDocument()
-  })
-
-  it('modal dismissible by clicking overlay', () => {
-    render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('compare-all-button'))
-    expect(screen.getByTestId('compare-dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('compare-overlay'))
-    expect(screen.queryByTestId('compare-dialog')).not.toBeInTheDocument()
   })
 
   // ─── Scenario Selector ────────────────────────────────
