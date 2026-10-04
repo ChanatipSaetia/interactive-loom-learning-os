@@ -6,7 +6,7 @@
  * `?ai=gemini` / `?ai=copilot` preselects the assistant.
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Copy, Download, ExternalLink, Eye, Share2, Sparkles } from 'lucide-react'
+import { Check, Copy, Download, ExternalLink, Eye, Share2, Sparkles, Terminal } from 'lucide-react'
 import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
@@ -17,6 +17,11 @@ import {
   LOOM_ASSISTANT_NAME,
   LOOM_PROMPT_FILE_NAME,
   LOOM_PROMPT_PATH,
+  LOOM_SKILL_NAME,
+  LOOM_SKILL_PATH,
+  SKILL_TOOLS,
+  skillInstallCommand,
+  skillInstallPrompt,
   assistantInstructions,
   type AssistantId,
 } from '../core/learning-engine/composition/oui/llm-guide'
@@ -123,6 +128,7 @@ export function CreateApp() {
   const [assistantId, setAssistantId] = useState<AssistantId>(initialAssistant)
   const ai = ASSISTANTS[assistantId]
   const instructions = assistantInstructions(assistantId)
+  const skillPrompt = skillInstallPrompt()
 
   const chooseAssistant = (id: AssistantId) => {
     setAssistantId(id)
@@ -266,6 +272,41 @@ export function CreateApp() {
               When the Loom prompt is updated, download it again and replace the file in your {ai.workspace}.
             </p>
           </Step>
+
+          <section className="create-step" aria-labelledby="coding-agents" data-testid="create-coding-agents">
+            <h2 id="coding-agents"><Terminal size={18} aria-hidden /> Using Claude Code or opencode?</h2>
+            <p>
+              Install the <code>{LOOM_SKILL_NAME}</code> skill once. Then ask in any project, e.g. <em>"Write a Loom topic about HTTP caching"</em>:
+              the agent writes a <code>&lt;topic-id&gt;.loom.oui</code> file you open in Loom Viewer. Inside the Interactive Loom repository it
+              writes <code>public/content/&lt;topic-id&gt;/</code> and checks it with the content tests (the skill is already in{' '}
+              <code>.claude/skills/</code> there).
+            </p>
+            <p>Easiest: copy the install steps and paste them into Claude Code or opencode; the agent downloads the skill for you.</p>
+            <div className="create-actions">
+              <CopyButton text={skillPrompt} label="Copy install steps" primary testId="create-copy-skill-steps" />
+            </div>
+            <details className="create-details">
+              <summary>Show install steps</summary>
+              <pre data-testid="create-skill-steps">{skillPrompt}</pre>
+            </details>
+            <p>Or run it yourself in a terminal (macOS, Linux or WSL):</p>
+            <ul className="create-examples">
+              {SKILL_TOOLS.map((tool) => {
+                const command = skillInstallCommand(tool.dir)
+                return (
+                  <li key={tool.id} className="create-command">
+                    <span className="create-example-text"><strong>{tool.label}</strong> <span className="create-muted">({tool.note})</span></span>
+                    <pre data-testid={`create-skill-command-${tool.id}`}>{command}</pre>
+                    <CopyButton text={command} label="Copy" testId={`create-copy-skill-${tool.id}`} />
+                  </li>
+                )
+              })}
+            </ul>
+            <p className="create-small">
+              <a href={`${BASE}${LOOM_SKILL_PATH}/SKILL.md`} target="_blank" rel="noreferrer">View the skill <ExternalLink size={12} /></a>
+              {' '}· Run the command again to update it when the Loom prompt changes.
+            </p>
+          </section>
         </main>
       </div>
     </UISystemProvider>

@@ -97,6 +97,56 @@ How to work with me:
 `
 }
 
+/** Agent skill for coding agents (Claude Code, opencode): `<name>/SKILL.md` plus the prompt as a reference. */
+export const LOOM_SKILL_NAME = 'loom-topic-writer'
+/** Published skill folder, relative to the app base. */
+export const LOOM_SKILL_PATH = `llm/skills/${LOOM_SKILL_NAME}`
+/** The authoring prompt inside the skill folder. */
+export const LOOM_SKILL_REFERENCE = `references/${LOOM_PROMPT_FILE_NAME}`
+
+/** Where each coding agent looks for user-level skills. */
+export const SKILL_TOOLS = [
+  { id: 'claude-code', label: 'Claude Code', dir: `~/.claude/skills/${LOOM_SKILL_NAME}`, note: 'opencode reads this folder too' },
+  { id: 'opencode', label: 'opencode', dir: `~/.config/opencode/skills/${LOOM_SKILL_NAME}`, note: 'only opencode reads this folder' },
+] as const
+
+/** Shell command (macOS, Linux, WSL) that downloads the published skill into `dir`. */
+export function skillInstallCommand(dir: string, base = LOOM_PAGES_URL): string {
+  const url = `${base}${LOOM_SKILL_PATH}`
+  return `mkdir -p ${dir}/references && curl -fsSL ${url}/SKILL.md -o ${dir}/SKILL.md && curl -fsSL ${url}/${LOOM_SKILL_REFERENCE} -o ${dir}/${LOOM_SKILL_REFERENCE}`
+}
+
+/**
+ * Markdown to paste into Claude Code or opencode: the agent installs the
+ * skill itself (works on any OS, since the agent picks the download tool).
+ */
+export function skillInstallPrompt(base = LOOM_PAGES_URL): string {
+  const url = `${base}${LOOM_SKILL_PATH}`
+  const [claudeCode, opencode] = SKILL_TOOLS
+  return `# Install the Loom topic writer skill
+
+Install the \`${LOOM_SKILL_NAME}\` agent skill for me. It teaches you to write Interactive Loom learning topics (OpenUI Lang \`.oui\` files).
+
+1. Pick the skill folder for the agent you are:
+   - Claude Code: \`${claudeCode.dir}\` (opencode reads this folder too)
+   - opencode: \`${opencode.dir}\`
+   On Windows, \`~\` is the user profile folder (\`%USERPROFILE%\`).
+2. Download these two files into that folder, keeping the paths (replace existing files to update):
+   - ${url}/SKILL.md → \`SKILL.md\`
+   - ${url}/${LOOM_SKILL_REFERENCE} → \`${LOOM_SKILL_REFERENCE}\`
+3. Check that \`SKILL.md\` starts with \`---\` and \`name: ${LOOM_SKILL_NAME}\`, and that the reference file is about 40 KB of Markdown, not an HTML error page.
+4. Tell me where you installed it, and whether I need to restart you or start a new session before the skill shows up.
+
+On macOS, Linux or WSL this one command does steps 1–2 for Claude Code:
+
+\`\`\`sh
+${skillInstallCommand(claudeCode.dir, base)}
+\`\`\`
+
+After that I can ask, for example: "Write a Loom topic about HTTP caching".
+`
+}
+
 /** Example first messages for a new chat. */
 export const EXAMPLE_REQUESTS = [
   'Write a beginner Loom topic about HTTP caching, about 6 sections.',

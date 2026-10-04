@@ -6,6 +6,7 @@
 
 - [Loom authoring prompt](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/loom-authoring-prompt.md): system prompt for writing a topic: layout, output formats, every component and prop, rules and an example.
 - [Loom OpenUI JSON Schema](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/loom-oui.schema.json): JSON Schema of every component's props, with descriptions.
+- [Loom agent skill](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-topic-writer/SKILL.md): `loom-topic-writer` skill for coding agents (Claude Code, opencode); its reference `references/loom-authoring-prompt.md` is the authoring prompt.
 
 ## OpenUI
 
