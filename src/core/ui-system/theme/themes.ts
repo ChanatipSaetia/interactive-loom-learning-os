@@ -24,6 +24,7 @@ export const THEMES: ThemeOption[] = [
   { id: 'recipebook', label: 'RecipeBook' },
   { id: 'pinkcatboo', label: 'PinkCatBoo' },
   { id: 'eink', label: 'E-Ink (Paper)', icon: '📄' },
+  { id: 'bedtime', label: 'Bedtime (Night Reading)', icon: '🌙' },
 ]
 
 export const DEFAULT_THEME_ID = ''

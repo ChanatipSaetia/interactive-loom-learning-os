@@ -109,3 +109,35 @@ html[data-theme='eink'] ::-webkit-scrollbar-thumb {
 html[data-theme='eink'] ::-webkit-scrollbar-thumb:hover {
   background: #5C5A54;
 }
+
+/* ======================================
+   Bedtime: calm night reading
+   Roomier lines for relaxed reading, dimmed
+   warm-toned images, soft selection and
+   scrollbars.
+====================================== */
+html[data-theme='bedtime'] body {
+  line-height: 1.8;
+}
+
+html[data-theme='bedtime'] img,
+html[data-theme='bedtime'] video {
+  filter: brightness(0.8) sepia(0.2);
+}
+
+html[data-theme='bedtime'] ::selection {
+  background-color: rgba(209, 160, 106, 0.25);
+  color: #d2c1a3;
+}
+
+html[data-theme='bedtime'] ::-webkit-scrollbar-track {
+  background: #16120f;
+}
+
+html[data-theme='bedtime'] ::-webkit-scrollbar-thumb {
+  background: #3a322a;
+}
+
+html[data-theme='bedtime'] ::-webkit-scrollbar-thumb:hover {
+  background: #4f4438;
+}
