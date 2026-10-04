@@ -10,7 +10,7 @@ import type { StoryRoute } from '../story-route';
 import { ICONS, COLORS } from '../types';
 import type { UnifiedFlowchartSchema } from '../types';
 
-import { getViewSpacing, positionViewNodes, routeViewRelations } from './geometry';
+import { getViewSpacing, positionViewNodes, routeViewRelations, sequenceFocusBBox } from './geometry';
 import { SequenceView } from './sequence-view';
 import { StandardView } from './standard-view';
 
@@ -123,7 +123,7 @@ export function FlowchartView({
     positionedNodesRef
   });
 
-  const { focusOnNodes, handleZoomIn, handleZoomOut, fitToScreen } = camera;
+  const { focusOnBox, focusOnNodes, handleZoomIn, handleZoomOut, fitToScreen } = camera;
 
   // Nodes the camera frames for the current step, with the caption beside them
   const focusNodeIds = useMemo(() => {
@@ -132,9 +132,12 @@ export function FlowchartView({
     return activeNodeIds;
   }, [viewKey, activeNodeIds, highlightedNodeId]);
 
+  // Sequence messages are not nodes: frame the step's messages instead
   const focusBBox = useMemo(
-    () => (focusNodeIds ? getNodesBBox(positioned, focusNodeIds) : null),
-    [focusNodeIds, positioned]
+    () => (isSequenceView
+      ? (focusNodeIds ? sequenceFocusBBox(schema, view, activeRelationIds, focusNodeIds) : null)
+      : (focusNodeIds ? getNodesBBox(positioned, focusNodeIds) : null)),
+    [isSequenceView, schema, view, activeRelationIds, focusNodeIds, positioned]
   );
 
   // The caption is already laid out at its final size when this runs, so the
@@ -154,10 +157,10 @@ export function FlowchartView({
   }, [camera.svgRef]);
   const [captionPlacement, setCaptionPlacement] = useState<CaptionPlacement>('below');
   useEffect(() => {
-    if (!focusNodeIds) return;
+    if (!focusBBox) return;
     const captionEl = stepCaption ? captionRef.current : null;
     const captionH = captionEl?.offsetHeight ?? 0;
-    const placement = focusOnNodes(focusNodeIds, {
+    const placement = focusOnBox(focusBBox, {
       insets: measureOverlayInsets(camera.svgRef.current),
       caption: captionEl && captionH > 0
         ? {
@@ -168,7 +171,7 @@ export function FlowchartView({
         : undefined,
     });
     if (placement) setCaptionPlacement(placement);
-  }, [focusNodeIds, focusOnNodes, stepCaption, camera.svgRef, viewportSize]);
+  }, [focusBBox, focusOnBox, stepCaption, camera.svgRef, viewportSize]);
 
   const hasFocusedRef = useRef(false);
   useEffect(() => {

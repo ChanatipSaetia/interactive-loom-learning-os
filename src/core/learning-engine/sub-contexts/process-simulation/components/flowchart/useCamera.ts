@@ -65,6 +65,8 @@ interface UseCameraReturn {
   handleZoomIn: () => void;
   handleZoomOut: () => void;
   animateTo: (targetX: number, targetY: number, targetScale: number) => void;
+  /** Frames a canvas box and returns where the caption fits, or null when nothing was framed. */
+  focusOnBox: (bbox: NodesBBox | null, options?: FocusOptions) => CaptionPlacement | null;
   /** Frames the nodes and returns where the caption fits, or null when nothing was framed. */
   focusOnNodes: (nodeIds: string[], options?: FocusOptions) => CaptionPlacement | null;
   fitToScreen: (minX: number, maxX: number, minY: number, maxY: number) => void;
@@ -106,10 +108,8 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
     });
   }, []);
 
-  const focusOnNodes = useCallback((nodeIds: string[], options: FocusOptions = {}): CaptionPlacement | null => {
-    if (!svgRef.current || !nodeIds || nodeIds.length === 0) return null;
-    const bbox = getNodesBBox(positionedNodesRef.current, nodeIds);
-    if (!bbox) return null;
+  const focusOnBox = useCallback((bbox: NodesBBox | null, options: FocusOptions = {}): CaptionPlacement | null => {
+    if (!svgRef.current || !bbox) return null;
 
     const viewportW = svgRef.current.clientWidth;
     const viewportH = svgRef.current.clientHeight;
@@ -153,7 +153,12 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
     }
     animateTo(targetX, targetY, scale);
     return placement;
-  }, [animateTo, positionedNodesRef]);
+  }, [animateTo]);
+
+  const focusOnNodes = useCallback((nodeIds: string[], options: FocusOptions = {}): CaptionPlacement | null => {
+    if (!nodeIds || nodeIds.length === 0) return null;
+    return focusOnBox(getNodesBBox(positionedNodesRef.current, nodeIds), options);
+  }, [focusOnBox, positionedNodesRef]);
 
   const fitToScreen = useCallback((minX: number, maxX: number, minY: number, maxY: number) => {
     if (!svgRef.current) return;
@@ -380,6 +385,7 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
     handleZoomIn,
     handleZoomOut,
     animateTo,
+    focusOnBox,
     focusOnNodes,
     fitToScreen,
     resetTransform

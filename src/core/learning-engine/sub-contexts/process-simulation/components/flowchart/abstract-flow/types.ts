@@ -123,6 +123,18 @@ export interface FlowJourney {
   steps: JourneyStepRef[];
 }
 
+/** View names an author can open a flowchart on, and the view each one shows. */
+export const FLOWCHART_VIEW_KEYS = {
+  'event-storming': 'EVENT_STORMING',
+  architecture: 'SYS_ARCH',
+  swimlanes: 'SWIMLANES',
+  sequence: 'SEQUENCE',
+  'data-flow': 'DATA_FLOW',
+  'state-machine': 'STATE_MACHINE',
+} as const;
+export type FlowchartViewName = keyof typeof FLOWCHART_VIEW_KEYS;
+export const FLOWCHART_VIEW_NAMES = Object.keys(FLOWCHART_VIEW_KEYS) as [FlowchartViewName, ...FlowchartViewName[]];
+
 /** Top-level abstract flow definition. */
 export interface AbstractFlow {
   /** Human actors in this flow. */
@@ -133,6 +145,8 @@ export interface AbstractFlow {
   steps: FlowStep[];
   /** Journeys through the flow. */
   journeys: FlowJourney[];
+  /** View the section opens on (default: the first view, Event Storming). */
+  initialView?: FlowchartViewName;
 }
 
 /** Derivation result mapping abstract IDs to generated entity IDs. */

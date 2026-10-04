@@ -14,7 +14,7 @@ import type {
   JourneyStepRef,
   ResultEvent,
 } from './abstract-flow/types'
-import { ref } from './abstract-flow/types'
+import { ref, type FlowchartViewName } from './abstract-flow/types'
 import { OUIFieldKey } from '../../../OUIFieldKey'
 import * as OUI from '../../openui'
 
@@ -22,6 +22,15 @@ interface FlowchartFormEditorProps {
   data: OKFFlowSectionData
   onChange: (data: OKFFlowSectionData) => void
 }
+
+const FLOWCHART_VIEW_OPTIONS: Array<[FlowchartViewName, string]> = [
+  ['event-storming', 'Event Storming'],
+  ['architecture', 'System Architecture'],
+  ['swimlanes', 'Activity Swimlanes'],
+  ['sequence', 'Sequence Diagram'],
+  ['data-flow', 'Data Flow'],
+  ['state-machine', 'State Machine'],
+]
 
 type FlowchartSubTab = 'actors' | 'systems' | 'steps' | 'journeys'
 
@@ -553,6 +562,30 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
       </div>
 
       <FlowchartHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+
+      <div className="visual-form-field">
+        <label className="visual-form-label">
+          <OUIFieldKey of={OUI.Flowchart} field="initialView">Opens on</OUIFieldKey>
+          <select
+            className="visual-form-select"
+            value={flow.initialView ?? 'event-storming'}
+            onChange={(e) => {
+              const value = e.target.value as FlowchartViewName
+              // Event Storming is the default, so it is left out of the file
+              updateFlow((prev) => {
+                const next: AbstractFlow = { ...prev, initialView: value }
+                if (value === 'event-storming') delete next.initialView
+                return next
+              })
+            }}
+            data-testid="flowchart-initial-view"
+          >
+            {FLOWCHART_VIEW_OPTIONS.map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       {/* --- ACTORS SUB-TAB --- */}
       {activeSubTab === 'actors' && (

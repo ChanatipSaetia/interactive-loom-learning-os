@@ -5,6 +5,7 @@ import * as Icons from 'lucide-react';
 import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartViewNode, FlowchartViewGroup } from '../types';
 import type { ForkHighlights } from '../fork-highlights';
+import { SEQUENCE_LAYOUT } from './geometry';
 
 export interface SequenceViewProps {
   viewKey: string;
@@ -49,11 +50,7 @@ export const SequenceView = memo(function SequenceView({
     return Array.from(cols.entries()).sort((a, b) => a[0] - b[0]);
   }, [view]);
 
-  const COL_W = 200;
-  const START_X = 140;
-  const TOP_Y = 12;
-  const MSG_SPACING = 44;
-  const MSG_START_Y = 160;
+  const { COL_W, START_X, TOP_Y, MSG_SPACING, MSG_START_Y } = SEQUENCE_LAYOUT;
   const lastRelY = seqRelations.length > 0
     ? MSG_START_Y + (seqRelations.length - 1) * MSG_SPACING + (seqRelations[seqRelations.length - 1].yOffset ?? 0)
     : MSG_START_Y;

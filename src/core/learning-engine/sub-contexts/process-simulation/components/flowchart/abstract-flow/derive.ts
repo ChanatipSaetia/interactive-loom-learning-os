@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
-import { isLinearStep, isBranchStep } from './types';
+import { isLinearStep, isBranchStep, FLOWCHART_VIEW_KEYS } from './types';
 import { TYPES } from '../types';
 import type { SystemKind } from './types';
 
@@ -218,6 +218,9 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
     relations,
     journeys,
     rawSteps: steps,
+    ...(flow?.initialView && FLOWCHART_VIEW_KEYS[flow.initialView]
+      ? { initialView: FLOWCHART_VIEW_KEYS[flow.initialView] }
+      : {}),
   };
 }
 

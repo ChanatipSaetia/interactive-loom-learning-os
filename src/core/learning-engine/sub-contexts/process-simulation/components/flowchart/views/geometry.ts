@@ -39,6 +39,55 @@ export function edgeLabelRoom(x: number, y: number, nodes: Array<{ x?: number; y
   return half === Infinity ? Infinity : Math.max(0, 2 * (half - MARGIN));
 }
 
+/** Sequence diagram layout (px): lifeline columns and message rows. */
+export const SEQUENCE_LAYOUT = {
+  COL_W: 200,
+  START_X: 140,
+  TOP_Y: 12,
+  MSG_SPACING: 44,
+  MSG_START_Y: 160,
+} as const;
+
+/**
+ * Canvas box around the given sequence messages (or, when none are given,
+ * the given participants' header boxes), for the camera to frame.
+ */
+export function sequenceFocusBBox(
+  schema: UnifiedFlowchartSchema,
+  view: FlowchartViewConfig | undefined,
+  relationIds: string[] | null,
+  nodeIds: string[] | null
+): { minX: number; minY: number; maxX: number; maxY: number } | null {
+  if (!view) return null;
+  const { COL_W, START_X, TOP_Y, MSG_SPACING, MSG_START_Y } = SEQUENCE_LAYOUT;
+  const colOf = new Map<string, number>();
+  view.nodes.forEach(n => { if (n.grid && !colOf.has(n.id)) colOf.set(n.id, n.grid[0]); });
+  const xOf = (id: string) => (colOf.has(id) ? colOf.get(id)! * COL_W + START_X : undefined);
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const add = (x1: number, y1: number, x2: number, y2: number) => {
+    minX = Math.min(minX, x1); minY = Math.min(minY, y1);
+    maxX = Math.max(maxX, x2); maxY = Math.max(maxY, y2);
+  };
+  const active = new Set(relationIds ?? []);
+  schema.relations.filter(r => r.views?.includes('SEQUENCE')).forEach((rel, idx) => {
+    if (!active.has(rel.id)) return;
+    const x1 = xOf(rel.from), x2 = xOf(rel.to);
+    if (x1 === undefined || x2 === undefined) return;
+    const y = MSG_START_Y + idx * MSG_SPACING + (rel.yOffset || 0);
+    // A self-message loops out to the right of its lifeline
+    const right = rel.from === rel.to ? x1 + 85 : Math.max(x1, x2);
+    add(Math.min(x1, x2) - 20, y - 30, right + 20, y + 30);
+  });
+  if (minX === Infinity) {
+    (nodeIds ?? []).forEach(id => {
+      const x = xOf(id);
+      if (x !== undefined) add(x - NODE_W / 2, TOP_Y, x + NODE_W / 2, TOP_Y + NODE_H);
+    });
+  }
+  return minX === Infinity ? null : { minX, minY, maxX, maxY };
+}
+
 export interface ViewSpacing { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number }
 export type PositionedNode = FlowchartViewNode & { x: number; y: number };
 

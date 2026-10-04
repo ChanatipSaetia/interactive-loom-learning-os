@@ -324,6 +324,15 @@ export function validateProcessSimulationTier3(
           Object.values(rawSystems).flatMap((sys: any) =>
             Array.isArray(sys?.stateMachine?.states) ? sys.stateMachine.states.map((st: any) => String(st?.id)) : []),
         )
+        if (rawFlow?.initialView === 'state-machine' && machineStates.size === 0) {
+          diagnostics.push({
+            tier: 3,
+            field: 'initialView',
+            message: 'initialView is "state-machine", but no system declares a stateMachine, so the flowchart opens on Event Storming.',
+            fixHint: 'Add a StateMachine to a system, or pick another initialView.',
+            ...ctx,
+          })
+        }
         const checkStepRefs = (s: any, kind: 'Step' | 'Branch option') => {
           const where = `${kind} "${s.id}" command "${s.command}"`
           for (const evt of Array.isArray(s.resultEvents) ? s.resultEvents : []) {

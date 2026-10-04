@@ -138,7 +138,7 @@ MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number
   - offsets: Optional custom shape: [rowOffset, colOffset] cells relative to the anchor. Overrides spans and shape.
 
 ### Process Simulation
-Flowchart(title: string, actors: Actor[], systems: System[], steps: (Step | Branch)[], journeys: Journey[], heading?: string, lead?: Lead) — Animated Event Storming flowchart. Every actor and system must be used by at least one step.
+Flowchart(title: string, actors: Actor[], systems: System[], steps: (Step | Branch)[], journeys: Journey[], heading?: string, lead?: Lead, initialView?: "event-storming" | "architecture" | "swimlanes" | "sequence" | "data-flow" | "state-machine") — Animated Event Storming flowchart. Every actor and system must be used by at least one step.
   - title: Section title, shown in the topic outline and as the section header.
   - actors: Human actors, as Actor references. Each must start at least one step.
   - systems: Systems, as System references. Each must handle or receive at least one step.
@@ -146,6 +146,7 @@ Flowchart(title: string, actors: Actor[], systems: System[], steps: (Step | Bran
   - journeys: Guided paths through the flow, as Journey references.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
+  - initialView: Optional view the section opens on: "event-storming" (default), "architecture", "swimlanes", "sequence", "data-flow" or "state-machine" (needs a system with a StateMachine). Pick the one that shows the lesson best.
 Actor(id: string, title: string, desc: string) — A human actor (user role) who initiates steps.
   - id: Actor ID, unique within the flowchart; steps refer to it with `initiatedBy`.
   - title: Actor name shown on its sticky (e.g. "Buyer").
@@ -531,6 +532,6 @@ tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C a
 - Mix interactive section types. Never build a topic out of Text sections only.
 - Quizzes and reflection challenges only test what an earlier section of the topic teaches. Each QuizQuestion has exactly one choice with `correct` set to true.
 - IDs (`id` props) are unique within their section. Props that point at an ID (`next`, `root`, `startNode`, `recommended`, `solution`, `continuesAs`, `initialState`, `dependsOn`) must name an ID that exists in the same section.
-- Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages. When a System has a StateMachine, set `enters` on each Event that moves it into a new state (a MachineState ID); the State Machine view draws its transitions only from those. Set `data` on an Event when the data it carries matters to the lesson (e.g. "Query embedding vector"); the Data Flow view names the data with it. Set `async` on a Step or BranchOption whose command is fired without waiting for a reply (e.g. a queued job or a notification).
+- Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages. When a System has a StateMachine, set `enters` on each Event that moves it into a new state (a MachineState ID); the State Machine view draws its transitions only from those. Set `data` on an Event when the data it carries matters to the lesson (e.g. "Query embedding vector"); the Data Flow view names the data with it. Set `async` on a Step or BranchOption whose command is fired without waiting for a reply (e.g. a queued job or a notification). Set `initialView` on the Flowchart when another view tells the lesson better than Event Storming: "sequence" for a protocol or request/response exchange, "architecture" for which systems talk to which, "swimlanes" for who does what, "data-flow" for how data changes, "state-machine" for the lifecycle of one object.
 - To skip an optional argument and still set a later one, pass `null` in its place, e.g. `Step("s1", "When …", "DoThing", sys, [evt], null, null, "s2")`.
 - Text paragraphs may use inline markdown (**bold**, `code`, [links](url)). Write factual, specific content; no placeholders such as "Lorem ipsum" or "TODO".

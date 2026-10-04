@@ -879,6 +879,18 @@
         "lead": {
           "$ref": "#/$defs/Lead",
           "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        },
+        "initialView": {
+          "type": "string",
+          "enum": [
+            "event-storming",
+            "architecture",
+            "swimlanes",
+            "sequence",
+            "data-flow",
+            "state-machine"
+          ],
+          "description": "Optional view the section opens on: \"event-storming\" (default), \"architecture\", \"swimlanes\", \"sequence\", \"data-flow\" or \"state-machine\" (needs a system with a StateMachine). Pick the one that shows the lesson best."
         }
       },
       "required": [

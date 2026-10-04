@@ -353,6 +353,8 @@ export interface UnifiedFlowchartSchema {
   views?: Record<string, FlowchartViewConfig>;
   journeys: FlowchartJourney[];
   rawSteps?: any[];
+  /** View key the section opens on, e.g. 'SEQUENCE'; falls back to the first view. */
+  initialView?: string;
 }
 
 export interface FlowchartProps {

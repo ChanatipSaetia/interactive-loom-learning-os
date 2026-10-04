@@ -33,6 +33,23 @@ resource: "."         # loads actors.yaml, systems.yaml, steps.yaml, journeys.ya
 | `title` | `string` | No | Section header |
 | `resource` | `"."` | Yes | Must be `"."` — signals directory-wide load |
 
+### Opening view (`initialView`)
+
+A flowchart opens on Event Storming unless it names another view. In `.oui` it is the last `Flowchart` argument (after `heading` and `lead`); in flow data it is `flow.initialView`.
+
+| Value | Opens on |
+|---|---|
+| `"event-storming"` | Event Storming (default) |
+| `"architecture"` | System Architecture |
+| `"swimlanes"` | Activity Swimlanes |
+| `"sequence"` | Sequence Diagram |
+| `"data-flow"` | Data Flow |
+| `"state-machine"` | State Machine (needs a system with a `StateMachine`; otherwise the section opens on Event Storming and validation warns) |
+
+```
+root = Flowchart("TLS Handshake", [client], [server], [hello, cert], [happy], null, null, "sequence")
+```
+
 ---
 
 ## `actors.yaml`
