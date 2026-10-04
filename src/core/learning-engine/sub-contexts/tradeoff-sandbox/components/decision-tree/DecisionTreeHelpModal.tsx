@@ -65,6 +65,11 @@ export function DecisionTreeHelpModal({ isOpen, onClose }: DecisionTreeHelpModal
               questions. Each node presents a prompt with selectable choices that lead to other nodes or
               final recommendation leaves. Great for teaching architectural trade-offs and decision-making frameworks.
             </p>
+            <p className="flowchart-help-desc">
+              Tap an earlier answer in the trail above the question to go back and choose again. Switch to{' '}
+              <strong>Whole tree</strong> to see every question, answer and recommendation at once; tap any
+              of them to jump there.
+            </p>
           </section>
 
           {/* Section 2: Node Types */}

@@ -1,8 +1,10 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
+import type { ReactNode } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { RotateCcw, ArrowRight, ChevronRight, ThumbsUp } from 'lucide-react'
+import { RotateCcw, ArrowRight, ChevronRight, ThumbsUp, Undo2 } from 'lucide-react'
 import type { OKFDecisionTreeNode, OKFDecisionTreeChoice } from '../../../../composition/okf/types'
 import { Button } from '../../../../../ui-system/motion/button'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../../ui-system/motion/tabs'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
 import { DecisionTreeHelpModal } from './DecisionTreeHelpModal'
@@ -18,31 +20,57 @@ export interface DecisionTreeSectionProps {
 
 type HistoryEntry = { nodeId: string; choiceId?: string }
 
-function Breadcrumb({ path, nodeTitles, stepIndex }: { path: HistoryEntry[]; nodeTitles: Map<string, string>; stepIndex: number }) {
+const truncate = (text: string, max: number) => (text.length > max ? text.slice(0, max - 1) + '…' : text)
+
+/**
+ * The answers given so far, one crumb per answered question. Tapping a crumb goes back to that question
+ * so the reader can pick a different answer; the last crumb names where they are now.
+ */
+function Breadcrumb({
+  path,
+  nodes,
+  onBack,
+}: {
+  path: HistoryEntry[]
+  nodes: Record<string, OKFDecisionTreeNode>
+  onBack: (idx: number) => void
+}) {
+  const current = nodes[path[path.length - 1].nodeId]
+  const currentLabel = current?.leaf && !current.choices ? 'Recommendation' : `Step ${path.length}`
   return (
-    <div className="dt-breadcrumb" data-testid="dt-breadcrumb">
-      {path.map((entry, idx) => {
-        const title = nodeTitles.get(entry.nodeId) ?? entry.nodeId
-        const isLast = idx === path.length - 1
-        const displayTitle = isLast ? title : title.length > 20 ? title.slice(0, 20) + '…' : title
+    <nav className="dt-breadcrumb" data-testid="dt-breadcrumb" aria-label="Your answers">
+      {path.slice(0, -1).map((entry, idx) => {
+        const question = nodes[entry.nodeId]?.prompt ?? entry.nodeId
+        const answerId = path[idx + 1].choiceId
+        const answer = nodes[entry.nodeId]?.choices?.find((c) => c.id === answerId)?.text ?? question
         return (
           <div key={`${entry.nodeId}-${idx}`} className="dt-breadcrumb-item">
-            {idx > 0 && <ChevronRight className="dt-breadcrumb-arrow" />}
-            <span
-              className={`dt-breadcrumb-label ${isLast ? 'dt-breadcrumb-label-active' : ''}`}
+            {idx > 0 && <ChevronRight className="dt-breadcrumb-arrow" aria-hidden="true" />}
+            <button
+              type="button"
+              className="dt-breadcrumb-label dt-breadcrumb-link"
               data-testid={`dt-breadcrumb-step-${idx}`}
+              onClick={() => onBack(idx)}
+              title={`${question} (tap to change your answer)`}
+              aria-label={`Change answer to: ${question}. Current answer: ${answer}`}
             >
-              {idx === stepIndex && !isLast ? (
-                <span className="dt-breadcrumb-step-num">{stepIndex + 1}</span>
-              ) : (
-                <span className="dt-breadcrumb-check">{idx < stepIndex ? '✓' : ''}</span>
-              )}
-              {displayTitle}
-            </span>
+              <span className="dt-breadcrumb-check" aria-hidden="true">✓</span>
+              {truncate(answer, 28)}
+            </button>
           </div>
         )
       })}
-    </div>
+      <div className="dt-breadcrumb-item">
+        <ChevronRight className="dt-breadcrumb-arrow" aria-hidden="true" />
+        <span
+          className="dt-breadcrumb-label dt-breadcrumb-label-active"
+          data-testid={`dt-breadcrumb-step-${path.length - 1}`}
+          aria-current="step"
+        >
+          {currentLabel}
+        </span>
+      </div>
+    </nav>
   )
 }
 
@@ -118,10 +146,12 @@ function LeafDisplay({ node, onReset }: { node: OKFDecisionTreeNode; onReset: ()
 function ChoiceButton({
   choice,
   index,
+  isPrevious,
   onClick,
 }: {
   choice: OKFDecisionTreeChoice
   index: number
+  isPrevious: boolean
   onClick: () => void
 }) {
   const optionLetter = String.fromCharCode(65 + index)
@@ -129,7 +159,7 @@ function ChoiceButton({
   return (
     <motion.div
       key={choice.id}
-      className={`dt-choice ${choice.recommended ? 'dt-choice-recommended' : ''}`}
+      className={`dt-choice ${choice.recommended ? 'dt-choice-recommended' : ''} ${isPrevious ? 'dt-choice-previous' : ''}`}
       data-testid={`dt-choice-${choice.id}`}
       onClick={onClick}
       initial={{ opacity: 0, y: 8 }}
@@ -142,6 +172,12 @@ function ChoiceButton({
       <div className="dt-choice-content">
         <span className="dt-choice-label">
           {choice.text}
+          {isPrevious && (
+            <span className="dt-previous-badge" data-testid={`dt-previous-${choice.id}`}>
+              <Undo2 className="dt-recommended-icon" />
+              Your last answer
+            </span>
+          )}
           {choice.recommended && (
             <span className="dt-recommended-badge" data-testid={`dt-recommended-${choice.id}`}>
               <ThumbsUp className="dt-recommended-icon" />
@@ -161,21 +197,21 @@ function ChoiceButton({
 function DecisionDisplay({
   node,
   path,
-  nodeTitles,
+  nodes,
+  previousChoiceId,
   onChoose,
-  stepIndex,
+  onBack,
 }: {
   node: OKFDecisionTreeNode
   path: HistoryEntry[]
-  nodeTitles: Map<string, string>
+  nodes: Record<string, OKFDecisionTreeNode>
+  previousChoiceId?: string
   onChoose: (choiceId: string, nextId: string) => void
-  stepIndex: number
+  onBack: (idx: number) => void
 }) {
   return (
     <div>
-      {path.length > 1 && (
-        <Breadcrumb path={path} nodeTitles={nodeTitles} stepIndex={stepIndex - 1} />
-      )}
+      {path.length > 1 && <Breadcrumb path={path} nodes={nodes} onBack={onBack} />}
 
       <motion.div
         className="dt-decision"
@@ -202,6 +238,7 @@ function DecisionDisplay({
               key={choice.id ?? idx}
               choice={choice}
               index={idx}
+              isPrevious={choice.id !== undefined && choice.id === previousChoiceId}
               onClick={() => onChoose(choice.id ?? '', choice.next ?? '')}
             />
           ))}
@@ -252,6 +289,104 @@ function IntroDisplay({ title, onStart }: { title?: string; onStart: () => void 
   )
 }
 
+const isLeafNode = (node?: OKFDecisionTreeNode) => node?.leaf !== undefined && node.choices === undefined
+
+/** The history entries that lead from the root to `targetId`, or null when it can't be reached. */
+function findPath(nodes: Record<string, OKFDecisionTreeNode>, root: string, targetId: string): HistoryEntry[] | null {
+  const walk = (nodeId: string, trail: HistoryEntry[], seen: Set<string>): HistoryEntry[] | null => {
+    if (nodeId === targetId) return trail
+    if (seen.has(nodeId)) return null
+    seen.add(nodeId)
+    for (const choice of nodes[nodeId]?.choices ?? []) {
+      if (!choice.next) continue
+      const found = walk(choice.next, [...trail, { nodeId: choice.next, choiceId: choice.id }], seen)
+      if (found) return found
+    }
+    return null
+  }
+  return walk(root, [{ nodeId: root }], new Set())
+}
+
+/**
+ * Every question, answer and recommendation as an indented tree. The reader's current path is highlighted;
+ * tapping a question or recommendation jumps there in the step-by-step view.
+ */
+function TreeView({
+  nodes,
+  root,
+  path,
+  onJump,
+}: {
+  nodes: Record<string, OKFDecisionTreeNode>
+  root: string
+  path: HistoryEntry[]
+  onJump: (nodeId: string) => void
+}) {
+  const onPathNodes = new Set(path.map((e) => e.nodeId))
+  const takenChoices = new Set(path.slice(1).map((e, idx) => `${path[idx].nodeId}:${e.choiceId}`))
+  const currentId = path[path.length - 1].nodeId
+
+  const renderNode = (nodeId: string, ancestors: Set<string>): ReactNode => {
+    const node = nodes[nodeId]
+    if (!node) return <span className="dt-tree-missing">Missing step “{nodeId}”</span>
+    const stateClass = `${onPathNodes.has(nodeId) ? ' dt-tree-on-path' : ''}${nodeId === currentId ? ' dt-tree-current' : ''}`
+
+    if (isLeafNode(node)) {
+      return (
+        <button
+          type="button"
+          className={`dt-tree-node dt-tree-leaf${stateClass}`}
+          data-testid={`dt-tree-node-${nodeId}`}
+          onClick={() => onJump(nodeId)}
+        >
+          <span className="dt-tree-kind">Recommendation</span>
+          {node.leaf?.recommendation}
+        </button>
+      )
+    }
+    if (ancestors.has(nodeId)) {
+      return <span className="dt-tree-loop">Back to “{truncate(node.prompt ?? nodeId, 40)}”</span>
+    }
+    const nextAncestors = new Set(ancestors).add(nodeId)
+    return (
+      <>
+        <button
+          type="button"
+          className={`dt-tree-node dt-tree-question${stateClass}`}
+          data-testid={`dt-tree-node-${nodeId}`}
+          onClick={() => onJump(nodeId)}
+        >
+          {node.prompt ?? nodeId}
+        </button>
+        {node.choices && node.choices.length > 0 && (
+          <ul className="dt-tree-branches">
+            {node.choices.map((choice, idx) => (
+              <li
+                key={choice.id ?? idx}
+                className={`dt-tree-branch${takenChoices.has(`${nodeId}:${choice.id}`) ? ' dt-tree-taken' : ''}`}
+                data-testid={`dt-tree-choice-${nodeId}-${choice.id}`}
+              >
+                <span className="dt-tree-answer">
+                  {choice.text}
+                  {choice.recommended && <ThumbsUp className="dt-tree-recommended" aria-label="Recommended" />}
+                </span>
+                {choice.next && renderNode(choice.next, nextAncestors)}
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
+    )
+  }
+
+  return (
+    <div className="dt-tree" data-testid="dt-tree">
+      <p className="dt-tree-hint">Tap a question or recommendation to jump there. Your current path is highlighted.</p>
+      <div className="dt-tree-root">{renderNode(root, new Set())}</div>
+    </div>
+  )
+}
+
 export default function DecisionTreeSection({
   title,
   root = 'root',
@@ -259,25 +394,15 @@ export default function DecisionTreeSection({
   sectionIndex = 0,
 }: DecisionTreeSectionProps) {
   const [phase, setPhase] = useState<'intro' | 'playing' | 'leaf'>('intro')
-  const [currentNodeId, setCurrentNodeId] = useState(root)
   const [history, setHistory] = useState<HistoryEntry[]>([{ nodeId: root }])
+  // The answer the reader gave last time at the current question, after stepping back to it
+  const [previousChoiceId, setPreviousChoiceId] = useState<string | undefined>()
+  const [view, setView] = useState<'steps' | 'tree'>('steps')
   const { playSound } = useSound()
 
+  const currentNodeId = history[history.length - 1].nodeId
   const currentNode = nodes[currentNodeId]
-
-  const nodeTitles = useMemo(() => {
-    const titles = new Map<string, string>()
-    for (const node of Object.values(nodes)) {
-      if (node.id) {
-        titles.set(node.id, node.prompt ?? node.id)
-      }
-    }
-    return titles
-  }, [nodes])
-
-  const isLeaf = useMemo(() => {
-    return currentNode?.leaf !== undefined && currentNode.choices === undefined
-  }, [currentNode])
+  const isLeaf = isLeafNode(currentNode)
 
   const handleStart = useCallback(() => {
     playSound('stepNext')
@@ -286,22 +411,38 @@ export default function DecisionTreeSection({
 
   const handleChoose = useCallback((choiceId: string, nextId: string) => {
     setHistory((prev) => [...prev, { nodeId: nextId, choiceId }])
-    const nextNode = nodes[nextId]
-    if (nextNode?.leaf && !nextNode.choices) {
+    setPreviousChoiceId(undefined)
+    if (isLeafNode(nodes[nextId])) {
       playSound('success')
-      setCurrentNodeId(nextId)
       setPhase('leaf')
     } else {
       playSound('click')
-      setCurrentNodeId(nextId)
     }
   }, [nodes, playSound])
+
+  const handleBack = useCallback((idx: number) => {
+    playSound('click')
+    setPreviousChoiceId(history[idx + 1]?.choiceId)
+    setHistory(history.slice(0, idx + 1))
+    setPhase('playing')
+  }, [history, playSound])
+
+  const handleJump = useCallback((nodeId: string) => {
+    const onPathIdx = history.findIndex((e) => e.nodeId === nodeId)
+    const newHistory = onPathIdx >= 0 ? history.slice(0, onPathIdx + 1) : findPath(nodes, root, nodeId)
+    if (!newHistory) return
+    playSound('click')
+    setPreviousChoiceId(onPathIdx >= 0 ? history[onPathIdx + 1]?.choiceId : undefined)
+    setHistory(newHistory)
+    setPhase(isLeafNode(nodes[nodeId]) ? 'leaf' : 'playing')
+    setView('steps')
+  }, [history, nodes, root, playSound])
 
   const handleReset = useCallback(() => {
     playSound('click')
     setPhase('intro')
-    setCurrentNodeId(root)
     setHistory([{ nodeId: root }])
+    setPreviousChoiceId(undefined)
   }, [root, playSound])
 
   if (Object.keys(nodes).length === 0) {
@@ -312,39 +453,50 @@ export default function DecisionTreeSection({
     <div className="dt-section" data-testid="dt-section">
       <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={DecisionTreeHelpModal} titleTestId="dt-title" />
 
-      <AnimatePresence mode="wait">
-        {phase === 'intro' && (
-          <IntroDisplay
-            key="intro"
-            title={title}
-            onStart={handleStart}
-          />
-        )}
+      <Tabs value={view} onValueChange={(v) => setView(v as 'steps' | 'tree')} variant="underline">
+        <TabsList className="dt-view-tabs">
+          <TabsTrigger value="steps" data-testid="dt-tab-steps">Step by step</TabsTrigger>
+          <TabsTrigger value="tree" data-testid="dt-tab-tree">Whole tree</TabsTrigger>
+        </TabsList>
 
-        {phase === 'playing' && currentNode && !isLeaf && (
-          <DecisionDisplay
-            key={`decision-${currentNodeId}`}
-            node={currentNode}
-            path={history}
-            nodeTitles={nodeTitles}
-            onChoose={handleChoose}
-            stepIndex={history.length}
-          />
-        )}
-
-        {(phase === 'leaf' || (phase === 'playing' && isLeaf)) && currentNode && (
-          <div>
-            {history.length > 1 && phase === 'leaf' && (
-              <Breadcrumb path={history} nodeTitles={nodeTitles} stepIndex={history.length - 1} />
+        <TabsContent value="steps" className="dt-view-panel">
+          <AnimatePresence mode="wait">
+            {phase === 'intro' && (
+              <IntroDisplay
+                key="intro"
+                title={title}
+                onStart={handleStart}
+              />
             )}
-            <LeafDisplay
-              key={`leaf-${currentNodeId}`}
-              node={currentNode}
-              onReset={handleReset}
-            />
-          </div>
-        )}
-      </AnimatePresence>
+
+            {phase === 'playing' && currentNode && !isLeaf && (
+              <DecisionDisplay
+                key={`decision-${currentNodeId}-${history.length}`}
+                node={currentNode}
+                path={history}
+                nodes={nodes}
+                previousChoiceId={previousChoiceId}
+                onChoose={handleChoose}
+                onBack={handleBack}
+              />
+            )}
+
+            {(phase === 'leaf' || (phase === 'playing' && isLeaf)) && currentNode && (
+              <div key={`leaf-${currentNodeId}`}>
+                {history.length > 1 && <Breadcrumb path={history} nodes={nodes} onBack={handleBack} />}
+                <LeafDisplay
+                  node={currentNode}
+                  onReset={handleReset}
+                />
+              </div>
+            )}
+          </AnimatePresence>
+        </TabsContent>
+
+        <TabsContent value="tree" className="dt-view-panel">
+          <TreeView nodes={nodes} root={root} path={history} onJump={handleJump} />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
