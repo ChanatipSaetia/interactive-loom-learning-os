@@ -176,7 +176,7 @@ stepHeralds = Step(
   null,
   "step_boss_check",
   null,
-  whirlingAssault,
+  pack,
 )
 
 stepBossCheck = Branch("step_boss_check", "evt_explosions", [branchMapping, branchBoss])
