@@ -78,6 +78,8 @@ stepCheckout = Step(
   customer,
   null,
   "step_invoke_port",
+  null,
+  createOrderPort,
 )
 
 stepInvokePort = Step(
@@ -95,6 +97,8 @@ stepInvokePort = Step(
   null,
   null,
   "step_domain_logic",
+  null,
+  orderAggregate,
 )
 
 stepDomainLogic = Step(
@@ -112,6 +116,8 @@ stepDomainLogic = Step(
   null,
   null,
   "step_call_driven_port",
+  null,
+  orderRepoPort,
 )
 
 stepCallDrivenPort = Step(
@@ -129,6 +135,8 @@ stepCallDrivenPort = Step(
   null,
   null,
   "step_db_persist",
+  null,
+  postgresAdapter,
 )
 
 stepDbPersist = Step(

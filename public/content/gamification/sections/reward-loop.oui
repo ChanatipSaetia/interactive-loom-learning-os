@@ -88,6 +88,8 @@ startLesson = Step(
   learner,
   null,
   "submit_answers",
+  null,
+  gradingService,
 )
 
 submitAnswers = Step(
@@ -105,6 +107,8 @@ submitAnswers = Step(
   learner,
   null,
   "grade_branch",
+  null,
+  rewardEngine,
 )
 
 gradeBranch = Branch("grade_branch", "exercise_graded", [awardXp, showHint])
@@ -120,6 +124,8 @@ awardXp = BranchOption(
   null,
   null,
   "update_progress",
+  null,
+  progressStore,
 )
 
 showHint = BranchOption(
@@ -139,6 +145,8 @@ showHint = BranchOption(
   null,
   null,
   "submit_answers",
+  null,
+  gradingService,
 )
 
 updateProgress = Step(
@@ -156,6 +164,8 @@ updateProgress = Step(
   null,
   null,
   "badge_branch",
+  null,
+  rewardEngine,
 )
 
 badgeBranch = Branch("badge_branch", "progress_updated", [unlockBadge, continueLesson])
@@ -177,6 +187,8 @@ unlockBadge = BranchOption(
   null,
   null,
   "streak_update",
+  null,
+  streakTracker,
 )
 
 continueLesson = BranchOption(
@@ -196,6 +208,8 @@ continueLesson = BranchOption(
   null,
   null,
   "streak_update",
+  null,
+  streakTracker,
 )
 
 streakUpdate = Step(
@@ -234,6 +248,8 @@ extendStreak = BranchOption(
   null,
   null,
   "update_league",
+  null,
+  leagueService,
 )
 
 freezeStreak = BranchOption(
@@ -253,6 +269,8 @@ freezeStreak = BranchOption(
   null,
   null,
   "update_league",
+  null,
+  leagueService,
 )
 
 updateLeague = Step(
@@ -270,6 +288,8 @@ updateLeague = Step(
   null,
   null,
   "notify_branch",
+  null,
+  pushService,
 )
 
 notifyBranch = Branch("notify_branch", "standings_updated", [sendNotification, silentUpdate])

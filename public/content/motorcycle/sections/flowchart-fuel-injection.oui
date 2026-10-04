@@ -37,6 +37,8 @@ injectThrottle = Step(
   rider,
   null,
   "inject_fuel",
+  null,
+  fuelInjector,
 )
 
 injectFuel = Step(

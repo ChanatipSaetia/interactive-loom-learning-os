@@ -70,6 +70,7 @@ stepInitFilter = Step(
   null,
   "step_acquire_target",
   "FilterSystem intercepts rendering and computes offscreen canvas dimensions",
+  targetPool,
 )
 
 stepAcquireTarget = Step(
@@ -88,6 +89,7 @@ stepAcquireTarget = Step(
   null,
   "step_render_children",
   "Leases pre-allocated RenderTarget matching padded dimensions",
+  displayContainer,
 )
 
 stepRenderChildren = Step(
@@ -106,6 +108,7 @@ stepRenderChildren = Step(
   null,
   "step_bind_shader",
   "Container renders all children into the leased RenderTarget",
+  shaderProgram,
 )
 
 stepBindShader = Step(
@@ -124,6 +127,7 @@ stepBindShader = Step(
   null,
   "step_branch_pass",
   "Prepares shader program with matrix mapping and uniform values",
+  gpuDriver,
 )
 
 stepBranchPass = Branch(

@@ -1,8 +1,12 @@
 import { describe, it, expect } from 'vitest';
+import type { AbstractFlow } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/types';
 import { parseFlowchart } from './fixtures/parse-flowchart';
 import { deriveSchema } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive';
 import { autoDeriveViews } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/derivations';
 import { validateOKFSection } from '../../../../src/core/learning-engine/validation/gateway';
+import { validateOUISection } from '../../../../src/core/learning-engine/validation/oui-gateway';
+import { compileOUISection } from '../../../../src/core/learning-engine/composition/oui/compile';
+import { printOUISection } from '../../../../src/core/learning-engine/composition/oui/print';
 
 const base = {
   actors: { dev: { title: 'Developer' } },
@@ -107,5 +111,41 @@ ${step}
   it('counts sendsTo as attaching a system to the flow', () => {
     const unattached = tier3('      sendsTo: client').filter(x => x.field === 'systems.client');
     expect(unattached).toEqual([]);
+  });
+});
+
+describe('sendsTo in OpenUI Lang', () => {
+  const source = `
+root = Flowchart("Hello", [dev], [client, server], [hello, fork], [j])
+dev = Actor("dev", "Developer", "Starts it")
+client = System("client", "Client", "Calls", "aggregate")
+server = System("server", "Server", "Answers", "aggregate")
+hello = Step("hello", "On start", "Say hello", client, [Event("said", "Hello said")], dev, null, "fork", null, server)
+fork = Branch("fork", "said", [ok, ko])
+ok = BranchOption("ok", "Accepted", "If valid", "Accept", server, [Event("accepted", "Accepted")], null, null, null, null, null, client)
+ko = BranchOption("ko", "Rejected", "If invalid", "Reject", server, [Event("rejected", "Rejected")], true)
+j = Journey("j", "J", "J", [JourneyStep(hello, "Hello", "Say hello")])
+`;
+
+  it('compiles sendsTo on steps and branch options as references', () => {
+    const flow = (compileOUISection(source).value!.data as { flow: AbstractFlow }).flow;
+    const [hello, fork] = flow.steps;
+    expect(hello.type === 'linear' && hello.sendsTo?.id).toBe('server');
+    expect(fork.type === 'branch' && fork.branches.map(b => b.sendsTo?.id)).toEqual(['client', undefined]);
+    const seq = autoDeriveViews(deriveSchema(flow)).relations.filter(r => r.views?.includes('SEQUENCE') && r.dashed);
+    expect(seq.find(r => r.label === 'Hello said')).toMatchObject({ to: expect.stringContaining('server') });
+  });
+
+  it('keeps sendsTo when the visual form saves the section back to .oui', () => {
+    const compiled = compileOUISection(source).value!;
+    const reprinted = compileOUISection(printOUISection(compiled.meta, compiled.data));
+    expect(reprinted.issues).toEqual([]);
+    expect(reprinted.value).toEqual(compiled);
+  });
+
+  it('flags a sendsTo that names nothing declared', () => {
+    const bad = source.replace('"fork", null, server)', '"fork", null, "nobody")');
+    const diag = validateOUISection(bad).diagnostics.find(d => d.field?.endsWith('sendsTo'));
+    expect(diag?.message).toContain('"nobody"');
   });
 });

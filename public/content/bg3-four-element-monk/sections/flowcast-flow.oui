@@ -54,6 +54,8 @@ step1 = Step(
   player,
   null,
   "step_opening",
+  null,
+  twistedWrathHandler,
 )
 
 stepOpening = Branch(
@@ -84,6 +86,8 @@ branchOffense = BranchOption(
   null,
   "enemy",
   "step_attack_loop",
+  null,
+  unarmedCombat,
 )
 
 branchDefense = BranchOption(
@@ -104,6 +108,8 @@ stepAttackLoop = Step(
   "evt_wrath_active",
   null,
   "step_ki_check",
+  null,
+  fourPointHandler,
 )
 
 stepKiCheck = Branch(

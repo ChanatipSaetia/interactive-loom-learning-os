@@ -63,6 +63,8 @@ stepIgnite = Step(
   pitmaster,
   null,
   "step_indirect_setup",
+  null,
+  deflectorUnit,
 )
 
 stepIndirectSetup = Step(
@@ -74,6 +76,8 @@ stepIndirectSetup = Step(
   null,
   null,
   "step_insert_probe",
+  null,
+  meatProbe,
 )
 
 stepInsertProbe = Step(
@@ -91,6 +95,8 @@ stepInsertProbe = Step(
   null,
   null,
   "step_reach_internal",
+  null,
+  deflectorUnit,
 )
 
 stepReachInternal = Step(
@@ -102,6 +108,8 @@ stepReachInternal = Step(
   null,
   null,
   "step_cast_iron_sear",
+  null,
+  searingGrate,
 )
 
 stepCastIronSear = Step(
@@ -119,6 +127,8 @@ stepCastIronSear = Step(
   null,
   null,
   "step_rest_and_serve",
+  null,
+  restingBoard,
 )
 
 stepRestAndServe = Step(

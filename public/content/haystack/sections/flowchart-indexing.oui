@@ -76,6 +76,8 @@ convertFiles = Step(
   null,
   null,
   "split_texts",
+  null,
+  textSplitter,
 )
 
 splitTexts = Step(
@@ -87,6 +89,8 @@ splitTexts = Step(
   null,
   null,
   "compute_embeddings",
+  null,
+  docEmbedder,
 )
 
 computeEmbeddings = Step(
@@ -104,6 +108,8 @@ computeEmbeddings = Step(
   null,
   embeddingModel,
   "write_docs",
+  null,
+  docWriter,
 )
 
 writeDocs = Step(

@@ -29,6 +29,8 @@ step1 = Step(
   cook,
   null,
   "step_2",
+  null,
+  knife,
 )
 
 step2 = Step(
@@ -40,6 +42,8 @@ step2 = Step(
   cook,
   null,
   "step_3",
+  null,
+  panOil,
 )
 
 step3 = Step(
@@ -62,6 +66,8 @@ step4 = Step(
   cook,
   null,
   "step_5",
+  null,
+  knife,
 )
 
 step5 = Step(
@@ -73,6 +79,8 @@ step5 = Step(
   cook,
   null,
   "step_branch",
+  null,
+  durianRaw,
 )
 
 stepBranch = Branch("step_branch", "evt_drained", [branchPlain, branchSugar])

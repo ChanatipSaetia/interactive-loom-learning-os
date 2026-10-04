@@ -123,6 +123,7 @@ A YAML **list** of step objects. Two step types exist: `linear` and `branch`.
       desc: "Optional description"          # optional
   continuesAs: step_charges      # references the next step ID (optional)
   delegatesTo: other_system_id   # optional — system that further processes the command
+  sendsTo: charged_staff         # optional — actor or system that receives the result events
 ```
 
 `LinearStep`:
@@ -136,6 +137,7 @@ A YAML **list** of step objects. Two step types exist: `linear` and `branch`.
 | `command` | `string` | Yes | Command name being issued |
 | `handledBy` | `string` | Yes | System ID that handles the command |
 | `delegatesTo` | `string` | No | Optional downstream system ID |
+| `sendsTo` | `string` | No | Actor or system ID that receives the result events. The Sequence and System Architecture views draw only declared messages; without it the events stay on the handler's lifeline. In `.oui` it is the last `Step` / `BranchOption` argument. |
 | `resultEvents` | `ResultEvent[]` | Yes | Events emitted after handling |
 | `continuesAs` | `string` | No | Next step ID (omit for terminal steps) |
 

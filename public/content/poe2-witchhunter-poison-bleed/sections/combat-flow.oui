@@ -59,6 +59,8 @@ stepPoisonPack = Step(
   player,
   "pack",
   "step_bleed_pack",
+  null,
+  barrage,
 )
 
 stepBleedPack = Step(
@@ -70,6 +72,8 @@ stepBleedPack = Step(
   null,
   null,
   "step_dots_pack",
+  null,
+  dotSystem,
 )
 
 stepDotsPack = Step(
@@ -81,6 +85,8 @@ stepDotsPack = Step(
   null,
   null,
   "step_clear_branch",
+  null,
+  gasGrenade,
 )
 
 stepClearBranch = Branch("step_clear_branch", "evt_pack_melted", [branchNextPack, branchBoss])
@@ -106,6 +112,8 @@ branchBoss = BranchOption(
   null,
   "boss",
   "step_bleed_boss",
+  null,
+  barrage,
 )
 
 stepBleedBoss = Step(
@@ -117,6 +125,8 @@ stepBleedBoss = Step(
   null,
   noMercy,
   "step_dots_boss",
+  null,
+  dotSystem,
 )
 
 stepDotsBoss = Step(

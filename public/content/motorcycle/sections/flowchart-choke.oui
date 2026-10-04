@@ -31,6 +31,8 @@ chokeOn = Step(
   rider,
   null,
   "rich-mix-branch",
+  null,
+  engineWarm,
 )
 
 richMixBranch = Branch("rich-mix-branch", "rich_mix", [coldStart, rideChoke])
@@ -46,6 +48,8 @@ coldStart = BranchOption(
   null,
   null,
   "choke_off",
+  null,
+  chokeValve,
 )
 
 rideChoke = BranchOption(

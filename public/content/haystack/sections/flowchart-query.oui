@@ -88,6 +88,8 @@ embedQuery = Step(
   null,
   queryEmbeddingModel,
   "retrieve",
+  null,
+  retriever,
 )
 
 retrieve = Step(
@@ -105,6 +107,8 @@ retrieve = Step(
   null,
   docStore,
   "rank",
+  null,
+  ranker,
 )
 
 rank = Step(
@@ -116,6 +120,8 @@ rank = Step(
   null,
   null,
   "build_prompt",
+  null,
+  promptBuilder,
 )
 
 buildPrompt = Step(
@@ -127,6 +133,8 @@ buildPrompt = Step(
   null,
   null,
   "generate_answer",
+  null,
+  llmGenerator,
 )
 
 generateAnswer = Step(

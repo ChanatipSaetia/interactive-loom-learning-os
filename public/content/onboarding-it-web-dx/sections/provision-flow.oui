@@ -54,6 +54,8 @@ stepRequest = Step(
   hiringManager,
   null,
   "step_provision",
+  null,
+  ssoDirectory,
 )
 
 stepProvision = Step(
@@ -65,6 +67,8 @@ stepProvision = Step(
   null,
   null,
   "step_privileges",
+  null,
+  pamVault,
 )
 
 stepPrivileges = Step(
@@ -76,6 +80,8 @@ stepPrivileges = Step(
   itOperator,
   null,
   "step_smoke",
+  null,
+  ssoDirectory,
 )
 
 stepSmoke = Step(

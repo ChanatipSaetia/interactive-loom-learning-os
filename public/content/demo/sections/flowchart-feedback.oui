@@ -40,6 +40,8 @@ fbCheck = Step(
   qaUser,
   null,
   "fb_decision",
+  null,
+  orchFeedback,
 )
 
 fbDecision = Branch("fb_decision", "fb_evaluated", [fbPass, fbFail])
@@ -64,6 +66,8 @@ fbFail = BranchOption(
   null,
   "dev_user",
   "fb_store",
+  null,
+  memoryStore,
 )
 
 fbStore = Step(
@@ -75,6 +79,8 @@ fbStore = Step(
   null,
   null,
   "fb_rerun",
+  null,
+  llmFeedback,
 )
 
 fbRerun = Step(
@@ -86,6 +92,8 @@ fbRerun = Step(
   null,
   null,
   "fb_check",
+  null,
+  evaluator,
 )
 
 fbJourneyPass = Journey(

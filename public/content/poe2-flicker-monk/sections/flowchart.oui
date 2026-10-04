@@ -112,6 +112,8 @@ stepEnter = Step(
   player,
   "pack",
   "step_charges",
+  null,
+  castOnCrit,
 )
 
 stepCharges = Step(
@@ -123,6 +125,8 @@ stepCharges = Step(
   null,
   null,
   "step_clear_branch",
+  null,
+  fallingThunder,
 )
 
 stepClearBranch = Branch(
@@ -141,6 +145,8 @@ stepClearBranch = Branch(
       null,
       hollowFocus,
       "step_heralds",
+      null,
+      heralds,
     ),
   ],
 )
@@ -156,6 +162,8 @@ branchFt = BranchOption(
   null,
   trinity,
   "step_heralds",
+  null,
+  heralds,
 )
 
 stepHeralds = Step(
@@ -167,6 +175,8 @@ stepHeralds = Step(
   null,
   null,
   "step_boss_check",
+  null,
+  whirlingAssault,
 )
 
 stepBossCheck = Branch("step_boss_check", "evt_explosions", [branchMapping, branchBoss])
@@ -192,6 +202,8 @@ branchBoss = BranchOption(
   null,
   "boss",
   "step_boss_charges",
+  null,
+  ailithsChimes,
 )
 
 stepBossCharges = Step(
@@ -203,6 +215,8 @@ stepBossCharges = Step(
   null,
   null,
   "step_boss_nuke",
+  null,
+  chargedStaff,
 )
 
 stepBossNuke = Step(
@@ -214,6 +228,8 @@ stepBossNuke = Step(
   null,
   ci,
   "step_boss_commit",
+  null,
+  flickerStrike,
 )
 
 stepBossCommit = Branch(

@@ -68,6 +68,8 @@ stepSme = Step(
   sme,
   null,
   "step_test",
+  null,
+  stagingApp,
 )
 
 stepTest = Step(
@@ -79,6 +81,8 @@ stepTest = Step(
   tester,
   null,
   "step_test_outcome",
+  null,
+  valeCi,
 )
 
 stepTestOutcome = Branch(
@@ -102,6 +106,8 @@ stepTestOutcome = Branch(
       null,
       null,
       "step_publish",
+      null,
+      docsSite,
     ),
     BranchOption(
       "branch_fail",
