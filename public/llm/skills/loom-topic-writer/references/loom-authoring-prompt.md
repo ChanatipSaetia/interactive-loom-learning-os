@@ -163,7 +163,7 @@ MachineState(id: string, label: string, color: string) — A state of a system s
   - id: State ID, unique within the state machine.
   - label: State name shown in the state machine view.
   - color: CSS colour for the state, e.g. "var(--ctp-green)" or "#a6d189".
-Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls.
+Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.
   - id: Step ID, unique within the flowchart; journeys and `continuesAs` refer to it.
   - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
   - command: Command the policy issues, in imperative form (e.g. "PlaceOrder").
@@ -173,11 +173,12 @@ Step(id: string, policy: string, command: string, handledBy: string | System, ev
   - delegatesTo: Optional second system the handler calls (System reference or ID).
   - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
   - description: Optional narration of this step, shown when it is highlighted.
+  - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
 Branch(id: string, event: string, options: BranchOption[]) — Branching step: one event splits into several policy/command paths.
   - id: Branch ID, unique within the flowchart.
   - event: The event that splits into the options (e.g. "Payment Checked").
   - options: The paths, as BranchOption references.
-BranchOption(id: string, label: string, policy: string, command: string, handledBy: string | System, events: Event[], dashed?: boolean, initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string) — One path of a branch: label, then the same POLICY → COMMAND → system → events cycle as a Step.
+BranchOption(id: string, label: string, policy: string, command: string, handledBy: string | System, events: Event[], dashed?: boolean, initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System) — One path of a branch: label, then the same POLICY → COMMAND → system → events cycle as a Step.
   - id: Option ID, unique within the flowchart; journeys and `continuesAs` refer to it.
   - label: Label drawn on the branch edge (e.g. "approved").
   - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
@@ -189,6 +190,7 @@ BranchOption(id: string, label: string, policy: string, command: string, handled
   - delegatesTo: Optional second system the handler calls (System reference or ID).
   - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
   - description: Optional narration of this step, shown when it is highlighted.
+  - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
 Event(id: string, title: string, desc?: string) — A domain event produced by a step (past tense, e.g. "Order Placed").
   - id: Event ID, unique within the flowchart.
   - title: Event name in past tense (e.g. "Order Placed").
@@ -440,7 +442,7 @@ root = Flowchart("Brewing Flow", [brewer], [kettle, teapot], [heat, brew], [happ
 brewer = Actor("brewer", "Brewer", "Person making the tea")
 kettle = System("kettle", "Kettle", "Heats water to a set temperature", "external")
 teapot = System("teapot", "Teapot", "Holds leaf and water while it steeps", "aggregate")
-heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves")
+heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves", null, teapot)
 brew = Step("steep-leaves", "When water is ready", "SteepLeaves", teapot, [Event("tea-steeped", "Tea Steeped")])
 happy = Journey("happy", "Balanced cup", "Heat, steep and pour on time", [JourneyStep(heat, "Heat water", "The kettle stops at 75 °C instead of boiling."), JourneyStep(brew, "Steep", "Two minutes, then pour off all the water.")])
 
@@ -525,6 +527,6 @@ tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C a
 - Mix interactive section types. Never build a topic out of Text sections only.
 - Quizzes and reflection challenges only test what an earlier section of the topic teaches. Each QuizQuestion has exactly one choice with `correct` set to true.
 - IDs (`id` props) are unique within their section. Props that point at an ID (`next`, `root`, `startNode`, `recommended`, `solution`, `continuesAs`, `initialState`, `dependsOn`) must name an ID that exists in the same section.
-- Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts at least one step (`initiatedBy`) and every declared System handles (`handledBy`) or receives (`delegatesTo`) at least one step.
+- Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages.
 - To skip an optional argument and still set a later one, pass `null` in its place, e.g. `Step("s1", "When …", "DoThing", sys, [evt], null, null, "s2")`.
 - Text paragraphs may use inline markdown (**bold**, `code`, [links](url)). Write factual, specific content; no placeholders such as "Lorem ipsum" or "TODO".

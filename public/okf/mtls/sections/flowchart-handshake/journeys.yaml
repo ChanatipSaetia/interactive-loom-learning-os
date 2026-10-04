@@ -2,6 +2,10 @@
   label: "Successful mTLS Handshake"
   description: "All certificates are valid, encrypted channel established"
   steps:
+    - stepId: configure_trust
+      name: "Configure Trust"
+      description: "The server administrator configures which certificate authorities the server trusts for client certificates."
+      processGroup: initiation
     - stepId: init_connection
       name: "Initiate Connection"
       description: "Client developer initiates the TLS connection."
@@ -43,6 +47,10 @@
   label: "Certificate Rejected"
   description: "Client certificate fails validation, connection terminated"
   steps:
+    - stepId: configure_trust
+      name: "Configure Trust"
+      description: "The server administrator configures which certificate authorities the server trusts for client certificates."
+      processGroup: initiation
     - stepId: init_connection
       name: "Initiate Connection"
       description: "Client developer initiates the TLS connection."

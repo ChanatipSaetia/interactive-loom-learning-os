@@ -77,10 +77,10 @@ journeyMismatch = Journey(
   "Wrong Prediction → Corrected Model",
   "The most valuable path: the learner's prediction fails and their model gets fixed",
   [
-    JourneyStep("evt_predicted", "Predict", "'Anna will see one project.'"),
-    JourneyStep("evt_observed", "Observe", "Anna sees all five Sales projects."),
+    JourneyStep("step_predict", "Predict", "'Anna will see one project.'"),
+    JourneyStep("step_observe", "Observe", "Anna sees all five Sales projects."),
     JourneyStep(
-      "evt_model_corrected",
+      "branch_mismatch",
       "Explain",
       "The learner explains the difference: permissions flow down from the workspace.",
     ),
@@ -92,8 +92,8 @@ journeyMatch = Journey(
   "Right Prediction → Confirmed Model",
   "The learner's model was already right and gets reinforced",
   [
-    JourneyStep("evt_predicted", "Predict", "'Anna will see all five projects.'"),
-    JourneyStep("evt_observed", "Observe", "She does."),
-    JourneyStep("evt_model_confirmed", "Explain", "The explanation confirms why."),
+    JourneyStep("step_predict", "Predict", "'Anna will see all five projects.'"),
+    JourneyStep("step_observe", "Observe", "She does."),
+    JourneyStep("branch_match", "Explain", "The explanation confirms why."),
   ],
 )

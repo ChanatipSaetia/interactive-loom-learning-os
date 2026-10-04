@@ -19,6 +19,28 @@ EVENT ──> POLICY ──> COMMAND ──> AGGREGATE/EXTERNAL (handledBy) ─�
 1. **Never jump directly** from `EVENT → AGGREGATE` or skip command/policy nodes. Every action that performs work must be represented as a `COMMAND` handled by an `AGGREGATE` or `EXTERNAL` system.
 2. **Policy Inclusion**: Every linear step (including the root step) and all branch options specify a `policy` field in the steps YAML file. The engine generates a `POLICY` node for every step in the chain (`ACTOR → POLICY → COMMAND` for root steps, and `EVENT → POLICY → COMMAND` for downstream steps).
 3. **Natural Language**: Values for `command` and `policy` fields must be written in natural language (e.g. `command: "Start Agent Run"`, `policy: "If Plan Approved"`) rather than code-like variable identifiers (e.g. `cmd_start`, `pol_approve`). They render directly as text labels in the flowchart nodes.
+4. **Who does what** (all on a linear step or branch option):
+
+   | Field | Meaning | Required |
+   |---|---|---|
+   | `initiatedBy` | Actor who starts the step | no |
+   | `handledBy` | System that runs the command | no — omit only for a pure state change no system runs (the command then emits its events directly) |
+   | `delegatesTo` | System the handler hands part of the work to (e.g. reading a key store) | no — needs `handledBy` |
+   | `sendsTo` | Actor or system that **receives** the step's result (a message) | no |
+
+   Declare `sendsTo` whenever the step sends something to someone, especially in protocol flows: the System Architecture and Sequence views draw exactly that message (`handledBy → sendsTo`) and nothing is inferred. A step with no `initiatedBy`, `sendsTo` or `delegatesTo` is drawn as happening inside its handler: its box lights up with the step label, and no line is invented.
+
+   ```yaml
+   - type: linear
+     id: server_cert_step
+     policy: "Present Server Identity"
+     command: "Send Server Certificate"
+     handledBy: server
+     sendsTo: client          # the certificate goes to the client
+     resultEvents:
+       - id: server_cert_sent
+         title: "Server Certificate Sent"
+   ```
 
 ---
 
@@ -107,6 +129,17 @@ A flowchart should contain one or more journeys (`journeys.yaml`) that serve as 
 - Each journey must follow **exactly one branch path** from start to finish. Never jump between parallel branches.
 - Include a **Happy Path** journey as the baseline progression.
 - Create secondary journeys for error loops, exceptions, or alternative execution flows.
+- Each journey step's `stepId` must be a **linear step `id` or a branch option `id`** from `steps.yaml` — never a `resultEvents` id or a branch step's own `id`. Playback highlights and frames that step's whole cycle (actor → policy → command → handler → result events); pointing at an event would show that single event only. The validator flags it with the producing step as the fix hint.
+
+```yaml
+- stepId: step_draft     # ✅ the step that produces evt_draft_opened
+  name: "Draft"
+  description: "The writer opens a pull request"
+- stepId: branch_pass    # ✅ one option of a branch step
+  name: "Editorial review"
+  description: "Structure, style and terms are checked"
+# - stepId: evt_draft_opened   ❌ a result event
+```
 
 ---
 
@@ -116,8 +149,8 @@ All flowchart diagrams are automatically validated via the **3-Tier Validation G
 
 ### Tier 3 Semantic Reference Integrity Rules for Flowcharts:
 1. **Actor & System Attachment to Steps**:
-   - Every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`) node declared in `actors.yaml` or `systems.yaml` **MUST be attached to at least one step in steps.yaml** (via `initiatedBy`, `handledBy`, or `delegatesTo`).
-   - Every `Command` derived from steps MUST be handled by a valid Aggregate or External system defined in `systems.yaml`.
+   - Every `Actor` (User) and `System` (`Aggregate`, `External API`, `Service`, `Database`) node declared in `actors.yaml` or `systems.yaml` **MUST be attached to at least one step in steps.yaml** (via `initiatedBy`, `handledBy`, `delegatesTo`, or `sendsTo`).
+   - A `handledBy` MUST name a system defined in `systems.yaml`; a `sendsTo` MUST name a declared actor or system; `delegatesTo` requires `handledBy`.
    - Every `Actor` and `System` node in the derived graph MUST be connected to an Event node via step relation chains.
 
 2. **Step Link Reference Integrity (`continuesAs`)**:

@@ -38,3 +38,41 @@ export function findCommandInitiator(
 
   return null;
 }
+
+/**
+ * Resolves the declared recipient participant for an event node (from a sendsTo relation).
+ */
+export function findEventRecipient(
+  schema: UnifiedFlowchartSchema,
+  eventId: string,
+  getCollapsedId: (id: string) => string
+): string | null {
+  const rel = schema.relations.find(r => r.sendsTo && r.from === eventId);
+  return rel ? getCollapsedId(rel.to) : null;
+}
+
+/**
+ * Resolves the producing participant (system or actor) for an event node.
+ */
+export function findEventProducer(
+  schema: UnifiedFlowchartSchema,
+  eventId: string,
+  getCollapsedId: (id: string) => string
+): string | null {
+  const rel = schema.relations.find(r =>
+    (!r.views || r.views.includes('EVENT_STORMING')) &&
+    r.to === eventId
+  );
+  if (!rel) return null;
+
+  const fromType = getEntityType(schema.entities[rel.from]);
+  if (fromType === TYPES.COMMAND) {
+    const handledByRel = schema.relations.find(hbr =>
+      (!hbr.views || hbr.views.includes('EVENT_STORMING')) &&
+      hbr.from === rel.from && hbr.handledBy
+    );
+    if (handledByRel) return getCollapsedId(handledByRel.to);
+    return findCommandInitiator(schema, rel.from, getCollapsedId);
+  }
+  return getCollapsedId(rel.from);
+}

@@ -55,6 +55,8 @@ stepCommit = Step(
   docWriter,
   null,
   "step_preview",
+  null,
+  ciPipeline,
 )
 
 stepPreview = Step(
@@ -66,6 +68,8 @@ stepPreview = Step(
   null,
   previewHost,
   "step_review",
+  null,
+  previewHost,
 )
 
 stepReview = Step(
@@ -77,6 +81,8 @@ stepReview = Step(
   reviewer,
   null,
   "step_outcome",
+  null,
+  docsSite,
 )
 
 stepOutcome = Branch(
@@ -109,22 +115,22 @@ journeyPublish = Journey(
   "The manual change is reviewed and published to the docs web app",
   [
     JourneyStep(
-      "evt_committed",
+      "step_commit",
       "Changes Committed",
       "The technical writer commits a manual update to the Git repository",
     ),
     JourneyStep(
-      "evt_preview",
+      "step_preview",
       "Preview Deployed",
       "CI builds a preview site so the proposed manual can be clicked through",
     ),
     JourneyStep(
-      "evt_reviewed",
+      "step_review",
       "Review Completed",
       "An engineering reviewer checks commands and screenshots against the real system",
     ),
     JourneyStep(
-      "evt_published",
+      "branch_publish",
       "Docs Published",
       "The docs web app ships the new version under a permanent permalink",
     ),
@@ -136,19 +142,19 @@ journeyRevision = Journey(
   "Revision Loop",
   "The reviewer finds a stale command and the manual cycles back for revision",
   [
-    JourneyStep("evt_committed", "Changes Committed", "A manual update lands in the repository"),
+    JourneyStep("step_commit", "Changes Committed", "A manual update lands in the repository"),
     JourneyStep(
-      "evt_preview",
+      "step_preview",
       "Preview Deployed",
       "CI deploys the ephemeral preview for inspection",
     ),
     JourneyStep(
-      "evt_reviewed",
+      "step_review",
       "Review Completed",
       "The reviewer spots a command that no longer matches the system",
     ),
     JourneyStep(
-      "evt_revised",
+      "branch_revise",
       "Content Revised",
       "Content returns to the writer for revision instead of publishing",
     ),

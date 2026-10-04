@@ -4,6 +4,7 @@ import React from 'react';
 import * as Icons from 'lucide-react';
 import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartViewNode, FlowchartViewGroup } from '../types';
+import type { ForkHighlights } from '../fork-highlights';
 
 export interface SequenceViewProps {
   viewKey: string;
@@ -13,6 +14,8 @@ export interface SequenceViewProps {
   activeNodeIds: string[] | null;
   activeRelationIds: string[] | null;
   highlightedNodeId: string | null;
+  /** Marks the `alt:` frame of the option the step takes and of the others. */
+  forkHighlights?: ForkHighlights | null;
 }
 
 export const SequenceView = memo(function SequenceView({
@@ -22,7 +25,8 @@ export const SequenceView = memo(function SequenceView({
   view,
   activeNodeIds,
   activeRelationIds,
-  highlightedNodeId
+  highlightedNodeId,
+  forkHighlights
 }: SequenceViewProps) {
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
@@ -113,6 +117,9 @@ export const SequenceView = memo(function SequenceView({
             opacity={isFaded ? 0.55 : 0.85} 
             style={{ transition: 'opacity 0.3s' }}
             data-testid={`flowchart-seq-group-${viewKey}-${group.id}`}
+            data-fork={forkHighlights?.takenGroupId === group.id
+              ? 'taken'
+              : forkHighlights?.altGroupIds.includes(group.id) ? 'alt' : undefined}
           >
             <rect
               x={xStart}

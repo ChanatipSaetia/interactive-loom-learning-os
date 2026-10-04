@@ -73,7 +73,9 @@ export function routeManhattanPath(
   fromNode: any,
   toNode: any,
   positioned: any[],
-  spacing: any
+  spacing: any,
+  /** Segments of lines already routed; running on top of them is penalised. */
+  avoid: Array<{ a: { x: number; y: number }; b: { x: number; y: number } }> = []
 ): { pathD: string; points: Array<{ x: number; y: number }>; midX: number; midY: number; incomingSide: string } {
   const STUB = 16;
   const candidates: Array<{ type: string; points: Array<{ x: number; y: number }> }> = [];
@@ -154,9 +156,10 @@ export function routeManhattanPath(
 
   let bestPath: Array<{ x: number; y: number }> | null = null;
   let minScore = Infinity;
+  let bestCollisions = Infinity;
   const PADDING = 18;
 
-  candidates.forEach(cand => {
+  const evaluate = (cand: { points: Array<{ x: number; y: number }> }) => {
     const pts = cand.points;
     let collisions = 0;
     let length = 0;
@@ -216,12 +219,62 @@ export function routeManhattanPath(
       });
     }
 
-    const score = collisions * 1000000 + bends * 5000 + length;
+    // Length shared with lines already placed (same channel, same direction)
+    let shared = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const horizontal = a.y === b.y;
+      for (const seg of avoid) {
+        if (horizontal && seg.a.y === seg.b.y && Math.abs(seg.a.y - a.y) < 4) {
+          shared += Math.max(0, Math.min(Math.max(a.x, b.x), Math.max(seg.a.x, seg.b.x)) - Math.max(Math.min(a.x, b.x), Math.min(seg.a.x, seg.b.x)));
+        } else if (!horizontal && seg.a.x === seg.b.x && Math.abs(seg.a.x - a.x) < 4) {
+          shared += Math.max(0, Math.min(Math.max(a.y, b.y), Math.max(seg.a.y, seg.b.y)) - Math.max(Math.min(a.y, b.y), Math.min(seg.a.y, seg.b.y)));
+        }
+      }
+    }
+
+    // Sharing a channel costs more than a couple of extra bends
+    const score = collisions * 1000000 + bends * 5000 + length + shared * 300;
     if (score < minScore) {
       minScore = score;
       bestPath = pts;
+      bestCollisions = collisions;
     }
-  });
+  };
+  candidates.forEach(evaluate);
+
+  // Safety net: when every short route hits a box, try routes with one or two
+  // more bends that leave through the port, cross in a free channel and come
+  // back in (e.g. drop below a row of boxes instead of running along it).
+  if (bestCollisions > 0) {
+    const xs = [...candidateXs];
+    const ys = [...candidateYs];
+    const startH = sideFrom === 'L' || sideFrom === 'R';
+    const endH = sideTo === 'L' || sideTo === 'R';
+    const S = { x: startX, y: startY };
+    const E = { x: endX, y: endY };
+    if (startH && endH) {
+      // H-V-H-V-H
+      xs.forEach(x1 => ys.forEach(y1 => xs.forEach(x2 => evaluate({
+        points: [S, { x: x1, y: startY }, { x: x1, y: y1 }, { x: x2, y: y1 }, { x: x2, y: endY }, E]
+      }))));
+    } else if (!startH && !endH) {
+      // V-H-V-H-V
+      ys.forEach(y1 => xs.forEach(x1 => ys.forEach(y2 => evaluate({
+        points: [S, { x: startX, y: y1 }, { x: x1, y: y1 }, { x: x1, y: y2 }, { x: endX, y: y2 }, E]
+      }))));
+    } else if (startH) {
+      // H-V-H-V
+      xs.forEach(x1 => ys.forEach(y1 => evaluate({
+        points: [S, { x: x1, y: startY }, { x: x1, y: y1 }, { x: endX, y: y1 }, E]
+      })));
+    } else {
+      // V-H-V-H
+      ys.forEach(y1 => xs.forEach(x1 => evaluate({
+        points: [S, { x: startX, y: y1 }, { x: x1, y: y1 }, { x: x1, y: endY }, E]
+      })));
+    }
+  }
 
   if (!bestPath) {
     bestPath = [
@@ -346,13 +399,11 @@ export function disambiguateAndBridgePaths(
       const offset = (idx - (count - 1) / 2) * TRACK_GAP;
       if (Math.abs(offset) < 0.1) return;
 
+      // Only interior segments move: the first and last ones are pinned to ports
+      // (already spread along each side), and moving one end would slant them.
       if (!isStartSeg && !isEndSeg) {
         pts[seg.segIdx].y += offset;
         pts[seg.segIdx + 1].y += offset;
-      } else if (isStartSeg && pts.length > 2) {
-        pts[seg.segIdx + 1].y += offset;
-      } else if (isEndSeg && pts.length > 2) {
-        pts[seg.segIdx].y += offset;
       }
     });
   });
@@ -368,13 +419,11 @@ export function disambiguateAndBridgePaths(
       const offset = (idx - (count - 1) / 2) * TRACK_GAP;
       if (Math.abs(offset) < 0.1) return;
 
+      // Only interior segments move: the first and last ones are pinned to ports
+      // (already spread along each side), and moving one end would slant them.
       if (!isStartSeg && !isEndSeg) {
         pts[seg.segIdx].x += offset;
         pts[seg.segIdx + 1].x += offset;
-      } else if (isStartSeg && pts.length > 2) {
-        pts[seg.segIdx + 1].x += offset;
-      } else if (isEndSeg && pts.length > 2) {
-        pts[seg.segIdx].x += offset;
       }
     });
   });

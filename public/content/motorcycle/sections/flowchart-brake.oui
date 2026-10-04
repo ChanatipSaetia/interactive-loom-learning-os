@@ -31,6 +31,8 @@ brake = Step(
   rider,
   null,
   "caliper_squeeze",
+  null,
+  brakeCaliper,
 )
 
 caliperSqueeze = Step(

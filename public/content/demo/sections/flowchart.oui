@@ -71,6 +71,8 @@ runAgent = Step(
   devUser,
   null,
   "call_llm",
+  null,
+  llm,
 )
 
 callLlm = Step(
@@ -88,6 +90,8 @@ callLlm = Step(
   null,
   null,
   "reason-branch",
+  null,
+  toolsRouter,
 )
 
 reasonBranch = Branch("reason-branch", "reasoned", [executeTool, callMcp, directComplete])
@@ -110,6 +114,8 @@ executeTool = BranchOption(
   null,
   subagents,
   "eval",
+  null,
+  llm,
 )
 
 callMcp = BranchOption(
@@ -123,6 +129,8 @@ callMcp = BranchOption(
   null,
   null,
   "eval",
+  null,
+  llm,
 )
 
 directComplete = BranchOption(
@@ -147,6 +155,8 @@ eval = Step(
   null,
   null,
   "notify-branch",
+  null,
+  orchAgent,
 )
 
 notifyBranch = Branch("notify-branch", "tool_executed", [sendMessage])
@@ -173,6 +183,8 @@ provideFeedback = Step(
   devUser,
   null,
   "call_llm",
+  null,
+  llm,
 )
 
 qaBranch = Branch("qa-branch", "done", [qaReview])

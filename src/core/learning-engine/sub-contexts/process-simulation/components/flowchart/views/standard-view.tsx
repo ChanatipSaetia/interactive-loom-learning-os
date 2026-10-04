@@ -3,6 +3,11 @@ import { useState, memo } from 'react';
 import * as Icons from 'lucide-react';
 import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText, TYPES } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup } from '../types';
+import type { ForkHighlights } from '../fork-highlights';
+import type { StoryRoute } from '../story-route';
+
+/** Longest hand-off label drawn on the canvas; the full text is in the caption. */
+const ROUTE_LABEL_MAX = 34;
 
 export interface StandardViewProps {
   viewKey: string;
@@ -18,8 +23,11 @@ export interface StandardViewProps {
   spacing: { colSpacing: number; rowSpacing: number; offsetX: number; offsetY: number };
   setActiveNodePopup: (popup: any) => void;
   handleNodeClick: (nodeId: string, x?: number, y?: number) => void;
-  prevHighlightedNodeId?: string | null;
   isFullscreen?: boolean;
+  /** Edges and nodes of the fork the current step passes through. */
+  forkHighlights?: ForkHighlights | null;
+  /** Route views: numbered trail of hand-offs and the current one's label. */
+  storyRoute?: StoryRoute | null;
 }
 
 export const StandardView = memo(function StandardView({
@@ -35,7 +43,9 @@ export const StandardView = memo(function StandardView({
   highlightedNodeId,
   spacing,
   handleNodeClick,
-  isFullscreen
+  isFullscreen,
+  forkHighlights,
+  storyRoute
 }: StandardViewProps) {
   const minX = positioned.length > 0 ? Math.min(...positioned.map(n => n.x || 0)) : 0;
   const maxX = positioned.length > 0 ? Math.max(...positioned.map(n => n.x || 0)) : 0;
@@ -44,6 +54,22 @@ export const StandardView = memo(function StandardView({
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [hoveredEdgeNodeIds, setHoveredEdgeNodeIds] = useState<string[] | null>(null);
+
+  // Route views: an edge is the step's main line, another current line, part of the
+  // trail, or off the story. Paint in that order so the main line sits on top.
+  const routeRoleOf = (relId: string): 'primary' | 'current' | 'trail' | 'off' | undefined => {
+    if (!storyRoute) return undefined;
+    if (relId === storyRoute.labelEdgeId) return 'primary';
+    if (storyRoute.currentEdgeIds.includes(relId)) return 'current';
+    return storyRoute.trail[relId] ? 'trail' : 'off';
+  };
+  const ROUTE_PAINT_ORDER = { off: 0, trail: 1, current: 2, primary: 3 } as const;
+  const edgeOrder = routedRelations.map((_, idx) => idx);
+  if (storyRoute) {
+    edgeOrder.sort((a, b) =>
+      ROUTE_PAINT_ORDER[routeRoleOf(routedRelations[a].id)!] - ROUTE_PAINT_ORDER[routeRoleOf(routedRelations[b].id)!]
+    );
+  }
 
   return (
     <>
@@ -120,7 +146,8 @@ export const StandardView = memo(function StandardView({
       })}
 
       {/* Edges */}
-      {routedRelations.map((relEntry, idx) => {
+      {edgeOrder.map(idx => {
+        const relEntry = routedRelations[idx];
         const rel = relEntry as any;
         const fromNode = nodeMap.get(rel.from);
         const toNode = nodeMap.get(rel.to);
@@ -129,7 +156,16 @@ export const StandardView = memo(function StandardView({
         const edgeId = `edge-${rel.id}`;
         const isHoveredEdge = hoveredEdgeId === edgeId;
         const isSelectedEdge = selectedEdgeId === edgeId;
-        const isExpanded = isHoveredEdge || isSelectedEdge || activeRelationIds?.includes(rel.id);
+        const forkRole = forkHighlights?.takenRelationIds.includes(rel.id)
+          ? 'taken'
+          : forkHighlights?.altRelationIds.includes(rel.id) ? 'alt' : undefined;
+        const routeRole = routeRoleOf(rel.id);
+        // A step travelling a two-way edge backwards: arrowhead only at its receiving (from) end
+        const travelsBackward = storyRoute?.reversedEdgeIds.includes(rel.id) ?? false;
+        const isRouteCurrent = routeRole === 'primary' || routeRole === 'current';
+        const trailSteps = storyRoute?.trail[rel.id];
+        // Fork edges always show their full condition label
+        const isExpanded = isHoveredEdge || isSelectedEdge || activeRelationIds?.includes(rel.id) || !!forkRole;
         const isHighlightedNode = highlightedNodeId === rel.from || highlightedNodeId === rel.to;
         const isRelationActive = activeRelationIds?.includes(rel.id) || false;
         const isEdgeActive = isHighlightedNode || isExpanded || isRelationActive;
@@ -157,6 +193,7 @@ export const StandardView = memo(function StandardView({
               ? `url(#flowchart-arrow-highlight-${startMarkerSide}-${viewInstanceId})`
               : `url(#flowchart-arrow-${startMarkerSide}-${viewInstanceId})`)
           : undefined;
+        const routeStartMarker = `url(#flowchart-arrow-highlight-${startMarkerSide}-${viewInstanceId})`;
 
         const midX = relEntry.midX || 0;
         const midY = relEntry.midY || 0;
@@ -164,7 +201,8 @@ export const StandardView = memo(function StandardView({
 
         // If it is handledBy, we can shift it slightly if we want, but using layout midX is standard.
 
-        let labelText = rel.label;
+        // Two-way edges name each direction: "A → B label ⇄ B → A label"
+        let labelText = rel.reverseLabel ? `${rel.label ?? ''} ⇄ ${rel.reverseLabel}` : rel.label;
         if (!labelText) {
           const fromType = schema.entities[rel.from]?.type || schema.entities[rel.from]?.viewTypes?.EVENT_STORMING || 'default';
           const toType = schema.entities[rel.to]?.type || schema.entities[rel.to]?.viewTypes?.EVENT_STORMING || 'default';
@@ -206,6 +244,10 @@ export const StandardView = memo(function StandardView({
             className="flowchart-edge-group"
             opacity={opacityVal} 
             style={{ transition: 'opacity 0.3s' }}
+            data-fork={forkRole}
+            data-route={routeRole}
+            data-active={isEdgeActive ? 'true' : undefined}
+            data-route-dir={storyRoute?.reversedEdgeIds.includes(rel.id) ? 'reverse' : undefined}
             onMouseEnter={() => {
               setHoveredEdgeId(edgeId);
               setHoveredEdgeNodeIds([rel.from, rel.to]);
@@ -239,8 +281,8 @@ export const StandardView = memo(function StandardView({
               stroke={strokeColor}
               strokeWidth={strokeWidth}
               strokeDasharray={rel.dashed ? '4 4' : '8 8'}
-              markerStart={markerStart}
-              markerEnd={marker}
+              markerStart={routeRole === 'off' || (isRouteCurrent && !travelsBackward) ? undefined : (isRouteCurrent ? routeStartMarker : markerStart)}
+              markerEnd={routeRole === 'off' || (isRouteCurrent && travelsBackward) ? undefined : marker}
               className="flowchart-edge flowchart-edge-animated"
               data-testid={`flowchart-edge-${viewKey}-${idx}`}
               style={{ 
@@ -265,6 +307,7 @@ export const StandardView = memo(function StandardView({
                     onTouchEnd={toggleEdge}
                   >
                     <rect
+                      className="flowchart-edge-label-pill"
                       x={-clampedWidth / 2}
                       y="-10"
                       width={clampedWidth}
@@ -275,6 +318,7 @@ export const StandardView = memo(function StandardView({
                       strokeWidth="1"
                     />
                     <text
+                      className="flowchart-edge-label-text"
                       x="0"
                       y="3"
                       textAnchor="middle"
@@ -288,15 +332,37 @@ export const StandardView = memo(function StandardView({
                   </g>
                 );
               })()}
-            {/* Animated particle dot */}
-            <circle
-              className="flowchart-edge-particle"
-              r="4"
-              fill={isHighlightedNode ? 'var(--secondary)' : 'var(--ctp-yellow)'}
-              opacity="0"
-              data-edge-id={edgeId}
-              data-testid={`flowchart-particle-${viewKey}`}
-            />
+            {storyRoute && (isRouteCurrent || trailSteps) && (() => {
+              // Numbered hand-off: "② Check the facts…" on the current edge, bare numbers on the trail
+              const numbers = isRouteCurrent ? [storyRoute.currentNumber] : trailSteps!;
+              const badge = numbers.join('·');
+              const text = isRouteCurrent && rel.id === storyRoute.labelEdgeId
+                ? (storyRoute.currentLabel.length > ROUTE_LABEL_MAX
+                    ? `${storyRoute.currentLabel.slice(0, ROUTE_LABEL_MAX - 1)}…`
+                    : storyRoute.currentLabel)
+                : '';
+              const badgeW = Math.max(18, badge.length * 7 + 10);
+              const textW = text ? text.length * 6.2 + 12 : 0;
+              const totalW = badgeW + textW;
+              return (
+                <g
+                  className="flowchart-route-label"
+                  data-testid={isRouteCurrent ? 'flowchart-route-current' : 'flowchart-route-trail'}
+                  data-route-role={routeRole}
+                  transform={`translate(${midX - totalW / 2}, ${midY})`}
+                  style={{ pointerEvents: 'none' }}
+                >
+                  {text && (
+                    <rect className="flowchart-route-label-pill" x={0} y={-11} width={totalW} height={22} rx={11} />
+                  )}
+                  <rect className="flowchart-route-badge" x={0} y={-9} width={badgeW} height={18} rx={9} />
+                  <text className="flowchart-route-badge-text" x={badgeW / 2} y={3.5} textAnchor="middle">{badge}</text>
+                  {text && (
+                    <text className="flowchart-route-label-text" x={badgeW + 6} y={3.5}>{text}</text>
+                  )}
+                </g>
+              );
+            })()}
           </g>
         );
       })}
@@ -332,6 +398,7 @@ export const StandardView = memo(function StandardView({
             key={node.id}
             id={`node-${node.id}`}
             data-testid={`flowchart-node-${viewKey}-${node.id}`}
+            data-fork={forkHighlights?.altNodeIds.includes(node.id) ? 'alt' : undefined}
             className={`flowchart-node-group ${(isFullscreen && hasLinks) ? 'has-links' : ''} ${isHighlighted ? 'active' : ''}`}
             transform={`translate(${x}, ${y})`}
             onMouseDown={(e) => e.stopPropagation()}
@@ -474,6 +541,45 @@ export const StandardView = memo(function StandardView({
 
             <text x={0} y={0} display="none">{entity.viewTitles?.[viewKey] ?? entity.title}</text>
             <text x={0} y={0} display="none">&lt;&lt;{viewType}&gt;&gt;</text>
+
+            {/* Route views: a step that sends nothing carries its label on the box */}
+            {storyRoute?.badgeNodeId === node.id && (() => {
+              const badge = String(storyRoute.currentNumber);
+              const text = storyRoute.currentLabel.length > ROUTE_LABEL_MAX
+                ? `${storyRoute.currentLabel.slice(0, ROUTE_LABEL_MAX - 1)}…`
+                : storyRoute.currentLabel;
+              const badgeW = Math.max(18, badge.length * 7 + 10);
+              const totalW = badgeW + text.length * 6.2 + 12;
+              return (
+                <g
+                  className="flowchart-route-label"
+                  data-testid="flowchart-route-node-badge"
+                  transform={`translate(${nW / 2 - totalW / 2}, -16)`}
+                  style={{ pointerEvents: 'none' }}
+                >
+                  <rect className="flowchart-route-label-pill" x={0} y={-11} width={totalW} height={22} rx={11} />
+                  <rect className="flowchart-route-badge" x={0} y={-9} width={badgeW} height={18} rx={9} />
+                  <text className="flowchart-route-badge-text" x={badgeW / 2} y={3.5} textAnchor="middle">{badge}</text>
+                  <text className="flowchart-route-label-text" x={badgeW + 6} y={3.5}>{text}</text>
+                </g>
+              );
+            })()}
+            {/* ...and earlier such steps leave their numbers on the box */}
+            {storyRoute?.nodeTrail[node.id] && (() => {
+              const badge = storyRoute.nodeTrail[node.id].join('·');
+              const badgeW = Math.max(18, badge.length * 7 + 10);
+              return (
+                <g
+                  className="flowchart-route-node-trail"
+                  data-testid="flowchart-route-node-trail"
+                  transform={`translate(${nW - badgeW + 6}, -6)`}
+                  style={{ pointerEvents: 'none' }}
+                >
+                  <rect className="flowchart-route-badge" x={0} y={-9} width={badgeW} height={18} rx={9} />
+                  <text className="flowchart-route-badge-text" x={badgeW / 2} y={3.5} textAnchor="middle">{badge}</text>
+                </g>
+              );
+            })()}
           </g>
         );
       })}

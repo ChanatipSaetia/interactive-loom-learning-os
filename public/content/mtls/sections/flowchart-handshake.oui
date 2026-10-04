@@ -3,6 +3,7 @@ root = Flowchart(
   [clientDev, serverAdmin],
   [client, server, tlsStack, keyStore, caService],
   [
+    configureTrust,
     initConnection,
     serverHelloStep,
     serverCertStep,
@@ -58,6 +59,23 @@ caService = System(
   "external",
 )
 
+configureTrust = Step(
+  "configure_trust",
+  "Before Accepting mTLS Clients",
+  "Configure Trusted Client CAs",
+  server,
+  [
+    Event(
+      "trust_configured",
+      "Client CA Trust Configured",
+      "Server knows which certificate authorities it accepts client certificates from",
+    ),
+  ],
+  serverAdmin,
+  keyStore,
+  "init_connection",
+)
+
 initConnection = Step(
   "init_connection",
   "Start mTLS Handshake",
@@ -67,6 +85,8 @@ initConnection = Step(
   clientDev,
   null,
   "server_hello_step",
+  null,
+  server,
 )
 
 serverHelloStep = Step(
@@ -78,6 +98,8 @@ serverHelloStep = Step(
   null,
   null,
   "server_cert_step",
+  null,
+  client,
 )
 
 serverCertStep = Step(
@@ -89,6 +111,8 @@ serverCertStep = Step(
   null,
   null,
   "server_req_cert_step",
+  null,
+  client,
 )
 
 serverReqCertStep = Step(
@@ -104,8 +128,10 @@ serverReqCertStep = Step(
     ),
   ],
   null,
-  "server_admin",
+  null,
   "client_cert_step",
+  null,
+  client,
 )
 
 clientCertStep = Step(
@@ -117,6 +143,8 @@ clientCertStep = Step(
   null,
   keyStore,
   "verify_branch",
+  null,
+  server,
 )
 
 verifyBranch = Branch("verify_branch", "client_cert_sent", [verifyHappy, verifyRejected])
@@ -154,6 +182,11 @@ verifyRejected = BranchOption(
     ),
   ],
   true,
+  null,
+  null,
+  null,
+  null,
+  client,
 )
 
 clientVerifyStep = Step(
@@ -169,7 +202,7 @@ clientVerifyStep = Step(
     ),
   ],
   null,
-  null,
+  keyStore,
   "key_exchange_step",
 )
 
@@ -209,6 +242,12 @@ mtlsHappyPath = Journey(
   "Successful mTLS Handshake",
   "All certificates are valid, encrypted channel established",
   [
+    JourneyStep(
+      configureTrust,
+      "Configure Trust",
+      "The server administrator configures which certificate authorities the server trusts for client certificates.",
+      "initiation",
+    ),
     JourneyStep(
       initConnection,
       "Initiate Connection",
@@ -271,6 +310,12 @@ mtlsRejectedPath = Journey(
   "Certificate Rejected",
   "Client certificate fails validation, connection terminated",
   [
+    JourneyStep(
+      configureTrust,
+      "Configure Trust",
+      "The server administrator configures which certificate authorities the server trusts for client certificates.",
+      "initiation",
+    ),
     JourneyStep(
       initConnection,
       "Initiate Connection",

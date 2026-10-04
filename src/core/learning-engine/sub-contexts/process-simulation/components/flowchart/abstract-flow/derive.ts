@@ -2,7 +2,7 @@
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
 import { isLinearStep, isBranchStep } from './types';
 import { TYPES } from '../types';
-import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation } from '../types';
+import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, ProcessGroup, FlowchartStepBranchInfo } from '../types';
 
 /**
  * Maps entity IDs to their canonical representative based on (title, type) grouping.
@@ -58,7 +58,7 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   const idMap = new Map<string, string>();
 
   // Track per-step handler/delegate/actor entity IDs (for Event Storming highlighting and journey nodes)
-  const stepHandlerMap = new Map<string, { handler: string; delegate?: string; actor?: string }>();
+  const stepHandlerMap = new Map<string, StepParticipants>();
 
   // Precompute all continuesAs target entity IDs so a policy that already receives
   // an event-driven incoming edge does not also get an actor edge on the same port.
@@ -104,32 +104,84 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
   let isFirstStep = true;
   for (const step of steps) {
     if (isLinearStep(step)) {
-      const { handler, delegate, actor } = processLinearStep(step, entities, relations, relCounter, idMap, actorRefCount, systemRefCount, isFirstStep, steps, continuesAsTargets);
-      stepHandlerMap.set(step.id, { handler, delegate, actor });
+      stepHandlerMap.set(step.id, processLinearStep(step, entities, relations, relCounter, idMap, actorRefCount, systemRefCount, isFirstStep, steps, continuesAsTargets));
       isFirstStep = false;
     } else if (isBranchStep(step)) {
       const handlers = processBranchStep(step, entities, relations, relCounter, idMap, actorRefCount, systemRefCount, steps, continuesAsTargets);
-      for (const { stepId, handler, delegate, actor } of handlers) {
-        stepHandlerMap.set(stepId, { handler, delegate, actor });
+      for (const { stepId, ...participants } of handlers) {
+        stepHandlerMap.set(stepId, participants);
       }
     }
   }
 
   // --- Phase 4: Build journeys ---
+  const nodeIdsForStep = (stepId: string): string[] => {
+    const stepData = findStepById(stepId, steps);
+    return stepData
+      ? collectNodeIds(stepId, stepData, entities, idMap, stepHandlerMap.get(stepId))
+      : [resolveNodeId(stepId, idMap)];
+  };
+
+  // Where each branch option is taken across journeys, for "other path" links
+  const optionTakenAt = new Map<string, { journeyId: string; stepIndex: number }[]>();
+  journeysList.forEach(j => (j.steps || []).forEach((s, idx) => {
+    optionTakenAt.set(s.stepId, [...(optionTakenAt.get(s.stepId) ?? []), { journeyId: j.id, stepIndex: idx }]);
+  }));
+
+  // Only real forks (2+ options) get branch info; a single labeled option is just a continuation
+  const branchInfoFor = (stepId: string, journeyId: string, stepIndex: number): FlowchartStepBranchInfo | undefined => {
+    const fork = steps.find((st): st is BranchStep => isBranchStep(st) && st.branches.some(b => b.id === stepId));
+    if (!fork || fork.branches.length < 2) return undefined;
+    const taken = fork.branches.find(b => b.id === stepId)!;
+    // The step (or option) whose result event is the fork's branching event
+    const producer = steps
+      .flatMap((st): Array<LinearStep | BranchOption> => (isBranchStep(st) ? st.branches : [st]))
+      .find(st => st.resultEvents.some(evt => evt.id === fork.event));
+    return {
+      optionId: taken.id,
+      label: taken.label,
+      forkNodeIds: [resolveNodeId(fork.event, idMap), ...(producer ? nodeIdsForStep(producer.id) : [])],
+      alternatives: fork.branches
+        .filter(b => b.id !== stepId)
+        .map(b => {
+          // Prefer another journey; fall back to another point of this one
+          const places = optionTakenAt.get(b.id) ?? [];
+          const takenBy = places.find(t => t.journeyId !== journeyId)
+            ?? places.find(t => t.stepIndex !== stepIndex);
+          return {
+            optionId: b.id,
+            label: b.label,
+            nodeIds: nodeIdsForStep(b.id),
+            ...(takenBy ? { journeyId: takenBy.journeyId, stepIndex: takenBy.stepIndex } : {}),
+          };
+        }),
+    };
+  };
+
   const journeys = journeysList.map(j => ({
     id: j.id,
     label: j.label,
     description: j.description,
-    steps: (j.steps || []).map(s => {
+    steps: (j.steps || []).map((s, idx) => {
+      const branch = branchInfoFor(s.stepId, j.id, idx);
       const stepData = findStepById(s.stepId, steps);
-      const nodeIds = stepData
-        ? collectNodeIds(s.stepId, stepData, entities, idMap, stepHandlerMap.get(s.stepId))
-        : [resolveNodeId(s.stepId, idMap)];
+      const participants = stepHandlerMap.get(s.stepId);
       return {
-        nodeIds,
+        nodeIds: nodeIdsForStep(s.stepId),
+        ...(stepData ? {
+          roles: {
+            initiator: participants?.actor,
+            handler: participants?.handler,
+            delegate: participants?.delegate,
+            recipient: participants?.recipient,
+            command: stepData.command,
+          },
+        } : {}),
         title: s.name,
         reason: s.description,
-        processGroup: s.processGroup,
+        // Topic-specific phase labels have no state mapping; PROCESS_GROUP_STATE_MAP lookups fall back to null.
+        processGroup: s.processGroup as ProcessGroup | undefined,
+        ...(branch ? { branch } : {}),
       };
     }),
   }));
@@ -258,7 +310,7 @@ function processLinearStep(
   isFirstStep: boolean,
   steps: FlowStep[] = [],
   _continuesAsTargets: Set<string> = new Set(),
-): { handler: string; delegate?: string; actor?: string } {
+): StepParticipants {
   // Create policy entity (always — even for root step)
   const polId = `pol_${step.id}`;
   entities[polId] = {
@@ -302,27 +354,25 @@ function processLinearStep(
     views: ['EVENT_STORMING'],
   });
 
-  // Get handler entity (auto-duplicate per step)
-  const handlerId = getSystemEntityId(
-    getId(step.handledBy),
-    entities,
-    systemRefCount,
-    idMap,
-    step.id,
-  );
+  // Get handler entity (auto-duplicate per step); a step may have none
+  const handlerId = step.handledBy
+    ? getSystemEntityId(getId(step.handledBy), entities, systemRefCount, idMap, step.id)
+    : undefined;
 
   // Command → handler (handledBy)
-  relations.push({
-    id: getNextRelId(relCounter),
-    from: cmdId,
-    to: handlerId,
-    handledBy: true,
-    views: ['EVENT_STORMING'],
-  });
+  if (handlerId) {
+    relations.push({
+      id: getNextRelId(relCounter),
+      from: cmdId,
+      to: handlerId,
+      handledBy: true,
+      views: ['EVENT_STORMING'],
+    });
+  }
 
   // Handler → delegate (side relation, not in event chain)
   let delegateId: string | undefined;
-  if (step.delegatesTo) {
+  if (handlerId && step.delegatesTo) {
     delegateId = getSystemEntityId(
       getId(step.delegatesTo),
       entities,
@@ -338,7 +388,7 @@ function processLinearStep(
     });
   }
 
-  // Handler → resultEvents (always from handler, never from delegate)
+  // Handler → resultEvents (from the handler, never the delegate; from the command when no handler)
   for (const evt of step.resultEvents) {
     const eventId = `evt_${evt.id}`;
     if (!entities[eventId]) {
@@ -352,11 +402,13 @@ function processLinearStep(
 
     relations.push({
       id: getNextRelId(relCounter),
-      from: handlerId,
+      from: handlerId ?? cmdId,
       to: eventId,
       views: ['EVENT_STORMING'],
     });
   }
+
+  const recipientId = addRecipient(step.sendsTo, step.resultEvents, step.id, entities, relations, relCounter, idMap, actorRefCount, systemRefCount);
 
   // continuesAs: link result events to next step's policy or branch event (skip self-edges)
   if (step.continuesAs) {
@@ -373,7 +425,48 @@ function processLinearStep(
     }
   }
 
-  return { handler: handlerId, delegate: delegateId, actor: actorId };
+  return { handler: handlerId, delegate: delegateId, actor: actorId, recipient: recipientId };
+}
+
+/** Who takes part in a step, as per-step entity ids. */
+interface StepParticipants {
+  handler?: string;
+  delegate?: string;
+  actor?: string;
+  recipient?: string;
+}
+
+/** Relation tag for sendsTo links: read by the Sequence and System Architecture views only. */
+export const SENDS_TO_VIEW = 'SENDS_TO';
+
+/**
+ * sendsTo: each result event is delivered to the recipient (the declared actor
+ * or system). The link is kept out of Event Storming, which does not model
+ * recipients; the Sequence and System Architecture views draw it as a message.
+ */
+function addRecipient(
+  sendsTo: unknown,
+  resultEvents: Array<{ id: string }>,
+  _stepId: string,
+  _entities: Record<string, FlowchartEntity>,
+  relations: FlowchartRelation[],
+  relCounter: { current: number },
+  idMap: Map<string, string>,
+  _actorRefCount: Map<string, number>,
+  _systemRefCount: Map<string, number>,
+): string | undefined {
+  if (!sendsTo) return undefined;
+  const recipientId = resolveNodeId(getId(sendsTo), idMap);
+  for (const evt of resultEvents) {
+    relations.push({
+      id: getNextRelId(relCounter),
+      from: `evt_${evt.id}`,
+      to: recipientId,
+      sendsTo: true,
+      views: [SENDS_TO_VIEW],
+    });
+  }
+  return recipientId;
 }
 
 function processBranchStep(
@@ -386,7 +479,7 @@ function processBranchStep(
   systemRefCount: Map<string, number>,
   steps: FlowStep[] = [],
   _continuesAsTargets: Set<string> = new Set(),
-): Array<{ stepId: string; handler: string; delegate?: string; actor?: string }> {
+): Array<{ stepId: string } & StepParticipants> {
   // Create branch event entity
   const branchEventId = `evt_${step.event}`;
   if (!entities[branchEventId]) {
@@ -399,7 +492,7 @@ function processBranchStep(
   idMap.set(step.event, branchEventId);
 
   // Process each branch
-  const handlerInfo: Array<{ stepId: string; handler: string; delegate?: string; actor?: string }> = [];
+  const handlerInfo: Array<{ stepId: string } & StepParticipants> = [];
   for (const branch of step.branches) {
     // Branch policy
     const polId = `pol_${branch.id}`;
@@ -435,14 +528,10 @@ function processBranchStep(
       });
     }
 
-    // Get handler (auto-duplicate per step)
-    const handlerId = getSystemEntityId(
-      getId(branch.handledBy),
-      entities,
-      systemRefCount,
-      idMap,
-      branch.id,
-    );
+    // Get handler (auto-duplicate per step); an option may have none
+    const handlerId = branch.handledBy
+      ? getSystemEntityId(getId(branch.handledBy), entities, systemRefCount, idMap, branch.id)
+      : undefined;
 
     // Event → Policy (branch point)
     relations.push({
@@ -463,17 +552,19 @@ function processBranchStep(
     });
 
     // Command → Handler (handledBy)
-    relations.push({
-      id: getNextRelId(relCounter),
-      from: cmdId,
-      to: handlerId,
-      handledBy: true,
-      views: ['EVENT_STORMING'],
-    });
+    if (handlerId) {
+      relations.push({
+        id: getNextRelId(relCounter),
+        from: cmdId,
+        to: handlerId,
+        handledBy: true,
+        views: ['EVENT_STORMING'],
+      });
+    }
 
     // Handler → delegate (side relation, not in event chain)
     let delegateId: string | undefined;
-    if (branch.delegatesTo) {
+    if (handlerId && branch.delegatesTo) {
       delegateId = getSystemEntityId(
         getId(branch.delegatesTo),
         entities,
@@ -489,9 +580,7 @@ function processBranchStep(
       });
     }
 
-    handlerInfo.push({ stepId: branch.id, handler: handlerId, delegate: delegateId, actor: actorId });
-
-    // Handler → ResultEvents (always from handler)
+    // Handler → ResultEvents (from the handler; from the command when no handler)
     for (const evt of branch.resultEvents) {
       const eventId = `evt_${evt.id}`;
       if (!entities[eventId]) {
@@ -505,11 +594,14 @@ function processBranchStep(
 
       relations.push({
         id: getNextRelId(relCounter),
-        from: handlerId,
+        from: handlerId ?? cmdId,
         to: eventId,
         views: ['EVENT_STORMING'],
       });
     }
+
+    const recipientId = addRecipient(branch.sendsTo, branch.resultEvents, branch.id, entities, relations, relCounter, idMap, actorRefCount, systemRefCount);
+    handlerInfo.push({ stepId: branch.id, handler: handlerId, delegate: delegateId, actor: actorId, recipient: recipientId });
 
     // continuesAs: link branch result events to next step (skip self-edges)
     if (branch.continuesAs) {
@@ -553,7 +645,7 @@ function collectNodeIds(
   step: LinearStep | BranchOption,
   entities: Record<string, FlowchartEntity>,
   idMap: Map<string, string>,
-  handlerInfo?: { handler: string; delegate?: string; actor?: string },
+  handlerInfo?: StepParticipants,
 ): string[] {
   const ids: string[] = [];
 
@@ -572,10 +664,10 @@ function collectNodeIds(
   const cmdId = `cmd_${stepId}`;
   if (entities[cmdId]) ids.push(cmdId);
 
-  // Handler — use per-step entity
-  if (handlerInfo) {
+  // Handler — use per-step entity (a step may have none)
+  if (handlerInfo?.handler) {
     ids.push(handlerInfo.handler);
-  } else {
+  } else if (!handlerInfo && step.handledBy) {
     ids.push(resolveNodeId(getId(step.handledBy), idMap));
   }
 

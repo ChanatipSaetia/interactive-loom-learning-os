@@ -2,6 +2,50 @@ import { useCallback, useRef, useState, useEffect, type MutableRefObject } from 
 import { animate } from 'animejs';
 import type { FlowchartViewNode, TransformState, PinchState } from './types';
 
+/** Footprint used for each node when framing it (a little larger than the card itself). */
+const FOCUS_NODE_W = 140;
+const FOCUS_NODE_H = 100;
+/** Bottom strip assumed covered by the journey dock when the caller does not measure it. */
+const DOCK_RESERVE = 200;
+const FOCUS_MAX_SCALE = 0.5;
+const FOCUS_MIN_SCALE = 0.15;
+/** Breathing room inside the free area, above and below the framed content. */
+const FOCUS_PAD_Y = 16;
+/** Only move the caption beside the nodes when that zooms in noticeably closer. */
+const SIDE_PLACEMENT_GAIN = 1.15;
+
+export interface NodesBBox {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+}
+
+/** Canvas-space box around the given nodes, or null when none of them is positioned. */
+export function getNodesBBox(nodes: FlowchartViewNode[], nodeIds: string[]): NodesBBox | null {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  nodeIds.forEach(id => {
+    const node = nodes.find(n => n.id === id);
+    if (!node || typeof node.x !== 'number' || typeof node.y !== 'number') return;
+    minX = Math.min(minX, node.x - FOCUS_NODE_W / 2);
+    minY = Math.min(minY, node.y - FOCUS_NODE_H / 2);
+    maxX = Math.max(maxX, node.x + FOCUS_NODE_W / 2);
+    maxY = Math.max(maxY, node.y + FOCUS_NODE_H / 2);
+  });
+  return minX === Infinity ? null : { minX, minY, maxX, maxY };
+}
+
+export interface FocusOptions {
+  /** Box to keep next to the nodes (the step caption); the camera picks the side that allows the closest zoom. */
+  caption?: { width: number; height: number; gap: number };
+  /** Screen pixels covered by floating UI at the top (view switcher) and bottom (journey dock). */
+  insets?: { top: number; bottom: number };
+  /** Closest zoom allowed; framing a whole small map can go closer than framing one step. */
+  maxScale?: number;
+}
+
+export type CaptionPlacement = 'below' | 'right';
+
 interface UseCameraOptions {
   positionedNodesRef: MutableRefObject<FlowchartViewNode[]>;
 }
@@ -21,7 +65,8 @@ interface UseCameraReturn {
   handleZoomIn: () => void;
   handleZoomOut: () => void;
   animateTo: (targetX: number, targetY: number, targetScale: number) => void;
-  focusOnNodes: (nodeIds: string[]) => void;
+  /** Frames the nodes and returns where the caption fits, or null when nothing was framed. */
+  focusOnNodes: (nodeIds: string[], options?: FocusOptions) => CaptionPlacement | null;
   fitToScreen: (minX: number, maxX: number, minY: number, maxY: number) => void;
   resetTransform: () => void;
 }
@@ -61,40 +106,53 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
     });
   }, []);
 
-  const focusOnNodes = useCallback((nodeIds: string[]) => {
-    if (!svgRef.current || !nodeIds || nodeIds.length === 0) return;
-    const nodes = positionedNodesRef.current;
-    if (nodes.length === 0) return;
-
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    nodeIds.forEach(id => {
-      const node = nodes.find(n => n.id === id);
-      if (!node || typeof node.x !== 'number' || typeof node.y !== 'number') return;
-      const nw = 140;
-      const nh = 100;
-      minX = Math.min(minX, node.x - nw / 2);
-      minY = Math.min(minY, node.y - nh / 2);
-      maxX = Math.max(maxX, node.x + nw / 2);
-      maxY = Math.max(maxY, node.y + nh / 2);
-    });
-    if (minX === Infinity) return;
+  const focusOnNodes = useCallback((nodeIds: string[], options: FocusOptions = {}): CaptionPlacement | null => {
+    if (!svgRef.current || !nodeIds || nodeIds.length === 0) return null;
+    const bbox = getNodesBBox(positionedNodesRef.current, nodeIds);
+    if (!bbox) return null;
 
     const viewportW = svgRef.current.clientWidth;
     const viewportH = svgRef.current.clientHeight;
-    const padding = Math.min(viewportW * 0.1, 80);
+    const padX = Math.min(viewportW * 0.1, 80);
+    const insetTop = options.insets?.top ?? 0;
+    const insetBottom = options.insets?.bottom ?? DOCK_RESERVE;
+    // Free area between the floating UI; never squeeze it below 40% of the canvas
+    const regionH = Math.max(viewportH - insetTop - insetBottom, viewportH * 0.4);
+    const availW = viewportW - padX * 2;
+    const availH = regionH - FOCUS_PAD_Y * 2;
+    const caption = options.caption;
 
-    const bboxW = Math.max(maxX - minX, 1);
-    const bboxH = Math.max(maxY - minY, 1);
-    const targetScale = Math.min(
-      (viewportW - padding * 2) / bboxW,
-      (viewportH - padding * 2) / bboxH,
-      0.5
-    );
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-    const targetX = viewportW / 2 - centerX * targetScale;
-    const targetY = (viewportH / 2 - 100) - centerY * targetScale;
-    animateTo(targetX, targetY, targetScale);
+    const bboxW = Math.max(bbox.maxX - bbox.minX, 1);
+    const bboxH = Math.max(bbox.maxY - bbox.minY, 1);
+    const maxScale = options.maxScale ?? FOCUS_MAX_SCALE;
+    const clampScale = (s: number) => Math.max(FOCUS_MIN_SCALE, Math.min(s, maxScale));
+
+    const belowScale = clampScale(Math.min(
+      availW / bboxW,
+      (availH - (caption ? caption.height + caption.gap : 0)) / bboxH
+    ));
+    const rightScale = caption && caption.height <= availH
+      ? clampScale(Math.min((availW - caption.width - caption.gap) / bboxW, availH / bboxH))
+      : 0;
+    const placement: CaptionPlacement = rightScale > belowScale * SIDE_PLACEMENT_GAIN ? 'right' : 'below';
+    const scale = placement === 'right' ? rightScale : belowScale;
+
+    const regionTop = insetTop + FOCUS_PAD_Y;
+    let targetX: number;
+    let targetY: number;
+    if (placement === 'right') {
+      // Nodes and caption side by side, centered as one row
+      const groupW = bboxW * scale + caption!.gap + caption!.width;
+      targetX = viewportW / 2 - groupW / 2 - bbox.minX * scale;
+      targetY = regionTop + (availH - bboxH * scale) / 2 - bbox.minY * scale;
+    } else {
+      // Nodes with the caption under them, centered as one column
+      const groupH = bboxH * scale + (caption ? caption.gap + caption.height : 0);
+      targetX = viewportW / 2 - ((bbox.minX + bbox.maxX) / 2) * scale;
+      targetY = regionTop + (availH - groupH) / 2 - bbox.minY * scale;
+    }
+    animateTo(targetX, targetY, scale);
+    return placement;
   }, [animateTo, positionedNodesRef]);
 
   const fitToScreen = useCallback((minX: number, maxX: number, minY: number, maxY: number) => {

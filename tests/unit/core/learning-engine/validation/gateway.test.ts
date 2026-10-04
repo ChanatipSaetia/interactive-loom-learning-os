@@ -548,6 +548,52 @@ journeys: []
     expect(connErrors.length).toBe(0)
   })
 
+  const flowWithJourneyStep = (stepId: string) => `
+type: flowchart
+flow:
+  actors:
+    user:
+      title: "User"
+  systems:
+    payment:
+      title: "Payment Engine"
+      type: "aggregate"
+  steps:
+    - id: step1
+      type: linear
+      initiatedBy: user
+      policy: "Process Payment"
+      command: "Pay"
+      handledBy: payment
+      resultEvents:
+        - id: paid
+          title: "Payment Received"
+  journeys:
+    - id: main
+      label: "Main"
+      description: "Main path"
+      steps:
+        - stepId: ${stepId}
+          name: "Pay"
+          description: "User pays"
+`.trim()
+
+  it('flags a journey step that references a result event instead of a step', () => {
+    const result = validateOKFSection(flowWithJourneyStep('paid'))
+    const diag = result.diagnostics.find((d) => d.tier === 3 && d.field === 'journeys[0].steps[0].stepId')
+    expect(diag).toBeDefined()
+    expect(diag!.message).toContain('result event "paid"')
+    expect(diag!.fixHint).toBe('Use the step that produces it: stepId: step1')
+  })
+
+  it('flags a journey step that references an unknown step', () => {
+    const result = validateOKFSection(flowWithJourneyStep('nope'))
+    const diag = result.diagnostics.find((d) => d.tier === 3 && d.field === 'journeys[0].steps[0].stepId')
+    expect(diag).toBeDefined()
+    expect(diag!.message).toContain('unknown step "nope"')
+    expect(diag!.fixHint).toContain('"step1"')
+  })
+
   it('detects unconnected system in raw abstract-flow format', () => {
     const result = validateOKFSection(`
 type: flowchart

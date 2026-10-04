@@ -74,6 +74,7 @@ stepHmr = Step(
   null,
   "step_index",
   "Vite/Webpack HMR swaps only the changed story module",
+  storyIndexer,
 )
 
 stepIndex = Step(
@@ -92,6 +93,7 @@ stepIndex = Step(
   null,
   "step_render",
   "Indexer re-reads default/named exports to refresh the sidebar",
+  previewRuntime,
 )
 
 stepRender = Step(
@@ -110,6 +112,7 @@ stepRender = Step(
   null,
   "step_outcome",
   "Preview mounts the component with args; success or error decides the branch",
+  controlsAddon,
 )
 
 stepOutcome = Branch(
@@ -164,6 +167,7 @@ stepTune = Step(
   null,
   "step_rerender",
   "Reviewer flips disabled or edits the label in the Controls panel",
+  previewRuntime,
 )
 
 stepRerender = Step(

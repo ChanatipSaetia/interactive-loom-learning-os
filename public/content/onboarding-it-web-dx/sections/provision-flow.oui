@@ -54,6 +54,8 @@ stepRequest = Step(
   hiringManager,
   null,
   "step_provision",
+  null,
+  ssoDirectory,
 )
 
 stepProvision = Step(
@@ -65,6 +67,8 @@ stepProvision = Step(
   null,
   null,
   "step_privileges",
+  null,
+  pamVault,
 )
 
 stepPrivileges = Step(
@@ -76,6 +80,8 @@ stepPrivileges = Step(
   itOperator,
   null,
   "step_smoke",
+  null,
+  ssoDirectory,
 )
 
 stepSmoke = Step(
@@ -119,27 +125,27 @@ journeyHappy = Journey(
   "The joiner request provisions every account before day one and the smoke test passes",
   [
     JourneyStep(
-      "evt_requested",
+      "step_request",
       "Joiner Request Filed",
       "The hiring manager files the joiner request with role, team, and start date before day one",
     ),
     JourneyStep(
-      "evt_provisioned",
+      "step_provision",
       "Day-Zero Accounts Provisioned",
       "SSO group rules mint accounts, licenses, and app entitlements automatically",
     ),
     JourneyStep(
-      "evt_privileged",
+      "step_privileges",
       "Privileges Granted",
       "For production-reach roles, the privileged access vault approves elevated grants",
     ),
     JourneyStep(
-      "evt_smoked",
+      "step_smoke",
       "Smoke Test Attempted",
       "On the first workday morning the newcomer logs in and checks every golden-path tool",
     ),
     JourneyStep(
-      "evt_verified",
+      "branch_pass",
       "Day-1 Access Verified",
       "Every entitlement resolves; the newcomer starts the golden-path task instead of a ticket queue",
     ),
@@ -152,22 +158,22 @@ journeyRework = Journey(
   "A missing entitlement surfaces on day one and the credential chain is fixed by hand",
   [
     JourneyStep(
-      "evt_requested",
+      "step_request",
       "Joiner Request Filed",
       "The joiner request lands in the ticket system",
     ),
     JourneyStep(
-      "evt_provisioned",
+      "step_provision",
       "Day-Zero Accounts Provisioned",
       "Standard accounts are minted, but an uncommon tool is missed by the group rules",
     ),
     JourneyStep(
-      "evt_smoked",
+      "step_smoke",
       "Smoke Test Attempted",
       "The newcomer's day-one smoke test hits a 4003 access-denied on the missing entitlement",
     ),
     JourneyStep(
-      "evt_denied",
+      "branch_fail",
       "Access Denied — Rework Loop",
       "The IT access operator manually repairs the credential chain and the test is re-run",
     ),

@@ -56,6 +56,7 @@ stepTick = Step(
   null,
   "step_transforms",
   "Ticker calculates elapsed time and fires frame update",
+  sceneGraph,
 )
 
 stepTransforms = Step(
@@ -92,6 +93,7 @@ stepTraverse = Step(
   null,
   "step_batch",
   "Collects visible sprites and skips hidden or out-of-bound nodes",
+  batchRenderer,
 )
 
 stepBatch = Step(
@@ -110,6 +112,7 @@ stepBatch = Step(
   null,
   "step_draw",
   "Assembles maximum quad buffers before hitting batch boundary",
+  webglDriver,
 )
 
 stepDraw = Step(

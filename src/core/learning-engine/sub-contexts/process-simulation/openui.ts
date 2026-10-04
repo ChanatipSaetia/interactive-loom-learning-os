@@ -129,6 +129,7 @@ const optionalChainProps = {
   delegatesTo: refOrId(System).optional(),
   continuesAs: z.string().optional(),
   description: z.string().optional(),
+  sendsTo: z.union([z.string(), Actor.ref, System.ref]).optional(),
 }
 
 const handlerFields = {
@@ -143,6 +144,7 @@ const optionalChainFields = {
   delegatesTo: 'Optional second system the handler calls (System reference or ID).',
   continuesAs: 'Optional ID of the Step, Branch or BranchOption that this path\'s events lead into.',
   description: 'Optional narration of this step, shown when it is highlighted.',
+  sendsTo: 'Optional actor or system that receives this step\'s events (e.g. the server sends ServerHello to the client).',
 } as const
 
 function toRef(value: unknown) {
@@ -151,7 +153,7 @@ function toRef(value: unknown) {
 
 export const Step = defineOUIComponent({
   name: 'Step',
-  description: 'Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls.',
+  description: 'Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.',
   props: z.object({
     id: z.string(),
     ...handlerProps,
@@ -170,6 +172,7 @@ export const Step = defineOUIComponent({
     command: p.command,
     handledBy: toRef(p.handledBy),
     delegatesTo: toRef(p.delegatesTo),
+    sendsTo: toRef(p.sendsTo),
     resultEvents: p.events,
     continuesAs: p.continuesAs,
     description: p.description,
@@ -202,6 +205,7 @@ export const BranchOption = defineOUIComponent({
     command: p.command,
     handledBy: toRef(p.handledBy),
     delegatesTo: toRef(p.delegatesTo),
+    sendsTo: toRef(p.sendsTo),
     resultEvents: p.events,
     continuesAs: p.continuesAs,
     description: p.description,
@@ -272,10 +276,11 @@ function eventCalls(events: ResultEvent[] | undefined): OUIValue[] {
   return (events ?? []).map((e) => call(Event, { id: e.id, title: e.title, desc: e.desc }))
 }
 
-function chainProps(step: { initiatedBy?: unknown; delegatesTo?: unknown; continuesAs?: string; description?: string }) {
+function chainProps(step: { initiatedBy?: unknown; delegatesTo?: unknown; sendsTo?: unknown; continuesAs?: string; description?: string }) {
   return {
     initiatedBy: refTo(Actor, refId(step.initiatedBy)),
     delegatesTo: refTo(System, refId(step.delegatesTo)),
+    sendsTo: refTo([Actor, System], refId(step.sendsTo)),
     continuesAs: step.continuesAs,
     description: step.description,
   }

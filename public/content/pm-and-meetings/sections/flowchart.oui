@@ -92,6 +92,8 @@ planSprint = Step(
   pm,
   null,
   "daily_execution",
+  null,
+  devWorkspace,
 )
 
 dailyExecution = Step(
@@ -103,6 +105,8 @@ dailyExecution = Step(
   dev,
   null,
   "sync_branch",
+  null,
+  slackChannel,
 )
 
 syncBranch = Branch("sync_branch", "evt_work_in_progress", [branchNoBlocker, branchBlocked])
@@ -118,6 +122,8 @@ branchNoBlocker = BranchOption(
   null,
   null,
   "review_cycle",
+  null,
+  retroBoard,
 )
 
 branchBlocked = BranchOption(
@@ -131,6 +137,8 @@ branchBlocked = BranchOption(
   null,
   null,
   "resolve_blocker",
+  null,
+  issueTracker,
 )
 
 resolveBlocker = Step(
@@ -142,6 +150,8 @@ resolveBlocker = Step(
   pm,
   null,
   "daily_execution",
+  null,
+  devWorkspace,
 )
 
 reviewCycle = Step(

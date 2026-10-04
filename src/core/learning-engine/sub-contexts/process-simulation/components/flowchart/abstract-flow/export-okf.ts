@@ -188,7 +188,8 @@ function generateLinearStepConcept(step: LinearStep, order: number): string {
 
   body += `- **Policy:** ${step.policy}\n`;
   body += `- **Command:** ${step.command}\n`;
-  body += `- **Handled by:** [\`${step.handledBy.id}\`](../systems/${step.handledBy.id}.md)\n`;
+  if (step.handledBy) body += `- **Handled by:** [\`${step.handledBy.id}\`](../systems/${step.handledBy.id}.md)\n`;
+  if (step.sendsTo) body += `- **Sends to:** \`${step.sendsTo.id}\`\n`;
   body += `- **Result event(s):**\n`;
 
   for (const evt of step.resultEvents) {
@@ -220,7 +221,8 @@ function generateBranchStepConcept(step: BranchStep, order: number): string {
     body += `### Branch ${i + 1}: ${b.label}\n\n`;
     body += `- **Policy:** ${b.policy}\n`;
     body += `- **Command:** ${b.command}\n`;
-    body += `- **Handled by:** [\`${b.handledBy.id}\`](../systems/${b.handledBy.id}.md)\n`;
+    if (b.handledBy) body += `- **Handled by:** [\`${b.handledBy.id}\`](../systems/${b.handledBy.id}.md)\n`;
+    if (b.sendsTo) body += `- **Sends to:** \`${b.sendsTo.id}\`\n`;
     body += `- **Result event(s):**\n`;
 
     for (const evt of b.resultEvents) {

@@ -133,6 +133,8 @@ export const FlowchartRawLinearStepSchema = z.object({
   command: z.string().optional(),
   handledBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   delegatesTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  // Optional: who receives the step's result (e.g. the server sends ServerHello to the client)
+  sendsTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   resultEvents: z.array(FlowchartResultEventSchema).min(1, {
     message: 'Linear step must define at least one result event in resultEvents array.',
   }),
@@ -148,6 +150,8 @@ export const FlowchartRawBranchOptionSchema = z.object({
   command: z.string().optional(),
   handledBy: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   delegatesTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
+  // Optional: who receives the step's result (e.g. the server sends ServerHello to the client)
+  sendsTo: z.union([z.string(), z.object({ id: z.string() })]).optional(),
   resultEvents: z.array(FlowchartResultEventSchema).min(1, {
     message: 'Branch option step must define at least one result event in resultEvents array.',
   }),

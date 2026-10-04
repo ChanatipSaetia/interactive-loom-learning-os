@@ -124,7 +124,7 @@ const AUTHORING_RULES = [
   'Mix interactive section types. Never build a topic out of Text sections only.',
   'Quizzes and reflection challenges only test what an earlier section of the topic teaches. Each QuizQuestion has exactly one choice with `correct` set to true.',
   'IDs (`id` props) are unique within their section. Props that point at an ID (`next`, `root`, `startNode`, `recommended`, `solution`, `continuesAs`, `initialState`, `dependsOn`) must name an ID that exists in the same section.',
-  'Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts at least one step (`initiatedBy`) and every declared System handles (`handledBy`) or receives (`delegatesTo`) at least one step.',
+  'Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages.',
   'To skip an optional argument and still set a later one, pass `null` in its place, e.g. `Step("s1", "When …", "DoThing", sys, [evt], null, null, "s2")`.',
   'Text paragraphs may use inline markdown (**bold**, `code`, [links](url)). Write factual, specific content; no placeholders such as "Lorem ipsum" or "TODO".',
 ]
@@ -149,7 +149,7 @@ root = Flowchart("Brewing Flow", [brewer], [kettle, teapot], [heat, brew], [happ
 brewer = Actor("brewer", "Brewer", "Person making the tea")
 kettle = System("kettle", "Kettle", "Heats water to a set temperature", "external")
 teapot = System("teapot", "Teapot", "Holds leaf and water while it steeps", "aggregate")
-heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves")
+heat = Step("heat-water", "When a cup is wanted", "HeatWater", kettle, [Event("water-ready", "Water Ready", "Water at 75 °C")], brewer, null, "steep-leaves", null, teapot)
 brew = Step("steep-leaves", "When water is ready", "SteepLeaves", teapot, [Event("tea-steeped", "Tea Steeped")])
 happy = Journey("happy", "Balanced cup", "Heat, steep and pour on time", [JourneyStep(heat, "Heat water", "The kettle stops at 75 °C instead of boiling."), JourneyStep(brew, "Steep", "Two minutes, then pour off all the water.")])
 

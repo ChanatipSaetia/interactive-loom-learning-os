@@ -32,6 +32,8 @@ throttle = Step(
   rider,
   null,
   "intake",
+  null,
+  engine,
 )
 
 intake = Step(
@@ -76,6 +78,8 @@ exhaust = Step(
   null,
   null,
   "transmission",
+  null,
+  transmission,
 )
 
 transmission2 = Step(

@@ -104,19 +104,19 @@ journeyHappy = Journey(
   "Happy Path: Watch → Try → Test",
   "The learner watches, practises with hints, then passes the unguided test",
   [
-    JourneyStep("evt_demo_watched", "Watch", "Watch mode demonstrates the task once"),
+    JourneyStep("step_watch", "Watch", "Watch mode demonstrates the task once"),
     JourneyStep(
-      "evt_step_attempted",
+      "step_try",
       "Try",
       "Try mode lets the learner do each step, with hints available",
     ),
     JourneyStep(
-      "evt_try_completed",
+      "branch_correct",
       "Guided practice done",
       "Every step was performed correctly with support",
     ),
-    JourneyStep("evt_test_submitted", "Test", "Test mode removes hints: an unguided assessment"),
-    JourneyStep("evt_result_recorded", "Recorded", "The score and wrong clicks go to the LMS"),
+    JourneyStep("step_test", "Test", "Test mode removes hints: an unguided assessment"),
+    JourneyStep("step_record", "Recorded", "The score and wrong clicks go to the LMS"),
   ],
 )
 
@@ -125,10 +125,10 @@ journeyWrongClick = Journey(
   "Wrong Click in Try Mode",
   "A wrong action gets immediate, specific feedback instead of silence",
   [
-    JourneyStep("evt_demo_watched", "Watch", "The learner watches the demo"),
-    JourneyStep("evt_step_attempted", "Try", "The learner clicks the wrong control"),
+    JourneyStep("step_watch", "Watch", "The learner watches the demo"),
+    JourneyStep("step_try", "Try", "The learner clicks the wrong control"),
     JourneyStep(
-      "evt_feedback_shown",
+      "branch_wrong",
       "Feedback",
       "The player explains why that was wrong and gives a hint, then the learner tries again",
     ),

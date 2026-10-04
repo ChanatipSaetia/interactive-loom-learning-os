@@ -1059,6 +1059,20 @@
         "description": {
           "type": "string",
           "description": "Optional narration of this step, shown when it is highlighted."
+        },
+        "sendsTo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Actor"
+            },
+            {
+              "$ref": "#/$defs/System"
+            }
+          ],
+          "description": "Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client)."
         }
       },
       "required": [
@@ -1069,7 +1083,7 @@
         "events"
       ],
       "additionalProperties": false,
-      "description": "Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls."
+      "description": "Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events."
     },
     "Event": {
       "type": "object",
@@ -1191,6 +1205,20 @@
         "description": {
           "type": "string",
           "description": "Optional narration of this step, shown when it is highlighted."
+        },
+        "sendsTo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Actor"
+            },
+            {
+              "$ref": "#/$defs/System"
+            }
+          ],
+          "description": "Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client)."
         }
       },
       "required": [

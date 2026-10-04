@@ -68,6 +68,8 @@ stepSme = Step(
   sme,
   null,
   "step_test",
+  null,
+  stagingApp,
 )
 
 stepTest = Step(
@@ -79,6 +81,8 @@ stepTest = Step(
   tester,
   null,
   "step_test_outcome",
+  null,
+  valeCi,
 )
 
 stepTestOutcome = Branch(
@@ -102,6 +106,8 @@ stepTestOutcome = Branch(
       null,
       null,
       "step_publish",
+      null,
+      docsSite,
     ),
     BranchOption(
       "branch_fail",
@@ -129,23 +135,23 @@ journeyPublish = Journey(
   "Happy Path: Draft to Published",
   "The page passes technical review, the step test and editorial review",
   [
-    JourneyStep("evt_draft_opened", "Draft", "The writer opens a pull request"),
+    JourneyStep("step_draft", "Draft", "The writer opens a pull request"),
     JourneyStep(
-      "evt_facts_checked",
+      "step_sme",
       "Technical review",
       "A subject-matter expert checks the facts against how the app really works",
     ),
     JourneyStep(
-      "evt_steps_tested",
+      "step_test",
       "Step test",
       "Someone follows every step in staging exactly as written",
     ),
     JourneyStep(
-      "evt_edit_done",
+      "branch_pass",
       "Editorial review",
       "Structure, style and terms are checked, with Vale doing the mechanical part",
     ),
-    JourneyStep("evt_published", "Published", "The page goes live"),
+    JourneyStep("step_publish", "Published", "The page goes live"),
   ],
 )
 
@@ -154,15 +160,15 @@ journeyRewrite = Journey(
   "A Step Fails",
   "The step test catches a step that doesn't work as written",
   [
-    JourneyStep("evt_draft_opened", "Draft", "The writer opens a pull request"),
-    JourneyStep("evt_facts_checked", "Technical review", "The facts look right on paper"),
+    JourneyStep("step_draft", "Draft", "The writer opens a pull request"),
+    JourneyStep("step_sme", "Technical review", "The facts look right on paper"),
     JourneyStep(
-      "evt_steps_tested",
+      "step_test",
       "Step test",
       "Step 3 says Export, but the button now lives in the ⋯ menu",
     ),
     JourneyStep(
-      "evt_rewrite_requested",
+      "branch_fail",
       "Rewrite",
       "The page goes back to the writer before any user sees it",
     ),

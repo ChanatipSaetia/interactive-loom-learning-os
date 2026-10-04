@@ -5,7 +5,6 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    await page.getByTestId('dock-tab-views').click();
 
     const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' });
     await seqTab.click();
@@ -36,7 +35,6 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    await page.getByTestId('dock-tab-views').click();
 
     const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' });
     await seqTab.click();
@@ -55,7 +53,6 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    await page.getByTestId('dock-tab-views').click();
 
     const viewTabs = page.getByTestId('flowchart-view-tabs');
     await expect(viewTabs).toBeVisible();
@@ -68,7 +65,6 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    await page.getByTestId('dock-tab-views').click();
 
     const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' });
     await seqTab.click();
@@ -88,7 +84,6 @@ test.describe('US-13: Sequence Diagram View Projection', () => {
     await page.goto('/#/demo/ai-agent');
     await page.waitForSelector('[data-testid="flowchart-section"]');
 
-    await page.getByTestId('dock-tab-views').click();
 
     const seqTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Sequence Diagram' });
     await seqTab.click();

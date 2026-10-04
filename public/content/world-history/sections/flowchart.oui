@@ -55,6 +55,8 @@ stepInventEngine = Step(
   inventorScientist,
   null,
   "step_build_factory",
+  null,
+  factorySystem,
 )
 
 stepBuildFactory = Step(
@@ -89,6 +91,8 @@ stepMassProduce = Step(
   factoryWorker,
   null,
   "step_expand_trade",
+  null,
+  globalMarket,
 )
 
 stepExpandTrade = Step(
