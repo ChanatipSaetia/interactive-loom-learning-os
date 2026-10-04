@@ -88,6 +88,7 @@ export function TabsTrigger({
   className,
   indicatorClassName,
   title,
+  "data-testid": testId,
 }: {
   value: string;
   children: ReactNode;
@@ -95,6 +96,7 @@ export function TabsTrigger({
   indicatorClassName?: string;
   /** Tooltip and accessible name, for icon-only triggers. */
   title?: string;
+  "data-testid"?: string;
 }) {
   const { value: current, setValue, layoutId, variant, disableLayoutAnimation } = useTabs();
   const active = current === value;
@@ -105,6 +107,7 @@ export function TabsTrigger({
         type="button"
         role="tab"
         aria-selected={active}
+        data-testid={testId}
         title={title}
         aria-label={title}
         onClick={() => setValue(value)}
@@ -163,6 +166,7 @@ export function TabsTrigger({
         type="button"
         role="tab"
         aria-selected={active}
+        data-testid={testId}
         title={title}
         aria-label={title}
         onClick={() => setValue(value)}

@@ -111,27 +111,17 @@
   font-size: var(--text-body);
 }
 
-/* ─── Compare All Button ────────────────────────────── */
+/* ─── Compare options / Try it tabs ─────────────────── */
 
-.compare-all-button {
-  @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-[var(--radius-sm)] border bg-transparent cursor-pointer mb-4 text-sm font-medium;
-  border-color: color-mix(in srgb, var(--secondary) 50%, transparent);
-  color: var(--secondary);
-  font-family: var(--font-body);
-  transition: background-color 0.15s ease, color 0.15s ease;
+.tradeoff-tabs {
+  @apply flex w-full mb-1;
 }
 
-.compare-all-button:hover {
-  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
-  color: var(--secondary);
+.tradeoff-tab-panel {
+  @apply mt-3;
 }
 
-.compare-all-button:focus {
-  @apply outline-none ring-2 ring-offset-2;
-  --tw-ring-color: var(--secondary);
-}
-
-/* ─── Compare Modal ─────────────────────────────────── */
+/* ─── Step Compare Modal ────────────────────────────── */
 
 .compare-overlay {
   @apply fixed inset-0 z-[50];
@@ -183,9 +173,7 @@
 /* ─── Compare Grid ──────────────────────────────────── */
 
 .compare-scenarios {
-  @apply flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto pr-2;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
+  @apply flex flex-col gap-4;
 }
 
 .compare-step {
