@@ -1,6 +1,6 @@
 # Section Type: `bullets`
 
-**Mental model**: Hierarchical taxonomy / breakdown. Deconstructs a concept into a collapsible tree of sub-points.
+**Mental model**: Hierarchical taxonomy / breakdown. Deconstructs a concept into a collapsible tree of sub-points; cards with sub-points start collapsed and open on tap.
 
 ---
 

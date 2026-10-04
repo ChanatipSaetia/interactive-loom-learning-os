@@ -1,4 +1,4 @@
-import { HelpCircle, X, Grid, Columns, Rows, ShieldCheck } from 'lucide-react'
+import { HelpCircle, X, Grid, Columns, Rows, ShieldCheck, Waypoints } from 'lucide-react'
 
 interface PillarLayerHelpModalProps {
   isOpen: boolean
@@ -22,6 +22,18 @@ export function PillarLayerHelpModal({ isOpen, onClose }: PillarLayerHelpModalPr
         </div>
 
         <div className="fc-help-content space-y-4">
+          <section className="fc-help-section">
+            <h4 className="flex items-center gap-2 text-primary font-bold text-sm">
+              <Waypoints size={14} /> Reading the Stack
+            </h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Layers run from top to bottom, and each block lists what it <strong>uses</strong>. Tap a block to trace
+              what it <strong>needs</strong> (marked below it) and what it <strong>affects</strong> if it changes
+              (marked above it); everything else fades. On narrow screens each layer becomes a band and blocks wrap
+              under it; on wide screens they keep their columns and spans.
+            </p>
+          </section>
+
           <section className="fc-help-section">
             <h4 className="flex items-center gap-2 text-primary font-bold text-sm">
               <Grid size={14} /> 2D Grid Architecture

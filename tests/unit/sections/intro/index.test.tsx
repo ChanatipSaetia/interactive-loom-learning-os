@@ -19,6 +19,12 @@ describe('IntroSection', () => {
     expect(screen.getByText('4 Modules')).toBeInTheDocument()
   })
 
+  it('shows the title once, with the help button still available', () => {
+    render(<IntroSection title="Autonomous AI Agent Architecture" sectionIndex={0} />)
+    expect(screen.getAllByText('Autonomous AI Agent Architecture')).toHaveLength(1)
+    expect(screen.getByTestId('section-help-btn-0')).toBeInTheDocument()
+  })
+
   it('renders What and Why pillar cards', () => {
     render(
       <IntroSection

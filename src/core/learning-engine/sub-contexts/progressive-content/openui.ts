@@ -380,7 +380,7 @@ export const MatrixBlock = defineOUIComponent({
 export const PillarLayer: LoomOUIComponent = defineOUISection({
   name: 'PillarLayer',
   sectionType: 'pillar-layer',
-  description: 'Layer-stack map: layers as rows, blocks placed on a gap-free grid. `displayTitle` overrides the title shown inside the map.',
+  description: 'Layer-stack map: layers as rows (foundation last), blocks placed on a gap-free grid. Give blocks `dependsOn` so readers can tap a block to trace what it needs and what it affects. `displayTitle` overrides the title shown inside the map.',
   props: z.object({
     title: z.string(),
     layers: z.array(Layer.ref),
@@ -393,7 +393,7 @@ export const PillarLayer: LoomOUIComponent = defineOUISection({
     ...sectionFields,
     layers: 'The rows, top to bottom, as Layer references.',
     blocks: 'Blocks placed on the grid, as MatrixBlock references. Together they must fill the grid without gaps.',
-    description: 'Optional summary shown above the map.',
+    description: 'Optional summary shown above the map; say what the reader should take away from the stack.',
     displayTitle: 'Optional title shown inside the map instead of `title`.',
   },
   toData: (p) => ({

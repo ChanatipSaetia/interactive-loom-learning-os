@@ -119,6 +119,7 @@
   ====================================== */
   --font-display: 'Noto Serif Thai', 'CohereText', 'Space Grotesk', 'Inter', ui-sans-serif, system-ui;
   --font-body:    'Noto Serif Thai', 'Unica77 Cohere Web', 'Inter', Arial, ui-sans-serif, system-ui;
+  --font-ui:      'Noto Sans Thai', 'Inter', ui-sans-serif, system-ui, sans-serif; /* dense UI text: cards, lists, chips */
   --font-mono:    'CohereMono', 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
   --text-hero:             96px / 1.0 -1.92px var(--font-display);

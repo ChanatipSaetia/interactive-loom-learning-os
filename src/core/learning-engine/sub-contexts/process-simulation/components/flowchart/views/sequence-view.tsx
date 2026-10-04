@@ -6,6 +6,7 @@ import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTool
 import type { UnifiedFlowchartSchema, FlowchartViewNode, FlowchartViewGroup } from '../types';
 import type { ForkHighlights } from '../fork-highlights';
 import { SEQUENCE_LAYOUT } from './geometry';
+import { useGhostClickGuard } from './ghost-click';
 
 export interface SequenceViewProps {
   viewKey: string;
@@ -30,6 +31,7 @@ export const SequenceView = memo(function SequenceView({
   forkHighlights
 }: SequenceViewProps) {
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
+  const isGhostClick = useGhostClickGuard();
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [hoveredEdgeNodeIds, setHoveredEdgeNodeIds] = useState<string[] | null>(null);
@@ -208,6 +210,7 @@ export const SequenceView = memo(function SequenceView({
 
         const toggleSeqEdge = (e: React.SyntheticEvent) => {
           e.stopPropagation();
+          if (isGhostClick(e)) return;
           if (selectedEdgeId === edgeId) {
             setSelectedEdgeId(null);
             setHoveredEdgeNodeIds(null);

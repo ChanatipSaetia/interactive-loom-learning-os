@@ -180,7 +180,7 @@ function ReflectionTemplateSingle({
 
 
   const renderedSentence = useMemo(() => {
-    const segments = template.split(/(\{([a-zA-Z0-9_-]+)\})/g)
+    const segments = template.split(/(\{[a-zA-Z0-9_-]+\})/g)
     return segments.map((seg, idx) => {
       const match = seg.match(/^\{([a-zA-Z0-9_-]+)\}$/)
       if (match) {

@@ -672,7 +672,7 @@
         },
         "description": {
           "type": "string",
-          "description": "Optional summary shown above the map."
+          "description": "Optional summary shown above the map; say what the reader should take away from the stack."
         },
         "displayTitle": {
           "type": "string",
@@ -693,7 +693,7 @@
         "blocks"
       ],
       "additionalProperties": false,
-      "description": "Layer-stack map: layers as rows, blocks placed on a gap-free grid. `displayTitle` overrides the title shown inside the map."
+      "description": "Layer-stack map: layers as rows (foundation last), blocks placed on a gap-free grid. Give blocks `dependsOn` so readers can tap a block to trace what it needs and what it affects. `displayTitle` overrides the title shown inside the map."
     },
     "Layer": {
       "type": "object",

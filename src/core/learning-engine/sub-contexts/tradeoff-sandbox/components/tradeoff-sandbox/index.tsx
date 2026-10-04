@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
+import type { CSSProperties, KeyboardEvent } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Check, X, Star, Plus, Info, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '../../../../../ui-system/motion/button'
@@ -607,91 +608,194 @@ function DetailsModal({
   )
 }
 
-/** Every step's choices side by side, with pros and cons; marks the chosen and recommended ones. */
+/** A choice's metric effects as small chips, e.g. "Understanding +20", coloured by whether the change helps. */
+function EffectChips({ choice, metrics, testId }: { choice: TradeoffChoice; metrics: MetricDef[]; testId: string }) {
+  const effects = Object.entries(choice.metrics).flatMap(([mid, delta]) => {
+    const metric = metrics.find((m) => m.id === mid)
+    return metric && delta !== 0 ? [{ metric, delta }] : []
+  })
+  if (effects.length === 0) return null
+  return (
+    <ul className="compare-effects" data-testid={testId} aria-label="Effects">
+      {effects.map(({ metric, delta }) => {
+        const isGood = (metric.direction ?? 'higher') === 'higher' ? delta > 0 : delta < 0
+        return (
+          <li key={metric.id} className={`compare-effect ${isGood ? 'compare-effect-good' : 'compare-effect-bad'}`}>
+            {metric.label} {delta > 0 ? '+' : '−'}{Math.abs(delta)}
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+/**
+ * Every step's choices side by side, with what each one gains and costs; marks the chosen and recommended ones.
+ * Tapping an option that has "why it fits" or "when to use" text shows it and dims the other options.
+ */
 function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; chosenIds: Record<string, string> }) {
+  const { playSound } = useSound()
+  const [focused, setFocused] = useState<Record<string, string | undefined>>({})
+
+  const toggleFocus = (stepId: string, choiceId: string) => {
+    playSound('click')
+    setFocused((prev) => ({ ...prev, [stepId]: prev[stepId] === choiceId ? undefined : choiceId }))
+  }
+
   return (
     <div className="compare-scenarios" data-testid="compare-scenarios" data-lenis-prevent>
-      {scenario.steps.map((step, sIdx) => (
-        <div key={step.id} className="compare-step" data-testid={`compare-step-${sIdx}`}>
-          <h5 className="compare-step-title" data-testid={`compare-step-title-${sIdx}`}>
-            {step.title}
-          </h5>
-          <div className="compare-grid" data-testid={`compare-grid-${sIdx}`}>
-            {step.choices.map((choice) => {
-              const isChosen = chosenIds[step.id] === choice.id
-              const isRecommended = step.recommended === choice.id
-              return (
-                <div
-                  key={choice.id}
-                  className={`compare-card${isChosen ? ' compare-card-chosen' : ''}${isRecommended ? ' compare-card-recommended' : ''}`}
-                  data-testid={`compare-card-${sIdx}-${choice.id}`}
-                >
-                  <div className="compare-card-header">
-                    <span
-                      className="compare-card-label"
-                      data-testid={`compare-card-label-${sIdx}-${choice.id}`}
-                    >
-                      {choice.label}
-                    </span>
-                    {isRecommended && (
-                      <span className="compare-recommended-badge" data-testid={`compare-recommended-badge-${sIdx}-${choice.id}`} title="Recommended">
-                        <Star size={14} style={{ fill: 'currentColor' }} />
-                        <span style={{ display: 'none' }}>Recommended</span>
+      {scenario.steps.map((step, sIdx) => {
+        const focusedId = focused[step.id]
+        const hasDetails = step.choices.some((c) => c.whyThisFits || c.whenToUse)
+        const columns = step.choices.length === 4 ? 2 : Math.min(step.choices.length, 3)
+
+        return (
+          <section key={step.id} className="compare-step" data-testid={`compare-step-${sIdx}`}>
+            <header className="compare-step-header">
+              {scenario.steps.length > 1 && (
+                <span className="compare-step-eyebrow" data-testid={`compare-step-eyebrow-${sIdx}`}>
+                  Question {sIdx + 1} of {scenario.steps.length}
+                </span>
+              )}
+              <h5 className="compare-step-title" data-testid={`compare-step-title-${sIdx}`}>
+                {step.title}
+              </h5>
+              {step.description && <p className="compare-step-desc">{step.description}</p>}
+              {hasDetails && (
+                <p className="compare-step-hint" data-testid={`compare-hint-${sIdx}`}>
+                  Tap an option to see when it fits.
+                </p>
+              )}
+            </header>
+
+            <div
+              className="compare-grid"
+              data-testid={`compare-grid-${sIdx}`}
+              style={{ '--compare-cols': columns } as CSSProperties}
+            >
+              {step.choices.map((choice) => {
+                const isChosen = chosenIds[step.id] === choice.id
+                const isRecommended = step.recommended === choice.id
+                const isFocused = focusedId === choice.id
+                const isDimmed = focusedId !== undefined && !isFocused
+                const showDetails = isFocused && (choice.whyThisFits || choice.whenToUse)
+                return (
+                  <div
+                    key={choice.id}
+                    {...(hasDetails && {
+                      role: 'button',
+                      tabIndex: 0,
+                      'aria-expanded': isFocused,
+                      onClick: () => toggleFocus(step.id, choice.id),
+                      onKeyDown: (e: KeyboardEvent) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          toggleFocus(step.id, choice.id)
+                        }
+                      },
+                    })}
+                    className={[
+                      'compare-card',
+                      hasDetails && 'compare-card-tappable',
+                      isChosen && 'compare-card-chosen',
+                      isRecommended && 'compare-card-recommended',
+                      isFocused && 'compare-card-focused',
+                      isDimmed && 'compare-card-dimmed',
+                    ].filter(Boolean).join(' ')}
+                    data-testid={`compare-card-${sIdx}-${choice.id}`}
+                  >
+                    <div className="compare-card-header">
+                      <span
+                        className="compare-card-label"
+                        data-testid={`compare-card-label-${sIdx}-${choice.id}`}
+                      >
+                        {choice.label}
                       </span>
+                      {isRecommended && (
+                        <span className="compare-recommended-badge" data-testid={`compare-recommended-badge-${sIdx}-${choice.id}`} title="Recommended">
+                          <Star size={14} style={{ fill: 'currentColor' }} />
+                          <span style={{ display: 'none' }}>Recommended</span>
+                        </span>
+                      )}
+                      {isChosen && (
+                        <span className="compare-badge" data-testid={`compare-badge-${sIdx}-${choice.id}`} title="Selected">
+                          <Check size={14} strokeWidth={3} />
+                          <span style={{ display: 'none' }}>Selected</span>
+                        </span>
+                      )}
+                    </div>
+
+                    {choice.description && (
+                      <p className="compare-card-summary" data-testid={`compare-card-desc-${sIdx}-${choice.id}`}>
+                        {choice.description}
+                      </p>
                     )}
-                    {isChosen && (
-                      <span className="compare-badge" data-testid={`compare-badge-${sIdx}-${choice.id}`} title="Selected">
-                        <Check size={14} strokeWidth={3} />
-                        <span style={{ display: 'none' }}>Selected</span>
-                      </span>
+
+                    <EffectChips choice={choice} metrics={scenario.metrics} testId={`compare-effects-${sIdx}-${choice.id}`} />
+
+                    {choice.pros.length > 0 && (
+                      <div className="compare-block compare-block-gains">
+                        <span className="compare-block-title">Gains</span>
+                        <ul className="compare-pros" data-testid={`compare-pros-${sIdx}-${choice.id}`}>
+                          {choice.pros.map((pro, pIdx) => (
+                            <li
+                              key={pIdx}
+                              className="compare-pro"
+                              data-testid={`compare-pro-${sIdx}-${choice.id}-${pIdx}`}
+                            >
+                              <Check className="compare-icon compare-icon-pro" strokeWidth={3} />
+                              <div className="compare-procon-content">
+                                <span className="compare-procon-title">{pro.title}</span>
+                                {pro.description && (
+                                  <span className="compare-procon-desc">{pro.description}</span>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {choice.cons.length > 0 && (
+                      <div className="compare-block compare-block-costs">
+                        <span className="compare-block-title">Costs</span>
+                        <ul className="compare-cons" data-testid={`compare-cons-${sIdx}-${choice.id}`}>
+                          {choice.cons.map((con, cIdx) => (
+                            <li
+                              key={cIdx}
+                              className="compare-con"
+                              data-testid={`compare-con-${sIdx}-${choice.id}-${cIdx}`}
+                            >
+                              <X className="compare-icon compare-icon-con" strokeWidth={3} />
+                              <div className="compare-procon-content">
+                                <span className="compare-procon-title">{con.title}</span>
+                                {con.description && (
+                                  <span className="compare-procon-desc">{con.description}</span>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {showDetails && (
+                      <div className="compare-card-details" data-testid={`compare-details-${sIdx}-${choice.id}`}>
+                        {choice.whyThisFits && (
+                          <p><span className="compare-block-title">Why it fits</span>{choice.whyThisFits}</p>
+                        )}
+                        {choice.whenToUse && (
+                          <p><span className="compare-block-title">When to use</span>{choice.whenToUse}</p>
+                        )}
+                      </div>
                     )}
                   </div>
-
-                  {choice.pros.length > 0 && (
-                    <ul className="compare-pros" data-testid={`compare-pros-${sIdx}-${choice.id}`}>
-                      {choice.pros.map((pro, pIdx) => (
-                        <li
-                          key={pIdx}
-                          className="compare-pro"
-                          data-testid={`compare-pro-${sIdx}-${choice.id}-${pIdx}`}
-                        >
-                          <Check className="compare-icon compare-icon-pro" />
-                          <div className="compare-procon-content">
-                            <span className="compare-procon-title">{pro.title}</span>
-                            {pro.description && (
-                              <span className="compare-procon-desc">{pro.description}</span>
-                            )}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {choice.cons.length > 0 && (
-                    <ul className="compare-cons" data-testid={`compare-cons-${sIdx}-${choice.id}`}>
-                      {choice.cons.map((con, cIdx) => (
-                        <li
-                          key={cIdx}
-                          className="compare-con"
-                          data-testid={`compare-con-${sIdx}-${choice.id}-${cIdx}`}
-                        >
-                          <X className="compare-icon compare-icon-con" />
-                          <div className="compare-procon-content">
-                            <span className="compare-procon-title">{con.title}</span>
-                            {con.description && (
-                              <span className="compare-procon-desc">{con.description}</span>
-                            )}
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      ))}
+                )
+              })}
+            </div>
+          </section>
+        )
+      })}
     </div>
   )
 }
@@ -866,7 +970,7 @@ function TradeoffSandboxSection({
         </TabsList>
 
         <TabsContent value="compare" className="tradeoff-tab-panel">
-          <CompareAllPanel scenario={scenario} chosenIds={chosenIds} />
+          <CompareAllPanel key={scenario.id} scenario={scenario} chosenIds={chosenIds} />
         </TabsContent>
 
         <TabsContent value="sandbox" className="tradeoff-tab-panel">

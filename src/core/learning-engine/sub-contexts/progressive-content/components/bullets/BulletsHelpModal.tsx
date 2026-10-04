@@ -36,7 +36,7 @@ export function BulletsHelpModal({ isOpen, onClose }: BulletsHelpModalProps) {
               <Layers size={14} /> Hierarchical Structure
             </h4>
             <ul className="list-disc pl-5 text-xs text-muted-foreground space-y-1">
-              <li><strong>Top-Level Bullets:</strong> Rendered as expandable cards with primary accent markers.</li>
+              <li><strong>Top-Level Bullets:</strong> Rendered as cards with primary accent markers. Cards with sub-points start collapsed; tap one to open it.</li>
               <li><strong>Nested Children:</strong> Add sub-bullets inside items to create deep concept hierarchies.</li>
               <li><strong>Ordering:</strong> Toggle between Unordered (bullet markers) and Ordered (numbered lists).</li>
             </ul>

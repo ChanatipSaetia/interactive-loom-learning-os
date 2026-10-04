@@ -6,6 +6,7 @@ import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, Flow
 import type { ForkHighlights } from '../fork-highlights';
 import type { StoryRoute } from '../story-route';
 import { edgeLabelRoom } from './geometry';
+import { useGhostClickGuard } from './ghost-click';
 
 /** Edge label pill widths (px): resting, and the most a highlighted one may open to. */
 const COLLAPSED_LABEL_W = 70;
@@ -56,6 +57,7 @@ export const StandardView = memo(function StandardView({
   const maxX = positioned.length > 0 ? Math.max(...positioned.map(n => n.x || 0)) : 0;
 
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
+  const isGhostClick = useGhostClickGuard();
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [hoveredEdgeNodeIds, setHoveredEdgeNodeIds] = useState<string[] | null>(null);
@@ -235,6 +237,7 @@ export const StandardView = memo(function StandardView({
 
         const toggleEdge = (e: React.SyntheticEvent) => {
           e.stopPropagation();
+          if (isGhostClick(e)) return;
           if (selectedEdgeId === edgeId) {
             setSelectedEdgeId(null);
             setHoveredEdgeNodeIds(null);

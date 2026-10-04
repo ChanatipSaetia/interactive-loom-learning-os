@@ -166,6 +166,95 @@ describe('DecisionTree Section', () => {
     expect(screen.getByTestId('dt-breadcrumb-step-1')).toBeInTheDocument()
   })
 
+  it('breadcrumb shows the chosen answers, then where the reader is now', () => {
+    render(<DecisionTreeSection title="Test" root="scale_question" nodes={mockNodes} />)
+    fireEvent.click(screen.getByTestId('dt-start-btn'))
+    fireEvent.click(screen.getByTestId('dt-choice-single'))
+    expect(screen.getByTestId('dt-breadcrumb-step-0')).toHaveTextContent('One at a time')
+    expect(screen.getByTestId('dt-breadcrumb-step-1')).toHaveTextContent('Step 2')
+    fireEvent.click(screen.getByTestId('dt-choice-no'))
+    expect(screen.getByTestId('dt-breadcrumb-step-2')).toHaveTextContent('Recommendation')
+  })
+
+  it('tapping an earlier answer goes back to that question and marks the last answer', () => {
+    render(<DecisionTreeSection title="Test" root="scale_question" nodes={mockNodes} />)
+    fireEvent.click(screen.getByTestId('dt-start-btn'))
+    fireEvent.click(screen.getByTestId('dt-choice-single'))
+    fireEvent.click(screen.getByTestId('dt-choice-no'))
+    fireEvent.click(screen.getByTestId('dt-breadcrumb-step-0'))
+    expect(screen.queryByTestId('dt-leaf')).not.toBeInTheDocument()
+    expect(screen.getByTestId('dt-decision-prompt')).toHaveTextContent('How many concurrent tasks')
+    expect(screen.getByTestId('dt-step-counter')).toHaveTextContent('Step 1')
+    expect(screen.getByTestId('dt-previous-single')).toHaveTextContent('Your last answer')
+    expect(screen.queryByTestId('dt-breadcrumb')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('dt-choice-parallel'))
+    expect(screen.getByTestId('dt-leaf-recommendation')).toHaveTextContent('Orchestrator-Workers')
+  })
+
+  it('stepping back from a leaf to the last question keeps the earlier answers', () => {
+    render(<DecisionTreeSection title="Test" root="scale_question" nodes={mockNodes} />)
+    fireEvent.click(screen.getByTestId('dt-start-btn'))
+    fireEvent.click(screen.getByTestId('dt-choice-single'))
+    fireEvent.click(screen.getByTestId('dt-choice-no'))
+    fireEvent.click(screen.getByTestId('dt-breadcrumb-step-1'))
+    expect(screen.getByTestId('dt-decision-prompt')).toHaveTextContent('remember past interactions')
+    expect(screen.getByTestId('dt-previous-no')).toBeInTheDocument()
+    expect(screen.getByTestId('dt-breadcrumb-step-0')).toHaveTextContent('One at a time')
+    fireEvent.click(screen.getByTestId('dt-choice-yes'))
+    expect(screen.getByTestId('dt-leaf-recommendation')).toHaveTextContent('vector store memory')
+  })
+
+  // --- Whole tree view ---
+
+  it('Whole tree lists every question, answer and recommendation', () => {
+    render(<DecisionTreeSection title="Test" root="scale_question" nodes={mockNodes} />)
+    fireEvent.click(screen.getByTestId('dt-tab-tree'))
+    const tree = screen.getByTestId('dt-tree')
+    expect(tree).toHaveTextContent('How many concurrent tasks will the agent handle?')
+    expect(tree).toHaveTextContent('Many at once')
+    expect(tree).toHaveTextContent('Does the agent need to remember past interactions?')
+    expect(screen.getByTestId('dt-tree-node-leaf_vector_db')).toHaveTextContent('vector store memory')
+    expect(screen.getByTestId('dt-tree-node-leaf_orchestrator')).toHaveTextContent('Orchestrator-Workers')
+  })
+
+  it('Whole tree highlights the path taken so far', () => {
+    render(<DecisionTreeSection title="Test" root="scale_question" nodes={mockNodes} />)
+    fireEvent.click(screen.getByTestId('dt-start-btn'))
+    fireEvent.click(screen.getByTestId('dt-choice-single'))
+    fireEvent.click(screen.getByTestId('dt-tab-tree'))
+    expect(screen.getByTestId('dt-tree-choice-scale_question-single').classList.contains('dt-tree-taken')).toBe(true)
+    expect(screen.getByTestId('dt-tree-choice-scale_question-parallel').classList.contains('dt-tree-taken')).toBe(false)
+    expect(screen.getByTestId('dt-tree-node-memory_question').classList.contains('dt-tree-current')).toBe(true)
+  })
+
+  it('tapping a recommendation in the tree jumps there with the answers that lead to it', () => {
+    render(<DecisionTreeSection title="Test" root="scale_question" nodes={mockNodes} />)
+    fireEvent.click(screen.getByTestId('dt-tab-tree'))
+    fireEvent.click(screen.getByTestId('dt-tree-node-leaf_vector_db'))
+    expect(screen.getByTestId('dt-tab-steps')).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByTestId('dt-leaf-recommendation')).toHaveTextContent('vector store memory')
+    expect(screen.getByTestId('dt-breadcrumb-step-0')).toHaveTextContent('One at a time')
+    expect(screen.getByTestId('dt-breadcrumb-step-1')).toHaveTextContent('Yes, across sessions')
+  })
+
+  it('tapping a question in the tree jumps to it', () => {
+    render(<DecisionTreeSection title="Test" root="scale_question" nodes={mockNodes} />)
+    fireEvent.click(screen.getByTestId('dt-tab-tree'))
+    fireEvent.click(screen.getByTestId('dt-tree-node-memory_question'))
+    expect(screen.getByTestId('dt-decision-prompt')).toHaveTextContent('remember past interactions')
+    expect(screen.getByTestId('dt-step-counter')).toHaveTextContent('Step 2')
+  })
+
+  it('a branch that loops back is shown once, not drawn forever', () => {
+    const looping: Record<string, OKFDecisionTreeNode> = {
+      a: { id: 'a', prompt: 'Question A', choices: [{ id: 'again', text: 'Ask again', next: 'a' }, { id: 'done', text: 'Done', next: 'end' }] },
+      end: { id: 'end', leaf: { recommendation: 'Finished.', explanation: 'Done.' } },
+    }
+    render(<DecisionTreeSection title="Test" root="a" nodes={looping} />)
+    fireEvent.click(screen.getByTestId('dt-tab-tree'))
+    expect(screen.getByTestId('dt-tree')).toHaveTextContent('Back to “Question A”')
+  })
+
   // --- Leaf node ---
 
   it('transitions to leaf when reaching terminal node', () => {

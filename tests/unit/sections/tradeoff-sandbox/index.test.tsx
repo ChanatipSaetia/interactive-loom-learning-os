@@ -404,7 +404,7 @@ describe('TradeoffSandbox Section', () => {
     expect(screen.getByTestId('compare-step-title-0')).toHaveTextContent('Frontend Choice')
   })
 
-  it('Compare options tab shows 2-column grid with all choices', () => {
+  it('Compare options tab shows a grid with all choices', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
     expect(screen.getByTestId('compare-grid-0')).toBeInTheDocument()
@@ -439,9 +439,41 @@ describe('TradeoffSandbox Section', () => {
 
   it('Compare options tab shows recommended badge for recommended choice', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    fireEvent.click(screen.getByTestId('tradeoff-tab-compare'))
-    expect(screen.getByTestId('compare-recommended-badge-0-ssr')).toBeInTheDocument()
     expect(screen.getByTestId('compare-recommended-badge-0-ssr')).toHaveTextContent('Recommended')
+    expect(screen.queryByTestId('compare-recommended-badge-0-spa')).not.toBeInTheDocument()
+  })
+
+  it('tapping an option shows when to use and dims the others; tapping again closes it', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    expect(screen.getByTestId('compare-hint-0')).toHaveTextContent('Tap an option')
+    fireEvent.click(screen.getByTestId('compare-card-0-spa'))
+    expect(screen.getByTestId('compare-details-0-spa')).toHaveTextContent('Internal tools where SEO does not matter.')
+    expect(screen.getByTestId('compare-card-0-spa')).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByTestId('compare-card-0-ssr').classList.contains('compare-card-dimmed')).toBe(true)
+    fireEvent.click(screen.getByTestId('compare-card-0-spa'))
+    expect(screen.queryByTestId('compare-details-0-spa')).not.toBeInTheDocument()
+    expect(screen.getByTestId('compare-card-0-ssr').classList.contains('compare-card-dimmed')).toBe(false)
+  })
+
+  it('cards answer to the keyboard', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    fireEvent.keyDown(screen.getByTestId('compare-card-0-ssr'), { key: 'Enter' })
+    expect(screen.getByTestId('compare-details-0-ssr')).toHaveTextContent('Enterprise apps benefit from SSR')
+  })
+
+  it('Compare options tab shows each option\'s summary and effect chips', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    expect(screen.getByTestId('compare-card-desc-0-spa')).toHaveTextContent('Single page application.')
+    const effects = screen.getByTestId('compare-effects-0-ssr')
+    expect(effects).toHaveTextContent('Performance +15')
+    expect(effects).toHaveTextContent('Cost −5')
+  })
+
+  it('options without why/when text are not tappable', () => {
+    const steps = [{ ...mockSteps[0], choices: mockSteps[0].choices.map((c) => ({ ...c, whyThisFits: undefined, whenToUse: undefined })) }]
+    render(<TradeoffSandboxSection scenarios={[{ ...mockScenarios[0], steps }]} />)
+    expect(screen.queryByTestId('compare-hint-0')).not.toBeInTheDocument()
+    expect(screen.getByTestId('compare-card-0-spa')).not.toHaveAttribute('role')
   })
 
   it('chosen choice has Selected badge in the Compare options tab', () => {
