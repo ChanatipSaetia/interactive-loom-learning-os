@@ -934,9 +934,11 @@
           "type": "string",
           "enum": [
             "aggregate",
+            "service",
+            "database",
             "external"
           ],
-          "description": "Optional \"aggregate\" (owned domain model) or \"external\" (outside service). Default \"external\"."
+          "description": "Optional \"aggregate\" (owned domain model), \"service\" (owned component without its own domain model), \"database\" (data store) or \"external\" (outside system). Default \"external\"."
         },
         "stateMachine": {
           "$ref": "#/$defs/StateMachine",

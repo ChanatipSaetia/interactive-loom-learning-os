@@ -354,6 +354,12 @@ async function loadPillarLayerSection(basePath: string, resource: string, resour
 
 // --- Flow mapping ---
 
+function systemKind(raw: unknown): 'aggregate' | 'service' | 'database' | 'external' {
+  const kind = String(raw ?? '').toLowerCase()
+  return kind === 'aggregate' || kind === 'service' || kind === 'database' ? kind : 'external'
+}
+
+
 function mapFlow(
   actorsRaw: any,
   systemsRaw: any,
@@ -388,7 +394,7 @@ function mapFlow(
         systems[id] = {
           title: s.label ?? s.title ?? s.name ?? id,
           desc: s.desc,
-          type: (s.type === 'AGGREGATE' || s.type === 'aggregate') ? 'aggregate' : 'external',
+          type: systemKind(s.type),
           stateMachine: s.stateMachine,
         }
       }
@@ -399,7 +405,7 @@ function mapFlow(
         systems[id] = {
           title: s.label ?? s.title ?? id,
           desc: s.desc,
-          type: (s.type === 'AGGREGATE' || s.type === 'aggregate') ? 'aggregate' : 'external',
+          type: systemKind(s.type),
           stateMachine: s.stateMachine,
         }
       }

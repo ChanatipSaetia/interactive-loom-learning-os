@@ -85,7 +85,7 @@ export function deriveSysArch(
     .filter(id => {
       const ent = schema.entities[id];
       const type = getEntityType(ent);
-      return ent && (type === TYPES.AGGREGATE || type === TYPES.DATABASE);
+      return ent && (type === TYPES.AGGREGATE || type === TYPES.SERVICE || type === TYPES.DATABASE);
     });
 
   const sysGroups = aggregateIds.length > 0 ? [

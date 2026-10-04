@@ -67,7 +67,7 @@ export function deriveDataFlow(
     let componentName = '';
     const compNode = pathNodeIds.find(id => {
       const type = getEntityType(schema.entities[id]);
-      return type === TYPES.AGGREGATE || type === TYPES.DATABASE || type === TYPES.EXTERNAL;
+      return type === TYPES.AGGREGATE || type === TYPES.SERVICE || type === TYPES.DATABASE || type === TYPES.EXTERNAL;
     });
 
     if (compNode) {
@@ -75,6 +75,7 @@ export function deriveDataFlow(
       const type = getEntityType(schema.entities[compNode]);
       let typeLabel = 'aggregate';
       if (type === TYPES.DATABASE) typeLabel = 'db';
+      else if (type === TYPES.SERVICE) typeLabel = 'service';
       else if (type === TYPES.EXTERNAL) typeLabel = 'external';
       componentName = `${componentName} [${typeLabel}]`;
     }

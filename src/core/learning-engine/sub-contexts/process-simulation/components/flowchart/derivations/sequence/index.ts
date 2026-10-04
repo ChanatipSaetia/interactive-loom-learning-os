@@ -35,7 +35,7 @@ export function deriveSequence(
     const toType   = getEntityType(schema.entities[r.to]);
 
     // ── Command dispatched to an Aggregate/External/Service (handledBy) → solid arrow ──────
-    const isHandlerSystem = toType === TYPES.AGGREGATE || toType === TYPES.EXTERNAL || toType === TYPES.SERVICE;
+    const isHandlerSystem = toType === TYPES.AGGREGATE || toType === TYPES.EXTERNAL || toType === TYPES.SERVICE || toType === TYPES.DATABASE;
     if (fromType === TYPES.COMMAND && r.handledBy && isHandlerSystem) {
       const handler  = getCollapsedId(r.to);
       const initiator = findCommandInitiator(schema, r.from, getCollapsedId);
@@ -54,7 +54,7 @@ export function deriveSequence(
     }
 
     // ── Event produced by a Command, Aggregate, or External system → dashed arrow ───────────
-    const isProducerSystem = fromType === TYPES.COMMAND || fromType === TYPES.AGGREGATE || fromType === TYPES.EXTERNAL || fromType === TYPES.SERVICE;
+    const isProducerSystem = fromType === TYPES.COMMAND || fromType === TYPES.AGGREGATE || fromType === TYPES.EXTERNAL || fromType === TYPES.SERVICE || fromType === TYPES.DATABASE;
     if (toType === TYPES.EVENT && isProducerSystem) {
       const eventEntity = schema.entities[r.to];
 

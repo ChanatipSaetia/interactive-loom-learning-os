@@ -81,14 +81,14 @@ export const System = defineOUIComponent({
     id: z.string(),
     title: z.string(),
     desc: z.string(),
-    kind: z.enum(['aggregate', 'external']).optional(),
+    kind: z.enum(['aggregate', 'service', 'database', 'external']).optional(),
     stateMachine: StateMachine.ref.optional(),
   }),
   fields: {
     id: 'System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`.',
     title: 'System name shown on its sticky (e.g. "Order Service").',
     desc: 'What the system owns or does.',
-    kind: 'Optional "aggregate" (owned domain model) or "external" (outside service). Default "external".',
+    kind: 'Optional "aggregate" (owned domain model), "service" (owned component without its own domain model), "database" (data store) or "external" (outside system). Default "external".',
     stateMachine: 'Optional StateMachine(...) for a system that orchestrates the flow.',
   },
   toData: (p) => ({

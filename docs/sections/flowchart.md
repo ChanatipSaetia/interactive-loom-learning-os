@@ -62,7 +62,7 @@ pack:
 
 ## `systems.yaml`
 
-A YAML **mapping** of `systemId → SystemDecl`. Systems can be `aggregate` (internal) or `external` (third-party/passive).
+A YAML **mapping** of `systemId → SystemDecl`. A system is an `aggregate` (owned domain model), a `service` (owned component without its own domain model), a `database` (data store) or `external` (outside system). The first three sit inside the System Boundary in the architecture view. In `.oui` this is `System`'s `kind` argument.
 
 ```yaml
 falling_thunder:
@@ -81,7 +81,7 @@ ailiths_chimes:
 |---|---|---|---|
 | `title` | `string` | Yes | Display name |
 | `desc` | `string` | Yes | Description |
-| `type` | `"aggregate" \| "external"` | Yes | Internal aggregate or external system |
+| `type` | `"aggregate" \| "service" \| "database" \| "external"` | Yes | What kind of system it is (see above) |
 | `stateMachine` | `StateMachine` | No | Optional state machine definition |
 
 `StateMachine`:

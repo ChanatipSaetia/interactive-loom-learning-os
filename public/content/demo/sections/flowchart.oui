@@ -35,7 +35,7 @@ toolsRouter = System(
   "tools_router",
   "Tools Router",
   "Handles command routing and executes operations.",
-  "aggregate",
+  "service",
 )
 
 llm = System(

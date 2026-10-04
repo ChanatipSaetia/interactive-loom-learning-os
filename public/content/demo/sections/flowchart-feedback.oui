@@ -28,7 +28,7 @@ memoryStore = System(
   "memory_store",
   "Memory Store",
   "Stores failed attempts for context",
-  "external",
+  "database",
 )
 
 fbCheck = Step(

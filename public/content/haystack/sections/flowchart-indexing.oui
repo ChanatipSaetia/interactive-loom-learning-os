@@ -12,21 +12,21 @@ fileConverter = System(
   "file_converter",
   "File Converter",
   "Converts PDF, HTML, Markdown, or other formats into Document objects.",
-  "aggregate",
+  "service",
 )
 
 textSplitter = System(
   "text_splitter",
   "Text Splitter",
   "Breaks large documents into smaller, semantically coherent chunks.",
-  "aggregate",
+  "service",
 )
 
 docEmbedder = System(
   "doc_embedder",
   "Document Embedder",
   "Computes dense vector embeddings for each text chunk.",
-  "aggregate",
+  "service",
 )
 
 embeddingModel = System(
@@ -40,14 +40,14 @@ docWriter = System(
   "doc_writer",
   "Document Writer",
   "Writes or overwrites documents into the Document Store.",
-  "aggregate",
+  "service",
 )
 
 docStore = System(
   "doc_store",
   "Document Store",
   "Persistent database (OpenSearch, Elasticsearch, Chroma, etc.) storing indexed documents.",
-  "external",
+  "database",
 )
 
 startIndexing = Step(

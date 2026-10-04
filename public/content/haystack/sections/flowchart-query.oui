@@ -21,7 +21,7 @@ textEmbedder = System(
   "text_embedder",
   "Text Embedder",
   "Converts the user query into a dense vector for semantic search.",
-  "aggregate",
+  "service",
 )
 
 queryEmbeddingModel = System(
@@ -35,35 +35,35 @@ retriever = System(
   "retriever",
   "Retriever",
   "Searches the Document Store for relevant documents.",
-  "aggregate",
+  "service",
 )
 
 docStore = System(
   "doc_store",
   "Document Store",
   "Stores indexed documents for retrieval.",
-  "external",
+  "database",
 )
 
 ranker = System(
   "ranker",
   "Ranker",
   "Re-ranks retrieved documents by relevance to the query.",
-  "aggregate",
+  "service",
 )
 
 promptBuilder = System(
   "prompt_builder",
   "Prompt Builder",
   "Assembles retrieved documents into an LLM prompt template.",
-  "aggregate",
+  "service",
 )
 
 llmGenerator = System(
   "llm_generator",
   "LLM Generator",
   "Generates the final answer from the prompt using an LLM.",
-  "aggregate",
+  "service",
 )
 
 llmApi = System("llm_api", "LLM API", "External LLM service (OpenAI, Anthropic, etc.).", "external")

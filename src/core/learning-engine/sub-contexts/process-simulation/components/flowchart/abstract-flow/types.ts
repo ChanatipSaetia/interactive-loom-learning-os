@@ -74,6 +74,9 @@ export interface BranchOption extends FlowStepBase {
 
 export type FlowStep = LinearStep | BranchStep;
 
+/** What kind of system a declared System is. */
+export type SystemKind = 'aggregate' | 'service' | 'database' | 'external';
+
 /** Declared actor (human user). */
 export interface ActorDecl {
   title: string;
@@ -84,7 +87,8 @@ export interface ActorDecl {
 export interface SystemDecl {
   title: string;
   desc: string;
-  type: 'aggregate' | 'external';
+  /** aggregate: owned domain model; service: owned component; database: data store; external: outside system. */
+  type: SystemKind;
   /** Optional state machine for the orchestrator entity. */
   stateMachine?: {
     states: Array<{ id: string; label: string; color: string }>;

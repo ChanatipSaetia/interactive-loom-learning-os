@@ -150,11 +150,11 @@ Actor(id: string, title: string, desc: string) — A human actor (user role) who
   - id: Actor ID, unique within the flowchart; steps refer to it with `initiatedBy`.
   - title: Actor name shown on its sticky (e.g. "Buyer").
   - desc: What this actor is or wants.
-System(id: string, title: string, desc: string, kind?: "aggregate" | "external", stateMachine?: StateMachine) — A system that handles commands: an "aggregate" (owned domain model) or an "external" service.
+System(id: string, title: string, desc: string, kind?: "aggregate" | "service" | "database" | "external", stateMachine?: StateMachine) — A system that handles commands: an "aggregate" (owned domain model) or an "external" service.
   - id: System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`.
   - title: System name shown on its sticky (e.g. "Order Service").
   - desc: What the system owns or does.
-  - kind: Optional "aggregate" (owned domain model) or "external" (outside service). Default "external".
+  - kind: Optional "aggregate" (owned domain model), "service" (owned component without its own domain model), "database" (data store) or "external" (outside system). Default "external".
   - stateMachine: Optional StateMachine(...) for a system that orchestrates the flow.
 StateMachine(states: MachineState[], initialState: string) — State machine for an orchestrating system. `initialState` is a state ID.
   - states: The states, as MachineState references.

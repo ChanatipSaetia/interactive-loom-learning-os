@@ -2,6 +2,14 @@
 import type { AbstractFlow, LinearStep, BranchStep, BranchOption, FlowStep } from './types';
 import { isLinearStep, isBranchStep } from './types';
 import { TYPES } from '../types';
+import type { SystemKind } from './types';
+
+const SYSTEM_KIND_TYPES: Record<SystemKind, string> = {
+  aggregate: TYPES.AGGREGATE,
+  service: TYPES.SERVICE,
+  database: TYPES.DATABASE,
+  external: TYPES.EXTERNAL,
+};
 import type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartStepBranchInfo } from '../types';
 
 /**
@@ -93,7 +101,7 @@ export function deriveSchema(flow: AbstractFlow): UnifiedFlowchartSchema {
     entities[entityId] = {
       title: sys.title,
       desc: sys.desc,
-      type: sys.type === 'aggregate' ? TYPES.AGGREGATE : TYPES.EXTERNAL,
+      type: SYSTEM_KIND_TYPES[sys.type] ?? TYPES.EXTERNAL,
       stateMachine: sys.stateMachine,
     };
     idMap.set(id, entityId);

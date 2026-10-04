@@ -49,7 +49,7 @@ keyStore = System(
   "key_store",
   "Key Store",
   "Secure storage for private keys and trusted CA certificates",
-  "aggregate",
+  "database",
 )
 
 caService = System(

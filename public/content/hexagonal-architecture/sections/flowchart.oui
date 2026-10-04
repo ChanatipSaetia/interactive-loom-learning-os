@@ -39,28 +39,28 @@ httpController = System(
   "http_controller",
   "Express HTTP Controller (Driving Adapter)",
   "Receives HTTP REST requests and translates DTOs into domain commands.",
-  "external",
+  "service",
 )
 
 createOrderPort = System(
   "create_order_port",
   "CreateOrderUseCase (Driving Port)",
   "Inbound application port interface exposing order creation operations.",
-  "external",
+  "service",
 )
 
 orderRepoPort = System(
   "order_repo_port",
   "OrderRepositoryPort (Driven Port)",
   "Outbound infrastructure port interface for order persistence.",
-  "external",
+  "service",
 )
 
 postgresAdapter = System(
   "postgres_adapter",
   "PostgresOrderAdapter (Driven Adapter)",
   "Outbound database adapter executing SQL queries against Postgres.",
-  "external",
+  "service",
 )
 
 stepCheckout = Step(

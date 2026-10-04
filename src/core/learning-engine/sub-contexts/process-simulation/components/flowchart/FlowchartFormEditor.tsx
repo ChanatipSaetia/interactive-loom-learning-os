@@ -697,12 +697,14 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                             onChange={(e) =>
                               handleSystemChange(key, {
                                 ...sys,
-                                type: e.target.value as 'aggregate' | 'external',
+                                type: e.target.value as SystemDecl['type'],
                               })
                             }
                             data-testid={`flowchart-system-${key}-type`}
                           >
                             <option value="aggregate">Aggregate</option>
+                            <option value="service">Service</option>
+                            <option value="database">Database</option>
                             <option value="external">External</option>
                           </select>
                         </label>

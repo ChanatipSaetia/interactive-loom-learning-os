@@ -38,7 +38,7 @@ describe('language spec', () => {
     expect(handledBy).toMatchObject({ type: 'string | System', optional: false, components: ['System'] })
     expect(handledBy.kinds).toEqual(expect.arrayContaining(['string', 'component']))
     expect(step.params[4]).toMatchObject({ type: 'Event[]', elementComponents: ['Event'] })
-    expect(getOUILanguageSpec().components.get('System')!.params[3].enumValues).toEqual(['aggregate', 'external'])
+    expect(getOUILanguageSpec().components.get('System')!.params[3].enumValues).toEqual(['aggregate', 'service', 'database', 'external'])
   })
 
   it('knows the section components and builtins', () => {
@@ -108,7 +108,7 @@ describe('completions', () => {
 
   it('offers enum values inside strings', () => {
     const [source, offset] = at('root = Flowchart("F", [], [System("s", "S", "d", "‸")], [], [])')
-    expect(labels(getCompletions(source, offset))).toEqual(['aggregate', 'external'])
+    expect(labels(getCompletions(source, offset))).toEqual(['aggregate', 'service', 'database', 'external'])
   })
 
   it('offers node IDs for scenario `next`', () => {

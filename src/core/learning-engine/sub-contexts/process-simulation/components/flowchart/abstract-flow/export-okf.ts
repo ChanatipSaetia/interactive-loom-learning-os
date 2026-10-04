@@ -1,4 +1,4 @@
-import type { AbstractFlow, LinearStep, BranchStep } from './types';
+import type { AbstractFlow, LinearStep, BranchStep, SystemKind } from './types';
 import { isLinearStep, isBranchStep } from './types';
 
 /** OKF frontmatter for a concept document. */
@@ -157,13 +157,20 @@ ${actor.desc}
 `;
 }
 
+const SYSTEM_KIND_LABELS: Record<SystemKind, string> = {
+  aggregate: 'Aggregate',
+  service: 'Service',
+  database: 'Database',
+  external: 'External System',
+};
+
 function generateSystemConcept(_id: string, sys: {
   title: string;
   desc: string;
-  type: 'aggregate' | 'external';
+  type: SystemKind;
 }): string {
   return `${frontmatter({
-    type: sys.type === 'aggregate' ? 'Aggregate' : 'External System',
+    type: SYSTEM_KIND_LABELS[sys.type],
     title: sys.title,
     description: sys.desc,
     tags: [sys.type],
