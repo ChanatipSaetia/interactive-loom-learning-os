@@ -51,6 +51,30 @@ function sortedPaths(files: Record<string, string>): string[] {
 
 const TOPIC_HEADER = /^\/\/\s*@loom-topic\s+(\S+)\s*$/
 const FILE_MARKER = /^\/\/\s*={3,}\s*(\S+?)\s*={3,}\s*$/
+/**
+ * Marker lines as LLM chats actually write them: a `//` comment naming one
+ * `.oui` file and nothing else, with optional decoration (`===`, `---`, `═══`,
+ * `###`, `**`…), an optional `File:` label and an optional `<topic-id>/`
+ * folder prefix. `// === sections/intro.oui ===`, `// sections/intro.oui`,
+ * `// --- File: my-topic/sections/intro.oui ---` all match.
+ */
+const LOOSE_MARKER = /^\/\/[\s=\-─═#*~_>]*(?:(?:file|path|filename)\s*:\s*)?`?([\w./-]+\.oui)`?[\s=\-─═#*~_<]*$/i
+
+/** The topic file a marker line names (`topic.oui`, `sections/<name>.oui`), or null for an ordinary comment. */
+function markerPath(line: string): string | null {
+  const strict = FILE_MARKER.exec(line)
+  const loose = strict ?? LOOSE_MARKER.exec(line)
+  if (!loose) return null
+  const raw = loose[1]
+  // Drop a leading `<topic-id>/` (or `./`) folder: keep from `sections/…`, or a trailing `topic.oui`.
+  const sections = raw.lastIndexOf('sections/')
+  const path = sections >= 0 ? raw.slice(sections) : raw.endsWith(TOPIC_FILE) && /(^|\/)topic\.oui$/.test(raw) ? TOPIC_FILE : raw
+  if (isTopicPath(path)) return path
+  if (strict) {
+    throw new TopicArchiveError(`"${raw}" is not a topic file. Use topic.oui or sections/<name>.oui (lowercase letters, digits, - and _).`)
+  }
+  return null
+}
 const CODE_FENCE = /^\s*```[\w-]*\s*$/
 
 /**
@@ -90,12 +114,8 @@ export function parseTopicSource(text: string, fallbackId = 'topic'): TopicFiles
       file = null
       continue
     }
-    const marker = FILE_MARKER.exec(line)
-    if (marker) {
-      const path = marker[1]
-      if (!isTopicPath(path)) {
-        throw new TopicArchiveError(`"${path}" is not a topic file. Use topic.oui or sections/<name>.oui (lowercase letters, digits, - and _).`)
-      }
+    const path = markerPath(line)
+    if (path) {
       if (!topic) {
         topic = { topicId: fallbackId, files: {} }
         topics.push(topic)
@@ -116,13 +136,55 @@ export function parseTopicSource(text: string, fallbackId = 'topic'): TopicFiles
   return topics.map(({ topicId, files }) => {
     if (!CONTENT_ID.test(topicId)) throw new TopicArchiveError(`"${topicId}" is not a valid topic ID (lowercase letters, digits, - and _).`)
     if (!(TOPIC_FILE in files)) throw new TopicArchiveError(`Topic "${topicId}" has no \`// === topic.oui ===\` part.`)
-    return { topicId, files: Object.fromEntries(Object.entries(files).map(([p, l]) => [p, `${l.join('\n')}\n`])) }
+    return { topicId, files: splitMergedFiles(topicId, Object.fromEntries(Object.entries(files).map(([p, l]) => [p, `${l.join('\n')}\n`]))) }
   })
+}
+
+const ROOT_LINE = /^root\s*=/
+const SECTION_REF = /SectionRef\(\s*"([^"]+)"\s*\)/g
+
+/**
+ * Safety net for a missed marker: a file holding several `root =` programs.
+ * When topic.oui swallowed its sections and the extra programs match, in
+ * count, the SectionRefs that have no file, they are split out in SectionRef
+ * order. Any other file with several roots is reported clearly.
+ */
+function splitMergedFiles(topicId: string, files: Record<string, string>): Record<string, string> {
+  const result = { ...files }
+  for (const [path, text] of Object.entries(files)) {
+    const lines = text.split('\n')
+    const starts = lines.flatMap((line, i) => (ROOT_LINE.test(line) ? [i] : []))
+    if (starts.length < 2) continue
+    if (path === TOPIC_FILE) {
+      const head = lines.slice(0, starts[1]).join('\n')
+      const missing = [...head.matchAll(SECTION_REF)].map((m) => m[1]).filter((name) => !(`sections/${name}.oui` in files))
+      if (missing.length === starts.length - 1) {
+        result[TOPIC_FILE] = `${head.replace(/\s+$/, '')}\n`
+        missing.forEach((name, i) => {
+          const block = lines.slice(starts[i + 1], starts[i + 2] ?? lines.length).join('\n')
+          result[`sections/${name}.oui`] = `${block.replace(/\s+$/, '')}\n`
+        })
+        continue
+      }
+    }
+    throw new TopicArchiveError(
+      `${path} in topic "${topicId}" has ${starts.length} \`root =\` statements, so the lines that start each file were not recognised. `
+      + 'Start every file with its own marker line, like `// === sections/intro.oui ===`.',
+    )
+  }
+  return result
 }
 
 /** True when the text uses the `.loom.oui` layout (a `// @loom-topic` line or `// === <path> ===` markers). */
 function hasTopicMarkers(text: string): boolean {
-  return text.split(/\r?\n/).some((line) => TOPIC_HEADER.test(line) || FILE_MARKER.test(line))
+  return text.split(/\r?\n/).some((line) => {
+    if (TOPIC_HEADER.test(line)) return true
+    try {
+      return markerPath(line) !== null
+    } catch {
+      return true
+    }
+  })
 }
 
 const TOPIC_ROOT = /^\s*root\s*=\s*Topic\s*\(/m

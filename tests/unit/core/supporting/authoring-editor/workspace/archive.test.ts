@@ -97,6 +97,38 @@ describe('single file (.loom.oui)', () => {
   })
 })
 
+describe('marker lines as AI chats write them', () => {
+  const topicWith = (marker: string) => `// @loom-topic g\n// === topic.oui ===\n${TOPIC}${marker}\n${INTRO}`
+  const expected = { 'topic.oui': TOPIC, 'sections/intro.oui': INTRO }
+
+  it.each([
+    '// === sections/intro.oui ===',
+    '// sections/intro.oui',
+    '// --- sections/intro.oui ---',
+    '// ═══ sections/intro.oui ═══',
+    '// File: sections/intro.oui',
+    '// === g/sections/intro.oui ===',
+    '// **`sections/intro.oui`**',
+  ])('splits files at %s', (marker) => {
+    expect(parseTopicSource(topicWith(marker))[0].files).toEqual(expected)
+  })
+
+  it('keeps ordinary comments that mention a file', () => {
+    const text = `// === topic.oui ===\n${TOPIC}// === sections/intro.oui ===\n// see sections/quiz.oui next\n${INTRO}`
+    expect(parseTopicSource(text)[0].files['sections/intro.oui']).toBe(`// see sections/quiz.oui next\n${INTRO}`)
+  })
+
+  it('recovers sections glued into topic.oui, in SectionRef order', () => {
+    const glued = `// @loom-topic demo\n// === topic.oui ===\n${TOPIC}\n${INTRO}\n${QUIZ}`
+    expect(parseTopicSource(glued)).toEqual([demo()])
+  })
+
+  it('explains a file with several roots it cannot split', () => {
+    const text = `// === topic.oui ===\n${TOPIC}// === sections/intro.oui ===\n${INTRO}${QUIZ}`
+    expect(() => parseTopicSource(text)).toThrow(/sections\/intro.oui in topic "topic" has 2 `root =` statements/)
+  })
+})
+
 describe('reading pasted text', () => {
   it('reads a .loom.oui text like parseTopicSource', () => {
     expect(readTopicText(createTopicSource([demo()]))).toEqual([demo()])

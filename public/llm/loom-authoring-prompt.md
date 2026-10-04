@@ -477,6 +477,7 @@ The `sections/steep-guide.oui` file in the example above is a standard OpenUI se
 
 ## Loom Authoring Rules
 
+- In the single .oui file, start EVERY file with its own marker line written exactly as `// === topic.oui ===` or `// === sections/<name>.oui ===` (three `=` on each side, no folder prefix). Each file holds exactly one `root =` statement; never put two sections in one file.
 - Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.
 - Start with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.
 - Mix interactive section types. Never build a topic out of Text sections only.
