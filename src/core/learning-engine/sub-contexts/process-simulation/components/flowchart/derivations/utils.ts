@@ -64,7 +64,9 @@ export function deriveRelations(
   viewKey: string,
   participantIds: Set<string>,
   getLabel: (nodesOnPath: string[], startId: string) => { label: string; dashed?: boolean },
-  onDanglingPath?: (pathNodeIds: string[], startId: string) => void
+  onDanglingPath?: (pathNodeIds: string[], startId: string) => void,
+  /** Paths for which no relation is drawn (the node at the end still stops the walk). */
+  skipPath?: (pathNodeIds: string[]) => boolean
 ): FlowchartRelation[] {
   const relations: FlowchartRelation[] = [];
   const visitedPaths = new Set<string>();
@@ -110,6 +112,7 @@ export function deriveRelations(
         if (participantIds.has(collapsedNext)) {
           if (collapsedNext !== collapsedStart) {
             const pathNodeIds = [...path.slice(1), nextId];
+            if (skipPath?.(pathNodeIds)) continue;
             const { label, dashed } = getLabel(pathNodeIds, startingInstanceId);
 
             const startEntity = schema.entities[collapsedStart];

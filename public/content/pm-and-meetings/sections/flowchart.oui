@@ -105,8 +105,6 @@ dailyExecution = Step(
   dev,
   null,
   "sync_branch",
-  null,
-  slackChannel,
 )
 
 syncBranch = Branch("sync_branch", "evt_work_in_progress", [branchNoBlocker, branchBlocked])
@@ -119,11 +117,11 @@ branchNoBlocker = BranchOption(
   slackChannel,
   [Event("evt_async_updated", "Async Update Logged", "Focus maintained, status updated.")],
   null,
-  null,
+  dev,
   null,
   "review_cycle",
   null,
-  retroBoard,
+  pm,
 )
 
 branchBlocked = BranchOption(
@@ -134,7 +132,7 @@ branchBlocked = BranchOption(
   standupTool,
   [Event("evt_blocker_raised", "Blocker Raised", "Dependency, bug, or clarity issue flagged.")],
   null,
-  null,
+  dev,
   null,
   "resolve_blocker",
   null,

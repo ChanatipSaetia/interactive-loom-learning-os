@@ -82,7 +82,7 @@ stepReview = Step(
   null,
   "step_outcome",
   null,
-  docsSite,
+  docWriter,
 )
 
 stepOutcome = Branch(

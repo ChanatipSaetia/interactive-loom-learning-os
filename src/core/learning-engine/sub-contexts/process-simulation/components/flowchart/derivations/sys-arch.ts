@@ -47,7 +47,18 @@ export function deriveSysArch(
     return { label: '' };
   };
 
-  const sysRelations = deriveRelations(schema, 'SYS_ARCH', localAddedNodes, getSysArchLabel);
+  // Once a flowchart declares who receives a step's result (sendsTo), its lines
+  // come only from declared links: initiatedBy (actor -> handler), delegatesTo
+  // (handler -> delegate) and sendsTo (handler -> recipient). A path through an
+  // event ("A's event triggers B's command") is then not drawn as a line.
+  // Flowcharts with no sendsTo keep inferring those hand-offs.
+  const declaresRecipients = schema.relations.some(r => r.sendsTo);
+  const throughEvent = (pathNodeIds: string[]) =>
+    pathNodeIds.slice(0, -1).some(id => getEntityType(schema.entities[id]) === TYPES.EVENT);
+  const sysRelations = deriveRelations(
+    schema, 'SYS_ARCH', localAddedNodes, getSysArchLabel, undefined,
+    declaresRecipients ? throughEvent : undefined
+  );
 
   // sendsTo messages are not in Event Storming, so add them here: producer → recipient,
   // labelled with the event (one label per direction, like the other edges)
