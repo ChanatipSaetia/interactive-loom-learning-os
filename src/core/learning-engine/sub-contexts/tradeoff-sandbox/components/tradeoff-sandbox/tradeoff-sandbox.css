@@ -172,24 +172,6 @@
 
 /* ─── Compare Grid ──────────────────────────────────── */
 
-.compare-scenarios {
-  @apply flex flex-col gap-4;
-}
-
-.compare-step {
-  @apply rounded-[var(--radius-sm)] border border-border p-3.5;
-}
-
-.compare-step-title {
-  @apply font-normal leading-[1.3] mt-0 mb-2.5;
-  font-size: var(--text-card-heading);
-  color: var(--ink);
-}
-
-.compare-grid {
-  @apply grid grid-cols-2 gap-3;
-}
-
 .compare-card {
   @apply rounded-[var(--radius-sm)] border border-border px-3 py-2 bg-card;
 }
@@ -215,54 +197,6 @@
   background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
 }
 
-.compare-pros {
-  @apply list-none pt-0 pb-0 pl-0 pr-0 mb-2 flex flex-col gap-0.5;
-}
-
-.compare-pro {
-  @apply leading-[1.25] flex items-start gap-1;
-  font-size: 9.5px;
-  color: var(--body-muted);
-}
-
-.compare-cons {
-  @apply list-none p-0 flex flex-col gap-0.5;
-}
-
-.compare-con {
-  @apply leading-[1.25] flex items-start gap-1;
-  font-size: 9.5px;
-  color: var(--body-muted);
-}
-
-.compare-icon {
-  @apply flex-shrink-0 w-[11px] h-[11px] mt-0.5;
-}
-
-.compare-icon-pro {
-  color: var(--ctp-green);
-}
-
-.compare-icon-con {
-  color: var(--error);
-}
-
-.compare-procon-content {
-  @apply flex flex-col gap-[1px];
-}
-
-.compare-procon-title {
-  @apply font-medium leading-[1.25];
-  font-size: 10px;
-  color: var(--ink);
-}
-
-.compare-procon-desc {
-  @apply leading-[1.25];
-  font-size: 9px;
-  color: var(--body-muted);
-}
-
 .compare-card-recommended {}
 
 .compare-recommended-badge {
@@ -274,6 +208,234 @@
 .metric-delta-badge {
   @apply inline-flex items-center px-1.5 py-0.5 rounded-[var(--radius-xs)] font-medium border leading-tight;
   font-size: 8px;
+}
+
+/* ─── Compare options panel ─────────────────────────── */
+
+.compare-scenarios {
+  @apply flex flex-col gap-5;
+}
+
+.compare-step {
+  @apply rounded-[var(--radius-sm)] border border-border p-4 flex flex-col gap-3;
+}
+
+.compare-step-header {
+  @apply flex flex-col gap-1;
+}
+
+.compare-step-eyebrow {
+  @apply font-semibold uppercase;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--body-muted);
+}
+
+.compare-step-title {
+  @apply font-semibold m-0;
+  font-size: 24px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.compare-step-desc {
+  @apply m-0;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--body-muted);
+}
+
+.compare-step-prompt {
+  @apply m-0 font-medium;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.compare-verdict {
+  @apply rounded-[var(--radius-sm)] px-3.5 py-3 flex flex-col gap-1.5 border-l-4;
+  font-family: var(--font-ui);
+}
+
+.compare-verdict-right {
+  border-color: var(--ctp-green);
+  background-color: var(--pale-green);
+}
+
+.compare-verdict-miss {
+  border-color: var(--coral);
+  background-color: color-mix(in srgb, var(--coral) 12%, transparent);
+}
+
+.compare-verdict-headline {
+  @apply m-0 font-semibold;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.compare-verdict-text {
+  @apply m-0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.compare-verdict-hint {
+  @apply m-0;
+  font-size: 13px;
+  color: var(--body-muted);
+}
+
+/* One column on phones; one column per option (at most 3) on wider screens */
+.compare-grid {
+  @apply grid grid-cols-1 gap-3;
+}
+
+@media (min-width: 640px) {
+  .compare-grid {
+    grid-template-columns: repeat(var(--compare-cols, 2), minmax(0, 1fr));
+  }
+}
+
+.compare-scenarios .compare-card {
+  @apply flex flex-col gap-2.5 p-3.5;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  transition: opacity 0.2s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.compare-scenarios .compare-card:hover {
+  border-color: var(--secondary);
+}
+
+.compare-scenarios .compare-card:focus-visible {
+  @apply outline-none ring-2 ring-[var(--focus-blue)] ring-offset-2;
+}
+
+.compare-card-focused {
+  box-shadow: 0 0 0 2px var(--secondary);
+}
+
+.compare-guess-tag {
+  @apply flex-shrink-0 rounded-full px-2 py-0.5 font-semibold;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--secondary);
+  background-color: color-mix(in srgb, var(--secondary) 14%, transparent);
+}
+
+.compare-card-dimmed {
+  opacity: 0.5;
+}
+
+.compare-scenarios .compare-card-header {
+  @apply mb-0 items-start;
+}
+
+.compare-scenarios .compare-card-label {
+  @apply font-semibold;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.compare-card-summary {
+  @apply m-0 italic;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--body-muted);
+}
+
+.compare-effects {
+  @apply list-none p-0 m-0 flex flex-wrap gap-1.5;
+}
+
+.compare-effect {
+  @apply rounded-full px-2 py-0.5 font-medium;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.compare-effect-good {
+  color: var(--ctp-green);
+  background-color: color-mix(in srgb, var(--ctp-green) 14%, transparent);
+}
+
+.compare-effect-bad {
+  color: var(--error);
+  background-color: color-mix(in srgb, var(--error) 12%, transparent);
+}
+
+.compare-block {
+  @apply rounded-[var(--radius-xs)] px-3 py-2 flex flex-col gap-1.5 border-l-[3px];
+}
+
+.compare-block-gains {
+  border-color: var(--ctp-green);
+  background-color: var(--pale-green);
+}
+
+.compare-block-costs {
+  border-color: var(--error);
+  background-color: color-mix(in srgb, var(--error) 9%, transparent);
+}
+
+.compare-block-title {
+  @apply block font-semibold uppercase;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--body-muted);
+}
+
+.compare-pros,
+.compare-cons {
+  @apply list-none p-0 m-0 flex flex-col gap-1.5;
+}
+
+.compare-pro,
+.compare-con {
+  @apply flex items-start gap-2;
+}
+
+.compare-icon {
+  @apply flex-shrink-0 w-4 h-4 mt-0.5;
+}
+
+.compare-icon-pro {
+  color: var(--ctp-green);
+}
+
+.compare-icon-con {
+  color: var(--error);
+}
+
+.compare-procon-content {
+  @apply flex flex-col gap-0.5;
+}
+
+.compare-procon-title {
+  @apply font-medium;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.compare-procon-desc {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--body-muted);
+}
+
+.compare-card-details {
+  @apply flex flex-col gap-2 pt-2.5 border-t border-border;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.compare-card-details p {
+  @apply m-0;
 }
 
 /* ─── Details Modal ───────────────────────────────────── */
