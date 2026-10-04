@@ -6,7 +6,7 @@ import { parseTopicSource } from '../../../../../../src/core/supporting/authorin
 
 describe('Loom authoring prompt', () => {
   it('has a worked example that is a valid single-file topic', () => {
-    const { topicId, files } = parseTopicSource(AUTHORING_EXAMPLE)
+    const [{ topicId, files }] = parseTopicSource(AUTHORING_EXAMPLE)
     expect(topicId).toBe('green-tea')
     const topic = compileOUITopic(files['topic.oui'])
     expect(topic.issues).toEqual([])
@@ -20,10 +20,10 @@ describe('Loom authoring prompt', () => {
 
   it('explains the topic layout and the three output formats around the OpenUI Lang spec', () => {
     const prompt = getLoomAuthoringPrompt()
-    for (const text of ['## Topic Layout', '## Output Formats', '// @loom-topic <topic-id>', '"format": "loom-topic-bundle"', '<topic-id>/sections/<name>.oui',
+    for (const text of ['## Topic Layout', '## Output Formats', '// @loom-topic <topic-id>', '<topic-id>/sections/<name>.oui',
       '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Loom Authoring Rules']) {
       expect(prompt, text).toContain(text)
     }
-    expect(prompt).not.toMatch(/streaming|charts for trends|every program must define `root = Topic/i)
+    expect(prompt).not.toMatch(/streaming|charts for trends|every program must define `root = Topic|\.loom\.json|JSON bundle/i)
   })
 })

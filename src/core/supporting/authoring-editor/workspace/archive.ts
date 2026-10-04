@@ -1,13 +1,12 @@
 /**
  * Topic archives — move whole topic folders in and out of Loom Studio.
  *
- *   - Single-file bundle (`<topic>.loom.json`): every `.oui` file of one or
- *     more topics in one JSON document.
+ *   - Single file (`<topic>.loom.oui`): every `.oui` file of one or more
+ *     topics in one text file. Each topic starts with `// @loom-topic <id>`,
+ *     each file with a `// === <path> ===` marker line. Easy for an LLM chat
+ *     to write (see composition/oui/authoring-prompt.ts).
  *   - Zip (`<topic>.zip`): the topic folder itself (`<topic>/topic.oui`,
  *     `<topic>/sections/<name>.oui`), including folder entries.
- *   - Single-file source (`<topic>.loom.oui`): every `.oui` file of one topic
- *     in one text file, each after a `// === <path> ===` marker line. Easy
- *     for an LLM chat to write (see composition/oui/authoring-prompt.ts).
  *
  * Paths inside a topic are relative to the topic folder and use `/`, the
  * same as TopicFolder. Only `topic.oui` and `sections/<name>.oui` belong to a
@@ -29,9 +28,7 @@ export class TopicArchiveError extends Error {
   }
 }
 
-export const BUNDLE_FORMAT = 'loom-topic-bundle'
-export const BUNDLE_VERSION = 1
-export const BUNDLE_EXTENSION = '.loom.json'
+export const SOURCE_EXTENSION = '.loom.oui'
 
 const TOPIC_FILE = 'topic.oui'
 const SECTION_FILE = /^sections\/([^/]+)\.oui$/
@@ -49,123 +46,78 @@ function sortedPaths(files: Record<string, string>): string[] {
 }
 
 // ============================================================================
-// Single-file bundle
+// Single file (.loom.oui)
 // ============================================================================
 
-interface BundleDocument {
-  format: typeof BUNDLE_FORMAT
-  version: number
-  exportedAt?: string
-  topics: Array<{ id: string; files: Record<string, string> }>
-}
-
-/** Serialize topics into a single-file bundle. */
-export function createTopicBundle(topics: TopicFiles[], exportedAt = new Date().toISOString()): string {
-  const doc: BundleDocument = {
-    format: BUNDLE_FORMAT,
-    version: BUNDLE_VERSION,
-    exportedAt,
-    topics: topics.map(({ topicId, files }) => ({
-      id: topicId,
-      files: Object.fromEntries(sortedPaths(files).map((p) => [p, files[p]])),
-    })),
-  }
-  return `${JSON.stringify(doc, null, 2)}\n`
-}
-
-/** Parse a single-file bundle. Throws TopicArchiveError when it is not one. */
-export function parseTopicBundle(text: string): TopicFiles[] {
-  let doc: unknown
-  try {
-    doc = JSON.parse(text)
-  } catch {
-    throw new TopicArchiveError('This file is not a Loom topic bundle (invalid JSON).')
-  }
-  const d = doc as Partial<BundleDocument> | null
-  if (!d || d.format !== BUNDLE_FORMAT || !Array.isArray(d.topics)) {
-    throw new TopicArchiveError('This file is not a Loom topic bundle.')
-  }
-  if (typeof d.version !== 'number' || d.version > BUNDLE_VERSION) {
-    throw new TopicArchiveError(`Unsupported bundle version ${String(d.version)}.`)
-  }
-  return d.topics.map((topic, i) => {
-    if (!topic || typeof topic.id !== 'string' || !topic.files || typeof topic.files !== 'object') {
-      throw new TopicArchiveError(`Topic #${i + 1} in the bundle is malformed.`)
-    }
-    const files: Record<string, string> = {}
-    for (const [path, text] of Object.entries(topic.files)) {
-      if (typeof text === 'string' && isTopicPath(path)) files[path] = text
-    }
-    if (!(TOPIC_FILE in files)) throw new TopicArchiveError(`Topic "${topic.id}" in the bundle has no topic.oui.`)
-    return { topicId: topic.id, files }
-  })
-}
-
-// ============================================================================
-// Single-file source
-// ============================================================================
-
-export const SOURCE_EXTENSION = '.loom.oui'
-
-const SOURCE_HEADER = /^\/\/\s*@loom-topic\s+(\S+)\s*$/
+const TOPIC_HEADER = /^\/\/\s*@loom-topic\s+(\S+)\s*$/
 const FILE_MARKER = /^\/\/\s*={3,}\s*(\S+?)\s*={3,}\s*$/
 const CODE_FENCE = /^\s*```[\w-]*\s*$/
 
-/** Serialize one topic into a single `.oui` source: header, then each file after its marker. */
-export function createTopicSource({ topicId, files }: TopicFiles): string {
-  const chunks = sortedPaths(files).map((p) => `// === ${p} ===\n${files[p].replace(/\s+$/, '')}\n`)
-  return `// @loom-topic ${topicId}\n\n${chunks.join('\n')}`
+/**
+ * Serialize topics into one `.loom.oui` text: per topic a `// @loom-topic <id>`
+ * line, then each file (topic.oui first) after its `// === <path> ===` marker.
+ * File text is kept verbatim, so the round trip is exact for files that end
+ * with a newline (a missing final newline is added).
+ */
+export function createTopicSource(topics: TopicFiles[]): string {
+  return topics.map(({ topicId, files }) => {
+    const parts = sortedPaths(files).map((p) => `// === ${p} ===\n${files[p].endsWith('\n') ? files[p] : `${files[p]}\n`}`)
+    return `// @loom-topic ${topicId}\n${parts.join('')}`
+  }).join('')
 }
 
 /**
- * Parse a single-file topic source. Markdown code fences (as LLM chats add
- * them) are ignored. The topic ID comes from the `// @loom-topic <id>` header,
- * else from `fallbackId`. Throws TopicArchiveError when it is not one.
+ * Parse a `.loom.oui` text into its topics. Markdown code fence lines (as LLM
+ * chats add them) are ignored. A text without a `// @loom-topic` line is one
+ * topic named `fallbackId`. Throws TopicArchiveError when it is not a topic.
  */
-export function parseTopicSource(text: string, fallbackId = 'topic'): TopicFiles {
-  let topicId = fallbackId
-  let current: string | null = null
-  const files: Record<string, string[]> = {}
-  for (const line of text.replace(/\r\n?/g, '\n').split('\n')) {
+export function parseTopicSource(text: string, fallbackId = 'topic'): TopicFiles[] {
+  if (text.replace(/^\s*```[\w-]*\s*$/gm, '').trimStart().startsWith('{')) {
+    throw new TopicArchiveError('JSON topic bundles (.loom.json) are no longer supported. Export the topic again from Loom Studio as a .loom.oui file.')
+  }
+  const lines = text.replace(/\r\n?/g, '\n').split('\n')
+  if (lines[lines.length - 1] === '') lines.pop()
+
+  const topics: Array<{ topicId: string; files: Record<string, string[]> }> = []
+  let topic: (typeof topics)[number] | null = null
+  let file: string[] | null = null
+  for (const line of lines) {
     if (CODE_FENCE.test(line)) continue
+    const header = TOPIC_HEADER.exec(line)
+    if (header) {
+      topic = { topicId: header[1], files: {} }
+      topics.push(topic)
+      file = null
+      continue
+    }
     const marker = FILE_MARKER.exec(line)
     if (marker) {
       const path = marker[1]
       if (!isTopicPath(path)) {
         throw new TopicArchiveError(`"${path}" is not a topic file. Use topic.oui or sections/<name>.oui (lowercase letters, digits, - and _).`)
       }
-      if (files[path]) throw new TopicArchiveError(`${path} appears twice.`)
-      files[path] = []
-      current = path
+      if (!topic) {
+        topic = { topicId: fallbackId, files: {} }
+        topics.push(topic)
+      }
+      if (topic.files[path]) throw new TopicArchiveError(`${path} appears twice in topic "${topic.topicId}".`)
+      file = topic.files[path] = []
       continue
     }
-    if (current) {
-      files[current].push(line)
-      continue
-    }
-    const header = SOURCE_HEADER.exec(line)
-    if (header) topicId = header[1]
+    if (file) file.push(line)
     else if (line.trim() && !line.trim().startsWith('//')) {
       throw new TopicArchiveError('Content before the first file marker. Start each file with a line like `// === topic.oui ===`.')
     }
   }
-  if (Object.keys(files).length === 0) {
-    throw new TopicArchiveError('This .oui file has no file markers. A single-file topic puts each file after a line like `// === sections/intro.oui ===`.')
-  }
-  if (!(TOPIC_FILE in files)) throw new TopicArchiveError('The single-file topic has no `// === topic.oui ===` part.')
-  if (!CONTENT_ID.test(topicId)) {
-    throw new TopicArchiveError(`"${topicId}" is not a valid topic ID (lowercase letters, digits, - and _).`)
-  }
-  return {
-    topicId,
-    files: Object.fromEntries(Object.entries(files).map(([p, lines]) => [p, `${lines.join('\n').trim()}\n`])),
-  }
-}
 
-/** Remove a markdown code fence wrapped around a whole document. */
-function unfence(text: string): string {
-  const match = /^\s*```[\w-]*\s*\n([\s\S]*?)\n\s*```\s*$/.exec(text)
-  return match ? match[1] : text
+  if (topics.every((t) => Object.keys(t.files).length === 0)) {
+    throw new TopicArchiveError('This .oui file has no file markers. A .loom.oui file puts each file after a line like `// === sections/intro.oui ===`.')
+  }
+  return topics.map(({ topicId, files }) => {
+    if (!CONTENT_ID.test(topicId)) throw new TopicArchiveError(`"${topicId}" is not a valid topic ID (lowercase letters, digits, - and _).`)
+    if (!(TOPIC_FILE in files)) throw new TopicArchiveError(`Topic "${topicId}" has no \`// === topic.oui ===\` part.`)
+    return { topicId, files: Object.fromEntries(Object.entries(files).map(([p, l]) => [p, `${l.join('\n')}\n`])) }
+  })
 }
 
 // ============================================================================
@@ -350,13 +302,12 @@ function isZip(bytes: Uint8Array): boolean {
   return bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04
 }
 
-/** Read the topics in a picked file: a single-file bundle or a zip. */
+/** Read the topics in a picked file: a `.loom.oui` single file or a zip. */
 export async function readTopicArchive(file: Blob & { name?: string }): Promise<TopicFiles[]> {
   const bytes = new Uint8Array(await file.arrayBuffer())
-  const baseName = (file.name ?? '').replace(/(\.loom)?\.(json|zip|oui)$/i, '') || 'topic'
+  const baseName = (file.name ?? '').replace(/(\.loom)?\.(oui|zip)$/i, '') || 'topic'
   if (isZip(bytes)) return nonEmpty(groupTopicFiles(await readZipEntries(bytes), baseName))
-  const text = unfence(new TextDecoder().decode(bytes))
-  return nonEmpty(text.trimStart().startsWith('{') ? parseTopicBundle(text) : [parseTopicSource(text, slug(baseName))])
+  return parseTopicSource(new TextDecoder().decode(bytes), slug(baseName))
 }
 
 function nonEmpty(topics: TopicFiles[]): TopicFiles[] {

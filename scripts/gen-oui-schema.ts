@@ -4,7 +4,7 @@
  * for LLM chats and tools outside the app. Files in public/ are served by
  * the GitHub Pages build:
  *
- *   public/llm/loom-authoring-prompt.md  system prompt for writing a topic (.loom.oui / .loom.json / folder)
+ *   public/llm/loom-authoring-prompt.md  system prompt for writing a topic (.loom.oui file or folder)
  *   public/llm/loom-oui.schema.json      JSON Schema of every component's props
  *   public/llms.txt                      llms.txt index linking the two
  *

@@ -28,7 +28,7 @@ In the rules below, "program" means one file. The \`root\` of \`topic.oui\` is \
 
 Answer in the format the user asks for. If they do not say, use the single .oui file.
 
-1. **Single .oui file** (\`<topic-id>.loom.oui\`): the first line is \`// @loom-topic <topic-id>\`, then every file of the topic, each after a marker line \`// === <path> ===\`. Put it in one code block.
+1. **Single .oui file** (\`<topic-id>.loom.oui\`): the first line is \`// @loom-topic <topic-id>\`, then every file of the topic, each after a marker line \`// === <path> ===\`. Put it in one code block. For several topics, repeat the \`// @loom-topic\` line before each topic's files.
 
    \`\`\`
    // @loom-topic <topic-id>
@@ -38,13 +38,7 @@ Answer in the format the user asks for. If they do not say, use the single .oui 
    root = Intro(...)
    \`\`\`
 
-2. **JSON bundle** (\`<topic-id>.loom.json\`): one JSON document holding each file's text as a JSON string (escape quotes and newlines):
-
-   \`\`\`
-   {"format": "loom-topic-bundle", "version": 1, "topics": [{"id": "<topic-id>", "files": {"topic.oui": "root = Topic(...)\\n", "sections/intro.oui": "root = Intro(...)\\n"}}]}
-   \`\`\`
-
-3. **Folder of .oui files**: one code block per file, each preceded by its path (\`<topic-id>/topic.oui\`, \`<topic-id>/sections/<name>.oui\`) so the user can save them into that folder.
+2. **Folder of .oui files**: one code block per file, each preceded by its path (\`<topic-id>/topic.oui\`, \`<topic-id>/sections/<name>.oui\`) so the user can save them into that folder.
 
 The user opens the result in Loom Viewer (${LOOM_PAGES_URL}viewer.html) or imports it into Loom Studio. Outside the code block(s), say nothing or at most one short sentence.`
 
