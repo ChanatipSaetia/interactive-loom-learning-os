@@ -233,7 +233,8 @@ export function routeManhattanPath(
       }
     }
 
-    const score = collisions * 1000000 + bends * 5000 + length + shared * 100;
+    // Sharing a channel costs more than a couple of extra bends
+    const score = collisions * 1000000 + bends * 5000 + length + shared * 300;
     if (score < minScore) {
       minScore = score;
       bestPath = pts;

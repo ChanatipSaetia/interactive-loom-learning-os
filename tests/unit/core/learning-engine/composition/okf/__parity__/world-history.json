@@ -1054,6 +1054,11 @@
                   "evt_evt_engine_ready"
                 ],
                 "reason": "นักประดิษฐ์สร้างเครื่องจักรไอน้ำปลดล็อกข้อจำกัดทางพลังงานเดิม",
+                "roles": {
+                  "command": "ประดิษฐ์และปรับปรุงเครื่องจักรไอน้ำ (Invent Steam Engine)",
+                  "handler": "steam_engine",
+                  "initiator": "inventor_scientist"
+                },
                 "title": "จุดกำเนิดพลังงานไอน้ำ"
               },
               {
@@ -1065,6 +1070,11 @@
                   "evt_evt_factory_operational"
                 ],
                 "reason": "นายทุนรวมศูนย์เครื่องจักรและแรงงาน เกิดระบบการแบ่งงานกันทำ",
+                "roles": {
+                  "command": "ลงทุนจัดตั้งโรงงานอุตสาหกรรม (Establish Factory)",
+                  "handler": "factory_system",
+                  "initiator": "merchant_capitalist"
+                },
                 "title": "การก่อตั้งระบบโรงงาน"
               },
               {
@@ -1076,6 +1086,11 @@
                   "evt_evt_goods_surplus"
                 ],
                 "reason": "แรงงานเดินเครื่องจักรอย่างต่อเนื่อง สินค้าเพิ่มปริมาณและราคาถูกลง",
+                "roles": {
+                  "command": "เดินเครื่องจักรผลิตสินค้าจำนวนมาก (Mass Production)",
+                  "handler": "factory_system2",
+                  "initiator": "factory_worker"
+                },
                 "title": "การผลิตจำนวนมาก"
               },
               {
@@ -1087,6 +1102,11 @@
                   "evt_evt_global_interconnected"
                 ],
                 "reason": "รถไฟและเรือกลไฟเชื่อมโยงตลาด ขับเคลื่อนสู่ยุคโลกาภิวัตน์",
+                "roles": {
+                  "command": "ขยายเส้นทางรถไฟและการเดินเรือกลไฟ (Expand Global Logistics)",
+                  "handler": "global_market",
+                  "initiator": "merchant_capitalist2"
+                },
                 "title": "การขยายตัวสู่ตลาดโลก"
               }
             ]

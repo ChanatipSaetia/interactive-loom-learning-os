@@ -621,6 +621,11 @@
                 ],
                 "processGroup": "ignition",
                 "reason": "จุดถ่านไม้ธรรมชาติให้คุแดงสม่ำเสมอใน Firebox",
+                "roles": {
+                  "command": "จุดถ่านไม้ก้อนธรรมชาติ",
+                  "handler": "firebox",
+                  "initiator": "pitmaster"
+                },
                 "title": "จุดถ่านไม้ธรรมชาติ"
               },
               {
@@ -632,6 +637,10 @@
                 ],
                 "processGroup": "indirect_bake",
                 "reason": "ติดตั้งแผ่น Heat Deflector และปรับวาล์วเพื่อคุมอุณหภูมิคงที่ 110°C",
+                "roles": {
+                  "command": "ใส่แผ่น Deflector และหรี่วาล์วลม 110°C",
+                  "handler": "deflector_unit"
+                },
                 "title": "ติดตั้ง Heat Deflector"
               },
               {
@@ -643,6 +652,10 @@
                 ],
                 "processGroup": "indirect_bake",
                 "reason": "เสียบโพรบดิจิทัลเพื่อเฝ้าดูอุณหภูมิแกนกลางเนื้อวัว",
+                "roles": {
+                  "command": "เสียบโพรบและวางเนื้อลงอบ",
+                  "handler": "meat_probe"
+                },
                 "title": "เสียบโพรบและเริ่มอบ"
               },
               {
@@ -654,6 +667,10 @@
                 ],
                 "processGroup": "sear_prep",
                 "reason": "ยกเนื้อออกมาพัก ถอดแผ่น Deflector และเปิดวาล์วเร่งไฟ 350°C",
+                "roles": {
+                  "command": "นำเนื้อออกพักชั่วคราวและเปิดวาล์วเร่งไฟ 350°C",
+                  "handler": "deflector_unit2"
+                },
                 "title": "เร่งไฟ 350°C"
               },
               {
@@ -665,6 +682,10 @@
                 ],
                 "processGroup": "searing",
                 "reason": "Sear เนื้อบนตะแกรงเหล็กหล่อด้านละ 60 วินาทีเพื่อเกิดปฏิกิริยา Maillard",
+                "roles": {
+                  "command": "วางเนื้อ Sear บนตะแกรงเหล็กหล่อด้านละ 60 วินาที",
+                  "handler": "searing_grate"
+                },
                 "title": "Sear บนตะแกรงเหล็กหล่อ"
               },
               {
@@ -676,6 +697,10 @@
                 ],
                 "processGroup": "serving",
                 "reason": "พักเนื้อ 8 นาทีเพื่อให้น้ำในเนื้อกระจายตัวทั่วถึงก่อนหั่นเสิร์ฟ",
+                "roles": {
+                  "command": "พักเนื้อ 8 นาทีและสไลซ์พร้อมเสิร์ฟ",
+                  "handler": "resting_board"
+                },
                 "title": "พักเนื้อและจัดเสิร์ฟ"
               }
             ]

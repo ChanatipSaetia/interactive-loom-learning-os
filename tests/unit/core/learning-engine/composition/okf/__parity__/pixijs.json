@@ -975,6 +975,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "App ticker receives requestAnimationFrame pulse and computes elapsed delta time.",
+                "roles": {
+                  "command": "Dispatch Delta Time Tick",
+                  "handler": "ticker_manager",
+                  "initiator": "app_ticker"
+                },
                 "title": "1. Animation Tick"
               },
               {
@@ -986,6 +991,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Scene graph multiplies local transforms by parent world matrices.",
+                "roles": {
+                  "command": "Update Local & World Transform Matrices",
+                  "handler": "scene_graph"
+                },
                 "title": "2. Transform Propagation"
               },
               {
@@ -997,6 +1006,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Culling and sorting visible display objects into a render list.",
+                "roles": {
+                  "command": "Traverse Display Tree & Cull Offscreen Nodes",
+                  "handler": "scene_graph2"
+                },
                 "title": "3. Scene Traversal"
               },
               {
@@ -1008,6 +1021,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "BatchRenderer packs vertex coordinates, UVs, and texture indices.",
+                "roles": {
+                  "command": "Pack Quad Vertices Into Multi-Texture Batch",
+                  "handler": "batch_renderer"
+                },
                 "title": "4. Geometry Batching"
               },
               {
@@ -1019,6 +1036,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "WebGL driver executes shader program and swaps canvas buffer.",
+                "roles": {
+                  "command": "Execute GPU Draw Call",
+                  "handler": "webgl_driver"
+                },
                 "title": "5. GPU Draw Execution"
               }
             ]

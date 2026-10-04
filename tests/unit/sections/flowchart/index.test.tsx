@@ -598,7 +598,7 @@ describe('Flowchart collapsible journey dock', () => {
   });
 });
 
-describe('Flowchart particle animation', () => {
+describe('Flowchart edge highlighting', () => {
   beforeEach(() => {
     SectionRegistry.clear();
     vi.useFakeTimers();
@@ -608,27 +608,19 @@ describe('Flowchart particle animation', () => {
     vi.useRealTimers();
   });
 
-  it('renders particle circle when journeys provided', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    expect(screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0]).toBeInTheDocument();
-  });
-
-  it('does not render particle when no journeys', () => {
-    render(<Flowchart title="Test" schema={mockSchemaNoJourneys} />, { wrapper });
-    expect(screen.queryByTestId('flowchart-particle')).not.toBeInTheDocument();
-  });
-
-  it('particle is invisible at step 0', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
-    const particle = screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0];
-    expect(particle.getAttribute('opacity')).toBe('0');
-  });
-
-  it('particle is present when advancing step', () => {
-    render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+  it('draws no moving dots on edges', () => {
+    const { container } = render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
     fireEvent.click(screen.getByTestId('flowchart-mini-next'));
-    const particle = screen.getAllByTestId('flowchart-particle-DEFAULT_VIEW')[0];
-    expect(particle).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    expect(container.querySelector('.flowchart-edge-group circle')).toBeNull();
+  });
+
+  it('marks the edges of the current step as active so they dash', () => {
+    const { container } = render(<Flowchart title="Test" schema={mockSchema} />, { wrapper });
+    expect(container.querySelector('.flowchart-edge-group[data-active="true"]')).toBeNull();
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    fireEvent.click(screen.getByTestId('flowchart-mini-next'));
+    expect(container.querySelectorAll('.flowchart-edge-group[data-active="true"]').length).toBeGreaterThan(0);
   });
 });
 

@@ -1158,6 +1158,11 @@
                   "evt_evt_predicted"
                 ],
                 "reason": "'Anna will see one project.'",
+                "roles": {
+                  "command": "Record a prediction of what will happen",
+                  "handler": "explainer",
+                  "initiator": "learner"
+                },
                 "title": "Predict"
               },
               {
@@ -1169,6 +1174,11 @@
                   "evt_evt_observed"
                 ],
                 "reason": "Anna sees all five Sales projects.",
+                "roles": {
+                  "command": "Run the situation and show the real outcome",
+                  "handler": "explainer2",
+                  "initiator": "learner2"
+                },
                 "title": "Observe"
               },
               {
@@ -1205,6 +1215,10 @@
                   "evt_evt_model_corrected"
                 ],
                 "reason": "The learner explains the difference: permissions flow down from the workspace.",
+                "roles": {
+                  "command": "Ask the learner to explain the difference, then show the explanation",
+                  "handler": "explainer4"
+                },
                 "title": "Explain"
               }
             ]
@@ -1223,6 +1237,11 @@
                   "evt_evt_predicted"
                 ],
                 "reason": "'Anna will see all five projects.'",
+                "roles": {
+                  "command": "Record a prediction of what will happen",
+                  "handler": "explainer",
+                  "initiator": "learner"
+                },
                 "title": "Predict"
               },
               {
@@ -1234,6 +1253,11 @@
                   "evt_evt_observed"
                 ],
                 "reason": "She does.",
+                "roles": {
+                  "command": "Run the situation and show the real outcome",
+                  "handler": "explainer2",
+                  "initiator": "learner2"
+                },
                 "title": "Observe"
               },
               {
@@ -1270,6 +1294,10 @@
                   "evt_evt_model_confirmed"
                 ],
                 "reason": "The explanation confirms why.",
+                "roles": {
+                  "command": "Confirm and explain why it was right",
+                  "handler": "explainer3"
+                },
                 "title": "Explain"
               }
             ]

@@ -584,6 +584,12 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Throw Gas Grenade at the mob pack to deploy a poison cloud",
+                "roles": {
+                  "command": "Engage Pack with Gas Grenade",
+                  "delegate": "pack",
+                  "handler": "gas_grenade",
+                  "initiator": "player"
+                },
                 "title": "Deploy Poison Cloud"
               },
               {
@@ -595,6 +601,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Fire Barrage into the pack to layer bleed on top of poison",
+                "roles": {
+                  "command": "Apply Bleed with Barrage",
+                  "handler": "barrage"
+                },
                 "title": "Apply Bleed"
               },
               {
@@ -606,6 +616,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Poison and bleed tick simultaneously for rapid pack clear",
+                "roles": {
+                  "command": "Let DoTs Deal Damage",
+                  "handler": "dot_system"
+                },
                 "title": "DoTs Melt Pack"
               },
               {
@@ -643,6 +657,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Loop back to engage the next mob pack",
+                "roles": {
+                  "command": "Proceed to Next Pack",
+                  "handler": "gas_grenade2"
+                },
                 "title": "Move to Next Pack"
               }
             ]
@@ -687,6 +705,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Throw Gas Grenade at the boss to apply poison cloud",
+                "roles": {
+                  "command": "Begin Boss Engagement",
+                  "delegate": "boss",
+                  "handler": "gas_grenade3"
+                },
                 "title": "Begin Boss Engagement"
               },
               {
@@ -699,6 +722,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Fire Barrage at the boss to layer bleed on top of poison",
+                "roles": {
+                  "command": "Apply Bleed to Boss with Barrage",
+                  "delegate": "no_mercy",
+                  "handler": "barrage2"
+                },
                 "title": "Apply Bleed to Boss"
               },
               {
@@ -711,6 +739,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Sustained poison and bleed ticks steadily damage the boss until defeated",
+                "roles": {
+                  "command": "Let DoTs Tick on Boss",
+                  "delegate": "sorcery_ward",
+                  "handler": "dot_system2"
+                },
                 "title": "DoTs Tick on Boss"
               }
             ]

@@ -355,15 +355,6 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
     return playback.highlightedNodeId;
   }, [activeViewKey, activeStateMachineAggregateId, activeStateId, playback.highlightedNodeId, localSchema.views!, localSchema.entities]);
 
-  const [prevHighlightedNodeId, setPrevHighlightedNodeId] = useState<string | null>(null);
-  const lastHighlightedId = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (highlightedNodeId !== lastHighlightedId.current) {
-      setPrevHighlightedNodeId(lastHighlightedId.current);
-      lastHighlightedId.current = highlightedNodeId;
-    }
-  }, [highlightedNodeId]);
 
   useEffect(() => {
     if (!dropdownOpen) return;
@@ -688,15 +679,12 @@ export function Flowchart({ title, flow, schema = INITIAL_SCHEMA, sectionIndex =
           activeNodeIds={activeNodeIds}
           activeRelationIds={activeRelationIds}
           highlightedNodeId={highlightedNodeId}
-          prevHighlightedNodeId={prevHighlightedNodeId}
-          currentStep={playback.currentStep}
           handleNodeClick={handleNodeClick}
           instanceId={instanceId}
           isGridMode={false}
           isFullscreen={isFullscreen}
           activeNodePopup={activeNodePopup}
           setActiveNodePopup={setActiveNodePopup}
-          currentJourneyId={playback.currentJourneyId}
           onEnterFullscreen={() => setIsFullscreen(true)}
           focusAfterViewSwitch={focusAfterViewSwitch}
           onCameraFocused={() => setFocusAfterViewSwitch(null)}

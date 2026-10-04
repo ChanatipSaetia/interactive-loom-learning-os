@@ -990,6 +990,11 @@
                 ],
                 "processGroup": "learning",
                 "reason": "Learner opens a lesson; the engine loads the exercises.",
+                "roles": {
+                  "command": "Start Lesson",
+                  "handler": "lesson_engine",
+                  "initiator": "learner"
+                },
                 "title": "Start Lesson"
               },
               {
@@ -1002,6 +1007,11 @@
                 ],
                 "processGroup": "learning",
                 "reason": "Learner submits answers; the grading service evaluates correctness and XP value.",
+                "roles": {
+                  "command": "Submit Answers",
+                  "handler": "grading_service",
+                  "initiator": "learner2"
+                },
                 "title": "Submit Answers"
               },
               {
@@ -1039,6 +1049,10 @@
                 ],
                 "processGroup": "reward",
                 "reason": "Answers are correct — the reward engine credits experience points.",
+                "roles": {
+                  "command": "Award XP",
+                  "handler": "reward_engine"
+                },
                 "title": "Award XP"
               },
               {
@@ -1075,6 +1089,10 @@
                 ],
                 "processGroup": "reward",
                 "reason": "Progress crosses a badge threshold — a new achievement is unlocked.",
+                "roles": {
+                  "command": "Unlock Badge",
+                  "handler": "reward_engine2"
+                },
                 "title": "Unlock Badge"
               },
               {
@@ -1111,6 +1129,10 @@
                 ],
                 "processGroup": "habit",
                 "reason": "Daily goal met — the streak counter increments and the habit is reinforced.",
+                "roles": {
+                  "command": "Extend Streak",
+                  "handler": "streak_tracker2"
+                },
                 "title": "Extend Streak"
               },
               {
@@ -1122,6 +1144,10 @@
                 ],
                 "processGroup": "competition",
                 "reason": "XP change triggers a league standings recalculation.",
+                "roles": {
+                  "command": "Recalculate Standings",
+                  "handler": "league_service"
+                },
                 "title": "Recalculate Standings"
               },
               {
@@ -1158,6 +1184,10 @@
                 ],
                 "processGroup": "feedback",
                 "reason": "The promotion is celebrated with a push notification.",
+                "roles": {
+                  "command": "Send Push Notification",
+                  "handler": "push_service"
+                },
                 "title": "Send Push Notification"
               }
             ]
@@ -1177,6 +1207,11 @@
                 ],
                 "processGroup": "learning",
                 "reason": "Learner submits answers; the grading service finds an incorrect answer.",
+                "roles": {
+                  "command": "Submit Answers",
+                  "handler": "grading_service",
+                  "initiator": "learner2"
+                },
                 "title": "Submit Answers"
               },
               {
@@ -1214,6 +1249,10 @@
                 ],
                 "processGroup": "learning",
                 "reason": "A partial-credit hint is displayed and the learner retries the exercise.",
+                "roles": {
+                  "command": "Show Hint",
+                  "handler": "lesson_engine2"
+                },
                 "title": "Show Hint"
               },
               {
@@ -1251,6 +1290,10 @@
                 ],
                 "processGroup": "reward",
                 "reason": "The retry succeeds — XP is credited at the reduced partial-credit rate.",
+                "roles": {
+                  "command": "Award XP",
+                  "handler": "reward_engine"
+                },
                 "title": "Award XP"
               },
               {
@@ -1287,6 +1330,10 @@
                 ],
                 "processGroup": "reward",
                 "reason": "No badge threshold crossed; the learner moves to the next exercise.",
+                "roles": {
+                  "command": "Continue Lesson",
+                  "handler": "lesson_engine3"
+                },
                 "title": "Continue Lesson"
               },
               {
@@ -1323,6 +1370,10 @@
                 ],
                 "processGroup": "habit",
                 "reason": "Daily goal missed — a freeze token protects the streak from resetting.",
+                "roles": {
+                  "command": "Apply Streak Freeze",
+                  "handler": "streak_tracker3"
+                },
                 "title": "Apply Streak Freeze"
               },
               {
@@ -1334,6 +1385,10 @@
                 ],
                 "processGroup": "competition",
                 "reason": "Standings are recalculated; no promotion this time.",
+                "roles": {
+                  "command": "Recalculate Standings",
+                  "handler": "league_service"
+                },
                 "title": "Recalculate Standings"
               },
               {
@@ -1370,6 +1425,10 @@
                 ],
                 "processGroup": "feedback",
                 "reason": "The update is persisted quietly without a notification.",
+                "roles": {
+                  "command": "Log Silently",
+                  "handler": "league_service2"
+                },
                 "title": "Log Silently"
               }
             ]

@@ -903,6 +903,12 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Enter map, open with Whirling Assault for initial clear and charge generation",
+                "roles": {
+                  "command": "Enter Map & Initiate Attack",
+                  "delegate": "pack",
+                  "handler": "whirling_assault",
+                  "initiator": "player"
+                },
                 "title": "Enter Map"
               },
               {
@@ -914,6 +920,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Cast on Critical triggers Profane Ritual on crits, generating Power Charges",
+                "roles": {
+                  "command": "Generate Power Charges",
+                  "handler": "cast_on_crit"
+                },
                 "title": "Generate Power Charges"
               },
               {
@@ -950,6 +960,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Spend charges on Falling Thunder for 360-degree lightning burst",
+                "roles": {
+                  "command": "Cast Falling Thunder",
+                  "delegate": "trinity",
+                  "handler": "falling_thunder"
+                },
                 "title": "Clear with Falling Thunder"
               },
               {
@@ -961,6 +976,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Herald of Thunder and Herald of Ice explode marked enemies",
+                "roles": {
+                  "command": "Trigger Herald Explosions",
+                  "handler": "heralds"
+                },
                 "title": "Trigger Herald Explosions"
               },
               {
@@ -998,6 +1017,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Loop back to clear next pack",
+                "roles": {
+                  "command": "Loop Back to Clear",
+                  "handler": "whirling_assault2"
+                },
                 "title": "Loop Back to Clear"
               }
             ]
@@ -1042,6 +1065,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Build 20 Combo stacks on boss via Whirling Assault",
+                "roles": {
+                  "command": "Build Combo Stacks",
+                  "delegate": "boss",
+                  "handler": "mantra_destruction"
+                },
                 "title": "Build Combo Stacks"
               },
               {
@@ -1053,6 +1081,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Expend Combo through Ailith's Chimes for Power Charges",
+                "roles": {
+                  "command": "Expend Combo Stacks",
+                  "handler": "ailiths_chimes"
+                },
                 "title": "Expend Combo for Charges"
               },
               {
@@ -1065,6 +1097,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Activate Charged Staff for massive Lightning damage buff",
+                "roles": {
+                  "command": "Activate Charged Staff Buff",
+                  "delegate": "ci",
+                  "handler": "charged_staff"
+                },
                 "title": "Activate Charged Staff"
               },
               {
@@ -1100,6 +1137,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Commit to Falling Thunder or Flicker Strike for the kill",
+                "roles": {
+                  "command": "Cast Falling Thunder on Boss",
+                  "handler": "falling_thunder2"
+                },
                 "title": "Cast Falling Thunder on Boss"
               }
             ]

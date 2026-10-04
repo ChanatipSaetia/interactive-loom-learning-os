@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { animate } from 'animejs';
 import * as Icons from 'lucide-react';
 
 import { ZoomToolbar } from '../zoom-toolbar';
@@ -52,8 +51,6 @@ export interface FlowchartViewProps {
   activeNodeIds: string[] | null;
   activeRelationIds: string[] | null;
   highlightedNodeId: string | null;
-  prevHighlightedNodeId: string | null;
-  currentStep: number;
   handleNodeClick: (nodeId: string, x?: number, y?: number) => void;
   instanceId: string;
   isGridMode: boolean;
@@ -65,7 +62,6 @@ export interface FlowchartViewProps {
     views: { key: string; name: string; type: string }[];
   } | null;
   setActiveNodePopup: (popup: any) => void;
-  currentJourneyId?: string;
   onEnterFullscreen?: () => void;
   focusAfterViewSwitch?: string | null;
   onCameraFocused?: () => void;
@@ -85,15 +81,12 @@ export function FlowchartView({
   activeNodeIds,
   activeRelationIds,
   highlightedNodeId,
-  prevHighlightedNodeId,
-  currentStep,
   handleNodeClick,
   instanceId: viewInstanceId,
   isGridMode,
   isFullscreen,
   activeNodePopup,
   setActiveNodePopup,
-  currentJourneyId,
   onEnterFullscreen,
   focusAfterViewSwitch,
   onCameraFocused,
@@ -208,75 +201,6 @@ export function FlowchartView({
       });
     }
   }, [handleZoomIn, handleZoomOut, fitToScreen, onCameraControls, minX, maxX, minY, maxY]);
-
-  const particlesRef = useRef<{ id: string, anim: any }[]>([]);
-
-  useEffect(() => {
-    particlesRef.current.forEach(p => p.anim.pause());
-    particlesRef.current = [];
-
-    if (!activeNodeIds || activeNodeIds.length === 0) return;
-    if (isSequenceView) return;
-
-    let targetEdgeIdxs: number[] = [];
-    if (storyRoute) {
-      // Route views: run along the step's main line only, including the first step
-      targetEdgeIdxs = storyRoute.labelEdgeId
-        ? [routedRelations.findIndex(r => r.id === storyRoute.labelEdgeId)].filter(idx => idx !== -1)
-        : [];
-    } else if (currentStep === 0) {
-      return;
-    } else if (currentJourneyId && schema.journeys) {
-      const journey = schema.journeys.find(j => j.id === currentJourneyId);
-      if (journey && journey.steps[currentStep - 1]) {
-        const step = journey.steps[currentStep - 1] as any;
-        if (step.relIds) {
-          targetEdgeIdxs = step.relIds.map((rid: string) => routedRelations.findIndex(r => r.id === rid)).filter((idx: number) => idx !== -1);
-        } else {
-          targetEdgeIdxs = routedRelations
-            .map((r, i) => (r.from === prevHighlightedNodeId && r.to === highlightedNodeId) ? i : -1)
-            .filter(i => i !== -1);
-        }
-      }
-    }
-
-    targetEdgeIdxs.forEach(idx => {
-      const rel = routedRelations[idx];
-      if (!rel) return;
-      const edgeEl = document.querySelector(`[data-testid="flowchart-edge-${viewKey}-${idx}"]`) as SVGPathElement;
-      // Skip where SVG geometry is unavailable (e.g. non-browser renderers)
-      if (!edgeEl || typeof edgeEl.getTotalLength !== 'function') return;
-      const edgeId = `edge-${rel.id}`;
-      const particleEl = document.querySelector(`circle[data-edge-id="${edgeId}"]`) as SVGCircleElement;
-      if (!particleEl) return;
-
-      const pathLength = edgeEl.getTotalLength();
-      if (!pathLength) return;
-
-      // Travel along the drawn line (through its bends), not straight from end to end
-      const p0 = edgeEl.getPointAtLength(0);
-      particleEl.setAttribute('cx', p0.x.toString());
-      particleEl.setAttribute('cy', p0.y.toString());
-      particleEl.setAttribute('opacity', '1');
-
-      const progress = { t: 0 };
-      const anim = animate(progress, {
-        t: 1,
-        easing: 'easeInOutSine',
-        // Longer lines take a little longer so the speed stays readable
-        duration: Math.min(1600, Math.max(700, pathLength * 2)),
-        onUpdate: () => {
-          const pt = edgeEl.getPointAtLength(progress.t * pathLength);
-          particleEl.setAttribute('cx', pt.x.toString());
-          particleEl.setAttribute('cy', pt.y.toString());
-        },
-        onComplete: () => {
-          particleEl.setAttribute('opacity', '0');
-        }
-      });
-      particlesRef.current.push({ id: edgeId, anim });
-    });
-  }, [currentStep, prevHighlightedNodeId, highlightedNodeId, viewKey, nodeMap, schema.relations, view, currentJourneyId, schema.journeys, routedRelations, isSequenceView, storyRoute]);
 
   if (!view) {
     return (

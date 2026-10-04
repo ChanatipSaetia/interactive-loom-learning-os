@@ -907,6 +907,11 @@
                 ],
                 "processGroup": "opening",
                 "reason": "Player enters combat and assesses the situation",
+                "roles": {
+                  "command": "Enter Combat Encounter",
+                  "handler": "ki_pool",
+                  "initiator": "player"
+                },
                 "title": "Combat Start"
               },
               {
@@ -955,6 +960,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Twin Elemental Wrath infuses strikes with elemental damage",
+                "roles": {
+                  "command": "Cast Twin Elemental Wrath",
+                  "delegate": "enemy",
+                  "handler": "twisted_wrath_handler"
+                },
                 "title": "Wrath Activation"
               },
               {
@@ -967,6 +977,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Unarmed strikes deal physical plus elemental damage",
+                "roles": {
+                  "command": "Make Unarmed Strikes",
+                  "handler": "unarmed_combat",
+                  "initiator": "evt_evt_wrath_active"
+                },
                 "title": "Elemental Damage"
               },
               {
@@ -1026,6 +1041,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Combat continues with sustained elemental strikes",
+                "roles": {
+                  "command": "Continue Twin Elemental Wrath Loop",
+                  "handler": "twisted_wrath_handler2"
+                },
                 "title": "Sustain Loop"
               }
             ]
@@ -1045,6 +1064,11 @@
                 ],
                 "processGroup": "opening",
                 "reason": "Boss engagement begins",
+                "roles": {
+                  "command": "Enter Combat Encounter",
+                  "handler": "ki_pool",
+                  "initiator": "player"
+                },
                 "title": "Combat Start"
               },
               {
@@ -1093,6 +1117,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Twin Elemental Wrath activates for opening damage",
+                "roles": {
+                  "command": "Cast Twin Elemental Wrath",
+                  "delegate": "enemy",
+                  "handler": "twisted_wrath_handler"
+                },
                 "title": "Wrath Activation"
               },
               {
@@ -1105,6 +1134,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Initial strikes weaken the boss",
+                "roles": {
+                  "command": "Make Unarmed Strikes",
+                  "handler": "unarmed_combat",
+                  "initiator": "evt_evt_wrath_active"
+                },
                 "title": "Initial Damage"
               },
               {
@@ -1164,6 +1198,10 @@
                 ],
                 "processGroup": "escalation",
                 "reason": "Four Point Attack unleashes four guaranteed elemental hits",
+                "roles": {
+                  "command": "Execute Four Point Attack",
+                  "handler": "four_point_handler"
+                },
                 "title": "Four Point Nuke"
               }
             ]
@@ -1183,6 +1221,11 @@
                 ],
                 "processGroup": "opening",
                 "reason": "Combat starts with high threat level",
+                "roles": {
+                  "command": "Enter Combat Encounter",
+                  "handler": "ki_pool",
+                  "initiator": "player"
+                },
                 "title": "Combat Start"
               },
               {
@@ -1231,6 +1274,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Flowing Barrier boosts AC to avoid damage",
+                "roles": {
+                  "command": "Activate Flowing Barrier",
+                  "handler": "ki_pool2"
+                },
                 "title": "Flowing Barrier"
               },
               {
@@ -1290,6 +1337,10 @@
                 ],
                 "processGroup": "escalation",
                 "reason": "Patient Defense or Empty Body for clutch survival",
+                "roles": {
+                  "command": "Use Patient Defense or Empty Body",
+                  "handler": "defense_system"
+                },
                 "title": "Clutch Survival"
               }
             ]

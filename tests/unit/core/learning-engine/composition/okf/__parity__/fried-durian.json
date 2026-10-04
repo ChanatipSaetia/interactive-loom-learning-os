@@ -609,6 +609,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "แยกเนื้อทุเรียนดิบออกจากเมล็ด",
+                "roles": {
+                  "command": "แยกเนื้อทุเรียน",
+                  "handler": "durian_raw",
+                  "initiator": "cook"
+                },
                 "title": "เตรียมเนื้อทุเรียน"
               },
               {
@@ -621,6 +626,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "หั่นเป็นชิ้นบางสม่ำเสมอเตรียมพร้อมทอด",
+                "roles": {
+                  "command": "หั่นชิ้นบาง",
+                  "handler": "knife",
+                  "initiator": "cook2"
+                },
                 "title": "หั่นทุเรียน"
               },
               {
@@ -633,6 +643,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "ตั้งน้ำมันให้ร้อน 170-180°C เติมน้ำเกลือ",
+                "roles": {
+                  "command": "ตั้งน้ำมันร้อน",
+                  "handler": "pan_oil",
+                  "initiator": "cook3"
+                },
                 "title": "เตรียมน้ำมันทอด"
               },
               {
@@ -645,6 +660,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "ทอดไฟกลางจนเหลืองทองกรอบ",
+                "roles": {
+                  "command": "ทอดทุเรียน",
+                  "handler": "pan_oil2",
+                  "initiator": "cook4"
+                },
                 "title": "ทอดทุเรียน"
               },
               {
@@ -657,6 +677,11 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "ยกขึ้นพักบนกระดาษซับมัน",
+                "roles": {
+                  "command": "สะเด็ดน้ำมัน",
+                  "handler": "knife2",
+                  "initiator": "cook5"
+                },
                 "title": "สะเด็ดน้ำมัน"
               },
               {
@@ -696,6 +721,11 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "จัดเสิร์ฟทุเรียนทอดเปล่ากรอบอร่อย",
+                "roles": {
+                  "command": "เสิร์ฟทันที",
+                  "delegate": "eater",
+                  "handler": "durian_raw2"
+                },
                 "title": "เสิร์ฟทุเรียนทอดเปล่า"
               }
             ]
@@ -715,6 +745,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "แยกเนื้อทุเรียนดิบออกจากเมล็ด",
+                "roles": {
+                  "command": "แยกเนื้อทุเรียน",
+                  "handler": "durian_raw",
+                  "initiator": "cook"
+                },
                 "title": "เตรียมเนื้อทุเรียน"
               },
               {
@@ -727,6 +762,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "หั่นเป็นชิ้นบางสม่ำเสมอเตรียมพร้อมทอด",
+                "roles": {
+                  "command": "หั่นชิ้นบาง",
+                  "handler": "knife",
+                  "initiator": "cook2"
+                },
                 "title": "หั่นทุเรียน"
               },
               {
@@ -739,6 +779,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "ตั้งน้ำมันให้ร้อน 170-180°C เติมน้ำเกลือ",
+                "roles": {
+                  "command": "ตั้งน้ำมันร้อน",
+                  "handler": "pan_oil",
+                  "initiator": "cook3"
+                },
                 "title": "เตรียมน้ำมันทอด"
               },
               {
@@ -751,6 +796,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "ทอดไฟกลางจนเหลืองทองกรอบ",
+                "roles": {
+                  "command": "ทอดทุเรียน",
+                  "handler": "pan_oil2",
+                  "initiator": "cook4"
+                },
                 "title": "ทอดทุเรียน"
               },
               {
@@ -763,6 +813,11 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "ยกขึ้นพักบนกระดาษซับมัน",
+                "roles": {
+                  "command": "สะเด็ดน้ำมัน",
+                  "handler": "knife2",
+                  "initiator": "cook5"
+                },
                 "title": "สะเด็ดน้ำมัน"
               },
               {
@@ -802,6 +857,11 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "เคี่ยวน้ำตาลคลุกเคลือบแล้วเสิร์ฟ",
+                "roles": {
+                  "command": "熬น้ำตาลแล้วคลุก",
+                  "delegate": "eater2",
+                  "handler": "sugar_bowl"
+                },
                 "title": "เคลือบน้ำตาลเสิร์ฟ"
               }
             ]

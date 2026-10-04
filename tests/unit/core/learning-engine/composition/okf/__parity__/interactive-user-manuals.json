@@ -1940,6 +1940,11 @@
                   "evt_evt_demo_watched"
                 ],
                 "reason": "Watch mode demonstrates the task once",
+                "roles": {
+                  "command": "Play the Watch demo",
+                  "handler": "sim_player",
+                  "initiator": "learner"
+                },
                 "title": "Watch"
               },
               {
@@ -1951,6 +1956,11 @@
                   "evt_evt_step_attempted"
                 ],
                 "reason": "Try mode lets the learner do each step, with hints available",
+                "roles": {
+                  "command": "Attempt a step in Try mode with hints",
+                  "handler": "sim_player2",
+                  "initiator": "learner2"
+                },
                 "title": "Try"
               },
               {
@@ -1987,6 +1997,10 @@
                   "evt_evt_try_completed"
                 ],
                 "reason": "Every step was performed correctly with support",
+                "roles": {
+                  "command": "Advance to the next step",
+                  "handler": "sim_player3"
+                },
                 "title": "Guided practice done"
               },
               {
@@ -1998,6 +2012,11 @@
                   "evt_evt_test_submitted"
                 ],
                 "reason": "Test mode removes hints: an unguided assessment",
+                "roles": {
+                  "command": "Perform the task in Test mode without hints",
+                  "handler": "sim_player5",
+                  "initiator": "learner3"
+                },
                 "title": "Test"
               },
               {
@@ -2009,6 +2028,11 @@
                   "evt_evt_result_recorded"
                 ],
                 "reason": "The score and wrong clicks go to the LMS",
+                "roles": {
+                  "command": "Record score and wrong clicks",
+                  "delegate": "lms",
+                  "handler": "sim_player6"
+                },
                 "title": "Recorded"
               }
             ]
@@ -2027,6 +2051,11 @@
                   "evt_evt_demo_watched"
                 ],
                 "reason": "The learner watches the demo",
+                "roles": {
+                  "command": "Play the Watch demo",
+                  "handler": "sim_player",
+                  "initiator": "learner"
+                },
                 "title": "Watch"
               },
               {
@@ -2038,6 +2067,11 @@
                   "evt_evt_step_attempted"
                 ],
                 "reason": "The learner clicks the wrong control",
+                "roles": {
+                  "command": "Attempt a step in Try mode with hints",
+                  "handler": "sim_player2",
+                  "initiator": "learner2"
+                },
                 "title": "Try"
               },
               {
@@ -2074,6 +2108,10 @@
                   "evt_evt_feedback_shown"
                 ],
                 "reason": "The player explains why that was wrong and gives a hint, then the learner tries again",
+                "roles": {
+                  "command": "Show specific feedback and a hint",
+                  "handler": "sim_player4"
+                },
                 "title": "Feedback"
               }
             ]

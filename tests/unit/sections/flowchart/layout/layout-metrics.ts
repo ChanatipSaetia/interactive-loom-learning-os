@@ -108,3 +108,22 @@ export function slantedSegments(schema: UnifiedFlowchartSchema, viewKey: string)
   });
   return count;
 }
+
+/** Lines whose two ends line up (same x or same y) but are drawn with a kink. */
+export function kinkedStraightLines(schema: UnifiedFlowchartSchema, viewKey: string): string[] {
+  const view = schema.views?.[viewKey];
+  const spacing = getViewSpacing(view, viewKey);
+  const positioned = positionViewNodes(view, spacing, false);
+  const nodes = new Map(positioned.map(n => [n.id, n]));
+  const routes = routeViewRelations(view, viewKey, schema, positioned, spacing, false);
+  return routes
+    .filter((r: { from: string; to: string; points: Pt[] }) => {
+      const a = nodes.get(r.from), b = nodes.get(r.to);
+      if (!a || !b) return false;
+      const aligned = Math.abs(a.x - b.x) < 0.5 || Math.abs(a.y - b.y) < 0.5;
+      return aligned && r.points.length > 2 && r.points.every((p, i, pts) => i === 0 || p.x === pts[0].x || p.y === pts[0].y) === false
+        && (Math.abs(r.points[0].x - r.points[r.points.length - 1].x) < 20 || Math.abs(r.points[0].y - r.points[r.points.length - 1].y) < 20)
+        && Math.abs(r.points[0].x - r.points[r.points.length - 1].x) > 0.5 && Math.abs(r.points[0].y - r.points[r.points.length - 1].y) > 0.5;
+    })
+    .map((r: { from: string; to: string }) => `${r.from}->${r.to}`);
+}

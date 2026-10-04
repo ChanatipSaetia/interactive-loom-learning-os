@@ -1933,6 +1933,11 @@
                   "evt_evt_draft_opened"
                 ],
                 "reason": "The writer opens a pull request",
+                "roles": {
+                  "command": "Open a pull request with the draft page",
+                  "handler": "docs_repo",
+                  "initiator": "writer"
+                },
                 "title": "Draft"
               },
               {
@@ -1944,6 +1949,11 @@
                   "evt_evt_facts_checked"
                 ],
                 "reason": "A subject-matter expert checks the facts against how the app really works",
+                "roles": {
+                  "command": "Check the facts against how the app works",
+                  "handler": "docs_repo2",
+                  "initiator": "sme"
+                },
                 "title": "Technical review"
               },
               {
@@ -1955,6 +1965,11 @@
                   "evt_evt_steps_tested"
                 ],
                 "reason": "Someone follows every step in staging exactly as written",
+                "roles": {
+                  "command": "Follow every step exactly as written",
+                  "handler": "staging_app",
+                  "initiator": "tester"
+                },
                 "title": "Step test"
               },
               {
@@ -1991,6 +2006,10 @@
                   "evt_evt_edit_done"
                 ],
                 "reason": "Structure, style and terms are checked, with Vale doing the mechanical part",
+                "roles": {
+                  "command": "Run editorial review with the linter",
+                  "handler": "vale_ci"
+                },
                 "title": "Editorial review"
               },
               {
@@ -2002,6 +2021,11 @@
                   "evt_evt_published"
                 ],
                 "reason": "The page goes live",
+                "roles": {
+                  "command": "Merge and publish the page",
+                  "handler": "docs_site",
+                  "initiator": "writer2"
+                },
                 "title": "Published"
               }
             ]
@@ -2020,6 +2044,11 @@
                   "evt_evt_draft_opened"
                 ],
                 "reason": "The writer opens a pull request",
+                "roles": {
+                  "command": "Open a pull request with the draft page",
+                  "handler": "docs_repo",
+                  "initiator": "writer"
+                },
                 "title": "Draft"
               },
               {
@@ -2031,6 +2060,11 @@
                   "evt_evt_facts_checked"
                 ],
                 "reason": "The facts look right on paper",
+                "roles": {
+                  "command": "Check the facts against how the app works",
+                  "handler": "docs_repo2",
+                  "initiator": "sme"
+                },
                 "title": "Technical review"
               },
               {
@@ -2042,6 +2076,11 @@
                   "evt_evt_steps_tested"
                 ],
                 "reason": "Step 3 says Export, but the button now lives in the ⋯ menu",
+                "roles": {
+                  "command": "Follow every step exactly as written",
+                  "handler": "staging_app",
+                  "initiator": "tester"
+                },
                 "title": "Step test"
               },
               {
@@ -2078,6 +2117,10 @@
                   "evt_evt_rewrite_requested"
                 ],
                 "reason": "The page goes back to the writer before any user sees it",
+                "roles": {
+                  "command": "Send the page back for rewrite",
+                  "handler": "docs_repo3"
+                },
                 "title": "Rewrite"
               }
             ]

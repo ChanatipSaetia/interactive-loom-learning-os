@@ -47,8 +47,11 @@ export const FlowchartLinearStepSchema = z.object({
   initiatedBy: FlowchartRefSchema.optional(),
   policy: z.string().default(''),
   command: z.string().default(''),
-  handledBy: FlowchartRefSchema,
+  // Optional: a step can be a pure state change (no system runs the command)
+  handledBy: FlowchartRefSchema.optional(),
   delegatesTo: FlowchartRefSchema.optional(),
+  // Optional: who receives the step's result (e.g. the server sends ServerHello to the client)
+  sendsTo: FlowchartRefSchema.optional(),
   resultEvents: z.array(FlowchartResultEventSchema).min(1, {
     message: 'Linear step must define at least one result event in resultEvents array.',
   }),
@@ -62,8 +65,11 @@ export const FlowchartBranchOptionSchema = z.object({
   dashed: z.boolean().optional(),
   policy: z.string(),
   command: z.string(),
-  handledBy: FlowchartRefSchema,
+  // Optional: a step can be a pure state change (no system runs the command)
+  handledBy: FlowchartRefSchema.optional(),
   delegatesTo: FlowchartRefSchema.optional(),
+  // Optional: who receives the step's result (e.g. the server sends ServerHello to the client)
+  sendsTo: FlowchartRefSchema.optional(),
   resultEvents: z.array(FlowchartResultEventSchema).min(1, {
     message: 'Branch option step must define at least one result event in resultEvents array.',
   }),

@@ -212,6 +212,7 @@ export function routeViewRelations(
   });
 
   const relPorts: Record<string, any> = {};
+  const STAGGER = 8;
   positioned.forEach(node => {
     ['T', 'R', 'B', 'L'].forEach(side => {
       const conns = nodeSideConns[node.id][side];
@@ -233,18 +234,21 @@ export function routeViewRelations(
         let px = node.x || 0;
         let py = node.y || 0;
 
+        // Facing sides are staggered (left/top a little later, right/bottom a little
+        // earlier) so two boxes side by side never get ports at exactly the same
+        // height, which would send their lines head-on along one channel.
         if (side === 'L') {
           px -= NODE_W / 2;
-          py = py - NODE_H / 2 + (i + 1) * NODE_H / (K + 1);
+          py = py - NODE_H / 2 + (i + 1) * NODE_H / (K + 1) + STAGGER;
         } else if (side === 'R') {
           px += NODE_W / 2;
-          py = py - NODE_H / 2 + (i + 1) * NODE_H / (K + 1);
+          py = py - NODE_H / 2 + (i + 1) * NODE_H / (K + 1) - STAGGER;
         } else if (side === 'T') {
           py -= NODE_H / 2;
-          px = px - NODE_W / 2 + (i + 1) * NODE_W / (K + 1);
+          px = px - NODE_W / 2 + (i + 1) * NODE_W / (K + 1) + STAGGER;
         } else if (side === 'B') {
           py += NODE_H / 2;
-          px = px - NODE_W / 2 + (i + 1) * NODE_W / (K + 1);
+          px = px - NODE_W / 2 + (i + 1) * NODE_W / (K + 1) - STAGGER;
         }
 
         if (!relPorts[conn.relId]) relPorts[conn.relId] = {};
@@ -261,21 +265,56 @@ export function routeViewRelations(
     });
   });
 
-  // Route one line at a time so each can steer clear of the lines already placed
-  const placedSegments: Array<{ a: { x: number; y: number }; b: { x: number; y: number } }> = [];
-  const rawRoutes = relSides.map(entry => {
+  // A line between two facing sides should run straight when it can: if the
+  // ends are close in height (or width), move the end whose side carries only
+  // this line onto the other end's level. Both sides busy: just undo the stagger.
+  const MARGIN = 10;
+  relSides.forEach(entry => {
+    const ports = relPorts[entry.rel.id];
+    if (!ports) return;
+    const { sideFrom, sideTo } = ports;
+    const horizontal = (sideFrom === 'R' && sideTo === 'L') || (sideFrom === 'L' && sideTo === 'R');
+    const vertical = (sideFrom === 'B' && sideTo === 'T') || (sideFrom === 'T' && sideTo === 'B');
+    if (!horizontal && !vertical) return;
+    const axis = horizontal ? 'Y' : 'X';
+    const half = horizontal ? NODE_H / 2 : NODE_W / 2;
+    const centre = (node: PositionedNode) => (horizontal ? node.y : node.x);
+    const fits = (value: number, node: PositionedNode) => Math.abs(value - centre(node)) <= half - MARGIN;
+    const start = ports[`start${axis}`];
+    const finish = ports[`end${axis}`];
+    if (Math.abs(start - finish) < 0.5) return;
+    const fromAlone = nodeSideConns[entry.fromId][sideFrom].length === 1;
+    const toAlone = nodeSideConns[entry.toId][sideTo].length === 1;
+    if (toAlone && fits(start, entry.toNode)) {
+      ports[`end${axis}`] = start;
+    } else if (fromAlone && fits(finish, entry.fromNode)) {
+      ports[`start${axis}`] = finish;
+    } else {
+      const unstaggeredStart = start + ((sideFrom === 'R' || sideFrom === 'B') ? STAGGER : -STAGGER);
+      const unstaggeredEnd = finish + ((sideTo === 'R' || sideTo === 'B') ? STAGGER : -STAGGER);
+      if (Math.abs(unstaggeredStart - unstaggeredEnd) < 0.5) {
+        ports[`start${axis}`] = unstaggeredStart;
+        ports[`end${axis}`] = unstaggeredEnd;
+      }
+    }
+  });
+
+  // Route one line at a time so each can steer clear of the lines already placed,
+  // then once more against all the others: the first pass cannot see lines
+  // routed after it (e.g. one ending at a pinned port in the same channel).
+  type Segment = { a: { x: number; y: number }; b: { x: number; y: number } };
+  const segmentsOf = (points: Array<{ x: number; y: number }>): Segment[] =>
+    points.slice(1).map((b, i) => ({ a: points[i], b }));
+  const routeEntry = (entry: any, avoid: Segment[]) => {
     const ports = relPorts[entry.rel.id];
     if (!ports) return null;
-
     const { startX, startY, endX, endY, sideFrom, sideTo } = ports;
     const { pathD, points, midX, midY, incomingSide } = routeManhattanPath(
       startX, startY, endX, endY,
       sideFrom, sideTo,
       entry.fromNode, entry.toNode,
-      positioned, spacing, placedSegments
+      positioned, spacing, avoid
     );
-    for (let i = 0; i < points.length - 1; i++) placedSegments.push({ a: points[i], b: points[i + 1] });
-
     return {
       ...entry.rel,
       pathD,
@@ -284,7 +323,21 @@ export function routeViewRelations(
       midX, midY,
       incomingSide
     };
-  }).filter(Boolean) as any[];
+  };
+
+  const placedSegments: Segment[] = [];
+  const firstPass = relSides.map(entry => {
+    const route = routeEntry(entry, placedSegments);
+    if (route) placedSegments.push(...segmentsOf(route.points));
+    return route;
+  });
+  const settled = [...firstPass];
+  relSides.forEach((entry, i) => {
+    if (!settled[i]) return;
+    const others = settled.flatMap((r, j) => (r && j !== i ? segmentsOf(r.points) : []));
+    settled[i] = routeEntry(entry, others);
+  });
+  const rawRoutes = settled.filter(Boolean) as any[];
 
   const bridgedRoutes = disambiguateAndBridgePaths(rawRoutes);
 

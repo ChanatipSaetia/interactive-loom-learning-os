@@ -1114,6 +1114,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Developer submits a task. Orchestrator agent starts a new session and begins planning.",
+                "roles": {
+                  "command": "Run Agent",
+                  "handler": "orch_agent",
+                  "initiator": "dev_user"
+                },
                 "title": "Launch Agent"
               },
               {
@@ -1125,6 +1130,10 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Agent sends the task context to the LLM for reasoning. LLM decides whether to use tools, call MCP, or finish.",
+                "roles": {
+                  "command": "Call LLM",
+                  "handler": "llm"
+                },
                 "title": "LLM Planning"
               },
               {
@@ -1175,6 +1184,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "LLM requests a tool. Tools router dispatches and runs it, returning the output back to the agent.",
+                "roles": {
+                  "command": "Execute Tool",
+                  "delegate": "subagents",
+                  "handler": "tools_router"
+                },
                 "title": "Execute Tool"
               },
               {
@@ -1225,6 +1239,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "LLM requests an external API via MCP protocol. MCP server processes the call and returns the result.",
+                "roles": {
+                  "command": "Call MCP",
+                  "handler": "mcp_servers"
+                },
                 "title": "Call MCP Server"
               },
               {
@@ -1236,6 +1254,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "LLM integrates all tool results and MCP responses into a coherent final answer.",
+                "roles": {
+                  "command": "Compile Answer",
+                  "handler": "llm3"
+                },
                 "title": "Compile Answer"
               },
               {
@@ -1248,6 +1270,11 @@
                   "evt_qa_rejected"
                 ],
                 "reason": "Orchestrator agent reviews the final output against QA standards before delivery.",
+                "roles": {
+                  "command": "Review Result",
+                  "delegate": "qa_user",
+                  "handler": "orch_agent4"
+                },
                 "title": "QA Review"
               }
             ]
@@ -1305,6 +1332,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "LLM requests a tool. Tools router dispatches and runs it, but the result indicates missing input.",
+                "roles": {
+                  "command": "Execute Tool",
+                  "delegate": "subagents",
+                  "handler": "tools_router"
+                },
                 "title": "Execute Tool"
               },
               {
@@ -1315,6 +1347,10 @@
                   "evt_message_sent"
                 ],
                 "reason": "Orchestrator agent detects missing information and sends a notification to the user.",
+                "roles": {
+                  "command": "Send Message",
+                  "handler": "orch_agent2"
+                },
                 "title": "Request Input"
               },
               {
@@ -1326,6 +1362,11 @@
                   "evt_feedback_received"
                 ],
                 "reason": "Developer responds with the requested information. Orchestrator captures the feedback and resumes.",
+                "roles": {
+                  "command": "Provide Feedback",
+                  "handler": "orch_agent3",
+                  "initiator": "dev_user2"
+                },
                 "title": "Provide Feedback"
               },
               {
@@ -1337,6 +1378,10 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Agent re-sends the task context with the new feedback to the LLM for updated reasoning.",
+                "roles": {
+                  "command": "Call LLM",
+                  "handler": "llm"
+                },
                 "title": "LLM Re-Planning"
               }
             ]
@@ -1355,6 +1400,10 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Agent sends the task to the LLM. The LLM determines no tools are needed and generates a direct answer.",
+                "roles": {
+                  "command": "Call LLM",
+                  "handler": "llm"
+                },
                 "title": "LLM Planning"
               },
               {
@@ -1405,6 +1454,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "LLM produces the final answer directly, skipping tool execution and MCP calls.",
+                "roles": {
+                  "command": "Complete Task",
+                  "handler": "llm2"
+                },
                 "title": "Complete Task"
               }
             ]
@@ -2157,6 +2210,11 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "QA evaluator reviews the output against quality criteria.",
+                "roles": {
+                  "command": "cmd_evaluate",
+                  "handler": "evaluator",
+                  "initiator": "qa_user"
+                },
                 "title": "Evaluate Output"
               },
               {
@@ -2195,6 +2253,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Output meets all criteria and is approved without revision.",
+                "roles": {
+                  "command": "cmd_accept",
+                  "handler": "orch_feedback"
+                },
                 "title": "Accept Output"
               }
             ]
@@ -2214,6 +2276,11 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "QA evaluator reviews the output and finds it does not meet criteria.",
+                "roles": {
+                  "command": "cmd_evaluate",
+                  "handler": "evaluator",
+                  "initiator": "qa_user"
+                },
                 "title": "Evaluate Output"
               },
               {
@@ -2252,6 +2319,11 @@
                 ],
                 "processGroup": "escalation",
                 "reason": "Output fails evaluation. Revision flag is raised to start the correction cycle.",
+                "roles": {
+                  "command": "cmd_revise",
+                  "delegate": "dev_user",
+                  "handler": "orch_feedback2"
+                },
                 "title": "Trigger Revision"
               },
               {
@@ -2263,6 +2335,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Failure details and feedback are stored in memory so the LLM can reference them during revision.",
+                "roles": {
+                  "command": "cmd_store_failure",
+                  "handler": "memory_store"
+                },
                 "title": "Store Failure Context"
               },
               {
@@ -2274,6 +2350,10 @@
                 ],
                 "processGroup": "planning",
                 "reason": "LLM receives the stored failure context and regenerates the output with corrections.",
+                "roles": {
+                  "command": "cmd_rerun",
+                  "handler": "llm_feedback"
+                },
                 "title": "Regenerate with Context"
               },
               {
@@ -2286,6 +2366,11 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Revised output is evaluated again to check if it now meets quality criteria.",
+                "roles": {
+                  "command": "cmd_evaluate",
+                  "handler": "evaluator",
+                  "initiator": "qa_user"
+                },
                 "title": "Re-Evaluate"
               }
             ]

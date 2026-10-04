@@ -1063,12 +1063,12 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                   onChange={(e) =>
                                     handleStepChange(idx, {
                                       ...linearStep,
-                                      handledBy: ref(e.target.value),
+                                      handledBy: e.target.value ? ref(e.target.value) : undefined,
                                     })
                                   }
                                   data-testid={`flowchart-step-${idx}-handledBy`}
                                 >
-                                  <option value="">(select system)</option>
+                                  <option value="">(none - no system runs it)</option>
                                   {Object.keys(systems).map((sysKey) => (
                                     <option key={sysKey} value={sysKey}>
                                       {sysKey} ({systems[sysKey]?.title || sysKey})
@@ -1097,6 +1097,29 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                   {Object.keys(systems).map((sysKey) => (
                                     <option key={sysKey} value={sysKey}>
                                       {sysKey} ({systems[sysKey]?.title || sysKey})
+                                    </option>
+                                  ))}
+                                </select>
+                              </label>
+                            </div>
+                            <div className="visual-form-field">
+                              <label className="visual-form-label">
+                                <span className="visual-form-key">Sends To (Recipient)</span>
+                                <select
+                                  className="visual-form-select"
+                                  value={linearStep.sendsTo?.id || ''}
+                                  onChange={(e) =>
+                                    handleStepChange(idx, {
+                                      ...linearStep,
+                                      sendsTo: e.target.value ? ref(e.target.value) : undefined,
+                                    })
+                                  }
+                                  data-testid={`flowchart-step-${idx}-sendsTo`}
+                                >
+                                  <option value="">(none - nothing is sent)</option>
+                                  {[...Object.keys(actors), ...Object.keys(systems)].map((key) => (
+                                    <option key={key} value={key}>
+                                      {key} ({actors[key]?.title || systems[key]?.title || key})
                                     </option>
                                   ))}
                                 </select>
@@ -1351,12 +1374,12 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                             onChange={(e) =>
                                               handleBranchOptionChange(idx, bIdx, {
                                                 ...bOpt,
-                                                handledBy: ref(e.target.value),
+                                                handledBy: e.target.value ? ref(e.target.value) : undefined,
                                               })
                                             }
                                             data-testid={`flowchart-step-${idx}-branch-${bIdx}-handledBy`}
                                           >
-                                            <option value="">(select system)</option>
+                                            <option value="">(none - no system runs it)</option>
                                             {Object.keys(systems).map((sysKey) => (
                                               <option key={sysKey} value={sysKey}>
                                                 {sysKey} ({systems[sysKey]?.title || sysKey})
@@ -1383,6 +1406,29 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                             {Object.keys(systems).map((sysKey) => (
                                               <option key={sysKey} value={sysKey}>
                                                 {sysKey} ({systems[sysKey]?.title || sysKey})
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </label>
+                                      </div>
+                                      <div className="visual-form-field">
+                                        <label className="visual-form-label">
+                                          <span className="visual-form-key">Sends To (Recipient)</span>
+                                          <select
+                                            className="visual-form-select"
+                                            value={bOpt.sendsTo?.id || ''}
+                                            onChange={(e) =>
+                                              handleBranchOptionChange(idx, bIdx, {
+                                                ...bOpt,
+                                                sendsTo: e.target.value ? ref(e.target.value) : undefined,
+                                              })
+                                            }
+                                            data-testid={`flowchart-step-${idx}-branch-${bIdx}-sendsTo`}
+                                          >
+                                            <option value="">(none - nothing is sent)</option>
+                                            {[...Object.keys(actors), ...Object.keys(systems)].map((key) => (
+                                              <option key={key} value={key}>
+                                                {key} ({actors[key]?.title || systems[key]?.title || key})
                                               </option>
                                             ))}
                                           </select>

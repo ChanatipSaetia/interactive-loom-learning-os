@@ -1342,6 +1342,11 @@
                   "evt_evt_committed"
                 ],
                 "reason": "The technical writer commits a manual update to the Git repository",
+                "roles": {
+                  "command": "Commit manual update",
+                  "handler": "git_repo",
+                  "initiator": "doc_writer"
+                },
                 "title": "Changes Committed"
               },
               {
@@ -1353,6 +1358,11 @@
                   "evt_evt_preview"
                 ],
                 "reason": "CI builds a preview site so the proposed manual can be clicked through",
+                "roles": {
+                  "command": "Build preview site",
+                  "delegate": "preview_host",
+                  "handler": "ci_pipeline"
+                },
                 "title": "Preview Deployed"
               },
               {
@@ -1364,6 +1374,11 @@
                   "evt_evt_reviewed"
                 ],
                 "reason": "An engineering reviewer checks commands and screenshots against the real system",
+                "roles": {
+                  "command": "Review pull request",
+                  "handler": "preview_host2",
+                  "initiator": "reviewer"
+                },
                 "title": "Review Completed"
               },
               {
@@ -1400,6 +1415,10 @@
                   "evt_evt_published"
                 ],
                 "reason": "The docs web app ships the new version under a permanent permalink",
+                "roles": {
+                  "command": "Publish release",
+                  "handler": "docs_site"
+                },
                 "title": "Docs Published"
               }
             ]
@@ -1418,6 +1437,11 @@
                   "evt_evt_committed"
                 ],
                 "reason": "A manual update lands in the repository",
+                "roles": {
+                  "command": "Commit manual update",
+                  "handler": "git_repo",
+                  "initiator": "doc_writer"
+                },
                 "title": "Changes Committed"
               },
               {
@@ -1429,6 +1453,11 @@
                   "evt_evt_preview"
                 ],
                 "reason": "CI deploys the ephemeral preview for inspection",
+                "roles": {
+                  "command": "Build preview site",
+                  "delegate": "preview_host",
+                  "handler": "ci_pipeline"
+                },
                 "title": "Preview Deployed"
               },
               {
@@ -1440,6 +1469,11 @@
                   "evt_evt_reviewed"
                 ],
                 "reason": "The reviewer spots a command that no longer matches the system",
+                "roles": {
+                  "command": "Review pull request",
+                  "handler": "preview_host2",
+                  "initiator": "reviewer"
+                },
                 "title": "Review Completed"
               },
               {
@@ -1476,6 +1510,10 @@
                   "evt_evt_revised"
                 ],
                 "reason": "Content returns to the writer for revision instead of publishing",
+                "roles": {
+                  "command": "Revise content in repo",
+                  "handler": "git_repo2"
+                },
                 "title": "Content Revised"
               }
             ]

@@ -783,6 +783,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "FilterSystem computes padded bounds around the container.",
+                "roles": {
+                  "command": "Calculate Padded Bounding Box & Push Filter State",
+                  "handler": "filter_system",
+                  "initiator": "render_ticker"
+                },
                 "title": "1. Filter Interception & Padding"
               },
               {
@@ -794,6 +799,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Leases temporary RenderTarget from internal pool.",
+                "roles": {
+                  "command": "Lease Temporary Offscreen Framebuffer",
+                  "handler": "target_pool"
+                },
                 "title": "2. Pool Allocation"
               },
               {
@@ -805,6 +814,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Container renders child sprites into offscreen target.",
+                "roles": {
+                  "command": "Render Child Display Tree Into Offscreen Target",
+                  "handler": "display_container"
+                },
                 "title": "3. Offscreen Draw"
               },
               {
@@ -816,6 +829,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Shader program uploads uFilterMatrix and uniforms.",
+                "roles": {
+                  "command": "Upload Uniforms, Textures, & uFilterMatrix",
+                  "handler": "shader_program"
+                },
                 "title": "4. Uniform Binding"
               },
               {
@@ -827,6 +844,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Returns leased framebuffers back to pool.",
+                "roles": {
+                  "command": "Return Temporary Framebuffers Back To Pool",
+                  "handler": "target_pool2"
+                },
                 "title": "5. Texture Recycling"
               }
             ]
@@ -846,6 +867,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Calculates expanded bounding box for blur halo.",
+                "roles": {
+                  "command": "Calculate Padded Bounding Box & Push Filter State",
+                  "handler": "filter_system",
+                  "initiator": "render_ticker"
+                },
                 "title": "1. Padded Bounds"
               },
               {
@@ -857,6 +883,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Leases pair of RenderTargets for intermediate passes.",
+                "roles": {
+                  "command": "Lease Temporary Offscreen Framebuffer",
+                  "handler": "target_pool"
+                },
                 "title": "2. Ping-Pong Targets"
               },
               {
@@ -868,6 +898,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Renders unblurred source into first target.",
+                "roles": {
+                  "command": "Render Child Display Tree Into Offscreen Target",
+                  "handler": "display_container"
+                },
                 "title": "3. Offscreen Capture"
               },
               {
@@ -879,6 +913,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Executes horizontal and vertical passes across ping-pong buffers.",
+                "roles": {
+                  "command": "Upload Uniforms, Textures, & uFilterMatrix",
+                  "handler": "shader_program"
+                },
                 "title": "4. Multi-Pass Shader"
               },
               {
@@ -890,6 +928,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Recycles intermediate buffers back to pool.",
+                "roles": {
+                  "command": "Return Temporary Framebuffers Back To Pool",
+                  "handler": "target_pool2"
+                },
                 "title": "5. Pool Cleanup"
               }
             ]

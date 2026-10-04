@@ -608,12 +608,27 @@
   animation: flowchart-dash-flow 1.2s linear infinite;
 }
 
-.flowchart-node-highlighted {
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--secondary) 90%, transparent)) drop-shadow(0 0 12px color-mix(in srgb, var(--secondary) 50%, transparent));
+/* Highlighted lines keep dashing, tighter and quicker, so the direction of flow
+   reads from the line itself. The offset equals one dash period (6 + 3). */
+@keyframes flowchart-dash-flow-strict {
+  from { stroke-dashoffset: 9; }
+  to { stroke-dashoffset: 0; }
 }
 
-.flowchart-particle {
-  filter: drop-shadow(0 0 6px var(--secondary));
+.flowchart-edge-group[data-active="true"] .flowchart-edge {
+  stroke-dasharray: 6 3;
+  animation: flowchart-dash-flow-strict 0.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowchart-edge-animated,
+  .flowchart-edge-group[data-active="true"] .flowchart-edge {
+    animation: none;
+  }
+}
+
+.flowchart-node-highlighted {
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--secondary) 90%, transparent)) drop-shadow(0 0 12px color-mix(in srgb, var(--secondary) 50%, transparent));
 }
 
 /* Icon animations */
@@ -1989,10 +2004,9 @@ button.flowchart-step-caption-alt:hover {
   opacity: 0.5;
 }
 
-/* The step's main line: thick and solid, carries the label and the moving dot */
+/* The step's main line: thick, with the strict marching dash, and carries the label */
 .flowchart-edge-group[data-route="primary"] .flowchart-edge {
   stroke-width: 3.5;
-  stroke-dasharray: none;
 }
 
 /* Other lines of the same step stay thin so the main one is unmistakable */
@@ -2033,4 +2047,14 @@ button.flowchart-step-caption-alt:hover {
   font-weight: 600;
   font-family: var(--font-body);
   fill: var(--secondary);
+}
+
+/* Earlier steps that happened inside a box: muted step numbers on its corner */
+.flowchart-route-node-trail .flowchart-route-badge {
+  fill: color-mix(in srgb, var(--secondary) 55%, var(--ctp-surface1));
+}
+
+/* A step travelling a two-way edge from its far end: dashes march the other way */
+.flowchart-edge-group[data-route-dir="reverse"] .flowchart-edge {
+  animation-direction: reverse;
 }

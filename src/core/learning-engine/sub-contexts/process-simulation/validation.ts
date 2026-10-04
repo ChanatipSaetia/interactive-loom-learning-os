@@ -281,11 +281,13 @@ export function validateProcessSimulationTier3(
               if (step.initiatedBy) referencedInSteps.add(getRefId(step.initiatedBy))
               if (step.handledBy) referencedInSteps.add(getRefId(step.handledBy))
               if (step.delegatesTo) referencedInSteps.add(getRefId(step.delegatesTo))
+              if (step.sendsTo) referencedInSteps.add(getRefId(step.sendsTo))
             } else if (step.type === 'branch') {
               for (const b of step.branches || []) {
                 if (b.initiatedBy) referencedInSteps.add(getRefId(b.initiatedBy))
                 if (b.handledBy) referencedInSteps.add(getRefId(b.handledBy))
                 if (b.delegatesTo) referencedInSteps.add(getRefId(b.delegatesTo))
+                if (b.sendsTo) referencedInSteps.add(getRefId(b.sendsTo))
               }
             }
           }
@@ -297,7 +299,7 @@ export function validateProcessSimulationTier3(
               tier: 3,
               field: `actors.${actorId}`,
               message: `Actor "${actorId}" is declared in actors.yaml but not attached to any step in steps.yaml.`,
-              fixHint: `Reference actor "${actorId}" in a step's initiatedBy field, or remove it from actors.yaml.`,
+              fixHint: `Reference actor "${actorId}" in a step's initiatedBy or sendsTo field, or remove it from actors.yaml.`,
               ...ctx,
             })
           }
@@ -309,41 +311,55 @@ export function validateProcessSimulationTier3(
               tier: 3,
               field: `systems.${sysId}`,
               message: `System "${sysId}" is declared in systems.yaml but not attached to any step in steps.yaml.`,
-              fixHint: `Reference system "${sysId}" in a step's handledBy or delegatesTo field, or remove it from systems.yaml.`,
+              fixHint: `Reference system "${sysId}" in a step's handledBy, delegatesTo or sendsTo field, or remove it from systems.yaml.`,
               ...ctx,
             })
           }
         }
 
-        // Invariant 2: Every command must be handled by an Aggregate/External system in systems.yaml
-        for (const step of Array.isArray(rawSteps) ? rawSteps : []) {
-          if (step && typeof step === 'object') {
-            if (step.type === 'linear') {
-              const h = getRefId(step.handledBy)
-              if (!h || !rawSystems[h]) {
-                diagnostics.push({
-                  tier: 3,
-                  field: `steps.${step.id}`,
-                  message: `Step "${step.id}" command "${step.command}" is handledBy "${h}", which is not a valid system in systems.yaml.`,
-                  fixHint: `Change handledBy in step "${step.id}" to point to a valid Aggregate or External system in systems.yaml.`,
-                  ...ctx,
-                })
-              }
-            } else if (step.type === 'branch') {
-              for (const b of step.branches || []) {
-                const h = getRefId(b.handledBy)
-                if (!h || !rawSystems[h]) {
-                  diagnostics.push({
-                    tier: 3,
-                    field: `steps.${b.id}`,
-                    message: `Branch option "${b.id}" command "${b.command}" is handledBy "${h}", which is not a valid system in systems.yaml.`,
-                    fixHint: `Change handledBy in branch option "${b.id}" to point to a valid Aggregate or External system in systems.yaml.`,
-                    ...ctx,
-                  })
-                }
-              }
+        // Invariant 2: step references point at declared participants.
+        // handledBy is optional (a step no system runs), but must name a system when given;
+        // delegatesTo needs a handler to delegate from; sendsTo names an actor or a system.
+        const checkStepRefs = (s: any, kind: 'Step' | 'Branch option') => {
+          const where = `${kind} "${s.id}" command "${s.command}"`
+          if (s.handledBy) {
+            const h = getRefId(s.handledBy)
+            if (!rawSystems[h]) {
+              diagnostics.push({
+                tier: 3,
+                field: `steps.${s.id}`,
+                message: `${where} is handledBy "${h}", which is not a valid system in systems.yaml.`,
+                fixHint: `Change handledBy in "${s.id}" to a system from systems.yaml, or remove it if no system runs this command.`,
+                ...ctx,
+              })
             }
           }
+          if (s.delegatesTo && !s.handledBy) {
+            diagnostics.push({
+              tier: 3,
+              field: `steps.${s.id}.delegatesTo`,
+              message: `${where} delegates to "${getRefId(s.delegatesTo)}" but has no handledBy to delegate from.`,
+              fixHint: `Add handledBy to "${s.id}", or remove delegatesTo.`,
+              ...ctx,
+            })
+          }
+          if (s.sendsTo) {
+            const r = getRefId(s.sendsTo)
+            if (!rawActors[r] && !rawSystems[r]) {
+              diagnostics.push({
+                tier: 3,
+                field: `steps.${s.id}.sendsTo`,
+                message: `${where} sendsTo "${r}", which is not declared in actors.yaml or systems.yaml.`,
+                fixHint: `Use one of: [${[...Object.keys(rawActors), ...Object.keys(rawSystems)].map((id) => `"${id}"`).join(', ')}]`,
+                ...ctx,
+              })
+            }
+          }
+        }
+        for (const step of Array.isArray(rawSteps) ? rawSteps : []) {
+          if (!step || typeof step !== 'object') continue
+          if (step.type === 'linear') checkStepRefs(step, 'Step')
+          else if (step.type === 'branch') (step.branches || []).forEach((b: any) => b && checkStepRefs(b, 'Branch option'))
         }
 
         for (const [entityId, entity] of Object.entries(entities)) {

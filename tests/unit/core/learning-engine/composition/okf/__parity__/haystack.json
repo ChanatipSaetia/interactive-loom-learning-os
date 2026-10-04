@@ -950,6 +950,11 @@
                   "evt_files_loaded"
                 ],
                 "reason": "Files are loaded from a document directory. Indexing begins by reading all supported file formats.",
+                "roles": {
+                  "command": "Start Indexing",
+                  "handler": "file_converter",
+                  "initiator": "dev_user"
+                },
                 "title": "Start Indexing"
               },
               {
@@ -961,6 +966,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Documents in various formats (PDF, DOCX, TXT) are converted to plain text for uniform processing.",
+                "roles": {
+                  "command": "Convert Files",
+                  "handler": "file_converter2"
+                },
                 "title": "Convert to Text"
               },
               {
@@ -972,6 +981,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Large text documents are split into smaller, overlapping chunks to fit model context windows.",
+                "roles": {
+                  "command": "Split Texts",
+                  "handler": "text_splitter"
+                },
                 "title": "Split into Chunks"
               },
               {
@@ -984,6 +997,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Each text chunk is passed through an embedding model to produce a vector representation for semantic search.",
+                "roles": {
+                  "command": "Compute Embeddings",
+                  "delegate": "embedding_model",
+                  "handler": "doc_embedder"
+                },
                 "title": "Compute Embeddings"
               },
               {
@@ -996,6 +1014,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Chunks and their embeddings are saved to the document store (e.g., SQLite, FAISS) for later retrieval.",
+                "roles": {
+                  "command": "Write Documents",
+                  "delegate": "doc_store",
+                  "handler": "doc_writer"
+                },
                 "title": "Store in Document Store"
               }
             ]
@@ -1459,6 +1482,11 @@
                   "evt_query_received"
                 ],
                 "reason": "User types a question into the chat interface. The query enters the RAG pipeline.",
+                "roles": {
+                  "command": "Submit Query",
+                  "handler": "text_embedder",
+                  "initiator": "end_user"
+                },
                 "title": "Submit Query"
               },
               {
@@ -1471,6 +1499,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "The query text is passed through the same embedding model used during indexing, producing a vector for comparison.",
+                "roles": {
+                  "command": "Embed Query",
+                  "delegate": "query_embedding_model",
+                  "handler": "text_embedder2"
+                },
                 "title": "Embed Query"
               },
               {
@@ -1483,6 +1516,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "The query vector is compared against stored document embeddings using similarity search. Top-k matching chunks are returned.",
+                "roles": {
+                  "command": "Retrieve Documents",
+                  "delegate": "doc_store",
+                  "handler": "retriever"
+                },
                 "title": "Retrieve Documents"
               },
               {
@@ -1494,6 +1532,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Retrieved chunks are re-scored and ranked by a cross-encoder model for higher precision.",
+                "roles": {
+                  "command": "Rank Documents",
+                  "handler": "ranker"
+                },
                 "title": "Rank Results"
               },
               {
@@ -1505,6 +1547,10 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Ranked chunks are combined with the original query into a prompt template for the LLM.",
+                "roles": {
+                  "command": "Build Prompt",
+                  "handler": "prompt_builder"
+                },
                 "title": "Build Prompt"
               },
               {
@@ -1517,6 +1563,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "LLM reads the enriched prompt and generates a grounded answer based on the retrieved context.",
+                "roles": {
+                  "command": "Generate Answer",
+                  "delegate": "llm_api",
+                  "handler": "llm_generator"
+                },
                 "title": "Generate Answer"
               }
             ]
@@ -1536,6 +1587,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "The query is converted to a vector using the embedding model.",
+                "roles": {
+                  "command": "Embed Query",
+                  "delegate": "query_embedding_model",
+                  "handler": "text_embedder2"
+                },
                 "title": "Embed Query"
               },
               {
@@ -1548,6 +1604,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Vector similarity search finds matching document chunks, which are returned directly without LLM generation.",
+                "roles": {
+                  "command": "Retrieve Documents",
+                  "delegate": "doc_store",
+                  "handler": "retriever"
+                },
                 "title": "Retrieve Documents"
               }
             ]

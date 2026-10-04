@@ -727,6 +727,11 @@
                   "evt_fuel_mix"
                 ],
                 "reason": "ผู้ขับขี่บิดคันเร่งเพื่อสั่งให้เครื่องยนต์เพิ่มรอบและสร้างกำลัง",
+                "roles": {
+                  "command": "บิดคันเร่ง",
+                  "handler": "carburetor",
+                  "initiator": "rider"
+                },
                 "title": "บิดคันเร่ง"
               },
               {
@@ -737,6 +742,10 @@
                   "evt_intake"
                 ],
                 "reason": "ลูกสูบเคลื่อนลง วาล์วน้ำมันเปิด ผสมอากาศ-น้ำมันไหลเข้ากระบอกสูบ",
+                "roles": {
+                  "command": "ดูดไอดี (Intake)",
+                  "handler": "engine"
+                },
                 "title": "จังหวะดูด"
               },
               {
@@ -747,6 +756,10 @@
                   "evt_comp"
                 ],
                 "reason": "ลูกสูบเคลื่อนขึ้น วาล์วปิดทั้งสองข้าง อัดส่วนผสมให้มีความหนาแน่นสูง",
+                "roles": {
+                  "command": "อัดไอดี (Compression)",
+                  "handler": "engine2"
+                },
                 "title": "จังหวะอัด"
               },
               {
@@ -757,6 +770,10 @@
                   "evt_comb"
                 ],
                 "reason": "หัวเทียนจุดระเบิด ส่วนผสมถูกอัดจนระเบิด ผลักลูกสูบลง สร้างกำลังขับเคลื่อน",
+                "roles": {
+                  "command": "จุดระเบิด (Combustion)",
+                  "handler": "engine3"
+                },
                 "title": "จังหวะระเบิด"
               },
               {
@@ -767,6 +784,10 @@
                   "evt_power_transfer"
                 ],
                 "reason": "วาล์วไอเสียเปิด ลูกสูบเคลื่อนขึ้น ผลักไอเสียที่ถูกเผาไหม้ออก",
+                "roles": {
+                  "command": "คายไอเสีย (Exhaust)",
+                  "handler": "engine4"
+                },
                 "title": "จังหวะไอเสีย"
               },
               {
@@ -777,6 +798,10 @@
                   "evt_wheel_spin"
                 ],
                 "reason": "กำลังจากการระเบิดถูกส่งผ่านคลัตช์ เกียร์ และโซ่ ไปยังล้อหลัง",
+                "roles": {
+                  "command": "ส่งกำลังทดรอบ (Shift Gear)",
+                  "handler": "transmission"
+                },
                 "title": "ส่งกำลัง"
               }
             ]
@@ -1208,6 +1233,11 @@
                   "evt_sensor_read"
                 ],
                 "reason": "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งสัญญาณปริมาณอากาศเข้าเครื่องไปยัง ECU",
+                "roles": {
+                  "command": "บิดคันเร่ง (Injector Mode)",
+                  "handler": "ecu",
+                  "initiator": "rider"
+                },
                 "title": "บิดคันเร่ง"
               },
               {
@@ -1218,6 +1248,10 @@
                   "evt_fuel_atomized"
                 ],
                 "reason": "ECU คำนวณปริมาณน้ำมันที่เหมาะสม สั่งหัวฉีดพ่นน้ำมันเป็นละอองฝอย",
+                "roles": {
+                  "command": "สั่งงานหัวฉีด (Activate Injector)",
+                  "handler": "fuel_injector"
+                },
                 "title": "พ่นหัวฉีด"
               },
               {
@@ -1253,6 +1287,10 @@
                   "evt_precise_mix"
                 ],
                 "reason": "ละอองน้ำมันผสมกับอากาศในอัตราส่วนที่ ECU คำนวณไว้ ให้การเผาไหม้สมบูรณ์",
+                "roles": {
+                  "command": "ใช้ส่วนผสมแม่นยำ (Use Precise Mixture)",
+                  "handler": "fuel_injector2"
+                },
                 "title": "ผสมส่วนแม่นยำ"
               }
             ]
@@ -1271,6 +1309,11 @@
                   "evt_sensor_read"
                 ],
                 "reason": "ผู้ขับขี่บิดคันเร่ง เซนเซอร์ส่งข้อมูลไปยัง ECU",
+                "roles": {
+                  "command": "บิดคันเร่ง (Injector Mode)",
+                  "handler": "ecu",
+                  "initiator": "rider"
+                },
                 "title": "บิดคันเร่ง"
               },
               {
@@ -1281,6 +1324,10 @@
                   "evt_fuel_atomized"
                 ],
                 "reason": "ECU คำนวณปริมาณน้ำมันพื้นฐานจากข้อมูลเซนเซอร์",
+                "roles": {
+                  "command": "สั่งงานหัวฉีด (Activate Injector)",
+                  "handler": "fuel_injector"
+                },
                 "title": "พ่นหัวฉีด"
               },
               {
@@ -1316,6 +1363,10 @@
                   "evt_inject_cold_auto"
                 ],
                 "reason": "เซนเซอร์ตรวจพบอุณหภูมิเครื่องเย็น ECU สั่งเพิ่มปริมาณน้ำมันเพื่อสตาร์ทง่าย",
+                "roles": {
+                  "command": "เพิ่มส่วนผสมอัตโนมัติ (Auto Cold Enrichment Action)",
+                  "handler": "fuel_injector3"
+                },
                 "title": "เพิ่มส่วนผสม"
               }
             ]
@@ -1655,6 +1706,11 @@
                   "evt_rich_mix"
                 ],
                 "reason": "ดึงโช้คปิดช่องอากาศ ลดอากาศเข้าเพื่อให้ส่วนผสมเข้มข้นขึ้น เหมาะแก่การสตาร์ทเครื่องเย็น",
+                "roles": {
+                  "command": "เปิดโช้ค (Turn Choke On)",
+                  "handler": "choke_valve",
+                  "initiator": "rider"
+                },
                 "title": "เปิดโช้ค"
               },
               {
@@ -1691,6 +1747,10 @@
                   "evt_engine_warm"
                 ],
                 "reason": "ส่วนผสมเข้มข้นช่วยให้จุดระเบิดง่ายขึ้น เครื่องติดและเริ่มทำงาน",
+                "roles": {
+                  "command": "สตาร์ทเครื่องเย็น (Cold Start Engine)",
+                  "handler": "engine_warm"
+                },
                 "title": "สตาร์ทเครื่อง"
               },
               {
@@ -1701,6 +1761,10 @@
                   "evt_normal_mix"
                 ],
                 "reason": "เมื่อเครื่องอุ่นแล้ว ปล่อยโช้คกลับมาเพื่อเปิดช่องอากาศให้กลับสู่การทำงานปกติ",
+                "roles": {
+                  "command": "ปิดโช้ค (Choke Off)",
+                  "handler": "choke_valve3"
+                },
                 "title": "ปิดโช้ค"
               }
             ]
@@ -1719,6 +1783,11 @@
                   "evt_rich_mix"
                 ],
                 "reason": "ดึงโช้คเพื่อสตาร์ทเครื่องเย็น",
+                "roles": {
+                  "command": "เปิดโช้ค (Turn Choke On)",
+                  "handler": "choke_valve",
+                  "initiator": "rider"
+                },
                 "title": "เปิดโช้ค"
               },
               {
@@ -1755,6 +1824,10 @@
                   "evt_choke_forget"
                 ],
                 "reason": "ลืมปล่อยโช้ค เครื่องได้รับส่วนผสมเข้มข้นเกินไป ทำให้เร่งไม่ขึ้น มีควันดำ และสิ้นเปลืองน้ำมัน",
+                "roles": {
+                  "command": "ขี่รถโดยลืมปิดโช้ค (Ride With Choke)",
+                  "handler": "choke_valve2"
+                },
                 "title": "วิ่งโช้คค้าง"
               }
             ]
@@ -2099,6 +2172,11 @@
                   "evt_brake_pressure"
                 ],
                 "reason": "ผู้ขับขี่กดแฮนด์เบรก หรือแป้นเบรก เพื่อสั่งให้ระบบเบรกทำงาน",
+                "roles": {
+                  "command": "กดคันเบรก (Apply Brake)",
+                  "handler": "brake_master",
+                  "initiator": "rider"
+                },
                 "title": "กดเบรก"
               },
               {
@@ -2110,6 +2188,10 @@
                   "evt_brake_heat"
                 ],
                 "reason": "แรงไฮดรอลิกส่งต่อเข้าแคลิเพอร์ กดผ้าเบรกประกบจานเบรกทั้งสองด้าน",
+                "roles": {
+                  "command": "กดผ้าเบรกเข้าจานเบรก",
+                  "handler": "brake_caliper"
+                },
                 "title": "แคลิเพอร์ประกบจาน"
               },
               {
@@ -2146,6 +2228,10 @@
                   "evt_brake_normal"
                 ],
                 "reason": "แรงเสียดทานระหว่างผ้าเบรกและจานเบรกทำให้ล้อช้าลง รถหยุดหรือลดความเร็วตามที่ต้องการ",
+                "roles": {
+                  "command": "รถหยุดหรือช้าลงตามต้องการ (Normal Brake)",
+                  "handler": "brake_caliper2"
+                },
                 "title": "รถช้าลง"
               }
             ]
@@ -2164,6 +2250,11 @@
                   "evt_brake_pressure"
                 ],
                 "reason": "ผู้ขับขี่กดเบรกเพื่อลดความเร็ว",
+                "roles": {
+                  "command": "กดคันเบรก (Apply Brake)",
+                  "handler": "brake_master",
+                  "initiator": "rider"
+                },
                 "title": "กดเบรก"
               },
               {
@@ -2175,6 +2266,10 @@
                   "evt_brake_heat"
                 ],
                 "reason": "แคลิเพอร์กดผ้าเบรกประกบจานเบรก ใช้แรงเสียดทานในการหยุดล้อ",
+                "roles": {
+                  "command": "กดผ้าเบรกเข้าจานเบรก",
+                  "handler": "brake_caliper"
+                },
                 "title": "แคลิเพอร์ประกบจาน"
               },
               {
@@ -2211,6 +2306,10 @@
                   "evt_brake_fade"
                 ],
                 "reason": "เบรกหนักต่อเนื่องทำให้จานและผ้าเบรกร้อนเกินจุดทนทาน แรงเสียดทานลด เบรกไม่ทำงานเต็มประสิทธิภาพ",
+                "roles": {
+                  "command": "เบรกจม (Brake Fade Action)",
+                  "handler": "brake_caliper3"
+                },
                 "title": "เบรกจม"
               }
             ]

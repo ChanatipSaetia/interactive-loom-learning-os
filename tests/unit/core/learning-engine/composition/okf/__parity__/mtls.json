@@ -164,6 +164,26 @@
             "title": "Client",
             "type": "Aggregate"
           },
+          "client4": {
+            "desc": "mTLS-enabled client application initiating the handshake",
+            "title": "Client",
+            "type": "Aggregate"
+          },
+          "client5": {
+            "desc": "mTLS-enabled client application initiating the handshake",
+            "title": "Client",
+            "type": "Aggregate"
+          },
+          "client6": {
+            "desc": "mTLS-enabled client application initiating the handshake",
+            "title": "Client",
+            "type": "Aggregate"
+          },
+          "client7": {
+            "desc": "mTLS-enabled client application initiating the handshake",
+            "title": "Client",
+            "type": "Aggregate"
+          },
           "client_dev": {
             "desc": "Integrates mTLS into client application",
             "title": "Client Developer",
@@ -177,6 +197,11 @@
           "cmd_client_verify_step": {
             "desc": "Verify Server Certificate Against Trusted CA",
             "title": "Verify Server Certificate Against Trusted CA",
+            "type": "Command"
+          },
+          "cmd_configure_trust": {
+            "desc": "Configure Trusted Client CAs",
+            "title": "Configure Trusted Client CAs",
             "type": "Command"
           },
           "cmd_handshake_complete": {
@@ -269,7 +294,22 @@
             "title": "ServerHello Sent",
             "type": "Event"
           },
+          "evt_trust_configured": {
+            "desc": "Server knows which certificate authorities it accepts client certificates from",
+            "title": "Client CA Trust Configured",
+            "type": "Event"
+          },
           "key_store": {
+            "desc": "Secure storage for private keys and trusted CA certificates",
+            "title": "Key Store",
+            "type": "Aggregate"
+          },
+          "key_store2": {
+            "desc": "Secure storage for private keys and trusted CA certificates",
+            "title": "Key Store",
+            "type": "Aggregate"
+          },
+          "key_store3": {
             "desc": "Secure storage for private keys and trusted CA certificates",
             "title": "Key Store",
             "type": "Aggregate"
@@ -284,6 +324,12 @@
             "desc": "Validate Server Identity",
             "root": false,
             "title": "Validate Server Identity",
+            "type": "Policy"
+          },
+          "pol_configure_trust": {
+            "desc": "Before Accepting mTLS Clients",
+            "root": false,
+            "title": "Before Accepting mTLS Clients",
             "type": "Policy"
           },
           "pol_handshake_complete": {
@@ -357,6 +403,21 @@
             "title": "Server",
             "type": "Aggregate"
           },
+          "server6": {
+            "desc": "mTLS-enabled server requiring mutual authentication",
+            "title": "Server",
+            "type": "Aggregate"
+          },
+          "server7": {
+            "desc": "mTLS-enabled server requiring mutual authentication",
+            "title": "Server",
+            "type": "Aggregate"
+          },
+          "server8": {
+            "desc": "mTLS-enabled server requiring mutual authentication",
+            "title": "Server",
+            "type": "Aggregate"
+          },
           "server_admin": {
             "desc": "Configures server CA trust and certificate requirements",
             "title": "Server Administrator",
@@ -381,60 +442,110 @@
             "steps": [
               {
                 "nodeIds": [
+                  "server_admin",
+                  "pol_configure_trust",
+                  "cmd_configure_trust",
+                  "server",
+                  "key_store",
+                  "evt_trust_configured"
+                ],
+                "processGroup": "initiation",
+                "reason": "The server administrator configures which certificate authorities the server trusts for client certificates.",
+                "roles": {
+                  "command": "Configure Trusted Client CAs",
+                  "delegate": "key_store",
+                  "handler": "server",
+                  "initiator": "server_admin"
+                },
+                "title": "Configure Trust"
+              },
+              {
+                "nodeIds": [
                   "client_dev",
                   "pol_init_connection",
                   "cmd_init_connection",
                   "client",
-                  "evt_connection_initiated"
+                  "evt_connection_initiated",
+                  "server2"
                 ],
                 "processGroup": "initiation",
                 "reason": "Client developer initiates the TLS connection.",
+                "roles": {
+                  "command": "Initiate TLS Connection",
+                  "handler": "client",
+                  "initiator": "client_dev",
+                  "recipient": "server2"
+                },
                 "title": "Initiate Connection"
               },
               {
                 "nodeIds": [
                   "pol_server_hello_step",
                   "cmd_server_hello_step",
-                  "server",
-                  "evt_server_hello_sent"
+                  "server3",
+                  "evt_server_hello_sent",
+                  "client2"
                 ],
                 "processGroup": "handshake",
                 "reason": "Server responds with ServerHello containing TLS parameters.",
+                "roles": {
+                  "command": "Send ServerHello",
+                  "handler": "server3",
+                  "recipient": "client2"
+                },
                 "title": "Server Hello"
               },
               {
                 "nodeIds": [
                   "pol_server_cert_step",
                   "cmd_server_cert_step",
-                  "server2",
-                  "evt_server_cert_sent"
+                  "server4",
+                  "evt_server_cert_sent",
+                  "client3"
                 ],
                 "processGroup": "identity",
                 "reason": "Server presents its certificate chain for identity verification.",
+                "roles": {
+                  "command": "Send Server Certificate",
+                  "handler": "server4",
+                  "recipient": "client3"
+                },
                 "title": "Server Certificate"
               },
               {
                 "nodeIds": [
                   "pol_server_req_cert_step",
                   "cmd_server_req_cert_step",
-                  "server3",
-                  "server_admin",
-                  "evt_client_cert_requested"
+                  "server5",
+                  "evt_client_cert_requested",
+                  "client4"
                 ],
                 "processGroup": "identity",
                 "reason": "Server requests the client certificate for mutual authentication.",
+                "roles": {
+                  "command": "Request Client Certificate",
+                  "handler": "server5",
+                  "recipient": "client4"
+                },
                 "title": "Certificate Request"
               },
               {
                 "nodeIds": [
                   "pol_client_cert_step",
                   "cmd_client_cert_step",
-                  "client2",
-                  "key_store",
-                  "evt_client_cert_sent"
+                  "client5",
+                  "key_store2",
+                  "evt_client_cert_sent",
+                  "server6"
                 ],
                 "processGroup": "identity",
                 "reason": "Client sends its certificate in response to the request.",
+                "roles": {
+                  "command": "Send Client Certificate",
+                  "delegate": "key_store2",
+                  "handler": "client5",
+                  "recipient": "server6"
+                },
                 "title": "Client Certificate"
               },
               {
@@ -446,20 +557,22 @@
                       "nodeIds": [
                         "pol_verify_rejected",
                         "cmd_verify_rejected",
-                        "server5",
-                        "evt_connection_terminated"
+                        "server8",
+                        "evt_connection_terminated",
+                        "client6"
                       ],
                       "optionId": "verify_rejected",
-                      "stepIndex": 5
+                      "stepIndex": 6
                     }
                   ],
                   "forkNodeIds": [
                     "evt_client_cert_sent",
                     "pol_client_cert_step",
                     "cmd_client_cert_step",
-                    "client2",
-                    "key_store",
-                    "evt_client_cert_sent"
+                    "client5",
+                    "key_store2",
+                    "evt_client_cert_sent",
+                    "server6"
                   ],
                   "label": "Valid Certificate",
                   "optionId": "verify_happy"
@@ -467,23 +580,34 @@
                 "nodeIds": [
                   "pol_verify_happy",
                   "cmd_verify_happy",
-                  "server4",
+                  "server7",
                   "ca_service",
                   "evt_client_cert_verified"
                 ],
                 "processGroup": "verification",
                 "reason": "Server validates the client certificate against trusted CA.",
+                "roles": {
+                  "command": "Verify Client Certificate Against Trusted CA",
+                  "delegate": "ca_service",
+                  "handler": "server7"
+                },
                 "title": "Verify Client Certificate"
               },
               {
                 "nodeIds": [
                   "pol_client_verify_step",
                   "cmd_client_verify_step",
-                  "client3",
+                  "client7",
+                  "key_store3",
                   "evt_server_cert_verified"
                 ],
                 "processGroup": "verification",
                 "reason": "Client validates the server certificate against trusted CA.",
+                "roles": {
+                  "command": "Verify Server Certificate Against Trusted CA",
+                  "delegate": "key_store3",
+                  "handler": "client7"
+                },
                 "title": "Verify Server Certificate"
               },
               {
@@ -495,6 +619,10 @@
                 ],
                 "processGroup": "encryption",
                 "reason": "Both parties exchange and derive session keys.",
+                "roles": {
+                  "command": "Exchange Session Keys",
+                  "handler": "tls_stack"
+                },
                 "title": "Key Exchange"
               },
               {
@@ -506,6 +634,10 @@
                 ],
                 "processGroup": "encryption",
                 "reason": "Encrypted mTLS channel is established and ready for communication.",
+                "roles": {
+                  "command": "Begin Encrypted Communication",
+                  "handler": "tls_stack2"
+                },
                 "title": "Handshake Complete"
               }
             ]
@@ -517,60 +649,110 @@
             "steps": [
               {
                 "nodeIds": [
+                  "server_admin",
+                  "pol_configure_trust",
+                  "cmd_configure_trust",
+                  "server",
+                  "key_store",
+                  "evt_trust_configured"
+                ],
+                "processGroup": "initiation",
+                "reason": "The server administrator configures which certificate authorities the server trusts for client certificates.",
+                "roles": {
+                  "command": "Configure Trusted Client CAs",
+                  "delegate": "key_store",
+                  "handler": "server",
+                  "initiator": "server_admin"
+                },
+                "title": "Configure Trust"
+              },
+              {
+                "nodeIds": [
                   "client_dev",
                   "pol_init_connection",
                   "cmd_init_connection",
                   "client",
-                  "evt_connection_initiated"
+                  "evt_connection_initiated",
+                  "server2"
                 ],
                 "processGroup": "initiation",
                 "reason": "Client developer initiates the TLS connection.",
+                "roles": {
+                  "command": "Initiate TLS Connection",
+                  "handler": "client",
+                  "initiator": "client_dev",
+                  "recipient": "server2"
+                },
                 "title": "Initiate Connection"
               },
               {
                 "nodeIds": [
                   "pol_server_hello_step",
                   "cmd_server_hello_step",
-                  "server",
-                  "evt_server_hello_sent"
+                  "server3",
+                  "evt_server_hello_sent",
+                  "client2"
                 ],
                 "processGroup": "handshake",
                 "reason": "Server responds with ServerHello containing TLS parameters.",
+                "roles": {
+                  "command": "Send ServerHello",
+                  "handler": "server3",
+                  "recipient": "client2"
+                },
                 "title": "Server Hello"
               },
               {
                 "nodeIds": [
                   "pol_server_cert_step",
                   "cmd_server_cert_step",
-                  "server2",
-                  "evt_server_cert_sent"
+                  "server4",
+                  "evt_server_cert_sent",
+                  "client3"
                 ],
                 "processGroup": "identity",
                 "reason": "Server presents its certificate chain for identity verification.",
+                "roles": {
+                  "command": "Send Server Certificate",
+                  "handler": "server4",
+                  "recipient": "client3"
+                },
                 "title": "Server Certificate"
               },
               {
                 "nodeIds": [
                   "pol_server_req_cert_step",
                   "cmd_server_req_cert_step",
-                  "server3",
-                  "server_admin",
-                  "evt_client_cert_requested"
+                  "server5",
+                  "evt_client_cert_requested",
+                  "client4"
                 ],
                 "processGroup": "identity",
                 "reason": "Server requests the client certificate for mutual authentication.",
+                "roles": {
+                  "command": "Request Client Certificate",
+                  "handler": "server5",
+                  "recipient": "client4"
+                },
                 "title": "Certificate Request"
               },
               {
                 "nodeIds": [
                   "pol_client_cert_step",
                   "cmd_client_cert_step",
-                  "client2",
-                  "key_store",
-                  "evt_client_cert_sent"
+                  "client5",
+                  "key_store2",
+                  "evt_client_cert_sent",
+                  "server6"
                 ],
                 "processGroup": "identity",
                 "reason": "Client sends its certificate in response to the request.",
+                "roles": {
+                  "command": "Send Client Certificate",
+                  "delegate": "key_store2",
+                  "handler": "client5",
+                  "recipient": "server6"
+                },
                 "title": "Client Certificate"
               },
               {
@@ -582,21 +764,22 @@
                       "nodeIds": [
                         "pol_verify_happy",
                         "cmd_verify_happy",
-                        "server4",
+                        "server7",
                         "ca_service",
                         "evt_client_cert_verified"
                       ],
                       "optionId": "verify_happy",
-                      "stepIndex": 5
+                      "stepIndex": 6
                     }
                   ],
                   "forkNodeIds": [
                     "evt_client_cert_sent",
                     "pol_client_cert_step",
                     "cmd_client_cert_step",
-                    "client2",
-                    "key_store",
-                    "evt_client_cert_sent"
+                    "client5",
+                    "key_store2",
+                    "evt_client_cert_sent",
+                    "server6"
                   ],
                   "label": "Invalid Certificate",
                   "optionId": "verify_rejected"
@@ -604,17 +787,49 @@
                 "nodeIds": [
                   "pol_verify_rejected",
                   "cmd_verify_rejected",
-                  "server5",
-                  "evt_connection_terminated"
+                  "server8",
+                  "evt_connection_terminated",
+                  "client6"
                 ],
                 "processGroup": "verification",
                 "reason": "Server finds the client certificate invalid and terminates the connection.",
+                "roles": {
+                  "command": "Terminate Connection",
+                  "handler": "server8",
+                  "recipient": "client6"
+                },
                 "title": "Certificate Rejected"
               }
             ]
           }
         ],
         "rawSteps": [
+          {
+            "command": "Configure Trusted Client CAs",
+            "continuesAs": "init_connection",
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "key_store"
+            },
+            "handledBy": {
+              "_tag": "ref",
+              "id": "server"
+            },
+            "id": "configure_trust",
+            "initiatedBy": {
+              "_tag": "ref",
+              "id": "server_admin"
+            },
+            "policy": "Before Accepting mTLS Clients",
+            "resultEvents": [
+              {
+                "desc": "Server knows which certificate authorities it accepts client certificates from",
+                "id": "trust_configured",
+                "title": "Client CA Trust Configured"
+              }
+            ],
+            "type": "linear"
+          },
           {
             "command": "Initiate TLS Connection",
             "continuesAs": "server_hello_step",
@@ -635,6 +850,10 @@
                 "title": "Connection Initiated"
               }
             ],
+            "sendsTo": {
+              "_tag": "ref",
+              "id": "server"
+            },
             "type": "linear"
           },
           {
@@ -653,6 +872,10 @@
                 "title": "ServerHello Sent"
               }
             ],
+            "sendsTo": {
+              "_tag": "ref",
+              "id": "client"
+            },
             "type": "linear"
           },
           {
@@ -671,15 +894,15 @@
                 "title": "Server Certificate Sent"
               }
             ],
+            "sendsTo": {
+              "_tag": "ref",
+              "id": "client"
+            },
             "type": "linear"
           },
           {
             "command": "Request Client Certificate",
             "continuesAs": "client_cert_step",
-            "delegatesTo": {
-              "_tag": "ref",
-              "id": "server_admin"
-            },
             "handledBy": {
               "_tag": "ref",
               "id": "server"
@@ -693,6 +916,10 @@
                 "title": "Client Certificate Requested"
               }
             ],
+            "sendsTo": {
+              "_tag": "ref",
+              "id": "client"
+            },
             "type": "linear"
           },
           {
@@ -715,6 +942,10 @@
                 "title": "Client Certificate Sent"
               }
             ],
+            "sendsTo": {
+              "_tag": "ref",
+              "id": "server"
+            },
             "type": "linear"
           },
           {
@@ -757,7 +988,11 @@
                     "id": "connection_terminated",
                     "title": "Connection Terminated"
                   }
-                ]
+                ],
+                "sendsTo": {
+                  "_tag": "ref",
+                  "id": "client"
+                }
               }
             ],
             "event": "client_cert_sent",
@@ -767,6 +1002,10 @@
           {
             "command": "Verify Server Certificate Against Trusted CA",
             "continuesAs": "key_exchange_step",
+            "delegatesTo": {
+              "_tag": "ref",
+              "id": "key_store"
+            },
             "handledBy": {
               "_tag": "ref",
               "id": "client"
@@ -820,8 +1059,57 @@
         ],
         "relations": [
           {
-            "from": "client_dev",
+            "from": "server_admin",
             "id": "r1",
+            "to": "pol_configure_trust",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "pol_configure_trust",
+            "id": "r2",
+            "to": "cmd_configure_trust",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "cmd_configure_trust",
+            "handledBy": true,
+            "id": "r3",
+            "to": "server",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server",
+            "id": "r4",
+            "to": "key_store",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "server",
+            "id": "r5",
+            "to": "evt_trust_configured",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_trust_configured",
+            "id": "r6",
+            "to": "pol_init_connection",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "client_dev",
+            "id": "r7",
             "to": "pol_init_connection",
             "views": [
               "EVENT_STORMING"
@@ -829,7 +1117,7 @@
           },
           {
             "from": "pol_init_connection",
-            "id": "r2",
+            "id": "r8",
             "to": "cmd_init_connection",
             "views": [
               "EVENT_STORMING"
@@ -838,7 +1126,7 @@
           {
             "from": "cmd_init_connection",
             "handledBy": true,
-            "id": "r3",
+            "id": "r9",
             "to": "client",
             "views": [
               "EVENT_STORMING"
@@ -846,7 +1134,7 @@
           },
           {
             "from": "client",
-            "id": "r4",
+            "id": "r10",
             "to": "evt_connection_initiated",
             "views": [
               "EVENT_STORMING"
@@ -854,7 +1142,16 @@
           },
           {
             "from": "evt_connection_initiated",
-            "id": "r5",
+            "id": "r11",
+            "sendsTo": true,
+            "to": "server2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_connection_initiated",
+            "id": "r12",
             "to": "pol_server_hello_step",
             "views": [
               "EVENT_STORMING"
@@ -862,7 +1159,7 @@
           },
           {
             "from": "pol_server_hello_step",
-            "id": "r6",
+            "id": "r13",
             "to": "cmd_server_hello_step",
             "views": [
               "EVENT_STORMING"
@@ -871,15 +1168,15 @@
           {
             "from": "cmd_server_hello_step",
             "handledBy": true,
-            "id": "r7",
-            "to": "server",
+            "id": "r14",
+            "to": "server3",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "server",
-            "id": "r8",
+            "from": "server3",
+            "id": "r15",
             "to": "evt_server_hello_sent",
             "views": [
               "EVENT_STORMING"
@@ -887,7 +1184,16 @@
           },
           {
             "from": "evt_server_hello_sent",
-            "id": "r9",
+            "id": "r16",
+            "sendsTo": true,
+            "to": "client2",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_server_hello_sent",
+            "id": "r17",
             "to": "pol_server_cert_step",
             "views": [
               "EVENT_STORMING"
@@ -895,7 +1201,7 @@
           },
           {
             "from": "pol_server_cert_step",
-            "id": "r10",
+            "id": "r18",
             "to": "cmd_server_cert_step",
             "views": [
               "EVENT_STORMING"
@@ -904,15 +1210,15 @@
           {
             "from": "cmd_server_cert_step",
             "handledBy": true,
-            "id": "r11",
-            "to": "server2",
+            "id": "r19",
+            "to": "server4",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "server2",
-            "id": "r12",
+            "from": "server4",
+            "id": "r20",
             "to": "evt_server_cert_sent",
             "views": [
               "EVENT_STORMING"
@@ -920,7 +1226,16 @@
           },
           {
             "from": "evt_server_cert_sent",
-            "id": "r13",
+            "id": "r21",
+            "sendsTo": true,
+            "to": "client3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_server_cert_sent",
+            "id": "r22",
             "to": "pol_server_req_cert_step",
             "views": [
               "EVENT_STORMING"
@@ -928,7 +1243,7 @@
           },
           {
             "from": "pol_server_req_cert_step",
-            "id": "r14",
+            "id": "r23",
             "to": "cmd_server_req_cert_step",
             "views": [
               "EVENT_STORMING"
@@ -937,23 +1252,15 @@
           {
             "from": "cmd_server_req_cert_step",
             "handledBy": true,
-            "id": "r15",
-            "to": "server3",
+            "id": "r24",
+            "to": "server5",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "server3",
-            "id": "r16",
-            "to": "server_admin",
-            "views": [
-              "EVENT_STORMING"
-            ]
-          },
-          {
-            "from": "server3",
-            "id": "r17",
+            "from": "server5",
+            "id": "r25",
             "to": "evt_client_cert_requested",
             "views": [
               "EVENT_STORMING"
@@ -961,7 +1268,16 @@
           },
           {
             "from": "evt_client_cert_requested",
-            "id": "r18",
+            "id": "r26",
+            "sendsTo": true,
+            "to": "client4",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_client_cert_requested",
+            "id": "r27",
             "to": "pol_client_cert_step",
             "views": [
               "EVENT_STORMING"
@@ -969,7 +1285,7 @@
           },
           {
             "from": "pol_client_cert_step",
-            "id": "r19",
+            "id": "r28",
             "to": "cmd_client_cert_step",
             "views": [
               "EVENT_STORMING"
@@ -978,23 +1294,23 @@
           {
             "from": "cmd_client_cert_step",
             "handledBy": true,
-            "id": "r20",
-            "to": "client2",
+            "id": "r29",
+            "to": "client5",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "client2",
-            "id": "r21",
-            "to": "key_store",
+            "from": "client5",
+            "id": "r30",
+            "to": "key_store2",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "client2",
-            "id": "r22",
+            "from": "client5",
+            "id": "r31",
             "to": "evt_client_cert_sent",
             "views": [
               "EVENT_STORMING"
@@ -1002,7 +1318,16 @@
           },
           {
             "from": "evt_client_cert_sent",
-            "id": "r23",
+            "id": "r32",
+            "sendsTo": true,
+            "to": "server6",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "evt_client_cert_sent",
+            "id": "r33",
             "label": "Valid Certificate",
             "to": "pol_verify_happy",
             "views": [
@@ -1011,7 +1336,7 @@
           },
           {
             "from": "pol_verify_happy",
-            "id": "r24",
+            "id": "r34",
             "to": "cmd_verify_happy",
             "views": [
               "EVENT_STORMING"
@@ -1020,23 +1345,23 @@
           {
             "from": "cmd_verify_happy",
             "handledBy": true,
-            "id": "r25",
-            "to": "server4",
+            "id": "r35",
+            "to": "server7",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "server4",
-            "id": "r26",
+            "from": "server7",
+            "id": "r36",
             "to": "ca_service",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "server4",
-            "id": "r27",
+            "from": "server7",
+            "id": "r37",
             "to": "evt_client_cert_verified",
             "views": [
               "EVENT_STORMING"
@@ -1044,7 +1369,7 @@
           },
           {
             "from": "evt_client_cert_verified",
-            "id": "r28",
+            "id": "r38",
             "to": "pol_client_verify_step",
             "views": [
               "EVENT_STORMING"
@@ -1053,7 +1378,7 @@
           {
             "dashed": true,
             "from": "evt_client_cert_sent",
-            "id": "r29",
+            "id": "r39",
             "label": "Invalid Certificate",
             "to": "pol_verify_rejected",
             "views": [
@@ -1062,7 +1387,7 @@
           },
           {
             "from": "pol_verify_rejected",
-            "id": "r30",
+            "id": "r40",
             "to": "cmd_verify_rejected",
             "views": [
               "EVENT_STORMING"
@@ -1071,23 +1396,32 @@
           {
             "from": "cmd_verify_rejected",
             "handledBy": true,
-            "id": "r31",
-            "to": "server5",
+            "id": "r41",
+            "to": "server8",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "server5",
-            "id": "r32",
+            "from": "server8",
+            "id": "r42",
             "to": "evt_connection_terminated",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
+            "from": "evt_connection_terminated",
+            "id": "r43",
+            "sendsTo": true,
+            "to": "client6",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
             "from": "pol_client_verify_step",
-            "id": "r33",
+            "id": "r44",
             "to": "cmd_client_verify_step",
             "views": [
               "EVENT_STORMING"
@@ -1096,15 +1430,23 @@
           {
             "from": "cmd_client_verify_step",
             "handledBy": true,
-            "id": "r34",
-            "to": "client3",
+            "id": "r45",
+            "to": "client7",
             "views": [
               "EVENT_STORMING"
             ]
           },
           {
-            "from": "client3",
-            "id": "r35",
+            "from": "client7",
+            "id": "r46",
+            "to": "key_store3",
+            "views": [
+              "EVENT_STORMING"
+            ]
+          },
+          {
+            "from": "client7",
+            "id": "r47",
             "to": "evt_server_cert_verified",
             "views": [
               "EVENT_STORMING"
@@ -1112,7 +1454,7 @@
           },
           {
             "from": "evt_server_cert_verified",
-            "id": "r36",
+            "id": "r48",
             "to": "pol_key_exchange_step",
             "views": [
               "EVENT_STORMING"
@@ -1120,7 +1462,7 @@
           },
           {
             "from": "pol_key_exchange_step",
-            "id": "r37",
+            "id": "r49",
             "to": "cmd_key_exchange_step",
             "views": [
               "EVENT_STORMING"
@@ -1129,7 +1471,7 @@
           {
             "from": "cmd_key_exchange_step",
             "handledBy": true,
-            "id": "r38",
+            "id": "r50",
             "to": "tls_stack",
             "views": [
               "EVENT_STORMING"
@@ -1137,7 +1479,7 @@
           },
           {
             "from": "tls_stack",
-            "id": "r39",
+            "id": "r51",
             "to": "evt_keys_established",
             "views": [
               "EVENT_STORMING"
@@ -1145,7 +1487,7 @@
           },
           {
             "from": "evt_keys_established",
-            "id": "r40",
+            "id": "r52",
             "to": "pol_handshake_complete",
             "views": [
               "EVENT_STORMING"
@@ -1153,7 +1495,7 @@
           },
           {
             "from": "pol_handshake_complete",
-            "id": "r41",
+            "id": "r53",
             "to": "cmd_handshake_complete",
             "views": [
               "EVENT_STORMING"
@@ -1162,7 +1504,7 @@
           {
             "from": "cmd_handshake_complete",
             "handledBy": true,
-            "id": "r42",
+            "id": "r54",
             "to": "tls_stack2",
             "views": [
               "EVENT_STORMING"
@@ -1170,7 +1512,7 @@
           },
           {
             "from": "tls_stack2",
-            "id": "r43",
+            "id": "r55",
             "to": "evt_channel_established",
             "views": [
               "EVENT_STORMING"

@@ -770,6 +770,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "The developer edits a story and the dev server detects the change.",
+                "roles": {
+                  "command": "Persist Story File Change",
+                  "handler": "dev_server",
+                  "initiator": "frontend_dev"
+                },
                 "title": "1. Save Story File"
               },
               {
@@ -781,6 +786,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "HMR swaps the changed story module without reloading the whole app.",
+                "roles": {
+                  "command": "Hot-Replace Story Module",
+                  "handler": "dev_server2"
+                },
                 "title": "2. Hot-Replace Module"
               },
               {
@@ -792,6 +801,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "The indexer refreshes sidebar entries from the new exports.",
+                "roles": {
+                  "command": "Re-extract Meta & Story Exports",
+                  "handler": "story_indexer"
+                },
                 "title": "3. Re-index Stories"
               },
               {
@@ -803,6 +816,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "The preview runtime mounts the story with its args.",
+                "roles": {
+                  "command": "Render Story Component in Preview Iframe",
+                  "handler": "preview_runtime"
+                },
                 "title": "4. Render in Preview"
               }
             ]
@@ -822,6 +839,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "The reviewer toggles a boolean in the Controls panel.",
+                "roles": {
+                  "command": "Dispatch Arg Update Over Channel",
+                  "handler": "controls_addon2",
+                  "initiator": "frontend_dev2"
+                },
                 "title": "1. Edit a Control"
               },
               {
@@ -833,6 +855,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Args flow over the channel and the component repaints.",
+                "roles": {
+                  "command": "Re-render Story With New Args",
+                  "handler": "preview_runtime3"
+                },
                 "title": "2. Live Re-render"
               }
             ]

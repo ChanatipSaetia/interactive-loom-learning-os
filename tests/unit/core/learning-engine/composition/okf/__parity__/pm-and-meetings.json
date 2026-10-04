@@ -533,6 +533,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Project Manager defines and documents the feature request in the backlog.",
+                "roles": {
+                  "command": "Define Feature Request",
+                  "handler": "backlog",
+                  "initiator": "pm"
+                },
                 "title": "Log Feature"
               },
               {
@@ -545,6 +550,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "The team defines goals and commits tasks from backlog to the sprint.",
+                "roles": {
+                  "command": "Plan Sprint Tasks",
+                  "handler": "backlog2",
+                  "initiator": "pm2"
+                },
                 "title": "Commit to Sprint"
               },
               {
@@ -557,6 +567,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Engineers write code and run test suites locally and in CI.",
+                "roles": {
+                  "command": "Deliver Code Changes",
+                  "handler": "dev_workspace",
+                  "initiator": "dev"
+                },
                 "title": "Coding and Testing"
               },
               {
@@ -594,6 +609,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Because there are no blockers, engineers submit status updates via Slack, protecting maker time.",
+                "roles": {
+                  "command": "Provide Async Update",
+                  "handler": "slack_channel"
+                },
                 "title": "Provide Async Update"
               },
               {
@@ -606,6 +625,11 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "At the end of the sprint, the team reflects and logs improvements.",
+                "roles": {
+                  "command": "Conduct Retrospective",
+                  "handler": "retro_board",
+                  "initiator": "dev2"
+                },
                 "title": "Conduct Retrospective"
               }
             ]
@@ -625,6 +649,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Engineers write code but hit an unexpected dependency blocker.",
+                "roles": {
+                  "command": "Deliver Code Changes",
+                  "handler": "dev_workspace",
+                  "initiator": "dev"
+                },
                 "title": "Coding and Testing"
               },
               {
@@ -662,6 +691,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "The engineer flags the blocker immediately in the standup channel.",
+                "roles": {
+                  "command": "Raise Blocker in Standup",
+                  "handler": "standup_tool"
+                },
                 "title": "Raise Blocker"
               },
               {
@@ -674,6 +707,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "The Project Manager coordinates with the external team to resolve the dependency.",
+                "roles": {
+                  "command": "Unblock Team Member",
+                  "handler": "issue_tracker",
+                  "initiator": "pm3"
+                },
                 "title": "Unblock Developer"
               },
               {
@@ -686,6 +724,11 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Once unblocked, the engineer resumes code development.",
+                "roles": {
+                  "command": "Deliver Code Changes",
+                  "handler": "dev_workspace",
+                  "initiator": "dev"
+                },
                 "title": "Resume Execution"
               }
             ]

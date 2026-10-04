@@ -483,6 +483,11 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Express Controller validates request payload and maps HTTP DTO into CreateOrderCommand.",
+                "roles": {
+                  "command": "Invoke CreateOrderPort",
+                  "handler": "http_controller",
+                  "initiator": "customer"
+                },
                 "title": "1. HTTP Request Received"
               },
               {
@@ -494,6 +499,10 @@
                 ],
                 "processGroup": "planning",
                 "reason": "Driving Adapter calls CreateOrderUseCase interface; application layer initiates domain transaction.",
+                "roles": {
+                  "command": "Instantiate Order Aggregate",
+                  "handler": "create_order_port"
+                },
                 "title": "2. Driving Port Invoked"
               },
               {
@@ -505,6 +514,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Order Aggregate validates business invariants, item calculations, and instantiates order state.",
+                "roles": {
+                  "command": "Call OrderRepositoryPort.save()",
+                  "handler": "order_aggregate"
+                },
                 "title": "3. Domain Core Execution"
               },
               {
@@ -516,6 +529,10 @@
                 ],
                 "processGroup": "execution",
                 "reason": "Domain Core invokes OrderRepositoryPort interface for persistence.",
+                "roles": {
+                  "command": "Execute SQL Insert",
+                  "handler": "order_repo_port"
+                },
                 "title": "4. Driven Port Call"
               },
               {
@@ -527,6 +544,10 @@
                 ],
                 "processGroup": "evaluation",
                 "reason": "Driven Postgres Adapter executes SQL insert, commits transaction, and returns result to HTTP Controller.",
+                "roles": {
+                  "command": "Respond 201 Created",
+                  "handler": "postgres_adapter"
+                },
                 "title": "5. Postgres Persistence & Response"
               }
             ]

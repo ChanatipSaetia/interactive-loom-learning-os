@@ -220,8 +220,12 @@ export interface FlowchartRelation {
   views?: string[];
   dashed?: boolean;
   handledBy?: boolean;
+  /** Event → recipient: the step's result is sent to this actor/system. */
+  sendsTo?: boolean;
   bidirectional?: boolean;
   label?: string;
+  /** Derived views: the first label of the reverse direction on a two-way edge. */
+  reverseLabel?: string;
   chronologicalIndex?: number;
   yOffset?: number;
   /** Position in the final ordered sequence array, set during single-pass BFS emission. */
@@ -295,6 +299,21 @@ export interface FlowchartStep {
   processGroup?: ProcessGroup;
   /** Present when the step takes one option of a branch. */
   branch?: FlowchartStepBranchInfo;
+  /** Who does what in this step (per-step entity ids), for views that draw messages. */
+  roles?: FlowchartStepRoles;
+}
+
+export interface FlowchartStepRoles {
+  /** Actor that starts the step (initiatedBy). */
+  initiator?: string;
+  /** System that runs the command (handledBy). */
+  handler?: string;
+  /** System the handler hands work to (delegatesTo). */
+  delegate?: string;
+  /** Actor or system that receives the result (sendsTo). */
+  recipient?: string;
+  /** The command's title. */
+  command: string;
 }
 
 export interface FlowchartStepLinear {

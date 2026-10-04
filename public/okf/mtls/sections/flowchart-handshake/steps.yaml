@@ -1,9 +1,23 @@
 - type: linear
+  id: configure_trust
+  initiatedBy: server_admin
+  command: "Configure Trusted Client CAs"
+  policy: "Before Accepting mTLS Clients"
+  handledBy: server
+  delegatesTo: key_store
+  resultEvents:
+    - id: trust_configured
+      title: "Client CA Trust Configured"
+      desc: "Server knows which certificate authorities it accepts client certificates from"
+  continuesAs: init_connection
+
+- type: linear
   id: init_connection
   initiatedBy: client_dev
   command: "Initiate TLS Connection"
   policy: "Start mTLS Handshake"
   handledBy: client
+  sendsTo: server
   resultEvents:
     - id: connection_initiated
       title: "Connection Initiated"
@@ -15,6 +29,7 @@
   policy: "On ClientHello Received"
   command: "Send ServerHello"
   handledBy: server
+  sendsTo: client
   resultEvents:
     - id: server_hello_sent
       title: "ServerHello Sent"
@@ -26,6 +41,7 @@
   policy: "Present Server Identity"
   command: "Send Server Certificate"
   handledBy: server
+  sendsTo: client
   resultEvents:
     - id: server_cert_sent
       title: "Server Certificate Sent"
@@ -37,7 +53,7 @@
   policy: "Require Mutual Auth"
   command: "Request Client Certificate"
   handledBy: server
-  delegatesTo: server_admin
+  sendsTo: client
   resultEvents:
     - id: client_cert_requested
       title: "Client Certificate Requested"
@@ -50,6 +66,7 @@
   command: "Send Client Certificate"
   handledBy: client
   delegatesTo: key_store
+  sendsTo: server
   resultEvents:
     - id: client_cert_sent
       title: "Client Certificate Sent"
@@ -77,6 +94,7 @@
       policy: "Client Certificate Invalid"
       command: "Terminate Connection"
       handledBy: server
+      sendsTo: client
       resultEvents:
         - id: connection_terminated
           title: "Connection Terminated"
@@ -87,6 +105,7 @@
   policy: "Validate Server Identity"
   command: "Verify Server Certificate Against Trusted CA"
   handledBy: client
+  delegatesTo: key_store
   resultEvents:
     - id: server_cert_verified
       title: "Server Certificate Verified"
