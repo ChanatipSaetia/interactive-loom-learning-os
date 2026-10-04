@@ -51,7 +51,8 @@ Always write a **topic folder**, one file per program, using the "Folder of .oui
 - Arguments are positional; pass \`null\` to skip an optional argument before a later one.
 - IDs are unique within their section and every ID reference (\`next\`, \`root\`, \`solution\`, \`continuesAs\`, …) points at an existing ID.
 - Flowchart steps follow EVENT → POLICY → COMMAND → system → EVENT, and every actor and system is used by a step.
-- Every flowchart step whose events go to another actor or system sets \`sendsTo\` (last Step / BranchOption argument); the Sequence and System Architecture views draw only declared messages.
+- Every flowchart step whose events go to another actor or system sets \`sendsTo\` (the Step / BranchOption argument after \`description\`); the Sequence and System Architecture views draw only declared messages.
+- System \`kind\` says what it is (aggregate, service, database or external); events that move a StateMachine into a new state set \`enters\`; \`data\` names what an event carries when it matters; \`async\` marks fire-and-forget steps.
 - Each quiz question has exactly one correct choice and only tests what an earlier section teaches.
 - Section types are mixed; tables and charts are standard OpenUI sections with literal data.
 

@@ -286,13 +286,18 @@ llm_api:
   label: "Happy Path"
   description: "Agent completes the task in one pass"
   steps:
-    - nodeId: evt_started
+    - stepId: step_1            # a linear step or branch option id, never an event id
+      name: "Start"
       description: "Developer triggers the agent run"
-      processGroup: planning
-    - nodeId: evt_approved
+      processGroup: planning    # optional free-text phase label
+    - stepId: branch_a
+      name: "Approve"
       description: "QA approves the result"
       processGroup: evaluation
 ```
+
+> [!NOTE]
+> Steps also take `delegatesTo`, `sendsTo` and `async`; events take `enters` and `data`; systems take `kind: aggregate | service | database | external`. See the [Event Storming Conventions](event-storming-conventions.md) and the [flowchart reference](sections/flowchart.md).
 
 > [!TIP]
 > **Splitting Large Systems into Multiple Connected Flowchart Sections**

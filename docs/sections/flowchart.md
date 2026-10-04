@@ -137,7 +137,7 @@ A YAML **list** of step objects. Two step types exist: `linear` and `branch`.
 | `command` | `string` | Yes | Command name being issued |
 | `handledBy` | `string` | Yes | System ID that handles the command |
 | `delegatesTo` | `string` | No | Optional downstream system ID |
-| `sendsTo` | `string` | No | Actor or system ID that receives the result events. The Sequence and System Architecture views draw only declared messages; without it the events stay on the handler's lifeline. Once any step in a flowchart declares `sendsTo`, System Architecture draws lines only from `initiatedBy`, `delegatesTo` and `sendsTo`; a flowchart with no `sendsTo` still gets a line wherever one system's event triggers another system's command. In `.oui` it is the last `Step` / `BranchOption` argument. |
+| `sendsTo` | `string` | No | Actor or system ID that receives the result events. The Sequence and System Architecture views draw only declared messages; without it the events stay on the handler's lifeline. Once any step in a flowchart declares `sendsTo`, System Architecture draws lines only from `initiatedBy`, `delegatesTo` and `sendsTo`; a flowchart with no `sendsTo` still gets a line wherever one system's event triggers another system's command. In `.oui` it is the `Step` / `BranchOption` argument after `description`. |
 | `async` | `boolean` | No | `true` when the command is sent without waiting for a reply; the Sequence view draws it with an open arrowhead. In `.oui` it is the argument after `sendsTo`. |
 | `resultEvents` | `ResultEvent[]` | Yes | Events emitted after handling |
 | `continuesAs` | `string` | No | Next step ID (omit for terminal steps) |
