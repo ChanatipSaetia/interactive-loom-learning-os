@@ -74,7 +74,7 @@ j = Journey("j", "J", "J", [JourneyStep(place, "Place", "Place")])
   });
 
   it('highlights the initial state, then the last state the journey entered', () => {
-    const data = raw({ placed: 'PLACED', paid: 'PAID' }) as any;
+    const data = raw({ placed: 'PLACED', paid: 'PAID' });
     data.flow.journeys[0].steps = ['place', 'note', 'pay'].map(stepId => ({ stepId, name: stepId, description: stepId }));
     const schema = deriveSchema(parseFlowchart(data).flow);
     const steps = schema.journeys[0].steps;
