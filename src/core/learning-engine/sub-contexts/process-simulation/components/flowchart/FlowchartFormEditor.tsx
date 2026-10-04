@@ -34,6 +34,7 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
   const systems = flow.systems || {}
   const steps = (flow.steps || []) as any[]
   const journeys = (flow.journeys || []) as FlowJourney[]
+  const machineStates = Object.values(systems).flatMap((sys) => sys.stateMachine?.states ?? [])
 
   const updateFlow = useCallback(
     (updater: (prevFlow: AbstractFlow) => AbstractFlow) => {
@@ -1209,6 +1210,28 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                       data-testid={`flowchart-step-${idx}-evt-${eIdx}-desc`}
                                     />
                                   </div>
+                                  {machineStates.length > 0 && (
+                                    <label className="visual-form-label">
+                                      <OUIFieldKey of={OUI.Event} field="enters">Enters State</OUIFieldKey>
+                                      <select
+                                        className="visual-form-select"
+                                        value={evt.enters || ''}
+                                        onChange={(e) => {
+                                          const newEvts = [...linearStep.resultEvents]
+                                          newEvts[eIdx] = { ...evt, enters: e.target.value || undefined }
+                                          handleStepChange(idx, { ...linearStep, resultEvents: newEvts })
+                                        }}
+                                        data-testid={`flowchart-step-${idx}-evt-${eIdx}-enters`}
+                                      >
+                                        <option value="">(none - state unchanged)</option>
+                                        {machineStates.map((st) => (
+                                          <option key={st.id} value={st.id}>
+                                            {st.id} ({st.label})
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </label>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -1542,6 +1565,28 @@ export function FlowchartFormEditor({ data, onChange }: FlowchartFormEditorProps
                                                 data-testid={`flowchart-step-${idx}-branch-${bIdx}-evt-${eIdx}-desc`}
                                               />
                                             </div>
+                                            {machineStates.length > 0 && (
+                                              <label className="visual-form-label">
+                                                <OUIFieldKey of={OUI.Event} field="enters">Enters State</OUIFieldKey>
+                                                <select
+                                                  className="visual-form-select"
+                                                  value={evt.enters || ''}
+                                                  onChange={(e) => {
+                                                    const newEvts = [...bOpt.resultEvents]
+                                                    newEvts[eIdx] = { ...evt, enters: e.target.value || undefined }
+                                                    handleBranchOptionChange(idx, bIdx, { ...bOpt, resultEvents: newEvts })
+                                                  }}
+                                                  data-testid={`flowchart-step-${idx}-branch-${bIdx}-evt-${eIdx}-enters`}
+                                                >
+                                                  <option value="">(none - state unchanged)</option>
+                                                  {machineStates.map((st) => (
+                                                    <option key={st.id} value={st.id}>
+                                                      {st.id} ({st.label})
+                                                    </option>
+                                                  ))}
+                                                </select>
+                                              </label>
+                                            )}
                                           </div>
                                         ))}
                                       </div>

@@ -1099,6 +1099,10 @@
         "desc": {
           "type": "string",
           "description": "Optional detail about the event."
+        },
+        "enters": {
+          "type": "string",
+          "description": "Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these."
         }
       },
       "required": [

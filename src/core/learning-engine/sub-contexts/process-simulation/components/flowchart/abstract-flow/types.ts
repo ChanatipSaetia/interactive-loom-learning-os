@@ -11,6 +11,8 @@ export interface ResultEvent {
   id: string;
   title: string;
   desc?: string;
+  /** State the flow's state machine enters when this event happens (a MachineState ID). */
+  enters?: string;
 }
 
 /** Base for any flow step. */

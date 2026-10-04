@@ -396,6 +396,7 @@ function processLinearStep(
         title: evt.title,
         desc: evt.desc || evt.title,
         type: TYPES.EVENT,
+        ...(evt.enters ? { entersState: evt.enters } : {}),
       };
     }
     idMap.set(evt.id, eventId);
@@ -588,6 +589,7 @@ function processBranchStep(
           title: evt.title,
           desc: evt.desc || evt.title,
           type: TYPES.EVENT,
+          ...(evt.enters ? { entersState: evt.enters } : {}),
         };
       }
       idMap.set(evt.id, eventId);

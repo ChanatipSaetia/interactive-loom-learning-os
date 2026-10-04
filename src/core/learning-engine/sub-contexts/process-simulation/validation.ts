@@ -320,8 +320,26 @@ export function validateProcessSimulationTier3(
         // Invariant 2: step references point at declared participants.
         // handledBy is optional (a step no system runs), but must name a system when given;
         // delegatesTo needs a handler to delegate from; sendsTo names an actor or a system.
+        const machineStates = new Set<string>(
+          Object.values(rawSystems).flatMap((sys: any) =>
+            Array.isArray(sys?.stateMachine?.states) ? sys.stateMachine.states.map((st: any) => String(st?.id)) : []),
+        )
         const checkStepRefs = (s: any, kind: 'Step' | 'Branch option') => {
           const where = `${kind} "${s.id}" command "${s.command}"`
+          for (const evt of Array.isArray(s.resultEvents) ? s.resultEvents : []) {
+            if (!evt?.enters || machineStates.has(evt.enters)) continue
+            diagnostics.push({
+              tier: 3,
+              field: `steps.${s.id}.resultEvents.${evt.id}.enters`,
+              message: machineStates.size === 0
+                ? `Event "${evt.id}" enters state "${evt.enters}", but no system declares a stateMachine.`
+                : `Event "${evt.id}" enters state "${evt.enters}", which is not a state of the flowchart's state machine.`,
+              fixHint: machineStates.size === 0
+                ? `Add a StateMachine to a system, or remove enters from "${evt.id}".`
+                : `Use one of: [${[...machineStates].map((id) => `"${id}"`).join(', ')}]`,
+              ...ctx,
+            })
+          }
           if (s.handledBy) {
             const h = getRefId(s.handledBy)
             if (!rawSystems[h]) {

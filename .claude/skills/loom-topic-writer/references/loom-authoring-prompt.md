@@ -191,10 +191,11 @@ BranchOption(id: string, label: string, policy: string, command: string, handled
   - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
   - description: Optional narration of this step, shown when it is highlighted.
   - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
-Event(id: string, title: string, desc?: string) — A domain event produced by a step (past tense, e.g. "Order Placed").
+Event(id: string, title: string, desc?: string, enters?: string) — A domain event produced by a step (past tense, e.g. "Order Placed").
   - id: Event ID, unique within the flowchart.
   - title: Event name in past tense (e.g. "Order Placed").
   - desc: Optional detail about the event.
+  - enters: Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these.
 Journey(id: string, label: string, description: string, steps: JourneyStep[]) — A guided path through the flow, from start to finish.
   - id: Journey ID, unique within the flowchart.
   - label: Journey name shown in the journey picker (e.g. "Happy path").
@@ -527,6 +528,6 @@ tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C a
 - Mix interactive section types. Never build a topic out of Text sections only.
 - Quizzes and reflection challenges only test what an earlier section of the topic teaches. Each QuizQuestion has exactly one choice with `correct` set to true.
 - IDs (`id` props) are unique within their section. Props that point at an ID (`next`, `root`, `startNode`, `recommended`, `solution`, `continuesAs`, `initialState`, `dependsOn`) must name an ID that exists in the same section.
-- Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages.
+- Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages. When a System has a StateMachine, set `enters` on each Event that moves it into a new state (a MachineState ID); the State Machine view draws its transitions only from those.
 - To skip an optional argument and still set a later one, pass `null` in its place, e.g. `Step("s1", "When …", "DoThing", sys, [evt], null, null, "s2")`.
 - Text paragraphs may use inline markdown (**bold**, `code`, [links](url)). Write factual, specific content; no placeholders such as "Lorem ipsum" or "TODO".

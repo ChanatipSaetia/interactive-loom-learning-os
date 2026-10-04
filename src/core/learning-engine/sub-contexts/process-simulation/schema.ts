@@ -123,6 +123,7 @@ export const FlowchartResultEventSchema = z.object({
   id: z.string().min(1, { message: 'Result event must have a non-empty id.' }),
   title: z.string().min(1, { message: 'Result event must have a non-empty title.' }),
   desc: z.string().optional(),
+  enters: z.string().optional(),
 })
 
 export const FlowchartRawLinearStepSchema = z.object({

@@ -206,6 +206,8 @@ export interface FlowchartEntity {
   color?: string;
   strokeColor?: string;
   stateMachine?: FlowchartStateMachine;
+  /** On an event: the state-machine state it enters (MachineState ID). */
+  entersState?: string;
   /** Store branching condition label when multiple policies are merged */
   branchLabel?: string;
   /** Marks this entity as the root/starting point for the Event Storming layout. Set exactly one entity per schema. */
