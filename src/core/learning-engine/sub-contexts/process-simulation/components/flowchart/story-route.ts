@@ -36,11 +36,13 @@ interface StepMessages {
 }
 
 /**
- * Reads each journey step as the messages it declares, nothing inferred:
+ * Reads each journey step as the messages it declares:
  *   initiatedBy → handledBy   (the command; main message)
  *   handledBy → sendsTo       (the result sent on; main message when there is no initiator)
  *   initiatedBy → sendsTo     (a step no system runs)
  *   handledBy → delegatesTo   (secondary)
+ * A step that declares none of these is read as the hand-off from the system
+ * whose event starts it (triggeredBy → handledBy).
  * A message is drawn only along an edge of the view that runs that way. A step
  * that sends nothing (e.g. a local check) lights its box and carries its label
  * as a badge there.
@@ -76,13 +78,15 @@ export function computeStoryRoute(
     const handler = toView(roles?.handler);
     const delegate = toView(roles?.delegate);
     const recipient = toView(roles?.recipient);
+    const trigger = toView(roles?.triggeredBy);
     const edges = [
       edgeBetween(initiator, handler),
+      edgeBetween(trigger, handler),
       edgeBetween(handler, recipient),
       handler ? undefined : edgeBetween(initiator, recipient),
       edgeBetween(handler, delegate),
     ].filter((e): e is { id: string; reversed: boolean } => !!e);
-    const nodeIds = [initiator, handler, delegate, recipient].filter((id): id is string => !!id);
+    const nodeIds = [trigger, initiator, handler, delegate, recipient].filter((id): id is string => !!id);
     return {
       edgeIds: [...new Set(edges.map(e => e.id))],
       reversedEdgeIds: edges.filter(e => e.reversed).map(e => e.id),
