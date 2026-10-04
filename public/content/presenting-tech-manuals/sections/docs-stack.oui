@@ -1,19 +1,19 @@
 root = PillarLayer(
   "The Docs-as-Code Layer Stack",
-  [lSource, lGenerators, lDelivery, lLive],
+  [lLive, lDelivery, lGenerators, lSource],
   [
-    bMarkdown,
-    bOpenapi,
-    bTourfiles,
+    bDeck,
+    bInapp,
+    bDocsite,
+    bPlayground,
     bSsg,
     bApirender,
     bDeckbuild,
-    bDocsite,
-    bPlayground,
-    bDeck,
-    bInapp,
+    bMarkdown,
+    bOpenapi,
+    bTourfiles,
   ],
-  "The manual as a Lego stack: plain-text sources at the bottom, generators that compile them, a delivery web app on top, and the live layer where a human presents it.",
+  "Write it once, show it everywhere: plain-text sources in Git (bottom) are compiled by generators into the docs web app and decks, which you then present live (top). Tap a source to see everything that changes when you edit it, so the talk never drifts from the docs.",
 )
 
 lSource = Layer(
@@ -69,7 +69,7 @@ bTourfiles = MatrixBlock(
   3,
   1,
   1,
-  "Narracted repository walkthroughs anchored to real files.",
+  "Narrated repository walkthroughs anchored to real files, replayed live in workshops.",
   "yellow",
 )
 
@@ -82,6 +82,7 @@ bSsg = MatrixBlock(
   1,
   "Docusaurus, MkDocs Material, VitePress, and mdBook compile sources into doc sites.",
   "green",
+  ["b-markdown"],
 )
 
 bApirender = MatrixBlock(
@@ -93,6 +94,7 @@ bApirender = MatrixBlock(
   1,
   "Swagger UI and Redoc turn the OpenAPI spec into explorable references.",
   "sky",
+  ["b-openapi"],
 )
 
 bDeckbuild = MatrixBlock(
@@ -104,6 +106,7 @@ bDeckbuild = MatrixBlock(
   1,
   "Marp, Slidev, and reveal.js compile slide markdown into presentable decks.",
   "mauve",
+  ["b-markdown"],
 )
 
 bDocsite = MatrixBlock(
@@ -115,6 +118,7 @@ bDocsite = MatrixBlock(
   1,
   "Hosted site with full-text search, versioning, and permanent permalinks.",
   "peach",
+  ["b-ssg", "b-apirender"],
 )
 
 bPlayground = MatrixBlock(
@@ -126,6 +130,7 @@ bPlayground = MatrixBlock(
   1,
   "Try-it-now API consoles and Storybook examples embedded in the docs.",
   "teal",
+  ["b-apirender"],
 )
 
 bDeck = MatrixBlock(
@@ -137,6 +142,7 @@ bDeck = MatrixBlock(
   1,
   "The live webinar or workshop deck — always ending on the permalink slide.",
   "mauve",
+  ["b-deckbuild", "b-tourfiles", "b-docsite"],
 )
 
 bInapp = MatrixBlock(
@@ -148,4 +154,5 @@ bInapp = MatrixBlock(
   1,
   "Intro.js/Shepherd tours and OBS clips teaching inside the running product.",
   "red",
+  ["b-docsite"],
 )

@@ -1,7 +1,7 @@
 # Section Type: `pillar-layer` (Layer Stacked Lego Architecture)
 
 **Subdomain**: `progressive-content`  
-**Mental Model Focus**: Pure Vertical Layer Stack & Lego Block Architecture. Maps system components as Lego building blocks that stack bottom-to-top across architectural layers (Y-axis), with multi-width spanning, L-shaped polygon geometries, relative offset matrices (`offsets`), and detailed inspection drawers.
+**Mental Model Focus**: Pure Vertical Layer Stack & Lego Block Architecture. Maps system components as Lego building blocks that stack bottom-to-top across architectural layers (Y-axis), with multi-width spanning, L-shaped polygon geometries, relative offset matrices (`offsets`), plus a tap-to-trace view of `depends_on` links.
 
 ---
 
@@ -101,4 +101,6 @@ matrix_blocks:
 - **Pure Layer Stacking Engine**: System components are organized strictly into horizontal architectural layer rows.
 - **Relative Offset Matrices (`offsets`)**: Authors define arbitrary Lego shapes via relative grid offsets `[dr, dc]` relative to the anchor layer.
 - **L-Shape & Polygon Clip Paths**: Renders L-shaped blocks using CSS `clip-path` polygons while allowing smaller Lego pieces to slot into cutouts without collision errors.
-- **Detail Drawer & Keyboard Accessibility**: Click or press `Enter`/`Space` to open detail drawer modal; press `Escape` or click close button to dismiss.
+- **Responsive Layout**: Layers render top to bottom in the order listed (put the foundation layer last). Below 640px each layer is a band with its blocks in one column; from 640px blocks wrap two per row (`col_span > 1` takes the full row); from 1024px layer names sit in a left column and blocks keep their `col_offset`, `col_span`, `row_span` and L-shape. Columns, row spans and shapes only apply in the wide layout.
+- **Uses & Tap-to-Trace (`depends_on`)**: Each block lists the blocks it uses. When any block has `depends_on`, tapping a block (or `Enter`/`Space`) highlights everything it needs (transitively, below) and everything it affects if it changes (transitively, above), dims the rest, and lists both inside the block; tap a listed name to move the trace, tap the block again to clear it. Without any `depends_on`, blocks are static.
+- **Block Colours**: `color` (a Catppuccin name such as `blue`, `mauve`, `peach`) sets the block's accent bar.

@@ -108,11 +108,11 @@ GalleryImage(id: string, url: string, caption: string, credit?: string) — An i
   - url: Image URL or path.
   - caption: Caption shown under the image.
   - credit: Optional attribution.
-PillarLayer(title: string, layers: Layer[], blocks: MatrixBlock[], description?: string, displayTitle?: string, heading?: string, lead?: Lead) — Layer-stack map: layers as rows, blocks placed on a gap-free grid. `displayTitle` overrides the title shown inside the map.
+PillarLayer(title: string, layers: Layer[], blocks: MatrixBlock[], description?: string, displayTitle?: string, heading?: string, lead?: Lead) — Layer-stack map: layers as rows (foundation last), blocks placed on a gap-free grid. Give blocks `dependsOn` so readers can tap a block to trace what it needs and what it affects. `displayTitle` overrides the title shown inside the map.
   - title: Section title, shown in the topic outline and as the section header.
   - layers: The rows, top to bottom, as Layer references.
   - blocks: Blocks placed on the grid, as MatrixBlock references. Together they must fill the grid without gaps.
-  - description: Optional summary shown above the map.
+  - description: Optional summary shown above the map; say what the reader should take away from the stack.
   - displayTitle: Optional title shown inside the map instead of `title`.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.

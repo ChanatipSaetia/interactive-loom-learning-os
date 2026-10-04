@@ -55,128 +55,125 @@ const mockSectionData: PillarLayerSectionData = {
 
 describe('PillarLayer Section (Layer Stacked Architecture)', () => {
   it('parses valid section data with Zod schema', () => {
-    const result = PillarLayerSectionSchema.safeParse(mockSectionData)
-    expect(result.success).toBe(true)
+    expect(PillarLayerSectionSchema.safeParse(mockSectionData).success).toBe(true)
   })
 
-  it('renders grid container with correct gridTemplateColumns style', () => {
+  it('renders each layer header followed by its blocks', () => {
     render(<PillarLayerSection section={mockSectionData} />)
-    const gridContainer = screen.getByTestId('pillar-layer-grid')
-    expect(gridContainer).toBeInTheDocument()
-    expect(gridContainer.style.gridTemplateColumns).toBe(
-      'minmax(160px, 200px) repeat(2, minmax(180px, 1fr))'
-    )
+    const grid = screen.getByTestId('pillar-layer-grid')
+    const order = [...grid.children].map((el) => el.getAttribute('data-testid'))
+    expect(order).toEqual([
+      'layer-row-l-channels',
+      'pillar-layer-block-0',
+      'layer-row-l-services',
+      'pillar-layer-block-1',
+      'pillar-layer-block-2',
+      'layer-row-l-infra',
+      'pillar-layer-block-3',
+    ])
+    expect(grid.style.getPropertyValue('--pillar-cols')).toBe('2')
   })
 
-  it('renders multi-column spanning block across columns', () => {
+  it('places blocks by layer row and column for the wide layout', () => {
     render(<PillarLayerSection section={mockSectionData} />)
     const block0 = screen.getByTestId('pillar-layer-block-0')
-    expect(block0.style.gridColumnStart).toBe('2')
-    expect(block0.style.gridColumnEnd).toBe('span 2')
-    expect(block0.style.gridRowStart).toBe('2')
-    expect(block0.style.gridRowEnd).toBe('span 1')
+    expect(block0.style.getPropertyValue('--row')).toBe('1')
+    expect(block0.style.getPropertyValue('--col')).toBe('2')
+    expect(block0.style.getPropertyValue('--col-span')).toBe('2')
+    expect(block0.classList.contains('is-wide')).toBe(true)
   })
 
-  it('renders matrix block with 2D grid placement, row_span, and col_span', () => {
+  it('derives row and column spans from relative offsets', () => {
     render(<PillarLayerSection section={mockSectionData} />)
-
-    const block1 = screen.getByTestId('pillar-layer-block-1')
-    expect(block1.style.gridColumnStart).toBe('2')
-    expect(block1.style.gridColumnEnd).toBe('span 1')
-    expect(block1.style.gridRowStart).toBe('3')
-    expect(block1.style.gridRowEnd).toBe('span 1')
-
     const block2 = screen.getByTestId('pillar-layer-block-2')
-    expect(block2.style.gridColumnStart).toBe('3')
-    expect(block2.style.gridRowStart).toBe('3')
-    expect(block2.style.gridRowEnd).toBe('span 2')
+    expect(block2.style.getPropertyValue('--row')).toBe('2')
+    expect(block2.style.getPropertyValue('--row-span')).toBe('2')
+    expect(block2.style.getPropertyValue('--col')).toBe('3')
   })
 
-  it('highlights associated layer header on block mouse enter', () => {
+  it('applies the block colour class', () => {
     render(<PillarLayerSection section={mockSectionData} />)
-    const block1 = screen.getByTestId('pillar-layer-block-1')
-    const layerHeader = screen.getByTestId('layer-row-l-services')
-
-    fireEvent.mouseEnter(block1)
-    expect(layerHeader).toHaveClass('is-highlighted')
-
-    fireEvent.mouseLeave(block1)
-    expect(layerHeader).not.toHaveClass('is-highlighted')
+    expect(screen.getByTestId('pillar-layer-block-0').classList.contains('color-teal')).toBe(true)
   })
 
   it('opens help guide modal on trigger click', () => {
     render(<PillarLayerSection section={mockSectionData} />)
     expect(screen.queryByTestId('pillar-layer-help-modal')).not.toBeInTheDocument()
-
     fireEvent.click(screen.getByTestId('section-help-btn-0'))
     expect(screen.getByTestId('pillar-layer-help-modal')).toBeInTheDocument()
   })
 
-  it('renders L-shaped block with shape property and clipPath polygon', () => {
-    const lShapeSectionData: PillarLayerSectionData = {
+  it('clips an L-shaped block with a polygon', () => {
+    const data: PillarLayerSectionData = {
       ...mockSectionData,
       matrix_blocks: [
-        mockSectionData.matrix_blocks[0],
-        {
-          id: 'b-l-block',
-          title: 'L-Shaped Microservice Controller',
-          description: 'Spans bottom row and left column stem.',
-          layer_id: 'l-services',
-          col_span: 2,
-          row_span: 2,
-          shape: 'l-bottom-left',
-          color: 'mauve',
-        },
-        {
-          id: 'b-corner-piece',
-          title: 'Corner Filler Service',
-          description: 'Slots into the L-block cutout at top-right.',
-          layer_id: 'l-services',
-          offsets: [[0, 1]],
-          color: 'green',
-        },
+        { id: 'b-l', title: 'L-Shaped IAM Controller', layer_id: 'l-services', col_span: 2, row_span: 2, shape: 'l-bottom-left' },
       ],
     }
-
-    const parseResult = PillarLayerSectionSchema.safeParse(lShapeSectionData)
-    expect(parseResult.success).toBe(true)
-
-    render(<PillarLayerSection section={lShapeSectionData} />)
-    const lBlock = screen.getByTestId('pillar-layer-block-1')
-    expect(lBlock).toHaveClass('shape-l-bottom-left')
-    expect(lBlock.style.clipPath).toBe('polygon(0 0, 50% 0, 50% 50%, 100% 50%, 100% 100%, 0 100%)')
+    render(<PillarLayerSection section={data} />)
+    const block = screen.getByTestId('pillar-layer-block-0')
+    expect(block.classList.contains('is-shaped')).toBe(true)
+    expect(block.style.getPropertyValue('--clip')).toContain('polygon(')
   })
 
-  it('parses and renders block with Option C relative offsets [dr, dc]', () => {
-    const offsetSectionData: PillarLayerSectionData = {
+  it('without dependencies, blocks are not tappable and there is no hint', () => {
+    render(<PillarLayerSection section={mockSectionData} />)
+    expect(screen.queryByTestId('pillar-layer-hint')).not.toBeInTheDocument()
+    expect(screen.getByTestId('pillar-layer-block-0')).not.toHaveAttribute('role')
+  })
+
+  describe('tracing dependencies', () => {
+    const linked: PillarLayerSectionData = {
       ...mockSectionData,
       matrix_blocks: [
-        mockSectionData.matrix_blocks[0],
-        {
-          id: 'b-offset-l-block',
-          title: 'Offset-based L-Block',
-          layer_id: 'l-services',
-          offsets: [
-            [0, 0],
-            [1, 0],
-            [1, 1],
-          ],
-          color: 'peach',
-        },
-        {
-          id: 'b-corner-piece',
-          title: 'Corner Filler Service',
-          layer_id: 'l-services',
-          offsets: [[0, 1]],
-        },
+        { id: 'b-app', title: 'App', layer_id: 'l-channels', depends_on: ['b-api'] },
+        { id: 'b-api', title: 'API', layer_id: 'l-services', depends_on: ['b-db'] },
+        { id: 'b-other', title: 'Other', layer_id: 'l-services' },
+        { id: 'b-db', title: 'Database', layer_id: 'l-infra' },
       ],
     }
 
-    const parseResult = PillarLayerSectionSchema.safeParse(offsetSectionData)
-    expect(parseResult.success).toBe(true)
+    it('shows what each block uses', () => {
+      render(<PillarLayerSection section={linked} />)
+      expect(screen.getByTestId('pillar-layer-hint')).toHaveTextContent('Tap a block')
+      expect(screen.getByTestId('pillar-block-uses-0')).toHaveTextContent('Uses: API')
+      expect(screen.queryByTestId('pillar-block-uses-3')).not.toBeInTheDocument()
+    })
 
-    render(<PillarLayerSection section={offsetSectionData} />)
-    const offsetBlock = screen.getByTestId('pillar-layer-block-1')
-    expect(offsetBlock.style.clipPath).toBe('polygon(0 0, 50% 0, 50% 50%, 100% 50%, 100% 100%, 0 100%)')
+    it('tapping a block marks everything it needs and everything it affects, and dims the rest', () => {
+      render(<PillarLayerSection section={linked} />)
+      fireEvent.click(screen.getByTestId('pillar-layer-block-1'))
+      expect(screen.getByTestId('pillar-layer-block-1').classList.contains('is-selected')).toBe(true)
+      expect(screen.getByTestId('pillar-layer-block-3').classList.contains('is-needed')).toBe(true)
+      expect(screen.getByTestId('pillar-layer-block-0').classList.contains('is-affected')).toBe(true)
+      expect(screen.getByTestId('pillar-layer-block-2').classList.contains('is-dimmed')).toBe(true)
+      expect(screen.getByTestId('layer-row-l-services').classList.contains('is-highlighted')).toBe(true)
+      const trace = screen.getByTestId('pillar-trace')
+      expect(trace).toHaveTextContent('NeedsDatabase')
+      expect(trace).toHaveTextContent('If it changes, it affectsApp')
+    })
+
+    it('follows chains: a foundation block affects everything built on it', () => {
+      render(<PillarLayerSection section={linked} />)
+      fireEvent.click(screen.getByTestId('pillar-layer-block-3'))
+      expect(screen.getByTestId('pillar-trace')).toHaveTextContent('If it changes, it affectsAPI, App')
+      expect(screen.getByTestId('pillar-trace')).toHaveTextContent('Needsnothing')
+    })
+
+    it('names in the trace move the selection; tapping the selected block clears it', () => {
+      render(<PillarLayerSection section={linked} />)
+      fireEvent.click(screen.getByTestId('pillar-layer-block-1'))
+      fireEvent.click(screen.getByRole('button', { name: 'Database' }))
+      expect(screen.getByTestId('pillar-layer-block-3').classList.contains('is-selected')).toBe(true)
+      fireEvent.click(screen.getByTestId('pillar-layer-block-3'))
+      expect(screen.queryByTestId('pillar-trace')).not.toBeInTheDocument()
+      expect(screen.getByTestId('pillar-layer-block-2').classList.contains('is-dimmed')).toBe(false)
+    })
+
+    it('blocks answer to the keyboard', () => {
+      render(<PillarLayerSection section={linked} />)
+      fireEvent.keyDown(screen.getByTestId('pillar-layer-block-0'), { key: 'Enter' })
+      expect(screen.getByTestId('pillar-layer-block-0')).toHaveAttribute('aria-pressed', 'true')
+    })
   })
 })
