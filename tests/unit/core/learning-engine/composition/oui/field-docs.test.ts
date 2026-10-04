@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const SCHEMA_FILES = import.meta.glob<string>(['/public/llm/*', '/public/llms.txt'], { query: '?raw', import: 'default', eager: true })
+const SCHEMA_FILES = import.meta.glob<string>(['/public/llm/**/*', '/public/llms.txt', '/.claude/skills/loom-topic-writer/**/*'], { query: '?raw', import: 'default', eager: true })
 const SOURCES = import.meta.glob<string>('/src/**/*.tsx', { query: '?raw', import: 'default', eager: true })
 
 type Def = { properties?: Record<string, { description?: string }> }
@@ -46,9 +46,11 @@ describe('OUI field descriptions', () => {
   })
 
   it('keeps the published LLM files fresh (npm run oui:schema)', () => {
-    expect(Object.keys(SCHEMA_FILES).sort()).toEqual(Object.keys(ouiSchemaFiles()).map((p) => `/${p}`).sort())
+    // Vite keys dot-folder matches without the leading slash.
+    const committed = Object.fromEntries(Object.entries(SCHEMA_FILES).map(([p, text]) => [p.replace(/^\//, ''), text]))
+    expect(Object.keys(committed).sort()).toEqual(Object.keys(ouiSchemaFiles()).sort())
     for (const [relative, text] of Object.entries(ouiSchemaFiles())) {
-      expect(SCHEMA_FILES[`/${relative}`], relative).toBe(text)
+      expect(committed[relative], relative).toBe(text)
     }
   })
 

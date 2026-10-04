@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { CreateApp } from '../../../src/create/CreateApp'
-import { LOOM_PROMPT_PATH, assistantInstructions } from '../../../src/core/learning-engine/composition/oui/llm-guide'
+import { LOOM_PROMPT_PATH, assistantInstructions, skillInstallCommand, skillInstallPrompt } from '../../../src/core/learning-engine/composition/oui/llm-guide'
 
 const PROMPT = '# Loom prompt\nYou write learning topics…\n'
 
@@ -72,6 +72,34 @@ describe('Create with AI page', () => {
     window.history.replaceState(null, '', '/')
     render(<CreateApp />)
     expect(screen.getByTestId('create-assistant-gemini').getAttribute('aria-checked')).toBe('true')
+  })
+
+  it('guides a Microsoft 365 Copilot agent with a .txt prompt and full rewrites', async () => {
+    render(<CreateApp />)
+    fireEvent.click(screen.getByTestId('create-assistant-copilot'))
+    expect(screen.getByRole('heading', { name: /Set up a Copilot agent/ })).toBeInTheDocument()
+    expect(screen.getByTestId('create-assistant-note').textContent).toMatch(/work or school account/)
+    expect(screen.getByTestId('create-download-prompt').textContent).toContain('Download .txt')
+    const instructions = screen.getByTestId('create-instructions').textContent
+    expect(instructions).toContain('The file loom-authoring-prompt.txt in this agent\'s knowledge')
+    expect(instructions).toContain('answer with the complete, updated topic in one new code block')
+    expect(instructions).not.toContain('inline code')
+    expect(window.location.search).toBe('?ai=copilot')
+    fireEvent.click(screen.getByTestId('create-copy-instructions'))
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(assistantInstructions('copilot')))
+  })
+
+  it('shows copyable skill install commands for Claude Code and opencode', async () => {
+    render(<CreateApp />)
+    const claudeCode = screen.getByTestId('create-skill-command-claude-code').textContent
+    expect(claudeCode).toBe(skillInstallCommand('~/.claude/skills/loom-topic-writer'))
+    expect(claudeCode).toContain('https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-topic-writer/SKILL.md')
+    expect(screen.getByTestId('create-skill-command-opencode').textContent).toContain('~/.config/opencode/skills/loom-topic-writer/references')
+    fireEvent.click(screen.getByTestId('create-copy-skill-steps'))
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(skillInstallPrompt()))
+    expect(screen.getByTestId('create-skill-steps').textContent).toContain('# Install the Loom topic writer skill')
+    fireEvent.click(screen.getByTestId('create-copy-skill-opencode'))
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(skillInstallCommand('~/.config/opencode/skills/loom-topic-writer')))
   })
 
   it('preselects the assistant from ?ai=', () => {

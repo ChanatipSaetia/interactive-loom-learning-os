@@ -7,6 +7,8 @@
  *   public/llm/loom-authoring-prompt.md  system prompt for writing a topic (.loom.oui file or folder)
  *   public/llm/loom-oui.schema.json      JSON Schema of every component's props
  *   public/llms.txt                      llms.txt index linking the two
+ *   public/llm/skills/loom-topic-writer/ agent skill (SKILL.md + the prompt as a reference) for
+ *                                        Claude Code / opencode, also kept in .claude/skills/
  *
  *   npx tsx scripts/gen-oui-schema.ts           # write the files
  *   npx tsx scripts/gen-oui-schema.ts --check   # fail if any is stale

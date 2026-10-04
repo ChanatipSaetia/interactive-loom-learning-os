@@ -163,6 +163,7 @@ body {
   .viewer .topnav { gap: 10px; padding: 0 12px; }
   .viewer-source { display: none; }
   .viewer-pill-label { display: none; }
+  .viewer .theme-toggle-label { display: none; }
   .viewer-pill { padding: 6px 10px; }
   .viewer-drop { padding: 24px 16px; }
   .viewer-actions { flex-direction: column; }

@@ -7,6 +7,7 @@
  * the output formats), authoring rules and a worked example.
  * `npm run oui:schema` publishes it as `public/llm/loom-authoring-prompt.md`.
  */
+import { standardOpenUISpec } from '../../sub-contexts/progressive-content/openui-standard'
 import { LOOM_PAGES_URL } from './llm-guide'
 import { getLoomOUIPrompt } from './library'
 
@@ -57,6 +58,64 @@ When no Loom section fits (a comparison table, a chart, KPI cards, free-form tab
 - List it in topic.oui with \`SectionRef\` like any other section. Prefer Loom sections; use standard OpenUI for the few parts that need a free-form layout.
 
 The \`sections/steep-guide.oui\` file in the example above is a standard OpenUI section.`
+
+/** Table and chart components listed with their real signatures, with when to use each. */
+const TABLE_CHART_COMPONENTS: Array<[name: string, use: string]> = [
+  ['Table', 'Compare several items across the same attributes (specs, settings, options side by side), or a reference the learner looks things up in. Column-oriented: a list of Col.'],
+  ['Col', 'One column: its header and its values, in the same row order in every column. Use type "number" for numeric columns.'],
+  ['BarChart', 'Compare one or more values across a few categories.'],
+  ['HorizontalBarChart', 'Like BarChart, for long category labels or a ranked list.'],
+  ['LineChart', 'A value changing over time or along an ordered scale.'],
+  ['AreaChart', 'Totals or volumes accumulating over time.'],
+  ['PieChart', 'Parts of one whole that add up to 100%; at most about six slices.'],
+  ['RadarChart', 'Two or three items scored on the same set of criteria.'],
+  ['ScatterChart', 'The relationship between two numeric variables.'],
+  ['Series', 'One named series of numbers, one value per label.'],
+  ['ScatterSeries', 'One named set of points of a ScatterChart.'],
+  ['Point', 'One x/y point of a ScatterSeries.'],
+]
+
+function tableChartSignatures(): string {
+  return TABLE_CHART_COMPONENTS.map(([name, use]) => {
+    const component = standardOpenUISpec.components[name]
+    if (!component) throw new Error(`Loom authoring prompt: standard OpenUI library has no ${name}`)
+    return `${component.signature} — ${use}`
+  }).join('\n')
+}
+
+/** A standard OpenUI section with a chart and a table (checked by unit tests). */
+export const TABLE_CHART_EXAMPLE = `// @openui "Water Temperature" "How hot to brew each tea"
+root = Card([header, views, tip])
+header = CardHeader("Water temperature by tea", "Starting points for a 2-minute steep")
+views = Tabs([TabItem("chart", "Chart", [chart]), TabItem("table", "Table", [table])])
+chart = BarChart(["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"], [Series("Water (°C)", [60, 75, 80, 90, 95])], "grouped", "Tea", "°C")
+table = Table([Col("Tea", ["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"]), Col("Water (°C)", [60, 75, 80, 90, 95], "number"), Col("Why", ["Shaded leaf, sweet and delicate", "Balanced, grassy", "Whisked powder, scorches easily", "Partly oxidised, needs more heat", "Fully oxidised, robust"])])
+tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C after 5 minutes in an open cup.")
+`
+
+const TABLES_AND_CHARTS = `### Tables and Charts
+
+Use a table or chart in a standard OpenUI section when the figures or the side-by-side comparison are what the learner should take away:
+
+- **Table**: several items compared on the same attributes, or reference values the learner looks up (settings, limits, specs).
+- **Chart**: the shape of real numbers: a comparison, a trend, a share of a whole or a correlation. Pick the chart type from the question it answers (see the list below).
+- Not a table or chart: a trade-off the learner should explore by moving sliders (TradeoffSandbox), a formula (FormulaSandbox), categories or a hierarchy (TaxonomyBrowser), a few points with explanation (Bullets).
+
+How to write them:
+
+- Data is written as literal arrays, e.g. \`Col("Tea", ["Sencha", "Matcha"])\`. There is no \`data.rows\`, Query or \`@\` function call over fetched data.
+- Every Col of a Table, and every Series of a chart, has one value per row or label, in the same order.
+- Use real, specific figures; never invent numbers to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
+- Wrap a chart in a Card with a CardHeader for its title. Use Tabs to show the same data as a chart and a table, and a Callout for the takeaway.
+
+Signatures (? marks an optional argument):
+
+${tableChartSignatures()}
+
+Example section file:
+
+\`\`\`
+${TABLE_CHART_EXAMPLE}\`\`\``
 
 const AUTHORING_RULES = [
   'In the single .oui file, start EVERY file with its own marker line written exactly as `// === topic.oui ===` or `// === sections/<name>.oui ===` (three `=` on each side, no folder prefix). Each file holds exactly one `root =` statement; never put two sections in one file.',
@@ -154,5 +213,5 @@ export function getLoomAuthoringPrompt(): string {
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)
   prompt = dropStreamingNotes(prompt)
-  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
+  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
 }

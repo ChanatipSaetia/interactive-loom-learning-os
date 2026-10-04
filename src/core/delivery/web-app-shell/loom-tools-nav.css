@@ -1,0 +1,81 @@
+/* Links between Create with AI, Loom Viewer and Loom Studio (LoomToolsNav). */
+.loom-tools {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.loom-tools-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  color: var(--foreground);
+  font-size: 13px;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.loom-tools-item:hover { background: var(--accent); }
+.loom-tools-item:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.loom-tools-item.is-current {
+  background: var(--primary);
+  color: var(--primary-foreground, var(--ctp-base));
+  cursor: default;
+}
+
+/* The tooltip hangs below the whole nav, right-aligned, so it stays on screen. */
+.loom-tools-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: max-content;
+  max-width: min(280px, calc(100vw - 32px));
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--ctp-mantle);
+  color: var(--foreground);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 120ms ease, visibility 120ms ease;
+}
+.loom-tools-item:hover .loom-tools-tip,
+.loom-tools-item:focus-visible .loom-tools-tip {
+  opacity: 1;
+  visibility: visible;
+}
+.loom-tools-item.is-current:focus .loom-tools-tip { opacity: 1; visibility: visible; }
+
+@media (max-width: 640px) {
+  .loom-tools-label { display: none; }
+  .loom-tools-item { padding: 6px 9px; }
+  /* Full-width panel under the header instead of hanging off the nav. */
+  .loom-tools-tip {
+    position: fixed;
+    top: 60px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loom-tools-tip { transition: none; }
+}

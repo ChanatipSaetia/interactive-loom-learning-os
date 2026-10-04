@@ -6,6 +6,7 @@
 
 - [Loom authoring prompt](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/loom-authoring-prompt.md): system prompt for writing a topic: layout, output formats, every component and prop, rules and an example.
 - [Loom OpenUI JSON Schema](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/loom-oui.schema.json): JSON Schema of every component's props, with descriptions.
+- [Loom agent skill](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-topic-writer/SKILL.md): `loom-topic-writer` skill for coding agents (Claude Code, opencode); its reference `references/loom-authoring-prompt.md` is the authoring prompt.
 
 ## OpenUI
 
@@ -14,6 +15,6 @@
 
 ## Tools
 
-- [Create with AI](https://chanatipsaetia.github.io/interactive-loom-learning-os/create.html): copy or download the prompt and set up a Claude Project or Gemini Gem, step by step.
+- [Create with AI](https://chanatipsaetia.github.io/interactive-loom-learning-os/create.html): copy or download the prompt and set up a Claude Project, Gemini Gem or Copilot agent, step by step.
 - [Loom Viewer](https://chanatipsaetia.github.io/interactive-loom-learning-os/viewer.html): opens a `.loom.oui` file, a `.zip` or a topic folder, read-only.
 - [Loom Studio](https://chanatipsaetia.github.io/interactive-loom-learning-os/studio.html): edits a topic folder with code, form and live preview.

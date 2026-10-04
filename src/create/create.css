@@ -141,6 +141,23 @@ body {
 }
 .create-example-text { flex: 1; min-width: 0; font-style: italic; }
 .create-examples .create-button { flex: none; min-height: 36px; padding: 6px 12px; font-size: 14px; }
+/* Install commands: label, then the command, then Copy. */
+.create-command .create-button { order: 3; align-self: flex-start; }
+.create-step .create-details + p { margin-top: 12px; }
+.create-examples li.create-command { flex-wrap: wrap; }
+.create-command .create-example-text { font-style: normal; }
+.create-command pre {
+  order: 2;
+  flex: 1 1 100%;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--muted);
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
 
 /* Phones: stacked, full-width buttons that are easy to tap. */
 @media (max-width: 560px) {
