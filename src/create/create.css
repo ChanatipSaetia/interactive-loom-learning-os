@@ -46,10 +46,12 @@ body {
 
 .create-switch {
   display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   padding: 4px;
   margin-bottom: 8px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 24px;
   background: var(--card);
 }
 .create-switch button {

@@ -89,8 +89,15 @@ describe('Create with AI page', () => {
     await waitFor(() => expect(writeText).toHaveBeenCalledWith(assistantInstructions('copilot')))
   })
 
-  it('shows copyable skill install commands for Claude Code and opencode', async () => {
+  it('has a Claude Code / opencode tab with skill install steps instead of the chat setup', async () => {
     render(<CreateApp />)
+    expect(screen.queryByTestId('create-copy-skill-steps')).toBeNull()
+    fireEvent.click(screen.getByTestId('create-assistant-agent'))
+    expect(window.location.search).toBe('?ai=agent')
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Create a Loom topic with Claude Code or opencode')
+    expect(screen.getByRole('heading', { name: /Install the Loom skill/ })).toBeInTheDocument()
+    expect(screen.queryByTestId('create-copy-prompt')).toBeNull()
+    expect(screen.queryByTestId('create-copy-instructions')).toBeNull()
     const claudeCode = screen.getByTestId('create-skill-command-claude-code').textContent
     expect(claudeCode).toBe(skillInstallCommand('~/.claude/skills/loom-topic-writer'))
     expect(claudeCode).toContain('https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-topic-writer/SKILL.md')
