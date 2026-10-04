@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, ListOrdered, CheckCircle2 } from 'lucide-react'
 import { ReflectionSequenceHelpModal } from './ReflectionSequenceHelpModal'
 import type { OKFReflectionSequenceSectionData, OKFReflectionSequenceChallenge } from '../../../../composition/okf/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface ReflectionSequenceFormEditorProps {
   data: OKFReflectionSequenceSectionData
@@ -126,7 +128,7 @@ function ChallengeItemEditor({
       <div className="visual-form-card-body">
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Challenge Prompt</span>
+            <OUIFieldKey of={OUI.SequenceChallenge} field="prompt">Challenge Prompt</OUIFieldKey>
             <input
               className="visual-form-input"
               value={challenge.prompt}
@@ -198,7 +200,7 @@ function ChallengeItemEditor({
           <div className="visual-form-card-body" style={{ gap: '6px', display: 'flex', flexDirection: 'column' }}>
             {solution.map((solId, si) => (
               <div key={si} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className="visual-form-key" style={{ width: '60px' }}>Slot #{si + 1}:</span>
+                <OUIFieldKey of={OUI.SequenceChallenge} field="solution" style={{ width: '60px' }}>Slot #{si + 1}:</OUIFieldKey>
                 <select
                   className="visual-form-select"
                   value={solId}

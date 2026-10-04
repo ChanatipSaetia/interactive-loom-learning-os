@@ -9,6 +9,8 @@ import type {
   OKFScenarioOutcome,
   ScenarioRating,
 } from '../../../../composition/okf/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface ScenarioFormEditorProps {
   data: OKFScenarioSectionData
@@ -57,7 +59,7 @@ function ChoiceRow({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Choice Text</span>
+              <OUIFieldKey of={OUI.ScenarioChoice} field="text">Choice Text</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={choice.text}
@@ -69,7 +71,7 @@ function ChoiceRow({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Next Node →</span>
+              <OUIFieldKey of={OUI.ScenarioChoice} field="next">Next Node →</OUIFieldKey>
               <select
                 className="visual-form-select"
                 value={choice.next}
@@ -207,7 +209,7 @@ export function ScenarioFormEditor({ data, onChange }: ScenarioFormEditorProps) 
             <div className="visual-form-grid-2">
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Title</span>
+                  <OUIFieldKey of={OUI.Scenario} field="displayTitle">Title</OUIFieldKey>
                   <input
                     className="visual-form-input"
                     value={data.title ?? ''}
@@ -219,7 +221,7 @@ export function ScenarioFormEditor({ data, onChange }: ScenarioFormEditorProps) 
               </div>
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Start Node</span>
+                  <OUIFieldKey of={OUI.Scenario} field="startNode">Start Node</OUIFieldKey>
                   <select
                     className="visual-form-select"
                     value={data.startNode ?? ''}
@@ -235,7 +237,7 @@ export function ScenarioFormEditor({ data, onChange }: ScenarioFormEditorProps) 
             </div>
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Intro Text</span>
+                <OUIFieldKey of={OUI.Scenario} field="intro">Intro Text</OUIFieldKey>
                 <textarea
                   className="visual-form-textarea"
                   value={data.intro ?? ''}
@@ -304,7 +306,7 @@ export function ScenarioFormEditor({ data, onChange }: ScenarioFormEditorProps) 
               <div className="node-detail-header">
                 <div className="visual-form-field" style={{ flex: 1 }}>
                   <label className="visual-form-label">
-                    <span className="visual-form-key">Node ID</span>
+                    <OUIFieldKey of={OUI.ScenarioNode} field="id">Node ID</OUIFieldKey>
                     <input
                       className="visual-form-input"
                       value={selectedNodeId}
@@ -370,7 +372,7 @@ export function ScenarioFormEditor({ data, onChange }: ScenarioFormEditorProps) 
                 <div className="node-detail-body" data-testid="sc-decision-fields">
                   <div className="visual-form-field">
                     <label className="visual-form-label">
-                      <span className="visual-form-key">Prompt <span style={{ fontWeight: 400, opacity: 0.6 }}>(the situation learners face)</span></span>
+                      <OUIFieldKey of={OUI.ScenarioNode} field="prompt">Prompt <span style={{ fontWeight: 400, opacity: 0.6 }}>(the situation learners face)</span></OUIFieldKey>
                       <textarea
                         className="visual-form-textarea"
                         value={selectedNode.prompt ?? ''}
@@ -422,7 +424,7 @@ export function ScenarioFormEditor({ data, onChange }: ScenarioFormEditorProps) 
                 <div className="node-detail-body" data-testid="sc-outcome-fields">
                   <div className="visual-form-field">
                     <label className="visual-form-label">
-                      <span className="visual-form-key">Rating</span>
+                      <OUIFieldKey of={OUI.Outcome} field="rating">Rating</OUIFieldKey>
                       <select
                         className="visual-form-select"
                         value={selectedNode.outcome.rating}
@@ -438,7 +440,7 @@ export function ScenarioFormEditor({ data, onChange }: ScenarioFormEditorProps) 
                   </div>
                   <div className="visual-form-field">
                     <label className="visual-form-label">
-                      <span className="visual-form-key">Verdict <span style={{ fontWeight: 400, opacity: 0.6 }}>(what happened)</span></span>
+                      <OUIFieldKey of={OUI.Outcome} field="verdict">Verdict <span style={{ fontWeight: 400, opacity: 0.6 }}>(what happened)</span></OUIFieldKey>
                       <textarea
                         className="visual-form-textarea"
                         value={selectedNode.outcome.verdict}
@@ -451,7 +453,7 @@ export function ScenarioFormEditor({ data, onChange }: ScenarioFormEditorProps) 
                   </div>
                   <div className="visual-form-field">
                     <label className="visual-form-label">
-                      <span className="visual-form-key">Key Lesson <span style={{ fontWeight: 400, opacity: 0.6 }}>(the takeaway)</span></span>
+                      <OUIFieldKey of={OUI.Outcome} field="lesson">Key Lesson <span style={{ fontWeight: 400, opacity: 0.6 }}>(the takeaway)</span></OUIFieldKey>
                       <textarea
                         className="visual-form-textarea"
                         value={selectedNode.outcome.lesson}

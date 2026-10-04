@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, List, Layers, CornerDownRight } from 'lucide-react'
 import { BulletsHelpModal } from './BulletsHelpModal'
 import type { OKFBulletSectionData } from '../../../../composition/okf/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 export interface BulletItem {
   text: string
@@ -122,7 +124,7 @@ function BulletItemEditor({
       <div className="visual-form-card-body">
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Bullet Point Text</span>
+            <OUIFieldKey of={OUI.Bullet} field="text">Bullet Point Text</OUIFieldKey>
             <input
               className="visual-form-input"
               value={item.text}

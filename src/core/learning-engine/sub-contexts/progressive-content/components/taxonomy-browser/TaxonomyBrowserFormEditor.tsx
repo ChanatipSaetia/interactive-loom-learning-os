@@ -4,6 +4,8 @@ import { TaxonomyHelpModal } from './TaxonomyHelpModal'
 import type { OKFTaxonomySectionData } from '../../../../composition/okf/types'
 import type { TaxonomyCategory } from '.'
 import { TAXONOMY_ACCENT_COLORS, type TaxonomyAccentColor } from '../../schema'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface TaxonomyBrowserFormEditorProps {
   data: OKFTaxonomySectionData
@@ -153,7 +155,7 @@ function CategoryItemEditor({
             <div className="visual-form-grid-2">
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Title</span>
+                  <OUIFieldKey of={OUI.TaxonomyCategory} field="title">Title</OUIFieldKey>
                   <input
                     className="visual-form-input"
                     value={category.title}
@@ -165,7 +167,7 @@ function CategoryItemEditor({
               </div>
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Subtitle</span>
+                  <OUIFieldKey of={OUI.TaxonomyCategory} field="subtitle">Subtitle</OUIFieldKey>
                   <input
                     className="visual-form-input"
                     value={category.subtitle}
@@ -180,7 +182,7 @@ function CategoryItemEditor({
             <div className="visual-form-grid-2">
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Icon (Lucide Icon Name)</span>
+                  <OUIFieldKey of={OUI.TaxonomyCategory} field="icon">Icon (Lucide Icon Name)</OUIFieldKey>
                   <input
                     className="visual-form-input"
                     value={category.icon}
@@ -192,7 +194,7 @@ function CategoryItemEditor({
               </div>
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Palette Accent Color</span>
+                  <OUIFieldKey of={OUI.TaxonomyCategory} field="color">Palette Accent Color</OUIFieldKey>
                   <select
                     className="visual-form-select"
                     value={category.color}
@@ -216,7 +218,7 @@ function CategoryItemEditor({
           <>
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Primary Focus</span>
+                <OUIFieldKey of={OUI.TaxonomyCategory} field="primaryFocus">Primary Focus</OUIFieldKey>
                 <input
                   className="visual-form-input"
                   value={category.primaryFocus}
@@ -229,7 +231,7 @@ function CategoryItemEditor({
 
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Description (Overview Summary)</span>
+                <OUIFieldKey of={OUI.TaxonomyCategory} field="description">Description (Overview Summary)</OUIFieldKey>
                 <textarea
                   className="visual-form-textarea"
                   value={category.description}
@@ -243,7 +245,7 @@ function CategoryItemEditor({
 
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Details (Deep Conceptual Specifics)</span>
+                <OUIFieldKey of={OUI.TaxonomyCategory} field="details">Details (Deep Conceptual Specifics)</OUIFieldKey>
                 <textarea
                   className="visual-form-textarea"
                   value={category.details}
@@ -257,7 +259,7 @@ function CategoryItemEditor({
 
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Real-World Analogy</span>
+                <OUIFieldKey of={OUI.TaxonomyCategory} field="analogy">Real-World Analogy</OUIFieldKey>
                 <textarea
                   className="visual-form-textarea"
                   value={category.analogy}
@@ -277,7 +279,7 @@ function CategoryItemEditor({
             {/* In Scope Column */}
             <div className="visual-form-field">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <span className="visual-form-key" style={{ color: 'var(--ctp-green)' }}>✓ In Scope Responsibilities</span>
+                <OUIFieldKey of={OUI.TaxonomyCategory} field="inScope" style={{ color: 'var(--ctp-green)' }}>✓ In Scope Responsibilities</OUIFieldKey>
                 <button
                   className="form-add-btn"
                   onClick={() => handleAddArrayItem('inScope')}
@@ -315,7 +317,7 @@ function CategoryItemEditor({
             {/* Out of Scope Column */}
             <div className="visual-form-field">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <span className="visual-form-key" style={{ color: 'var(--ctp-red)' }}>✕ Out of Scope Non-Goals</span>
+                <OUIFieldKey of={OUI.TaxonomyCategory} field="outOfScope" style={{ color: 'var(--ctp-red)' }}>✕ Out of Scope Non-Goals</OUIFieldKey>
                 <button
                   className="form-add-btn"
                   onClick={() => handleAddArrayItem('outOfScope')}

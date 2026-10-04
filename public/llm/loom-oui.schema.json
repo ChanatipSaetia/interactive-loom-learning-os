@@ -1,0 +1,2455 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "Intro": {
+      "$ref": "#/$defs/Intro"
+    },
+    "IntroWhat": {
+      "$ref": "#/$defs/IntroWhat"
+    },
+    "IntroWhy": {
+      "$ref": "#/$defs/IntroWhy"
+    },
+    "RoadmapStep": {
+      "$ref": "#/$defs/RoadmapStep"
+    },
+    "Text": {
+      "$ref": "#/$defs/Text"
+    },
+    "Bullets": {
+      "$ref": "#/$defs/Bullets"
+    },
+    "Bullet": {
+      "$ref": "#/$defs/Bullet"
+    },
+    "TaxonomyBrowser": {
+      "$ref": "#/$defs/TaxonomyBrowser"
+    },
+    "TaxonomyCategory": {
+      "$ref": "#/$defs/TaxonomyCategory"
+    },
+    "ImageGallery": {
+      "$ref": "#/$defs/ImageGallery"
+    },
+    "GalleryImage": {
+      "$ref": "#/$defs/GalleryImage"
+    },
+    "PillarLayer": {
+      "$ref": "#/$defs/PillarLayer"
+    },
+    "Layer": {
+      "$ref": "#/$defs/Layer"
+    },
+    "LayerItem": {
+      "$ref": "#/$defs/LayerItem"
+    },
+    "MatrixBlock": {
+      "$ref": "#/$defs/MatrixBlock"
+    },
+    "Flowchart": {
+      "$ref": "#/$defs/Flowchart"
+    },
+    "Actor": {
+      "$ref": "#/$defs/Actor"
+    },
+    "System": {
+      "$ref": "#/$defs/System"
+    },
+    "StateMachine": {
+      "$ref": "#/$defs/StateMachine"
+    },
+    "MachineState": {
+      "$ref": "#/$defs/MachineState"
+    },
+    "Step": {
+      "$ref": "#/$defs/Step"
+    },
+    "Branch": {
+      "$ref": "#/$defs/Branch"
+    },
+    "BranchOption": {
+      "$ref": "#/$defs/BranchOption"
+    },
+    "Event": {
+      "$ref": "#/$defs/Event"
+    },
+    "Journey": {
+      "$ref": "#/$defs/Journey"
+    },
+    "JourneyStep": {
+      "$ref": "#/$defs/JourneyStep"
+    },
+    "Scenario": {
+      "$ref": "#/$defs/Scenario"
+    },
+    "ScenarioNode": {
+      "$ref": "#/$defs/ScenarioNode"
+    },
+    "ScenarioChoice": {
+      "$ref": "#/$defs/ScenarioChoice"
+    },
+    "Outcome": {
+      "$ref": "#/$defs/Outcome"
+    },
+    "TradeoffSandbox": {
+      "$ref": "#/$defs/TradeoffSandbox"
+    },
+    "TradeoffScenario": {
+      "$ref": "#/$defs/TradeoffScenario"
+    },
+    "TradeoffStep": {
+      "$ref": "#/$defs/TradeoffStep"
+    },
+    "TradeoffChoice": {
+      "$ref": "#/$defs/TradeoffChoice"
+    },
+    "TradeoffMetric": {
+      "$ref": "#/$defs/TradeoffMetric"
+    },
+    "ProCon": {
+      "$ref": "#/$defs/ProCon"
+    },
+    "FormulaSandbox": {
+      "$ref": "#/$defs/FormulaSandbox"
+    },
+    "FormulaVariable": {
+      "$ref": "#/$defs/FormulaVariable"
+    },
+    "FormulaMetric": {
+      "$ref": "#/$defs/FormulaMetric"
+    },
+    "DecisionTree": {
+      "$ref": "#/$defs/DecisionTree"
+    },
+    "DecisionNode": {
+      "$ref": "#/$defs/DecisionNode"
+    },
+    "DecisionChoice": {
+      "$ref": "#/$defs/DecisionChoice"
+    },
+    "DecisionLeaf": {
+      "$ref": "#/$defs/DecisionLeaf"
+    },
+    "ReflectionSequence": {
+      "$ref": "#/$defs/ReflectionSequence"
+    },
+    "SequenceChallenge": {
+      "$ref": "#/$defs/SequenceChallenge"
+    },
+    "SequenceItem": {
+      "$ref": "#/$defs/SequenceItem"
+    },
+    "ReflectionTemplate": {
+      "$ref": "#/$defs/ReflectionTemplate"
+    },
+    "TemplateChallenge": {
+      "$ref": "#/$defs/TemplateChallenge"
+    },
+    "Chip": {
+      "$ref": "#/$defs/Chip"
+    },
+    "Quiz": {
+      "$ref": "#/$defs/Quiz"
+    },
+    "QuizQuestion": {
+      "$ref": "#/$defs/QuizQuestion"
+    },
+    "QuizChoice": {
+      "$ref": "#/$defs/QuizChoice"
+    },
+    "Flashcards": {
+      "$ref": "#/$defs/Flashcards"
+    },
+    "Flashcard": {
+      "$ref": "#/$defs/Flashcard"
+    },
+    "Dialogue": {
+      "$ref": "#/$defs/Dialogue"
+    },
+    "ConceptMap": {
+      "$ref": "#/$defs/ConceptMap"
+    },
+    "Concept": {
+      "$ref": "#/$defs/Concept"
+    },
+    "ConceptLink": {
+      "$ref": "#/$defs/ConceptLink"
+    },
+    "Lead": {
+      "$ref": "#/$defs/Lead"
+    },
+    "Topic": {
+      "$ref": "#/$defs/Topic"
+    },
+    "SectionRef": {
+      "$ref": "#/$defs/SectionRef"
+    },
+    "Catalog": {
+      "$ref": "#/$defs/Catalog"
+    },
+    "TopicRef": {
+      "$ref": "#/$defs/TopicRef"
+    }
+  },
+  "required": [
+    "Intro",
+    "IntroWhat",
+    "IntroWhy",
+    "RoadmapStep",
+    "Text",
+    "Bullets",
+    "Bullet",
+    "TaxonomyBrowser",
+    "TaxonomyCategory",
+    "ImageGallery",
+    "GalleryImage",
+    "PillarLayer",
+    "Layer",
+    "LayerItem",
+    "MatrixBlock",
+    "Flowchart",
+    "Actor",
+    "System",
+    "StateMachine",
+    "MachineState",
+    "Step",
+    "Branch",
+    "BranchOption",
+    "Event",
+    "Journey",
+    "JourneyStep",
+    "Scenario",
+    "ScenarioNode",
+    "ScenarioChoice",
+    "Outcome",
+    "TradeoffSandbox",
+    "TradeoffScenario",
+    "TradeoffStep",
+    "TradeoffChoice",
+    "TradeoffMetric",
+    "ProCon",
+    "FormulaSandbox",
+    "FormulaVariable",
+    "FormulaMetric",
+    "DecisionTree",
+    "DecisionNode",
+    "DecisionChoice",
+    "DecisionLeaf",
+    "ReflectionSequence",
+    "SequenceChallenge",
+    "SequenceItem",
+    "ReflectionTemplate",
+    "TemplateChallenge",
+    "Chip",
+    "Quiz",
+    "QuizQuestion",
+    "QuizChoice",
+    "Flashcards",
+    "Flashcard",
+    "Dialogue",
+    "ConceptMap",
+    "Concept",
+    "ConceptLink",
+    "Lead",
+    "Topic",
+    "SectionRef",
+    "Catalog",
+    "TopicRef"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Intro": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "what": {
+          "$ref": "#/$defs/IntroWhat",
+          "description": "IntroWhat(...) panel: what the topic is."
+        },
+        "why": {
+          "$ref": "#/$defs/IntroWhy",
+          "description": "IntroWhy(...) panel: why it matters."
+        },
+        "roadmap": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoadmapStep"
+          },
+          "description": "Optional preview of the sections ahead, as RoadmapStep references."
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Optional tagline under the title."
+        },
+        "estimatedTime": {
+          "type": "string",
+          "description": "Optional time to complete, e.g. \"25 min\"."
+        },
+        "moduleCount": {
+          "type": "number",
+          "description": "Optional number of modules shown in the header."
+        },
+        "displayTitle": {
+          "type": "string",
+          "description": "Optional title shown inside the card instead of `title`."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "what",
+        "why"
+      ],
+      "additionalProperties": false,
+      "description": "Topic opener: what it is, why it matters, and a roadmap of the sections ahead. `displayTitle` overrides the title shown inside the card."
+    },
+    "IntroWhat": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "One-paragraph answer to \"what is it?\"."
+        },
+        "definition": {
+          "type": "string",
+          "description": "Optional formal one-line definition."
+        },
+        "bullets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional key points."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional short keyword tags."
+        }
+      },
+      "required": [
+        "summary"
+      ],
+      "additionalProperties": false,
+      "description": "The \"what is it\" panel of a topic intro."
+    },
+    "IntroWhy": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "One-paragraph answer to \"why does it matter?\"."
+        },
+        "impact": {
+          "type": "string",
+          "description": "Optional concrete impact or payoff."
+        }
+      },
+      "required": [
+        "summary"
+      ],
+      "additionalProperties": false,
+      "description": "The \"why it matters\" panel of a topic intro."
+    },
+    "RoadmapStep": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Name of the upcoming section."
+        },
+        "type": {
+          "type": "string",
+          "description": "Section type it previews, e.g. \"quiz\" or \"flowchart\"."
+        },
+        "description": {
+          "type": "string",
+          "description": "What the learner will do there."
+        },
+        "sectionId": {
+          "type": "string",
+          "description": "Optional section file name (without .oui) to link to."
+        }
+      },
+      "required": [
+        "title",
+        "type",
+        "description"
+      ],
+      "additionalProperties": false,
+      "description": "A roadmap entry previewing a later section. `type` is the section type (e.g. \"quiz\"); `sectionId` its file name."
+    },
+    "Lead": {
+      "type": "object",
+      "properties": {
+        "what": {
+          "type": "string",
+          "description": "What this section shows, in one sentence."
+        },
+        "why": {
+          "type": "string",
+          "description": "Why it matters to the learner."
+        },
+        "next": {
+          "type": "string",
+          "description": "What the learner should do or look for next."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Short lead-in shown above a section: what it shows, why it matters, and what comes next."
+    },
+    "Text": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "paragraphs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The paragraphs, one string each, in order."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "paragraphs"
+      ],
+      "additionalProperties": false,
+      "description": "Prose section: one string per paragraph."
+    },
+    "Bullets": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Bullet"
+          },
+          "description": "The bullets, as Bullet references."
+        },
+        "ordered": {
+          "type": "boolean",
+          "description": "Optional: true numbers the list."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "items"
+      ],
+      "additionalProperties": false,
+      "description": "Bulleted (or numbered, when `ordered` is true) checklist."
+    },
+    "Bullet": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Bullet text."
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Bullet"
+          },
+          "description": "Optional nested bullets, as Bullet calls."
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "additionalProperties": false,
+      "description": "A bullet point, optionally with nested child bullets."
+    },
+    "TaxonomyBrowser": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TaxonomyCategory"
+          },
+          "description": "The categories, as TaxonomyCategory references."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "categories"
+      ],
+      "additionalProperties": false,
+      "description": "Browsable taxonomy of categories with scope, analogy and details."
+    },
+    "TaxonomyCategory": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Category name shown on the card."
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Short tagline under the name."
+        },
+        "icon": {
+          "type": "string",
+          "description": "lucide-react icon name, e.g. \"Brain\" (falls back to a circle)."
+        },
+        "color": {
+          "type": "string",
+          "description": "Accent colour: blue, peach, pink, mauve, green, teal, sky, lavender, yellow or red."
+        },
+        "description": {
+          "type": "string",
+          "description": "Summary shown on the card."
+        },
+        "details": {
+          "type": "string",
+          "description": "Longer explanation shown in the category details."
+        },
+        "analogy": {
+          "type": "string",
+          "description": "Everyday analogy for the category."
+        },
+        "primaryFocus": {
+          "type": "string",
+          "description": "The main concern of this category, in one line."
+        },
+        "inScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "What belongs in this category."
+        },
+        "outOfScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "What does not belong here (and often where it goes instead)."
+        }
+      },
+      "required": [
+        "title",
+        "subtitle",
+        "icon",
+        "color",
+        "description",
+        "details",
+        "analogy",
+        "primaryFocus",
+        "inScope",
+        "outOfScope"
+      ],
+      "additionalProperties": false,
+      "description": "A category card in a taxonomy browser. `color` is a theme color name (e.g. \"blue\", \"mauve\")."
+    },
+    "ImageGallery": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GalleryImage"
+          },
+          "description": "The images, as GalleryImage references, in order."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "images"
+      ],
+      "additionalProperties": false,
+      "description": "Gallery of captioned images."
+    },
+    "GalleryImage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Image ID, unique within the gallery."
+        },
+        "url": {
+          "type": "string",
+          "description": "Image URL or path."
+        },
+        "caption": {
+          "type": "string",
+          "description": "Caption shown under the image."
+        },
+        "credit": {
+          "type": "string",
+          "description": "Optional attribution."
+        }
+      },
+      "required": [
+        "id",
+        "url",
+        "caption"
+      ],
+      "additionalProperties": false,
+      "description": "An image in a gallery."
+    },
+    "PillarLayer": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Layer"
+          },
+          "description": "The rows, top to bottom, as Layer references."
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MatrixBlock"
+          },
+          "description": "Blocks placed on the grid, as MatrixBlock references. Together they must fill the grid without gaps."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional summary shown above the map."
+        },
+        "displayTitle": {
+          "type": "string",
+          "description": "Optional title shown inside the map instead of `title`."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "layers",
+        "blocks"
+      ],
+      "additionalProperties": false,
+      "description": "Layer-stack map: layers as rows, blocks placed on a gap-free grid. `displayTitle` overrides the title shown inside the map."
+    },
+    "Layer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Layer ID, unique within the map; blocks refer to it with `layer`."
+        },
+        "title": {
+          "type": "string",
+          "description": "Layer name shown at the start of the row."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional layer summary."
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LayerItem"
+          },
+          "description": "Optional items listed for this layer, as LayerItem references."
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": false,
+      "description": "A horizontal layer (row) of a pillar/layer matrix."
+    },
+    "LayerItem": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Item name."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional detail."
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "additionalProperties": false,
+      "description": "A labelled item listed inside a layer."
+    },
+    "MatrixBlock": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Block ID, unique within the map; `dependsOn` refers to it."
+        },
+        "title": {
+          "type": "string",
+          "description": "Text shown on the block."
+        },
+        "layer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Layer"
+            }
+          ],
+          "description": "Anchor row: Layer reference or ID."
+        },
+        "colOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Optional anchor column, from 0 (default 0)."
+        },
+        "colSpan": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "Optional number of columns covered (default 1)."
+        },
+        "rowSpan": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "Optional number of rows covered, downward (default 1)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional detail shown when the block is selected."
+        },
+        "color": {
+          "type": "string",
+          "description": "Optional accent: rosewater, flamingo, pink, mauve, red, maroon, peach, yellow, green, teal, sky, sapphire, blue or lavender."
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional IDs of blocks this block depends on."
+        },
+        "shape": {
+          "type": "string",
+          "enum": [
+            "rect",
+            "l-bottom-left",
+            "l-bottom-right",
+            "l-top-left",
+            "l-top-right"
+          ],
+          "description": "Optional \"rect\" (default) or an L-shape inside the span: \"l-bottom-left\", \"l-bottom-right\", \"l-top-left\", \"l-top-right\"."
+        },
+        "offsets": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          },
+          "description": "Optional custom shape: [rowOffset, colOffset] cells relative to the anchor. Overrides spans and shape."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "layer"
+      ],
+      "additionalProperties": false,
+      "description": "A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is \"rect\" or an L-shape. `dependsOn` lists block IDs."
+    },
+    "Flowchart": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "actors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Actor"
+          },
+          "description": "Human actors, as Actor references. Each must start at least one step."
+        },
+        "systems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/System"
+          },
+          "description": "Systems, as System references. Each must handle or receive at least one step."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Step"
+              },
+              {
+                "$ref": "#/$defs/Branch"
+              }
+            ]
+          },
+          "description": "The flow, as Step and Branch references, in order."
+        },
+        "journeys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Journey"
+          },
+          "description": "Guided paths through the flow, as Journey references."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "actors",
+        "systems",
+        "steps",
+        "journeys"
+      ],
+      "additionalProperties": false,
+      "description": "Animated Event Storming flowchart. Every actor and system must be used by at least one step."
+    },
+    "Actor": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Actor ID, unique within the flowchart; steps refer to it with `initiatedBy`."
+        },
+        "title": {
+          "type": "string",
+          "description": "Actor name shown on its sticky (e.g. \"Buyer\")."
+        },
+        "desc": {
+          "type": "string",
+          "description": "What this actor is or wants."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "desc"
+      ],
+      "additionalProperties": false,
+      "description": "A human actor (user role) who initiates steps."
+    },
+    "System": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`."
+        },
+        "title": {
+          "type": "string",
+          "description": "System name shown on its sticky (e.g. \"Order Service\")."
+        },
+        "desc": {
+          "type": "string",
+          "description": "What the system owns or does."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "aggregate",
+            "external"
+          ],
+          "description": "Optional \"aggregate\" (owned domain model) or \"external\" (outside service). Default \"external\"."
+        },
+        "stateMachine": {
+          "$ref": "#/$defs/StateMachine",
+          "description": "Optional StateMachine(...) for a system that orchestrates the flow."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "desc"
+      ],
+      "additionalProperties": false,
+      "description": "A system that handles commands: an \"aggregate\" (owned domain model) or an \"external\" service."
+    },
+    "StateMachine": {
+      "type": "object",
+      "properties": {
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MachineState"
+          },
+          "description": "The states, as MachineState references."
+        },
+        "initialState": {
+          "type": "string",
+          "description": "ID of the starting MachineState."
+        }
+      },
+      "required": [
+        "states",
+        "initialState"
+      ],
+      "additionalProperties": false,
+      "description": "State machine for an orchestrating system. `initialState` is a state ID."
+    },
+    "MachineState": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "State ID, unique within the state machine."
+        },
+        "label": {
+          "type": "string",
+          "description": "State name shown in the state machine view."
+        },
+        "color": {
+          "type": "string",
+          "description": "CSS colour for the state, e.g. \"var(--ctp-green)\" or \"#a6d189\"."
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "color"
+      ],
+      "additionalProperties": false,
+      "description": "A state of a system state machine."
+    },
+    "Step": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Step ID, unique within the flowchart; journeys and `continuesAs` refer to it."
+        },
+        "policy": {
+          "type": "string",
+          "description": "Policy that reacts to the incoming event (\"When …\"); the POLICY sticky."
+        },
+        "command": {
+          "type": "string",
+          "description": "Command the policy issues, in imperative form (e.g. \"PlaceOrder\")."
+        },
+        "handledBy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/System"
+            }
+          ],
+          "description": "System that handles the command (System reference or ID)."
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Event"
+          },
+          "description": "Events the handler emits, as Event references (past tense)."
+        },
+        "initiatedBy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Actor"
+            }
+          ],
+          "description": "Optional actor that starts this path (Actor reference or ID), usually on the first step."
+        },
+        "delegatesTo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/System"
+            }
+          ],
+          "description": "Optional second system the handler calls (System reference or ID)."
+        },
+        "continuesAs": {
+          "type": "string",
+          "description": "Optional ID of the Step, Branch or BranchOption that this path's events lead into."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional narration of this step, shown when it is highlighted."
+        }
+      },
+      "required": [
+        "id",
+        "policy",
+        "command",
+        "handledBy",
+        "events"
+      ],
+      "additionalProperties": false,
+      "description": "Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls."
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Event ID, unique within the flowchart."
+        },
+        "title": {
+          "type": "string",
+          "description": "Event name in past tense (e.g. \"Order Placed\")."
+        },
+        "desc": {
+          "type": "string",
+          "description": "Optional detail about the event."
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": false,
+      "description": "A domain event produced by a step (past tense, e.g. \"Order Placed\")."
+    },
+    "Branch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Branch ID, unique within the flowchart."
+        },
+        "event": {
+          "type": "string",
+          "description": "The event that splits into the options (e.g. \"Payment Checked\")."
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BranchOption"
+          },
+          "description": "The paths, as BranchOption references."
+        }
+      },
+      "required": [
+        "id",
+        "event",
+        "options"
+      ],
+      "additionalProperties": false,
+      "description": "Branching step: one event splits into several policy/command paths."
+    },
+    "BranchOption": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Option ID, unique within the flowchart; journeys and `continuesAs` refer to it."
+        },
+        "label": {
+          "type": "string",
+          "description": "Label drawn on the branch edge (e.g. \"approved\")."
+        },
+        "policy": {
+          "type": "string",
+          "description": "Policy that reacts to the incoming event (\"When …\"); the POLICY sticky."
+        },
+        "command": {
+          "type": "string",
+          "description": "Command the policy issues, in imperative form (e.g. \"PlaceOrder\")."
+        },
+        "handledBy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/System"
+            }
+          ],
+          "description": "System that handles the command (System reference or ID)."
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Event"
+          },
+          "description": "Events the handler emits, as Event references (past tense)."
+        },
+        "dashed": {
+          "type": "boolean",
+          "description": "Optional: true draws this path as a dashed line (e.g. an error path)."
+        },
+        "initiatedBy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Actor"
+            }
+          ],
+          "description": "Optional actor that starts this path (Actor reference or ID), usually on the first step."
+        },
+        "delegatesTo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/System"
+            }
+          ],
+          "description": "Optional second system the handler calls (System reference or ID)."
+        },
+        "continuesAs": {
+          "type": "string",
+          "description": "Optional ID of the Step, Branch or BranchOption that this path's events lead into."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional narration of this step, shown when it is highlighted."
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "policy",
+        "command",
+        "handledBy",
+        "events"
+      ],
+      "additionalProperties": false,
+      "description": "One path of a branch: label, then the same POLICY → COMMAND → system → events cycle as a Step."
+    },
+    "Journey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Journey ID, unique within the flowchart."
+        },
+        "label": {
+          "type": "string",
+          "description": "Journey name shown in the journey picker (e.g. \"Happy path\")."
+        },
+        "description": {
+          "type": "string",
+          "description": "What this journey walks through."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/JourneyStep"
+          },
+          "description": "The stops in order, as JourneyStep references."
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "description",
+        "steps"
+      ],
+      "additionalProperties": false,
+      "description": "A guided path through the flow, from start to finish."
+    },
+    "JourneyStep": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Step"
+            },
+            {
+              "$ref": "#/$defs/BranchOption"
+            }
+          ],
+          "description": "The Step or BranchOption this stop plays (reference or ID)."
+        },
+        "name": {
+          "type": "string",
+          "description": "Short stop name shown in the journey list."
+        },
+        "description": {
+          "type": "string",
+          "description": "Narration shown while the stop is played."
+        },
+        "processGroup": {
+          "type": "string",
+          "description": "Optional phase used by the state machine (e.g. \"planning\", \"execution\")."
+        }
+      },
+      "required": [
+        "step",
+        "name",
+        "description"
+      ],
+      "additionalProperties": false,
+      "description": "A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` groups stops for the state machine (e.g. \"planning\", \"execution\")."
+    },
+    "Scenario": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "id": {
+          "type": "string",
+          "description": "Scenario ID, unique within the topic."
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ScenarioNode"
+          },
+          "description": "All nodes, as ScenarioNode references."
+        },
+        "intro": {
+          "type": "string",
+          "description": "Optional setup text shown before the first node."
+        },
+        "startNode": {
+          "type": "string",
+          "description": "Optional ID of the first node (default \"start\")."
+        },
+        "displayTitle": {
+          "type": "string",
+          "description": "Optional title shown inside the scenario instead of `title`."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "id",
+        "nodes"
+      ],
+      "additionalProperties": false,
+      "description": "Branching \"what would you do?\" scenario. `startNode` defaults to \"start\". `displayTitle` overrides the title shown inside the scenario."
+    },
+    "ScenarioNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Node ID, unique within the scenario; choices point at it with `next`."
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Situation and question shown at this node (prompt nodes)."
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ScenarioChoice"
+          },
+          "description": "Options, as ScenarioChoice references (prompt nodes)."
+        },
+        "outcome": {
+          "$ref": "#/$defs/Outcome",
+          "description": "Outcome(...) ending (outcome nodes, instead of prompt/choices)."
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "description": "A scenario node: a prompt with choices, or an outcome."
+    },
+    "ScenarioChoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Choice ID, unique within its node."
+        },
+        "text": {
+          "type": "string",
+          "description": "Choice text shown on the button."
+        },
+        "next": {
+          "type": "string",
+          "description": "ID of the ScenarioNode this choice leads to."
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "next"
+      ],
+      "additionalProperties": false,
+      "description": "A choice in a scenario. `next` is the ID of the node it leads to."
+    },
+    "Outcome": {
+      "type": "object",
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "description": "Short judgement of the path taken (e.g. \"Solid call\")."
+        },
+        "lesson": {
+          "type": "string",
+          "description": "What the learner should take away."
+        },
+        "rating": {
+          "type": "string",
+          "enum": [
+            "a",
+            "b-plus",
+            "b-minus",
+            "c"
+          ],
+          "description": "Grade of the path: \"a\", \"b-plus\", \"b-minus\" or \"c\"."
+        }
+      },
+      "required": [
+        "verdict",
+        "lesson",
+        "rating"
+      ],
+      "additionalProperties": false,
+      "description": "End of a scenario path: verdict, lesson, and rating (\"a\", \"b-plus\", \"b-minus\" or \"c\")."
+    },
+    "TradeoffSandbox": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TradeoffScenario"
+          },
+          "description": "The scenarios, as TradeoffScenario references."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "scenarios"
+      ],
+      "additionalProperties": false,
+      "description": "Interactive sandbox where learners make design choices and watch metrics move."
+    },
+    "TradeoffScenario": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Scenario ID, unique within the sandbox."
+        },
+        "title": {
+          "type": "string",
+          "description": "Scenario name shown in the scenario picker."
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TradeoffMetric"
+          },
+          "description": "Metrics to watch, as TradeoffMetric references."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TradeoffStep"
+          },
+          "description": "Decisions in order, as TradeoffStep references."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional scenario summary."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "metrics",
+        "steps"
+      ],
+      "additionalProperties": false,
+      "description": "A trade-off scenario: metrics to watch and the sequence of decisions to make."
+    },
+    "TradeoffMetric": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Metric ID, unique within the scenario; choices refer to it in `metrics`."
+        },
+        "label": {
+          "type": "string",
+          "description": "Metric name shown on its bar (e.g. \"Latency\")."
+        },
+        "baseValue": {
+          "type": "number",
+          "description": "Starting value before any choice is made."
+        },
+        "min": {
+          "type": "number",
+          "description": "Optional lowest value the bar shows (default 0)."
+        },
+        "max": {
+          "type": "number",
+          "description": "Optional highest value the bar shows (default 100)."
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "higher",
+            "lower"
+          ],
+          "description": "Optional \"higher\" or \"lower\": which way is better."
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "baseValue"
+      ],
+      "additionalProperties": false,
+      "description": "A metric tracked across a trade-off scenario. `direction` says whether higher or lower is better."
+    },
+    "TradeoffStep": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Step ID, unique within the scenario."
+        },
+        "title": {
+          "type": "string",
+          "description": "The decision to make at this step."
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TradeoffChoice"
+          },
+          "description": "The options, as TradeoffChoice references."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional context for the decision."
+        },
+        "recommended": {
+          "type": "string",
+          "description": "Optional ID of the recommended choice."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "choices"
+      ],
+      "additionalProperties": false,
+      "description": "A decision point in a trade-off scenario. `recommended` is the ID of the recommended choice."
+    },
+    "TradeoffChoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Choice ID, unique within the step; `recommended` refers to it."
+        },
+        "label": {
+          "type": "string",
+          "description": "Option name shown on the choice card."
+        },
+        "description": {
+          "type": "string",
+          "description": "What picking this option means."
+        },
+        "metrics": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "number"
+          },
+          "description": "Delta per metric ID when picked, e.g. {performance: 10, cost: -5}."
+        },
+        "pros": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProCon"
+          },
+          "description": "Advantages, as ProCon references."
+        },
+        "cons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProCon"
+          },
+          "description": "Drawbacks, as ProCon references."
+        },
+        "whyThisFits": {
+          "type": "string",
+          "description": "Optional reason this option fits the scenario."
+        },
+        "whenToUse": {
+          "type": "string",
+          "description": "Optional guidance on when to choose this option in practice."
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "description",
+        "metrics",
+        "pros",
+        "cons"
+      ],
+      "additionalProperties": false,
+      "description": "One option in a trade-off step. `metrics` maps metric IDs to the delta this choice applies, e.g. {performance: 10, cost: -5}."
+    },
+    "ProCon": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Short pro or con statement."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional detail behind the statement."
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "additionalProperties": false,
+      "description": "A pro or con of a trade-off choice."
+    },
+    "FormulaSandbox": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FormulaVariable"
+          },
+          "description": "Slider inputs, as FormulaVariable references."
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FormulaMetric"
+          },
+          "description": "Computed outputs, as FormulaMetric references."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "variables",
+        "metrics"
+      ],
+      "additionalProperties": false,
+      "description": "Parameter sandbox: sliders drive live formula-based metrics."
+    },
+    "FormulaVariable": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Variable ID, used by name inside formulas (letters, digits, _)."
+        },
+        "label": {
+          "type": "string",
+          "description": "Slider label."
+        },
+        "min": {
+          "type": "number",
+          "description": "Slider minimum."
+        },
+        "max": {
+          "type": "number",
+          "description": "Slider maximum."
+        },
+        "step": {
+          "type": "number",
+          "description": "Slider increment."
+        },
+        "defaultValue": {
+          "type": "number",
+          "description": "Initial slider value."
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "min",
+        "max",
+        "step",
+        "defaultValue"
+      ],
+      "additionalProperties": false,
+      "description": "A slider input that formulas can reference by `id`."
+    },
+    "FormulaMetric": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Metric ID, unique within the sandbox."
+        },
+        "label": {
+          "type": "string",
+          "description": "Metric name shown on its card."
+        },
+        "formula": {
+          "type": "string",
+          "description": "JavaScript expression over variable IDs, e.g. \"Math.round(chunk_size * (1 + overlap / 70))\"."
+        },
+        "description": {
+          "type": "string",
+          "description": "What the metric measures."
+        },
+        "analogy": {
+          "type": "string",
+          "description": "Optional everyday analogy shown in the metric details."
+        },
+        "inScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional list of what the metric covers."
+        },
+        "outOfScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional list of what the metric does not cover."
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "formula",
+        "description"
+      ],
+      "additionalProperties": false,
+      "description": "A computed metric. `formula` is an expression over variable IDs, e.g. \"Math.round(chunk_size * (1 + overlap / 70))\"."
+    },
+    "DecisionTree": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "id": {
+          "type": "string",
+          "description": "Tree ID, unique within the topic."
+        },
+        "root": {
+          "type": "string",
+          "description": "ID of the first DecisionNode."
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DecisionNode"
+          },
+          "description": "All nodes, as DecisionNode references."
+        },
+        "displayTitle": {
+          "type": "string",
+          "description": "Optional title shown inside the guide instead of `title`."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "id",
+        "root",
+        "nodes"
+      ],
+      "additionalProperties": false,
+      "description": "Interactive decision guide. `root` is the ID of the first node. `displayTitle` overrides the title shown inside the guide."
+    },
+    "DecisionNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Node ID, unique within the tree; choices point at it with `next`."
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Question asked at this node (question nodes)."
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DecisionChoice"
+          },
+          "description": "Answers, as DecisionChoice references (question nodes)."
+        },
+        "leaf": {
+          "$ref": "#/$defs/DecisionLeaf",
+          "description": "DecisionLeaf(...) recommendation (leaf nodes, instead of prompt/choices)."
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "description": "A decision tree node: either a question with choices, or a leaf recommendation."
+    },
+    "DecisionChoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Choice ID, unique within its node."
+        },
+        "text": {
+          "type": "string",
+          "description": "Answer text shown on the button."
+        },
+        "next": {
+          "type": "string",
+          "description": "ID of the DecisionNode this answer leads to."
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Optional reason for taking this branch."
+        },
+        "recommended": {
+          "type": "boolean",
+          "description": "Optional: true highlights this answer as recommended."
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "next"
+      ],
+      "additionalProperties": false,
+      "description": "An answer that moves to another decision node. `next` is the target node ID."
+    },
+    "DecisionLeaf": {
+      "type": "object",
+      "properties": {
+        "recommendation": {
+          "type": "string",
+          "description": "The recommended option at the end of this path."
+        },
+        "explanation": {
+          "type": "string",
+          "description": "Why this is recommended."
+        },
+        "tradeoffs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional list of trade-offs to keep in mind."
+        }
+      },
+      "required": [
+        "recommendation",
+        "explanation"
+      ],
+      "additionalProperties": false,
+      "description": "Terminal recommendation of a decision tree."
+    },
+    "ReflectionSequence": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "challenges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SequenceChallenge"
+          },
+          "description": "The challenges, as SequenceChallenge references, in order."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "challenges"
+      ],
+      "additionalProperties": false,
+      "description": "Sequence-builder reflection: learners put steps in the right order."
+    },
+    "SequenceChallenge": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Instruction shown above the items, e.g. \"Put the steps in order\"."
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SequenceItem"
+          },
+          "description": "The items to order, as SequenceItem references, in the order they are first shown (not the solution order)."
+        },
+        "solution": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/SequenceItem"
+              }
+            ]
+          },
+          "description": "The same items (references or IDs) in the correct order."
+        }
+      },
+      "required": [
+        "prompt",
+        "items",
+        "solution"
+      ],
+      "additionalProperties": false,
+      "description": "Ask the learner to order items. `solution` lists the items (references or IDs) in the correct order."
+    },
+    "SequenceItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Item ID, unique within the challenge; `solution` refers to it."
+        },
+        "text": {
+          "type": "string",
+          "description": "Text shown on the draggable card."
+        },
+        "icon": {
+          "type": "string",
+          "description": "Optional icon name (reserved; not shown yet)."
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "additionalProperties": false,
+      "description": "A draggable item in a sequence challenge."
+    },
+    "ReflectionTemplate": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "challenges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TemplateChallenge"
+          },
+          "description": "The challenges, as TemplateChallenge references, in order."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "challenges"
+      ],
+      "additionalProperties": false,
+      "description": "Self-explanation reflection: learners complete sentence templates with chips."
+    },
+    "TemplateChallenge": {
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "Instruction shown above the template."
+        },
+        "template": {
+          "type": "string",
+          "description": "Sentence with {zone-id} blanks, e.g. \"A cache trades {zone-1} for {zone-2}.\""
+        },
+        "chips": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Chip"
+          },
+          "description": "Chips the learner can drop into blanks, as Chip references (may include distractors)."
+        },
+        "solution": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Correct chip per blank: an object of zone ID → chip ID, e.g. {\"zone-1\": \"chip-a\"}."
+        },
+        "explanation": {
+          "type": "string",
+          "description": "Optional explanation shown once the template is solved."
+        }
+      },
+      "required": [
+        "prompt",
+        "template",
+        "chips",
+        "solution"
+      ],
+      "additionalProperties": false,
+      "description": "Fill-in-the-blanks self-explanation. `template` contains {zone-id} slots; `solution` maps each zone ID to a chip ID, e.g. {\"zone-1\": \"chip-a\"}."
+    },
+    "Chip": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Chip ID, unique within the challenge; `solution` refers to it."
+        },
+        "text": {
+          "type": "string",
+          "description": "Word or phrase shown on the chip."
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "additionalProperties": false,
+      "description": "A word chip the learner drops into a template blank."
+    },
+    "Quiz": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/QuizQuestion"
+          },
+          "description": "The questions, as QuizQuestion references, in order."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "questions"
+      ],
+      "additionalProperties": false,
+      "description": "Knowledge-check section of multiple-choice questions."
+    },
+    "QuizQuestion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Question ID, unique within the quiz."
+        },
+        "question": {
+          "type": "string",
+          "description": "The question text."
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/QuizChoice"
+          },
+          "description": "Answer options, as QuizChoice references. Exactly one is correct."
+        },
+        "hint": {
+          "type": "string",
+          "description": "Optional hint the learner can reveal before answering."
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "choices"
+      ],
+      "additionalProperties": false,
+      "description": "A multiple-choice question. Mark exactly one choice as correct."
+    },
+    "QuizChoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Choice ID, unique within its question (e.g. \"a\")."
+        },
+        "text": {
+          "type": "string",
+          "description": "Answer text shown on the option button."
+        },
+        "correct": {
+          "type": "boolean",
+          "description": "true for the one correct choice of the question."
+        },
+        "explanation": {
+          "type": "string",
+          "description": "Feedback shown after this choice is picked: why it is right or wrong."
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "correct",
+        "explanation"
+      ],
+      "additionalProperties": false,
+      "description": "One answer option of a quiz question, with the explanation shown after answering."
+    },
+    "Flashcards": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Flashcard"
+          },
+          "description": "The cards, as Flashcard references, in deck order."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "cards"
+      ],
+      "additionalProperties": false,
+      "description": "Deck of flip cards for key vocabulary."
+    },
+    "Flashcard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Card ID, unique within the deck."
+        },
+        "word": {
+          "type": "string",
+          "description": "The term on the front of the card."
+        },
+        "pronunciation": {
+          "type": "string",
+          "description": "How to say the term, e.g. \"/ˈkæʃ/\"."
+        },
+        "category": {
+          "type": "string",
+          "description": "Grouping shown as a badge on the card (e.g. \"concept\")."
+        },
+        "shortDefinition": {
+          "type": "string",
+          "description": "One-line definition shown on the back."
+        },
+        "detailedDefinition": {
+          "type": "string",
+          "description": "Longer explanation shown on the back."
+        },
+        "whyItMatters": {
+          "type": "string",
+          "description": "Why the learner should care about this term."
+        },
+        "image": {
+          "type": "string",
+          "description": "Optional image URL or path shown on the card."
+        },
+        "dialogue": {
+          "$ref": "#/$defs/Dialogue",
+          "description": "Optional Dialogue(...) example that shows the term in use."
+        }
+      },
+      "required": [
+        "id",
+        "word",
+        "pronunciation",
+        "category",
+        "shortDefinition",
+        "detailedDefinition",
+        "whyItMatters"
+      ],
+      "additionalProperties": false,
+      "description": "A vocabulary flip card: the term on the front, definitions on the back."
+    },
+    "Dialogue": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "description": "What the user says, using the term."
+        },
+        "aiThoughts": {
+          "type": "string",
+          "description": "The AI's internal reasoning about the user's message."
+        },
+        "aiQuestion": {
+          "type": "string",
+          "description": "The follow-up question the AI asks back."
+        }
+      },
+      "required": [
+        "user",
+        "aiThoughts",
+        "aiQuestion"
+      ],
+      "additionalProperties": false,
+      "description": "Example exchange showing a term in use: what the user says, what the AI thinks, and its follow-up question."
+    },
+    "ConceptMap": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "concepts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Concept"
+          },
+          "description": "The nodes, as Concept references."
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ConceptLink"
+          },
+          "description": "The edges between concepts, as ConceptLink references."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "concepts",
+        "links"
+      ],
+      "additionalProperties": false,
+      "description": "Knowledge graph of concepts and the relations between them."
+    },
+    "Concept": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Concept ID, unique within the map; links point at it."
+        },
+        "title": {
+          "type": "string",
+          "description": "Label shown on the node."
+        },
+        "category": {
+          "type": "string",
+          "description": "Optional node colour group: pattern, mechanism, concept, role, system, data or process."
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": false,
+      "description": "A node in a concept map."
+    },
+    "ConceptLink": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Concept"
+            }
+          ],
+          "description": "Source concept (Concept reference or ID)."
+        },
+        "to": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/Concept"
+            }
+          ],
+          "description": "Target concept (Concept reference or ID)."
+        },
+        "label": {
+          "type": "string",
+          "description": "Optional relation label drawn on the edge (e.g. \"uses\")."
+        }
+      },
+      "required": [
+        "from",
+        "to"
+      ],
+      "additionalProperties": false,
+      "description": "A labelled relation between two concepts (references or concept IDs)."
+    },
+    "Topic": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Topic title shown in the catalog and topic header."
+        },
+        "category": {
+          "type": "string",
+          "description": "Catalog group the topic is listed under."
+        },
+        "description": {
+          "type": "string",
+          "description": "One- or two-sentence summary shown on the catalog card."
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SectionRef"
+          },
+          "description": "The sections in reading order, as SectionRef calls."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional keyword tags for search and filtering."
+        },
+        "difficulty": {
+          "type": "string",
+          "description": "Optional level, e.g. \"beginner\", \"intermediate\", \"advanced\"."
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Optional last-updated date, e.g. \"2026-05-01\"."
+        },
+        "isNew": {
+          "type": "boolean",
+          "description": "Optional: true shows a \"new\" badge in the catalog."
+        }
+      },
+      "required": [
+        "title",
+        "category",
+        "description",
+        "sections"
+      ],
+      "additionalProperties": false,
+      "description": "Topic manifest (root of topic.oui): catalog metadata and the ordered list of sections."
+    },
+    "SectionRef": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Section file name without .oui, e.g. \"intro\" for sections/intro.oui."
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "description": "Includes the section file sections/<name>.oui of this topic."
+    },
+    "Catalog": {
+      "type": "object",
+      "properties": {
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TopicRef"
+          },
+          "description": "The topics in catalog order, as TopicRef calls."
+        }
+      },
+      "required": [
+        "topics"
+      ],
+      "additionalProperties": false,
+      "description": "Content catalog (root of index.oui): the ordered list of topics."
+    },
+    "TopicRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Topic folder name under the content root."
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "description": "Includes the topic folder <id>/topic.oui in the catalog."
+    }
+  }
+}

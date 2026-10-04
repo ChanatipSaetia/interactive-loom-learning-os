@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { ViewerApp } from '../../../src/viewer/ViewerApp'
-import { createTopicBundle } from '../../../src/core/supporting/authoring-editor/workspace'
+import { createTopicSource } from '../../../src/core/supporting/authoring-editor/workspace'
 import { registerCoreSections } from '../../../src/core/learning-engine/registry/register-core-sections'
 
 const topic = (id: string, title: string) => ({
@@ -22,11 +22,11 @@ beforeAll(() => {
 })
 
 describe('Loom Viewer', () => {
-  it('opens a single-file bundle and switches between its topics', async () => {
+  it('opens a .loom.oui file and switches between its topics', async () => {
     render(<ViewerApp />)
     expect(screen.getByTestId('viewer-landing')).toBeInTheDocument()
-    const bundle = createTopicBundle([topic('one', 'First Topic'), topic('two', 'Second Topic')])
-    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [pickedFile('all.loom.json', bundle)] } })
+    const source = createTopicSource([topic('one', 'First Topic'), topic('two', 'Second Topic')])
+    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [pickedFile('all.loom.oui', source)] } })
 
     await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('First Topic')
@@ -42,7 +42,7 @@ describe('Loom Viewer', () => {
 
   it('shows an error for a file that is not a topic archive', async () => {
     render(<ViewerApp />)
-    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [pickedFile('notes.json', '{}')] } })
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/not a Loom topic bundle/))
+    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [pickedFile('notes.oui', 'hello')] } })
+    await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/before the first file marker/))
   })
 })

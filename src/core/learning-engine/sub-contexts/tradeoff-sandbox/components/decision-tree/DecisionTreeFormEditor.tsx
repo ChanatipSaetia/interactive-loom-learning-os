@@ -8,6 +8,8 @@ import type {
   OKFDecisionTreeChoice,
   OKFDecisionTreeLeaf,
 } from '../../../../composition/okf/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface DecisionTreeFormEditorProps {
   data: OKFDecisionTreeSectionData
@@ -52,7 +54,7 @@ function ChoiceRow({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Choice Text</span>
+              <OUIFieldKey of={OUI.DecisionChoice} field="text">Choice Text</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={choice.text}
@@ -64,7 +66,7 @@ function ChoiceRow({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Next Node →</span>
+              <OUIFieldKey of={OUI.DecisionChoice} field="next">Next Node →</OUIFieldKey>
               <select
                 className="visual-form-select"
                 value={choice.next}
@@ -80,7 +82,7 @@ function ChoiceRow({
         </div>
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Rationale <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional — shown as sub-text)</span></span>
+            <OUIFieldKey of={OUI.DecisionChoice} field="rationale">Rationale <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional — shown as sub-text)</span></OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={choice.rationale ?? ''}
@@ -261,7 +263,7 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
             <div className="visual-form-grid-2">
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Title</span>
+                  <OUIFieldKey of={OUI.DecisionTree} field="displayTitle">Title</OUIFieldKey>
                   <input
                     className="visual-form-input"
                     value={data.title}
@@ -273,7 +275,7 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
               </div>
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">Root Node</span>
+                  <OUIFieldKey of={OUI.DecisionTree} field="root">Root Node</OUIFieldKey>
                   <select
                     className="visual-form-select"
                     value={data.root}
@@ -289,7 +291,7 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
             </div>
             <div className="visual-form-field">
               <label className="visual-form-label">
-                <span className="visual-form-key">Section ID</span>
+                <OUIFieldKey of={OUI.DecisionTree} field="id">Section ID</OUIFieldKey>
                 <input
                   className="visual-form-input"
                   value={data.id}
@@ -356,7 +358,7 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
               <div className="node-detail-header">
                 <div className="visual-form-field" style={{ flex: 1 }}>
                   <label className="visual-form-label">
-                    <span className="visual-form-key">Node ID</span>
+                    <OUIFieldKey of={OUI.DecisionNode} field="id">Node ID</OUIFieldKey>
                     <input
                       className="visual-form-input"
                       value={selectedNodeId}
@@ -422,7 +424,7 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
                 <div className="node-detail-body" data-testid="dt-decision-fields">
                   <div className="visual-form-field">
                     <label className="visual-form-label">
-                      <span className="visual-form-key">Prompt <span style={{ fontWeight: 400, opacity: 0.6 }}>(the question learners see)</span></span>
+                      <OUIFieldKey of={OUI.DecisionNode} field="prompt">Prompt <span style={{ fontWeight: 400, opacity: 0.6 }}>(the question learners see)</span></OUIFieldKey>
                       <textarea
                         className="visual-form-textarea"
                         value={selectedNode.prompt ?? ''}
@@ -475,7 +477,7 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
                 <div className="node-detail-body" data-testid="dt-leaf-fields">
                   <div className="visual-form-field">
                     <label className="visual-form-label">
-                      <span className="visual-form-key">Recommendation <span style={{ fontWeight: 400, opacity: 0.6 }}>(the final verdict)</span></span>
+                      <OUIFieldKey of={OUI.DecisionLeaf} field="recommendation">Recommendation <span style={{ fontWeight: 400, opacity: 0.6 }}>(the final verdict)</span></OUIFieldKey>
                       <textarea
                         className="visual-form-textarea"
                         value={selectedNode.leaf.recommendation}
@@ -488,7 +490,7 @@ export function DecisionTreeFormEditor({ data, onChange }: DecisionTreeFormEdito
                   </div>
                   <div className="visual-form-field">
                     <label className="visual-form-label">
-                      <span className="visual-form-key">Explanation</span>
+                      <OUIFieldKey of={OUI.DecisionLeaf} field="explanation">Explanation</OUIFieldKey>
                       <textarea
                         className="visual-form-textarea"
                         value={selectedNode.leaf.explanation}

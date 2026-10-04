@@ -3,6 +3,8 @@ import { Folder, Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, MessageSquare, Im
 import { FlashcardsHelpModal } from './FlashcardsHelpModal'
 import type { OKFFlashcardSectionData } from '../../../../composition/okf/types'
 import type { WordTerm } from './types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface FlashcardsFormEditorProps {
   data: OKFFlashcardSectionData
@@ -120,7 +122,7 @@ function FlashcardEditorItem({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.Flashcard} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={term.id}
@@ -132,7 +134,7 @@ function FlashcardEditorItem({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Word / Term Title</span>
+              <OUIFieldKey of={OUI.Flashcard} field="word">Word / Term Title</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={term.word}
@@ -147,7 +149,7 @@ function FlashcardEditorItem({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Pronunciation (Phonetic)</span>
+              <OUIFieldKey of={OUI.Flashcard} field="pronunciation">Pronunciation (Phonetic)</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={term.pronunciation}
@@ -159,7 +161,7 @@ function FlashcardEditorItem({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Category</span>
+              <OUIFieldKey of={OUI.Flashcard} field="category">Category</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={term.category}
@@ -174,9 +176,9 @@ function FlashcardEditorItem({
         {/* Section 2: Media & Content Definitions */}
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <OUIFieldKey of={OUI.Flashcard} field="image" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Image size={12} /> Image Asset URL (Optional)
-            </span>
+            </OUIFieldKey>
             <input
               className="visual-form-input"
               value={term.image ?? ''}
@@ -189,7 +191,7 @@ function FlashcardEditorItem({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Short Definition (Card Front Quote)</span>
+            <OUIFieldKey of={OUI.Flashcard} field="shortDefinition">Short Definition (Card Front Quote)</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={term.shortDefinition}
@@ -203,7 +205,7 @@ function FlashcardEditorItem({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Detailed Definition (Card Back Explanation)</span>
+            <OUIFieldKey of={OUI.Flashcard} field="detailedDefinition">Detailed Definition (Card Back Explanation)</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={term.detailedDefinition}
@@ -217,7 +219,7 @@ function FlashcardEditorItem({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Why It Matters (Architectural Significance)</span>
+            <OUIFieldKey of={OUI.Flashcard} field="whyItMatters">Why It Matters (Architectural Significance)</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={term.whyItMatters}
@@ -249,7 +251,7 @@ function FlashcardEditorItem({
             <div className="visual-form-card-body">
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">User Directive / Prompt</span>
+                  <OUIFieldKey of={OUI.Dialogue} field="user">User Directive / Prompt</OUIFieldKey>
                   <input
                     className="visual-form-input"
                     value={term.dialogue?.user ?? ''}
@@ -262,7 +264,7 @@ function FlashcardEditorItem({
 
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">AI Rationale / Reasoning Thoughts</span>
+                  <OUIFieldKey of={OUI.Dialogue} field="aiThoughts">AI Rationale / Reasoning Thoughts</OUIFieldKey>
                   <textarea
                     className="visual-form-textarea"
                     value={term.dialogue?.aiThoughts ?? ''}
@@ -276,7 +278,7 @@ function FlashcardEditorItem({
 
               <div className="visual-form-field">
                 <label className="visual-form-label">
-                  <span className="visual-form-key">AI Alignment Inquiry (Follow-up Question)</span>
+                  <OUIFieldKey of={OUI.Dialogue} field="aiQuestion">AI Alignment Inquiry (Follow-up Question)</OUIFieldKey>
                   <input
                     className="visual-form-input"
                     value={term.dialogue?.aiQuestion ?? ''}

@@ -3,6 +3,8 @@ import { HelpCircle, CheckCircle2, CheckSquare, Settings, Plus, Trash2 } from 'l
 import { QuizHelpModal } from './QuizHelpModal'
 import './quiz.css'
 import type { OKFQuizSectionData, OKFQuizQuestion, OKFQuizChoice } from '../../../../composition/okf/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface QuizFormEditorProps {
   data: OKFQuizSectionData
@@ -59,7 +61,7 @@ function QuizChoiceEditor({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.QuizChoice} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={choice.id}
@@ -76,16 +78,16 @@ function QuizChoiceEditor({
                 onChange={(e) => handleFieldChange('correct', e.target.checked)}
                 data-testid={`quiz-choice-${index}-correct`}
               />
-              <span className="visual-form-key" style={{ color: choice.correct ? 'var(--ctp-green)' : undefined }}>
+              <OUIFieldKey of={OUI.QuizChoice} field="correct" style={{ color: choice.correct ? 'var(--ctp-green)' : undefined }}>
                 Correct Choice
-              </span>
+              </OUIFieldKey>
             </label>
           </div>
         </div>
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Text</span>
+            <OUIFieldKey of={OUI.QuizChoice} field="text">Text</OUIFieldKey>
             <input
               className="visual-form-input"
               value={choice.text}
@@ -97,7 +99,7 @@ function QuizChoiceEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Explanation</span>
+            <OUIFieldKey of={OUI.QuizChoice} field="explanation">Explanation</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={choice.explanation}
@@ -182,7 +184,7 @@ function QuizQuestionEditor({
         <div className="visual-form-grid-2">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.QuizQuestion} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={question.id}
@@ -193,7 +195,7 @@ function QuizQuestionEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Hint</span>
+              <OUIFieldKey of={OUI.QuizQuestion} field="hint">Hint</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={question.hint ?? ''}
@@ -207,7 +209,7 @@ function QuizQuestionEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Question Text</span>
+            <OUIFieldKey of={OUI.QuizQuestion} field="question">Question Text</OUIFieldKey>
             <textarea
               className="visual-form-textarea"
               value={question.question}
@@ -220,7 +222,7 @@ function QuizQuestionEditor({
 
         <div className="visual-form-field visual-form-field--array">
           <div className="visual-form-section-header">
-            <span className="visual-form-key">Choices ({question.choices.length})</span>
+            <OUIFieldKey of={OUI.QuizQuestion} field="choices">Choices ({question.choices.length})</OUIFieldKey>
             <button
               className="form-add-btn form-add-btn--sm"
               onClick={handleAddChoice}
@@ -326,7 +328,7 @@ export function QuizFormEditor({ data, onChange }: QuizFormEditorProps) {
       {activeTab === 'questions' && (
         <div className="visual-form-field visual-form-field--array" data-testid="quiz-questions-tab-content">
           <div className="visual-form-section-header">
-            <span className="visual-form-key">Questions ({data.questions.length})</span>
+            <OUIFieldKey of={OUI.Quiz} field="questions">Questions ({data.questions.length})</OUIFieldKey>
             <button
               className="form-add-btn"
               onClick={handleAddQuestion}

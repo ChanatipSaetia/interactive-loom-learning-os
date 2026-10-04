@@ -3,8 +3,16 @@
  *
  * Helpers every subdomain uses to declare the OpenUI Lang components that
  * make up its `.oui` authoring vocabulary. Components are declared once
- * (name, description, Zod props) and carry a `toData` mapper that turns the
- * component's compiled props into the subdomain's section data shape.
+ * (name, description, Zod props, one description per prop) and carry a
+ * `toData` mapper that turns the component's compiled props into the
+ * subdomain's section data shape.
+ *
+ * Prop descriptions live in `fields`, not in Zod `.describe()`: lang-core
+ * builds its JSON Schema with a private registry (dropping `.describe()`),
+ * and describing a `Child.ref` clones it, which loses the `Child` type in
+ * prompt signatures. The library re-attaches `fields` to its JSON Schema and
+ * LLM prompt (see composition/oui/library.ts), where VS Code, the Studio code
+ * editor and form tooltips read them.
  *
  * Positional argument order in OpenUI Lang follows the key order of the
  * `props` object, so every section component puts `title` first and the
@@ -61,6 +69,10 @@ export interface OUISectionMetaInput {
 export interface LoomOUIComponent {
   /** Component call name in OpenUI Lang (e.g. "Quiz"). */
   name: string
+  /** What the component is, shown in hovers and the LLM prompt. */
+  description: string
+  /** One description per prop, keyed by prop name. */
+  fields: Readonly<Record<string, string>>
   /** OpenUI component definition (framework-agnostic, no renderer). */
   definition: DefinedComponent
   /** Schema to embed in a parent's props: `z.array(Child.ref)`. */
@@ -73,10 +85,15 @@ export interface LoomOUIComponent {
   fromData?: (data: Record<string, unknown>, meta: OUISectionMetaInput) => OUICall
 }
 
+/** One description per prop of `T`; every prop must be described. */
+export type OUIFieldDocs<T extends z.ZodObject> = { readonly [K in keyof T['shape']]: string }
+
 export interface LoomOUIComponentConfig<T extends z.ZodObject> {
   name: string
   description: string
   props: T
+  /** Description of each prop (VS Code / editor hovers, form tooltips, LLM prompt). */
+  fields: OUIFieldDocs<T>
   toData?: (props: z.infer<T>) => unknown
 }
 
@@ -97,6 +114,8 @@ export function defineOUIComponent<T extends z.ZodObject>(config: LoomOUICompone
   }) as unknown as DefinedComponent
   return {
     name: config.name,
+    description: config.description,
+    fields: config.fields as Readonly<Record<string, string>>,
     definition,
     ref: definition.ref as unknown as z.ZodType,
     toData: (config.toData as LoomOUIComponent['toData'] | undefined) ?? ((props) => ({ ...props })),
@@ -124,6 +143,11 @@ export function refTo(components: LoomOUIComponent | LoomOUIComponent[], id: str
   return { kind: 'ref', components: list.map((c) => c.name), id: String(id) }
 }
 
+/** Description of one prop of `component` (form tooltips), or undefined. */
+export function fieldDoc(component: LoomOUIComponent, field: string): string | undefined {
+  return Object.prototype.hasOwnProperty.call(component.fields, field) ? component.fields[field] : undefined
+}
+
 // ============================================================================
 // Shared section props
 // ============================================================================
@@ -137,6 +161,11 @@ export const Lead = defineOUIComponent({
     why: z.string().optional(),
     next: z.string().optional(),
   }),
+  fields: {
+    what: 'What this section shows, in one sentence.',
+    why: 'Why it matters to the learner.',
+    next: 'What the learner should do or look for next.',
+  },
 })
 
 /** Trailing props shared by every section component. Spread last into `props`. */
@@ -144,6 +173,13 @@ export const sectionTailProps = {
   heading: z.string().optional(),
   lead: Lead.ref.optional(),
 }
+
+/** Descriptions of `title` plus `sectionTailProps`. Spread into every section's `fields`. */
+export const sectionFields = {
+  title: 'Section title, shown in the topic outline and as the section header.',
+  heading: 'Optional sub-heading shown under the section title.',
+  lead: 'Optional Lead(...) intro card: what the section shows, why it matters, what comes next.',
+} as const
 
 /** Printer counterpart of `sectionTailProps`: `heading` and `lead` from section meta. */
 export function sectionTail(meta: OUISectionMetaInput): Record<string, OUIValue> {

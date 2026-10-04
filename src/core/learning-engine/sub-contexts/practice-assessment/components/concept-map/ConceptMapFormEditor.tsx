@@ -6,6 +6,8 @@ import type {
   OKFConceptNode,
   OKFConceptEdge,
 } from '../../../../composition/okf/types'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface ConceptMapFormEditorProps {
   data: OKFConceptMapSectionData
@@ -55,7 +57,7 @@ function ConceptNodeEditor({
         <div className="visual-form-grid-3">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">ID</span>
+              <OUIFieldKey of={OUI.Concept} field="id">ID</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={node.id}
@@ -66,7 +68,7 @@ function ConceptNodeEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Title</span>
+              <OUIFieldKey of={OUI.Concept} field="title">Title</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={node.title}
@@ -77,7 +79,7 @@ function ConceptNodeEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Category</span>
+              <OUIFieldKey of={OUI.Concept} field="category">Category</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={node.category}
@@ -137,7 +139,7 @@ function ConceptEdgeEditor({
         <div className="visual-form-grid-3">
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">From</span>
+              <OUIFieldKey of={OUI.ConceptLink} field="from">From</OUIFieldKey>
               <select
                 className="visual-form-select"
                 value={edge.from}
@@ -154,7 +156,7 @@ function ConceptEdgeEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">To</span>
+              <OUIFieldKey of={OUI.ConceptLink} field="to">To</OUIFieldKey>
               <select
                 className="visual-form-select"
                 value={edge.to}
@@ -171,7 +173,7 @@ function ConceptEdgeEditor({
           </div>
           <div className="visual-form-field">
             <label className="visual-form-label">
-              <span className="visual-form-key">Relation Label</span>
+              <OUIFieldKey of={OUI.ConceptLink} field="label">Relation Label</OUIFieldKey>
               <input
                 className="visual-form-input"
                 value={edge.label ?? ''}
@@ -305,7 +307,7 @@ export function ConceptMapFormEditor({ data, onChange }: ConceptMapFormEditorPro
       {activeTab === 'nodes' && (
         <div className="visual-form-field visual-form-field--array" data-testid="cm-nodes-tab-content">
           <div className="visual-form-section-header">
-            <span className="visual-form-key">Concept Nodes ({Object.keys(data.nodes).length})</span>
+            <OUIFieldKey of={OUI.ConceptMap} field="concepts">Concept Nodes ({Object.keys(data.nodes).length})</OUIFieldKey>
             <button
               className="form-add-btn"
               onClick={handleAddNode}
@@ -334,7 +336,7 @@ export function ConceptMapFormEditor({ data, onChange }: ConceptMapFormEditorPro
       {activeTab === 'edges' && (
         <div className="visual-form-field visual-form-field--array" data-testid="cm-edges-tab-content">
           <div className="visual-form-section-header">
-            <span className="visual-form-key">Concept Edges ({data.edges.length})</span>
+            <OUIFieldKey of={OUI.ConceptMap} field="links">Concept Edges ({data.edges.length})</OUIFieldKey>
             <button
               className="form-add-btn"
               onClick={handleAddEdge}

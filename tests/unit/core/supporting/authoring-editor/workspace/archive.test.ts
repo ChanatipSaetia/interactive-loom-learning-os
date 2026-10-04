@@ -3,11 +3,11 @@ import {
   TopicArchiveError,
   TopicWorkspace,
   WorkspaceError,
-  createTopicBundle,
+  createTopicSource,
   createTopicZip,
   groupTopicFiles,
   memoryFolder,
-  parseTopicBundle,
+  parseTopicSource,
   readTopicArchive,
   readTopicFolderFiles,
   readZipEntries,
@@ -68,27 +68,31 @@ function pickedFile(name: string, content: string | Uint8Array, webkitRelativePa
   } as unknown as File
 }
 
-describe('single-file bundle', () => {
-  it('round-trips topics with topic.oui first', () => {
-    const text = createTopicBundle([demo()], '2026-01-01T00:00:00.000Z')
-    expect(Object.keys(JSON.parse(text).topics[0].files)).toEqual(['topic.oui', 'sections/intro.oui', 'sections/quiz.oui'])
-    expect(parseTopicBundle(text)).toEqual([{ topicId: 'demo', files: demo().files }])
+describe('single file (.loom.oui)', () => {
+  it('round-trips topics exactly, topic.oui first', () => {
+    const blankTail = { topicId: 'two', files: { 'topic.oui': TOPIC, 'sections/intro.oui': `${INTRO}\n\n` } }
+    const source = createTopicSource([demo(), blankTail])
+    expect(source.startsWith('// @loom-topic demo\n// === topic.oui ===\nroot = Topic(')).toBe(true)
+    expect(source.indexOf('// === sections/intro.oui ===')).toBeLessThan(source.indexOf('// === sections/quiz.oui ==='))
+    expect(parseTopicSource(source)).toEqual([demo(), blankTail])
+    expect(parseTopicSource(source.replace(/\n/g, '\r\n'))).toEqual([demo(), blankTail])
   })
 
-  it('ignores files that do not belong to a topic', () => {
-    const text = JSON.stringify({
-      format: 'loom-topic-bundle',
-      version: 1,
-      topics: [{ id: 'demo', files: { 'topic.oui': TOPIC, '../evil.oui': 'x', 'notes.txt': 'x', 'sections/Bad Name.oui': 'x' } }],
-    })
-    expect(parseTopicBundle(text)[0].files).toEqual({ 'topic.oui': TOPIC })
+  it('ignores markdown code fences and names a headerless topic after the fallback', () => {
+    expect(parseTopicSource(`\`\`\`oui\n${createTopicSource([demo()])}\`\`\`\n`)).toEqual([demo()])
+    expect(() => parseTopicSource(`Here is your topic:\n\`\`\`oui\n${createTopicSource([demo()])}\`\`\``)).toThrow(/before the first file marker/)
+    expect(parseTopicSource(`// === topic.oui ===\n${TOPIC}`, 'fallback')).toEqual([{ topicId: 'fallback', files: { 'topic.oui': TOPIC } }])
   })
 
-  it('rejects files that are not bundles', () => {
-    expect(() => parseTopicBundle('nope')).toThrow(TopicArchiveError)
-    expect(() => parseTopicBundle('{"format":"other"}')).toThrow(/not a Loom topic bundle/)
-    expect(() => parseTopicBundle(JSON.stringify({ format: 'loom-topic-bundle', version: 1, topics: [{ id: 'x', files: {} }] }))).toThrow(/no topic.oui/)
-    expect(() => parseTopicBundle(JSON.stringify({ format: 'loom-topic-bundle', version: 99, topics: [] }))).toThrow(/Unsupported/)
+  it('rejects text that is not a topic, including old JSON bundles', () => {
+    expect(() => parseTopicSource(QUIZ)).toThrow(TopicArchiveError)
+    expect(() => parseTopicSource(QUIZ)).toThrow(/before the first file marker/)
+    expect(() => parseTopicSource('// just a comment\n')).toThrow(/no file markers/)
+    expect(() => parseTopicSource('```json\n{"format": "loom-topic-bundle"}\n```')).toThrow(/\.loom\.json\) are no longer supported/)
+    expect(() => parseTopicSource(`// === sections/intro.oui ===\n${INTRO}`)).toThrow(/no `\/\/ === topic.oui ===` part/)
+    expect(() => parseTopicSource(`// === topic.oui ===\n${TOPIC}// === notes.md ===\nhi\n`)).toThrow(/"notes.md" is not a topic file/)
+    expect(() => parseTopicSource(`// === topic.oui ===\n${TOPIC}// === topic.oui ===\n${TOPIC}`)).toThrow(/appears twice/)
+    expect(() => parseTopicSource(`// @loom-topic Bad-ID\n// === topic.oui ===\n${TOPIC}`)).toThrow(/not a valid topic ID/)
   })
 })
 
@@ -133,11 +137,16 @@ describe('grouping files into topics', () => {
 })
 
 describe('reading picked files', () => {
-  it('reads a bundle file and a zip file', async () => {
-    const bundle = pickedFile('demo.loom.json', createTopicBundle([demo()]))
-    expect((await readTopicArchive(bundle))[0].files).toEqual(demo().files)
+  it('reads a .loom.oui file and a zip file', async () => {
+    const single = pickedFile('demo.loom.oui', createTopicSource([demo()]))
+    expect(await readTopicArchive(single)).toEqual([demo()])
     const zip = pickedFile('demo.zip', createTopicZip([demo()]))
     expect(await readTopicArchive(zip)).toEqual([{ topicId: 'demo', files: demo().files }])
+  })
+
+  it('reads a headerless, fenced .oui answer pasted from an LLM chat', async () => {
+    const answer = `\`\`\`\n${createTopicSource([demo()]).replace('// @loom-topic demo\n', '')}\`\`\``
+    expect(await readTopicArchive(pickedFile('My Topic.loom.oui', answer))).toEqual([{ topicId: 'my-topic', files: demo().files }])
   })
 
   it('reads a picked folder', async () => {

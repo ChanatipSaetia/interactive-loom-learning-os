@@ -175,9 +175,16 @@ describe('hover and definition', () => {
     expect(getHover(FLOW, offset)?.contents).toContain('System(id: string, title: string, desc: string')
   })
 
+  it('lists described parameters in component docs', () => {
+    const offset = FLOW.indexOf('System(') + 2
+    expect(getHover(FLOW, offset)?.contents).toContain('- `kind?` — Optional "aggregate"')
+  })
+
   it('names the positional parameter an argument fills', () => {
     const offset = FLOW.indexOf('"PlaceOrder"') + 3
-    expect(getHover(FLOW, offset)?.contents).toContain('**Step › command**')
+    const contents = getHover(FLOW, offset)?.contents
+    expect(contents).toContain('**Step › command**')
+    expect(contents).toContain('Command the policy issues')
   })
 
   it('previews referenced statements with the parameter they fill', () => {

@@ -9,12 +9,12 @@ export type { SectionTemplate } from './templates'
 export { TopicWorkspace, WorkspaceError, compileForForm } from './workspace'
 export type { SectionState, TopicMetadata, WorkspaceSnapshot } from './workspace'
 export {
-  BUNDLE_EXTENSION,
+  SOURCE_EXTENSION,
   TopicArchiveError,
-  createTopicBundle,
+  createTopicSource,
   createTopicZip,
   groupTopicFiles,
-  parseTopicBundle,
+  parseTopicSource,
   readTopicArchive,
   readTopicFolderFiles,
   readZipEntries,

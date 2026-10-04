@@ -20,7 +20,7 @@ import {
   idOf,
   refOrId,
   refTo,
-  sectionTail,
+  sectionFields, sectionTail,
   sectionTailProps,
   type LoomOUIComponent,
   type OUIValue,
@@ -39,6 +39,11 @@ export const Actor = defineOUIComponent({
     title: z.string(),
     desc: z.string(),
   }),
+  fields: {
+    id: 'Actor ID, unique within the flowchart; steps refer to it with `initiatedBy`.',
+    title: 'Actor name shown on its sticky (e.g. "Buyer").',
+    desc: 'What this actor is or wants.',
+  },
 })
 
 export const MachineState = defineOUIComponent({
@@ -49,6 +54,11 @@ export const MachineState = defineOUIComponent({
     label: z.string(),
     color: z.string(),
   }),
+  fields: {
+    id: 'State ID, unique within the state machine.',
+    label: 'State name shown in the state machine view.',
+    color: 'CSS colour for the state, e.g. "var(--ctp-green)" or "#a6d189".',
+  },
 })
 
 export const StateMachine = defineOUIComponent({
@@ -58,6 +68,10 @@ export const StateMachine = defineOUIComponent({
     states: z.array(MachineState.ref),
     initialState: z.string(),
   }),
+  fields: {
+    states: 'The states, as MachineState references.',
+    initialState: 'ID of the starting MachineState.',
+  },
 })
 
 export const System = defineOUIComponent({
@@ -70,6 +84,13 @@ export const System = defineOUIComponent({
     kind: z.enum(['aggregate', 'external']).optional(),
     stateMachine: StateMachine.ref.optional(),
   }),
+  fields: {
+    id: 'System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`.',
+    title: 'System name shown on its sticky (e.g. "Order Service").',
+    desc: 'What the system owns or does.',
+    kind: 'Optional "aggregate" (owned domain model) or "external" (outside service). Default "external".',
+    stateMachine: 'Optional StateMachine(...) for a system that orchestrates the flow.',
+  },
   toData: (p) => ({
     id: p.id,
     title: p.title,
@@ -89,6 +110,11 @@ export const Event = defineOUIComponent({
     title: z.string(),
     desc: z.string().optional(),
   }),
+  fields: {
+    id: 'Event ID, unique within the flowchart.',
+    title: 'Event name in past tense (e.g. "Order Placed").',
+    desc: 'Optional detail about the event.',
+  },
 })
 
 const handlerProps = {
@@ -105,6 +131,20 @@ const optionalChainProps = {
   description: z.string().optional(),
 }
 
+const handlerFields = {
+  policy: 'Policy that reacts to the incoming event ("When …"); the POLICY sticky.',
+  command: 'Command the policy issues, in imperative form (e.g. "PlaceOrder").',
+  handledBy: 'System that handles the command (System reference or ID).',
+  events: 'Events the handler emits, as Event references (past tense).',
+} as const
+
+const optionalChainFields = {
+  initiatedBy: 'Optional actor that starts this path (Actor reference or ID), usually on the first step.',
+  delegatesTo: 'Optional second system the handler calls (System reference or ID).',
+  continuesAs: 'Optional ID of the Step, Branch or BranchOption that this path\'s events lead into.',
+  description: 'Optional narration of this step, shown when it is highlighted.',
+} as const
+
 function toRef(value: unknown) {
   return value === undefined ? undefined : ref(idOf(value))
 }
@@ -117,6 +157,11 @@ export const Step = defineOUIComponent({
     ...handlerProps,
     ...optionalChainProps,
   }),
+  fields: {
+    id: 'Step ID, unique within the flowchart; journeys and `continuesAs` refer to it.',
+    ...handlerFields,
+    ...optionalChainFields,
+  },
   toData: (p) => ({
     type: 'linear',
     id: p.id,
@@ -141,6 +186,13 @@ export const BranchOption = defineOUIComponent({
     dashed: z.boolean().optional(),
     ...optionalChainProps,
   }),
+  fields: {
+    id: 'Option ID, unique within the flowchart; journeys and `continuesAs` refer to it.',
+    label: 'Label drawn on the branch edge (e.g. "approved").',
+    ...handlerFields,
+    dashed: 'Optional: true draws this path as a dashed line (e.g. an error path).',
+    ...optionalChainFields,
+  },
   toData: (p) => ({
     id: p.id,
     label: p.label,
@@ -164,6 +216,11 @@ export const Branch = defineOUIComponent({
     event: z.string(),
     options: z.array(BranchOption.ref),
   }),
+  fields: {
+    id: 'Branch ID, unique within the flowchart.',
+    event: 'The event that splits into the options (e.g. "Payment Checked").',
+    options: 'The paths, as BranchOption references.',
+  },
   toData: (p) => ({ type: 'branch', id: p.id, event: p.event, branches: p.options }),
 })
 
@@ -178,6 +235,12 @@ export const JourneyStep = defineOUIComponent({
     description: z.string(),
     processGroup: z.string().optional(),
   }),
+  fields: {
+    step: 'The Step or BranchOption this stop plays (reference or ID).',
+    name: 'Short stop name shown in the journey list.',
+    description: 'Narration shown while the stop is played.',
+    processGroup: 'Optional phase used by the state machine (e.g. "planning", "execution").',
+  },
   toData: (p) => ({ stepId: idOf(p.step), name: p.name, description: p.description, processGroup: p.processGroup }),
 })
 
@@ -190,6 +253,12 @@ export const Journey = defineOUIComponent({
     description: z.string(),
     steps: z.array(JourneyStep.ref),
   }),
+  fields: {
+    id: 'Journey ID, unique within the flowchart.',
+    label: 'Journey name shown in the journey picker (e.g. "Happy path").',
+    description: 'What this journey walks through.',
+    steps: 'The stops in order, as JourneyStep references.',
+  },
 })
 
 // --- Flowchart printing (data → call tree) ---
@@ -251,6 +320,13 @@ export const Flowchart: LoomOUIComponent = defineOUISection({
     journeys: z.array(Journey.ref),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    actors: 'Human actors, as Actor references. Each must start at least one step.',
+    systems: 'Systems, as System references. Each must handle or receive at least one step.',
+    steps: 'The flow, as Step and Branch references, in order.',
+    journeys: 'Guided paths through the flow, as Journey references.',
+  },
   toData: (p) => {
     const actors: Record<string, ActorDecl> = {}
     for (const [id, a] of Object.entries(byId(p.actors as unknown as Array<ActorDecl & { id: string }>))) {
@@ -315,6 +391,11 @@ export const Outcome = defineOUIComponent({
     lesson: z.string(),
     rating: z.enum(['a', 'b-plus', 'b-minus', 'c']),
   }),
+  fields: {
+    verdict: 'Short judgement of the path taken (e.g. "Solid call").',
+    lesson: 'What the learner should take away.',
+    rating: 'Grade of the path: "a", "b-plus", "b-minus" or "c".',
+  },
 })
 
 export const ScenarioChoice = defineOUIComponent({
@@ -325,6 +406,11 @@ export const ScenarioChoice = defineOUIComponent({
     text: z.string(),
     next: z.string(),
   }),
+  fields: {
+    id: 'Choice ID, unique within its node.',
+    text: 'Choice text shown on the button.',
+    next: 'ID of the ScenarioNode this choice leads to.',
+  },
 })
 
 export const ScenarioNode = defineOUIComponent({
@@ -336,6 +422,12 @@ export const ScenarioNode = defineOUIComponent({
     choices: z.array(ScenarioChoice.ref).optional(),
     outcome: Outcome.ref.optional(),
   }),
+  fields: {
+    id: 'Node ID, unique within the scenario; choices point at it with `next`.',
+    prompt: 'Situation and question shown at this node (prompt nodes).',
+    choices: 'Options, as ScenarioChoice references (prompt nodes).',
+    outcome: 'Outcome(...) ending (outcome nodes, instead of prompt/choices).',
+  },
 })
 
 export const Scenario: LoomOUIComponent = defineOUISection({
@@ -351,6 +443,14 @@ export const Scenario: LoomOUIComponent = defineOUISection({
     displayTitle: z.string().optional(),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    id: 'Scenario ID, unique within the topic.',
+    nodes: 'All nodes, as ScenarioNode references.',
+    intro: 'Optional setup text shown before the first node.',
+    startNode: 'Optional ID of the first node (default "start").',
+    displayTitle: 'Optional title shown inside the scenario instead of `title`.',
+  },
   toData: (p) => ({
     type: 'scenario',
     id: p.id,

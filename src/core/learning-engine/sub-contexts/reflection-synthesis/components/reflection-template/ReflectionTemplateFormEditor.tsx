@@ -3,6 +3,8 @@ import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, FileCode, Tag, CheckCircl
 import { ReflectionTemplateHelpModal } from './ReflectionTemplateHelpModal'
 import type { OKFReflectionTemplateSectionData, OKFReflectionTemplateChallenge } from '../../../../composition/okf/types'
 import type { ChipItem } from '.'
+import { OUIFieldKey } from '../../../OUIFieldKey'
+import * as OUI from '../../openui'
 
 interface ReflectionTemplateFormEditorProps {
   data: OKFReflectionTemplateSectionData
@@ -156,7 +158,7 @@ function ChallengeItemEditor({
       <div className="visual-form-card-body">
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Challenge Prompt</span>
+            <OUIFieldKey of={OUI.TemplateChallenge} field="prompt">Challenge Prompt</OUIFieldKey>
             <input
               className="visual-form-input"
               value={challenge.prompt}
@@ -170,7 +172,7 @@ function ChallengeItemEditor({
         <div className="visual-form-field">
           <label className="visual-form-label">
             <span className="visual-form-key" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Sentence Template (Embed {"{zone-1}"}, {"{zone-2}"})</span>
+              <OUIFieldKey of={OUI.TemplateChallenge} field="template">Sentence Template (Embed {"{zone-1}"}, {"{zone-2}"})</OUIFieldKey>
               <button
                 className="form-add-btn"
                 onClick={handleInsertZonePlaceholder}
@@ -193,7 +195,7 @@ function ChallengeItemEditor({
 
         <div className="visual-form-field">
           <label className="visual-form-label">
-            <span className="visual-form-key">Success Explanation (Optional)</span>
+            <OUIFieldKey of={OUI.TemplateChallenge} field="explanation">Success Explanation (Optional)</OUIFieldKey>
             <input
               className="visual-form-input"
               value={challenge.explanation ?? ''}
@@ -266,7 +268,7 @@ function ChallengeItemEditor({
             <div className="visual-form-card-body" style={{ gap: '6px', display: 'flex', flexDirection: 'column' }}>
               {detectedZoneIds.map((zoneId) => (
                 <div key={zoneId} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span className="visual-form-key" style={{ width: '90px', textTransform: 'none' }}><code>{zoneId}</code>:</span>
+                  <OUIFieldKey of={OUI.TemplateChallenge} field="solution" style={{ width: '90px', textTransform: 'none' }}><code>{zoneId}</code>:</OUIFieldKey>
                   <select
                     className="visual-form-select"
                     value={solution[zoneId] || ''}

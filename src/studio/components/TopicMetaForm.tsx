@@ -1,3 +1,5 @@
+import { Topic } from '../../core/learning-engine/composition/oui/library'
+import { OUIFieldHelp } from '../../core/learning-engine/sub-contexts'
 import type { TopicMetadata, TopicWorkspace } from '../../core/supporting/authoring-editor/workspace'
 
 interface Props {
@@ -14,19 +16,19 @@ export function TopicMetaForm({ workspace, metadata }: Props) {
       <h2>Topic settings</h2>
       <p className="studio-hint">Shown in the learning app's catalog. Saved to <code>topic.oui</code>.</p>
       <label className="studio-field">
-        <span>Title</span>
+        <span>Title<OUIFieldHelp of={Topic} field="title" /></span>
         <input value={metadata.title} onChange={(e) => update({ title: e.target.value })} data-testid="studio-topic-title" />
       </label>
       <label className="studio-field">
-        <span>Category</span>
+        <span>Category<OUIFieldHelp of={Topic} field="category" /></span>
         <input value={metadata.category} onChange={(e) => update({ category: e.target.value })} />
       </label>
       <label className="studio-field">
-        <span>Description</span>
+        <span>Description<OUIFieldHelp of={Topic} field="description" /></span>
         <textarea rows={3} value={metadata.description} onChange={(e) => update({ description: e.target.value })} />
       </label>
       <label className="studio-field">
-        <span>Tags <small>(comma-separated)</small></span>
+        <span>Tags <small>(comma-separated)</small><OUIFieldHelp of={Topic} field="tags" /></span>
         <input
           value={(metadata.tags ?? []).join(', ')}
           onChange={(e) => update({ tags: e.target.value.split(',').map((t) => t.trim()).filter(Boolean) })}
@@ -34,16 +36,16 @@ export function TopicMetaForm({ workspace, metadata }: Props) {
       </label>
       <div className="studio-field-row">
         <label className="studio-field">
-          <span>Difficulty</span>
+          <span>Difficulty<OUIFieldHelp of={Topic} field="difficulty" /></span>
           <input value={metadata.difficulty ?? ''} placeholder="e.g. beginner" onChange={(e) => update({ difficulty: e.target.value || undefined })} />
         </label>
         <label className="studio-field">
-          <span>Updated</span>
+          <span>Updated<OUIFieldHelp of={Topic} field="updatedAt" /></span>
           <input type="date" value={metadata.updatedAt ?? ''} onChange={(e) => update({ updatedAt: e.target.value || undefined })} />
         </label>
         <label className="studio-field studio-field--checkbox">
           <input type="checkbox" checked={!!metadata.isNew} onChange={(e) => update({ isNew: e.target.checked || undefined })} />
-          <span>Mark as new</span>
+          <span>Mark as new<OUIFieldHelp of={Topic} field="isNew" /></span>
         </label>
       </div>
     </section>

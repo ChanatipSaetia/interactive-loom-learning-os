@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { Eye, FileArchive, FileJson, FolderOpen, Save, Sparkles, Upload, X } from 'lucide-react'
+import { Eye, FileArchive, FileCode, FolderOpen, Save, Sparkles, Upload, X } from 'lucide-react'
 import { HUDProvider } from '../../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../../core/supporting/learner-progress'
 import {
-  BUNDLE_EXTENSION,
+  SOURCE_EXTENSION,
   TopicWorkspace,
-  createTopicBundle,
+  createTopicSource,
   createTopicZip,
   readTopicArchive,
 } from '../../core/supporting/authoring-editor/workspace'
@@ -49,10 +49,10 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
 
   const importInput = useRef<HTMLInputElement>(null)
 
-  const exportBundle = useCallback(() => {
+  const exportSource = useCallback(() => {
     const topic = workspace.exportFiles()
-    downloadFile(`${topic.topicId}${BUNDLE_EXTENSION}`, createTopicBundle([topic]), 'application/json')
-    setStatus({ kind: 'ok', text: `Exported ${topic.topicId}${BUNDLE_EXTENSION}` })
+    downloadFile(`${topic.topicId}${SOURCE_EXTENSION}`, createTopicSource([topic]), 'text/plain')
+    setStatus({ kind: 'ok', text: `Exported ${topic.topicId}${SOURCE_EXTENSION}` })
   }, [workspace])
 
   const exportZip = useCallback(() => {
@@ -138,19 +138,19 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
               <a className="studio-button" href="viewer.html" target="_blank" rel="noreferrer" title="Open Loom Viewer to view exported topics">
                 <Eye size={15} /> Viewer
               </a>
-              <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.json bundle or a .zip" data-testid="studio-import">
+              <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.oui file or a .zip" data-testid="studio-import">
                 <Upload size={15} /> Import
               </button>
               <input
                 ref={importInput}
                 type="file"
-                accept=".json,.zip,application/json,application/zip"
+                accept=".oui,.zip,application/zip"
                 hidden
                 onChange={importFile}
                 data-testid="studio-import-input"
               />
-              <button type="button" className="studio-button" onClick={exportBundle} title="Export all sections to a single .loom.json file" data-testid="studio-export-bundle">
-                <FileJson size={15} /> Export file
+              <button type="button" className="studio-button" onClick={exportSource} title="Export all files as a single .loom.oui file" data-testid="studio-export-file">
+                <FileCode size={15} /> Export file
               </button>
               <button type="button" className="studio-button" onClick={exportZip} title="Export the topic folder as a .zip" data-testid="studio-export-zip">
                 <FileArchive size={15} /> Export zip

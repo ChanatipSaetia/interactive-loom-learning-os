@@ -5,7 +5,7 @@
  *   q1 = QuizQuestion("q1", "What is X?", [QuizChoice("a", "Y", true, "Because…")])
  */
 import { z } from 'zod'
-import { byId, call, defineOUIComponent, defineOUISection, idOf, refOrId, refTo, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
+import { byId, call, defineOUIComponent, defineOUISection, idOf, refOrId, refTo, sectionFields, sectionTail, sectionTailProps, type LoomOUIComponent } from '../openui-kernel'
 import type {
   ConceptEdgeType,
   ConceptMapSectionData,
@@ -27,6 +27,12 @@ export const QuizChoice = defineOUIComponent({
     correct: z.boolean(),
     explanation: z.string(),
   }),
+  fields: {
+    id: 'Choice ID, unique within its question (e.g. "a").',
+    text: 'Answer text shown on the option button.',
+    correct: 'true for the one correct choice of the question.',
+    explanation: 'Feedback shown after this choice is picked: why it is right or wrong.',
+  },
 })
 
 export const QuizQuestion = defineOUIComponent({
@@ -38,6 +44,12 @@ export const QuizQuestion = defineOUIComponent({
     choices: z.array(QuizChoice.ref),
     hint: z.string().optional(),
   }),
+  fields: {
+    id: 'Question ID, unique within the quiz.',
+    question: 'The question text.',
+    choices: 'Answer options, as QuizChoice references. Exactly one is correct.',
+    hint: 'Optional hint the learner can reveal before answering.',
+  },
 })
 
 export const Quiz: LoomOUIComponent = defineOUISection({
@@ -49,6 +61,10 @@ export const Quiz: LoomOUIComponent = defineOUISection({
     questions: z.array(QuizQuestion.ref),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    questions: 'The questions, as QuizQuestion references, in order.',
+  },
   toData: (p) => ({ type: 'quiz', questions: p.questions as unknown as QuizQuestionData[] }),
   fromData: (data: QuizSectionData, meta) => call(Quiz, {
     title: meta.title ?? '',
@@ -72,6 +88,11 @@ export const Dialogue = defineOUIComponent({
     aiThoughts: z.string(),
     aiQuestion: z.string(),
   }),
+  fields: {
+    user: 'What the user says, using the term.',
+    aiThoughts: 'The AI\'s internal reasoning about the user\'s message.',
+    aiQuestion: 'The follow-up question the AI asks back.',
+  },
 })
 
 export const Flashcard = defineOUIComponent({
@@ -88,6 +109,17 @@ export const Flashcard = defineOUIComponent({
     image: z.string().optional(),
     dialogue: Dialogue.ref.optional(),
   }),
+  fields: {
+    id: 'Card ID, unique within the deck.',
+    word: 'The term on the front of the card.',
+    pronunciation: 'How to say the term, e.g. "/ˈkæʃ/".',
+    category: 'Grouping shown as a badge on the card (e.g. "concept").',
+    shortDefinition: 'One-line definition shown on the back.',
+    detailedDefinition: 'Longer explanation shown on the back.',
+    whyItMatters: 'Why the learner should care about this term.',
+    image: 'Optional image URL or path shown on the card.',
+    dialogue: 'Optional Dialogue(...) example that shows the term in use.',
+  },
 })
 
 export const Flashcards: LoomOUIComponent = defineOUISection({
@@ -99,6 +131,10 @@ export const Flashcards: LoomOUIComponent = defineOUISection({
     cards: z.array(Flashcard.ref),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    cards: 'The cards, as Flashcard references, in deck order.',
+  },
   toData: (p) => ({ type: 'flashcards', terms: p.cards as unknown as WordTermType[] }),
   fromData: (data: FlashcardsSectionData, meta) => call(Flashcards, {
     title: meta.title ?? '',
@@ -127,6 +163,11 @@ export const Concept = defineOUIComponent({
     title: z.string(),
     category: z.string().optional(),
   }),
+  fields: {
+    id: 'Concept ID, unique within the map; links point at it.',
+    title: 'Label shown on the node.',
+    category: 'Optional node colour group: pattern, mechanism, concept, role, system, data or process.',
+  },
 })
 
 export const ConceptLink = defineOUIComponent({
@@ -137,6 +178,11 @@ export const ConceptLink = defineOUIComponent({
     to: refOrId(Concept),
     label: z.string().optional(),
   }),
+  fields: {
+    from: 'Source concept (Concept reference or ID).',
+    to: 'Target concept (Concept reference or ID).',
+    label: 'Optional relation label drawn on the edge (e.g. "uses").',
+  },
   toData: (p) => ({ from: idOf(p.from), to: idOf(p.to), label: p.label }),
 })
 
@@ -150,6 +196,11 @@ export const ConceptMap: LoomOUIComponent = defineOUISection({
     links: z.array(ConceptLink.ref),
     ...sectionTailProps,
   }),
+  fields: {
+    ...sectionFields,
+    concepts: 'The nodes, as Concept references.',
+    links: 'The edges between concepts, as ConceptLink references.',
+  },
   toData: (p) => ({
     type: 'concept-map',
     nodes: byId(p.concepts as unknown as ConceptNodeType[]),

@@ -1,0 +1,13 @@
+# Interactive Loom
+
+> Interactive learning app. A topic is a folder of OpenUI Lang (`.oui`) files: `topic.oui` plus one `sections/<name>.oui` per section. An LLM can write a whole topic as one `.loom.oui` file or a folder of `.oui` files, and the user opens it in Loom Viewer.
+
+## Authoring
+
+- [Loom authoring prompt](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/loom-authoring-prompt.md): system prompt for writing a topic: layout, output formats, every component and prop, rules and an example.
+- [Loom OpenUI JSON Schema](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/loom-oui.schema.json): JSON Schema of every component's props, with descriptions.
+
+## Tools
+
+- [Loom Viewer](https://chanatipsaetia.github.io/interactive-loom-learning-os/viewer.html): opens a `.loom.oui` file, a `.zip` or a topic folder, read-only.
+- [Loom Studio](https://chanatipsaetia.github.io/interactive-loom-learning-os/studio.html): edits a topic folder with code, form and live preview.
