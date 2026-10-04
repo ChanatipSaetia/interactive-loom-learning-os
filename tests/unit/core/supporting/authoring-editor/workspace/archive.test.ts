@@ -9,6 +9,7 @@ import {
   memoryFolder,
   parseTopicSource,
   readTopicArchive,
+  readTopicText,
   readTopicFolderFiles,
   readZipEntries,
   type TopicFiles,
@@ -96,6 +97,32 @@ describe('single file (.loom.oui)', () => {
   })
 })
 
+describe('reading pasted text', () => {
+  it('reads a .loom.oui text like parseTopicSource', () => {
+    expect(readTopicText(createTopicSource([demo()]))).toEqual([demo()])
+  })
+
+  it('turns a single section into a one-section topic titled after the section', () => {
+    expect(readTopicText(`\`\`\`oui\n${QUIZ}\`\`\``, 'check')).toEqual([{
+      topicId: 'check',
+      files: {
+        'topic.oui': 'root = Topic("Check", "Single section", "", [SectionRef("check")])\n',
+        'sections/check.oui': QUIZ,
+      },
+    }])
+    const openui = '// @openui "Steep \\"Guide\\"" "By tea"\nroot = Card([TextContent("Hi")])\n'
+    const [topic] = readTopicText(openui)
+    expect(topic.topicId).toBe('pasted')
+    expect(topic.files['topic.oui']).toContain('root = Topic("Steep \\"Guide\\""')
+    expect(topic.files['sections/pasted.oui']).toBe(openui)
+  })
+
+  it('rejects empty text and a topic.oui on its own', () => {
+    expect(() => readTopicText('  \n')).toThrow(/empty/)
+    expect(() => readTopicText(TOPIC)).toThrow(/only a topic.oui, without its sections/)
+  })
+})
+
 describe('zip', () => {
   it('stores the topic as a folder, including folder entries', async () => {
     const zip = createTopicZip([demo()])
@@ -142,6 +169,13 @@ describe('reading picked files', () => {
     expect(await readTopicArchive(single)).toEqual([demo()])
     const zip = pickedFile('demo.zip', createTopicZip([demo()]))
     expect(await readTopicArchive(zip)).toEqual([{ topicId: 'demo', files: demo().files }])
+  })
+
+  it('reads a single section file only when asked to (Viewer, not Studio import)', async () => {
+    await expect(readTopicArchive(pickedFile('quiz.oui', QUIZ))).rejects.toThrow(/before the first file marker/)
+    const [topic] = await readTopicArchive(pickedFile('quiz.oui', QUIZ), { singleSection: true })
+    expect(topic.topicId).toBe('quiz')
+    expect(topic.files['sections/quiz.oui']).toBe(QUIZ)
   })
 
   it('reads a headerless, fenced .oui answer pasted from an LLM chat', async () => {

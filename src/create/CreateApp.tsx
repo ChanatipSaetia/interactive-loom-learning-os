@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Check, Copy, Download, ExternalLink, Eye, Share2, Sparkles } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
+import { copyText } from '../core/ui-system/clipboard'
 import {
   ASSISTANTS,
   EXAMPLE_REQUESTS,
@@ -39,26 +40,6 @@ function initialAssistant(): AssistantId {
     // Storage unavailable (private mode): fall through to the default.
   }
   return 'claude'
-}
-
-/** Copy text; falls back to a hidden textarea where the Clipboard API is missing or refused. */
-async function copyText(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text)
-    return true
-  } catch {
-    const area = document.createElement('textarea')
-    area.value = text
-    area.setAttribute('readonly', '')
-    area.style.position = 'fixed'
-    area.style.opacity = '0'
-    document.body.appendChild(area)
-    area.select()
-    area.setSelectionRange(0, text.length)
-    const ok = document.execCommand?.('copy') ?? false
-    area.remove()
-    return ok
-  }
 }
 
 function downloadText(text: string, fileName: string) {
@@ -263,8 +244,9 @@ export function CreateApp() {
 
           <Step n={4} title="Open it in Loom Viewer">
             <p>
-              {ai.label} writes the whole topic into one {ai.document}. Copy or download it, save it as <code>&lt;topic-id&gt;.loom.oui</code>,
-              then choose <strong>Open file</strong> in Loom Viewer.
+              {ai.label} writes the whole topic into one {ai.document}. Copy it, open Loom Viewer, tap <strong>Paste text</strong>, paste and
+              press <strong>Open</strong>. On a computer you can just press Ctrl/Cmd+V on Viewer's start screen. Prefer a file? Save it as{' '}
+              <code>&lt;topic-id&gt;.loom.oui</code> and use <strong>Open file</strong>.
             </p>
             <div className="create-actions">
               <a className="create-button create-button--primary" href={VIEWER_URL} data-testid="create-open-viewer"><Eye size={16} /> Open Loom Viewer</a>
@@ -274,7 +256,7 @@ export function CreateApp() {
           <Step n={5} title="Fix and improve">
             <p>
               If Viewer shows an error for a section, copy the error into the same chat and say <em>"Fix these"</em>. Ask for changes the same
-              way (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). {ai.label} updates the {ai.document}; save it again and reopen it.
+              way (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). {ai.label} updates the {ai.document}; copy and paste it into Viewer again.
             </p>
             <p className="create-tip">
               When the Loom prompt is updated, download it again and replace the file in your {ai.workspace}.

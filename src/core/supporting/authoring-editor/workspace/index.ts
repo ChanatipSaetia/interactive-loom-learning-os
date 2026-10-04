@@ -16,6 +16,7 @@ export {
   groupTopicFiles,
   parseTopicSource,
   readTopicArchive,
+  readTopicText,
   readTopicFolderFiles,
   readZipEntries,
 } from './archive'

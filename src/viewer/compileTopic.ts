@@ -44,3 +44,23 @@ export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic 
   })
   return { topicId, manifest: topic.value, sections }
 }
+
+/**
+ * A ready-to-paste message for the AI chat that wrote the topic, listing
+ * every error Viewer found (topic.oui and each failing section), or null
+ * when the topic has none.
+ */
+export function topicErrorReport(topic: ViewerTopic): string | null {
+  const parts: string[] = []
+  if (topic.error) parts.push(topic.error)
+  for (const section of topic.sections) {
+    if (section.error) parts.push(`sections/${section.name}.oui\n${section.error}`)
+  }
+  if (parts.length === 0) return null
+  return `Loom Viewer found these errors in the topic "${topic.topicId}". Fix only what they point at, keep everything else unchanged, and give me the complete updated topic as one .loom.oui file.\n\n${parts.join('\n\n')}\n`
+}
+
+/** Same message for text or a file that could not be opened at all. */
+export function loadErrorReport(message: string): string {
+  return `Loom Viewer could not open the topic you wrote:\n\n${message}\n\nFix it and give me the complete topic again as one .loom.oui file (first line \`// @loom-topic <topic-id>\`, each file after a \`// === <path> ===\` line).\n`
+}

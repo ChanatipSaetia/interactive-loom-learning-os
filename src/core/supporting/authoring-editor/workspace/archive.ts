@@ -120,6 +120,51 @@ export function parseTopicSource(text: string, fallbackId = 'topic'): TopicFiles
   })
 }
 
+/** True when the text uses the `.loom.oui` layout (a `// @loom-topic` line or `// === <path> ===` markers). */
+function hasTopicMarkers(text: string): boolean {
+  return text.split(/\r?\n/).some((line) => TOPIC_HEADER.test(line) || FILE_MARKER.test(line))
+}
+
+const TOPIC_ROOT = /^\s*root\s*=\s*Topic\s*\(/m
+const SECTION_TITLE = /^\s*root\s*=\s*\w+\s*\(\s*("(?:[^"\\\n]|\\.)*")/m
+const OPENUI_TITLE = /^\s*\/\/\s*@openui\s+("(?:[^"\\\n]|\\.)*")/m
+
+/** Title of a section source: its `// @openui "Title"` or the first string argument of `root = …(`. */
+function sectionTitle(source: string): string | undefined {
+  const match = OPENUI_TITLE.exec(source) ?? SECTION_TITLE.exec(source)
+  if (!match) return undefined
+  try {
+    return JSON.parse(match[1]) as string
+  } catch {
+    return match[1].slice(1, -1)
+  }
+}
+
+/**
+ * Read topics from pasted or loaded text: a `.loom.oui` single file, or one
+ * section file on its own (`root = Quiz(...)`, `// @openui …`), which becomes
+ * a one-section topic named `name`. Throws TopicArchiveError otherwise.
+ */
+export function readTopicText(text: string, name = 'pasted'): TopicFiles[] {
+  if (hasTopicMarkers(text) || text.replace(/^\s*```[\w-]*\s*$/gm, '').trimStart().startsWith('{')) {
+    return parseTopicSource(text, name)
+  }
+  const source = text.replace(/\r\n?/g, '\n').split('\n').filter((line) => !CODE_FENCE.test(line)).join('\n').trim()
+  if (!source) throw new TopicArchiveError('Nothing to open: the text is empty.')
+  if (TOPIC_ROOT.test(source)) {
+    throw new TopicArchiveError('This is only a topic.oui, without its sections. Open the whole .loom.oui file, or pick the topic folder.')
+  }
+  const id = CONTENT_ID.test(name) ? name : 'pasted'
+  const title = sectionTitle(source) || id
+  return [{
+    topicId: id,
+    files: {
+      'topic.oui': `root = Topic(${JSON.stringify(title)}, "Single section", "", [SectionRef(${JSON.stringify(id)})])\n`,
+      [`sections/${id}.oui`]: `${source}\n`,
+    },
+  }]
+}
+
 // ============================================================================
 // Grouping loose files (folders, zips) into topics
 // ============================================================================
@@ -302,12 +347,18 @@ function isZip(bytes: Uint8Array): boolean {
   return bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04
 }
 
-/** Read the topics in a picked file: a `.loom.oui` single file or a zip. */
-export async function readTopicArchive(file: Blob & { name?: string }): Promise<TopicFiles[]> {
+/**
+ * Read the topics in a picked file: a `.loom.oui` single file or a zip.
+ * With `singleSection`, one section `.oui` file is also accepted (as a
+ * one-section topic); Studio leaves it off so an import never replaces a
+ * whole topic with one section.
+ */
+export async function readTopicArchive(file: Blob & { name?: string }, { singleSection = false } = {}): Promise<TopicFiles[]> {
   const bytes = new Uint8Array(await file.arrayBuffer())
-  const baseName = (file.name ?? '').replace(/(\.loom)?\.(oui|zip)$/i, '') || 'topic'
+  const baseName = (file.name ?? '').replace(/(\.loom)?\.(oui|zip|txt)$/i, '') || 'topic'
   if (isZip(bytes)) return nonEmpty(groupTopicFiles(await readZipEntries(bytes), baseName))
-  return parseTopicSource(new TextDecoder().decode(bytes), slug(baseName))
+  const text = new TextDecoder().decode(bytes)
+  return singleSection ? readTopicText(text, slug(baseName)) : parseTopicSource(text, slug(baseName))
 }
 
 function nonEmpty(topics: TopicFiles[]): TopicFiles[] {
