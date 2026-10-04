@@ -63,29 +63,33 @@ const IntroSection: React.FC<IntroSectionProps> = ({
 
   return (
     <div className="topic-intro-section" data-testid="intro-section">
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={IntroHelpModal} />
+      {/* The hero below shows the title, so the bar only carries the help button */}
+      {!hasHeroHeader && <SectionTitleBar sectionIndex={sectionIndex} HelpModal={IntroHelpModal} />}
 
       {hasHeroHeader && (
         <div className="topic-intro-hero">
-          <div className="topic-intro-badges">
-            <div className="topic-intro-badge chapter-badge">
-              <Sparkles size={14} className="sparkle-pulse" />
-              <span>OVERVIEW</span>
+          <div className="topic-intro-badge-row">
+            <div className="topic-intro-badges">
+              <div className="topic-intro-badge chapter-badge">
+                <Sparkles size={14} className="sparkle-pulse" />
+                <span>OVERVIEW</span>
+              </div>
+
+              {estimatedTime && (
+                <div className="topic-intro-badge meta-badge">
+                  <Clock size={13} />
+                  <span>{estimatedTime}</span>
+                </div>
+              )}
+
+              {moduleCount !== undefined && moduleCount > 0 && (
+                <div className="topic-intro-badge meta-badge">
+                  <Layers size={13} />
+                  <span>{moduleCount} Modules</span>
+                </div>
+              )}
             </div>
-
-            {estimatedTime && (
-              <div className="topic-intro-badge meta-badge">
-                <Clock size={13} />
-                <span>{estimatedTime}</span>
-              </div>
-            )}
-
-            {moduleCount !== undefined && moduleCount > 0 && (
-              <div className="topic-intro-badge meta-badge">
-                <Layers size={13} />
-                <span>{moduleCount} Modules</span>
-              </div>
-            )}
+            <SectionTitleBar sectionIndex={sectionIndex} HelpModal={IntroHelpModal} className="topic-intro-help" />
           </div>
 
           {title && <h1 className="topic-intro-title" data-testid="intro-title">{title}</h1>}
