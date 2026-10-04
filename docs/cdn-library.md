@@ -110,13 +110,13 @@ interface HeaderOptions {
   statusBadge?: string     // Optional status pill badge (e.g. '⚡ Live')
 }
 
-type BuiltInTheme = 'frappe' | 'medicare' | 'recipebook' | 'pinkcatboo' | 'eink' | string
+type BuiltInTheme = 'frappe' | 'medicare' | 'recipebook' | 'pinkcatboo' | 'eink' | 'bedtime' | string
 ```
 
 | Field | Type | Description |
 |---|---|---|
 | `title` | `string` | When provided, the library renders a styled page header above the sections containing this text. |
-| `theme` | `BuiltInTheme` | Theme identifier matching the main web application (`frappe`, `medicare`, `recipebook`, `pinkcatboo`, `eink`). |
+| `theme` | `BuiltInTheme` | Theme identifier matching the main web application (`frappe`, `medicare`, `recipebook`, `pinkcatboo`, `eink`, `bedtime`). |
 | `header` | `boolean \| HeaderOptions` | Embeds the main website's top navigation bar containing audio toggle, theme switcher, and container shell. |
 
 ---

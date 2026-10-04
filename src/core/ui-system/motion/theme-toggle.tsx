@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Palette, Moon, Sun, Cat, BookOpen } from "lucide-react";
+import { Palette, Moon, Sun, Cat, BookOpen, MoonStar } from "lucide-react";
 import { useTheme } from "../theme/useTheme";
 import { cn } from "../utils";
 import { SPRING_PRESS } from "./ease";
@@ -10,6 +10,7 @@ const THEME_ICONS: Record<string, React.ReactNode> = {
   recipebook: <Sun className="h-4 w-4" />,
   pinkcatboo: <Cat className="h-4 w-4" />,
   eink: <BookOpen className="h-4 w-4" />,
+  bedtime: <MoonStar className="h-4 w-4" />,
 };
 
 const THEME_LABELS: Record<string, string> = {
@@ -18,6 +19,7 @@ const THEME_LABELS: Record<string, string> = {
   recipebook: "RecipeBook",
   pinkcatboo: "PinkCatBoo",
   eink: "E-Ink (Paper)",
+  bedtime: "Bedtime",
 };
 
 export function ThemeToggle({ className }: { className?: string }) {

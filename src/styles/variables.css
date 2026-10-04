@@ -419,3 +419,76 @@
   --pale-blue:     rgba(26, 58, 110, 0.10);
   --pale-pink:     rgba(110, 26, 58, 0.10);
 }
+
+/* ============================================================
+   Theme: Bedtime (Night Reading)
+   For reading in a dark room before sleep.
+
+   Design principles:
+   · Very dark, warm (brown-black) surfaces — no bright panels.
+   · Warm parchment text at moderate contrast (~9:1), bright
+     enough to read comfortably but never glaring.
+   · Blue-light reduced: accents are dimmed and shifted toward
+     amber; the few cool roles (sky, teal, lavender) are dusty,
+     low-saturation tints so diagrams keep distinct hues.
+   · Images are dimmed and slow, calm motion (see global.css).
+============================================================ */
+[data-theme='bedtime'] {
+  /* shadcn semantic tokens — warm dim dark */
+  --background:             #1a1612;
+  --foreground:             #d2c1a3;
+  --card:                   #231e19;
+  --card-foreground:        #d2c1a3;
+  --primary:                #d1a06a;   /* candlelight amber */
+  --primary-foreground:     #1a1612;
+  --secondary:              #93a887;   /* dusty sage */
+  --secondary-foreground:   #1a1612;
+  --muted:                  #2e2721;
+  --muted-foreground:       #9a8b76;
+  --accent:                 #2e2721;
+  --accent-foreground:      #d2c1a3;
+  --border:                 #3a322a;
+  --input:                  #2e2721;
+  --ring:                   #d1a06a;
+  --destructive:            #c46f62;
+  --destructive-foreground: #1a1612;
+
+  /* Surfaces — warm brown-black */
+  --ctp-crust:     #110e0b;   /* darkest: topnav / sidebar header */
+  --ctp-mantle:    #16120f;   /* secondary surface */
+  --ctp-base:      #1a1612;   /* page / canvas background */
+  --ctp-surface0:  #231e19;   /* cards, elevated surfaces */
+  --ctp-surface1:  #322a23;   /* subtle border */
+  --ctp-surface2:  #463c32;   /* strong border / divider */
+
+  /* Overlays / muted text — warm greys */
+  --ctp-overlay0:  #6b5f51;
+  --ctp-overlay1:  #807262;
+  --ctp-overlay2:  #938471;
+  --ctp-subtext0:  #a79680;
+  --ctp-subtext1:  #bba98f;
+  --ctp-text:      #d2c1a3;   /* primary text — warm parchment */
+
+  /* Accents — dimmed, amber-shifted */
+  --ctp-blue:      #d1a06a;   /* Command — Candle Amber */
+  --ctp-sapphire:  #b99a72;   /* Service — Honey Brown */
+  --ctp-lavender:  #a698b0;   /* Read Model — Dusty Lilac */
+  --ctp-sky:       #8fa3a0;   /* Process — Dusk Grey-Teal */
+  --ctp-teal:      #8aa58e;   /* Database — Sage */
+  --ctp-mauve:     #b391a4;   /* Policy — Dusty Mauve */
+  --ctp-pink:      #c4939a;   /* Data Object — Faded Rose */
+  --ctp-rosewater: #d6b6a6;   /* Core System — Warm Blush */
+  --ctp-flamingo:  #cba091;   /* cursor — Clay */
+
+  /* Status — muted so nothing flashes */
+  --ctp-green:     #a3ad78;   /* Success / External API — Olive */
+  --ctp-yellow:    #cdbb7c;   /* Warning / Actor — Pale Straw */
+  --ctp-peach:     #cc7f58;   /* Event — Terracotta */
+  --ctp-red:       #c46f62;   /* Error / Hotspot — Brick */
+  --ctp-maroon:    #ad7276;   /* Decision — Dusty Wine */
+
+  /* Selection / highlight tints */
+  --pale-green:    rgba(163, 173, 120, 0.12);
+  --pale-blue:     rgba(209, 160, 106, 0.14);
+  --pale-pink:     rgba(196, 147, 154, 0.12);
+}

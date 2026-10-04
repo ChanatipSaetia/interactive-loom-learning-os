@@ -74,7 +74,7 @@ for (const [type, component] of Object.entries(SECTIONS)) {
   registerEmbedSection(type, component)
 }
 
-export type BuiltInTheme = 'frappe' | 'medicare' | 'recipebook' | 'pinkcatboo' | 'eink' | string
+export type BuiltInTheme = 'frappe' | 'medicare' | 'recipebook' | 'pinkcatboo' | 'eink' | 'bedtime' | string
 
 // --- Render options ---
 
