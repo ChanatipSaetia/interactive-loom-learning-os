@@ -4,7 +4,7 @@
  * or share the published authoring prompt, set up a Claude Project, Gemini
  * Gem or Copilot agent, ask, then open the answer in Loom Viewer), or with a
  * coding agent such as Claude Code or opencode (install the Loom skill, ask,
- * open the file it writes). `?ai=gemini` / `?ai=copilot` / `?ai=agent`
+ * open the topic folder it writes). `?ai=gemini` / `?ai=copilot` / `?ai=agent`
  * preselects the tab.
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
@@ -183,7 +183,7 @@ export function CreateApp() {
             <p>
               {ai
                 ? `Give ${ai.label} the Loom prompt once, ask for any topic, and open the answer in Loom Viewer as an interactive lesson.`
-                : 'Install the Loom skill once, ask your coding agent for any topic, and open the file it writes in Loom Viewer as an interactive lesson.'}
+                : 'Install the Loom skill once, ask your coding agent for any topic, and open the topic folder it writes in Loom Viewer as an interactive lesson.'}
             </p>
             <div className="create-switch" role="radiogroup" aria-label="AI assistant">
               {TABS.map((tab) => (
@@ -374,9 +374,10 @@ function AgentGuide() {
 
       <Step n={3} title="Open it in Loom Viewer">
         <p>
-          The agent writes the topic as <code>&lt;topic-id&gt;.loom.oui</code> in that folder. Open Loom Viewer and use <strong>Open file</strong>,
-          or <strong>Open folder</strong> if it wrote a topic folder. In the Interactive Loom repository it writes{' '}
-          <code>public/content/&lt;topic-id&gt;/</code> and checks it with the content tests; see it with <code>npm run dev</code>.
+          The agent writes a topic folder there: <code>&lt;topic-id&gt;/topic.oui</code> plus one <code>sections/&lt;name&gt;.oui</code> per
+          section. Open Loom Viewer, use <strong>Open folder</strong> and pick <code>&lt;topic-id&gt;</code>; or open it in Loom Studio to edit it
+          with a live preview. In the Interactive Loom repository it writes <code>public/content/&lt;topic-id&gt;/</code> and checks it with the
+          content tests; see it with <code>npm run dev</code>.
         </p>
         <div className="create-actions">
           <a className="create-button create-button--primary" href={VIEWER_URL} data-testid="create-open-viewer"><Eye size={16} /> Open Loom Viewer</a>
@@ -386,7 +387,7 @@ function AgentGuide() {
       <Step n={4} title="Fix and improve">
         <p>
           If Viewer shows errors, press <strong>Copy errors for your AI chat</strong> and paste them into the agent. Ask for changes the same way
-          (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). The agent edits the file; open it in Viewer again.
+          (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). The agent edits the files; open the folder in Viewer again.
         </p>
         <p className="create-tip">When the Loom prompt is updated, run the install steps again to update the skill.</p>
       </Step>
