@@ -124,7 +124,7 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
       <HUDProvider>
         <div className="studio-shell" data-testid="studio-workspace">
           <header className="studio-header">
-            <div className="studio-brand"><Sparkles size={18} /> Loom Studio</div>
+            <span className="topnav-title studio-brand"><Sparkles size={16} /> Loom&nbsp;Studio</span>
             <div className="studio-header-topic">
               <span className="studio-header-title">{snap.metadata.title}</span>
               <span className="studio-header-folder">{snap.topicId}/</span>
