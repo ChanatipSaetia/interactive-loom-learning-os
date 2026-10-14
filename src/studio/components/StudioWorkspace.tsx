@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { FileArchive, FileCode, FolderOpen, Save, Sparkles, Upload, X } from 'lucide-react'
+import { FileArchive, FileCode, FolderOpen, RefreshCw, Save, Sparkles, Upload, X } from 'lucide-react'
 import { HUDProvider } from '../../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../../core/supporting/learner-progress'
 import {
@@ -20,15 +20,28 @@ import { TopicMetaForm } from './TopicMetaForm'
 interface Props {
   workspace: TopicWorkspace
   onOpenFolder: () => void
-  /** Reopen the current folder (after its files were replaced by an import). */
-  onReload: () => Promise<void>
+  /**
+   * Reopen the current folder from disk (Refresh, or after an import),
+   * selecting `section` and showing `status` once it is open.
+   */
+  onReload: (section?: string, status?: string) => Promise<void>
+  /** Section to select first (kept across a reload). */
+  initialSection?: string
+  /** Message to show first (e.g. after a reload). */
+  initialStatus?: string
 }
 
-export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
+export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSection, initialStatus }: Props) {
   const snap = useWorkspace(workspace)
-  const [selected, setSelected] = useState<string>(() => snap.sections[0]?.name ?? TOPIC_ITEM)
+  const [selected, setSelected] = useState<string>(() =>
+    initialSection && (initialSection === TOPIC_ITEM || snap.sections.some((s) => s.name === initialSection))
+      ? initialSection
+      : snap.sections[0]?.name ?? TOPIC_ITEM)
   const [saving, setSaving] = useState(false)
-  const [status, setStatus] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
+  const [status, setStatus] = useState<{ kind: 'ok' | 'error'; text: string } | null>(
+    () => (initialStatus ? { kind: 'ok', text: initialStatus } : null),
+  )
 
   const dirtyCount = snap.dirtySections.length + (snap.topicDirty ? 1 : 0)
 
@@ -47,6 +60,16 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
     await run(() => workspace.save(), 'Saved')
     setSaving(false)
   }, [run, workspace])
+
+  /** Reload the topic from disk, e.g. after an AI agent edited the files. */
+  const refresh = useCallback(async () => {
+    if (workspace.isDirty && !window.confirm(
+      `You have ${dirtyCount} unsaved change${dirtyCount === 1 ? '' : 's'}. Discard ${dirtyCount === 1 ? 'it' : 'them'} and reload the topic from disk?`,
+    )) return
+    setRefreshing(true)
+    await run(() => onReload(selected, 'Reloaded from disk'))
+    setRefreshing(false)
+  }, [dirtyCount, onReload, run, selected, workspace])
 
   const importInput = useRef<HTMLInputElement>(null)
 
@@ -78,9 +101,9 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
       ].filter(Boolean).join('\n\n')
       if (!window.confirm(message)) return
       await TopicWorkspace.replaceFolderContents(workspace.folder, topic.files)
-      await onReload()
+      await onReload(selected, `Imported ${file.name}`)
     })
-  }, [onReload, run, snap.topicId, workspace])
+  }, [onReload, run, selected, snap.topicId, workspace])
 
   // Ctrl/Cmd+S saves; leaving with unsaved changes asks first.
   useEffect(() => {
@@ -153,6 +176,16 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload }: Props) {
               </button>
               <button type="button" className="studio-button" onClick={exportZip} title="Export the topic folder as a .zip" data-testid="studio-export-zip">
                 <FileArchive size={15} /> Export zip
+              </button>
+              <button
+                type="button"
+                className="studio-button"
+                onClick={refresh}
+                disabled={refreshing}
+                title="Reload the topic from disk to pick up changes made outside Studio (e.g. by an AI agent)"
+                data-testid="studio-refresh"
+              >
+                <RefreshCw size={15} className={refreshing ? 'studio-spin' : undefined} /> Refresh
               </button>
               <button type="button" className="studio-button" onClick={onOpenFolder}>
                 <FolderOpen size={15} /> Open folder

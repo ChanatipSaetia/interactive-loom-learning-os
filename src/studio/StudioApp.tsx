@@ -40,16 +40,32 @@ export function StudioApp({ pickFolder }: StudioAppProps = {}) {
   const [error, setError] = useState<string | null>(null)
   /** Bumped on every open so reopening the same folder remounts the editor. */
   const [generation, setGeneration] = useState(0)
+  /** Section to select and message to show after reopening the same folder. */
+  const [reopened, setReopened] = useState<{ section?: string; status?: string }>({})
 
   const open = useCallback(async (folder: TopicFolder) => {
     try {
       setWorkspace(await TopicWorkspace.open(folder))
       setGeneration((g) => g + 1)
+      setReopened({})
       setError(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     }
   }, [])
+
+  /**
+   * Reopen the current folder from disk (Refresh, or after an import),
+   * keeping the selected section. Throws when the folder no longer opens
+   * (e.g. a broken topic.oui), so the editor stays and shows the error.
+   */
+  const reload = useCallback(async (section?: string, status?: string) => {
+    if (!workspace) return
+    const next = await TopicWorkspace.open(workspace.folder)
+    setWorkspace(next)
+    setGeneration((g) => g + 1)
+    setReopened({ section, status })
+  }, [workspace])
 
   const pick = useCallback(async () => {
     if (workspace?.isDirty && !window.confirm('You have unsaved changes. Open another folder anyway?')) return
@@ -107,7 +123,9 @@ export function StudioApp({ pickFolder }: StudioAppProps = {}) {
             key={`${workspace.getSnapshot().topicId}:${generation}`}
             workspace={workspace}
             onOpenFolder={pick}
-            onReload={() => open(workspace.folder)}
+            onReload={reload}
+            initialSection={reopened.section}
+            initialStatus={reopened.status}
           />
         )
         : <Landing onPick={pick} onCreate={createFromText} canPick={!!pickFolder || supportsFolderPicker()} error={error} />}

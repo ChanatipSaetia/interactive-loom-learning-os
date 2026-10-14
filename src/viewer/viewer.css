@@ -64,6 +64,21 @@ body {
 .viewer-pill:hover,
 .viewer-button:hover { background: var(--accent); }
 .viewer-button { padding: 8px 16px; border-radius: 10px; font-size: 14px; }
+.viewer-pill:disabled { opacity: 0.6; cursor: progress; }
+.viewer-spin { animation: viewer-spin 0.8s linear infinite; }
+@keyframes viewer-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .viewer-spin { animation: none; } }
+
+.viewer-status {
+  max-width: 40ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+.viewer-status--ok { color: var(--ctp-green); }
+.viewer-status--error { color: var(--destructive); white-space: normal; }
 .viewer-button--primary { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
 .viewer-button--primary:hover { background: color-mix(in srgb, var(--primary) 85%, var(--foreground)); }
 
@@ -162,6 +177,7 @@ body {
 @media (max-width: 640px) {
   .viewer .topnav { gap: 10px; padding: 0 12px; }
   .viewer-source { display: none; }
+  .viewer-status { max-width: 16ch; }
   .viewer-pill-label { display: none; }
   .viewer .theme-toggle-label { display: none; }
   .viewer-pill { padding: 6px 10px; }

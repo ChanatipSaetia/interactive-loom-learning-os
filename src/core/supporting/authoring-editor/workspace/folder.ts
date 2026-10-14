@@ -142,3 +142,30 @@ export function memoryFolder(name: string, initial: Record<string, string> = {})
     },
   }
 }
+
+// ============================================================================
+// Read-only folder snapshots (Loom Viewer)
+// ============================================================================
+
+const SKIPPED_DIRS = new Set(['node_modules', '.git'])
+
+/**
+ * Every `.oui` file under a picked or dropped folder, keyed by a path that
+ * starts with the folder's name (like `webkitRelativePath`). Reading the
+ * handle again picks up files changed on disk since the last read.
+ */
+export async function readDirectoryOUIFiles(root: FileSystemDirectoryHandle, maxDepth = 4): Promise<Record<string, string>> {
+  const entries: Record<string, string> = {}
+  const walk = async (dir: FileSystemDirectoryHandle, prefix: string, depth: number) => {
+    for await (const entry of (dir as unknown as DirectoryIteration).values()) {
+      const path = `${prefix}/${entry.name}`
+      if (entry.kind === 'file' && entry.name.endsWith('.oui')) {
+        entries[path] = await (await (entry as FileSystemFileHandle).getFile()).text()
+      } else if (entry.kind === 'directory' && depth < maxDepth && !entry.name.startsWith('.') && !SKIPPED_DIRS.has(entry.name)) {
+        await walk(entry as FileSystemDirectoryHandle, path, depth + 1)
+      }
+    }
+  }
+  await walk(root, root.name, 0)
+  return entries
+}
