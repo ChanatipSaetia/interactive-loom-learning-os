@@ -485,3 +485,10 @@
   color: var(--ctp-text);
 }
 
+
+/* Loom Studio / Viewer Pick mode: link labels, node titles and categories can be picked on their own. */
+.loom-picking .cm-edge-label-group,
+.loom-picking .cm-node-title,
+.loom-picking .cm-node-category {
+  pointer-events: auto;
+}

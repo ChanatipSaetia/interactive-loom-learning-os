@@ -5,6 +5,7 @@ import type { OKFScenarioNode, ScenarioRating } from '../../../../composition/ok
 import { Button } from '../../../../../ui-system/motion/button'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { ScenarioHelpModal } from './ScenarioHelpModal'
 import './scenario.css'
 
@@ -59,6 +60,7 @@ function RatingBadge({ rating }: { rating: ScenarioRating }) {
 }
 
 function OutcomeDisplay({ node, onRestart }: { node: OKFScenarioNode; onRestart: () => void }) {
+  const pick = usePickAnchors()
   if (!node.outcome) return null
 
   return (
@@ -70,6 +72,7 @@ function OutcomeDisplay({ node, onRestart }: { node: OKFScenarioNode; onRestart:
       transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
     >
       <div
+        {...pick(node.outcome)}
         className="scenario-outcome-card"
         style={{
           borderColor: RATING_COLORS[node.outcome.rating],
@@ -91,13 +94,13 @@ function OutcomeDisplay({ node, onRestart }: { node: OKFScenarioNode; onRestart:
         <div className="scenario-outcome-body">
           <div className="scenario-outcome-block">
             <span className="scenario-outcome-block-label">What Happened</span>
-            <p className="scenario-outcome-block-text" data-testid="scenario-outcome-verdict">
+            <p className="scenario-outcome-block-text" data-testid="scenario-outcome-verdict" {...pick(node.outcome, 'verdict')}>
               {node.outcome.verdict}
             </p>
           </div>
           <div className="scenario-outcome-block">
             <span className="scenario-outcome-block-label">Key Lesson</span>
-            <p className="scenario-outcome-block-text" data-testid="scenario-outcome-lesson">
+            <p className="scenario-outcome-block-text" data-testid="scenario-outcome-lesson" {...pick(node.outcome, 'lesson')}>
               {node.outcome.lesson}
             </p>
           </div>
@@ -132,10 +135,12 @@ function DecisionDisplay({
   onBack: () => void
   isLastChoice: boolean
 }) {
+  const pick = usePickAnchors()
   return (
     <motion.div
       className="scenario-decision"
       data-testid="scenario-decision"
+      {...pick(node)}
       initial={{ opacity: 0, x: 12 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -12 }}
@@ -158,7 +163,7 @@ function DecisionDisplay({
         )}
       </div>
 
-      <h4 className="scenario-decision-prompt" data-testid="scenario-decision-prompt">
+      <h4 className="scenario-decision-prompt" data-testid="scenario-decision-prompt" {...pick(node, 'prompt')}>
         {node.prompt}
       </h4>
 
@@ -170,6 +175,7 @@ function DecisionDisplay({
               key={choice.id ?? idx}
               className="scenario-choice"
               data-testid={`scenario-choice-${choice.id ?? idx}`}
+              {...pick(choice)}
               onClick={() => onChoose(choice.id ?? '', choice.next ?? '')}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -178,7 +184,7 @@ function DecisionDisplay({
               <div className="scenario-choice-badge" aria-hidden="true">
                 {optionLetter}
               </div>
-              <span className="scenario-choice-text">{choice.text}</span>
+              <span className="scenario-choice-text" {...pick(choice, 'text')}>{choice.text}</span>
               <ArrowRight className="scenario-choice-arrow" />
             </motion.button>
           )
@@ -189,14 +195,17 @@ function DecisionDisplay({
 }
 
 function IntroDisplay({
+  scenarioId,
   title,
   intro,
   onStart,
 }: {
+  scenarioId?: string
   title?: string
   intro?: string
   onStart: () => void
 }) {
+  const pick = usePickAnchors()
   return (
     <motion.div
       className="scenario-intro"
@@ -221,7 +230,7 @@ function IntroDisplay({
           )}
         </div>
         {intro && (
-          <p className="scenario-intro-text" data-testid="scenario-intro-text">
+          <p className="scenario-intro-text" data-testid="scenario-intro-text" {...(scenarioId ? pick.byId('Scenario', scenarioId, 'intro') : {})}>
             {intro}
           </p>
         )}
@@ -241,6 +250,7 @@ function IntroDisplay({
 }
 
 export default function ScenarioSection({
+  id,
   title,
   intro,
   nodes = {},
@@ -321,6 +331,7 @@ export default function ScenarioSection({
         {phase === 'intro' && (
           <IntroDisplay
             key="intro"
+            scenarioId={id}
             title={title}
             intro={intro}
             onStart={handleStart}

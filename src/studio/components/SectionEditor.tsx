@@ -1,19 +1,46 @@
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useCallback, useMemo, useRef, useState } from 'react'
 import { AlertCircle, AlertTriangle, Code2, Eye, FormInput } from 'lucide-react'
 import { LazyOUICodeEditor, VisualFormEditor } from '../../core/supporting/authoring-editor'
 import type { SectionState, TopicWorkspace } from '../../core/supporting/authoring-editor/workspace'
+import { statementAtLine, type PickTarget } from '../../core/supporting/authoring-editor/pick'
+import { indexStatementLines } from '../../core/learning-engine/composition/oui/compile'
 import { SectionPreview } from './SectionPreview'
 
 interface Props {
   workspace: TopicWorkspace
   section: SectionState
   sectionNames: string[]
+  /** The statement the latest Pick points at; shown in the code when it is in this file. */
+  reveal?: { file: string; statement: string } | null
+  /** Adds the statement on a code line to the Pick tray (Ctrl/Cmd+Shift+M). */
+  onAddToTray?: (target: PickTarget) => void
 }
 
 type Tab = 'code' | 'form'
 
-export function SectionEditor({ workspace, section, sectionNames }: Props) {
+export function SectionEditor({ workspace, section, sectionNames, reveal, onAddToTray }: Props) {
   const [tab, setTab] = useState<Tab>('code')
+  const file = `sections/${section.name}.oui`
+  const title = section.lastValid?.meta.title || section.name
+  const sourceRef = useRef(section.source)
+  sourceRef.current = section.source
+
+  // Reveal only when a new pick arrives, not on every keystroke.
+  const revealLine = useMemo(() => {
+    if (!reveal || reveal.file !== file) return undefined
+    const line = indexStatementLines(sourceRef.current).get(reveal.statement)
+    return line ? { line } : undefined
+  }, [reveal, file])
+
+  // Hovering a code line outlines what its statement draws in the preview.
+  const [hoverStatement, setHoverStatement] = useState<string | undefined>()
+  const onHoverLine = useCallback((line: number | null) => {
+    setHoverStatement(line ? statementAtLine(sourceRef.current, line) : undefined)
+  }, [])
+  const onAddLine = useCallback((line: number) => {
+    const statement = statementAtLine(sourceRef.current, line)
+    if (statement) onAddToTray?.({ file, anchor: statement, section: title, label: statement === 'root' ? title : `${title} › ${statement}` })
+  }, [file, title, onAddToTray])
   const diagnostics = section.validation.diagnostics
   const blocking = diagnostics.some((d) => d.tier < 3)
   const payload = blocking ? null : section.validation.payload
@@ -56,6 +83,9 @@ export function SectionEditor({ workspace, section, sectionNames }: Props) {
                 hints={hints}
                 className="studio-code-editor"
                 ariaLabel={`Source of ${section.name}`}
+                revealLine={revealLine}
+                onHoverLine={onHoverLine}
+                onAddLine={onAddToTray ? onAddLine : undefined}
               />
             </Suspense>
           ) : payload ? (
@@ -79,7 +109,7 @@ export function SectionEditor({ workspace, section, sectionNames }: Props) {
           <span className="studio-tabs-label"><Eye size={14} /> Preview</span>
           {blocking && section.lastValid && <span className="studio-stale">Showing the last version without errors</span>}
         </div>
-        <SectionPreview payload={section.lastValid} />
+        <SectionPreview payload={section.lastValid} file={file} highlight={tab === 'code' ? hoverStatement : undefined} />
       </section>
     </div>
   )

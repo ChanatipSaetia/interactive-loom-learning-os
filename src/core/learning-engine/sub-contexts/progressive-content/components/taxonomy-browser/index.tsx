@@ -5,6 +5,7 @@ import * as Icons from 'lucide-react'
 import { ScrollReveal } from '../../../../../ui-system/motion/scroll-reveal'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { TaxonomyHelpModal } from './TaxonomyHelpModal'
 import type { TaxonomyAccentColor } from '../../schema'
 import './taxonomy-browser.css'
@@ -63,6 +64,7 @@ function TaxonomyModal({
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const [lastCategory, setLastCategory] = useState<TaxonomyCategory | undefined>(propCategory)
   const { playSound } = useSound()
+  const pick = usePickAnchors()
 
   if (propCategory && propCategory !== lastCategory) {
     setLastCategory(propCategory)
@@ -123,16 +125,16 @@ function TaxonomyModal({
                   ✕
                 </Dialog.Close>
 
-                <div className="taxonomy-modal-header">
+                <div className="taxonomy-modal-header" {...pick(category)}>
                   <div className="taxonomy-modal-icon" style={{ color: accent }}>
                     <Icon size={32} strokeWidth={1.5} />
                   </div>
                   {category.subtitle && (
-                    <p className="taxonomy-modal-subtitle" style={{ color: accent }}>
+                    <p className="taxonomy-modal-subtitle" style={{ color: accent }} {...pick(category, 'subtitle')}>
                       {category.subtitle}
                     </p>
                   )}
-                  <h2 className="taxonomy-modal-title" style={{ color: accent }}>
+                  <h2 className="taxonomy-modal-title" style={{ color: accent }} {...pick(category, 'title')}>
                     {category.title}
                   </h2>
                 </div>
@@ -140,13 +142,13 @@ function TaxonomyModal({
                 <div className="taxonomy-modal-sections-scroll" data-lenis-prevent>
                   <div className="taxonomy-modal-section" data-testid="taxonomy-modal-overview">
                     <h3 className="taxonomy-modal-section-title">Overview</h3>
-                    <p className="taxonomy-modal-text">{category.description}</p>
+                    <p className="taxonomy-modal-text" {...pick(category, 'description')}>{category.description}</p>
                   </div>
 
                   <div className="taxonomy-modal-section taxonomy-modal-deepdive" data-testid="taxonomy-modal-deepdive">
                     <h3 className="taxonomy-modal-section-title">Deep Dive</h3>
                     <div className="taxonomy-modal-elevated">
-                      <p className="taxonomy-modal-text">{category.details}</p>
+                      <p className="taxonomy-modal-text" {...pick(category, 'details')}>{category.details}</p>
                     </div>
                   </div>
 
@@ -154,13 +156,13 @@ function TaxonomyModal({
                     <h3 className="taxonomy-modal-section-title">Scope & Boundaries</h3>
 
                     {category.analogy && (
-                      <blockquote className="taxonomy-modal-analogy" data-testid="taxonomy-modal-analogy">
+                      <blockquote className="taxonomy-modal-analogy" data-testid="taxonomy-modal-analogy" {...pick(category, 'analogy')}>
                         {category.analogy}
                       </blockquote>
                     )}
 
                     {category.primaryFocus && (
-                      <div className="taxonomy-modal-focus" data-testid="taxonomy-modal-primary-focus">
+                      <div className="taxonomy-modal-focus" data-testid="taxonomy-modal-primary-focus" {...pick(category, 'primaryFocus')}>
                         <span className="taxonomy-modal-focus-label">Primary Focus</span>
                         <span className="taxonomy-modal-focus-text">{category.primaryFocus}</span>
                       </div>
@@ -174,7 +176,7 @@ function TaxonomyModal({
                           </h4>
                           <ul className="taxonomy-modal-scope-list">
                             {category.inScope.map((item, i) => (
-                              <li key={i} className="taxonomy-modal-scope-item" data-testid={`taxonomy-modal-in-scope-${i}`}>
+                              <li key={i} className="taxonomy-modal-scope-item" data-testid={`taxonomy-modal-in-scope-${i}`} {...pick(category.inScope, i)}>
                                 {item}
                               </li>
                             ))}
@@ -189,7 +191,7 @@ function TaxonomyModal({
                           </h4>
                           <ul className="taxonomy-modal-scope-list">
                             {category.outOfScope.map((item, i) => (
-                              <li key={i} className="taxonomy-modal-scope-item" data-testid={`taxonomy-modal-out-of-scope-${i}`}>
+                              <li key={i} className="taxonomy-modal-scope-item" data-testid={`taxonomy-modal-out-of-scope-${i}`} {...pick(category.outOfScope, i)}>
                                 {item}
                               </li>
                             ))}
@@ -211,6 +213,7 @@ function TaxonomyModal({
 function TaxonomyBrowserSection({ title, categories, sectionIndex = 0 }: TaxonomyBrowserSectionProps) {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const { playSound } = useSound()
+  const pick = usePickAnchors()
 
   const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
@@ -239,6 +242,7 @@ function TaxonomyBrowserSection({ title, categories, sectionIndex = 0 }: Taxonom
                 aria-label={`Open details for ${cat.title}`}
                 className="taxonomy-browser-card"
                 data-testid={`taxonomy-browser-card-${idx}`}
+                {...pick(cat)}
                 style={{ borderTopColor: accent }}
                 onClick={() => handleCardClick(idx)}
                 onKeyDown={(e) => {
@@ -253,14 +257,14 @@ function TaxonomyBrowserSection({ title, categories, sectionIndex = 0 }: Taxonom
                 </div>
                 <div className="taxonomy-browser-card-body">
                   {cat.subtitle && (
-                    <p className="taxonomy-browser-subtitle" data-testid={`taxonomy-browser-subtitle-${idx}`}>
+                    <p className="taxonomy-browser-subtitle" data-testid={`taxonomy-browser-subtitle-${idx}`} {...pick(cat, 'subtitle')}>
                       {cat.subtitle}
                     </p>
                   )}
-                  <h4 className="taxonomy-browser-card-title" data-testid={`taxonomy-browser-card-title-${idx}`}>
+                  <h4 className="taxonomy-browser-card-title" data-testid={`taxonomy-browser-card-title-${idx}`} {...pick(cat, 'title')}>
                     {cat.title}
                   </h4>
-                  <p className="taxonomy-browser-description" data-testid={`taxonomy-browser-description-${idx}`}>
+                  <p className="taxonomy-browser-description" data-testid={`taxonomy-browser-description-${idx}`} {...pick(cat, 'description')}>
                     {cat.description}
                   </p>
                 </div>

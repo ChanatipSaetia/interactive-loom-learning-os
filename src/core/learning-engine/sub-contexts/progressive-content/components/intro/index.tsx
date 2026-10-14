@@ -1,5 +1,6 @@
 import React from 'react'
 import { Sparkles, Target, Lightbulb, MapPin, Clock, Layers, ArrowRight, CheckCircle2, BookOpen } from 'lucide-react'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import type { OKFIntroRoadmapStep } from '../../../../composition/okf/types'
 import { IntroHelpModal } from './IntroHelpModal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
@@ -39,6 +40,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
   sectionId = 'intro',
   onResultChange,
 }) => {
+  const pick = usePickAnchors()
   React.useMemo(() => {
     onResultChange?.({
       sectionId,
@@ -99,7 +101,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
 
       {what?.definition && (
         <div className="topic-intro-definition-row">
-          <div className="topic-intro-block pillar-definition" data-testid="intro-definition">
+          <div className="topic-intro-block pillar-definition" data-testid="intro-definition" {...pick(what, 'definition')}>
             <div className="pillar-header">
               <div className="pillar-icon-box icon-definition">
                 <BookOpen size={18} />
@@ -115,7 +117,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
       {(what || why) && (
         <div className="topic-intro-pillars">
           {what && (
-            <div className="topic-intro-block pillar-what" data-testid="intro-what-card">
+            <div className="topic-intro-block pillar-what" data-testid="intro-what-card" {...pick(what)}>
               <div className="pillar-header">
                 <div className="pillar-icon-box icon-what">
                   <Target size={18} />
@@ -123,12 +125,12 @@ const IntroSection: React.FC<IntroSectionProps> = ({
                 <h3 className="pillar-title">WHAT THIS COVERS</h3>
               </div>
 
-              <p className="pillar-summary">{what.summary}</p>
+              <p className="pillar-summary" {...pick(what, 'summary')}>{what.summary}</p>
 
               {what.bullets && what.bullets.length > 0 && (
                 <ul className="pillar-bullets">
                   {what.bullets.map((item, idx) => (
-                    <li key={idx}>
+                    <li key={idx} {...pick(what.bullets, idx)}>
                       <CheckCircle2 size={14} className="bullet-icon" />
                       <span>{item}</span>
                     </li>
@@ -139,7 +141,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
               {what.tags && what.tags.length > 0 && (
                 <div className="pillar-tags">
                   {what.tags.map((tag, idx) => (
-                    <span key={idx} className="pillar-tag">{tag}</span>
+                    <span key={idx} className="pillar-tag" {...pick(what.tags, idx)}>{tag}</span>
                   ))}
                 </div>
               )}
@@ -147,7 +149,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
           )}
 
           {why && (
-            <div className="topic-intro-block pillar-why" data-testid="intro-why-card">
+            <div className="topic-intro-block pillar-why" data-testid="intro-why-card" {...pick(why)}>
               <div className="pillar-header">
                 <div className="pillar-icon-box icon-why">
                   <Lightbulb size={18} />
@@ -155,10 +157,10 @@ const IntroSection: React.FC<IntroSectionProps> = ({
                 <h3 className="pillar-title">WHY IT MATTERS</h3>
               </div>
 
-              <p className="pillar-summary">{why.summary}</p>
+              <p className="pillar-summary" {...pick(why, 'summary')}>{why.summary}</p>
 
               {why.impact && (
-                <div className="pillar-impact-box">
+                <div className="pillar-impact-box" {...pick(why, 'impact')}>
                   <span className="impact-label">KEY TAKEAWAY</span>
                   <p className="impact-text">{why.impact}</p>
                 </div>
@@ -181,6 +183,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({
               <div
                 key={idx}
                 className="roadmap-step-card"
+                {...pick(step)}
                 onClick={() => handleScrollToSection(step.sectionId || step.type)}
                 role="button"
                 tabIndex={0}

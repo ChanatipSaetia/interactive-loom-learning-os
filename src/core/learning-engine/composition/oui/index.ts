@@ -9,8 +9,10 @@ export {
   compileSectionElement,
   compileElementTree,
   indexStatementLines,
+  sourceMapOf,
 } from './compile'
 export type {
+  OUIAnchor,
   OUIIssue,
   OUIIssueCode,
   OUISourceMap,

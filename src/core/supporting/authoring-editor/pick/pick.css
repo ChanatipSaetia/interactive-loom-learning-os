@@ -1,0 +1,257 @@
+/* Pick mode (Loom Studio and Loom Viewer) — outline and tray. */
+
+.loom-picking [data-oui-file],
+.loom-picking [data-oui-file] * { cursor: crosshair !important; }
+
+.pick-toggle.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.pick-outline {
+  position: fixed;
+  z-index: 997; /* under the tray, which stays readable */
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 2px solid var(--primary);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+.pick-outline-label {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  transform: translateY(-100%);
+  max-width: min(60ch, 90vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 6px 6px 0 0;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font: 600 12px/1.5 var(--font-mono, monospace);
+}
+
+.pick-tray {
+  position: fixed;
+  z-index: 999;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  width: min(760px, calc(100vw - 32px));
+  max-height: 45vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--foreground) 18%, transparent);
+  font-size: 13px;
+}
+.pick-tray-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 8px 14px;
+}
+.pick-tray:not(.is-collapsed) .pick-tray-head { border-bottom: 1px solid var(--border); }
+.pick-tray-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pick-tray-spacer { flex: 1; }
+.pick-tray-status { color: var(--muted-foreground); font-weight: 600; }
+
+.pick-tray-modes {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pick-tray-modes button {
+  border: 0;
+  padding: 3px 12px;
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pick-tray-modes button.is-active { background: var(--primary); color: var(--primary-foreground); }
+
+.pick-tray-button,
+.pick-tray-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pick-tray-button { padding: 5px 12px; border-radius: 8px; }
+.pick-tray-button--primary { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+.pick-tray-icon { padding: 5px; border-radius: 6px; }
+.pick-tray-button:disabled,
+.pick-tray-icon:disabled { opacity: 0.5; cursor: default; }
+.pick-tray-icon:hover:not(:disabled) { background: var(--accent); }
+
+.pick-tray-body { overflow-y: auto; padding: 8px 14px 12px; }
+.pick-tray-hint { margin: 4px 0; color: var(--muted-foreground); }
+
+.pick-entry-pointer {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--muted-foreground);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+}
+.pick-entry-stale {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--ctp-yellow, var(--destructive));
+  font-size: 12px;
+}
+
+.pick-entry-note,
+.pick-tray-question {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+}
+.pick-tray-question { margin-top: 10px; }
+
+
+/* Studio: what the code line under the pointer draws (decision 46). */
+.pick-linked { outline: 2px dashed var(--primary); outline-offset: 2px; border-radius: 4px; }
+svg .pick-linked,
+svg.pick-linked { outline: none; filter: drop-shadow(0 0 3px var(--primary)) drop-shadow(0 0 1px var(--primary)); }
+
+.pick-outline--flash { border-style: solid; border-width: 3px; background: color-mix(in srgb, var(--primary) 18%, transparent); animation: pick-flash 1.1s ease-out forwards; }
+@keyframes pick-flash { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pick-outline--flash { animation: none; } }
+
+/* Floating "Picking · Done" pill while Pick mode is on. */
+.pick-pill {
+  position: fixed;
+  z-index: 1001;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 14px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--foreground) 20%, transparent);
+}
+.pick-pill button {
+  border: 0;
+  border-radius: 999px;
+  padding: 4px 12px;
+  background: var(--primary-foreground);
+  color: var(--primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Numbered dots on picked places, matching the tray rows. */
+.pick-badge {
+  position: fixed;
+  z-index: 996;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 2px solid var(--background);
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font: 700 11px/16px var(--font-mono, monospace);
+  cursor: pointer;
+}
+
+/* Rows grouped by section. */
+.pick-tray-list, .pick-tray-list ol { list-style: none; margin: 0; padding: 0; }
+.pick-group + .pick-group { margin-top: 10px; }
+.pick-group-title {
+  margin-bottom: 4px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pick-row { display: flex; flex-direction: column; gap: 4px; padding: 1px 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent); }
+.pick-row-head { display: flex; align-items: center; gap: 4px; }
+.pick-row-head .pick-tray-icon { border-color: transparent; background: transparent; }
+.pick-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.pick-row-number {
+  flex: none;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font: 700 11px/20px var(--font-mono, monospace);
+  text-align: center;
+}
+.pick-row-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono, monospace); font-size: 12px; }
+.pick-row.is-open .pick-row-label { white-space: normal; overflow-wrap: anywhere; }
+.pick-row-noted { flex: none; color: var(--muted-foreground); }
+.is-stale .pick-row-label, .is-stale .pick-entry-pointer { text-decoration: line-through; }
+.pick-row-detail { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding-left: 28px; }
+.pick-row-detail .pick-tray-button { padding: 3px 10px; font-size: 12px; }
+.pick-row .pick-entry-note, .pick-row .pick-entry-stale { margin-left: 28px; width: calc(100% - 28px); }
+
+/* Phones: a one-line bar that opens into a sheet. */
+.pick-tray.is-narrow { bottom: 0; width: 100vw; max-height: 85vh; border-radius: 14px 14px 0 0; }
+.pick-tray.is-narrow .pick-tray-head { flex-wrap: nowrap; padding: 8px 10px; }
+.pick-tray.is-narrow.is-collapsed .pick-tray-head { padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
+.pick-tray.is-narrow .pick-tray-body { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+.pick-tray.is-narrow .pick-row-main { padding: 8px 2px; }
+@media (max-width: 640px) {
+  .pick-toggle-label { display: none; }
+  .pick-pill { top: auto; bottom: 64px; }
+}

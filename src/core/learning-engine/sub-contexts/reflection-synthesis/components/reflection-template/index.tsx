@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { ReflectionTemplateHelpModal } from './ReflectionTemplateHelpModal'
 import './reflection-template.css'
 
@@ -30,18 +31,22 @@ export interface ReflectionTemplateProps {
 }
 
 function ReflectionTemplateSingle({
+  challenge,
   prompt,
   template,
   chips = [],
   solution = {},
   explanation,
 }: {
+  /** The challenge being shown, for Pick mode anchors. */
+  challenge?: object
   prompt: string
   template: string
   chips: ChipItem[]
   solution: Record<string, string>
   explanation?: string
 }) {
+  const pick = usePickAnchors()
   const { playSound } = useSound()
   const zoneIds = useMemo(() => {
     const ids: string[] = []
@@ -205,10 +210,10 @@ function ReflectionTemplateSingle({
   }, [template, blanks, selectedChipId, handleDrop, handleZoneTap])
 
   return (
-    <div className="template-body">
-      <div className="template-prompt">{prompt}</div>
+    <div className="template-body" {...pick(challenge)}>
+      <div className="template-prompt" {...pick(challenge, 'prompt')}>{prompt}</div>
 
-      <div className="template-sentence-container">{renderedSentence}</div>
+      <div className="template-sentence-container" {...pick(challenge, 'template')}>{renderedSentence}</div>
 
       <div className="template-chips-bank">
         {chips.map((chip) => {
@@ -218,6 +223,7 @@ function ReflectionTemplateSingle({
           return (
             <div
               key={chip.id}
+              {...pick(chip)}
               draggable={!used}
               onDragStart={(e) => handleDragStart(e, chip.id)}
               onClick={() => handleChipTap(chip.id)}
@@ -289,6 +295,7 @@ export function ReflectionTemplate({
       {/* Single Challenge Renderer with index key to reset state */}
       <ReflectionTemplateSingle
         key={currentIndex}
+        challenge={currentChallenge}
         prompt={currentChallenge.prompt}
         template={currentChallenge.template}
         chips={currentChallenge.chips}

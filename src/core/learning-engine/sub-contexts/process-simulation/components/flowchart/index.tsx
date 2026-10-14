@@ -283,6 +283,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
       total: activeSteps.length,
       title: step.title,
       text: step.reason,
+      ...(playback.currentJourneyId && step.id.startsWith('journey-step-')
+        ? { journeyStep: { journeyId: playback.currentJourneyId, stepIndex: playback.currentStep } }
+        : {}),
       ...(branch ? {
         branch: {
           label: branch.label,
@@ -652,6 +655,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
         handleStepClick={handleStepClick}
         instanceId={instanceId}
         inline={true}
+        journeyId={playback.currentJourneyId ?? undefined}
       />
     </div>
   );

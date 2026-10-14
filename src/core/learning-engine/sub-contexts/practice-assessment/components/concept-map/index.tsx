@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ConceptMapHelpModal } from './ConceptMapHelpModal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import './concept-map.css'
 
 export interface ConceptNode {
@@ -413,6 +414,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
   const svgRef = useRef<SVGSVGElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
+  const pick = usePickAnchors()
   const [transform, setTransform] = useState<TransformState>({ scale: 1, translateX: 0, translateY: 0 })
   const [layoutNodes, setLayoutNodes] = useState<Record<string, ConceptNode>>({})
   const [edgeAnchors, setEdgeAnchors] = useState<Record<string, ConceptEdgeAnchor>>({})
@@ -720,6 +722,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
             ref={svgRef}
             className="concept-map-svg"
             data-testid="concept-map-svg"
+            data-pick-pan
             viewBox={viewBox}
             width="100%"
             height="100%"
@@ -759,7 +762,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
                 const p2 = anchor?.p2 ?? getBoundaryAnchor(to.x, to.y, toHW, toHH, from.x, from.y, 16)
 
                 return (
-                  <g key={`edge-${edge.from}-${edge.to}-${idx}`} data-testid={`concept-map-edge-${idx}`}>
+                  <g key={`edge-${edge.from}-${edge.to}-${idx}`} data-testid={`concept-map-edge-${idx}`} {...pick(edge)}>
                     <line
                       x1={p1.x}
                       y1={p1.y}
@@ -790,6 +793,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
                     key={id}
                     className={`cm-node-group ${isHov ? 'cm-node-highlight' : ''} ${isDimmed ? 'cm-node-dimmed' : ''}`}
                     data-testid={`concept-map-node-${id}`}
+                    {...pick(nodes[id])}
                     onMouseEnter={() => setHoveredNode(id)}
                     onMouseLeave={() => setHoveredNode(null)}
                   >
@@ -812,6 +816,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
                       className="cm-node-title"
                       fill="var(--ctp-text)"
                       data-testid={`concept-map-node-title-${id}`}
+                      {...pick(nodes[id], 'title')}
                     >
                       {node.title}
                     </text>
@@ -822,6 +827,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
                       dominantBaseline="middle"
                       className="cm-node-category"
                       fill={color}
+                      {...pick(nodes[id], 'category')}
                     >
                       {node.category}
                     </text>
@@ -886,6 +892,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
                 return (
                   <g
                     key={`edge-label-${idx}`}
+                    {...pick(edge, 'label')}
                     className={`cm-edge-label-group ${isConnected ? 'cm-edge-label-group-highlight' : ''} ${isDimmed ? 'cm-edge-label-dimmed' : ''}`}
                   >
                     <title>{edge.label}</title>

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar';
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor';
 
 export interface GalleryItem {
   id: string;
@@ -19,9 +20,11 @@ export interface ImageGalleryProps {
 function GalleryImage({ item, onClick }: { item: GalleryItem; onClick: () => void }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const pick = usePickAnchors();
 
   return (
     <motion.button
+      {...pick(item)}
       className="group relative w-full aspect-video rounded-lg overflow-hidden border border-border/50 bg-muted/20 flex items-center justify-center p-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       onClick={onClick}
       whileHover={{ scale: 1.02 }}
@@ -73,6 +76,7 @@ function Lightbox({
   onClose: () => void;
 }) {
   const [index, setIndex] = useState(initialIndex);
+  const pick = usePickAnchors();
   const [direction, setDirection] = useState(0);
   const item = items[index];
 
@@ -161,6 +165,7 @@ function Lightbox({
             className="w-full flex justify-center"
           >
             <img
+              {...pick(item, 'url')}
               src={item.url}
               alt={item.caption}
               className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl"
@@ -177,9 +182,9 @@ function Lightbox({
             transition={{ duration: 0.2 }}
             className="text-center space-y-1"
           >
-            <p className="text-white font-medium text-base leading-snug">{item.caption}</p>
+            <p className="text-white font-medium text-base leading-snug" {...pick(item, 'caption')}>{item.caption}</p>
             {item.credit && (
-              <p className="text-white/50 text-xs font-mono">{item.credit}</p>
+              <p className="text-white/50 text-xs font-mono" {...pick(item, 'credit')}>{item.credit}</p>
             )}
           </motion.div>
         </AnimatePresence>

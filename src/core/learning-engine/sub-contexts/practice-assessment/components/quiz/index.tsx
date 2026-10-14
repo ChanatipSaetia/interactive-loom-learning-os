@@ -5,6 +5,7 @@ import type { OKFQuizQuestion } from '../../../../composition/okf/types'
 import { Button } from '../../../../../ui-system/motion/button'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { QuizHelpModal } from './QuizHelpModal'
 import './quiz.css'
 
@@ -58,9 +59,10 @@ function QuestionCard({
 
   const chosen = question.choices.find((c) => c.id === selectedChoice)
   const isCorrect = chosen?.correct ?? false
+  const pick = usePickAnchors()
 
   return (
-    <div className="quiz-question-card" data-testid={`quiz-question-${question.id}`}>
+    <div className="quiz-question-card" data-testid={`quiz-question-${question.id}`} {...pick(question)}>
       <div className="quiz-question-header">
         <div className="quiz-question-number" data-testid={`quiz-question-number-${index}`}>
           Q{index + 1}
@@ -70,7 +72,7 @@ function QuestionCard({
         </div>
       </div>
 
-      <h4 className="quiz-question-text" data-testid={`quiz-question-text-${index}`}>
+      <h4 className="quiz-question-text" data-testid={`quiz-question-text-${index}`} {...pick(question, 'question')}>
         {question.question}
       </h4>
 
@@ -81,7 +83,7 @@ function QuestionCard({
       )}
 
       {question.hint && !revealed && (
-        <div className="quiz-hint" data-testid={`quiz-hint-${index}`}>
+        <div className="quiz-hint" data-testid={`quiz-hint-${index}`} {...pick(question, 'hint')}>
           <button
             className="quiz-hint-toggle"
             onClick={() => onToggleHint(index)}
@@ -131,6 +133,7 @@ function QuestionCard({
             <motion.button
               key={choice.id}
               data-testid={`quiz-choice-${index}-${choice.id}`}
+              {...pick(choice)}
               className={`quiz-choice ${stateClass}`}
               onClick={() => handleSelect(choice.id)}
               disabled={revealed}
@@ -139,7 +142,7 @@ function QuestionCard({
               transition={{ duration: 0.2, delay: ci * 0.06, ease: [0.25, 1, 0.5, 1] }}
             >
               <span className="quiz-choice-label">{label}</span>
-              <span className="quiz-choice-text">{choice.text}</span>
+              <span className="quiz-choice-text" {...pick(choice, 'text')}>{choice.text}</span>
               {isRevealedCorrectByIntelligence && (
                 <span className="quiz-choice-intelligence-badge">
                   <span>💡 Arcane Insight</span>
@@ -179,7 +182,7 @@ function QuestionCard({
                 </>
               )}
             </div>
-            <p className="quiz-explanation-text">{chosen.explanation}</p>
+            <p className="quiz-explanation-text" {...pick(chosen, 'explanation')}>{chosen.explanation}</p>
           </motion.div>
         )}
       </AnimatePresence>

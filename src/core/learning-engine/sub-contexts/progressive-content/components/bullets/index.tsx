@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown } from 'lucide-react'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { BulletsHelpModal } from './BulletsHelpModal'
 import './bullets.css'
 
@@ -38,6 +39,7 @@ function BulletItemRow({
 }) {
   // Cards with sub-points start collapsed; the reader opens the ones they want
   const [isExpanded, setIsExpanded] = useState(false)
+  const pick = usePickAnchors()
   const hasChildren = item.children && item.children.length > 0
   const isTopLevel = depth === 0
 
@@ -59,6 +61,7 @@ function BulletItemRow({
       <motion.li
         className={`bullets-card ${hasChildren ? 'bullets-card-collapsible' : ''}`}
         data-testid={`bullet-item-${path}`}
+        {...pick(item)}
         initial={animate ? { opacity: 0, y: 15 } : {}}
         whileInView={animate ? { opacity: 1, y: 0 } : {}}
         viewport={animate ? { once: true, amount: 0.3 } : {}}
@@ -105,6 +108,7 @@ function BulletItemRow({
             <span
               className="bullet-text bullet-text-parent"
               data-testid={`bullet-text-${path}`}
+              {...pick(item, 'text')}
             >
               {item.text}
             </span>
@@ -157,6 +161,7 @@ function BulletItemRow({
     <motion.li
       className="bullet-item"
       data-testid={`bullet-item-${path}`}
+      {...pick(item)}
       initial={animate ? { opacity: 0, x: -8 } : {}}
       whileInView={animate ? { opacity: 1, x: 0 } : {}}
       viewport={animate ? { once: true, amount: 0.3 } : {}}
@@ -186,6 +191,7 @@ function BulletItemRow({
         <span
           className="bullet-text"
           data-testid={`bullet-text-${path}`}
+          {...pick(item, 'text')}
         >
           {item.text}
         </span>

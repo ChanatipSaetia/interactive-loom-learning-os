@@ -7,6 +7,7 @@ import { Button } from '../../../../../ui-system/motion/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../../ui-system/motion/tabs'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { DecisionTreeHelpModal } from './DecisionTreeHelpModal'
 import './decision-tree.css'
 
@@ -75,6 +76,7 @@ function Breadcrumb({
 }
 
 function LeafDisplay({ node, onReset }: { node: OKFDecisionTreeNode; onReset: () => void }) {
+  const pick = usePickAnchors()
   if (!node.leaf) return null
 
   return (
@@ -85,7 +87,7 @@ function LeafDisplay({ node, onReset }: { node: OKFDecisionTreeNode; onReset: ()
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
     >
-      <div className="dt-leaf-card">
+      <div className="dt-leaf-card" {...pick(node.leaf)}>
         <div className="dt-leaf-header">
           <div className="dt-leaf-icon" data-testid="dt-leaf-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -100,7 +102,7 @@ function LeafDisplay({ node, onReset }: { node: OKFDecisionTreeNode; onReset: ()
 
         <div className="dt-leaf-body">
           <div className="dt-leaf-recommendation">
-            <p className="dt-leaf-rec-text" data-testid="dt-leaf-recommendation">
+            <p className="dt-leaf-rec-text" data-testid="dt-leaf-recommendation" {...pick(node.leaf, 'recommendation')}>
               {node.leaf.recommendation}
             </p>
           </div>
@@ -108,7 +110,7 @@ function LeafDisplay({ node, onReset }: { node: OKFDecisionTreeNode; onReset: ()
           {node.leaf.explanation && (
             <div className="dt-leaf-explanation">
               <span className="dt-leaf-block-label">Explanation</span>
-              <p className="dt-leaf-block-text" data-testid="dt-leaf-explanation">
+              <p className="dt-leaf-block-text" data-testid="dt-leaf-explanation" {...pick(node.leaf, 'explanation')}>
                 {node.leaf.explanation}
               </p>
             </div>
@@ -119,7 +121,7 @@ function LeafDisplay({ node, onReset }: { node: OKFDecisionTreeNode; onReset: ()
               <span className="dt-leaf-block-label">Trade-offs</span>
               <ul className="dt-leaf-tradeoff-list" data-testid="dt-leaf-tradeoffs">
                 {node.leaf.tradeoffs.map((t, idx) => (
-                  <li key={idx} className="dt-leaf-tradeoff-item" data-testid={`dt-leaf-tradeoff-${idx}`}>
+                  <li key={idx} className="dt-leaf-tradeoff-item" data-testid={`dt-leaf-tradeoff-${idx}`} {...pick(node.leaf?.tradeoffs, idx)}>
                     {t}
                   </li>
                 ))}
@@ -155,12 +157,14 @@ function ChoiceButton({
   onClick: () => void
 }) {
   const optionLetter = String.fromCharCode(65 + index)
+  const pick = usePickAnchors()
 
   return (
     <motion.div
       key={choice.id}
       className={`dt-choice ${choice.recommended ? 'dt-choice-recommended' : ''} ${isPrevious ? 'dt-choice-previous' : ''}`}
       data-testid={`dt-choice-${choice.id}`}
+      {...pick(choice)}
       onClick={onClick}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
@@ -170,7 +174,7 @@ function ChoiceButton({
         {optionLetter}
       </div>
       <div className="dt-choice-content">
-        <span className="dt-choice-label">
+        <span className="dt-choice-label" {...pick(choice, 'text')}>
           {choice.text}
           {isPrevious && (
             <span className="dt-previous-badge" data-testid={`dt-previous-${choice.id}`}>
@@ -186,7 +190,7 @@ function ChoiceButton({
           )}
         </span>
         {choice.rationale && (
-          <span className="dt-choice-desc" data-testid={`dt-rationale-${choice.id}`}>{choice.rationale}</span>
+          <span className="dt-choice-desc" data-testid={`dt-rationale-${choice.id}`} {...pick(choice, 'rationale')}>{choice.rationale}</span>
         )}
       </div>
       <ArrowRight className="dt-choice-arrow" />
@@ -209,6 +213,7 @@ function DecisionDisplay({
   onChoose: (choiceId: string, nextId: string) => void
   onBack: (idx: number) => void
 }) {
+  const pick = usePickAnchors()
   return (
     <div>
       {path.length > 1 && <Breadcrumb path={path} nodes={nodes} onBack={onBack} />}
@@ -216,6 +221,7 @@ function DecisionDisplay({
       <motion.div
         className="dt-decision"
         data-testid="dt-decision"
+        {...pick(node)}
         key={node.id}
         initial={{ opacity: 0, x: 12 }}
         animate={{ opacity: 1, x: 0 }}
@@ -228,7 +234,7 @@ function DecisionDisplay({
           </span>
         </div>
 
-        <h4 className="dt-decision-prompt" data-testid="dt-decision-prompt">
+        <h4 className="dt-decision-prompt" data-testid="dt-decision-prompt" {...pick(node, 'prompt')}>
           {node.prompt}
         </h4>
 
@@ -322,6 +328,7 @@ function TreeView({
   path: HistoryEntry[]
   onJump: (nodeId: string) => void
 }) {
+  const pick = usePickAnchors()
   const onPathNodes = new Set(path.map((e) => e.nodeId))
   const takenChoices = new Set(path.slice(1).map((e, idx) => `${path[idx].nodeId}:${e.choiceId}`))
   const currentId = path[path.length - 1].nodeId
@@ -337,6 +344,7 @@ function TreeView({
           type="button"
           className={`dt-tree-node dt-tree-leaf${stateClass}`}
           data-testid={`dt-tree-node-${nodeId}`}
+          {...pick(node)}
           onClick={() => onJump(nodeId)}
         >
           <span className="dt-tree-kind">Recommendation</span>
@@ -354,6 +362,7 @@ function TreeView({
           type="button"
           className={`dt-tree-node dt-tree-question${stateClass}`}
           data-testid={`dt-tree-node-${nodeId}`}
+          {...pick(node)}
           onClick={() => onJump(nodeId)}
         >
           {node.prompt ?? nodeId}
@@ -365,8 +374,9 @@ function TreeView({
                 key={choice.id ?? idx}
                 className={`dt-tree-branch${takenChoices.has(`${nodeId}:${choice.id}`) ? ' dt-tree-taken' : ''}`}
                 data-testid={`dt-tree-choice-${nodeId}-${choice.id}`}
+                {...pick(choice)}
               >
-                <span className="dt-tree-answer">
+                <span className="dt-tree-answer" {...pick(choice, 'text')}>
                   {choice.text}
                   {choice.recommended && <ThumbsUp className="dt-tree-recommended" aria-label="Recommended" />}
                 </span>

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useHUD } from '../../../../composition/context/HUDContext'
 import type { OKFFormulaVariable, OKFFormulaMetric } from '../../../../composition/okf/types'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { FormulaHelpModal } from './FormulaHelpModal'
 import './formula-sandbox.css'
 
@@ -136,6 +137,7 @@ function getMetricUnitAndFormat(metric: OKFFormulaMetric, val: number): { unit: 
 
 
 export function FormulaSandbox({ title, variables = [], metrics = [], sectionIndex = 0 }: FormulaSandboxProps) {
+  const pick = usePickAnchors()
   const { openHUD } = useHUD()
 
   // Initialize variables state
@@ -204,7 +206,7 @@ export function FormulaSandbox({ title, variables = [], metrics = [], sectionInd
             {metrics.map((m, idx) => {
               const cleanLabel = m.label.replace(/\s*\([^)]*\)\s*$/, '')
               return (
-                <span key={m.id}>
+                <span key={m.id} {...pick(m, 'formula')}>
                   • {cleanLabel} = <code>{humanizeFormula(m.formula, variables)}</code>
                   {idx < metrics.length - 1 && <br />}
                 </span>
@@ -213,9 +215,9 @@ export function FormulaSandbox({ title, variables = [], metrics = [], sectionInd
           </div>
 
           {variables.map((v) => (
-            <div key={v.id} className="slider-group">
+            <div key={v.id} className="slider-group" {...pick(v)}>
               <div className="slider-header">
-                <span className="slider-label">
+                <span className="slider-label" {...pick(v, 'label')}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
                   {v.label}
                 </span>
@@ -251,9 +253,9 @@ export function FormulaSandbox({ title, variables = [], metrics = [], sectionInd
             const gaugeWidth = `${Math.max(0, Math.min(percentage, 100))}%`
 
             return (
-              <div key={m.id} className="sim-metric-row">
+              <div key={m.id} className="sim-metric-row" {...pick(m)}>
                 <div className="sim-metric-meta">
-                  <span className="sim-metric-name">{m.label}</span>
+                  <span className="sim-metric-name" {...pick(m, 'label')}>{m.label}</span>
                   <button
                     className="sim-metric-val sky"
                     onClick={() => handleMetricClick(m)}

@@ -7,6 +7,8 @@ import type { UnifiedFlowchartSchema, FlowchartViewNode, FlowchartViewGroup } fr
 import type { ForkHighlights } from '../fork-highlights';
 import { SEQUENCE_LAYOUT } from './geometry';
 import { useGhostClickGuard } from './ghost-click';
+import { usePickAnchors } from '../../../../../../ui-system/pick-anchor';
+import { entityPickSources, pickFirst } from '../pick-source';
 
 export interface SequenceViewProps {
   viewKey: string;
@@ -30,6 +32,7 @@ export const SequenceView = memo(function SequenceView({
   highlightedNodeId,
   forkHighlights
 }: SequenceViewProps) {
+  const pick = usePickAnchors();
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
   const isGhostClick = useGhostClickGuard();
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
@@ -366,6 +369,7 @@ export const SequenceView = memo(function SequenceView({
             <g
               transform={`translate(${x}, ${TOP_Y})`}
               data-testid={`flowchart-seq-top-${viewKey}-${nodeId}`}
+              {...pickFirst(pick, entityPickSources(nodeId, schema.rawSteps))}
               onMouseEnter={() => {
                 if (entity.desc) {
                   setTooltip({ description: entity.desc, x: colX, y: TOP_Y - 10 });
@@ -463,6 +467,7 @@ export const SequenceView = memo(function SequenceView({
             <g
               transform={`translate(${x}, ${BOTTOM_Y})`}
               data-testid={`flowchart-seq-bottom-${viewKey}-${nodeId}`}
+              {...pickFirst(pick, entityPickSources(nodeId, schema.rawSteps))}
               style={{
                 opacity: 1,
                 transition: 'opacity 0.3s, filter 0.3s',

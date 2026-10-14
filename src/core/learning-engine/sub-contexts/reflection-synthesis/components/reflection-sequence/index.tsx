@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { CheckCircle2, AlertCircle, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { ReflectionSequenceHelpModal } from './ReflectionSequenceHelpModal'
 import './reflection-sequence.css'
 
@@ -31,16 +32,20 @@ export interface ReflectionSequenceProps extends SectionResultProps<ReflectionCo
 }
 
 function ReflectionSequenceSingle({
+  challenge,
   prompt,
   items,
   solution,
   onVerifyResult,
 }: {
+  /** The challenge being shown, for Pick mode anchors. */
+  challenge?: object
   prompt: string
   items: SequenceItem[]
   solution: string[]
   onVerifyResult?: (isCorrect: boolean, stepCount: number) => void
 }) {
+  const pick = usePickAnchors()
   const { playSound } = useSound()
   const [slots, setSlots] = useState<Record<number, SequenceItem | null>>(() => {
     const initial: Record<number, SequenceItem | null> = {}
@@ -177,9 +182,9 @@ function ReflectionSequenceSingle({
 
 
   return (
-    <div className="sequence-card" data-testid="sequence-card">
+    <div className="sequence-card" data-testid="sequence-card" {...pick(challenge)}>
       <div className="sequence-prompt-banner">
-        <span className="sequence-prompt-text">{prompt}</span>
+        <span className="sequence-prompt-text" {...pick(challenge, 'prompt')}>{prompt}</span>
       </div>
 
       <div className="sequence-pool">
@@ -190,12 +195,13 @@ function ReflectionSequenceSingle({
           return (
             <div
               key={item.id}
+              {...pick(item)}
               draggable={!placed}
               onDragStart={(e) => handleDragStart(e, item.id)}
               onClick={() => handleItemTap(item.id)}
               className={`sequence-drag-item ${placed ? 'placed' : ''} ${isSelected ? 'selected' : ''}`}
             >
-              <span>{item.text}</span>
+              <span {...pick(item, 'text')}>{item.text}</span>
             </div>
           )
         })}
@@ -217,7 +223,7 @@ function ReflectionSequenceSingle({
               <div className="sequence-slot-content">
                 {placedItem ? (
                   <div className="sequence-placed-wrapper">
-                    <span className="sequence-placed-text">{placedItem.text}</span>
+                    <span className="sequence-placed-text" {...pick(placedItem, 'text')}>{placedItem.text}</span>
                     <button
                       className="sequence-remove-btn"
                       onClick={(e) => {
@@ -344,6 +350,7 @@ export function ReflectionSequence({
       {/* Single Challenge Renderer with index key to reset state */}
       <ReflectionSequenceSingle
         key={currentIndex}
+        challenge={currentChallenge}
         prompt={currentChallenge.prompt}
         items={currentChallenge.items}
         solution={currentChallenge.solution}
