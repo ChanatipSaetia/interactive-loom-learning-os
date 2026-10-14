@@ -182,7 +182,8 @@ describe('Loom Viewer', () => {
       fireEvent.click(screen.getByText(/Hello from the viewer/))
       const entries = screen.getAllByTestId('pick-entry')
       expect(entries).toHaveLength(2)
-      expect(entries[0].textContent).toContain('kafka/sections/intro.oui:2 #root')
+      expect(entries[0].textContent).toContain('kafka/sections/intro.oui:2 #root.paragraphs[0]')
+      expect(entries[0].textContent).toContain('Intro › root.paragraphs[0]')
       expect(entries[1].textContent).toContain('kafka/topic.oui:1 #root')
 
       fireEvent.change(screen.getAllByTestId('pick-entry-note')[0], { target: { value: 'Say why logs matter.' } })
@@ -190,7 +191,7 @@ describe('Loom Viewer', () => {
       await waitFor(() => expect(writeText).toHaveBeenCalled())
       expect((writeText.mock.calls[0] as unknown as [string])[0]).toBe(
         'Comments on the Loom topic "kafka":\n'
-        + '- kafka/sections/intro.oui:2 #root (from pasted text)\n  Say why logs matter.\n'
+        + '- kafka/sections/intro.oui:2 #root.paragraphs[0] (from pasted text)\n  Say why logs matter.\n'
         + '- kafka/topic.oui:1 #root (from pasted text)\n',
       )
 

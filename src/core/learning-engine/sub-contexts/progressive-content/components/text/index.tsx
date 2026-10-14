@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { marked } from 'marked'
 import { ScrollReveal } from '../../../../../ui-system/motion/scroll-reveal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { TextHelpModal } from './TextHelpModal'
 import './text.css'
 
@@ -27,6 +28,7 @@ function TextSection({
   sectionId = 'text',
   onResultChange,
 }: TextSectionProps) {
+  const pick = usePickAnchors()
   const renderedParagraphs = useMemo(
     () =>
       paragraphs.map((p) => {
@@ -77,6 +79,7 @@ function TextSection({
             key={i}
             className="text-paragraph"
             data-testid={`text-paragraph-${i}`}
+            {...pick(paragraphs, i)}
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ))}

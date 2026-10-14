@@ -1,6 +1,8 @@
 import { useMemo, type ReactNode } from 'react'
-import type { OUISourceMap } from '../../../learning-engine/composition/oui/compile'
+import type { OUIAnchor, OUISourceMap } from '../../../learning-engine/composition/oui/compile'
 import { PickAnchorProvider, type PickAnchorScope } from '../../../ui-system/pick-anchor'
+
+const format = (anchor: OUIAnchor | undefined) => (anchor ? `${anchor.statement}${anchor.path}` : undefined)
 
 /**
  * Marks one rendered file (a section, or the topic header) for Pick mode.
@@ -17,17 +19,15 @@ export function PickSection({ file, label, sourceMap, className, children }: {
   className?: string
   children: ReactNode
 }) {
-  const scope = useMemo<PickAnchorScope | null>(() => sourceMap
-    ? {
-        anchorOf: (value) => {
-          const anchor = sourceMap.anchorOf(value)
-          return anchor ? `${anchor.statement}${anchor.path}` : undefined
-        },
-      }
-    : null, [sourceMap])
+  const scope = useMemo<PickAnchorScope>(() => ({
+    file,
+    label,
+    anchorOf: (value) => format(sourceMap?.anchorOf(value)),
+    anchorOfId: (component, id) => format(sourceMap?.anchorOfId(component, id)),
+  }), [file, label, sourceMap])
 
   return (
-    <div className={className ? `pick-section ${className}` : 'pick-section'} data-oui-file={file} data-oui-anchor="root" data-oui-label={label}>
+    <div className={className ? `pick-section ${className}` : 'pick-section'} data-oui-file={file} data-oui-anchor="root" data-oui-section={label}>
       <PickAnchorProvider scope={scope}>{children}</PickAnchorProvider>
     </div>
   )

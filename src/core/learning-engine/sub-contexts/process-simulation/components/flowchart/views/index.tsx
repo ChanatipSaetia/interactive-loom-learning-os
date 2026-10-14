@@ -248,6 +248,7 @@ export function FlowchartView({
           className="flowchart-svg"
           data-testid={`flowchart-svg-${viewKey}`}
           data-fullscreen={isFullscreen || false}
+          data-pick-pan
           width="100%"
           height="100%"
           onMouseMove={(e) => camera.handlePointerMove(e.clientX, e.clientY)}

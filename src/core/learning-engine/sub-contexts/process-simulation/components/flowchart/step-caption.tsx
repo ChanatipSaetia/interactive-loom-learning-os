@@ -1,4 +1,5 @@
 import { forwardRef, type CSSProperties } from 'react';
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor';
 import { GitBranch, ArrowRight } from 'lucide-react';
 import { useTypewriter } from '../../../../../ui-system/motion/use-typewriter';
 
@@ -9,6 +10,8 @@ export interface StepCaptionData {
   total: number;
   title: string;
   text: string;
+  /** The JourneyStep this narrates, for Pick mode (`steps[stepIndex]` of the journey). */
+  journeyStep?: { journeyId: string; stepIndex: number };
   /** Set when this step takes one option of a fork. */
   branch?: {
     label: string;
@@ -36,6 +39,9 @@ export const StepCaption = forwardRef<HTMLDivElement, StepCaptionProps>(function
   ref
 ) {
   const { shown, done, skip } = useTypewriter(caption.text);
+  const pick = usePickAnchors();
+  const journeyStep = (prop: string) =>
+    caption.journeyStep ? pick.byId('Journey', caption.journeyStep.journeyId, `steps[${caption.journeyStep.stepIndex}].${prop}`) : {};
 
   return (
     <div
@@ -44,6 +50,7 @@ export const StepCaption = forwardRef<HTMLDivElement, StepCaptionProps>(function
       data-placement={placement}
       data-typing={!done}
       data-testid="flowchart-step-caption"
+      {...journeyStep('description')}
       style={style}
       onClick={skip}
       title={done ? undefined : 'Click to show the full text'}
@@ -52,7 +59,7 @@ export const StepCaption = forwardRef<HTMLDivElement, StepCaptionProps>(function
         <span className="flowchart-step-caption-index">
           Step {caption.index + 1} / {caption.total}
         </span>
-        <span className="flowchart-step-caption-title">{caption.title}</span>
+        <span className="flowchart-step-caption-title" {...journeyStep('name')}>{caption.title}</span>
         {caption.branch && (
           <span
             className="flowchart-step-caption-branch"

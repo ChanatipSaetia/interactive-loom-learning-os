@@ -106,5 +106,5 @@ export type {
 } from './SensoryFeedbackContract'
 
 // Pick anchors — mark elements for Loom Studio / Viewer Pick mode
-export { PickAnchorProvider, usePickAnchor } from './pick-anchor'
-export type { PickAnchorScope, PickAnchorAttributes } from './pick-anchor'
+export { PickAnchorProvider, usePickAnchor, usePickAnchors } from './pick-anchor'
+export type { PickAnchorScope, PickAnchorAttributes, PickAnchorFn } from './pick-anchor'

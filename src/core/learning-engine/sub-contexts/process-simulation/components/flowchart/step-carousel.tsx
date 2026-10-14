@@ -1,3 +1,4 @@
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor';
 import { GitBranch } from 'lucide-react';
 import type { FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption } from './types';
 
@@ -7,6 +8,8 @@ interface StepCarouselProps {
   handleStepClick: (step: FlowchartStepLinear | FlowchartStepBranchOption) => void;
   instanceId: string;
   inline?: boolean;
+  /** Journey the steps come from, for Pick mode (cards point at its `steps[i]`). */
+  journeyId?: string;
 }
 
 export function StepCarousel({
@@ -14,8 +17,14 @@ export function StepCarousel({
   activeStep,
   handleStepClick,
   instanceId,
-  inline = false
+  inline = false,
+  journeyId,
 }: StepCarouselProps) {
+  const pick = usePickAnchors();
+  const journeyStep = (stepId: string, prop?: string) => {
+    const index = /^journey-step-(\d+)$/.exec(stepId)?.[1];
+    return journeyId && index ? pick.byId('Journey', journeyId, `steps[${index}]${prop ? `.${prop}` : ''}`) : {};
+  };
   if (!activeSteps || activeSteps.length === 0) return null;
 
   const innerContent = (
@@ -42,6 +51,7 @@ export function StepCarousel({
             <div
               id={`step-card-${instanceId}-${step.id}`}
               key={step.id}
+              {...journeyStep(step.id)}
               onClick={() => handleStepClick(step)}
               style={{
                 flexShrink: 0,

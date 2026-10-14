@@ -1,6 +1,6 @@
 # Grill Log — Pick & Comment in Studio and Viewer
 
-Status: **Phase 1 complete — Phase 2 (statement + prop tags in practice-assessment, progressive-content) next**
+Status: **Phases 1–3 complete — Phase 4 (tradeoff-sandbox, reflection-synthesis) next**
 
 ## Goal
 
@@ -34,6 +34,8 @@ Numbering continues from [grill-log-openui-input.md](grill-log-openui-input.md).
 | 47 | Learning app and embeds | **Not included**, not even behind a dev switch. Pick mode exists only in Studio and Viewer; the embed bundle never ships it. A learner-facing "ask about this" would be a separate product and its own grill session. |
 | 48 | The anchor | **Nearest statement name + short path**: `#q2` when the element is its own statement, `#q2.choices[1].explanation` when it is inline. The tray chip also shows a differing `id` prop for people (`q2 (id "kafka-offsets")`); the copy does not. The compiler records `{ statement, path }` for every evaluated object in a `WeakMap` (alongside the existing line map), and section components tag their elements through a `usePickAnchor(obj, prop?)` hook from the UI system (`data-oui-anchor`). Flowchart nodes merged across steps anchor to the **declaring** statement (`#user`), not the step. |
 | 49 | Rollout | **Phased**, each green on `typecheck` + `test` (below). **Standard OpenUI sections** (`// @openui`, stock `@openuidev/react-ui` components) stay **section-level** until lang-core's `<Renderer>` offers a per-element hook. |
+| 50 | Panning in Pick mode | **Drags pass through on canvases.** Inside an element marked `data-pick-pan` (flowchart and concept-map SVGs) presses still reach the section, so it can be panned while picking; clicks stay blocked, and a click that ends a drag of more than 4px picks nothing. Everywhere else presses stay blocked. Wheel zoom always works. |
+| 51 | Flowchart nodes and lines | **The source of what is drawn, not the step.** Actors and systems point at their declaring statement in every copy and view (`#evaluator`, also for `evaluator2`); policy and command nodes at their step's prop (`#fbCheck.policy`, `#fbCheck.command`); event nodes at the **inline event** (`#fbCheck.events[0]`), or the branch's `event` when no step declares it. Event Storming lines point at the step prop that drew them (`initiatedBy`, `command`, `handledBy`, `events[i]`, `sendsTo`, `continuesAs`, `delegatesTo`; a fork's fan-out at the option). Lines in the derived views, sequence messages and the inspector panel stay section-level. Step cards and the narration caption point at their `JourneyStep` (`#fbJourneyPass.steps[1]`, `.name`, `.description`). |
 
 Example copy (decision 44):
 
@@ -77,6 +79,22 @@ and the question follows the list.
 - Staleness checks the statement only (Phase 1); a path into an inline component that no longer exists is not detected.
 - Section components carry no tags yet, so every pick in Phase 1 is `#root` of a section or of `topic.oui`.
 - Tests: `tests/unit/core/learning-engine/composition/oui/{anchors,pick-report}.test.ts`, `tests/unit/core/supporting/authoring-editor/pick/`, and Pick cases in the Viewer and Studio component tests. Checked in Chromium against `http-caching`: a click on a quiz answer in Pick mode adds the entry and does not answer it.
+
+## Phases 2 and 3 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Lists are anchored too (`#root.paragraphs[0]`), so plain strings can be picked through their array | `composition/oui/compile.ts` (`compileElementTree`) |
+| `usePickAnchors()` returns `pick(value, prop?)` for use inside loops (`prop` may be a list index); `usePickAnchor` is the single-element form | `src/core/ui-system/pick-anchor.tsx` |
+| Every tagged element also carries `data-oui-file` and `data-oui-section`, so picks resolve inside portals (the taxonomy dialog) | `pick-anchor.tsx`, `PickLayer.tsx` (`pickTargetOf`) |
+| `OUISourceMap.anchorOfId(component, id)` and `pick.byId(components, id, prop?)` for renderers left with domain IDs only | `compile.ts`, `pick-anchor.tsx`, `PickSection.tsx` |
+| Tags: Text paragraphs; Bullets (item, text); Intro (what/why panels, summary, definition, bullets, tags, impact, roadmap steps); TaxonomyBrowser (card + title/subtitle/description, and the dialog's fields and scope items); ImageGallery (image, lightbox caption/credit/url); PillarLayer (layers, blocks, their titles/descriptions); Quiz (question, text, hint, choice, choice text, explanation); Flashcards (card, word, pronunciation, short/detailed definition, whyItMatters, image, dialogue lines); ConceptMap (node, title, category, link, link label); Scenario (intro, decision, prompt, choice, choice text, outcome, verdict, lesson) | each section's `components/<type>/index.tsx` |
+| Flowchart: `entityPickSources` / `relationPickSources` map `deriveSchema` IDs (`pol_`, `cmd_`, `evt_`, `<id>2`) back to sources without changing `deriveSchema`'s output; `pickFirst` takes the first one the file declares | `process-simulation/components/flowchart/pick-source.ts`, `views/standard-view.tsx`, `views/sequence-view.tsx`, `step-carousel.tsx`, `step-caption.tsx` |
+| Drag-through on canvases (`data-pick-pan`) | `PickLayer.tsx`, concept-map and flowchart SVGs |
+
+- Not tagged yet (section-level picks): flowchart lines in the derived views, sequence messages, the inspector panel, quiz/flashcard category badges, and the sections of Phase 4.
+- Hidden content (a closed quiz hint, a flashcard's back, a taxonomy dialog, a scenario's later nodes) is picked after leaving Pick mode to open it, then Alt/Option+clicking or turning Pick mode back on.
+- Tests: `tests/unit/core/supporting/authoring-editor/pick/section-anchors.test.tsx` renders every tagged section type's Studio template and checks that each anchor names a real statement; `flowchart-pick-source.test.ts` resolves every node of `demo/sections/flowchart-feedback.oui`. Checked in Chromium against `bg3-four-element-monk`: flowchart nodes pick `#step1.events[0]`, `#kiPool`, `#step1.command`, `#player`, `#stepOpening.options[1].policy`; the concept map pans while picking.
 
 ## Open Questions
 

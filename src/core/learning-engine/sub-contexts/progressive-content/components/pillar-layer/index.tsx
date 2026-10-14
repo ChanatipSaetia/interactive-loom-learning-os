@@ -3,6 +3,7 @@ import type { CSSProperties, KeyboardEvent } from 'react'
 import type { PillarLayerSectionData, PillarLayerBlock, PillarLayerLayer } from '../../schema'
 import { PillarLayerHelpModal } from './PillarLayerHelpModal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import './pillar-layer.css'
 
 export interface PillarLayerSectionProps {
@@ -104,6 +105,7 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
   const sectionDescription = description || section?.description
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
+  const pick = usePickAnchors()
 
   const placed = useMemo<PlacedBlock[]>(() => matrix_blocks.map((block, idx) => {
     const lIdx = layers.findIndex((l) => l.id === block.layer_id)
@@ -205,10 +207,11 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
             <div
               className={`pillar-layer-header${selectedLayerIdx === lIdx ? ' is-highlighted' : ''}`}
               data-testid={`layer-row-${layer.id}`}
+              {...pick(layer)}
               style={{ '--row': lIdx + 1 } as CSSProperties}
             >
-              <span className="pillar-layer-header-title">{layer.title}</span>
-              {layer.description && <span className="pillar-layer-header-desc">{layer.description}</span>}
+              <span className="pillar-layer-header-title" {...pick(layer, 'title')}>{layer.title}</span>
+              {layer.description && <span className="pillar-layer-header-desc" {...pick(layer, 'description')}>{layer.description}</span>}
             </div>
 
             {placed.filter((p) => p.layerIdx === lIdx).map((p) => {
@@ -229,6 +232,7 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
                     role,
                   ].filter(Boolean).join(' ')}
                   data-testid={`pillar-layer-block-${p.idx}`}
+                  {...pick(block)}
                   style={{
                     '--row': p.layerIdx + 1,
                     '--row-span': p.rowSpan,
@@ -249,8 +253,8 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
                     },
                   })}
                 >
-                  <span className="pillar-block-title">{block.title}</span>
-                  {block.description && <span className="pillar-block-desc">{block.description}</span>}
+                  <span className="pillar-block-title" {...pick(block, 'title')}>{block.title}</span>
+                  {block.description && <span className="pillar-block-desc" {...pick(block, 'description')}>{block.description}</span>}
                   {blockUses.length > 0 && !isSelected && (
                     <span className="pillar-block-uses" data-testid={`pillar-block-uses-${p.idx}`}>
                       Uses: {blockUses.map((k) => titles.get(k)).join(', ')}

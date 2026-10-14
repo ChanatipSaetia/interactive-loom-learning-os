@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../../ui-syst
 import { useSound } from '../../../../../ui-system/sensory/SoundContext';
 import { FlashcardsHelpModal } from './FlashcardsHelpModal';
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar';
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor';
 
 type BackTabId = 'guidelines' | 'dialogue';
 
@@ -22,6 +23,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   const [activeBackTab, setActiveBackTab] = useState<BackTabId>('guidelines');
   const { playSound } = useSound();
+  const pick = usePickAnchors();
 
   // Auto-clamp currentIndex if terms array shrinks or changes
   useEffect(() => {
@@ -168,6 +170,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={safeIndex}
+              {...pick(currentTerm)}
               custom={direction}
               variants={slideVariants}
               initial="initial"
@@ -232,6 +235,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                   {currentTerm.image && (
                     <div className="w-full flex justify-center items-center mb-4 flex-shrink-0 bg-muted/5 rounded-md p-2 border border-border/20" style={{ minHeight: '80px', maxHeight: '160px' }}>
                       <img
+                        {...pick(currentTerm, 'image')}
                         src={currentTerm.image}
                         alt={currentTerm.word}
                         loading="lazy"
@@ -243,19 +247,19 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
 
                   {/* Large Word Display */}
                   <div className="my-auto text-left">
-                    <h2 className="text-3xl md:text-5xl font-light tracking-tight text-foreground font-display leading-[1.15] mb-3 md:mb-4">
+                    <h2 className="text-3xl md:text-5xl font-light tracking-tight text-foreground font-display leading-[1.15] mb-3 md:mb-4" {...pick(currentTerm, 'word')}>
                       {currentTerm.word}
                     </h2>
                     
                     {currentTerm.pronunciation && (
-                      <div className="text-sm font-mono text-muted-foreground font-medium tracking-wider uppercase mb-6">
+                      <div className="text-sm font-mono text-muted-foreground font-medium tracking-wider uppercase mb-6" {...pick(currentTerm, 'pronunciation')}>
                         Phonetic: <span className="text-foreground italic">/{currentTerm.pronunciation}/</span>
                       </div>
                     )}
                     
                     <div className="relative">
                       <div className="absolute top-0 left-0 w-[3px] h-full bg-primary/50"></div>
-                      <p className="text-muted-foreground italic font-serif text-lg md:text-xl leading-relaxed pl-6 py-1">
+                      <p className="text-muted-foreground italic font-serif text-lg md:text-xl leading-relaxed pl-6 py-1" {...pick(currentTerm, 'shortDefinition')}>
                         “{currentTerm.shortDefinition}”
                       </p>
                     </div>
@@ -320,7 +324,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                             </h4>
                           </div>
 
-                          <p className="text-base text-muted-foreground leading-relaxed font-normal">
+                          <p className="text-base text-muted-foreground leading-relaxed font-normal" {...pick(currentTerm, 'detailedDefinition')}>
                             {currentTerm.detailedDefinition}
                           </p>
 
@@ -328,7 +332,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                             <span className="text-xs font-mono text-primary uppercase tracking-widest font-bold block mb-2">
                               Why Alignment Matters:
                             </span>
-                            <p className="text-base text-foreground/90 leading-relaxed">
+                            <p className="text-base text-foreground/90 leading-relaxed" {...pick(currentTerm, 'whyItMatters')}>
                               {currentTerm.whyItMatters}
                             </p>
                           </div>
@@ -346,7 +350,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                               {/* User Prompts */}
                               <div className="space-y-2">
                                 <span className="text-xs text-primary uppercase tracking-widest font-bold block">● User (General Concept directive):</span>
-                                <div className="pl-4 border-l-2 border-primary/40 text-foreground leading-relaxed">
+                                <div className="pl-4 border-l-2 border-primary/40 text-foreground leading-relaxed" {...pick(simulatedChat, 'user')}>
                                   "{simulatedChat.user}"
                                 </div>
                               </div>
@@ -354,7 +358,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                               {/* AI Thinks */}
                               <div className="space-y-2">
                                 <span className="text-xs text-accent-foreground uppercase tracking-widest font-bold block">● AI Reason (Evaluates parameters):</span>
-                                <div className="pl-4 border-l-2 border-border text-muted-foreground italic leading-relaxed">
+                                <div className="pl-4 border-l-2 border-border text-muted-foreground italic leading-relaxed" {...pick(simulatedChat, 'aiThoughts')}>
                                   {simulatedChat.aiThoughts}
                                 </div>
                               </div>
@@ -365,7 +369,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                                   <HelpCircle className="w-4 h-4 mr-2 text-primary" />
                                   AI Alignment Inquiry (Asks back):
                                 </span>
-                                <p className="text-foreground leading-relaxed font-sans text-base font-medium">
+                                <p className="text-foreground leading-relaxed font-sans text-base font-medium" {...pick(simulatedChat, 'aiQuestion')}>
                                   "{simulatedChat.aiQuestion}"
                                 </p>
                               </div>

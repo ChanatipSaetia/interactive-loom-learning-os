@@ -7,6 +7,8 @@ import type { ForkHighlights } from '../fork-highlights';
 import type { StoryRoute } from '../story-route';
 import { edgeLabelRoom } from './geometry';
 import { useGhostClickGuard } from './ghost-click';
+import { usePickAnchors } from '../../../../../../ui-system/pick-anchor';
+import { entityPickSources, pickFirst, relationPickSources } from '../pick-source';
 
 /** Edge label pill widths (px): resting, and the most a highlighted one may open to. */
 const COLLAPSED_LABEL_W = 70;
@@ -53,6 +55,7 @@ export const StandardView = memo(function StandardView({
   forkHighlights,
   storyRoute
 }: StandardViewProps) {
+  const pick = usePickAnchors();
   const minX = positioned.length > 0 ? Math.min(...positioned.map(n => n.x || 0)) : 0;
   const maxX = positioned.length > 0 ? Math.max(...positioned.map(n => n.x || 0)) : 0;
 
@@ -258,6 +261,7 @@ export const StandardView = memo(function StandardView({
             className="flowchart-edge-group"
             opacity={opacityVal} 
             style={{ transition: 'opacity 0.3s' }}
+            {...(viewKey === 'EVENT_STORMING' ? pickFirst(pick, relationPickSources(rel, schema.rawSteps)) : {})}
             data-fork={forkRole}
             data-route={routeRole}
             data-active={isEdgeActive ? 'true' : undefined}
@@ -412,6 +416,7 @@ export const StandardView = memo(function StandardView({
             key={node.id}
             id={`node-${node.id}`}
             data-testid={`flowchart-node-${viewKey}-${node.id}`}
+            {...pickFirst(pick, entityPickSources(node.id, schema.rawSteps))}
             data-fork={forkHighlights?.altNodeIds.includes(node.id) ? 'alt' : undefined}
             className={`flowchart-node-group ${(isFullscreen && hasLinks) ? 'has-links' : ''} ${isHighlighted ? 'active' : ''}`}
             transform={`translate(${x}, ${y})`}

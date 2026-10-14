@@ -85,6 +85,11 @@ export interface OUISourceMap {
   statementOf(value: unknown): string | undefined
   /** Statement and prop path that produced a compiled object, if known. */
   anchorOf(value: unknown): OUIAnchor | undefined
+  /**
+   * Anchor of the first `component` element whose `id` prop is `id`, for
+   * renderers that only have domain IDs left (e.g. flowchart entities).
+   */
+  anchorOfId(component: string, id: string): OUIAnchor | undefined
 }
 
 export interface OUICompileResult<T> {
@@ -329,11 +334,19 @@ function evaluateDynamicProps(root: ElementNode, stateDefaults: Record<string, u
  * component's `toData` bottom-up. Exported for renderers that receive
  * already-evaluated elements from `<Renderer>`.
  */
-export function compileElementTree(root: ElementNode, track?: (value: unknown, anchor: OUIAnchor) => void): unknown {
+export function compileElementTree(
+  root: ElementNode,
+  track?: (value: unknown, anchor: OUIAnchor, element?: { component: string; id: unknown }) => void,
+): unknown {
   // `path` is the prop path from the nearest named statement; inline
   // elements have no statementId, so they extend their parent's path.
   const visit = (value: unknown, statementId: string | undefined, path: string): unknown => {
-    if (Array.isArray(value)) return value.map((v, i) => visit(v, statementId, `${path}[${i}]`))
+    if (Array.isArray(value)) {
+      const list = value.map((v, i) => visit(v, statementId, `${path}[${i}]`))
+      // Lists of plain strings (paragraphs, tags) are found through their array.
+      if (statementId) track?.(list, { statement: statementId, path })
+      return list
+    }
     if (isElement(value)) {
       const owner = value.statementId ?? statementId
       const base = value.statementId ? '' : path
@@ -344,7 +357,9 @@ export function compileElementTree(root: ElementNode, track?: (value: unknown, a
       }
       const component = getLoomOUIComponent(value.typeName)
       const data = stripUndefined(component ? component.toData(props) : props)
-      if (owner && data && typeof data === 'object') track?.(data, { statement: owner, path: base })
+      if (owner && data && typeof data === 'object') {
+        track?.(data, { statement: owner, path: base }, { component: value.typeName, id: value.props.id })
+      }
       return data
     }
     if (value && typeof value === 'object') {
@@ -360,17 +375,25 @@ export function compileElementTree(root: ElementNode, track?: (value: unknown, a
 function compileProgram(source: string): OUICompileResult<unknown> & { root: ElementNode | null } {
   const { result, issues, lines } = parseProgram(source)
   const anchors = new WeakMap<object, OUIAnchor>()
+  const byId = new Map<string, OUIAnchor>()
   const anchorOf = (value: unknown) => (value && typeof value === 'object' ? anchors.get(value) : undefined)
   const sourceMap: OUISourceMap = {
     lineOf: (id) => lines.get(id),
     statementOf: (value) => anchorOf(value)?.statement,
     anchorOf,
+    anchorOfId: (component, id) => byId.get(`${component}:${id}`),
   }
   if (!result?.root) return { value: null, issues, sourceMap, root: null }
 
   const stateDefaults = (result.stateDeclarations ?? {}) as Record<string, unknown>
   const root = evaluateDynamicProps(result.root, stateDefaults, lines, issues)
-  const value = compileElementTree(root, (data, anchor) => anchors.set(data as object, anchor))
+  const value = compileElementTree(root, (data, anchor, element) => {
+    anchors.set(data as object, anchor)
+    if (element && typeof element.id === 'string') {
+      const key = `${element.component}:${element.id}`
+      if (!byId.has(key)) byId.set(key, anchor)
+    }
+  })
   return { value, rootComponent: root.typeName, issues, sourceMap, root }
 }
 
@@ -422,6 +445,7 @@ function compileStandardOpenUISection(source: string, directive: OpenUIDirective
     lineOf: (id) => lines.get(id),
     statementOf: () => undefined,
     anchorOf: () => undefined,
+    anchorOfId: () => undefined,
   }
   for (const issue of issues) {
     if (issue.code === 'unknown-component') {

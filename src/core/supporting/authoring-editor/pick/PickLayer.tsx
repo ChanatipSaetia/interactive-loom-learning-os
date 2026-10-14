@@ -2,8 +2,11 @@
  * Pick mode events (decision 43): while active, hovering outlines the
  * pickable element under the pointer and a click picks it instead of
  * reaching the section (quiz answers, card flips and sliders are blocked in
- * the capture phase). Alt/Option+click picks without the mode, `P` toggles
- * it, `Esc` leaves it and Ctrl/Cmd+C copies the tray.
+ * the capture phase). Inside a pannable canvas (`data-pick-pan`: flowcharts,
+ * concept maps) presses still reach the section so it can be dragged, and a
+ * click that ends a drag picks nothing (decision 50). Alt/Option+click picks
+ * without the mode, `P` toggles it, `Esc` leaves it and Ctrl/Cmd+C copies
+ * the tray.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -18,18 +21,21 @@ interface Hit {
   target: PickTarget
 }
 
-/** Elements outside the topic (the tray, dialogs) opt out with `data-pick-ignore`. */
+/**
+ * The closest pickable element: tagged with `data-oui-anchor`, `data-oui-file`
+ * and `data-oui-section` (by `PickSection` or `usePickAnchor`). An optional
+ * `data-oui-label` names it for people. Elements outside the topic (the
+ * tray) opt out with `data-pick-ignore`.
+ */
 export function pickTargetOf(node: EventTarget | null): Hit | null {
   if (!(node instanceof Element) || node.closest('[data-pick-ignore]')) return null
-  const section = node.closest<HTMLElement>('[data-oui-file]')
-  const element = node.closest<HTMLElement>('[data-oui-anchor]')
-  if (!section || !element || !section.contains(element)) return null
-  const anchor = element.dataset.ouiAnchor!
-  const sectionLabel = section.dataset.ouiLabel || section.dataset.ouiFile!
-  const own = element === section ? '' : element.dataset.ouiLabel || anchor
+  const element = node.closest<HTMLElement | SVGElement>('[data-oui-anchor][data-oui-file]')
+  if (!element) return null
+  const { ouiAnchor: anchor, ouiFile: file, ouiSection: section, ouiLabel: own } = element.dataset
+  const sectionLabel = section || file!
   return {
     element,
-    target: { file: section.dataset.ouiFile!, anchor, label: own ? `${sectionLabel} › ${own}` : sectionLabel },
+    target: { file: file!, anchor: anchor!, label: anchor === 'root' ? sectionLabel : `${sectionLabel} › ${own || anchor}` },
   }
 }
 
@@ -40,6 +46,11 @@ function isEditable(node: EventTarget | null): boolean {
 
 // Pointer and mouse events a section could react to before the click.
 const BLOCKED = ['pointerdown', 'pointerup', 'mousedown', 'mouseup', 'dblclick', 'auxclick'] as const
+const PRESS = new Set(['pointerdown', 'pointerup', 'mousedown', 'mouseup'])
+/** A press that moves further than this is a drag, not a pick. */
+const DRAG_DISTANCE = 4
+
+const inPannable = (node: EventTarget | null) => node instanceof Element && !!node.closest('[data-pick-pan]')
 
 interface Outline {
   top: number
@@ -80,10 +91,14 @@ export function PickLayer({ active, onActiveChange, onPick, onCopy }: {
 
   useEffect(() => {
     const picking = (e: MouseEvent) => latest.current.active || e.altKey
+    let pressedAt: { x: number; y: number } | null = null
 
     const onMove = (e: PointerEvent) => hover(picking(e) ? pickTargetOf(e.target) : null)
     const onBlock = (e: Event) => {
+      if (e.type === 'pointerdown' || e.type === 'mousedown') pressedAt = { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY }
       if (!picking(e as MouseEvent) || !pickTargetOf(e.target)) return
+      // Let canvases see presses so they can still be panned.
+      if (PRESS.has(e.type) && inPannable(e.target)) return
       e.preventDefault()
       e.stopPropagation()
     }
@@ -93,7 +108,9 @@ export function PickLayer({ active, onActiveChange, onPick, onCopy }: {
       if (!hit) return
       e.preventDefault()
       e.stopPropagation()
-      latest.current.onPick(hit.target)
+      const dragged = pressedAt && Math.hypot(e.clientX - pressedAt.x, e.clientY - pressedAt.y) > DRAG_DISTANCE
+      pressedAt = null
+      if (!dragged) latest.current.onPick(hit.target)
     }
     const onKey = (e: KeyboardEvent) => {
       const { active, onActiveChange, onCopy } = latest.current

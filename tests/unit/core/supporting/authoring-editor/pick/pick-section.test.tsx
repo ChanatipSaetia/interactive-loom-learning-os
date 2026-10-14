@@ -41,6 +41,31 @@ describe('PickSection and usePickAnchor', () => {
     ])
   })
 
+  it('lets presses reach a pannable canvas and picks nothing after a drag', () => {
+    const onPick = vi.fn()
+    const onMouseDown = vi.fn()
+    render(
+      <>
+        <PickLayer active onActiveChange={() => {}} onPick={onPick} onCopy={() => {}} />
+        <PickSection file="sections/quiz.oui" label="Check" sourceMap={sourceMap}>
+          <div data-pick-pan onMouseDown={onMouseDown}><p>Canvas</p></div>
+          <p onMouseDown={onMouseDown}>Plain</p>
+        </PickSection>
+      </>,
+    )
+    fireEvent.pointerDown(screen.getByText('Canvas'), { clientX: 0, clientY: 0 })
+    fireEvent.mouseDown(screen.getByText('Canvas'))
+    expect(onMouseDown).toHaveBeenCalledTimes(1)
+    fireEvent.click(screen.getByText('Canvas'), { clientX: 30, clientY: 0 })
+    expect(onPick).not.toHaveBeenCalled()
+    fireEvent.pointerDown(screen.getByText('Canvas'), { clientX: 0, clientY: 0 })
+    fireEvent.click(screen.getByText('Canvas'), { clientX: 2, clientY: 1 })
+    expect(onPick).toHaveBeenCalledTimes(1)
+    // Outside a canvas, presses stay blocked.
+    fireEvent.mouseDown(screen.getByText('Plain'))
+    expect(onMouseDown).toHaveBeenCalledTimes(1)
+  })
+
   it('adds no attributes outside a pick section', () => {
     render(<Question />)
     expect(screen.getByText('Why?').hasAttribute('data-oui-anchor')).toBe(false)
