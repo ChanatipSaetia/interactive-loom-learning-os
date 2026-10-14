@@ -1,6 +1,6 @@
 # Grill Log — Pick & Comment in Studio and Viewer
 
-Status: **Phases 1–3 complete — Phase 4 (tradeoff-sandbox, reflection-synthesis) next**
+Status: **All phases complete (1–5)**
 
 ## Goal
 
@@ -92,9 +92,24 @@ and the question follows the list.
 | Flowchart: `entityPickSources` / `relationPickSources` map `deriveSchema` IDs (`pol_`, `cmd_`, `evt_`, `<id>2`) back to sources without changing `deriveSchema`'s output; `pickFirst` takes the first one the file declares | `process-simulation/components/flowchart/pick-source.ts`, `views/standard-view.tsx`, `views/sequence-view.tsx`, `step-carousel.tsx`, `step-caption.tsx` |
 | Drag-through on canvases (`data-pick-pan`) | `PickLayer.tsx`, concept-map and flowchart SVGs |
 
-- Not tagged yet (section-level picks): flowchart lines in the derived views, sequence messages, the inspector panel, quiz/flashcard category badges, and the sections of Phase 4.
+- Not tagged (section-level picks): flowchart lines in the derived views, sequence messages, the inspector panel, quiz/flashcard category badges.
 - Hidden content (a closed quiz hint, a flashcard's back, a taxonomy dialog, a scenario's later nodes) is picked after leaving Pick mode to open it, then Alt/Option+clicking or turning Pick mode back on.
 - Tests: `tests/unit/core/supporting/authoring-editor/pick/section-anchors.test.tsx` renders every tagged section type's Studio template and checks that each anchor names a real statement; `flowchart-pick-source.test.ts` resolves every node of `demo/sections/flowchart-feedback.oui`. Checked in Chromium against `bg3-four-element-monk`: flowchart nodes pick `#step1.events[0]`, `#kiPool`, `#step1.command`, `#player`, `#stepOpening.options[1].policy`; the concept map pans while picking.
+
+## Phases 4 and 5 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Tags: TradeoffSandbox (scenario, metric bars and effect chips, step + title/description, choice cards in the step dialog, the compare panel and the details dialog: label, description, pros/cons and their title/description, whyThisFits, whenToUse); FormulaSandbox (variable sliders + label, metric rows + label, each formula line); DecisionTree (node, prompt, choice, text, rationale, leaf, recommendation, explanation, trade-offs, tree-view nodes and branches); ReflectionSequence (challenge, prompt, items and placed items); ReflectionTemplate (challenge, prompt, template sentence, chips) | `tradeoff-sandbox/components/*/index.tsx`, `reflection-synthesis/components/*/index.tsx` |
+| Reflection components receive the current challenge object (`challenge` prop) only for anchors | `ReflectionSequenceSingle`, `ReflectionTemplateSingle` |
+| Code editor: `revealLine` (scroll, cursor, 1.5s line flash), `onHoverLine`, `onAddLine` (Ctrl/Cmd+Shift+M on the cursor line, Alt/Option+click on a line number) | `authoring-editor/components/OUICodeEditor.tsx` |
+| `statementAtLine(source, line)`: the top-level statement a line belongs to | `pick/tray.ts` |
+| `PickMode` takes `onPick` (Studio reveals the pick's statement) and `apiRef` (`add(target)`, for picks from the code) | `pick/PickMode.tsx` |
+| Studio wiring: a pick reveals its statement in the Code tab; hovering a code line outlines the statement's elements in the preview (`.pick-linked`: exact anchor, else the shallowest ones inside it); Ctrl/Cmd+Shift+M adds the statement | `StudioWorkspace.tsx`, `SectionEditor.tsx`, `SectionPreview.tsx`, `pick.css` |
+
+- Every Loom section type now tags its elements; `section-anchors.test.tsx` renders every Studio template (inside the same HUD and progress providers Studio and Viewer use) and checks that each anchor names a real statement.
+- **Deviation from decision 46:** a pick does not open a form field. The visual forms are per-type editors with no mapping from anchors to fields, so a pick only reveals the line in the Code tab (the Form tab is left as it is). Picks from the code add the whole statement, not a prop.
+- Tests: `statementAtLine` unit test; `tests/e2e/studio.spec.ts` "links preview picks and code lines both ways" (pick → line flash, Ctrl/Cmd+Shift+M → `#root` entry, code-line hover → `.pick-linked` in the preview), run in Chromium against the `mtls` topic.
 
 ## Open Questions
 

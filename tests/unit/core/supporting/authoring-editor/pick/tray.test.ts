@@ -6,6 +6,7 @@ import {
   resolvePickEntries,
   savePickTray,
   sourceResolver,
+  statementAtLine,
   statementOfAnchor,
   trayReport,
 } from '../../../../../../src/core/supporting/authoring-editor/pick'
@@ -24,6 +25,15 @@ describe('Pick tray', () => {
     expect(statementOfAnchor('q2.choices[1].explanation')).toBe('q2')
     expect(statementOfAnchor('q2[0]')).toBe('q2')
     expect(statementOfAnchor('root')).toBe('root')
+  })
+
+  it('finds the statement a code line belongs to', () => {
+    const source = '// note\nroot = Quiz("C", [q1])\n\nq1 = QuizQuestion(\n  "q1", "Why?",\n  [QuizChoice("a", "A", true, "Yes")],\n)\n'
+    expect(statementAtLine(source, 1)).toBeUndefined()
+    expect(statementAtLine(source, 2)).toBe('root')
+    expect(statementAtLine(source, 3)).toBe('root')
+    expect(statementAtLine(source, 4)).toBe('q1')
+    expect(statementAtLine(source, 6)).toBe('q1')
   })
 
   it('adds each place once', () => {

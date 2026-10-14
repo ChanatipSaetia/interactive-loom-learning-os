@@ -3,7 +3,7 @@
  * `PickToggle` goes in the page header, `PickMode` renders the hover outline
  * and the tray of picked places, and copies them for an AI coding agent.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, type MutableRefObject } from 'react'
 import { AlertTriangle, Check, ChevronDown, ChevronUp, Copy, Crosshair, Trash2, X } from 'lucide-react'
 import { copyText } from '../../../ui-system/clipboard'
 import { formatPickPointer, type PickSource } from '../../../learning-engine/composition/oui/pick-report'
@@ -53,13 +53,21 @@ function usePickTray(topicId: string) {
   return [state, setState] as const
 }
 
-export function PickMode({ topicId, active, onActiveChange, resolve, source }: {
+/** Lets the page add picks that do not come from a click (Studio's code editor). */
+export interface PickModeApi {
+  add(target: PickTarget): void
+}
+
+export function PickMode({ topicId, active, onActiveChange, resolve, source, onPick, apiRef }: {
   topicId: string
   active: boolean
   onActiveChange: (active: boolean) => void
   /** Finds an entry's statement in the current sources (line hint, unsaved, stale). */
   resolve: PickResolver
   source?: PickSource
+  /** Called for every pick, after it is added (Studio reveals the statement in the code). */
+  onPick?: (target: PickTarget) => void
+  apiRef?: MutableRefObject<PickModeApi | null>
 }) {
   const [tray, setTray] = usePickTray(topicId)
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed' | 'empty'>('idle')
@@ -68,10 +76,23 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source }: {
   const entries = useMemo(() => resolvePickEntries(tray.entries, resolve), [tray.entries, resolve])
   const report = useMemo(() => trayReport(topicId, tray, resolve, source), [topicId, tray, resolve, source])
 
-  const pick = useCallback((target: PickTarget) => {
+  const add = useCallback((target: PickTarget) => {
     setTray((t) => addPickEntry(t, target))
     setCollapsed(false)
   }, [setTray])
+
+  const pick = useCallback((target: PickTarget) => {
+    add(target)
+    onPick?.(target)
+  }, [add, onPick])
+
+  useEffect(() => {
+    if (!apiRef) return
+    apiRef.current = { add }
+    return () => {
+      apiRef.current = null
+    }
+  }, [apiRef, add])
 
   const copy = useCallback(async () => {
     if (!report) {

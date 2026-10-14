@@ -3,6 +3,7 @@
  * and copy a reference for an AI coding agent. See grill-log-pick-and-comment.md.
  */
 export { PickMode, PickToggle } from './PickMode'
+export type { PickModeApi } from './PickMode'
 export { PickSection } from './PickSection'
 export { PickLayer, pickTargetOf } from './PickLayer'
 export type { PickTarget } from './PickLayer'
@@ -14,6 +15,7 @@ export {
   resolvePickEntries,
   savePickTray,
   sourceResolver,
+  statementAtLine,
   statementOfAnchor,
   trayReport,
 } from './tray'

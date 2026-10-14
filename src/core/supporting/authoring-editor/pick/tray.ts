@@ -67,6 +67,19 @@ export function sourceResolver(sources: Record<string, string>, unsaved: Readonl
   }
 }
 
+/** The top-level statement a 1-based line belongs to (the last one starting at or before it). */
+export function statementAtLine(source: string, line: number): string | undefined {
+  let found: string | undefined
+  let start = 0
+  for (const [statement, at] of indexStatementLines(source)) {
+    if (at <= line && at >= start) {
+      found = statement
+      start = at
+    }
+  }
+  return found
+}
+
 export function resolvePickEntries(entries: PickEntry[], resolve: PickResolver): ResolvedPickEntry[] {
   return entries.map((entry) => {
     const found = resolve(entry.file, statementOfAnchor(entry.anchor))

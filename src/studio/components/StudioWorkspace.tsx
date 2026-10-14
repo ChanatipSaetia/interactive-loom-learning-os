@@ -9,7 +9,7 @@ import {
   createTopicZip,
   readTopicArchive,
 } from '../../core/supporting/authoring-editor/workspace'
-import { PickMode, PickToggle, sourceResolver } from '../../core/supporting/authoring-editor/pick'
+import { PickMode, PickToggle, sourceResolver, statementOfAnchor, type PickModeApi, type PickTarget } from '../../core/supporting/authoring-editor/pick'
 import { ThemeToggle } from '../../core/ui-system/motion/theme-toggle'
 import { LoomToolsNav } from '../../core/delivery/web-app-shell/LoomToolsNav'
 import { useWorkspace } from '../useWorkspace'
@@ -47,6 +47,11 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
     () => (initialStatus ? { kind: 'ok', text: initialStatus } : null),
   )
   const [picking, setPicking] = useState(false)
+  const pickApi = useRef<PickModeApi | null>(null)
+  // A pick in the preview shows its statement in the code editor (decision 46).
+  const [reveal, setReveal] = useState<{ file: string; statement: string } | null>(null)
+  const onPick = useCallback((target: PickTarget) => setReveal({ file: target.file, statement: statementOfAnchor(target.anchor) }), [])
+  const addToTray = useCallback((target: PickTarget) => pickApi.current?.add(target), [])
 
   // Pick tray line hints come from the editor buffers, marked (unsaved) when they differ from disk.
   const pickResolver = useMemo(() => sourceResolver(
@@ -229,10 +234,19 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
             <main className="studio-main">
               {selected === TOPIC_ITEM || !section
                 ? <TopicMetaForm workspace={workspace} metadata={snap.metadata} />
-                : <SectionEditor key={section.name} workspace={workspace} section={section} sectionNames={snap.sections.map((s) => s.name)} />}
+                : (
+                  <SectionEditor
+                    key={section.name}
+                    workspace={workspace}
+                    section={section}
+                    sectionNames={snap.sections.map((s) => s.name)}
+                    reveal={reveal}
+                    onAddToTray={addToTray}
+                  />
+                )}
             </main>
           </div>
-          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} />
+          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} onPick={onPick} apiRef={pickApi} />
         </div>
       </HUDProvider>
     </ProgressProvider>

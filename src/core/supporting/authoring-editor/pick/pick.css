@@ -146,3 +146,8 @@
   .pick-tray { bottom: 0; width: 100vw; border-radius: 12px 12px 0 0; }
   .pick-toggle-label { display: none; }
 }
+
+/* Studio: what the code line under the pointer draws (decision 46). */
+.pick-linked { outline: 2px dashed var(--primary); outline-offset: 2px; border-radius: 4px; }
+svg .pick-linked,
+svg.pick-linked { outline: none; filter: drop-shadow(0 0 3px var(--primary)) drop-shadow(0 0 1px var(--primary)); }

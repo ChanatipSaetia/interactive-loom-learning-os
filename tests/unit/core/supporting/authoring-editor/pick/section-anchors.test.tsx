@@ -7,6 +7,8 @@ import { SectionRegistry } from '../../../../../../src/core/learning-engine/regi
 import { registerCoreSections } from '../../../../../../src/core/learning-engine/registry/register-core-sections'
 import { SECTION_TEMPLATES } from '../../../../../../src/core/supporting/authoring-editor/workspace'
 import { PickSection, statementOfAnchor } from '../../../../../../src/core/supporting/authoring-editor/pick'
+import { HUDProvider } from '../../../../../../src/core/learning-engine/composition/context/HUDContext'
+import { ProgressProvider } from '../../../../../../src/core/supporting/learner-progress'
 
 beforeAll(() => registerCoreSections())
 
@@ -16,17 +18,22 @@ async function anchorsOf(source: string): Promise<string[]> {
   const { value } = compileOUISection(source)
   const config = bundleToSections([value!])[0]
   const Component = SectionRegistry.get(config.type)!
+  // The same providers Studio and Viewer render sections in.
   const { container } = render(
-    <PickSection file="sections/s.oui" label="S" sourceMap={sourceMapOf(value)}>
-      <Suspense fallback={<p>loading</p>}><Component sectionIndex={0} {...config.props} /></Suspense>
-    </PickSection>,
+    <ProgressProvider>
+      <HUDProvider>
+        <PickSection file="sections/s.oui" label="S" sourceMap={sourceMapOf(value)}>
+          <Suspense fallback={<p>loading</p>}><Component sectionIndex={0} {...config.props} /></Suspense>
+        </PickSection>
+      </HUDProvider>
+    </ProgressProvider>,
   )
   await waitFor(() => expect(container.textContent).not.toContain('loading'))
   return [...container.querySelectorAll('[data-oui-anchor]')].map((el) => el.getAttribute('data-oui-anchor')!)
 }
 
-/** Section types whose items are tagged (Phase 2: progressive-content and practice-assessment; Phase 3: process-simulation). */
-const TAGGED = ['intro', 'text', 'bullets', 'taxonomy-browser', 'image-gallery', 'pillar-layer', 'quiz', 'flashcards', 'concept-map', 'flowchart', 'scenario']
+/** Every Loom section type tags its items; standard OpenUI sections stay section-level (decision 49). */
+const TAGGED = SECTION_TEMPLATES.map((t) => t.type).filter((type) => type !== 'openui')
 
 describe('Section pick anchors', () => {
   for (const template of SECTION_TEMPLATES.filter((t) => TAGGED.includes(t.type))) {

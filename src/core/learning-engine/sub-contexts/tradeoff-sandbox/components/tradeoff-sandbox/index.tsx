@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../../ui-syst
 import { Dropdown } from '../../../../../ui-system/motion/dropdown'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
+import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { TradeoffHelpModal } from './TradeoffHelpModal'
 import './tradeoff-sandbox.css'
 
@@ -63,6 +64,7 @@ export interface TradeoffSandboxSectionProps extends SectionResultProps<Record<s
 }
 
 function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; value: number; max: number; instanceId?: string }) {
+  const pick = usePickAnchors()
   const clamped = Math.max(metric.min ?? 0, Math.min(metric.max ?? 100, value))
   const pct = max !== 0 ? (clamped / max) * 100 : 0
   const direction = metric.direction ?? 'higher'
@@ -85,9 +87,9 @@ function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; valu
     : (direction === 'higher' ? 'var(--ctp-red)' : 'var(--ctp-green)')
 
   return (
-    <div className="metric-bar" data-testid={getTestId(`metric-bar-${metric.id}`)}>
+    <div className="metric-bar" data-testid={getTestId(`metric-bar-${metric.id}`)} {...pick(metric)}>
       <div className="metric-bar-header">
-        <span className="metric-label" data-testid={getTestId(`metric-label-${metric.id}`)}>{metric.label}</span>
+        <span className="metric-label" data-testid={getTestId(`metric-label-${metric.id}`)} {...pick(metric, 'label')}>{metric.label}</span>
         <div className="metric-values-container flex items-center gap-1.5">
           {delta !== 0 && (
             <span className="metric-delta text-xs font-semibold" style={{ color: deltaColor }}>
@@ -131,6 +133,7 @@ function StepComparisonModal({
   scenarioMetrics: MetricDef[]
   totalSteps: number
 }) {
+  const pick = usePickAnchors()
   const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
   const choices = step.choices
   const initialIdx = chosenChoiceId ? Math.max(0, choices.findIndex(c => c.id === chosenChoiceId)) : 0
@@ -187,6 +190,7 @@ function StepComparisonModal({
           <Dialog.Description
             className="text-xs text-muted-foreground mt-1 mb-3 leading-normal block"
             data-testid={getTestId(`step-description-${scenarioIdx}-${stepIdx}`)}
+            {...pick(step, 'description')}
           >
             {step.description}
           </Dialog.Description>
@@ -205,6 +209,7 @@ function StepComparisonModal({
               return (
                 <div
                   key={choice.id}
+                  {...pick(choice)}
                   ref={el => { cardRefs.current[idx] = el }}
                   className={`compare-card${isChosen ? ' compare-card-chosen' : ''}${isRecommended ? ' compare-card-recommended' : ''}${isActive ? ' compare-card-active' : ''} cursor-pointer`}
                   data-testid={getTestId(`dropdown-option-${scenarioIdx}-${stepIdx}-${choice.id}`)}
@@ -224,7 +229,7 @@ function StepComparisonModal({
                   }}
                 >
                   <div className="compare-card-header">
-                    <span className="compare-card-label" data-testid={getTestId(`compare-card-label-${stepIdx}-${choice.id}`)}>
+                    <span className="compare-card-label" data-testid={getTestId(`compare-card-label-${stepIdx}-${choice.id}`)} {...pick(choice, 'label')}>
                       {choice.label}
                     </span>
                     {isRecommended && (
@@ -245,7 +250,7 @@ function StepComparisonModal({
                     )}
                   </div>
 
-                  <p className="compare-card-desc text-xs text-muted-foreground mb-3 leading-normal">
+                  <p className="compare-card-desc text-xs text-muted-foreground mb-3 leading-normal" {...pick(choice, 'description')}>
                     {choice.description}
                   </p>
 
@@ -274,6 +279,7 @@ function StepComparisonModal({
                             color: badgeColor,
                             borderColor: badgeColor,
                           }}
+                          {...pick(metric, 'label')}
                         >
                           {metric.label}: {delta > 0 ? '+' : ''}{delta}
                         </span>
@@ -286,12 +292,12 @@ function StepComparisonModal({
                       <h5 className="details-section-title">Pros</h5>
                       <ul className="details-pros flex flex-col gap-1.5" data-testid={getTestId(`compare-pros-${stepIdx}-${choice.id}`)}>
                         {choice.pros.map((pro, pIdx) => (
-                          <li key={pIdx} className="details-pro-item flex items-start gap-2 px-2.5 py-1.5 rounded-[var(--radius-xs)] border-l-4" data-testid={getTestId(`compare-pro-${stepIdx}-${choice.id}-${pIdx}`)}>
+                          <li {...pick(pro)} key={pIdx} className="details-pro-item flex items-start gap-2 px-2.5 py-1.5 rounded-[var(--radius-xs)] border-l-4" data-testid={getTestId(`compare-pro-${stepIdx}-${choice.id}-${pIdx}`)}>
                             <Check className="details-icon details-icon-pro w-3.5 h-3.5 mt-0.5" />
                             <div>
-                              <span className="details-procon-title text-xs font-semibold">{pro.title}</span>
+                              <span className="details-procon-title text-xs font-semibold" {...pick(pro, 'title')}>{pro.title}</span>
                               {pro.description && (
-                                <span className="details-procon-desc text-[11px] text-muted-foreground block mt-0.5 leading-normal">{pro.description}</span>
+                                <span className="details-procon-desc text-[11px] text-muted-foreground block mt-0.5 leading-normal" {...pick(pro, 'description')}>{pro.description}</span>
                               )}
                             </div>
                           </li>
@@ -305,12 +311,12 @@ function StepComparisonModal({
                       <h5 className="details-section-title">Cons</h5>
                       <ul className="details-cons flex flex-col gap-1.5" data-testid={getTestId(`compare-cons-${stepIdx}-${choice.id}`)}>
                         {choice.cons.map((con, cIdx) => (
-                          <li key={cIdx} className="details-con-item flex items-start gap-2 px-2.5 py-1.5 rounded-[var(--radius-xs)] border-l-4" data-testid={getTestId(`compare-con-${stepIdx}-${choice.id}-${cIdx}`)}>
+                          <li {...pick(con)} key={cIdx} className="details-con-item flex items-start gap-2 px-2.5 py-1.5 rounded-[var(--radius-xs)] border-l-4" data-testid={getTestId(`compare-con-${stepIdx}-${choice.id}-${cIdx}`)}>
                             <X className="details-icon details-icon-con w-3.5 h-3.5 mt-0.5" />
                             <div>
-                              <span className="details-procon-title text-xs font-semibold">{con.title}</span>
+                              <span className="details-procon-title text-xs font-semibold" {...pick(con, 'title')}>{con.title}</span>
                               {con.description && (
-                                <span className="details-procon-desc text-[11px] text-muted-foreground block mt-0.5 leading-normal">{con.description}</span>
+                                <span className="details-procon-desc text-[11px] text-muted-foreground block mt-0.5 leading-normal" {...pick(con, 'description')}>{con.description}</span>
                               )}
                             </div>
                           </li>
@@ -374,6 +380,7 @@ function StepSection({
   scenarioMetrics: MetricDef[]
   totalSteps: number
 }) {
+  const pick = usePickAnchors()
   const [modalOpen, setModalOpen] = useState(false)
   const chosenChoice = step.choices.find((c) => c.id === chosenChoiceId) || null
   const isRecommended = chosenChoice && step.recommended === chosenChoiceId
@@ -381,9 +388,9 @@ function StepSection({
   const getTestId = (id: string) => instanceId ? `${instanceId}-${id}` : id
 
   return (
-    <div className={`step-section${chosenChoiceId ? '' : ' step-section-unselected'}`} data-testid={getTestId(`step-section-${scenarioIdx}-${stepIdx}`)}>
+    <div className={`step-section${chosenChoiceId ? '' : ' step-section-unselected'}`} data-testid={getTestId(`step-section-${scenarioIdx}-${stepIdx}`)} {...pick(step)}>
       <div className="step-header">
-        <h4 className="step-title" data-testid={getTestId(`step-title-${scenarioIdx}-${stepIdx}`)}>
+        <h4 className="step-title" data-testid={getTestId(`step-title-${scenarioIdx}-${stepIdx}`)} {...pick(step, 'title')}>
           {step.title}
         </h4>
       </div>
@@ -400,6 +407,7 @@ function StepSection({
           whiteSpace: 'nowrap',
           border: '0',
         }}
+        {...pick(step, 'description')}
       >
         {step.description}
       </span>
@@ -416,7 +424,7 @@ function StepSection({
         >
           {chosenChoice ? (
             <div className="drop-zone-content w-full flex items-center justify-between min-w-0" data-testid={getTestId(`drop-zone-content-${scenarioIdx}-${stepIdx}`)}>
-              <span className="drop-zone-label pr-16" data-testid={getTestId(`drop-zone-label-${scenarioIdx}-${stepIdx}`)}>
+              <span className="drop-zone-label pr-16" data-testid={getTestId(`drop-zone-label-${scenarioIdx}-${stepIdx}`)} {...pick(chosenChoice, 'label')}>
                 {chosenChoice.label}
               </span>
             </div>
@@ -511,6 +519,7 @@ function DetailsModal({
   step: TradeoffStep
   onClose: () => void
 }) {
+  const pick = usePickAnchors()
   const isRecommended = step.recommended === choice.id
 
   return (
@@ -537,7 +546,7 @@ function DetailsModal({
           </Dialog.Close>
 
           <div className="details-header" data-testid="details-header">
-            <h4 className="details-choice-label" data-testid="details-choice-label">
+            <h4 className="details-choice-label" data-testid="details-choice-label" {...pick(choice, 'label')}>
               {choice.label}
             </h4>
             {isRecommended && (
@@ -546,7 +555,7 @@ function DetailsModal({
                 <span style={{ display: 'none' }}>Recommended</span>
               </span>
             )}
-            <p className="details-description" data-testid="details-description">
+            <p className="details-description" data-testid="details-description" {...pick(choice, 'description')}>
               {choice.description}
             </p>
           </div>
@@ -556,12 +565,12 @@ function DetailsModal({
               <h5 className="details-section-title">Pros</h5>
               <ul className="details-pros" data-testid="details-pros">
                 {choice.pros.map((pro, pIdx) => (
-                  <li key={pIdx} className="details-pro-item" data-testid={`details-pro-${pIdx}`}>
+                  <li {...pick(pro)} key={pIdx} className="details-pro-item" data-testid={`details-pro-${pIdx}`}>
                     <Check className="details-icon details-icon-pro" />
                     <div>
-                      <span className="details-procon-title">{pro.title}</span>
+                      <span className="details-procon-title" {...pick(pro, 'title')}>{pro.title}</span>
                       {pro.description && (
-                        <span className="details-procon-desc">{pro.description}</span>
+                        <span className="details-procon-desc" {...pick(pro, 'description')}>{pro.description}</span>
                       )}
                     </div>
                   </li>
@@ -575,12 +584,12 @@ function DetailsModal({
               <h5 className="details-section-title">Cons</h5>
               <ul className="details-cons" data-testid="details-cons">
                 {choice.cons.map((con, cIdx) => (
-                  <li key={cIdx} className="details-con-item" data-testid={`details-con-${cIdx}`}>
+                  <li {...pick(con)} key={cIdx} className="details-con-item" data-testid={`details-con-${cIdx}`}>
                     <X className="details-icon details-icon-con" />
                     <div>
-                      <span className="details-procon-title">{con.title}</span>
+                      <span className="details-procon-title" {...pick(con, 'title')}>{con.title}</span>
                       {con.description && (
-                        <span className="details-procon-desc">{con.description}</span>
+                        <span className="details-procon-desc" {...pick(con, 'description')}>{con.description}</span>
                       )}
                     </div>
                   </li>
@@ -592,14 +601,14 @@ function DetailsModal({
           {isRecommended && choice.whyThisFits && (
             <div className="details-recommendation-box" data-testid="details-recommendation-box">
               <h5 className="details-rec-title">Why this fits</h5>
-              <p className="details-rec-text" data-testid="details-rec-text">{choice.whyThisFits}</p>
+              <p className="details-rec-text" data-testid="details-rec-text" {...pick(choice, 'whyThisFits')}>{choice.whyThisFits}</p>
             </div>
           )}
 
           {!isRecommended && choice.whenToUse && (
             <div className="details-alternative-box" data-testid="details-alternative-box">
               <h5 className="details-alt-title">Alternative / When to use</h5>
-              <p className="details-alt-text" data-testid="details-alt-text">{choice.whenToUse}</p>
+              <p className="details-alt-text" data-testid="details-alt-text" {...pick(choice, 'whenToUse')}>{choice.whenToUse}</p>
             </div>
           )}
         </Dialog.Content>
@@ -610,6 +619,7 @@ function DetailsModal({
 
 /** A choice's metric effects as small chips, e.g. "Understanding +20", coloured by whether the change helps. */
 function EffectChips({ choice, metrics, testId }: { choice: TradeoffChoice; metrics: MetricDef[]; testId: string }) {
+  const pick = usePickAnchors()
   const effects = Object.entries(choice.metrics).flatMap(([mid, delta]) => {
     const metric = metrics.find((m) => m.id === mid)
     return metric && delta !== 0 ? [{ metric, delta }] : []
@@ -620,7 +630,7 @@ function EffectChips({ choice, metrics, testId }: { choice: TradeoffChoice; metr
       {effects.map(({ metric, delta }) => {
         const isGood = (metric.direction ?? 'higher') === 'higher' ? delta > 0 : delta < 0
         return (
-          <li key={metric.id} className={`compare-effect ${isGood ? 'compare-effect-good' : 'compare-effect-bad'}`}>
+          <li key={metric.id} className={`compare-effect ${isGood ? 'compare-effect-good' : 'compare-effect-bad'}`} {...pick(metric, 'label')}>
             {metric.label} {delta > 0 ? '+' : '−'}{Math.abs(delta)}
           </li>
         )
@@ -634,6 +644,7 @@ function EffectChips({ choice, metrics, testId }: { choice: TradeoffChoice; metr
  * Tapping an option that has "why it fits" or "when to use" text shows it and dims the other options.
  */
 function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; chosenIds: Record<string, string> }) {
+  const pick = usePickAnchors()
   const { playSound } = useSound()
   const [focused, setFocused] = useState<Record<string, string | undefined>>({})
 
@@ -650,17 +661,17 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
         const columns = step.choices.length === 4 ? 2 : Math.min(step.choices.length, 3)
 
         return (
-          <section key={step.id} className="compare-step" data-testid={`compare-step-${sIdx}`}>
+          <section key={step.id} className="compare-step" data-testid={`compare-step-${sIdx}`} {...pick(step)}>
             <header className="compare-step-header">
               {scenario.steps.length > 1 && (
                 <span className="compare-step-eyebrow" data-testid={`compare-step-eyebrow-${sIdx}`}>
                   Question {sIdx + 1} of {scenario.steps.length}
                 </span>
               )}
-              <h5 className="compare-step-title" data-testid={`compare-step-title-${sIdx}`}>
+              <h5 className="compare-step-title" data-testid={`compare-step-title-${sIdx}`} {...pick(step, 'title')}>
                 {step.title}
               </h5>
-              {step.description && <p className="compare-step-desc">{step.description}</p>}
+              {step.description && <p className="compare-step-desc" {...pick(step, 'description')}>{step.description}</p>}
               {hasDetails && (
                 <p className="compare-step-hint" data-testid={`compare-hint-${sIdx}`}>
                   Tap an option to see when it fits.
@@ -682,6 +693,7 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                 return (
                   <div
                     key={choice.id}
+                  {...pick(choice)}
                     {...(hasDetails && {
                       role: 'button',
                       tabIndex: 0,
@@ -708,6 +720,7 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                       <span
                         className="compare-card-label"
                         data-testid={`compare-card-label-${sIdx}-${choice.id}`}
+                        {...pick(choice, 'label')}
                       >
                         {choice.label}
                       </span>
@@ -726,7 +739,7 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                     </div>
 
                     {choice.description && (
-                      <p className="compare-card-summary" data-testid={`compare-card-desc-${sIdx}-${choice.id}`}>
+                      <p className="compare-card-summary" data-testid={`compare-card-desc-${sIdx}-${choice.id}`} {...pick(choice, 'description')}>
                         {choice.description}
                       </p>
                     )}
@@ -738,16 +751,16 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                         <span className="compare-block-title">Gains</span>
                         <ul className="compare-pros" data-testid={`compare-pros-${sIdx}-${choice.id}`}>
                           {choice.pros.map((pro, pIdx) => (
-                            <li
+                            <li {...pick(pro)}
                               key={pIdx}
                               className="compare-pro"
                               data-testid={`compare-pro-${sIdx}-${choice.id}-${pIdx}`}
                             >
                               <Check className="compare-icon compare-icon-pro" strokeWidth={3} />
                               <div className="compare-procon-content">
-                                <span className="compare-procon-title">{pro.title}</span>
+                                <span className="compare-procon-title" {...pick(pro, 'title')}>{pro.title}</span>
                                 {pro.description && (
-                                  <span className="compare-procon-desc">{pro.description}</span>
+                                  <span className="compare-procon-desc" {...pick(pro, 'description')}>{pro.description}</span>
                                 )}
                               </div>
                             </li>
@@ -761,16 +774,16 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                         <span className="compare-block-title">Costs</span>
                         <ul className="compare-cons" data-testid={`compare-cons-${sIdx}-${choice.id}`}>
                           {choice.cons.map((con, cIdx) => (
-                            <li
+                            <li {...pick(con)}
                               key={cIdx}
                               className="compare-con"
                               data-testid={`compare-con-${sIdx}-${choice.id}-${cIdx}`}
                             >
                               <X className="compare-icon compare-icon-con" strokeWidth={3} />
                               <div className="compare-procon-content">
-                                <span className="compare-procon-title">{con.title}</span>
+                                <span className="compare-procon-title" {...pick(con, 'title')}>{con.title}</span>
                                 {con.description && (
-                                  <span className="compare-procon-desc">{con.description}</span>
+                                  <span className="compare-procon-desc" {...pick(con, 'description')}>{con.description}</span>
                                 )}
                               </div>
                             </li>
@@ -808,6 +821,7 @@ function TradeoffSandboxSection({
   sectionId = 'tradeoff-sandbox',
   onResultChange,
 }: TradeoffSandboxSectionProps) {
+  const pick = usePickAnchors()
   const [scenarioIdx, setScenarioIdx] = useState(0)
   const [activeTab, setActiveTab] = useState<'compare' | 'sandbox'>('compare')
   const { playSound } = useSound()
@@ -950,8 +964,8 @@ function TradeoffSandboxSection({
         </div>
       )}
 
-      <div className="scenario-banner" data-testid={getTestId("scenario-banner")}>
-        <p className="scenario-description">{scenario.description}</p>
+      <div className="scenario-banner" data-testid={getTestId("scenario-banner")} {...pick(scenario)}>
+        <p className="scenario-description" {...pick(scenario, 'description')}>{scenario.description}</p>
       </div>
 
 
