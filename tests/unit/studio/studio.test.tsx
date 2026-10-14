@@ -178,4 +178,41 @@ describe('Loom Studio', () => {
     expect([...folder.files.keys()].sort()).toEqual(['sections/only.oui', 'topic.oui'])
     confirm.mockRestore()
   })
+
+  it('refreshes the topic from disk, keeping the selected section', async () => {
+    const folder = memoryFolder('demo', files())
+    render(<StudioApp pickFolder={async () => folder} />)
+    fireEvent.click(screen.getByTestId('studio-open-folder'))
+    await waitFor(() => expect(screen.getByTestId('studio-workspace')).toBeInTheDocument())
+    fireEvent.click(screen.getByTestId('studio-section-quiz').querySelector('.studio-section-main')!)
+
+    // An AI agent edits the files on disk.
+    folder.files.set('sections/quiz.oui', 'root = Quiz("Check again", [q1])\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "A", true, "Yes")])\n')
+    folder.files.set('sections/extra.oui', 'root = Text("Extra", ["New."])\n')
+    folder.files.set('topic.oui', 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz"), SectionRef("extra")])\n')
+
+    fireEvent.click(screen.getByTestId('studio-refresh'))
+    await waitFor(() => expect(screen.getByTestId('studio-section-extra')).toBeInTheDocument())
+    expect(screen.getByTestId('studio-status').textContent).toBe('Reloaded from disk')
+    expect(screen.getByTestId('studio-section-quiz').className).toContain('is-selected')
+  })
+
+  it('asks before a refresh discards unsaved changes, and shows a broken topic.oui', async () => {
+    const folder = memoryFolder('demo', files())
+    render(<StudioApp pickFolder={async () => folder} />)
+    fireEvent.click(screen.getByTestId('studio-open-folder'))
+    await waitFor(() => expect(screen.getByTestId('studio-workspace')).toBeInTheDocument())
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    fireEvent.click(screen.getByTestId('studio-topic-item'))
+    fireEvent.change(screen.getByTestId('studio-topic-title'), { target: { value: 'Demo 2' } })
+    fireEvent.click(screen.getByTestId('studio-refresh'))
+    expect(confirm.mock.calls[0][0]).toMatch(/1 unsaved change\. Discard it/)
+    expect(screen.getByTestId('studio-save').textContent).toContain('Save (1)')
+    confirm.mockReturnValue(true)
+    folder.files.set('topic.oui', 'root = Topic(')
+    fireEvent.click(screen.getByTestId('studio-refresh'))
+    await waitFor(() => expect(screen.getByTestId('studio-status').textContent).toMatch(/topic.oui has errors/))
+    expect(screen.getByTestId('studio-workspace')).toBeInTheDocument()
+    confirm.mockRestore()
+  })
 })

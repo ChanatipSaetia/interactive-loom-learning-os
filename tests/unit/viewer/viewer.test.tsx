@@ -104,4 +104,48 @@ describe('Loom Viewer', () => {
     fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [pickedFile('topic.oui', 'root = Topic("T", "C", "", [SectionRef("a")])')] } })
     await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/only a topic.oui, without its sections/))
   })
+
+  it('refreshes an opened file, keeping the selected topic', async () => {
+    let source = createTopicSource([topic('one', 'First Topic'), topic('two', 'Second Topic')])
+    const file = { name: 'all.loom.oui', arrayBuffer: async () => new TextEncoder().encode(source).buffer }
+    render(<ViewerApp />)
+    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [file] } })
+    await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
+    fireEvent.change(screen.getByTestId('viewer-topic-select'), { target: { value: '1' } })
+
+    source = createTopicSource([topic('one', 'First Topic'), topic('two', 'Second Topic, Revised')])
+    fireEvent.click(screen.getByTestId('viewer-refresh'))
+    await waitFor(() => expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Second Topic, Revised'))
+    expect(screen.getByTestId('viewer-status').textContent).toBe('Refreshed')
+  })
+
+  it('keeps the topic and shows the error when a refresh fails', async () => {
+    let source = createTopicSource([topic('one', 'Good Topic')])
+    const file = { name: 'one.loom.oui', arrayBuffer: async () => new TextEncoder().encode(source).buffer }
+    render(<ViewerApp />)
+    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [file] } })
+    await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
+    source = 'root = Topic("T", "C", "", [SectionRef("a")])'
+    fireEvent.click(screen.getByTestId('viewer-refresh'))
+    await waitFor(() => expect(screen.getByTestId('viewer-status').textContent).toMatch(/^Could not refresh:/))
+    expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Good Topic')
+  })
+
+  it('refreshes pasted text from the clipboard or the next paste', async () => {
+    const readText = vi.fn(async () => createTopicSource([topic('one', 'From Clipboard')]))
+    Object.assign(navigator, { clipboard: { readText } })
+    render(<ViewerApp />)
+    fireEvent.click(screen.getByTestId('viewer-paste-toggle'))
+    fireEvent.change(screen.getByTestId('viewer-paste-input'), { target: { value: createTopicSource([topic('one', 'Pasted Topic')]) } })
+    fireEvent.click(screen.getByTestId('viewer-paste-open'))
+    await waitFor(() => expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Pasted Topic'))
+
+    fireEvent.click(screen.getByTestId('viewer-refresh'))
+    await waitFor(() => expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('From Clipboard'))
+
+    const event = new Event('paste', { bubbles: true }) as Event & { clipboardData: unknown }
+    event.clipboardData = { getData: () => createTopicSource([topic('one', 'Pasted Again')]) }
+    fireEvent(document.body, event)
+    await waitFor(() => expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Pasted Again'))
+  })
 })

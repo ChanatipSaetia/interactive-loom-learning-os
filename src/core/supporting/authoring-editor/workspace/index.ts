@@ -2,7 +2,7 @@
  * Loom Studio workspace: topic-folder storage port, section templates and the
  * TopicWorkspace store.
  */
-export { fileSystemAccessFolder, memoryFolder, pickTopicFolder, supportsFolderPicker } from './folder'
+export { fileSystemAccessFolder, memoryFolder, pickTopicFolder, readDirectoryOUIFiles, supportsFolderPicker } from './folder'
 export type { TopicFolder, MemoryFolder } from './folder'
 export { SECTION_TEMPLATES, getSectionTemplate, humanize, newTopicSource } from './templates'
 export type { SectionTemplate } from './templates'

@@ -2,9 +2,11 @@
  * Loom Viewer — read-only page that shows topics exported from Loom Studio
  * (a single-file `.loom.oui` or a `.zip`) or a topic folder picked from disk,
  * rendered with the learning app's section components and themes.
+ * Refresh reads the same file, folder or (for pasted text) the clipboard
+ * again, so changes made by an AI show up without reopening anything.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, FileUp, FolderOpen, Sparkles } from 'lucide-react'
+import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, FileUp, FolderOpen, RefreshCw, Sparkles } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
@@ -13,39 +15,177 @@ import { HUDDrawer, SectionRenderer } from '../core/delivery/web-app-shell/Topic
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../core/supporting/learner-progress'
 import { SectionErrorBoundary } from '../core/ui-system/primitives/SectionErrorBoundary'
-import { readTopicArchive, readTopicFolderFiles, readTopicText, type TopicFiles } from '../core/supporting/authoring-editor/workspace'
+import {
+  TopicArchiveError,
+  groupTopicFiles,
+  readDirectoryOUIFiles,
+  readTopicArchive,
+  readTopicFolderFiles,
+  readTopicText,
+  type TopicFiles,
+} from '../core/supporting/authoring-editor/workspace'
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from './compileTopic'
 import { copyText } from '../core/ui-system/clipboard'
 import '../core/delivery/web-app-shell/layout.css'
 
+type ReadTopics = () => Promise<TopicFiles[]>
+
 interface Loaded {
   source: string
   topics: ViewerTopic[]
+  /** Reads the source again (file, folder or clipboard). */
+  refresh: ReadTopics
+  /** Tooltip for the Refresh button. */
+  refreshHint: string
+  /** The topic came from pasted text: pasting again replaces it. */
+  pasted: boolean
+  /** Bumped on every refresh so the sections remount with the new content. */
+  revision: number
+}
+
+interface Status {
+  kind: 'ok' | 'error'
+  text: string
+}
+
+/** File System Access pickers (Chromium); other browsers fall back to file inputs. */
+interface PickerWindow {
+  showOpenFilePicker?: (options?: { id?: string; multiple?: boolean }) => Promise<FileSystemFileHandle[]>
+  showDirectoryPicker?: (options?: { id?: string; mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle>
+}
+
+const pickers = () => window as unknown as PickerWindow
+
+function message(e: unknown): string {
+  return e instanceof Error ? e.message : String(e)
+}
+
+const readFile = (file: File): ReadTopics => () => readTopicArchive(file, { singleSection: true })
+
+const readFileHandle = (handle: FileSystemFileHandle): ReadTopics => async () =>
+  readTopicArchive(await handle.getFile(), { singleSection: true })
+
+const readDirectory = (handle: FileSystemDirectoryHandle): ReadTopics => async () => {
+  const topics = groupTopicFiles(await readDirectoryOUIFiles(handle), handle.name)
+  if (topics.length === 0) throw new TopicArchiveError('No topic found: the folder has no topic.oui.')
+  return topics
+}
+
+async function readClipboard(): Promise<TopicFiles[]> {
+  if (!navigator.clipboard?.readText) {
+    throw new Error('This browser does not let the page read the clipboard. Copy the updated text and press Ctrl/Cmd+V on this page.')
+  }
+  const text = await navigator.clipboard.readText()
+  if (!text.trim()) throw new Error('The clipboard is empty. Copy the updated topic from your AI chat first.')
+  return readTopicText(text)
 }
 
 export function ViewerApp() {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [selected, setSelected] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState<Status | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
+  const current = useRef({ loaded, selected })
+  current.current = { loaded, selected }
 
-  const load = useCallback(async (source: string, read: () => Promise<TopicFiles[]>) => {
+  const load = useCallback(async (source: string, read: ReadTopics, options: { refresh?: ReadTopics; refreshHint: string; pasted?: boolean }) => {
     try {
       const topics = (await read()).map(compileViewerTopic)
-      setLoaded({ source, topics })
+      setLoaded({ source, topics, refresh: options.refresh ?? read, refreshHint: options.refreshHint, pasted: !!options.pasted, revision: 0 })
       setSelected(0)
       setError(null)
+      setStatus(null)
       window.scrollTo(0, 0)
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      setError(message(e))
     }
   }, [])
 
-  const openFile = useCallback((file: File) => load(file.name, () => readTopicArchive(file, { singleSection: true })), [load])
-  const openText = useCallback((text: string) => load('Pasted text', async () => readTopicText(text)), [load])
-  const openFolder = useCallback(
-    (files: FileList) => load(files[0]?.webkitRelativePath.split('/')[0] || 'folder', () => readTopicFolderFiles(Array.from(files))),
+  /** Re-read the open topic, keeping the selected topic and the scroll position. */
+  const refreshWith = useCallback(async (read: ReadTopics) => {
+    const { loaded: before, selected: index } = current.current
+    if (!before) return
+    const topicId = before.topics[index]?.topicId
+    const scrollY = window.scrollY
+    setRefreshing(true)
+    try {
+      const topics = (await read()).map(compileViewerTopic)
+      const keep = topics.findIndex((t) => t.topicId === topicId)
+      setLoaded({ ...before, topics, revision: before.revision + 1 })
+      setSelected(keep < 0 ? 0 : keep)
+      setStatus({ kind: 'ok', text: 'Refreshed' })
+      // Restore the reading position once the remounted sections have laid out.
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, keep < 0 ? 0 : scrollY)))
+    } catch (e) {
+      const notReadable = e instanceof DOMException && e.name === 'NotReadableError'
+      setStatus({
+        kind: 'error',
+        text: notReadable
+          ? `${before.source} changed on disk and this browser cannot read it again. Use Open… to open it again.`
+          : `Could not refresh: ${message(e)}`,
+      })
+    } finally {
+      setRefreshing(false)
+    }
+  }, [])
+
+  const refresh = useCallback(() => {
+    const read = current.current.loaded?.refresh
+    if (read) void refreshWith(read)
+  }, [refreshWith])
+
+  const openFile = useCallback(
+    (file: File) => load(file.name, readFile(file), { refreshHint: `Read ${file.name} again` }),
     [load],
   )
+  const openFileHandle = useCallback(
+    (handle: FileSystemFileHandle) => load(handle.name, readFileHandle(handle), { refreshHint: `Reload ${handle.name} from disk` }),
+    [load],
+  )
+  const openDirectory = useCallback(
+    (handle: FileSystemDirectoryHandle) => load(`${handle.name}/`, readDirectory(handle), { refreshHint: `Reload ${handle.name}/ from disk` }),
+    [load],
+  )
+  const openText = useCallback(
+    (text: string) => load('Pasted text', async () => readTopicText(text), {
+      refresh: readClipboard,
+      refreshHint: 'Open the updated topic from the clipboard (or press Ctrl/Cmd+V)',
+      pasted: true,
+    }),
+    [load],
+  )
+  const openFolder = useCallback(
+    (files: FileList) => {
+      const list = Array.from(files)
+      const name = list[0]?.webkitRelativePath.split('/')[0] || 'folder'
+      return load(`${name}/`, () => readTopicFolderFiles(list), { refreshHint: `Read ${name}/ again` })
+    },
+    [load],
+  )
+
+  // A topic opened from pasted text is replaced by the next paste (outside text fields).
+  const pasted = !!loaded?.pasted
+  useEffect(() => {
+    if (!pasted) return
+    const onPaste = (e: ClipboardEvent) => {
+      const target = e.target as HTMLElement | null
+      if (target?.closest('textarea, input, [contenteditable="true"]')) return
+      const text = e.clipboardData?.getData('text/plain')
+      if (!text?.trim()) return
+      e.preventDefault()
+      void refreshWith(async () => readTopicText(text))
+    }
+    document.addEventListener('paste', onPaste)
+    return () => document.removeEventListener('paste', onPaste)
+  }, [pasted, refreshWith])
+
+  // Status messages fade after a few seconds.
+  useEffect(() => {
+    if (!status) return
+    const timer = setTimeout(() => setStatus(null), status.kind === 'ok' ? 2000 : 8000)
+    return () => clearTimeout(timer)
+  }, [status])
 
   const topic = loaded?.topics[selected]
 
@@ -77,7 +217,25 @@ export function ViewerApp() {
             </div>
           )}
           <div className="viewer-nav-actions">
+            {status && (
+              <span className={`viewer-status viewer-status--${status.kind}`} role={status.kind === 'error' ? 'alert' : 'status'} data-testid="viewer-status">
+                {status.text}
+              </span>
+            )}
             <LoomToolsNav current="viewer" />
+            {loaded && (
+              <button
+                type="button"
+                className="viewer-pill"
+                onClick={refresh}
+                disabled={refreshing}
+                title={loaded.refreshHint}
+                aria-label={loaded.refreshHint}
+                data-testid="viewer-refresh"
+              >
+                <RefreshCw size={14} className={refreshing ? 'viewer-spin' : undefined} /> <span className="viewer-pill-label">Refresh</span>
+              </button>
+            )}
             {loaded && (
               <button type="button" className="viewer-pill" onClick={() => setLoaded(null)} aria-label="Open another topic" data-testid="viewer-open-another">
                 <FileUp size={14} /> <span className="viewer-pill-label">Open…</span>
@@ -89,16 +247,27 @@ export function ViewerApp() {
         </header>
         <main className="main-content">
           {topic
-            ? <TopicView key={`${loaded.source}:${topic.topicId}`} topic={topic} />
-            : <Landing onFile={openFile} onFolder={openFolder} onText={openText} error={error} />}
+            ? <TopicView key={`${loaded.source}:${topic.topicId}:${loaded.revision}`} topic={topic} />
+            : (
+              <Landing
+                onFile={openFile}
+                onFileHandle={openFileHandle}
+                onDirectory={openDirectory}
+                onFolder={openFolder}
+                onText={openText}
+                error={error}
+              />
+            )}
         </main>
       </div>
     </UISystemProvider>
   )
 }
 
-function Landing({ onFile, onFolder, onText, error }: {
+function Landing({ onFile, onFileHandle, onDirectory, onFolder, onText, error }: {
   onFile: (file: File) => void
+  onFileHandle: (handle: FileSystemFileHandle) => void
+  onDirectory: (handle: FileSystemDirectoryHandle) => void
   onFolder: (files: FileList) => void
   onText: (text: string) => void
   error: string | null
@@ -133,11 +302,44 @@ function Landing({ onFile, onFolder, onText, error }: {
     folderInput.current?.setAttribute('webkitdirectory', '')
   }, [])
 
+  // Open through a File System Access handle where the browser has one, so
+  // Refresh can read the file or folder again after it changes on disk.
+  const pick = async (viaHandle: () => Promise<void> | undefined, fallback: () => void) => {
+    try {
+      const picked = viaHandle()
+      if (picked) await picked
+      else fallback()
+    } catch (e) {
+      if (!(e instanceof DOMException && e.name === 'AbortError')) fallback()
+    }
+  }
+  const pickFile = () => pick(
+    () => pickers().showOpenFilePicker?.({ id: 'loom-viewer-file' }).then(([handle]) => onFileHandle(handle)),
+    () => fileInput.current?.click(),
+  )
+  const pickFolder = () => pick(
+    () => pickers().showDirectoryPicker?.({ id: 'loom-viewer-folder', mode: 'read' }).then(onDirectory),
+    () => folderInput.current?.click(),
+  )
+
   const onDrop = (e: DragEvent) => {
     e.preventDefault()
     setDragging(false)
     const file = e.dataTransfer.files[0]
-    if (file) onFile(file)
+    // Must be requested during the drop event; Chromium only.
+    const item = e.dataTransfer.items?.[0] as (DataTransferItem & { getAsFileSystemHandle?: () => Promise<FileSystemHandle | null> }) | undefined
+    const handle = item?.kind === 'file' ? item.getAsFileSystemHandle?.() : undefined
+    if (!handle) {
+      if (file) onFile(file)
+      return
+    }
+    handle
+      .then((h) => {
+        if (h?.kind === 'directory') onDirectory(h as FileSystemDirectoryHandle)
+        else if (h?.kind === 'file') onFileHandle(h as FileSystemFileHandle)
+        else if (file) onFile(file)
+      })
+      .catch(() => file && onFile(file))
   }
 
   return (
@@ -155,7 +357,7 @@ function Landing({ onFile, onFolder, onText, error }: {
         <h1>View a topic</h1>
         <p>
           Paste or open a <code>.loom.oui</code> topic (or a single section <code>.oui</code>), open a <code>.zip</code>{' '}
-          exported from Loom Studio, or pick a topic folder. You can also drop a file here.
+          exported from Loom Studio, or pick a topic folder. You can also drop a file or folder here.
         </p>
         <p className="viewer-hint">
           Writing a topic with Claude, Gemini, Copilot or another AI chat? <a href="create.html" data-testid="viewer-llm-prompt">Get the Loom prompt and a step-by-step guide</a>,
@@ -165,10 +367,10 @@ function Landing({ onFile, onFolder, onText, error }: {
           <button type="button" className="viewer-button viewer-button--primary" onClick={() => setPasting((p) => !p)} aria-expanded={pasting} data-testid="viewer-paste-toggle">
             <ClipboardPaste size={16} /> Paste text
           </button>
-          <button type="button" className="viewer-button" onClick={() => fileInput.current?.click()} data-testid="viewer-open-file">
+          <button type="button" className="viewer-button" onClick={() => void pickFile()} data-testid="viewer-open-file">
             <FileUp size={16} /> Open file
           </button>
-          <button type="button" className="viewer-button" onClick={() => folderInput.current?.click()} data-testid="viewer-open-folder">
+          <button type="button" className="viewer-button" onClick={() => void pickFolder()} data-testid="viewer-open-folder">
             <FolderOpen size={16} /> Open folder
           </button>
         </div>
