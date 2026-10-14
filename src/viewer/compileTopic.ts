@@ -2,7 +2,7 @@
  * Compile a topic read from a bundle, zip or folder into renderable sections,
  * using the same OpenUI compiler and validation gateway as the learning app.
  */
-import { compileOUITopic, type OUITopicManifest } from '../core/learning-engine/composition/oui/compile'
+import { compileOUITopic, sourceMapOf, type OUISourceMap, type OUITopicManifest } from '../core/learning-engine/composition/oui/compile'
 import { bundleToSections } from '../core/learning-engine/composition/okf/sections'
 import { validateOUISection } from '../core/learning-engine/validation/oui-gateway'
 import type { SectionConfig } from '../core/learning-engine/registry'
@@ -12,6 +12,8 @@ export interface ViewerSection {
   name: string
   /** Renderable section, or null when the file is missing or does not compile. */
   config: SectionConfig | null
+  /** Where the compiled section data came from (for Pick mode). */
+  sourceMap?: OUISourceMap
   error?: string
 }
 
@@ -21,6 +23,8 @@ export interface ViewerTopic {
   /** Set when topic.oui itself cannot be read. */
   error?: string
   sections: ViewerSection[]
+  /** The topic's source files, by path (for Pick mode line hints). */
+  files: Record<string, string>
 }
 
 const formatIssues = (issues: Array<{ line?: number; message: string }>) =>
@@ -30,7 +34,7 @@ export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic 
   const topic = compileOUITopic(files['topic.oui'] ?? '')
   const topicErrors = topic.issues.filter((i) => i.tier < 3)
   if (!topic.value || topicErrors.length) {
-    return { topicId, manifest: null, error: `topic.oui has errors:\n${formatIssues(topicErrors)}`, sections: [] }
+    return { topicId, manifest: null, error: `topic.oui has errors:\n${formatIssues(topicErrors)}`, sections: [], files }
   }
 
   const sections = topic.value.sections.map((name): ViewerSection => {
@@ -40,9 +44,9 @@ export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic 
     const result = validateOUISection(source, { topicId, sectionName: name, file })
     const blocking = result.diagnostics.filter((d) => d.tier < 3)
     if (!result.payload || blocking.length) return { name, config: null, error: formatIssues(blocking) || `${file} cannot be compiled.` }
-    return { name, config: bundleToSections([result.payload])[0] }
+    return { name, config: bundleToSections([result.payload])[0], sourceMap: sourceMapOf(result.payload) }
   })
-  return { topicId, manifest: topic.value, sections }
+  return { topicId, manifest: topic.value, sections, files }
 }
 
 /**

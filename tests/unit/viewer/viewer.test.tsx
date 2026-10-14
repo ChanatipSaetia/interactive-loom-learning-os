@@ -148,4 +148,87 @@ describe('Loom Viewer', () => {
     fireEvent(document.body, event)
     await waitFor(() => expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Pasted Again'))
   })
+
+  describe('Pick mode', () => {
+    const pickTopic = () => createTopicSource([{
+      topicId: 'kafka',
+      files: {
+        'topic.oui': 'root = Topic("Kafka", "Data", "Logs", [SectionRef("intro")])\n',
+        'sections/intro.oui': '// Intro\nroot = Text("Intro", ["Hello from the viewer."])\n',
+      },
+    }])
+
+    async function openPasted(text: string) {
+      fireEvent.click(screen.getByTestId('viewer-paste-toggle'))
+      fireEvent.change(screen.getByTestId('viewer-paste-input'), { target: { value: text } })
+      fireEvent.click(screen.getByTestId('viewer-paste-open'))
+      await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
+    }
+
+    it('picks sections and the topic header, then copies comments for the agent', async () => {
+      localStorage.clear()
+      const writeText = vi.fn(async () => {})
+      Object.assign(navigator, { clipboard: { writeText } })
+      const { unmount } = render(<ViewerApp />)
+      await openPasted(pickTopic())
+
+      const toggle = screen.getByTestId('pick-toggle')
+      fireEvent.click(toggle)
+      expect(toggle.getAttribute('aria-pressed')).toBe('true')
+      expect(screen.getByTestId('pick-tray').textContent).toContain('Click part of a section')
+
+      fireEvent.click(await screen.findByText(/Hello from the viewer/))
+      fireEvent.click(screen.getByRole('heading', { level: 2 }))
+      fireEvent.click(screen.getByText(/Hello from the viewer/))
+      const entries = screen.getAllByTestId('pick-entry')
+      expect(entries).toHaveLength(2)
+      expect(entries[0].textContent).toContain('kafka/sections/intro.oui:2 #root')
+      expect(entries[1].textContent).toContain('kafka/topic.oui:1 #root')
+
+      fireEvent.change(screen.getAllByTestId('pick-entry-note')[0], { target: { value: 'Say why logs matter.' } })
+      fireEvent.click(screen.getByTestId('pick-copy'))
+      await waitFor(() => expect(writeText).toHaveBeenCalled())
+      expect((writeText.mock.calls[0] as unknown as [string])[0]).toBe(
+        'Comments on the Loom topic "kafka":\n'
+        + '- kafka/sections/intro.oui:2 #root (from pasted text)\n  Say why logs matter.\n'
+        + '- kafka/topic.oui:1 #root (from pasted text)\n',
+      )
+
+      fireEvent.keyDown(window, { key: 'Escape' })
+      expect(toggle.getAttribute('aria-pressed')).toBe('false')
+      // The tray stays while it has entries, and is kept for the next visit.
+      expect(screen.getByTestId('pick-tray')).toBeInTheDocument()
+      unmount()
+      render(<ViewerApp />)
+      await openPasted(pickTopic())
+      expect(screen.getAllByTestId('pick-entry')).toHaveLength(2)
+      expect((screen.getAllByTestId('pick-entry-note')[0] as HTMLTextAreaElement).value).toBe('Say why logs matter.')
+      localStorage.clear()
+    })
+
+    it('picks with Alt+click outside Pick mode, toggles with P and marks entries stale after a refresh', async () => {
+      localStorage.clear()
+      render(<ViewerApp />)
+      await openPasted(pickTopic())
+      expect(screen.queryByTestId('pick-tray')).toBeNull()
+
+      fireEvent.click(await screen.findByText(/Hello from the viewer/))
+      expect(screen.queryByTestId('pick-tray')).toBeNull()
+      fireEvent.click(screen.getByText(/Hello from the viewer/), { altKey: true })
+      expect(screen.getAllByTestId('pick-entry')).toHaveLength(1)
+
+      fireEvent.keyDown(window, { key: 'p' })
+      expect(screen.getByTestId('pick-toggle').getAttribute('aria-pressed')).toBe('true')
+      fireEvent.keyDown(window, { key: 'p' })
+      expect(screen.getByTestId('pick-toggle').getAttribute('aria-pressed')).toBe('false')
+
+      // Pasting a new version replaces the topic; the section is gone, so its entry is stale.
+      const event = new Event('paste', { bubbles: true }) as Event & { clipboardData: unknown }
+      event.clipboardData = { getData: () => pickTopic().replace('SectionRef("intro")', '').replace(/\/\/ === sections\/intro\.oui ===[\s\S]*$/, '') }
+      fireEvent(document.body, event)
+      await waitFor(() => expect(screen.getByTestId('pick-entry').className).toBe('is-stale'))
+      expect(screen.getByTestId('pick-entry').textContent).toContain('No longer in the topic')
+      localStorage.clear()
+    })
+  })
 })

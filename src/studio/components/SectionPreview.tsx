@@ -1,7 +1,8 @@
 import { Suspense, useMemo } from 'react'
 import { SectionRegistry } from '../../core/learning-engine/registry'
 import { bundleToSections } from '../../core/learning-engine/composition/okf/sections'
-import type { OUISectionPayload } from '../../core/learning-engine/composition/oui/compile'
+import { sourceMapOf, type OUISectionPayload } from '../../core/learning-engine/composition/oui/compile'
+import { PickSection } from '../../core/supporting/authoring-editor/pick'
 import { SectionErrorBoundary } from '../../core/ui-system/primitives/SectionErrorBoundary'
 
 /** Small stable hash so the preview remounts when the section data changes. */
@@ -12,7 +13,7 @@ function hash(text: string): string {
 }
 
 /** Renders a compiled section with the same components as the learning app. */
-export function SectionPreview({ payload }: { payload: OUISectionPayload | null }) {
+export function SectionPreview({ payload, file }: { payload: OUISectionPayload | null; file: string }) {
   const config = useMemo(() => (payload ? bundleToSections([payload])[0] : null), [payload])
   const key = useMemo(() => (payload ? hash(JSON.stringify(payload)) : 'empty'), [payload])
 
@@ -24,9 +25,11 @@ export function SectionPreview({ payload }: { payload: OUISectionPayload | null 
     <div className="studio-preview topic-content" data-testid="studio-preview" data-section-type={config.type}>
       <SectionErrorBoundary key={key} sectionName={String(config.props.title ?? config.type)}>
         <Suspense fallback={<div className="section-loading">Loading section…</div>}>
-          <div className="section-wrapper" data-section-type={config.type}>
-            <Component key={key} sectionIndex={0} {...config.props} />
-          </div>
+          <PickSection file={file} label={String(config.props.title ?? config.type)} sourceMap={sourceMapOf(payload)}>
+            <div className="section-wrapper" data-section-type={config.type}>
+              <Component key={key} sectionIndex={0} {...config.props} />
+            </div>
+          </PickSection>
         </Suspense>
       </SectionErrorBoundary>
     </div>

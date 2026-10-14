@@ -26,6 +26,8 @@ import {
 } from '../core/supporting/authoring-editor/workspace'
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from './compileTopic'
 import { copyText } from '../core/ui-system/clipboard'
+import { PickMode, PickSection, PickToggle, sourceResolver } from '../core/supporting/authoring-editor/pick'
+import type { PickSource } from '../core/learning-engine/composition/oui/pick-report'
 import '../core/delivery/web-app-shell/layout.css'
 
 type ReadTopics = () => Promise<TopicFiles[]>
@@ -55,6 +57,13 @@ interface PickerWindow {
 }
 
 const pickers = () => window as unknown as PickerWindow
+
+/** Where the open topic lives, for the note after copied pointers. */
+function pickSourceOf(loaded: Loaded): PickSource {
+  if (loaded.pasted) return { kind: 'text' }
+  if (loaded.source.endsWith('/')) return { kind: 'folder' }
+  return { kind: 'archive', name: loaded.source }
+}
 
 function message(e: unknown): string {
   return e instanceof Error ? e.message : String(e)
@@ -86,6 +95,7 @@ export function ViewerApp() {
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<Status | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [picking, setPicking] = useState(false)
   const current = useRef({ loaded, selected })
   current.current = { loaded, selected }
 
@@ -96,6 +106,7 @@ export function ViewerApp() {
       setSelected(0)
       setError(null)
       setStatus(null)
+      setPicking(false)
       window.scrollTo(0, 0)
     } catch (e) {
       setError(message(e))
@@ -188,6 +199,8 @@ export function ViewerApp() {
   }, [status])
 
   const topic = loaded?.topics[selected]
+  const pickResolver = useMemo(() => sourceResolver(topic?.files ?? {}), [topic])
+  const pickSource = useMemo(() => (loaded ? pickSourceOf(loaded) : undefined), [loaded])
 
   return (
     <UISystemProvider>
@@ -223,6 +236,7 @@ export function ViewerApp() {
               </span>
             )}
             <LoomToolsNav current="viewer" />
+            {topic && <PickToggle active={picking} onChange={setPicking} className="viewer-pill" />}
             {loaded && (
               <button
                 type="button"
@@ -259,6 +273,15 @@ export function ViewerApp() {
               />
             )}
         </main>
+        {topic && (
+          <PickMode
+            topicId={topic.topicId}
+            active={picking}
+            onActiveChange={setPicking}
+            resolve={pickResolver}
+            source={pickSource}
+          />
+        )}
       </div>
     </UISystemProvider>
   )
@@ -463,13 +486,15 @@ function TopicView({ topic }: { topic: ViewerTopic }) {
     <ProgressProvider>
       <HUDProvider>
         <div className="topic-page topic-container" data-topic-id={topic.topicId} data-testid="viewer-topic">
-          <h2 className="topic-page-title">{title}</h2>
-          {(meta || topic.manifest?.description) && (
-            <div className="viewer-topic-meta">
-              {meta && <span className="viewer-topic-category">{meta}</span>}
-              {topic.manifest?.description && <p>{topic.manifest.description}</p>}
-            </div>
-          )}
+          <PickSection file="topic.oui" label={`Topic: ${title}`}>
+            <h2 className="topic-page-title">{title}</h2>
+            {(meta || topic.manifest?.description) && (
+              <div className="viewer-topic-meta">
+                {meta && <span className="viewer-topic-category">{meta}</span>}
+                {topic.manifest?.description && <p>{topic.manifest.description}</p>}
+              </div>
+            )}
+          </PickSection>
           {report && (
             <section className="viewer-error-summary" role="alert" aria-labelledby="viewer-error-title" data-testid="viewer-error-summary">
               <div className="viewer-error-summary-head">
@@ -499,7 +524,9 @@ function TopicView({ topic }: { topic: ViewerTopic }) {
           <div className="topic-content topic-container-content">
             {topic.sections.map((section, idx) => section.config && (
               <SectionErrorBoundary key={section.name} sectionName={String(section.config.props.title ?? section.name)}>
-                <SectionRenderer config={section.config} sectionIndex={idx} />
+                <PickSection file={`sections/${section.name}.oui`} label={String(section.config.props.title ?? section.name)} sourceMap={section.sourceMap}>
+                  <SectionRenderer config={section.config} sectionIndex={idx} />
+                </PickSection>
               </SectionErrorBoundary>
             ))}
             {!topic.error && topic.sections.length === 0 && <p className="topic-page-placeholder">This topic has no sections yet.</p>}

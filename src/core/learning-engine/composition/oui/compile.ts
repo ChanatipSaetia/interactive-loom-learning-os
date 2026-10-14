@@ -68,11 +68,23 @@ export interface OUIIssue {
   path?: string
 }
 
+/**
+ * Where a compiled object came from: the nearest named statement and the
+ * prop path from it, in source terms (e.g. `q2` + `.choices[1]`).
+ */
+export interface OUIAnchor {
+  statement: string
+  /** Empty when the object is the statement itself, else `.prop[index]…`. */
+  path: string
+}
+
 export interface OUISourceMap {
   /** 1-based line of the statement that defines `statementId`. */
   lineOf(statementId: string): number | undefined
   /** Statement that produced a compiled object, if known. */
   statementOf(value: unknown): string | undefined
+  /** Statement and prop path that produced a compiled object, if known. */
+  anchorOf(value: unknown): OUIAnchor | undefined
 }
 
 export interface OUICompileResult<T> {
@@ -317,43 +329,48 @@ function evaluateDynamicProps(root: ElementNode, stateDefaults: Record<string, u
  * component's `toData` bottom-up. Exported for renderers that receive
  * already-evaluated elements from `<Renderer>`.
  */
-export function compileElementTree(root: ElementNode, track?: (value: unknown, statementId: string) => void): unknown {
-  const visit = (value: unknown, statementId: string | undefined): unknown => {
-    if (Array.isArray(value)) return value.map((v) => visit(v, statementId))
+export function compileElementTree(root: ElementNode, track?: (value: unknown, anchor: OUIAnchor) => void): unknown {
+  // `path` is the prop path from the nearest named statement; inline
+  // elements have no statementId, so they extend their parent's path.
+  const visit = (value: unknown, statementId: string | undefined, path: string): unknown => {
+    if (Array.isArray(value)) return value.map((v, i) => visit(v, statementId, `${path}[${i}]`))
     if (isElement(value)) {
       const owner = value.statementId ?? statementId
+      const base = value.statementId ? '' : path
       const props: Record<string, unknown> = {}
       for (const [key, prop] of Object.entries(value.props)) {
         // `null` skips an optional positional argument; treat it as omitted.
-        if (prop !== null) props[key] = visit(prop, owner)
+        if (prop !== null) props[key] = visit(prop, owner, `${base}.${key}`)
       }
       const component = getLoomOUIComponent(value.typeName)
       const data = stripUndefined(component ? component.toData(props) : props)
-      if (owner && data && typeof data === 'object') track?.(data, owner)
+      if (owner && data && typeof data === 'object') track?.(data, { statement: owner, path: base })
       return data
     }
     if (value && typeof value === 'object') {
       const out: Record<string, unknown> = {}
-      for (const [key, v] of Object.entries(value)) out[key] = visit(v, statementId)
+      for (const [key, v] of Object.entries(value)) out[key] = visit(v, statementId, `${path}.${key}`)
       return out
     }
     return value
   }
-  return visit(root, root.statementId)
+  return visit(root, root.statementId, '')
 }
 
 function compileProgram(source: string): OUICompileResult<unknown> & { root: ElementNode | null } {
   const { result, issues, lines } = parseProgram(source)
-  const statements = new WeakMap<object, string>()
+  const anchors = new WeakMap<object, OUIAnchor>()
+  const anchorOf = (value: unknown) => (value && typeof value === 'object' ? anchors.get(value) : undefined)
   const sourceMap: OUISourceMap = {
     lineOf: (id) => lines.get(id),
-    statementOf: (value) => (value && typeof value === 'object' ? statements.get(value) : undefined),
+    statementOf: (value) => anchorOf(value)?.statement,
+    anchorOf,
   }
   if (!result?.root) return { value: null, issues, sourceMap, root: null }
 
   const stateDefaults = (result.stateDeclarations ?? {}) as Record<string, unknown>
   const root = evaluateDynamicProps(result.root, stateDefaults, lines, issues)
-  const value = compileElementTree(root, (data, id) => statements.set(data as object, id))
+  const value = compileElementTree(root, (data, anchor) => anchors.set(data as object, anchor))
   return { value, rootComponent: root.typeName, issues, sourceMap, root }
 }
 
@@ -404,6 +421,7 @@ function compileStandardOpenUISection(source: string, directive: OpenUIDirective
   const sourceMap: OUISourceMap = {
     lineOf: (id) => lines.get(id),
     statementOf: () => undefined,
+    anchorOf: () => undefined,
   }
   for (const issue of issues) {
     if (issue.code === 'unknown-component') {
@@ -422,11 +440,28 @@ function compileStandardOpenUISection(source: string, directive: OpenUIDirective
   }
 }
 
+const payloadSourceMaps = new WeakMap<object, OUISourceMap>()
+
+/**
+ * Source map of a section payload returned by `compileOUISection` (or the
+ * Validation Gateway), so a renderer holding only the payload can still ask
+ * where its data came from. Undefined for payloads built any other way.
+ */
+export function sourceMapOf(payload: OUISectionPayload | null | undefined): OUISourceMap | undefined {
+  return payload ? payloadSourceMaps.get(payload) : undefined
+}
+
 /**
  * Compile a section `.oui` file: either a Loom section (root must be a
  * section component) or a standard OpenUI program behind an `// @openui` directive.
  */
 export function compileOUISection(source: string): OUICompileResult<OUISectionPayload> {
+  const result = compileOUISectionProgram(source)
+  if (result.value) payloadSourceMaps.set(result.value, result.sourceMap)
+  return result
+}
+
+function compileOUISectionProgram(source: string): OUICompileResult<OUISectionPayload> {
   const directive = readOpenUIDirective(source)
   if (directive) return compileStandardOpenUISection(source, directive)
 

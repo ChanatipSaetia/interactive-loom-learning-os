@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { FileArchive, FileCode, FolderOpen, RefreshCw, Save, Sparkles, Upload, X } from 'lucide-react'
 import { HUDProvider } from '../../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../../core/supporting/learner-progress'
@@ -9,6 +9,7 @@ import {
   createTopicZip,
   readTopicArchive,
 } from '../../core/supporting/authoring-editor/workspace'
+import { PickMode, PickToggle, sourceResolver } from '../../core/supporting/authoring-editor/pick'
 import { ThemeToggle } from '../../core/ui-system/motion/theme-toggle'
 import { LoomToolsNav } from '../../core/delivery/web-app-shell/LoomToolsNav'
 import { useWorkspace } from '../useWorkspace'
@@ -16,6 +17,9 @@ import { downloadFile } from '../download'
 import { SectionList, TOPIC_ITEM } from './SectionList'
 import { SectionEditor } from './SectionEditor'
 import { TopicMetaForm } from './TopicMetaForm'
+
+/** Studio always edits a folder on disk. */
+const FOLDER_SOURCE = { kind: 'folder' } as const
 
 interface Props {
   workspace: TopicWorkspace
@@ -42,6 +46,13 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
   const [status, setStatus] = useState<{ kind: 'ok' | 'error'; text: string } | null>(
     () => (initialStatus ? { kind: 'ok', text: initialStatus } : null),
   )
+  const [picking, setPicking] = useState(false)
+
+  // Pick tray line hints come from the editor buffers, marked (unsaved) when they differ from disk.
+  const pickResolver = useMemo(() => sourceResolver(
+    Object.fromEntries(snap.sections.map((s) => [`sections/${s.name}.oui`, s.source])),
+    new Set(snap.dirtySections.map((name) => `sections/${name}.oui`)),
+  ), [snap.sections, snap.dirtySections])
 
   const dirtyCount = snap.dirtySections.length + (snap.topicDirty ? 1 : 0)
 
@@ -160,6 +171,7 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
               )}
               <LoomToolsNav current="studio" newTab />
               <ThemeToggle />
+              <PickToggle active={picking} onChange={setPicking} className="studio-button" />
               <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.oui file or a .zip" data-testid="studio-import">
                 <Upload size={15} /> Import
               </button>
@@ -220,6 +232,7 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
                 : <SectionEditor key={section.name} workspace={workspace} section={section} sectionNames={snap.sections.map((s) => s.name)} />}
             </main>
           </div>
+          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} />
         </div>
       </HUDProvider>
     </ProgressProvider>

@@ -104,3 +104,7 @@ export type {
   AudioEngine,
   SensoryFeedbackContract,
 } from './SensoryFeedbackContract'
+
+// Pick anchors — mark elements for Loom Studio / Viewer Pick mode
+export { PickAnchorProvider, usePickAnchor } from './pick-anchor'
+export type { PickAnchorScope, PickAnchorAttributes } from './pick-anchor'

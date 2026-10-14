@@ -1,0 +1,148 @@
+/* Pick mode (Loom Studio and Loom Viewer) — outline and tray. */
+
+.loom-picking [data-oui-file],
+.loom-picking [data-oui-file] * { cursor: crosshair !important; }
+
+.pick-toggle.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.pick-outline {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 2px solid var(--primary);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+.pick-outline-label {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  transform: translateY(-100%);
+  max-width: min(60ch, 90vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 6px 6px 0 0;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font: 600 12px/1.5 var(--font-mono, monospace);
+}
+
+.pick-tray {
+  position: fixed;
+  z-index: 999;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  width: min(760px, calc(100vw - 32px));
+  max-height: 45vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--foreground) 18%, transparent);
+  font-size: 13px;
+}
+.pick-tray-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 8px 14px;
+}
+.pick-tray:not(.is-collapsed) .pick-tray-head { border-bottom: 1px solid var(--border); }
+.pick-tray-title { font-size: 13px; }
+.pick-tray-spacer { flex: 1; }
+.pick-tray-status { color: var(--muted-foreground); font-weight: 600; }
+
+.pick-tray-modes {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pick-tray-modes button {
+  border: 0;
+  padding: 3px 12px;
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pick-tray-modes button.is-active { background: var(--primary); color: var(--primary-foreground); }
+
+.pick-tray-button,
+.pick-tray-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pick-tray-button { padding: 5px 12px; border-radius: 8px; }
+.pick-tray-button--primary { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+.pick-tray-icon { padding: 5px; border-radius: 6px; }
+.pick-tray-button:disabled,
+.pick-tray-icon:disabled { opacity: 0.5; cursor: default; }
+.pick-tray-icon:hover:not(:disabled) { background: var(--accent); }
+
+.pick-tray-body { overflow-y: auto; padding: 8px 14px 12px; }
+.pick-tray-hint { margin: 4px 0; color: var(--muted-foreground); }
+
+.pick-tray-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pick-tray-list li { display: flex; flex-direction: column; gap: 4px; }
+.pick-entry-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.pick-entry-label { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40%; }
+.pick-entry-pointer {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+}
+.is-stale .pick-entry-label,
+.is-stale .pick-entry-pointer { text-decoration: line-through; }
+.pick-entry-stale {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--ctp-yellow, var(--destructive));
+  font-size: 12px;
+}
+
+.pick-entry-note,
+.pick-tray-question {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+}
+.pick-tray-question { margin-top: 10px; }
+
+@media (max-width: 640px) {
+  .pick-tray { bottom: 0; width: 100vw; border-radius: 12px 12px 0 0; }
+  .pick-toggle-label { display: none; }
+}

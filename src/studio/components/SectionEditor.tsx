@@ -79,7 +79,7 @@ export function SectionEditor({ workspace, section, sectionNames }: Props) {
           <span className="studio-tabs-label"><Eye size={14} /> Preview</span>
           {blocking && section.lastValid && <span className="studio-stale">Showing the last version without errors</span>}
         </div>
-        <SectionPreview payload={section.lastValid} />
+        <SectionPreview payload={section.lastValid} file={`sections/${section.name}.oui`} />
       </section>
     </div>
   )

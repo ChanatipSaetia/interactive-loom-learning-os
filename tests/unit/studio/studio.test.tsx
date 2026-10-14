@@ -70,6 +70,17 @@ describe('Loom Studio', () => {
     await waitFor(() => expect(screen.getByTestId('studio-preview').getAttribute('data-section-type')).toBe('text'))
   })
 
+  it('picks from the preview, with line hints from unsaved edits', async () => {
+    localStorage.clear()
+    const { workspace } = await renderWorkspace()
+    fireEvent.click(screen.getByTestId('pick-toggle'))
+    fireEvent.click(await screen.findByText('Hello.'))
+    expect(screen.getByTestId('pick-entry').textContent).toContain('demo/sections/intro.oui:1 #root')
+    act(() => workspace.setSource('intro', '// Edited\nroot = Text("Intro", ["Hello."])\n'))
+    await waitFor(() => expect(screen.getByTestId('pick-entry').textContent).toContain('demo/sections/intro.oui:2 #root (unsaved)'))
+    localStorage.clear()
+  })
+
   it('tracks unsaved edits and saves with Ctrl+S', async () => {
     const { folder, workspace } = await renderWorkspace()
     expect(screen.getByTestId('studio-save').textContent).toContain('Saved')

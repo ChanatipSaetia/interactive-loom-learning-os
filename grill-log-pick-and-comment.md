@@ -1,6 +1,6 @@
 # Grill Log — Pick & Comment in Studio and Viewer
 
-Status: **Decided — Phase 1 next**
+Status: **Phase 1 complete — Phase 2 (statement + prop tags in practice-assessment, progressive-content) next**
 
 ## Goal
 
@@ -58,6 +58,25 @@ and the question follows the list.
 3. **`process-simulation`** (flowchart, scenario), with the declaring-statement rule for merged nodes.
 4. **`tradeoff-sandbox`** and **`reflection-synthesis`**.
 5. **Studio two-way code link** (decision 46).
+
+## Phase 1 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Anchor map: `OUISourceMap.anchorOf(value)` → `{ statement, path }`, built while `compileElementTree` walks the tree (inline elements have no `statementId`, so they extend their parent's path); `sourceMapOf(payload)` finds the map of a payload from `compileOUISection` or the Validation Gateway | `src/core/learning-engine/composition/oui/compile.ts` |
+| Copy wording (`formatPickPointer`, `pickReport`, `PickSource`) | `src/core/learning-engine/composition/oui/pick-report.ts` |
+| `usePickAnchor(value, prop?)` + `PickAnchorProvider`; returns nothing outside a provider, so the learning app and embeds are unaffected | `src/core/ui-system/pick-anchor.tsx` |
+| Tray model: entries, localStorage per topic (`loom-pick-tray:<topicId>`), `sourceResolver` (line hints from `indexStatementLines`, `(unsaved)`, stale), `trayReport` | `src/core/supporting/authoring-editor/pick/tray.ts` |
+| `PickSection` (marks a file, `#root`), `PickLayer` (capture-phase events, outline, `P` / `Esc` / Alt+click / Ctrl+C), `PickMode` + `PickToggle` (tray UI) | `src/core/supporting/authoring-editor/pick/` |
+| Viewer: Pick button, every section and the topic header (`topic.oui`) are pickable; the source note comes from how the topic was opened | `src/viewer/ViewerApp.tsx`, `compileTopic.ts` (`files`, `sourceMap` per section) |
+| Studio: Pick button, the preview is pickable; line hints come from the editor buffers | `src/studio/components/StudioWorkspace.tsx`, `SectionPreview.tsx` |
+| Skill: "Pointers and comments from Loom Studio and Loom Viewer" section; skill description mentions Pick mode | `composition/oui/skill.ts` → `npm run oui:schema` |
+
+- Entries store only file, anchor, label, note and `keep`. Line hints, `(unsaved)` and staleness are resolved from the current sources on every render, so they follow edits, Save and Refresh.
+- A place is added once; picking it again leaves the tray as is.
+- Staleness checks the statement only (Phase 1); a path into an inline component that no longer exists is not detected.
+- Section components carry no tags yet, so every pick in Phase 1 is `#root` of a section or of `topic.oui`.
+- Tests: `tests/unit/core/learning-engine/composition/oui/{anchors,pick-report}.test.ts`, `tests/unit/core/supporting/authoring-editor/pick/`, and Pick cases in the Viewer and Studio component tests. Checked in Chromium against `http-caching`: a click on a quiz answer in Pick mode adds the entry and does not answer it.
 
 ## Open Questions
 
