@@ -201,6 +201,10 @@ export function ViewerApp() {
   const topic = loaded?.topics[selected]
   const pickResolver = useMemo(() => sourceResolver(topic?.files ?? {}), [topic])
   const pickSource = useMemo(() => (loaded ? pickSourceOf(loaded) : undefined), [loaded])
+  const pickFileOrder = useMemo(
+    () => (topic ? ['topic.oui', ...topic.sections.map((s) => `sections/${s.name}.oui`)] : []),
+    [topic],
+  )
 
   return (
     <UISystemProvider>
@@ -280,6 +284,7 @@ export function ViewerApp() {
             onActiveChange={setPicking}
             resolve={pickResolver}
             source={pickSource}
+            fileOrder={pickFileOrder}
           />
         )}
       </div>

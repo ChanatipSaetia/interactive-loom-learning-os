@@ -17,8 +17,10 @@ export interface PickEntry {
   file: string
   /** Statement name plus prop path, e.g. `q2.choices[1].explanation`. */
   anchor: string
-  /** For people: section title (and later an `id` prop), never copied. */
+  /** For people: section title and anchor, never copied. */
   label: string
+  /** Section title alone (entries saved before it existed derive it from `label`). */
+  section?: string
   /** Comment; empty for a mention. */
   note: string
   /** Copy this entry even though its statement is gone. */
@@ -87,15 +89,64 @@ export function resolvePickEntries(entries: PickEntry[], resolve: PickResolver):
   })
 }
 
+/** Section title of an entry, for grouping. */
+export const entrySection = (entry: Pick<PickEntry, 'label' | 'section'>) => entry.section ?? entry.label.split(' › ')[0]
+
+/**
+ * One step wider: drop the last prop or list index (`q1.choices[0].text` →
+ * `q1.choices[0]` → `q1`), then the whole file (`root`). Null at `root`.
+ */
+export function widenAnchor(anchor: string): string | null {
+  if (anchor === 'root') return null
+  const parent = anchor.replace(/(\.[^.[\]]+|\[\d+\])$/, '')
+  return parent === anchor ? 'root' : parent
+}
+
+/**
+ * Replace an entry with its wider place. When the tray already holds that
+ * place, the entry is merged into it (their comments are joined).
+ */
+export function widenPickEntry(state: PickTrayState, entry: PickEntry): PickTrayState {
+  const anchor = widenAnchor(entry.anchor)
+  if (!anchor) return state
+  const section = entrySection(entry)
+  const wider: PickEntry = { ...entry, anchor, section, label: anchor === 'root' ? section : `${section} › ${anchor}` }
+  const key = pickEntryKey(entry)
+  const existing = state.entries.find((e) => pickEntryKey(e) === pickEntryKey(wider))
+  if (!existing) return { ...state, entries: state.entries.map((e) => (pickEntryKey(e) === key ? wider : e)) }
+  const note = [existing.note.trim(), entry.note.trim()].filter(Boolean).join('\n')
+  return {
+    ...state,
+    entries: state.entries
+      .filter((e) => pickEntryKey(e) !== key)
+      .map((e) => (e === existing ? { ...e, note } : e)),
+  }
+}
+
+/**
+ * Reading order: files in `fileOrder` (topic.oui, then the sections as the
+ * topic lists them; other files after, as first picked), then by line.
+ */
+export function orderPickEntries<T extends PickEntry & { line?: number }>(entries: T[], fileOrder: readonly string[] = []): T[] {
+  const files = [...fileOrder]
+  for (const e of entries) if (!files.includes(e.file)) files.push(e.file)
+  return entries
+    .map((entry, index) => ({ entry, index }))
+    .sort((a, b) => files.indexOf(a.entry.file) - files.indexOf(b.entry.file)
+      || (a.entry.line ?? Infinity) - (b.entry.line ?? Infinity)
+      || a.index - b.index)
+    .map(({ entry }) => entry)
+}
+
 /** Add a pick, or leave the tray as is when that place is already in it. */
 export function addPickEntry(state: PickTrayState, entry: Omit<PickEntry, 'note'>): PickTrayState {
   if (state.entries.some((e) => pickEntryKey(e) === pickEntryKey(entry))) return state
   return { ...state, entries: [...state.entries, { ...entry, note: '' }] }
 }
 
-/** The text to copy; stale entries are left out unless kept. */
-export function trayReport(topicId: string, state: PickTrayState, resolve: PickResolver, source?: PickSource): string {
-  const entries: PickReportEntry[] = resolvePickEntries(state.entries, resolve)
+/** The text to copy, in reading order; stale entries are left out unless kept. */
+export function trayReport(topicId: string, state: PickTrayState, resolve: PickResolver, source?: PickSource, fileOrder?: readonly string[]): string {
+  const entries: PickReportEntry[] = orderPickEntries(resolvePickEntries(state.entries, resolve), fileOrder)
     .filter((e) => !e.stale || e.keep)
     .map((e) => ({ topicId, file: e.file, anchor: e.anchor, line: e.line, unsaved: e.unsaved, note: e.note }))
   return pickReport({ topicId, entries, source, question: state.mode === 'ask' ? state.question : undefined })

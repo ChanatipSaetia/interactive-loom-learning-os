@@ -52,6 +52,7 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
   const [reveal, setReveal] = useState<{ file: string; statement: string } | null>(null)
   const onPick = useCallback((target: PickTarget) => setReveal({ file: target.file, statement: statementOfAnchor(target.anchor) }), [])
   const addToTray = useCallback((target: PickTarget) => pickApi.current?.add(target), [])
+  const pickFileOrder = useMemo(() => snap.sections.map((s) => `sections/${s.name}.oui`), [snap.sections])
 
   // Pick tray line hints come from the editor buffers, marked (unsaved) when they differ from disk.
   const pickResolver = useMemo(() => sourceResolver(
@@ -246,7 +247,7 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
                 )}
             </main>
           </div>
-          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} onPick={onPick} apiRef={pickApi} />
+          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} fileOrder={pickFileOrder} onPick={onPick} apiRef={pickApi} />
         </div>
       </HUDProvider>
     </ProgressProvider>

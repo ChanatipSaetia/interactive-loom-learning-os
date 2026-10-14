@@ -39,7 +39,7 @@ export function SectionEditor({ workspace, section, sectionNames, reveal, onAddT
   }, [])
   const onAddLine = useCallback((line: number) => {
     const statement = statementAtLine(sourceRef.current, line)
-    if (statement) onAddToTray?.({ file, anchor: statement, label: statement === 'root' ? title : `${title} › ${statement}` })
+    if (statement) onAddToTray?.({ file, anchor: statement, section: title, label: statement === 'root' ? title : `${title} › ${statement}` })
   }, [file, title, onAddToTray])
   const diagnostics = section.validation.diagnostics
   const blocking = diagnostics.some((d) => d.tier < 3)

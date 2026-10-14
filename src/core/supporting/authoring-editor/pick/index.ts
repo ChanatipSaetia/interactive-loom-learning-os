@@ -10,6 +10,10 @@ export type { PickTarget } from './PickLayer'
 export {
   EMPTY_TRAY,
   addPickEntry,
+  entrySection,
+  orderPickEntries,
+  widenAnchor,
+  widenPickEntry,
   loadPickTray,
   pickEntryKey,
   resolvePickEntries,

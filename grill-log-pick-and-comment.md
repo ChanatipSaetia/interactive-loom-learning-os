@@ -36,6 +36,8 @@ Numbering continues from [grill-log-openui-input.md](grill-log-openui-input.md).
 | 49 | Rollout | **Phased**, each green on `typecheck` + `test` (below). **Standard OpenUI sections** (`// @openui`, stock `@openuidev/react-ui` components) stay **section-level** until lang-core's `<Renderer>` offers a per-element hook. |
 | 50 | Panning in Pick mode | **Drags pass through on canvases.** Inside an element marked `data-pick-pan` (flowchart and concept-map SVGs) presses still reach the section, so it can be panned while picking; clicks stay blocked, and a click that ends a drag of more than 4px picks nothing. Everywhere else presses stay blocked. Wheel zoom always works. |
 | 51 | Flowchart nodes and lines | **The source of what is drawn, not the step.** Actors and systems point at their declaring statement in every copy and view (`#evaluator`, also for `evaluator2`); policy and command nodes at their step's prop (`#fbCheck.policy`, `#fbCheck.command`); event nodes at the **inline event** (`#fbCheck.events[0]`), or the branch's `event` when no step declares it. Event Storming lines point at the step prop that drew them (`initiatedBy`, `command`, `handledBy`, `events[i]`, `sendsTo`, `continuesAs`, `delegatesTo`; a fork's fan-out at the option). Lines in the derived views, sequence messages and the inspector panel stay section-level. Step cards and the narration caption point at their `JourneyStep` (`#fbJourneyPass.steps[1]`, `.name`, `.description`). |
+| 52 | Touch | **A tap is picked when the touch ends.** Phones have no hover, so every pick flashes the picked element with its label for about a second. In Pick mode a tap on a tagged element is picked on `touchend`, which is cancelled (no click follows) and stopped, so sections that act on `touchend` (flowchart lines toggled their highlight) or cancel `touchstart` (concept-map lines got no click at all) still pick right. A tap on a canvas background picks the whole section and still reaches the canvas, so its pan gesture ends. Concept-map link labels, node titles and categories, which had `pointer-events: none`, take pointer events in Pick mode, on desktop too. Studio stays desktop-only: phone browsers cannot open folders. |
+| 53 | Many picks, and phones | **Group, compact, number.** The tray groups picks by section in reading order (topic.oui, then the sections as the topic lists them; by line inside a file), and the copy follows the same order. Each pick is one row: a number, its anchor ("Whole section" for `root`), a comment button and an X; tapping a row opens its full pointer, a **Wider** button (one step up: `q1.choices[0].text` to `q1.choices[0]`, then `q1`, then `root`, merging into a place already picked) and, on phones, **Show on page**. Comment boxes appear only when asked for or filled. Numbered **badges** mark the picked places on the page while picking or with the tray open; a badge opens its row. A **"Picking · Done"** pill shows while Pick mode is on. On phones (640px wide or less) the tray is a one-line bar ("8 picked · Copy") that opens into an 85vh sheet; picks keep the bar folded, Show on page folds it, and the pill hides while the sheet is open. |
 
 Example copy (decision 44):
 
@@ -110,6 +112,19 @@ and the question follows the list.
 - Every Loom section type now tags its elements; `section-anchors.test.tsx` renders every Studio template (inside the same HUD and progress providers Studio and Viewer use) and checks that each anchor names a real statement.
 - **Deviation from decision 46:** a pick does not open a form field. The visual forms are per-type editors with no mapping from anchors to fields, so a pick only reveals the line in the Code tab (the Form tab is left as it is). Picks from the code add the whole statement, not a prop.
 - Tests: `statementAtLine` unit test; `tests/e2e/studio.spec.ts` "links preview picks and code lines both ways" (pick → line flash, Ctrl/Cmd+Shift+M → `#root` entry, code-line hover → `.pick-linked` in the preview), run in Chromium against the `mtls` topic.
+
+## Touch and Many-Picks Notes (decisions 52–53)
+
+| Piece | Location |
+|---|---|
+| Tap picking on `touchend`, pick flash, `findPickElement`, `focus` prop (scroll to a pick and flash it) | `pick/PickLayer.tsx` |
+| `PickTarget.section`, `widenAnchor` / `widenPickEntry`, `orderPickEntries`, `entrySection`; `trayReport(…, fileOrder)` | `pick/tray.ts` |
+| Grouped compact rows, Wider, Show on page, badges (`PickBadges`), "Picking · Done" pill, phone bar and sheet (`useNarrow`), `fileOrder` prop | `pick/PickMode.tsx`, `pick/pick.css` |
+| Reading order from the topic: Viewer passes `topic.oui` and its sections, Studio its sections | `src/viewer/ViewerApp.tsx`, `src/studio/components/StudioWorkspace.tsx` |
+| Pick-mode pointer events for concept-map labels and node text | `practice-assessment/components/concept-map/concept-map.css` |
+
+- Checked on a Pixel 7 (Chromium device emulation) against `bg3-four-element-monk`: tapping a quiz answer picks it without answering; a flowchart line tap no longer toggles the line; a concept-map label tap picks `#root.links[1].label`; eight picks fit the sheet in one screen; Wider turned `kiPoints.word` into `kiPoints`; the copy came out in reading order.
+- Tests: tap picking (and a swipe that does not pick) in `pick-section.test.tsx`; widen, merge and ordering in `tray.test.ts`; Viewer and Studio component tests and the Studio e2e test updated for the new rows.
 
 ## Open Questions
 

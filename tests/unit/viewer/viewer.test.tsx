@@ -180,19 +180,23 @@ describe('Loom Viewer', () => {
       fireEvent.click(await screen.findByText(/Hello from the viewer/))
       fireEvent.click(screen.getByRole('heading', { level: 2 }))
       fireEvent.click(screen.getByText(/Hello from the viewer/))
+      // Rows are grouped in reading order: topic.oui, then the sections.
       const entries = screen.getAllByTestId('pick-entry')
       expect(entries).toHaveLength(2)
-      expect(entries[0].textContent).toContain('kafka/sections/intro.oui:2 #root.paragraphs[0]')
-      expect(entries[0].textContent).toContain('Intro › root.paragraphs[0]')
-      expect(entries[1].textContent).toContain('kafka/topic.oui:1 #root')
+      expect(entries[0].textContent).toContain('Whole section')
+      expect(entries[1].textContent).toContain('root.paragraphs[0]')
+      // A row opens to show its full pointer.
+      fireEvent.click(screen.getAllByTestId('pick-row')[1])
+      expect(entries[1].textContent).toContain('kafka/sections/intro.oui:2 #root.paragraphs[0]')
 
-      fireEvent.change(screen.getAllByTestId('pick-entry-note')[0], { target: { value: 'Say why logs matter.' } })
+      fireEvent.click(screen.getAllByTestId('pick-add-note')[1])
+      fireEvent.change(screen.getByTestId('pick-entry-note'), { target: { value: 'Say why logs matter.' } })
       fireEvent.click(screen.getByTestId('pick-copy'))
       await waitFor(() => expect(writeText).toHaveBeenCalled())
       expect((writeText.mock.calls[0] as unknown as [string])[0]).toBe(
         'Comments on the Loom topic "kafka":\n'
-        + '- kafka/sections/intro.oui:2 #root.paragraphs[0] (from pasted text)\n  Say why logs matter.\n'
-        + '- kafka/topic.oui:1 #root (from pasted text)\n',
+        + '- kafka/topic.oui:1 #root (from pasted text)\n'
+        + '- kafka/sections/intro.oui:2 #root.paragraphs[0] (from pasted text)\n  Say why logs matter.\n',
       )
 
       fireEvent.keyDown(window, { key: 'Escape' })
@@ -203,7 +207,7 @@ describe('Loom Viewer', () => {
       render(<ViewerApp />)
       await openPasted(pickTopic())
       expect(screen.getAllByTestId('pick-entry')).toHaveLength(2)
-      expect((screen.getAllByTestId('pick-entry-note')[0] as HTMLTextAreaElement).value).toBe('Say why logs matter.')
+      expect((screen.getByTestId('pick-entry-note') as HTMLTextAreaElement).value).toBe('Say why logs matter.')
       localStorage.clear()
     })
 
@@ -227,7 +231,7 @@ describe('Loom Viewer', () => {
       const event = new Event('paste', { bubbles: true }) as Event & { clipboardData: unknown }
       event.clipboardData = { getData: () => pickTopic().replace('SectionRef("intro")', '').replace(/\/\/ === sections\/intro\.oui ===[\s\S]*$/, '') }
       fireEvent(document.body, event)
-      await waitFor(() => expect(screen.getByTestId('pick-entry').className).toBe('is-stale'))
+      await waitFor(() => expect(screen.getByTestId('pick-entry').className).toContain('is-stale'))
       expect(screen.getByTestId('pick-entry').textContent).toContain('No longer in the topic')
       localStorage.clear()
     })

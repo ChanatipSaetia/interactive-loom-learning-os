@@ -35,9 +35,9 @@ describe('PickSection and usePickAnchor', () => {
     fireEvent.click(screen.getByText('A'))
     fireEvent.click(screen.getByText('Untagged'))
     expect(onPick.mock.calls.map(([t]) => t)).toEqual([
-      { file: 'sections/quiz.oui', anchor: 'q2.question', label: 'Check › q2.question' },
-      { file: 'sections/quiz.oui', anchor: 'q2.choices[0]', label: 'Check › q2.choices[0]' },
-      { file: 'sections/quiz.oui', anchor: 'root', label: 'Check' },
+      { file: 'sections/quiz.oui', anchor: 'q2.question', section: 'Check', label: 'Check › q2.question' },
+      { file: 'sections/quiz.oui', anchor: 'q2.choices[0]', section: 'Check', label: 'Check › q2.choices[0]' },
+      { file: 'sections/quiz.oui', anchor: 'root', section: 'Check', label: 'Check' },
     ])
   })
 
@@ -64,6 +64,31 @@ describe('PickSection and usePickAnchor', () => {
     // Outside a canvas, presses stay blocked.
     fireEvent.mouseDown(screen.getByText('Plain'))
     expect(onMouseDown).toHaveBeenCalledTimes(1)
+  })
+
+  it('picks a tap when the touch ends, without letting the section see it', () => {
+    const onPick = vi.fn()
+    const onTouchEnd = vi.fn()
+    render(
+      <>
+        <PickLayer active onActiveChange={() => {}} onPick={onPick} onCopy={() => {}} />
+        <PickSection file="sections/quiz.oui" label="Check" sourceMap={sourceMap}>
+          <p onTouchEnd={onTouchEnd}><Question /></p>
+        </PickSection>
+      </>,
+    )
+    const why = screen.getByText('Why?')
+    fireEvent.touchStart(why, { touches: [{ clientX: 10, clientY: 10 }] })
+    const end = fireEvent.touchEnd(why, { touches: [], changedTouches: [{ clientX: 11, clientY: 10 }] })
+    expect(end).toBe(false) // cancelled, so no click follows
+    expect(onTouchEnd).not.toHaveBeenCalled()
+    expect(onPick).toHaveBeenCalledWith(expect.objectContaining({ anchor: 'q2.question' }))
+
+    // A swipe is not a tap.
+    fireEvent.touchStart(why, { touches: [{ clientX: 10, clientY: 10 }] })
+    fireEvent.touchEnd(why, { touches: [], changedTouches: [{ clientX: 80, clientY: 10 }] })
+    expect(onPick).toHaveBeenCalledTimes(1)
+    expect(onTouchEnd).toHaveBeenCalledTimes(1)
   })
 
   it('adds no attributes outside a pick section', () => {

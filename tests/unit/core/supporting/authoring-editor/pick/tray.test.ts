@@ -2,6 +2,9 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import {
   EMPTY_TRAY,
   addPickEntry,
+  orderPickEntries,
+  widenAnchor,
+  widenPickEntry,
   loadPickTray,
   resolvePickEntries,
   savePickTray,
@@ -9,6 +12,7 @@ import {
   statementAtLine,
   statementOfAnchor,
   trayReport,
+  type PickTrayState,
 } from '../../../../../../src/core/supporting/authoring-editor/pick'
 
 const sources = {
@@ -34,6 +38,31 @@ describe('Pick tray', () => {
     expect(statementAtLine(source, 3)).toBe('root')
     expect(statementAtLine(source, 4)).toBe('q1')
     expect(statementAtLine(source, 6)).toBe('q1')
+  })
+
+  it('widens a pick one level at a time, merging into a place already picked', () => {
+    expect(widenAnchor('q1.choices[0].text')).toBe('q1.choices[0]')
+    expect(widenAnchor('q1.choices[0]')).toBe('q1.choices')
+    expect(widenAnchor('q1')).toBe('root')
+    expect(widenAnchor('root')).toBeNull()
+
+    const text = { file: 'sections/quiz.oui', anchor: 'q1.text', section: 'Check', label: 'Check › q1.text', note: 'Shorter' }
+    let state: PickTrayState = { ...EMPTY_TRAY, entries: [text] }
+    state = widenPickEntry(state, text)
+    expect(state.entries).toEqual([{ ...text, anchor: 'q1', label: 'Check › q1' }])
+    const other = { ...text, anchor: 'q1.hint', label: 'Check › q1.hint', note: 'Add a hint' }
+    state = widenPickEntry({ ...state, entries: [...state.entries, other] }, other)
+    expect(state.entries).toEqual([{ ...text, anchor: 'q1', label: 'Check › q1', note: 'Shorter\nAdd a hint' }])
+    expect(widenPickEntry(state, { ...text, anchor: 'root', label: 'Check' })).toBe(state)
+  })
+
+  it('orders picks by the topic\'s files, then by line', () => {
+    const at = (file: string, line?: number) => ({ file, anchor: `a${line}`, label: '', note: '', line })
+    const order = orderPickEntries([at('sections/b.oui', 3), at('sections/a.oui', 9), at('topic.oui', 1), at('sections/a.oui', 2), at('sections/x.oui')],
+      ['topic.oui', 'sections/a.oui', 'sections/b.oui'])
+    expect(order.map((e) => `${e.file}:${e.line}`)).toEqual([
+      'topic.oui:1', 'sections/a.oui:2', 'sections/a.oui:9', 'sections/b.oui:3', 'sections/x.oui:undefined',
+    ])
   })
 
   it('adds each place once', () => {
