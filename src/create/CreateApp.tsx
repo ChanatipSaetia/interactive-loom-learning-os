@@ -483,8 +483,8 @@ function ModelGuide() {
       <Step n={3} title="Pick and ask">
         <p>
           Press <strong>Pick</strong> and click the parts you mean (a quiz question, a flowchart step, a whole section), add comments if you
-          like, write your message in the tray and press <strong>Send to AI</strong> (Ctrl/Cmd+Enter). The model sees the source of what you
-          picked and the topic&apos;s errors; follow-ups keep the conversation.
+          like, then type your message in the AI panel and press Enter (or <strong>Send to AI</strong> in the tray). The model sees the source of
+          what you picked and the topic&apos;s errors; keep typing in the panel to ask follow-ups in the same conversation.
         </p>
       </Step>
 

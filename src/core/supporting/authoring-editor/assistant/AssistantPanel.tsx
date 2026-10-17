@@ -2,11 +2,14 @@
  * The Assistant panel (grill-log-ai-assistant.md, decision 60): the topic's
  * conversation in a drawer on the right (a sheet on phones), with the
  * profile and model menu, New chat, Stop, and the one-time notice before the
- * first send to a remote server. The Pick tray is where messages are
- * written; `AssistantToggle` opens the panel from the page header.
+ * first send to a remote server. Messages are written in the message box at
+ * the foot of the panel, which also sends the Pick tray's picks; on phones
+ * the tray's message bar under the sheet is the message box. Send to AI in
+ * the tray still works. `AssistantToggle` opens the panel from the page
+ * header.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { AlertTriangle, Bot, Loader2, MessageSquarePlus, RotateCcw, Settings2, Square, X } from 'lucide-react'
+import { AlertTriangle, Bot, Loader2, MessageSquarePlus, RotateCcw, Send, Settings2, Square, X, type LucideIcon } from 'lucide-react'
 import { Modal } from '../../../ui-system'
 import { findPickElement } from '../pick/PickLayer'
 import { useNarrow } from '../pick/PickMode'
@@ -16,7 +19,7 @@ import { AssistantMarkdown } from './AssistantMarkdown'
 import { EditCard, ProposalBar, useEditBlocks } from './AssistantEdits'
 import { AssistantSettingsDialog } from './AssistantSettingsDialog'
 import { failureHint, type AssistantPresetId } from './presets'
-import { historyForRequest, type ThreadMessage, type ThreadPick } from './thread'
+import type { ThreadMessage, ThreadPick } from './thread'
 import type { AssistantFailureKind } from './client'
 import type { AssistantState } from './useAssistant'
 import type { PickAssistantBridge } from '../pick/PickMode'
@@ -156,6 +159,104 @@ function Reply({ assistant, message, preset, last, onRetry }: { assistant: Assis
   )
 }
 
+const COMPOSER_DRAFT_KEY = (topicId: string) => `loom-ai-draft:${topicId}`
+
+/** What is typed in the message box, kept per topic until it is sent. */
+function useComposerDraft(topicId: string) {
+  const read = () => {
+    try {
+      return sessionStorage.getItem(COMPOSER_DRAFT_KEY(topicId)) ?? ''
+    } catch {
+      return ''
+    }
+  }
+  const [text, setText] = useState(read)
+  const [loadedFor, setLoadedFor] = useState(topicId)
+  if (loadedFor !== topicId) {
+    setLoadedFor(topicId)
+    setText(read())
+  }
+  useEffect(() => {
+    try {
+      if (text) sessionStorage.setItem(COMPOSER_DRAFT_KEY(topicId), text)
+      else sessionStorage.removeItem(COMPOSER_DRAFT_KEY(topicId))
+    } catch {
+      // Not kept.
+    }
+  }, [topicId, text])
+  return [text, setText] as const
+}
+
+/** The message box at the foot of the panel: Enter sends, Shift+Enter starts a new line. */
+function Composer({ assistant }: { assistant: AssistantState }) {
+  const [text, setText] = useComposerDraft(assistant.topicId)
+  const [sending, setSending] = useState(false)
+  const box = useRef<HTMLTextAreaElement>(null)
+  const picks = assistant.trayCount
+  const canSend = !assistant.busy && !sending && (!!text.trim() || picks > 0)
+
+  // Grow with the text, up to the CSS max-height.
+  useLayoutEffect(() => {
+    const el = box.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [text])
+
+  // Ready to type when the panel opens and after each reply.
+  useEffect(() => {
+    if (!assistant.busy) box.current?.focus({ preventScroll: true })
+  }, [assistant.busy])
+
+  const submit = async () => {
+    if (!canSend) return
+    setSending(true)
+    try {
+      if (await assistant.sendMessage(text)) setText('')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const action: { icon: LucideIcon; label: string; onClick: () => void; disabled: boolean; testId: string } = assistant.busy
+    ? { icon: Square, label: 'Stop (Esc)', onClick: assistant.stop, disabled: false, testId: 'ai-composer-stop' }
+    : { icon: Send, label: picks ? `Send with ${picks} picked` : 'Send (Enter)', onClick: () => void submit(), disabled: !canSend, testId: 'ai-composer-send' }
+  const Icon = action.icon
+
+  return (
+    <form
+      className="ai-composer"
+      onSubmit={(e) => {
+        e.preventDefault()
+        void submit()
+      }}
+    >
+      {picks > 0 && <p className="ai-composer-picks" data-testid="ai-composer-picks">{picks === 1 ? '1 picked place goes with this message' : `${picks} picked places go with this message`}</p>}
+      <div className="ai-composer-row">
+        <textarea
+          ref={box}
+          rows={1}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+              e.preventDefault()
+              void submit()
+            }
+          }}
+          placeholder={assistant.thread.messages.length ? 'Ask a follow-up…' : picks ? 'Message about the picked places (optional)' : 'Ask about this topic…'}
+          aria-label="Message for the AI"
+          spellCheck
+          data-testid="ai-composer"
+        />
+        <button type="button" className={`ai-composer-button${assistant.busy ? '' : ' is-primary'}`} onClick={action.onClick} disabled={action.disabled} title={action.label} aria-label={action.label} data-testid={action.testId}>
+          <Icon size={14} />
+        </button>
+      </div>
+    </form>
+  )
+}
+
 export interface AssistantDockProps {
   assistant: AssistantState
   /** Resolves the thread's picks against the current sources (stale chips). */
@@ -175,7 +276,7 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
   const stick = useRef(true)
   const { messages } = assistant.thread
   const profile = assistant.profile
-  const firstSent = profile ? historyForRequest(messages, profile.tokenBudget).firstSent : 0
+  const firstSent = Math.max(0, messages.findIndex((m) => m.id === assistant.thread.start))
 
   // The tray moves left of the drawer while it is open.
   useEffect(() => {
@@ -303,7 +404,9 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
           >
             {messages.length === 0 && (
               <div className="ai-empty">
-                <p>Pick parts of the topic, add comments if you like, and press <strong>Send to AI</strong> in the tray. You can also just type a message there.</p>
+                <p>{narrow
+                  ? <>Pick parts of the topic, add comments if you like, and press <strong>Send</strong>. You can also just type a message.</>
+                  : <>Type a question below, or pick parts of the topic first (with comments if you like): the picks go with your next message. Keep asking follow-ups in the same chat.</>}</p>
                 <p>{assistant.app === 'studio'
                   ? 'The assistant sees the current source of what you picked, unsaved edits included, and the errors in it.'
                   : 'The assistant sees the source of what you picked and the errors in it. Viewer is read-only, so it answers and explains.'}</p>
@@ -328,13 +431,14 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
               </div>
             ))}
           </div>
-          {assistant.busy && (
+          {assistant.busy && narrow && (
             <div className="ai-panel-foot">
               <button type="button" className="ai-button" onClick={assistant.stop} data-testid="ai-stop">
                 <Square size={12} /> Stop <kbd>Esc</kbd>
               </button>
             </div>
           )}
+          {!narrow && <Composer assistant={assistant} />}
         </aside>
       )}
 
@@ -373,6 +477,15 @@ export function pickBridgeOf(assistant: AssistantState): PickAssistantBridge {
     busy: assistant.busy,
     unread: assistant.unread,
     togglePanel: assistant.togglePanel,
+    connectTray: (tray) =>
+      assistant.connectTray(tray && {
+        count: tray.count,
+        clear: tray.clear,
+        take: () => {
+          const draft = tray.take()
+          return { mode: draft.mode, message: draft.message, picks: draft.entries.map((e) => ({ file: e.file, anchor: e.anchor, label: e.label, note: e.note })) }
+        },
+      }),
     send: (draft) =>
       assistant.send({
         mode: draft.mode,

@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   historyForRequest,
+  historyStart,
+  knownContext,
   loadThread,
   saveThread,
   threadPointers,
@@ -36,9 +38,10 @@ describe('assistant thread', () => {
     expect(all.messages.map((m) => m.role)).toEqual(['user', 'assistant', 'user', 'user'])
     expect(all.firstSent).toBe(0)
 
+    // Over the budget, the history is cut to half of it in one step.
     const cut = historyForRequest(thread, 250)
-    expect(cut.messages).toHaveLength(2)
-    expect(cut.firstSent).toBe(2)
+    expect(cut.messages).toHaveLength(1)
+    expect(cut.firstSent).toBe(4)
 
     const tiny = historyForRequest(thread, 1)
     expect(tiny.messages).toEqual([{ role: 'user', content: long }])
@@ -50,6 +53,27 @@ describe('assistant thread', () => {
     const history = historyForRequest([user('1', long), reply('2', long), user('3', 'short')], 120)
     expect(history.messages.map((m) => m.role)).toEqual(['user'])
     expect(history.firstSent).toBe(2)
+  })
+
+  it('keeps where the history starts while it fits, so the prefix does not shift each turn', () => {
+    const long = 'z'.repeat(400) // ~100 tokens each
+    const thread = [user('1', long), reply('2', long), user('3', long), reply('4', long), user('5', long)]
+    // Everything fits: no cut.
+    expect(historyStart(thread, 600)).toBe(0)
+    // Too long: cut in one step, to the turn from which the rest fits half the budget.
+    expect(historyStart(thread, 500)).toBe(4)
+    // Once the thread starts later, it stays there while the rest fits, rather than moving back.
+    const next = [...thread, reply('6', 'ok'), user('7', 'more')]
+    expect(historyStart(next, 600, '3')).toBe(2)
+    expect(historyStart(next, 600)).toBe(0)
+  })
+
+  it('sends a user message with the topic context it was sent with', () => {
+    const message = user('1', 'Why?', { context: '<topic-context topic="t">\n## Outline\n</topic-context>', sent: ['outline:1'] })
+    expect(userMessageContent(message)).toBe('<topic-context topic="t">\n## Outline\n</topic-context>\n\nWhy?')
+    expect([...knownContext([message, reply('2', 'Because.'), user('3', 'Ok', { sent: ['src:a#q1:x'] })])]).toEqual(['outline:1', 'src:a#q1:x'])
+    saveThread('t', { messages: [message], start: '1' })
+    expect(loadThread('t')).toEqual({ messages: [{ ...message, picks: [], mode: 'comment' }], start: '1' })
   })
 
   it('marks a stopped reply', () => {

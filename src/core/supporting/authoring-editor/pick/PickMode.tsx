@@ -105,6 +105,8 @@ export interface PickAssistantBridge {
   /** Resolves to true once sent; the tray then clears. */
   send(draft: PickSendDraft): Promise<boolean>
   togglePanel(open?: boolean): void
+  /** The tray registers itself (null when it goes away), so the panel's message box can send its picks. */
+  connectTray?(tray: { count: number; take(): PickSendDraft; clear(): void } | null): void
 }
 
 const rowLabel = (anchor: string) => (anchor === 'root' ? 'Whole section' : anchor)
@@ -273,13 +275,37 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
     requestAnimationFrame(() => listRef.current?.querySelector(`[data-key="${CSS.escape(key)}"]`)?.scrollIntoView?.({ block: 'nearest' }))
   }, [])
 
+  // The panel's message box sends the tray's draft too.
+  const draftRef = useRef({ tray, entries })
+  draftRef.current = { tray, entries }
+  const bridgeRef = useRef(assistant)
+  bridgeRef.current = assistant
+  const hasAssistant = !!assistant
+  useEffect(() => {
+    if (!hasAssistant) return
+    bridgeRef.current?.connectTray?.({
+      count: tray.entries.length,
+      take: () => {
+        const { tray: t, entries: all } = draftRef.current
+        return { mode: t.mode, message: t.question, entries: all.filter((e) => !e.stale || e.keep) }
+      },
+      clear: () => {
+        setTray((t) => ({ ...EMPTY_TRAY, mode: t.mode }))
+        setOpenKey(null)
+        setCommenting(new Set())
+      },
+    })
+  }, [hasAssistant, tray.entries.length, setTray])
+  useEffect(() => () => bridgeRef.current?.connectTray?.(null), [])
+
   const hasNotes = tray.entries.some((e) => e.note.trim())
   const copyLabel = tray.mode === 'ask' ? 'Copy question' : hasNotes ? 'Copy comments' : 'Copy references'
   const chatting = !!assistant?.panelOpen
-  const showTray = active || tray.entries.length > 0 || chatting
   const count = tray.entries.length
   // On phones the open chat replaces the sheet; the tray is a message bar under it.
+  // On wide screens the panel has its own message box.
   const chatBar = narrow && chatting
+  const showTray = active || count > 0 || chatBar
   const folded = collapsed || chatBar
   const canSend = !!assistant && !assistant.busy && (count > 0 || !!tray.question.trim())
 
@@ -322,7 +348,7 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
     </button>
   )
 
-  const composer = chatting && (
+  const composer = chatBar && (
     <textarea
       className="pick-tray-question pick-tray-composer"
       rows={chatBar ? 1 : 2}
@@ -502,7 +528,7 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
                   ))}
                 </ol>
               )}
-              {tray.mode === 'ask' && !chatting && (
+              {tray.mode === 'ask' && !chatBar && (
                 <textarea
                   className="pick-tray-question"
                   rows={2}

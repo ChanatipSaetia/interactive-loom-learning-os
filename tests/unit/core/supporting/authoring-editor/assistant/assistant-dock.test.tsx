@@ -79,13 +79,49 @@ describe('AssistantDock with the Pick tray', () => {
     const chat = fetchImpl.mock.calls.find(([url]) => String(url).endsWith('/chat/completions'))!
     const body = JSON.parse(chat[1]!.body as string)
     expect(body.model).toBe('m1')
-    expect(body.messages[0].content).toContain('### sections/quiz.oui: q1 (line 2)')
-    expect(body.messages[1].content).toBe('Comments on these places:\n- sections/quiz.oui #q1\n  Too easy?')
+    expect(body.messages[0].content).not.toContain('<topic-context topic=')
+    expect(body.messages[1].content).toMatch(/^<topic-context topic="demo">/)
+    expect(body.messages[1].content).toContain('### sections/quiz.oui: q1 (line 2)')
+    expect(body.messages[1].content).toContain('QuizQuestion(id: string')
+    expect(body.messages[1].content).toMatch(/<\/topic-context>\n\nComments on these places:\n- sections\/quiz.oui #q1\n {2}Too easy\?$/)
     expect(JSON.parse(localStorage.getItem('loom-ai-thread:demo')!).messages).toHaveLength(2)
 
     // New chat clears the thread.
     fireEvent.click(screen.getByTestId('ai-new-chat'))
     expect(screen.queryByTestId('ai-reply')).toBeNull()
+  })
+
+  it('keeps asking from the panel, repeating the earlier turns unchanged so the server can reuse its cache', async () => {
+    seed('http://localhost:11434/v1')
+    const fetchImpl = mockFetch()
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+
+    // The panel's message box sends the tray's picks with the message.
+    fireEvent.click(screen.getByTestId('ai-toggle'))
+    expect(screen.getByTestId('ai-composer-picks')).toHaveTextContent('1 picked place')
+    fireEvent.change(screen.getByTestId('ai-composer'), { target: { value: 'Is it fair?' } })
+    fireEvent.keyDown(screen.getByTestId('ai-composer'), { key: 'Enter' })
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    expect(screen.queryByTestId('pick-entry')).toBeNull()
+    expect(screen.getByTestId('ai-composer')).toHaveValue('')
+    expect(screen.getByTestId('ai-chip')).toHaveTextContent('Check › q1')
+
+    // A follow-up: Shift+Enter is a new line, Enter sends.
+    fireEvent.change(screen.getByTestId('ai-composer'), { target: { value: 'And q2?' } })
+    fireEvent.keyDown(screen.getByTestId('ai-composer'), { key: 'Enter', shiftKey: true })
+    expect(fetchImpl.mock.calls.filter(([u]) => u.endsWith('/chat/completions'))).toHaveLength(1)
+    fireEvent.keyDown(screen.getByTestId('ai-composer'), { key: 'Enter' })
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')[1]).toHaveAttribute('data-status', 'done'))
+
+    const [first, second] = fetchImpl.mock.calls
+      .filter(([u]) => u.endsWith('/chat/completions'))
+      .map(([, init]) => JSON.parse(init!.body as string).messages as Array<{ role: string; content: string }>)
+    expect(first[1].content).toContain('Comments on these places:\n- sections/quiz.oui #q1\n  Too easy?\n\nIs it fair?')
+    // Same system prompt, same first turn: the prefix is unchanged.
+    expect(second.slice(0, 2)).toEqual(first)
+    expect(second.map((m) => m.role)).toEqual(['system', 'user', 'assistant', 'user'])
+    // Nothing changed in the topic, so the follow-up carries no new context.
+    expect(second[3].content).toBe('And q2?')
   })
 
   it('asks once before the first send to a remote server', async () => {

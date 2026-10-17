@@ -3,9 +3,15 @@
  * decisions 55–61): the active profile, the topic's thread, the request in
  * flight, the Assistant panel and the settings dialog.
  *
- * Every request is built afresh: the system prompt for the components in
- * play, the <topic-context> block from the current sources (`getContext`),
- * and as much of the thread as the profile's token budget allows.
+ * Requests are laid out for prompt caching (decision 63): the same system
+ * prompt for the whole conversation, then the thread as it was sent before,
+ * then the new message, which carries a <topic-context> block built from the
+ * current sources (`getContext`) with only what the earlier blocks in the
+ * history do not already hold. The block is stored with the message, so the
+ * next request repeats it unchanged.
+ *
+ * Messages are written in the panel's message box (with whatever the Pick
+ * tray holds) or sent from the tray (`send`).
  *
  * With an `editor` (Studio), replies may propose `oui-edit` blocks
  * (decisions 54 and 58): each finished reply is dry-run against the current
@@ -28,7 +34,9 @@ import {
 } from './profiles'
 import {
   EMPTY_THREAD,
-  historyForRequest,
+  historyMessages,
+  historyStart,
+  knownContext,
   loadThread,
   newMessageId,
   saveThread,
@@ -43,6 +51,16 @@ export interface AssistantDraft {
   mode: 'comment' | 'ask'
   message: string
   picks: ThreadPick[]
+}
+
+/** The Pick tray as the panel's message box sees it: its picks go with the next message. */
+export interface AssistantTray {
+  /** Places in the tray. */
+  count: number
+  /** The tray's draft: mode, its own message and picks. */
+  take(): AssistantDraft
+  /** Empty the tray after its draft was sent. */
+  clear(): void
 }
 
 /** Where Studio puts proposed edits: the editor buffers, never the disk. */
@@ -139,6 +157,8 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
   editorRef.current = editor
   const threadRef = useRef(thread)
   threadRef.current = thread
+  const trayRef = useRef<AssistantTray | null>(null)
+  const [trayCount, setTrayCount] = useState(0)
 
   const profile = activeProfile(settings)
   const busy = thread.messages.some((m) => m.status === 'streaming')
@@ -178,7 +198,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
   }, [])
 
   const patchMessage = useCallback((id: string, patch: Partial<ThreadMessage> | ((m: ThreadMessage) => Partial<ThreadMessage>)) => {
-    setThread((t) => ({ messages: t.messages.map((m) => (m.id === id ? { ...m, ...(typeof patch === 'function' ? patch(m) : patch) } : m)) }))
+    setThread((t) => ({ ...t, messages: t.messages.map((m) => (m.id === id ? { ...m, ...(typeof patch === 'function' ? patch(m) : patch) } : m)) }))
   }, [setThread])
 
   /**
@@ -186,10 +206,30 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
    * `retry` marks the automatic second request after a proposal that did
    * not validate; it never triggers another one.
    */
-  const run = useCallback(async (messages: ThreadMessage[], profile: AssistantProfile, retry = false): Promise<void> => {
+  const run = useCallback(async (thread: ThreadMessage[], profile: AssistantProfile, retry = false): Promise<void> => {
     const controller = new AbortController()
     abort.current?.abort()
     abort.current = controller
+    let messages = thread
+    let start = historyStart(messages, profile.tokenBudget, threadRef.current.start)
+    const last = messages[messages.length - 1]
+    if (last?.role === 'user' && last.context === undefined) {
+      // The new message's topic context: what the history from `start` does not hold yet.
+      const withContext = (from: number): ThreadMessage => {
+        const block = buildTopicContext(contextRef.current(), threadPointers(messages), {
+          known: knownContext(messages.slice(from, -1)),
+          reference: !profile.fullReference,
+        })
+        return { ...last, context: block.text, sent: block.keys }
+      }
+      messages = [...messages.slice(0, -1), withContext(start)]
+      // The block itself can push the history over the budget; then cut and build it again.
+      const moved = historyStart(messages, profile.tokenBudget, messages[start]?.id)
+      if (moved !== start) {
+        start = moved
+        messages = [...messages.slice(0, -1), withContext(start)]
+      }
+    }
     const reply: ThreadMessage = {
       id: newMessageId(),
       role: 'assistant',
@@ -198,18 +238,17 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
       via: { host: hostOf(profile.baseUrl), model: profile.model },
       at: Date.now(),
     }
-    setThread({ messages: [...messages, reply] })
+    setThread({ messages: [...messages, reply], start: messages[start]?.id })
 
-    const context = buildTopicContext(contextRef.current(), threadPointers(messages))
-    const system = `${getLoomAssistantPrompt({ app, components: context.components, fullReference: profile.fullReference })}\n\n${context.text}`
-    const history = historyForRequest(messages, profile.tokenBudget)
+    // The same for every request of the conversation, so it stays cached.
+    const system = getLoomAssistantPrompt({ app, fullReference: profile.fullReference })
     let followUp: ThreadMessage[] | null = null
     try {
       const result = await chatCompletion(
         connectionOf(profile),
         {
           model: profile.model,
-          messages: [{ role: 'system', content: system }, ...history.messages],
+          messages: [{ role: 'system', content: system }, ...historyMessages(messages, start)],
           signal: controller.signal,
           onDelta: (delta) => patchMessage(reply.id, (m) => ({ text: m.text + delta })),
         },
@@ -274,6 +313,23 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     return true
   }, [busy, profile, run, thread.messages])
 
+  /** Send what was typed in the panel, together with the Pick tray's picks (which then clear). */
+  const sendMessage = useCallback(async (text: string): Promise<boolean> => {
+    const tray = trayRef.current
+    const draft = tray?.take()
+    const picks = draft?.picks ?? []
+    const message = [draft?.message.trim() ?? '', text.trim()].filter(Boolean).join('\n\n')
+    const ok = await send({ mode: picks.length && draft ? draft.mode : 'comment', message, picks })
+    if (ok && draft && (picks.length || draft.message.trim())) tray?.clear()
+    return ok
+  }, [send])
+
+  /** The Pick tray registers itself here (null when it goes away). */
+  const connectTray = useCallback((tray: AssistantTray | null) => {
+    trayRef.current = tray
+    setTrayCount(tray?.count ?? 0)
+  }, [])
+
   const answerNotice = useCallback((ok: boolean) => {
     setNotice(null)
     noticeAnswer.current?.(ok)
@@ -287,7 +343,12 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     if (!profile || busy) return
     const messages = [...thread.messages]
     while (messages.length && messages[messages.length - 1].role === 'assistant') messages.pop()
-    if (messages.length) void run(messages, profile)
+    if (!messages.length) return
+    // Its topic context is built again, from the sources as they are now.
+    const last = { ...messages[messages.length - 1] }
+    delete last.context
+    delete last.sent
+    void run([...messages.slice(0, -1), last], profile)
   }, [busy, profile, run, thread.messages])
 
   const setHunk = useCallback((messageId: string, index: number, hunk: EditHunkState) => {
@@ -370,6 +431,10 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     settingsOpen,
     notice,
     send,
+    sendMessage,
+    connectTray,
+    /** Places in the Pick tray, sent with the panel's next message. */
+    trayCount,
     stop,
     retry,
     newChat,

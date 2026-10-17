@@ -55,12 +55,15 @@ export {
   saveProfileKey,
 } from './profiles'
 export type { AssistantProfile, AssistantSettings, StoredKey } from './profiles'
-export { buildTopicContext, fileStatements } from './context'
-export type { AssistantTopicContext, ContextPointer, FileStatement, TopicContextBlock } from './context'
+export { buildTopicContext, fileStatements, textHash } from './context'
+export type { AssistantTopicContext, ContextPointer, FileStatement, TopicContextBlock, TopicContextOptions } from './context'
 export {
   EMPTY_THREAD,
   estimateTokens,
   historyForRequest,
+  historyMessages,
+  historyStart,
+  knownContext,
   loadThread,
   saveThread,
   threadPointers,
@@ -68,4 +71,4 @@ export {
 } from './thread'
 export type { AssistantThread, EditHunkState, HistoryForRequest, ThreadMessage, ThreadMessageStatus, ThreadPick } from './thread'
 export { hostOf, retryMessage, useAssistant } from './useAssistant'
-export type { AssistantDraft, AssistantEditor, AssistantState, RemoteNotice, UseAssistantOptions } from './useAssistant'
+export type { AssistantDraft, AssistantEditor, AssistantTray, AssistantState, RemoteNotice, UseAssistantOptions } from './useAssistant'

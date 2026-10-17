@@ -257,6 +257,56 @@
 .ai-panel-model select { flex: 0 1 40%; }
 .ai-panel-model input { flex: 1 1 60%; font-family: var(--font-mono, monospace); }
 
+/* The message box at the foot of the panel. */
+.ai-composer {
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--border);
+}
+.ai-composer-picks {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.ai-composer-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.ai-composer textarea {
+  flex: 1;
+  min-width: 0;
+  max-height: 30vh;
+  box-sizing: border-box;
+  resize: none;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  line-height: 1.4;
+}
+.ai-composer textarea:focus-visible { outline: 2px solid var(--primary); outline-offset: -1px; }
+.ai-composer-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+}
+.ai-composer-button.is-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+.ai-composer-button:disabled { opacity: 0.5; cursor: default; }
+
 .ai-messages {
   flex: 1;
   overflow-y: auto;

@@ -1,6 +1,6 @@
 # Grill Log — AI Assistant for Pick in Studio and Viewer
 
-Status: **All phases complete (1–4)**
+Status: **All phases complete (1–4), plus decision 63**
 
 ## Goal
 
@@ -35,6 +35,7 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 | 59 | What the prompt contains | **A short assistant prompt built per request, plus an opt-in Full reference.** (1) Core OUI syntax rules and the `oui-edit` format (left out in Viewer), ~1.5k tokens. (2) Reference entries (props, `fields` descriptions, an example) only for the component types in the current source block, plus their usual children (`Quiz` brings `QuizQuestion`). (3) A **topic outline**: `topic.oui`'s section list; for each file in context one line per statement (name and type); every component name with a one-line summary. (4) The **current diagnostics** for the files in context. Statement-level picks send the picked statements plus the statements they reference by name, one level deep; a whole-section pick (`#root`) sends the whole file. The profile's **Full reference** switch sends the full authoring prompt instead of (2). Built by `composition/oui/assistant-prompt.ts` from the same sources as `authoring-prompt.ts`, so it cannot drift from the published prompt. |
 | 60 | Where it appears | **The tray becomes the input box.** **Send to AI** sits next to **Copy**; both use the same draft, and Copy stays the main route for big changes. Replies show in an **Assistant panel**: a resizable right drawer over the preview in Studio, a drawer on the same side in Viewer. Sending with no picks is a plain message with the outline as context. With no active profile, Send opens connection settings (gear in the panel header); a profile/model menu in the header switches per message. `Ctrl/Cmd+Enter` sends; `Esc` or **Stop** stops a streaming reply, which stays marked "(stopped)". The **Send to AI** button is always visible; the panel stays hidden until a profile exists. On phones (≤640px) the decision 53 sheet gets **Picks · Chat** tabs, the folded bar reads "3 picked · Send · Copy", and a reply arriving while folded puts a dot on the bar. Studio edit cards show the hunks with **Apply**, **Reject**, **Apply all** and **Show in code** (decision 46's reveal). |
 | 61 | Safety of output and content | **Sanitized markdown.** Replies render as markdown with **no raw HTML and no images** (an image URL can leak topic source and comments when it loads); links show their full URL and open in a new tab with `rel="noopener noreferrer"`; code blocks are highlighted; `oui-edit` blocks become edit cards and never run. Topic source and diagnostics are wrapped in tags and marked as **data, not instructions** in the system prompt. The first send through a **remote** profile shows a one-time notice naming the host that receives the picks, comments and source; `localhost` / `127.0.0.1` skip it. Every reply carries a small "via `<host>` · `<model>`" label. |
+| 63 | Follow-ups and prompt caching | **A message box in the panel, and a request laid out as a stable prefix.** (1) The Assistant panel has its own message box at its foot (Enter sends, Shift+Enter is a new line, Stop while a reply streams), so a conversation goes on without the tray; whatever the Pick tray holds goes with the next message as chips, and the tray then clears. On wide screens the tray no longer shows a message box while the panel is open (it hides when empty); on phones the tray's message bar under the sheet stays the message box. **Send to AI** in the tray still works. (2) Revises decisions 56 and 59 for caching: the **system prompt is the same for the whole conversation** (role, rules, syntax, component index; no topic context and no per-request reference entries). The `<topic-context>` block moves into the **user turn** it was sent with and is **stored with that message**, so every later request repeats the earlier turns byte for byte and OpenAI-compatible servers with prefix caching (OpenAI, DeepSeek, OpenRouter providers with implicit caching, llama.cpp, Ollama and LM Studio keeping their KV cache) reuse it. (3) A new block carries only what the blocks still in the history do not: the outline when it changed, picked statements that are new or changed (a whole file once, until it changes), reference entries for components not yet described, and the errors when they changed ("None." once they are gone). A follow-up about nothing new carries no block at all. (4) Over the token budget the history is cut **in one step, down to half the budget**, and the thread keeps where it starts (`start`), so the prefix stays the same for the following requests instead of shifting one turn each time. Retry builds the last message's block again. |
 | 62 | Rollout and scope | **Phased**, each green on `typecheck` + `test` (below). E2E in Playwright against a **mock OpenAI-compatible server** fixture (canned `/models` and streaming `/chat/completions`), plus one manual check against a real Ollama. **Out of scope:** tool calling and agent loops, several threads per topic, an assistant for learners in the main app or embeds (as decision 47), and non-OpenAI APIs (e.g. Anthropic-native). |
 
 ## Rollout Phases
@@ -109,6 +110,20 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 
 - The authoring prompt and the skill did not change, so `npm run oui:schema` rewrites the published files unchanged (checked). The assistant's own prompt is built at runtime and is not published.
 - Tests: `tests/unit/create/create.test.tsx` (the tab, the Ollama command with this origin, switching servers, and `MODEL_SERVERS` base URLs and keys matching the assistant presets).
+
+## Decision 63 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Panel message box (`Composer`: draft kept per topic in sessionStorage, `loom-ai-draft:<topicId>`), Stop in the box while streaming | `assistant/AssistantPanel.tsx`, `assistant.css` |
+| The tray registers its draft with the assistant (`connectTray`, `AssistantTray`); `sendMessage` sends the panel's text with the tray's picks | `pick/PickMode.tsx`, `assistant/useAssistant.ts` |
+| `buildTopicContext(context, pointers, { known, reference })`: keys per part sent (`outline:`, `src:<file>#<name>:`, `file:<file>:`, `errors:`, `component:`), `textHash` | `assistant/context.ts` |
+| Messages keep `context` and `sent`; the thread keeps `start`; `historyStart` (cut to half the budget), `historyMessages`, `knownContext` | `assistant/thread.ts` |
+| Stable system prompt; `componentEntries` for the reference entries the topic context carries | `composition/oui/assistant-prompt.ts` |
+
+- The data rule in the system prompt says each block carries only what is new or changed, and that a later version of a statement replaces an earlier one.
+- Threads saved before this change still load: their user messages have no stored block, and the next request only adds one to the new message.
+- Tests: `context.test.ts` (known parts left out, changed statements resent, errors gone), `thread.test.ts` (`historyStart`, stored context), `assistant-dock.test.tsx` (panel message box with tray picks, follow-up repeats the first turns unchanged); `tests/e2e/assistant.spec.ts` uses the panel's message box and checks the unchanged prefix. The mock server's echo leaves out the topic context block.
 
 ## Open Questions
 

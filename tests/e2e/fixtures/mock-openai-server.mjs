@@ -37,7 +37,8 @@ export function startMockOpenAI({ port = 0, cors = true, models = ['mock-small',
         const last = [...(request.messages ?? [])].reverse().find((message) => message.role === 'user')
         // `REPLY<<…>>` in the last user message is answered with exactly that text.
         const scripted = /REPLY<<([\s\S]*?)>>/.exec(last?.content ?? '')
-        const reply = scripted ? scripted[1] : `Echo: ${last?.content ?? ''}`
+        // The echo leaves out the <topic-context> block a user turn can start with.
+        const reply = scripted ? scripted[1] : `Echo: ${(last?.content ?? '').replace(/^<topic-context[\s\S]*?<\/topic-context>\n\n/, '')}`
         if (!request.stream) {
           return res
             .writeHead(200, { 'content-type': 'application/json' })
