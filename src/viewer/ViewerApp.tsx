@@ -27,6 +27,7 @@ import {
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from './compileTopic'
 import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, PickSection, PickToggle, sourceResolver } from '../core/supporting/authoring-editor/pick'
+import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext } from '../core/supporting/authoring-editor/assistant'
 import type { PickSource } from '../core/learning-engine/composition/oui/pick-report'
 import '../core/delivery/web-app-shell/layout.css'
 
@@ -63,6 +64,16 @@ function pickSourceOf(loaded: Loaded): PickSource {
   if (loaded.pasted) return { kind: 'text' }
   if (loaded.source.endsWith('/')) return { kind: 'folder' }
   return { kind: 'archive', name: loaded.source }
+}
+
+/** Viewer's errors by file, for the assistant (one line each). */
+function viewerDiagnostics(topic: ViewerTopic): Record<string, string[]> {
+  const out: Record<string, string[]> = {}
+  if (topic.error) out['topic.oui'] = topic.error.split('\n').slice(1).filter(Boolean)
+  for (const section of topic.sections) {
+    if (section.error) out[`sections/${section.name}.oui`] = section.error.split('\n').filter(Boolean)
+  }
+  return out
 }
 
 function message(e: unknown): string {
@@ -205,6 +216,15 @@ export function ViewerApp() {
     () => (topic ? ['topic.oui', ...topic.sections.map((s) => `sections/${s.name}.oui`)] : []),
     [topic],
   )
+  const getAssistantContext = useCallback((): AssistantTopicContext => ({
+    topicId: topic?.topicId ?? '',
+    files: topic?.files ?? {},
+    fileOrder: pickFileOrder,
+    diagnostics: topic ? viewerDiagnostics(topic) : {},
+    source: pickSource,
+  }), [topic, pickFileOrder, pickSource])
+  const assistant = useAssistant({ topicId: topic?.topicId ?? '', app: 'viewer', getContext: getAssistantContext })
+  const pickAssistant = pickBridgeOf(assistant)
 
   return (
     <UISystemProvider>
@@ -241,6 +261,7 @@ export function ViewerApp() {
             )}
             <LoomToolsNav current="viewer" />
             {topic && <PickToggle active={picking} onChange={setPicking} className="viewer-pill" />}
+            {topic && <AssistantToggle assistant={assistant} className="viewer-pill" />}
             {loaded && (
               <button
                 type="button"
@@ -285,8 +306,10 @@ export function ViewerApp() {
             resolve={pickResolver}
             source={pickSource}
             fileOrder={pickFileOrder}
+            assistant={pickAssistant}
           />
         )}
+        {topic && <AssistantDock assistant={assistant} resolve={pickResolver} onShowPicks={() => setPicking(true)} />}
       </div>
     </UISystemProvider>
   )

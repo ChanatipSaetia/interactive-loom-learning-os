@@ -10,6 +10,7 @@ import {
   readTopicArchive,
 } from '../../core/supporting/authoring-editor/workspace'
 import { PickMode, PickToggle, sourceResolver, statementOfAnchor, type PickModeApi, type PickTarget } from '../../core/supporting/authoring-editor/pick'
+import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext } from '../../core/supporting/authoring-editor/assistant'
 import { ThemeToggle } from '../../core/ui-system/motion/theme-toggle'
 import { LoomToolsNav } from '../../core/delivery/web-app-shell/LoomToolsNav'
 import { useWorkspace } from '../useWorkspace'
@@ -61,6 +62,27 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
   ), [snap.sections, snap.dirtySections])
 
   const dirtyCount = snap.dirtySections.length + (snap.topicDirty ? 1 : 0)
+
+  // The assistant reads the buffers as they are when a request is sent, unsaved edits included.
+  const getAssistantContext = useCallback((): AssistantTopicContext => {
+    const { files } = workspace.exportFiles()
+    const current = workspace.getSnapshot()
+    const diagnostics: Record<string, string[]> = {}
+    for (const s of current.sections) {
+      const lines = s.validation.diagnostics.map((d) => `${d.line ? `line ${d.line}: ` : ''}${d.message}${d.fixHint ? ` (fix: ${d.fixHint})` : ''}`)
+      if (lines.length) diagnostics[`sections/${s.name}.oui`] = lines
+    }
+    const unsaved = new Set(current.dirtySections.map((name) => `sections/${name}.oui`))
+    if (current.topicDirty) unsaved.add('topic.oui')
+    return {
+      topicId: current.topicId,
+      files,
+      fileOrder: ['topic.oui', ...current.sections.map((s) => `sections/${s.name}.oui`)],
+      diagnostics,
+      unsaved,
+    }
+  }, [workspace])
+  const assistant = useAssistant({ topicId: snap.topicId, app: 'studio', getContext: getAssistantContext })
 
   const run = useCallback(async (action: () => Promise<void>, success?: string) => {
     try {
@@ -178,6 +200,7 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
               <LoomToolsNav current="studio" newTab />
               <ThemeToggle />
               <PickToggle active={picking} onChange={setPicking} className="studio-button" />
+              <AssistantToggle assistant={assistant} className="studio-button" />
               <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.oui file or a .zip" data-testid="studio-import">
                 <Upload size={15} /> Import
               </button>
@@ -247,7 +270,8 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
                 )}
             </main>
           </div>
-          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} fileOrder={pickFileOrder} onPick={onPick} apiRef={pickApi} />
+          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} fileOrder={pickFileOrder} onPick={onPick} apiRef={pickApi} assistant={pickBridgeOf(assistant)} />
+          <AssistantDock assistant={assistant} resolve={pickResolver} onShowPicks={() => setPicking(true)} />
         </div>
       </HUDProvider>
     </ProgressProvider>

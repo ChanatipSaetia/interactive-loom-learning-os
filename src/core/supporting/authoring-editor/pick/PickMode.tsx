@@ -8,9 +8,14 @@
  * compact numbered row each; a row opens to show its full pointer, the
  * Wider button and a comment box. On phones it is a one-line bar that opens
  * into a sheet.
+ *
+ * With an `assistant` (grill-log-ai-assistant.md, decision 60) the tray is
+ * also where messages to the AI assistant are written: Send to AI sits next
+ * to Copy, and while the Assistant panel is open the tray shows a message
+ * box (on phones the bar becomes that box, with Picks and Chat tabs).
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react'
-import { AlertTriangle, Check, ChevronDown, ChevronUp, ChevronsUp, Copy, Crosshair, LocateFixed, MessageSquare, MessageSquarePlus, Trash2, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MutableRefObject } from 'react'
+import { AlertTriangle, Bot, Check, ChevronDown, ChevronUp, ChevronsUp, Copy, Crosshair, LocateFixed, MessageSquare, MessageSquarePlus, Send, Trash2, X } from 'lucide-react'
 import { copyText } from '../../../ui-system/clipboard'
 import { formatPickPointer, type PickSource } from '../../../learning-engine/composition/oui/pick-report'
 import { PickLayer, findPickElement, type PickTarget } from './PickLayer'
@@ -67,7 +72,7 @@ function usePickTray(topicId: string) {
 const NARROW = '(max-width: 640px)'
 
 /** Phone-sized screens get the bar-and-sheet tray. */
-function useNarrow(): boolean {
+export function useNarrow(): boolean {
   const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.(NARROW).matches)
   useEffect(() => {
     const query = window.matchMedia?.(NARROW)
@@ -82,6 +87,24 @@ function useNarrow(): boolean {
 /** Lets the page add picks that do not come from a click (Studio's code editor). */
 export interface PickModeApi {
   add(target: PickTarget): void
+}
+
+/** What Send to AI hands the assistant. */
+export interface PickSendDraft {
+  mode: PickTrayState['mode']
+  message: string
+  /** In reading order; stale entries only when kept. */
+  entries: ResolvedPickEntry[]
+}
+
+/** The AI assistant as the tray sees it (`useAssistant` in authoring-editor/assistant). */
+export interface PickAssistantBridge {
+  panelOpen: boolean
+  busy: boolean
+  unread: boolean
+  /** Resolves to true once sent; the tray then clears. */
+  send(draft: PickSendDraft): Promise<boolean>
+  togglePanel(open?: boolean): void
 }
 
 const rowLabel = (anchor: string) => (anchor === 'root' ? 'Whole section' : anchor)
@@ -147,7 +170,7 @@ function PickBadges({ entries, onSelect }: { entries: ResolvedPickEntry[]; onSel
   )
 }
 
-export function PickMode({ topicId, active, onActiveChange, resolve, source, fileOrder, onPick, apiRef }: {
+export function PickMode({ topicId, active, onActiveChange, resolve, source, fileOrder, onPick, apiRef, assistant }: {
   topicId: string
   active: boolean
   onActiveChange: (active: boolean) => void
@@ -159,6 +182,8 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
   /** Called for every pick, after it is added (Studio reveals the statement in the code). */
   onPick?: (target: PickTarget) => void
   apiRef?: MutableRefObject<PickModeApi | null>
+  /** The AI assistant: adds Send to AI and the message box (decision 60). */
+  assistant?: PickAssistantBridge
 }) {
   const [tray, setTray] = usePickTray(topicId)
   const narrow = useNarrow()
@@ -250,14 +275,71 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
 
   const hasNotes = tray.entries.some((e) => e.note.trim())
   const copyLabel = tray.mode === 'ask' ? 'Copy question' : hasNotes ? 'Copy comments' : 'Copy references'
-  const showTray = active || tray.entries.length > 0
+  const chatting = !!assistant?.panelOpen
+  const showTray = active || tray.entries.length > 0 || chatting
   const count = tray.entries.length
+  // On phones the open chat replaces the sheet; the tray is a message bar under it.
+  const chatBar = narrow && chatting
+  const folded = collapsed || chatBar
+  const canSend = !!assistant && !assistant.busy && (count > 0 || !!tray.question.trim())
+
+  const sendToAI = async () => {
+    if (!assistant || !canSend) return
+    const draft: PickSendDraft = {
+      mode: tray.mode,
+      message: tray.question,
+      entries: entries.filter((e) => !e.stale || e.keep),
+    }
+    if (await assistant.send(draft)) {
+      setTray((t) => ({ ...EMPTY_TRAY, mode: t.mode }))
+      setOpenKey(null)
+      setCommenting(new Set())
+    }
+  }
+
+  /** Ctrl/Cmd+Enter in the tray's text boxes sends to the assistant. */
+  const onSendKey = (e: KeyboardEvent) => {
+    if (assistant && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault()
+      void sendToAI()
+    }
+  }
+
+  const chatButton = assistant && !chatting && (
+    <button
+      type="button"
+      className="pick-tray-icon pick-chat-button"
+      onClick={() => {
+        assistant.togglePanel(true)
+        if (narrow) setCollapsed(true)
+      }}
+      aria-label="Open the AI chat"
+      title="Open the AI chat"
+      data-testid="pick-chat"
+    >
+      <Bot size={14} />
+      {assistant.unread && <span className="ai-dot" aria-label="New reply" />}
+    </button>
+  )
+
+  const composer = chatting && (
+    <textarea
+      className="pick-tray-question pick-tray-composer"
+      rows={chatBar ? 1 : 2}
+      value={tray.question}
+      placeholder={tray.mode === 'ask' ? 'Your question about these places' : count ? 'Message for the AI (optional)' : 'Message for the AI'}
+      onChange={(e) => setTray((t) => ({ ...t, question: e.target.value }))}
+      onKeyDown={onSendKey}
+      aria-label="Message for the AI"
+      data-testid="pick-composer"
+    />
+  )
 
   return (
     <>
       <PickLayer active={active} onActiveChange={onActiveChange} onPick={pick} onCopy={() => void copy()} focus={focus} />
-      {(active || (count > 0 && !collapsed)) && <PickBadges entries={entries} onSelect={selectBadge} />}
-      {active && !(narrow && showTray && !collapsed) && (
+      {(active || (count > 0 && !folded)) && <PickBadges entries={entries} onSelect={selectBadge} />}
+      {active && !(narrow && showTray && !folded) && (
         <div className="pick-pill" role="status" data-pick-ignore data-testid="pick-pill">
           <Crosshair size={14} aria-hidden />
           <span>{narrow ? 'Picking · tap a part' : 'Picking · click a part (Esc to stop)'}</span>
@@ -266,7 +348,7 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
       )}
       {showTray && (
         <aside
-          className={`pick-tray${collapsed ? ' is-collapsed' : ''}${narrow ? ' is-narrow' : ''}`}
+          className={`pick-tray${folded ? ' is-collapsed' : ''}${narrow ? ' is-narrow' : ''}${chatting ? ' is-chatting' : ''}`}
           data-pick-ignore
           aria-label="Picked places"
           data-testid="pick-tray"
@@ -275,14 +357,21 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
             <button
               type="button"
               className="pick-tray-title"
-              onClick={() => setCollapsed((c) => !c)}
-              aria-expanded={!collapsed}
+              onClick={() => {
+                if (chatBar) {
+                  // The Picks tab: the chat folds away, the sheet opens and Pick mode starts.
+                  assistant!.togglePanel(false)
+                  setCollapsed(false)
+                  onActiveChange(true)
+                } else setCollapsed((c) => !c)
+              }}
+              aria-expanded={!folded}
               data-testid="pick-tray-toggle"
             >
-              {collapsed ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              {folded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
               {count === 0 ? 'Nothing picked' : `${count} picked`}
             </button>
-            {!(narrow && collapsed) && (
+            {!(narrow && folded) && (
               <div className="pick-tray-modes" role="radiogroup" aria-label="What to copy">
                 {(['comment', 'ask'] as const).map((mode) => (
                   <button
@@ -306,17 +395,30 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
             <span className="pick-tray-status" aria-live="polite">
               {copyState === 'copied' ? 'Copied' : copyState === 'failed' ? 'Copy failed' : copyState === 'empty' ? 'Nothing to copy' : ''}
             </span>
-            <button type="button" className="pick-tray-button pick-tray-button--primary" onClick={() => void copy()} disabled={count === 0} title="Copy for your AI agent (Ctrl/Cmd+C in Pick mode)" data-testid="pick-copy">
+            {assistant && (
+              <button
+                type="button"
+                className="pick-tray-button pick-tray-button--primary"
+                onClick={() => void sendToAI()}
+                disabled={!canSend}
+                title={assistant.busy ? 'Wait for the reply, or stop it' : 'Send to the AI assistant (Ctrl/Cmd+Enter)'}
+                data-testid="pick-send"
+              >
+                <Send size={14} /> <span className="pick-copy-label">{narrow ? 'Send' : 'Send to AI'}</span>
+              </button>
+            )}
+            <button type="button" className={`pick-tray-button${assistant ? '' : ' pick-tray-button--primary'}`} onClick={() => void copy()} disabled={count === 0} title="Copy for your AI agent (Ctrl/Cmd+C in Pick mode)" data-testid="pick-copy">
               {copyState === 'copied' ? <Check size={14} /> : <Copy size={14} />} <span className="pick-copy-label">{narrow ? 'Copy' : copyLabel}</span>
             </button>
-            {!(narrow && collapsed) && (
+            {chatButton}
+            {!(narrow && folded) && (
               <button type="button" className="pick-tray-icon" onClick={() => setTray(EMPTY_TRAY)} disabled={count === 0 && !tray.question} aria-label="Clear the tray" title="Clear the tray" data-testid="pick-clear">
                 <Trash2 size={14} />
               </button>
             )}
           </div>
 
-          {!collapsed && (
+          {!folded && (
             <div className="pick-tray-body">
               {count === 0 && (
                 <p className="pick-tray-hint">
@@ -386,6 +488,7 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
                                   autoFocus={commenting.has(key) && !entry.note}
                                   placeholder={tray.mode === 'ask' ? 'Note' : 'Comment for the agent'}
                                   onChange={(e) => update(entry, { note: e.target.value })}
+                                  onKeyDown={onSendKey}
                                   onFocus={(e) => e.currentTarget.scrollIntoView?.({ block: 'nearest' })}
                                   aria-label={`Comment on ${entry.label}`}
                                   data-testid="pick-entry-note"
@@ -399,13 +502,14 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
                   ))}
                 </ol>
               )}
-              {tray.mode === 'ask' && (
+              {tray.mode === 'ask' && !chatting && (
                 <textarea
                   className="pick-tray-question"
                   rows={2}
                   value={tray.question}
                   placeholder="Your question about these places"
                   onChange={(e) => setTray((t) => ({ ...t, question: e.target.value }))}
+                  onKeyDown={onSendKey}
                   onFocus={(e) => e.currentTarget.scrollIntoView?.({ block: 'nearest' })}
                   aria-label="Question"
                   data-testid="pick-question"
@@ -413,6 +517,7 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
               )}
             </div>
           )}
+          {composer && <div className="pick-tray-compose">{composer}</div>}
         </aside>
       )}
     </>

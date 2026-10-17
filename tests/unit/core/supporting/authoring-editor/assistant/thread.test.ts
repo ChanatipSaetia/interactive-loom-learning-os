@@ -1,0 +1,76 @@
+import { beforeEach, describe, expect, it } from 'vitest'
+import {
+  historyForRequest,
+  loadThread,
+  saveThread,
+  threadPointers,
+  userMessageContent,
+  type ThreadMessage,
+} from '../../../../../../src/core/supporting/authoring-editor/assistant'
+
+const user = (id: string, text: string, extra: Partial<ThreadMessage> = {}): ThreadMessage => ({ id, role: 'user', text, picks: [], mode: 'comment', at: 0, ...extra })
+const reply = (id: string, text: string, extra: Partial<ThreadMessage> = {}): ThreadMessage => ({ id, role: 'assistant', text, status: 'done', at: 0, ...extra })
+
+beforeEach(() => localStorage.clear())
+
+describe('assistant thread', () => {
+  it('writes picks with their comments, then the message', () => {
+    const message = user('1', 'Shorter, please.', {
+      picks: [
+        { file: 'sections/quiz.oui', anchor: 'q2.explanation', label: 'Quiz › q2.explanation', note: 'Too long.\nOne sentence.' },
+        { file: 'sections/quiz.oui', anchor: 'q5', label: 'Quiz › q5', note: '' },
+      ],
+    })
+    expect(userMessageContent(message)).toBe(
+      'Comments on these places:\n- sections/quiz.oui #q2.explanation\n  Too long.\n  One sentence.\n- sections/quiz.oui #q5\n\nShorter, please.',
+    )
+    expect(userMessageContent(user('2', 'Why?', { mode: 'ask', picks: [{ file: 'topic.oui', anchor: 'root', label: 'Topic', note: '' }] }))).toBe(
+      'About these places:\n- topic.oui #root\n\nWhy?\n\n(This is a question: answer it, do not propose changes unless asked.)',
+    )
+  })
+
+  it('keeps the newest turns within the budget, always the last user message, and leaves out failed replies', () => {
+    const long = 'x'.repeat(400) // ~100 tokens
+    const thread = [user('1', long), reply('2', long), user('3', long), reply('4', 'oops', { status: 'error' }), user('5', long)]
+    const all = historyForRequest(thread, 10_000)
+    expect(all.messages.map((m) => m.role)).toEqual(['user', 'assistant', 'user', 'user'])
+    expect(all.firstSent).toBe(0)
+
+    const cut = historyForRequest(thread, 250)
+    expect(cut.messages).toHaveLength(2)
+    expect(cut.firstSent).toBe(2)
+
+    const tiny = historyForRequest(thread, 1)
+    expect(tiny.messages).toEqual([{ role: 'user', content: long }])
+    expect(tiny.firstSent).toBe(4)
+  })
+
+  it('never starts the history with a reply', () => {
+    const long = 'y'.repeat(400)
+    const history = historyForRequest([user('1', long), reply('2', long), user('3', 'short')], 120)
+    expect(history.messages.map((m) => m.role)).toEqual(['user'])
+    expect(history.firstSent).toBe(2)
+  })
+
+  it('marks a stopped reply', () => {
+    const history = historyForRequest([user('1', 'Hi'), reply('2', 'Half', { status: 'stopped' }), user('3', 'Go on')], 1000)
+    expect(history.messages[1].content).toBe('Half\n\n(stopped before the end)')
+  })
+
+  it('collects every picked place once', () => {
+    const pick = { file: 'a.oui', anchor: 'q1', label: '', note: '' }
+    expect(threadPointers([user('1', '', { picks: [pick] }), reply('2', 'ok'), user('3', '', { picks: [pick, { ...pick, anchor: 'q2' }] })])).toEqual([
+      { file: 'a.oui', anchor: 'q1' },
+      { file: 'a.oui', anchor: 'q2' },
+    ])
+  })
+
+  it('saves per topic and turns a reply that was streaming into a stopped one', () => {
+    saveThread('demo', { messages: [user('1', 'Hi'), reply('2', 'Hal', { status: 'streaming', via: { host: 'h', model: 'm' } })] })
+    const loaded = loadThread('demo')
+    expect(loaded.messages[1]).toMatchObject({ status: 'stopped', text: 'Hal', via: { host: 'h', model: 'm' } })
+    expect(loadThread('other')).toEqual({ messages: [] })
+    saveThread('demo', { messages: [] })
+    expect(localStorage.getItem('loom-ai-thread:demo')).toBeNull()
+  })
+})

@@ -8,6 +8,7 @@
  * `--no-cors` leaves out the CORS headers, the way Ollama answers pages that
  * are not on its allow list. An `Authorization: Bearer bad` header gets 401.
  */
+/* global process, console, setInterval, clearInterval */
 import { createServer } from 'node:http'
 
 export function startMockOpenAI({ port = 0, cors = true, models = ['mock-small', 'mock-large'] } = {}) {

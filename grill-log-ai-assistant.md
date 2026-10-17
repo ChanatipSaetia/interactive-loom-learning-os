@@ -1,6 +1,6 @@
 # Grill Log — AI Assistant for Pick in Studio and Viewer
 
-Status: **Grilled, not implemented (phases 1–4 open)**
+Status: **Phases 1–2 done (connection, answer-only chat); phases 3–4 open**
 
 ## Goal
 
@@ -49,6 +49,38 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
    edit cards, diff in the editor buffer, Apply / Reject, the single validation retry (54).
 4. **Docs:** `AGENTS.md`, the Create page (`composition/oui/llm-guide.ts`, local-server setup
    hints), and `npm run oui:schema` if `authoring-prompt.ts` changes.
+
+## Phase 1 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Profiles, key storage (`loom-ai-profiles`, `loom-ai-key:<id>` in sessionStorage or localStorage), `connectionOf`, header parsing | `src/core/supporting/authoring-editor/assistant/profiles.ts` |
+| Client: `listModels`, `testConnection`, `chatCompletion` (plain `fetch`, `SSEDecoder`, one retry with `stream: false`), failure kinds (`invalid-url`, `mixed-content`, `network`, `auth`, `not-found`, `no-models`, `bad-response`, `http`, `aborted`) | `assistant/client.ts` |
+| Presets and fix hints (`failureHint`) | `assistant/presets.ts` |
+| Settings dialog | `assistant/AssistantSettingsDialog.tsx`, `assistant.css` |
+| Mock OpenAI-compatible server (`--no-cors` mimics a server that refuses the page) | `tests/e2e/fixtures/mock-openai-server.mjs` |
+
+- Plain http to a host other than `localhost`, `127.x` or `[::1]` from an https page is refused before anything is sent (`mixed-content`); browsers report every other unreachable case as the same `TypeError`, so `network` hints list the likely causes per preset.
+- Tests: `tests/unit/core/supporting/authoring-editor/assistant/{client,profiles,settings-dialog}.test.*`. Checked in Chromium against the mock: streaming, Stop, a server without CORS, a refused key and a wrong path.
+
+## Phase 2 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Assistant system prompt: role and answer rules per app, syntax rules, reference entries for the components in context and everything their signatures can contain (`componentClosure`), a one-line index of every component, Full reference | `src/core/learning-engine/composition/oui/assistant-prompt.ts` (`promptDescription` is now exported from `library.ts`) |
+| `<topic-context>`: outline, current source of the picked statements (plus their one-level references; `#root` sends the file), current errors; `fileStatements` uses the editor's scanner | `assistant/context.ts` |
+| Thread: messages with pick chips, `loom-ai-thread:<topicId>`, `userMessageContent`, `historyForRequest` (token budget, starts with a user turn), `threadPointers` | `assistant/thread.ts` |
+| `useAssistant`: profile, thread, request in flight, Stop / Esc, Retry, New chat, the remote notice (`loom-ai-remote-ok:<profileId>`), model list | `assistant/useAssistant.ts` |
+| Panel (`AssistantDock`), header button (`AssistantToggle`), `pickBridgeOf` | `assistant/AssistantPanel.tsx` |
+| Reply renderer: `marked` tokens to React elements, no `innerHTML`; openui-lang blocks highlighted with the scanner | `assistant/AssistantMarkdown.tsx` |
+| Tray: Send to AI, message box while the panel is open, Ctrl/Cmd+Enter, Chat button with a new-reply dot, phone message bar; the tray centres left of the drawer (`--ai-panel-width`) | `pick/PickMode.tsx` (`PickAssistantBridge`, `PickSendDraft`), `pick/pick.css` |
+| Wiring: Viewer passes its files, errors and source note; Studio passes `exportFiles()` (unsaved buffers), each section's diagnostics with fix hints, and the unsaved set | `src/viewer/ViewerApp.tsx`, `src/studio/components/StudioWorkspace.tsx` |
+
+- The system prompt for a quiz pick is about 8 KB (~2k tokens), against 47 KB for the authoring prompt. The topic context goes at the end of the one system message (several local chat templates reject a second system message).
+- In comment mode the tray's message is sent after the picks; in Ask mode the message says it is a question. Copy still copies exactly what it did before.
+- Phones: the open chat is a sheet above the tray, which becomes a one-line message bar; its "N picked" button is the Picks tab and turns Pick mode on.
+- Code blocks in replies are highlighted only when they are openui-lang (`oui` or unlabelled `name = Component(`); other languages show as plain monospace.
+- Tests: `tests/unit/core/learning-engine/composition/oui/assistant-prompt.test.ts`; `assistant/{context,thread,markdown,assistant-dock}.test.*` (send and clear, remote notice accepted and declined, no profile, failure and Retry); `tests/e2e/assistant.spec.ts` against the mock server (Viewer: pick, send, follow-up, thread after reload; Studio: the request carries unsaved edits). The existing Studio e2e tests still pass.
 
 ## Open Questions
 
