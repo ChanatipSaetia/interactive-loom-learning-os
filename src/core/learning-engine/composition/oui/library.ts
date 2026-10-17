@@ -154,7 +154,7 @@ export function getLoomOUIJSONSchema(): LibraryJSONSchema {
 }
 
 /** Component description followed by one `- prop: description` line per prop, in signature order. */
-function promptDescription(component: LoomOUIComponent): string {
+export function promptDescription(component: LoomOUIComponent): string {
   const props = Object.keys((component.definition.props as unknown as { shape: Record<string, unknown> }).shape)
   const lines = props.filter((p) => component.fields[p]).map((p) => `  - ${p}: ${component.fields[p]}`)
   return [component.description, ...lines].join('\n')

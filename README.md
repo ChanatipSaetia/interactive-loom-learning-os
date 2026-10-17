@@ -14,6 +14,7 @@ An interactive learning platform that dynamically renders structured topic cours
 - **Formula Sandbox** — Parametric system dynamic simulation dashboards calculating math formulas dynamically via sliders.
 - **Zero-Compile Content (OKF Pipeline)** — Load topics dynamically at runtime using simple Markdown and YAML catalog bundles. No React rebuild required!
 - **Standalone CDN Library** — Package any curriculum layout into a single HTML/JSON file running via UMD CDN script tags.
+- **AI Assistant in Loom Studio & Viewer** — Pick parts of a topic and ask any OpenAI-compatible model about them (Ollama, LM Studio, llama.cpp, OpenRouter, …), called straight from the browser with no backend. In Studio the model proposes edits as diffs you apply to the editor and save. Setup guide: the **Your own model** tab of `create.html`; design: [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 
 ---
 

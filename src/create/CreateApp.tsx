@@ -4,11 +4,13 @@
  * or share the published authoring prompt, set up a Claude Project, Gemini
  * Gem or Copilot agent, ask, then open the answer in Loom Viewer), or with a
  * coding agent such as Claude Code or opencode (install the Loom skill, ask,
- * open the topic folder it writes). `?ai=gemini` / `?ai=copilot` / `?ai=agent`
- * preselects the tab.
+ * open the topic folder it writes), or with any model through the AI
+ * assistant built into Loom Viewer and Loom Studio (Ollama, LM Studio,
+ * llama.cpp, OpenRouter: connect, pick, send). `?ai=gemini` / `?ai=copilot` /
+ * `?ai=agent` / `?ai=model` preselects the tab.
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Copy, Download, ExternalLink, Eye, Share2, Sparkles } from 'lucide-react'
+import { Check, Copy, Download, ExternalLink, Eye, PenLine, Share2, Sparkles } from 'lucide-react'
 import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
@@ -21,30 +23,35 @@ import {
   LOOM_PROMPT_PATH,
   LOOM_SKILL_NAME,
   LOOM_SKILL_PATH,
+  LOCAL_MODEL_NOTE,
+  MODEL_SERVERS,
   SKILL_TOOLS,
   skillInstallCommand,
   skillInstallPrompt,
   assistantInstructions,
   type AssistantGuide,
   type AssistantId,
+  type ModelServerGuide,
 } from '../core/learning-engine/composition/oui/llm-guide'
 import '../core/delivery/web-app-shell/layout.css'
 
 const BASE = import.meta.env.BASE_URL ?? '/'
 const PROMPT_URL = `${BASE}${LOOM_PROMPT_PATH}`
 const VIEWER_URL = `${BASE}viewer.html`
+const STUDIO_URL = `${BASE}studio.html`
 const ASSISTANT_KEY = 'loom-create-assistant'
 
-/** A guide tab: one of the chat assistants, or coding agents with the Loom skill. */
-type GuideId = AssistantId | 'agent'
+/** A guide tab: one of the chat assistants, coding agents with the Loom skill, or your own model in Viewer and Studio. */
+type GuideId = AssistantId | 'agent' | 'model'
 
 const TABS: Array<{ id: GuideId; label: string }> = [
   ...Object.values(ASSISTANTS).map(({ id, label }) => ({ id, label })),
   { id: 'agent', label: 'Claude Code / opencode' },
+  { id: 'model', label: 'Your own model' },
 ]
 
 function isGuide(value: unknown): value is GuideId {
-  return value === 'agent' || (typeof value === 'string' && Object.prototype.hasOwnProperty.call(ASSISTANTS, value))
+  return value === 'agent' || value === 'model' || (typeof value === 'string' && Object.prototype.hasOwnProperty.call(ASSISTANTS, value))
 }
 
 /** The chosen tab: `?ai=` wins, then the last choice on this device, else Claude. */
@@ -137,8 +144,8 @@ export function CreateApp() {
   const [shareable] = useState(canShareFiles)
   const [notice, setNotice] = useState('')
   const [guideId, setGuideId] = useState<GuideId>(initialGuide)
-  /** The chat assistant, or null on the coding-agent tab. */
-  const ai = guideId === 'agent' ? null : ASSISTANTS[guideId]
+  /** The chat assistant, or null on the coding-agent and own-model tabs. */
+  const ai = guideId === 'agent' || guideId === 'model' ? null : ASSISTANTS[guideId]
   const promptFileName = ai?.promptFileName ?? LOOM_PROMPT_FILE_NAME
 
   const chooseGuide = (id: GuideId) => {
@@ -179,11 +186,15 @@ export function CreateApp() {
 
         <main className="create-main">
           <div className="create-hero">
-            <h1>Create a Loom topic with {ai ? ai.label : 'Claude Code or opencode'}</h1>
+            <h1>
+              {guideId === 'model' ? 'Improve a Loom topic with your own model' : `Create a Loom topic with ${ai ? ai.label : 'Claude Code or opencode'}`}
+            </h1>
             <p>
               {ai
                 ? `Give ${ai.label} the Loom prompt once, ask for any topic, and open the answer in Loom Viewer as an interactive lesson.`
-                : 'Install the Loom skill once, ask your coding agent for any topic, and open the topic folder it writes in Loom Viewer as an interactive lesson.'}
+                : guideId === 'model'
+                  ? 'Connect Loom Viewer or Loom Studio to a model on your computer or to OpenRouter, pick parts of a topic and ask about them. In Studio the model proposes edits you apply with one click.'
+                  : 'Install the Loom skill once, ask your coding agent for any topic, and open the topic folder it writes in Loom Viewer as an interactive lesson.'}
             </p>
             <div className="create-switch" role="radiogroup" aria-label="AI assistant">
               {TABS.map((tab) => (
@@ -212,7 +223,7 @@ export function CreateApp() {
               share={share}
               notice={notice}
             />
-          ) : <AgentGuide />}
+          ) : guideId === 'model' ? <ModelGuide /> : <AgentGuide />}
         </main>
       </div>
     </UISystemProvider>
@@ -390,6 +401,103 @@ function AgentGuide() {
           (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). The agent edits the files; open the folder in Viewer again.
         </p>
         <p className="create-tip">When the Loom prompt is updated, run the install steps again to update the skill.</p>
+      </Step>
+    </>
+  )
+}
+
+const SERVER_KEY = 'loom-create-model-server'
+
+function initialServer(): ModelServerGuide {
+  try {
+    const saved = localStorage.getItem(SERVER_KEY)
+    const found = MODEL_SERVERS.find((server) => server.id === saved)
+    if (found) return found
+  } catch {
+    // Storage unavailable: the first server.
+  }
+  return MODEL_SERVERS[0]
+}
+
+/** The AI assistant built into Viewer and Studio, with a model you run or choose (grill-log-ai-assistant.md). */
+function ModelGuide() {
+  const [server, setServer] = useState(initialServer)
+  const origin = window.location.origin
+  const choose = (next: ModelServerGuide) => {
+    setServer(next)
+    try {
+      localStorage.setItem(SERVER_KEY, next.id)
+    } catch {
+      // Not remembered.
+    }
+  }
+  const command = server.command?.(origin)
+  return (
+    <>
+      <Step n={1} title="Start a model">
+        <p>Any server with an OpenAI-compatible API works. Pick yours:</p>
+        <div className="create-switch create-switch--small" role="radiogroup" aria-label="Model server">
+          {MODEL_SERVERS.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              role="radio"
+              aria-checked={option.id === server.id}
+              className={option.id === server.id ? 'is-active' : ''}
+              onClick={() => choose(option)}
+              data-testid={`create-server-${option.id}`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <ol className="create-list" data-testid="create-server-steps">
+          {server.steps(origin).map((step) => <li key={step}>{step}</li>)}
+        </ol>
+        {command && (
+          <div className="create-command">
+            <pre data-testid="create-server-command">{command}</pre>
+            <CopyButton text={command} label="Copy" testId="create-copy-server-command" />
+          </div>
+        )}
+        {server.local && <p className="create-tip">{LOCAL_MODEL_NOTE}</p>}
+      </Step>
+
+      <Step n={2} title="Connect Viewer or Studio">
+        <p>
+          Open a topic in Loom Viewer (or a topic folder in Loom Studio) and press <strong>AI</strong> in the header. Choose{' '}
+          <strong>{server.label}</strong>; the base URL is filled in (<code>{server.baseUrl}</code>)
+          {server.needsKey ? ', paste your API key' : ''}. Press <strong>Test connection</strong>, pick a model, then{' '}
+          <strong>Save and use</strong>.
+        </p>
+        <p className="create-tip">
+          The page calls the model directly; there is no Loom server in between. Settings stay in this browser. If the test fails, it says
+          why and what to change.
+        </p>
+        <div className="create-actions">
+          <a className="create-button create-button--primary" href={VIEWER_URL} data-testid="create-model-viewer"><Eye size={16} /> Open Loom Viewer</a>
+          <a className="create-button" href={STUDIO_URL} data-testid="create-model-studio"><PenLine size={16} /> Open Loom Studio</a>
+        </div>
+      </Step>
+
+      <Step n={3} title="Pick and ask">
+        <p>
+          Press <strong>Pick</strong> and click the parts you mean (a quiz question, a flowchart step, a whole section), add comments if you
+          like, write your message in the tray and press <strong>Send to AI</strong> (Ctrl/Cmd+Enter). The model sees the source of what you
+          picked and the topic&apos;s errors; follow-ups keep the conversation.
+        </p>
+      </Step>
+
+      <Step n={4} title="Apply edits in Studio">
+        <p>
+          In Studio, ask for changes (<em>"make this explanation one sentence"</em>, <em>"add a quiz section about this"</em>). Each proposed
+          change shows as a diff with <strong>Apply</strong> and <strong>Reject</strong>; Studio checks the edits first and asks the model
+          again once if they would break the topic. Applied edits change the editor only: press <strong>Save</strong> to write the files.
+        </p>
+        <p className="create-tip">
+          Small local models do best with a few picks at a time. For large-context models (e.g. through OpenRouter), turn on{' '}
+          <strong>Full reference</strong> in the connection settings so they get the whole Loom authoring prompt.
+        </p>
       </Step>
     </>
   )

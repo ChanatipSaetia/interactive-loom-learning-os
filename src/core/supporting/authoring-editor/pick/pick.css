@@ -37,10 +37,11 @@
 .pick-tray {
   position: fixed;
   z-index: 999;
-  left: 50%;
+  /* Centred in the space left of the AI assistant drawer, when it is open. */
+  left: calc((100vw - var(--ai-panel-width, 0px)) / 2);
   bottom: 12px;
   transform: translateX(-50%);
-  width: min(760px, calc(100vw - 32px));
+  width: min(760px, calc(100vw - var(--ai-panel-width, 0px) - 32px));
   max-height: 45vh;
   display: flex;
   flex-direction: column;
@@ -143,6 +144,14 @@
   font: inherit;
 }
 .pick-tray-question { margin-top: 10px; }
+
+/* AI assistant (grill-log-ai-assistant.md, decision 60): the message box and the chat button. */
+.pick-tray-compose { padding: 0 12px 10px; }
+.pick-tray:not(.is-collapsed) .pick-tray-compose { padding-top: 2px; }
+.pick-tray-compose .pick-tray-composer { margin-top: 8px; max-height: 30vh; }
+.pick-tray.is-narrow .pick-tray-compose { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+.pick-tray.is-narrow.is-chatting.is-collapsed .pick-tray-head { padding-bottom: 0; }
+.pick-chat-button { position: relative; }
 
 
 /* Studio: what the code line under the pointer draws (decision 46). */
