@@ -82,6 +82,31 @@ describe('Loom Studio', () => {
     localStorage.clear()
   })
 
+  it('shows one pane at a time on phones, with the secondary actions in the ⋯ menu', async () => {
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) => ({ matches: query.includes('max-width: 640px'), media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, onchange: null, dispatchEvent: () => false })) as typeof window.matchMedia
+    try {
+      await renderWorkspace()
+      const body = () => document.querySelector('.studio-body')!
+      expect(body().getAttribute('data-pane')).toBe('edit')
+      expect(screen.queryByTestId('studio-export-zip')).toBeNull()
+      fireEvent.click(screen.getByTestId('studio-more'))
+      expect(screen.getByTestId('studio-export-zip')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByTestId('studio-pane-sections'))
+      expect(body().getAttribute('data-pane')).toBe('sections')
+      // Choosing a section shows its preview.
+      fireEvent.click(screen.getByTestId('studio-section-quiz').querySelector('.studio-section-main')!)
+      expect(body().getAttribute('data-pane')).toBe('preview')
+      // Pick mode brings up the preview too.
+      fireEvent.click(screen.getByTestId('studio-pane-edit'))
+      fireEvent.click(screen.getByTestId('pick-toggle'))
+      expect(body().getAttribute('data-pane')).toBe('preview')
+    } finally {
+      window.matchMedia = original
+    }
+  })
+
   it('tracks unsaved edits and saves with Ctrl+S', async () => {
     const { folder, workspace } = await renderWorkspace()
     expect(screen.getByTestId('studio-save').textContent).toContain('Saved')

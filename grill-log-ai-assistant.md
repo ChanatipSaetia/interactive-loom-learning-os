@@ -136,6 +136,7 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 | Header Pick buttons removed | `src/viewer/ViewerApp.tsx`, `src/studio/components/StudioWorkspace.tsx` |
 | Modals sit above the bar and the panel (`z-[1100]`) | `src/core/ui-system/UIComponentRegistryContract.tsx` |
 
+- **Studio on phones (≤640px):** the header is one row (topic title, AI, Save, ⋯); the ⋯ menu holds the app switcher, theme, Import, Export file, Export zip, Refresh and Open folder. A **Sections · Edit · Preview** switch shows one pane at a time (`data-pane` on `.studio-body`); choosing a section shows its preview, Topic settings shows its form, and ⌖ brings up the preview. The panes end where the message bar starts. Desktop is unchanged (`src/studio/components/StudioWorkspace.tsx`, `src/studio/studio.css`; test in `tests/unit/studio/studio.test.tsx`).
 - Tests: `pick/message-bar.test.tsx` (⌖, Copy with Enter, Send with Answer only and a comment, Stop), `pick-report.test.ts` (message), Viewer and Studio pick tests on chips and the chip editor, `assistant-dock.test.tsx` and `tests/e2e/assistant.spec.ts` on the bar's text box.
 
 ## Open Questions

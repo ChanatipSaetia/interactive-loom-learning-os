@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
-import { FileArchive, FileCode, FolderOpen, RefreshCw, Save, Sparkles, Upload, X } from 'lucide-react'
+import { Code2, Eye, FileArchive, FileCode, FolderOpen, ListTree, MoreHorizontal, RefreshCw, Save, Sparkles, Upload, X } from 'lucide-react'
 import { HUDProvider } from '../../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider } from '../../core/supporting/learner-progress'
 import {
@@ -9,7 +9,7 @@ import {
   createTopicZip,
   readTopicArchive,
 } from '../../core/supporting/authoring-editor/workspace'
-import { PickMode, sourceResolver, statementOfAnchor, type PickModeApi, type PickTarget } from '../../core/supporting/authoring-editor/pick'
+import { PickMode, sourceResolver, statementOfAnchor, useNarrow, type PickModeApi, type PickTarget } from '../../core/supporting/authoring-editor/pick'
 import {
   AssistantDock,
   AssistantToggle,
@@ -30,6 +30,9 @@ import { TopicMetaForm } from './TopicMetaForm'
 
 /** Studio always edits a folder on disk. */
 const FOLDER_SOURCE = { kind: 'folder' } as const
+
+/** On phones one pane shows at a time. */
+type PhonePane = 'sections' | 'edit' | 'preview'
 
 interface Props {
   workspace: TopicWorkspace
@@ -58,6 +61,10 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
   )
   const [picking, setPicking] = useState(false)
   const pickApi = useRef<PickModeApi | null>(null)
+  const narrow = useNarrow()
+  const [pane, setPane] = useState<PhonePane>('edit')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
   // A pick in the preview shows its statement in the code editor (decision 46).
   const [reveal, setReveal] = useState<{ file: string; statement: string } | null>(null)
   const onPick = useCallback((target: PickTarget) => setReveal({ file: target.file, statement: statementOfAnchor(target.anchor) }), [])
@@ -227,12 +234,63 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
 
   const section = snap.sections.find((s) => s.name === selected)
 
+  // Phones: choosing a section shows its preview; Topic settings shows the form.
+  const select = useCallback((name: string) => {
+    setSelected(name)
+    setPane(name === TOPIC_ITEM ? 'edit' : 'preview')
+  }, [])
+  // Phones: picks are made in the preview, so Pick mode brings it up.
+  useEffect(() => {
+    if (narrow && picking && section) setPane('preview')
+  }, [narrow, picking, section])
+  const phonePane: PhonePane = pane === 'preview' && !section ? 'edit' : pane
+
+  // The ⋯ menu closes on a click elsewhere.
+  useEffect(() => {
+    if (!menuOpen) return
+    const onDown = (e: PointerEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false)
+    }
+    window.addEventListener('pointerdown', onDown)
+    return () => window.removeEventListener('pointerdown', onDown)
+  }, [menuOpen])
+
+  // On phones these go in the ⋯ menu.
+  const secondary = (
+    <>
+      <LoomToolsNav current="studio" newTab />
+      <ThemeToggle />
+      <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.oui file or a .zip" data-testid="studio-import">
+        <Upload size={15} /> Import
+      </button>
+      <button type="button" className="studio-button" onClick={exportSource} title="Export all files as a single .loom.oui file" data-testid="studio-export-file">
+        <FileCode size={15} /> Export file
+      </button>
+      <button type="button" className="studio-button" onClick={exportZip} title="Export the topic folder as a .zip" data-testid="studio-export-zip">
+        <FileArchive size={15} /> Export zip
+      </button>
+      <button
+        type="button"
+        className="studio-button"
+        onClick={refresh}
+        disabled={refreshing}
+        title="Reload the topic from disk to pick up changes made outside Studio (e.g. by an AI agent)"
+        data-testid="studio-refresh"
+      >
+        <RefreshCw size={15} className={refreshing ? 'studio-spin' : undefined} /> Refresh
+      </button>
+      <button type="button" className="studio-button" onClick={onOpenFolder}>
+        <FolderOpen size={15} /> Open folder
+      </button>
+    </>
+  )
+
   return (
     <ProgressProvider>
       <HUDProvider>
         <div className="studio-shell" data-testid="studio-workspace">
           <header className="studio-header">
-            <span className="topnav-title studio-brand"><Sparkles size={16} /> Loom&nbsp;Studio</span>
+            <span className="topnav-title studio-brand"><Sparkles size={16} /> <span className="studio-brand-label">Loom&nbsp;Studio</span></span>
             <div className="studio-header-topic">
               <span className="studio-header-title">{snap.metadata.title}</span>
               <span className="studio-header-folder">{snap.topicId}/</span>
@@ -243,12 +301,8 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
                   {status.text}
                 </span>
               )}
-              <LoomToolsNav current="studio" newTab />
-              <ThemeToggle />
+              {!narrow && secondary}
               <AssistantToggle assistant={assistant} className="studio-button" />
-              <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.oui file or a .zip" data-testid="studio-import">
-                <Upload size={15} /> Import
-              </button>
               <input
                 ref={importInput}
                 type="file"
@@ -257,25 +311,6 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
                 onChange={importFile}
                 data-testid="studio-import-input"
               />
-              <button type="button" className="studio-button" onClick={exportSource} title="Export all files as a single .loom.oui file" data-testid="studio-export-file">
-                <FileCode size={15} /> Export file
-              </button>
-              <button type="button" className="studio-button" onClick={exportZip} title="Export the topic folder as a .zip" data-testid="studio-export-zip">
-                <FileArchive size={15} /> Export zip
-              </button>
-              <button
-                type="button"
-                className="studio-button"
-                onClick={refresh}
-                disabled={refreshing}
-                title="Reload the topic from disk to pick up changes made outside Studio (e.g. by an AI agent)"
-                data-testid="studio-refresh"
-              >
-                <RefreshCw size={15} className={refreshing ? 'studio-spin' : undefined} /> Refresh
-              </button>
-              <button type="button" className="studio-button" onClick={onOpenFolder}>
-                <FolderOpen size={15} /> Open folder
-              </button>
               <button
                 type="button"
                 className="studio-button studio-button--primary"
@@ -286,6 +321,19 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
               >
                 <Save size={15} /> {saving ? 'Saving…' : dirtyCount ? `Save (${dirtyCount})` : 'Saved'}
               </button>
+              {narrow && (
+                <div className="studio-menu-wrap" ref={menuRef}>
+                  <button type="button" className="studio-button studio-button--icon" onClick={() => setMenuOpen((o) => !o)} aria-haspopup="menu" aria-expanded={menuOpen} aria-label="More" data-testid="studio-more">
+                    <MoreHorizontal size={16} />
+                  </button>
+                  {menuOpen && (
+                    // A choice closes the menu (the clicks bubble up here).
+                    <div className="studio-menu" role="menu" onClick={(e) => (e.target as HTMLElement).closest('button, a') && setMenuOpen(false)}>
+                      {secondary}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </header>
 
@@ -298,8 +346,31 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
             </div>
           )}
 
-          <div className="studio-body">
-            <SectionList workspace={workspace} snapshot={snap} selected={selected} onSelect={setSelected} run={run} />
+          {narrow && (
+            <div className="studio-panes" role="tablist" aria-label="Show">
+              {([
+                ['sections', ListTree, 'Sections'],
+                ['edit', Code2, section ? 'Edit' : 'Settings'],
+                ['preview', Eye, 'Preview'],
+              ] as const).map(([id, Icon, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={phonePane === id}
+                  className={phonePane === id ? 'is-active' : ''}
+                  disabled={id === 'preview' && !section}
+                  onClick={() => setPane(id)}
+                  data-testid={`studio-pane-${id}`}
+                >
+                  <Icon size={14} /> {label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="studio-body" data-pane={narrow ? phonePane : undefined}>
+            <SectionList workspace={workspace} snapshot={snap} selected={selected} onSelect={select} run={run} />
             <main className="studio-main">
               {selected === TOPIC_ITEM || !section
                 ? <TopicMetaForm workspace={workspace} metadata={snap.metadata} />
