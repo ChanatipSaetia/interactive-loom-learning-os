@@ -60,7 +60,7 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 | Settings dialog | `assistant/AssistantSettingsDialog.tsx`, `assistant.css` |
 | Mock OpenAI-compatible server (`--no-cors` mimics a server that refuses the page) | `tests/e2e/fixtures/mock-openai-server.mjs` |
 
-- Plain http to a host other than `localhost`, `127.x` or `[::1]` from an https page is refused before anything is sent (`mixed-content`); browsers report every other unreachable case as the same `TypeError`, so `network` hints list the likely causes per preset.
+- Plain http from an https page (the published site) is refused before anything is sent (`mixed-content`) unless the host is loopback or on the local network: private IP literals (10/8, 172.16/12, 192.168/16, 169.254/16, fc00::/7, fe80::/10) and `.local` names. Those requests carry `targetAddressSpace: "local"`, so Chrome's Local Network Access asks the person for permission instead of blocking them as mixed content; when such a request fails anyway the error is `local-network`, whose hint names the permission, the browsers that do not have it, and the server's own network and CORS settings. Browsers report every other unreachable case as the same `TypeError`, so `network` hints list the likely causes per preset.
 - Tests: `tests/unit/core/supporting/authoring-editor/assistant/{client,profiles,settings-dialog}.test.*`. Checked in Chromium against the mock: streaming, Stop, a server without CORS, a refused key and a wrong path.
 
 ## Phase 2 — Implementation Notes

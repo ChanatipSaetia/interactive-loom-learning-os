@@ -8,6 +8,11 @@
  * missing `usage` and a missing `[DONE]`; a server that ignores `stream`
  * and answers with one JSON body works too. When streaming fails before any
  * text arrives, the request is sent once more with `stream: false`.
+ *
+ * Plain http from an https page is refused before sending, except to
+ * loopback and private-network addresses (`192.168.x.x`, `*.local`, …):
+ * Chrome lets those through after the person allows local network access,
+ * and the request says it targets the local network (`targetAddressSpace`).
  */
 
 export interface AssistantConnection {
@@ -25,6 +30,7 @@ export interface ChatMessage {
 export type AssistantFailureKind =
   | 'invalid-url'
   | 'mixed-content'
+  | 'local-network'
   | 'network'
   | 'auth'
   | 'not-found'
@@ -57,9 +63,26 @@ export interface ClientEnvironment {
 
 const LOOPBACK = /^(localhost|127\.\d+\.\d+\.\d+|\[::1\])$/
 
-/** `localhost`, `127.x.x.x` and `[::1]`: the only plain-http hosts an https page may call. */
+/** `localhost`, `127.x.x.x` and `[::1]`: plain-http hosts every browser lets an https page call. */
 export function isLoopbackHost(hostname: string): boolean {
   return LOOPBACK.test(hostname.toLowerCase())
+}
+
+/**
+ * A private-network address written as an IP literal (10/8, 172.16/12,
+ * 192.168/16, 169.254/16, IPv6 fc00::/7 and fe80::/10) or a `.local` name:
+ * the hosts Chrome's Local Network Access lets an https page call over http,
+ * with the person's permission.
+ */
+export function isLocalNetworkHost(hostname: string): boolean {
+  const host = hostname.toLowerCase()
+  if (host.endsWith('.local')) return true
+  const v4 = /^(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}$/.exec(host)
+  if (v4) {
+    const [a, b] = [Number(v4[1]), Number(v4[2])]
+    return a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254)
+  }
+  return /^\[(f[cd][0-9a-f]{0,2}|fe[89ab][0-9a-f]?):/.test(host)
 }
 
 /** Base URL without trailing slashes, or null when it is not an http(s) URL. */
@@ -76,16 +99,26 @@ export function normalizeBaseUrl(raw: string): string | null {
 
 const pageUrlOf = (env: ClientEnvironment) => env.pageUrl ?? (typeof location !== 'undefined' ? location.href : 'http://localhost/')
 
-/** The endpoint URL, or a thrown `invalid-url` / `mixed-content` error before anything is sent. */
-function endpoint(connection: AssistantConnection, path: string, env: ClientEnvironment): string {
+interface Endpoint {
+  url: string
+  /** The server is on the local network (Local Network Access). */
+  localNetwork: boolean
+  /** Plain http to the local network from an https page: only browsers with Local Network Access allow it. */
+  insecureLocal: boolean
+}
+
+/** The endpoint, or a thrown `invalid-url` / `mixed-content` error before anything is sent. */
+function endpoint(connection: AssistantConnection, path: string, env: ClientEnvironment): Endpoint {
   const base = normalizeBaseUrl(connection.baseUrl)
   if (!base) throw new AssistantError('invalid-url', `"${connection.baseUrl}" is not an http(s) URL.`)
   const target = new URL(base)
   const page = new URL(pageUrlOf(env))
-  if (page.protocol === 'https:' && target.protocol === 'http:' && !isLoopbackHost(target.hostname)) {
+  const localNetwork = isLocalNetworkHost(target.hostname)
+  const insecure = page.protocol === 'https:' && target.protocol === 'http:' && !isLoopbackHost(target.hostname)
+  if (insecure && !localNetwork) {
     throw new AssistantError('mixed-content', `The browser blocks http://${target.host} from an https page.`)
   }
-  return `${base}${path}`
+  return { url: `${base}${path}`, localNetwork, insecureLocal: insecure }
 }
 
 function requestHeaders(connection: AssistantConnection, json: boolean): Record<string, string> {
@@ -101,12 +134,19 @@ function requestHeaders(connection: AssistantConnection, json: boolean): Record<
 
 const isAbort = (error: unknown) => error instanceof DOMException && error.name === 'AbortError'
 
-async function send(url: string, init: RequestInit, env: ClientEnvironment): Promise<Response> {
+async function send(target: Endpoint, init: RequestInit, env: ClientEnvironment): Promise<Response> {
   const doFetch = env.fetch ?? fetch
+  const url = target.url
+  // Tells Chrome the request is meant for the local network, so it asks for
+  // permission instead of blocking it as mixed content. Other browsers ignore it.
+  const request = target.localNetwork ? ({ ...init, targetAddressSpace: 'local' } as RequestInit) : init
   try {
-    return await doFetch(url, init)
+    return await doFetch(url, request)
   } catch (error) {
     if (isAbort(error) || init.signal?.aborted) throw new AssistantError('aborted', 'The request was stopped.')
+    if (target.insecureLocal) {
+      throw new AssistantError('local-network', `Could not reach ${new URL(url).host} over http from this https page.`)
+    }
     // Browsers report CORS refusals, stopped servers and blocked requests all
     // as the same TypeError; the hint lists the likely causes.
     throw new AssistantError('network', `Could not reach ${new URL(url).host}.`)
@@ -144,8 +184,8 @@ export async function listModels(
   connection: AssistantConnection,
   options: { signal?: AbortSignal } & ClientEnvironment = {},
 ): Promise<string[]> {
-  const url = endpoint(connection, '/models', options)
-  const response = await send(url, { headers: requestHeaders(connection, false), signal: options.signal }, options)
+  const target = endpoint(connection, '/models', options)
+  const response = await send(target, { headers: requestHeaders(connection, false), signal: options.signal }, options)
   if (!response.ok) throw await failure(response)
   let data: unknown
   try {
@@ -306,9 +346,9 @@ async function chatOnce(
   stream: boolean,
   env: ClientEnvironment,
 ): Promise<ChatResult> {
-  const url = endpoint(connection, '/chat/completions', env)
+  const target = endpoint(connection, '/chat/completions', env)
   const response = await send(
-    url,
+    target,
     {
       method: 'POST',
       headers: requestHeaders(connection, true),
