@@ -1,6 +1,6 @@
 # Grill Log — AI Assistant for Pick in Studio and Viewer
 
-Status: **Phases 1–3 done (connection, chat, Studio edits); phase 4 (docs) open**
+Status: **All phases complete (1–4)**
 
 ## Goal
 
@@ -98,6 +98,17 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 - Removing a section from topic.oui is refused when applied ("Remove sections with Delete in the section list"): Delete stays the one way to remove files. Blocks can be applied even when the dry run found problems; the card and the bar say what is wrong.
 - In Viewer, `oui-edit` blocks (which its prompt never asks for) render as highlighted code.
 - Tests: `assistant/edits.test.ts`; Studio cases in `assistant-dock.test.tsx` (apply, reject, the automatic retry and what it sends); `thread.test.ts` (edit outcomes in the history); `workspace.test.ts` (buffered insert and reorder); `tests/e2e/assistant.spec.ts` (an applied edit is saved; Apply all adds a section and its SectionRef, written on Save).
+
+## Phase 4 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Server setup wording for the Create page (`MODEL_SERVERS`: steps worded with the page's origin, start commands; `LOCAL_MODEL_NOTE` on https pages and network addresses) | `composition/oui/llm-guide.ts` |
+| **Your own model** tab (`?ai=model`): start a model (Ollama, LM Studio, llama.cpp, OpenRouter), connect Viewer or Studio, pick and ask, apply edits in Studio | `src/create/CreateApp.tsx` (`ModelGuide`), `create.css` |
+| README feature line; AGENTS.md section on the assistant | `README.md`, `AGENTS.md` |
+
+- The authoring prompt and the skill did not change, so `npm run oui:schema` rewrites the published files unchanged (checked). The assistant's own prompt is built at runtime and is not published.
+- Tests: `tests/unit/create/create.test.tsx` (the tab, the Ollama command with this origin, switching servers, and `MODEL_SERVERS` base URLs and keys matching the assistant presets).
 
 ## Open Questions
 

@@ -153,3 +153,83 @@ export const EXAMPLE_REQUESTS = [
   'Make a Loom topic that teaches how a sourdough starter works, for home bakers.',
   'Turn these notes into a Loom topic with a flowchart and a quiz: <paste your notes>',
 ]
+
+// --- Built-in AI assistant (grill-log-ai-assistant.md) --------------------------
+
+/**
+ * Model servers for the AI assistant in Loom Viewer and Loom Studio, which
+ * call an OpenAI-compatible API straight from the browser. Base URLs match
+ * the assistant's presets (`authoring-editor/assistant/presets.ts`, checked
+ * by unit tests); `origin` is the page the person opens Viewer or Studio on.
+ */
+export interface ModelServerGuide {
+  /** The assistant preset with the same base URL. */
+  id: 'ollama' | 'lmstudio' | 'llamacpp' | 'openrouter'
+  label: string
+  baseUrl: string
+  /** Runs on the person's own computer (or network). */
+  local: boolean
+  needsKey: boolean
+  /** Setup steps, worded for this page's origin. */
+  steps(origin: string): string[]
+  /** Terminal command to start the server, if it has one. */
+  command?(origin: string): string
+}
+
+export const MODEL_SERVERS: ModelServerGuide[] = [
+  {
+    id: 'ollama',
+    label: 'Ollama',
+    baseUrl: 'http://localhost:11434/v1',
+    local: true,
+    needsKey: false,
+    steps: (origin) => [
+      'Install Ollama from ollama.com and pull a model, for example: ollama pull qwen3:8b',
+      `Ollama only answers pages on localhost unless told otherwise. Quit it, then start it with OLLAMA_ORIGINS set to ${origin} (command below). On macOS with the app: launchctl setenv OLLAMA_ORIGINS "${origin}", then restart Ollama.`,
+      'To reach Ollama from another device on your network, also set OLLAMA_HOST=0.0.0.0 and use http://<computer-ip>:11434/v1 as the base URL.',
+    ],
+    command: (origin) => `OLLAMA_ORIGINS=${origin} ollama serve`,
+  },
+  {
+    id: 'lmstudio',
+    label: 'LM Studio',
+    baseUrl: 'http://localhost:1234/v1',
+    local: true,
+    needsKey: false,
+    steps: () => [
+      'Install LM Studio from lmstudio.ai and download a model.',
+      'Open the Developer tab, load the model and start the server.',
+      'In the server settings turn on "Enable CORS" (and "Serve on Local Network" to reach it from another device).',
+    ],
+  },
+  {
+    id: 'llamacpp',
+    label: 'llama.cpp',
+    baseUrl: 'http://localhost:8080/v1',
+    local: true,
+    needsKey: false,
+    steps: () => [
+      'Start llama-server with a GGUF model (command below). It accepts requests from web pages by default.',
+      'To reach it from another device on your network, add --host 0.0.0.0 and use http://<computer-ip>:8080/v1 as the base URL.',
+    ],
+    command: () => 'llama-server -m model.gguf --port 8080',
+  },
+  {
+    id: 'openrouter',
+    label: 'OpenRouter',
+    baseUrl: 'https://openrouter.ai/api/v1',
+    local: false,
+    needsKey: true,
+    steps: () => [
+      'Create an API key at openrouter.ai/keys.',
+      'Paste it into the API key field. It stays in this browser: forgotten when the tab closes unless you tick "Remember key on this device", and sent only to openrouter.ai.',
+    ],
+  },
+]
+
+/**
+ * Why a model on your own network may not answer the published (https)
+ * pages, and what to do instead.
+ */
+export const LOCAL_MODEL_NOTE =
+  'The published Viewer and Studio are served over https, so browsers block plain http to other addresses on your network (http://localhost still works). For a model on another computer, run Studio on your own machine with npm run studio, or give the server an https address (for example a tunnel).'

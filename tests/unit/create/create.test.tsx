@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { CreateApp } from '../../../src/create/CreateApp'
-import { LOOM_PROMPT_PATH, assistantInstructions, skillInstallCommand, skillInstallPrompt } from '../../../src/core/learning-engine/composition/oui/llm-guide'
+import { LOOM_PROMPT_PATH, MODEL_SERVERS, assistantInstructions, skillInstallCommand, skillInstallPrompt } from '../../../src/core/learning-engine/composition/oui/llm-guide'
+import { presetOf } from '../../../src/core/supporting/authoring-editor/assistant/presets'
 
 const PROMPT = '# Loom prompt\nYou write learning topics…\n'
 
@@ -121,5 +122,25 @@ describe('Create with AI page', () => {
     render(<CreateApp />)
     expect((await screen.findByRole('alert')).textContent).toMatch(/Could not load the prompt/)
     expect(screen.getByTestId('create-copy-prompt')).toBeDisabled()
+  })
+
+  it('guides your own model through the AI assistant in Viewer and Studio', () => {
+    window.history.replaceState(null, '', '/?ai=model')
+    render(<CreateApp />)
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Improve a Loom topic with your own model')
+    expect(screen.getByTestId('create-server-command')).toHaveTextContent(`OLLAMA_ORIGINS=${window.location.origin} ollama serve`)
+    expect(screen.getByTestId('create-model-studio')).toHaveAttribute('href', expect.stringMatching(/studio\.html$/))
+
+    fireEvent.click(screen.getByTestId('create-server-lmstudio'))
+    expect(screen.getByTestId('create-server-steps')).toHaveTextContent('Enable CORS')
+    expect(screen.queryByTestId('create-server-command')).toBeNull()
+    expect(localStorage.getItem('loom-create-model-server')).toBe('lmstudio')
+  })
+
+  it('lists the same base URLs as the assistant presets', () => {
+    for (const server of MODEL_SERVERS) {
+      expect(presetOf(server.id).baseUrl).toBe(server.baseUrl)
+      expect(presetOf(server.id).needsKey).toBe(server.needsKey)
+    }
   })
 })
