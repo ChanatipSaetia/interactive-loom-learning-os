@@ -9,10 +9,12 @@
  * and answers with one JSON body works too. When streaming fails before any
  * text arrives, the request is sent once more with `stream: false`.
  *
- * Plain http from an https page is refused before sending, except to
- * loopback and private-network addresses (`192.168.x.x`, `*.local`, …):
- * Chrome lets those through after the person allows local network access,
- * and the request says it targets the local network (`targetAddressSpace`).
+ * Plain http from an https page is refused before sending only for public
+ * IP literals. Loopback, private-network addresses (`192.168.x.x`,
+ * Tailscale's `100.64.0.0/10`, `*.local`, …) and other host names are sent
+ * marked as local-network requests (`targetAddressSpace: "local"`): Chrome
+ * asks the person to allow local network access instead of blocking them as
+ * mixed content, and fails a name that resolves to a public address.
  */
 
 export interface AssistantConnection {
@@ -68,21 +70,27 @@ export function isLoopbackHost(hostname: string): boolean {
   return LOOPBACK.test(hostname.toLowerCase())
 }
 
+const IPV4 = /^(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}$/
+
+/** An IPv4 or bracketed IPv6 literal, as `URL.hostname` gives them. */
+export const isIpLiteral = (hostname: string) => IPV4.test(hostname) || hostname.startsWith('[')
+
 /**
- * A private-network address written as an IP literal (10/8, 172.16/12,
- * 192.168/16, 169.254/16, IPv6 fc00::/7 and fe80::/10) or a `.local` name:
- * the hosts Chrome's Local Network Access lets an https page call over http,
- * with the person's permission.
+ * A local-network address written as an IP literal, in the "local" address
+ * space of the Local Network Access spec (10/8, 100.64/10 carrier-grade NAT
+ * and Tailscale, 172.16/12, 192.168/16, 169.254/16, IPv6 fc00::/7, fe80::/10,
+ * fec0::/10), or a `.local` name: the hosts Chrome lets an https page call
+ * over http once the person allows local network access.
  */
 export function isLocalNetworkHost(hostname: string): boolean {
   const host = hostname.toLowerCase()
   if (host.endsWith('.local')) return true
-  const v4 = /^(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}$/.exec(host)
+  const v4 = IPV4.exec(host)
   if (v4) {
     const [a, b] = [Number(v4[1]), Number(v4[2])]
-    return a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254)
+    return a === 10 || (a === 100 && b >= 64 && b <= 127) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254)
   }
-  return /^\[(f[cd][0-9a-f]{0,2}|fe[89ab][0-9a-f]?):/.test(host)
+  return /^\[(f[cd][0-9a-f]{0,2}|fe[89a-f][0-9a-f]?):/.test(host)
 }
 
 /** Base URL without trailing slashes, or null when it is not an http(s) URL. */
@@ -113,11 +121,14 @@ function endpoint(connection: AssistantConnection, path: string, env: ClientEnvi
   if (!base) throw new AssistantError('invalid-url', `"${connection.baseUrl}" is not an http(s) URL.`)
   const target = new URL(base)
   const page = new URL(pageUrlOf(env))
-  const localNetwork = isLocalNetworkHost(target.hostname)
-  const insecure = page.protocol === 'https:' && target.protocol === 'http:' && !isLoopbackHost(target.hostname)
-  if (insecure && !localNetwork) {
+  const host = target.hostname
+  const insecure = page.protocol === 'https:' && target.protocol === 'http:' && !isLoopbackHost(host)
+  // A public IP literal can never be reached this way; a name may resolve to the local network.
+  if (insecure && isIpLiteral(host) && !isLocalNetworkHost(host)) {
     throw new AssistantError('mixed-content', `The browser blocks http://${target.host} from an https page.`)
   }
+  // Marking a loopback or public target as local would make the request fail, so only these are marked.
+  const localNetwork = isLocalNetworkHost(host) || (insecure && !isIpLiteral(host))
   return { url: `${base}${path}`, localNetwork, insecureLocal: insecure }
 }
 

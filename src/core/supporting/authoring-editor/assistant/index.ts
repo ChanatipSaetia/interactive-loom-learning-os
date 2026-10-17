@@ -23,6 +23,7 @@ export {
   AssistantError,
   SSEDecoder,
   chatCompletion,
+  isIpLiteral,
   isLocalNetworkHost,
   isLoopbackHost,
   listModels,

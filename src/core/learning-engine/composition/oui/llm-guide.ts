@@ -232,4 +232,4 @@ export const MODEL_SERVERS: ModelServerGuide[] = [
  * pages, and what to do instead.
  */
 export const LOCAL_MODEL_NOTE =
-  'The published Viewer and Studio are served over https. http://localhost always works. For a model on another computer of your network (http://192.168.x.x or <name>.local), Chrome asks to let the site access devices on your local network: allow it. Other browsers block that; run Studio on your own machine with npm run studio, or give the server an https address (for example a tunnel).'
+  'The published Viewer and Studio are served over https. http://localhost always works. For a model on another computer of your network (http://192.168.x.x, a Tailscale 100.x.x.x address or <name>.local), Chrome asks to let the site access devices on your local network: allow it. Other browsers block that; run Studio on your own machine with npm run studio, or give the server an https address (for example a tunnel).'
