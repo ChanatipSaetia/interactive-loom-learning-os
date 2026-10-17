@@ -2,11 +2,13 @@
  * The Assistant panel (grill-log-ai-assistant.md, decision 60): the topic's
  * conversation in a drawer on the right (a sheet on phones), with the
  * profile and model menu, New chat, Stop, and the one-time notice before the
- * first send to a remote server. The Pick tray is where messages are
- * written; `AssistantToggle` opens the panel from the page header.
+ * first send to a remote server. Messages are written in the Pick message
+ * bar (`PickMode`, decision 64), which docks at the foot of the panel while
+ * it is open; on phones the panel is a sheet that ends where the bar
+ * starts. `AssistantToggle` opens the panel from the page header.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { AlertTriangle, Bot, Loader2, MessageSquarePlus, RotateCcw, Settings2, Square, X } from 'lucide-react'
+import { AlertTriangle, Bot, Loader2, MessageSquarePlus, RotateCcw, Settings2, X } from 'lucide-react'
 import { Modal } from '../../../ui-system'
 import { findPickElement } from '../pick/PickLayer'
 import { useNarrow } from '../pick/PickMode'
@@ -16,7 +18,7 @@ import { AssistantMarkdown } from './AssistantMarkdown'
 import { EditCard, ProposalBar, useEditBlocks } from './AssistantEdits'
 import { AssistantSettingsDialog } from './AssistantSettingsDialog'
 import { failureHint, type AssistantPresetId } from './presets'
-import { historyForRequest, type ThreadMessage, type ThreadPick } from './thread'
+import type { ThreadMessage, ThreadPick } from './thread'
 import type { AssistantFailureKind } from './client'
 import type { AssistantState } from './useAssistant'
 import type { PickAssistantBridge } from '../pick/PickMode'
@@ -160,14 +162,12 @@ export interface AssistantDockProps {
   assistant: AssistantState
   /** Resolves the thread's picks against the current sources (stale chips). */
   resolve: PickResolver
-  /** Phones: the Picks tab was chosen (the page turns Pick mode on). */
-  onShowPicks?: () => void
   /** For tests: replaces `fetch` in Test connection. */
   fetchImpl?: typeof fetch
 }
 
 /** The Assistant panel, the connection settings dialog and the remote notice. */
-export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: AssistantDockProps) {
+export function AssistantDock({ assistant, resolve, fetchImpl }: AssistantDockProps) {
   const narrow = useNarrow()
   const [width, setWidth] = useState(loadWidth)
   const top = useHeaderBottom(assistant.panelOpen && !narrow)
@@ -175,7 +175,7 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
   const stick = useRef(true)
   const { messages } = assistant.thread
   const profile = assistant.profile
-  const firstSent = profile ? historyForRequest(messages, profile.tokenBudget).firstSent : 0
+  const firstSent = Math.max(0, messages.findIndex((m) => m.id === assistant.thread.start))
 
   // The tray moves left of the drawer while it is open.
   useEffect(() => {
@@ -188,22 +188,6 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
       root.classList.remove('ai-chat-open')
     }
   }, [assistant.panelOpen, narrow, width])
-
-  // On phones the sheet ends where the tray's message bar starts.
-  useEffect(() => {
-    if (!assistant.panelOpen || !narrow) return
-    const root = document.documentElement
-    const measure = () => {
-      const tray = document.querySelector('.pick-tray')
-      root.style.setProperty('--ai-bar-height', `${tray ? Math.ceil(tray.getBoundingClientRect().height) : 0}px`)
-    }
-    measure()
-    const timer = setInterval(measure, 400)
-    return () => {
-      clearInterval(timer)
-      root.style.removeProperty('--ai-bar-height')
-    }
-  }, [assistant.panelOpen, narrow])
 
   // Follow the reply while it streams, unless the reader scrolled up.
   const lastText = messages[messages.length - 1]?.text
@@ -245,14 +229,7 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
         >
           {!narrow && <div className="ai-panel-resize" onPointerDown={startResize} aria-hidden />}
           <div className="ai-panel-head">
-            {narrow ? (
-              <div className="ai-tabs" role="tablist">
-                <button type="button" role="tab" aria-selected={false} onClick={() => { assistant.togglePanel(false); onShowPicks?.() }} data-testid="ai-tab-picks">Picks</button>
-                <button type="button" role="tab" aria-selected className="is-active">Chat</button>
-              </div>
-            ) : (
-              <span className="ai-panel-title"><Bot size={15} /> AI assistant</span>
-            )}
+            <span className="ai-panel-title"><Bot size={15} /> AI assistant</span>
             <span className="ai-spacer" />
             <button type="button" className="ai-icon-button" onClick={assistant.newChat} disabled={messages.length === 0} title="New chat" aria-label="New chat" data-testid="ai-new-chat">
               <MessageSquarePlus size={15} />
@@ -303,7 +280,7 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
           >
             {messages.length === 0 && (
               <div className="ai-empty">
-                <p>Pick parts of the topic, add comments if you like, and press <strong>Send to AI</strong> in the tray. You can also just type a message there.</p>
+                <p>Type a question in the bar below. To ask about part of the topic, press <strong>⌖</strong> and {narrow ? 'tap' : 'click'} it first: each pick becomes a chip you can comment on, and goes with your next message. Keep asking follow-ups in the same chat.</p>
                 <p>{assistant.app === 'studio'
                   ? 'The assistant sees the current source of what you picked, unsaved edits included, and the errors in it.'
                   : 'The assistant sees the source of what you picked and the errors in it. Viewer is read-only, so it answers and explains.'}</p>
@@ -328,13 +305,6 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
               </div>
             ))}
           </div>
-          {assistant.busy && (
-            <div className="ai-panel-foot">
-              <button type="button" className="ai-button" onClick={assistant.stop} data-testid="ai-stop">
-                <Square size={12} /> Stop <kbd>Esc</kbd>
-              </button>
-            </div>
-          )}
         </aside>
       )}
 
@@ -373,6 +343,7 @@ export function pickBridgeOf(assistant: AssistantState): PickAssistantBridge {
     busy: assistant.busy,
     unread: assistant.unread,
     togglePanel: assistant.togglePanel,
+    stop: assistant.stop,
     send: (draft) =>
       assistant.send({
         mode: draft.mode,

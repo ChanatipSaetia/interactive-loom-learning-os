@@ -76,10 +76,35 @@ describe('Loom Studio', () => {
     fireEvent.click(screen.getByTestId('pick-toggle'))
     fireEvent.click(await screen.findByText('Hello.'))
     fireEvent.click(screen.getByTestId('pick-row'))
-    expect(screen.getByTestId('pick-entry').textContent).toContain('demo/sections/intro.oui:1 #root.paragraphs[0]')
+    expect(screen.getByTestId('pick-editor').textContent).toContain('demo/sections/intro.oui:1 #root.paragraphs[0]')
     act(() => workspace.setSource('intro', '// Edited\nroot = Text("Intro", ["Hello."])\n'))
-    await waitFor(() => expect(screen.getByTestId('pick-entry').textContent).toContain('demo/sections/intro.oui:2 #root.paragraphs[0] (unsaved)'))
+    await waitFor(() => expect(screen.getByTestId('pick-editor').textContent).toContain('demo/sections/intro.oui:2 #root.paragraphs[0] (unsaved)'))
     localStorage.clear()
+  })
+
+  it('shows one pane at a time on phones, with the secondary actions in the ⋯ menu', async () => {
+    const original = window.matchMedia
+    window.matchMedia = ((query: string) => ({ matches: query.includes('max-width: 640px'), media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, onchange: null, dispatchEvent: () => false })) as typeof window.matchMedia
+    try {
+      await renderWorkspace()
+      const body = () => document.querySelector('.studio-body')!
+      expect(body().getAttribute('data-pane')).toBe('edit')
+      expect(screen.queryByTestId('studio-export-zip')).toBeNull()
+      fireEvent.click(screen.getByTestId('studio-more'))
+      expect(screen.getByTestId('studio-export-zip')).toBeInTheDocument()
+
+      fireEvent.click(screen.getByTestId('studio-pane-sections'))
+      expect(body().getAttribute('data-pane')).toBe('sections')
+      // Choosing a section shows its preview.
+      fireEvent.click(screen.getByTestId('studio-section-quiz').querySelector('.studio-section-main')!)
+      expect(body().getAttribute('data-pane')).toBe('preview')
+      // Pick mode brings up the preview too.
+      fireEvent.click(screen.getByTestId('studio-pane-edit'))
+      fireEvent.click(screen.getByTestId('pick-toggle'))
+      expect(body().getAttribute('data-pane')).toBe('preview')
+    } finally {
+      window.matchMedia = original
+    }
   })
 
   it('tracks unsaved edits and saves with Ctrl+S', async () => {

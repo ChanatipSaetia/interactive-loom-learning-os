@@ -1,17 +1,11 @@
-/* Pick mode (Loom Studio and Loom Viewer) — outline and tray. */
+/* Pick mode (Loom Studio and Loom Viewer) — outline and message bar. */
 
 .loom-picking [data-oui-file],
 .loom-picking [data-oui-file] * { cursor: crosshair !important; }
 
-.pick-toggle.is-active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--primary-foreground);
-}
-
 .pick-outline {
   position: fixed;
-  z-index: 997; /* under the tray, which stays readable */
+  z-index: 997; /* under the bar, which stays readable */
   pointer-events: none;
   box-sizing: border-box;
   border: 2px solid var(--primary);
@@ -34,86 +28,218 @@
   font: 600 12px/1.5 var(--font-mono, monospace);
 }
 
-.pick-tray {
+/* The message bar (grill-log-ai-assistant.md, decision 64): chips, ⌖, the message, ⋯ and Send. */
+.pick-bar {
   position: fixed;
   z-index: 999;
-  /* Centred in the space left of the AI assistant drawer, when it is open. */
-  left: calc((100vw - var(--ai-panel-width, 0px)) / 2);
+  /* Centred in the space left of the AI assistant drawer. */
+  left: 50%;
   bottom: 12px;
   transform: translateX(-50%);
-  width: min(760px, calc(100vw - var(--ai-panel-width, 0px) - 32px));
-  max-height: 45vh;
+  width: min(720px, calc(100vw - 32px));
+  max-height: 60vh;
   display: flex;
   flex-direction: column;
+  gap: 6px;
   box-sizing: border-box;
+  padding: 8px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--card);
   color: var(--foreground);
   box-shadow: 0 12px 32px color-mix(in srgb, var(--foreground) 18%, transparent);
   font-size: 13px;
 }
-.pick-tray-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px 8px 14px;
+/* Docked at the foot of the open Assistant panel. */
+.pick-bar.is-docked {
+  left: auto;
+  right: 0;
+  bottom: 0;
+  transform: none;
+  width: var(--ai-panel-width, 420px);
+  max-width: 100vw;
+  border-width: 1px 0 0 1px;
+  border-radius: 0;
+  box-shadow: none;
 }
-.pick-tray:not(.is-collapsed) .pick-tray-head { border-bottom: 1px solid var(--border); }
-.pick-tray-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 4px;
-  border: 0;
-  background: transparent;
-  color: var(--foreground);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
+/* Phones: a full-width bar; the chat sheet sits above it. */
+.pick-bar.is-narrow {
+  left: 0;
+  bottom: 0;
+  transform: none;
+  width: 100vw;
+  max-height: 70vh;
+  border-width: 1px 0 0;
+  border-radius: 14px 14px 0 0;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
 }
-.pick-tray-spacer { flex: 1; }
-.pick-tray-status { color: var(--muted-foreground); font-weight: 600; }
 
-.pick-tray-modes {
-  display: inline-flex;
+.pick-bar-row { display: flex; align-items: flex-end; gap: 4px; }
+.pick-bar-input {
+  flex: 1;
+  min-width: 0;
+  max-height: 30vh;
+  box-sizing: border-box;
+  resize: none;
+  padding: 7px 9px;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.pick-tray-modes button {
-  border: 0;
-  padding: 3px 12px;
-  background: transparent;
-  color: var(--foreground);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-.pick-tray-modes button.is-active { background: var(--primary); color: var(--primary-foreground); }
-
-.pick-tray-button,
-.pick-tray-icon {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid var(--border);
+  border-radius: 9px;
   background: var(--background);
   color: var(--foreground);
   font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.pick-bar-input:focus-visible { outline: 2px solid var(--primary); outline-offset: -1px; }
+.pick-bar.is-narrow .pick-bar-input { font-size: 16px; } /* no zoom on focus in iOS */
+.pick-bar-icon,
+.pick-bar-send {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.pick-bar-icon:hover:not(:disabled) { background: var(--accent); color: var(--foreground); }
+.pick-bar-send { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+.pick-bar-send.is-stop { background: var(--background); border-color: var(--border); color: var(--foreground); }
+.pick-bar-icon:disabled,
+.pick-bar-send:disabled { opacity: 0.45; cursor: default; }
+.pick-toggle.is-active { background: var(--primary); color: var(--primary-foreground); }
+.pick-toggle.is-active:hover { background: var(--primary); color: var(--primary-foreground); }
+.pick-tray-status { align-self: center; color: var(--muted-foreground); font-weight: 600; font-size: 12px; }
+.pick-tray-status:empty { display: none; }
+.pick-chat-button { position: relative; }
+
+/* ⋯ menu */
+.pick-menu-wrap { position: relative; }
+.pick-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  z-index: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--foreground) 20%, transparent);
+}
+.pick-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.pick-menu button:hover:not(:disabled) { background: var(--accent); }
+.pick-menu button:disabled { opacity: 0.45; cursor: default; }
+.pick-menu small { margin-left: auto; color: var(--muted-foreground); }
+.pick-menu .is-hidden { visibility: hidden; }
+
+/* Chips: one per pick. */
+.pick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 84px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pick-bar.is-narrow .pick-chips { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; max-height: none; scrollbar-width: none; }
+.pick-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  flex: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--background);
+}
+.pick-chip.is-open { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.pick-chip-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 3px 4px 3px 3px;
+  border: 0;
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  cursor: pointer;
+}
+.pick-chip-label { max-width: 26ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono, monospace); font-size: 12px; }
+.pick-chip-remove {
+  display: inline-flex;
+  padding: 4px 6px 4px 2px;
+  border: 0;
+  background: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.pick-chip-remove:hover { color: var(--foreground); }
+.pick-chip.is-stale .pick-chip-label { text-decoration: line-through; }
+.pick-chip.is-stale svg { color: var(--ctp-yellow, var(--destructive)); }
+.pick-row-number {
+  flex: none;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font: 700 10px/18px var(--font-mono, monospace);
+  text-align: center;
+}
+.pick-row-noted { flex: none; color: var(--muted-foreground); }
+
+/* The open chip: full pointer, comment, Show on page, Wider, Remove. */
+.pick-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 4px 8px;
+  border-bottom: 1px solid var(--border);
+  overflow-y: auto;
+}
+.pick-editor-head { display: flex; align-items: center; gap: 6px; }
+.pick-editor-head strong { flex: 1; min-width: 0; overflow-wrap: anywhere; font-family: var(--font-mono, monospace); font-size: 12px; }
+.pick-editor-head .pick-bar-icon { width: 28px; height: 28px; }
+.pick-editor-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick-tray-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
 }
-.pick-tray-button { padding: 5px 12px; border-radius: 8px; }
-.pick-tray-button--primary { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
-.pick-tray-icon { padding: 5px; border-radius: 6px; }
-.pick-tray-button:disabled,
-.pick-tray-icon:disabled { opacity: 0.5; cursor: default; }
-.pick-tray-icon:hover:not(:disabled) { background: var(--accent); }
-
-.pick-tray-body { overflow-y: auto; padding: 8px 14px 12px; }
-.pick-tray-hint { margin: 4px 0; color: var(--muted-foreground); }
+.pick-tray-button:hover { background: var(--accent); }
+.pick-bar.is-narrow .pick-tray-button { padding: 7px 12px; }
 
 .pick-entry-pointer {
   display: block;
@@ -131,8 +257,7 @@
   font-size: 12px;
 }
 
-.pick-entry-note,
-.pick-tray-question {
+.pick-entry-note {
   width: 100%;
   box-sizing: border-box;
   resize: vertical;
@@ -143,16 +268,6 @@
   color: var(--foreground);
   font: inherit;
 }
-.pick-tray-question { margin-top: 10px; }
-
-/* AI assistant (grill-log-ai-assistant.md, decision 60): the message box and the chat button. */
-.pick-tray-compose { padding: 0 12px 10px; }
-.pick-tray:not(.is-collapsed) .pick-tray-compose { padding-top: 2px; }
-.pick-tray-compose .pick-tray-composer { margin-top: 8px; max-height: 30vh; }
-.pick-tray.is-narrow .pick-tray-compose { padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
-.pick-tray.is-narrow.is-chatting.is-collapsed .pick-tray-head { padding-bottom: 0; }
-.pick-chat-button { position: relative; }
-
 
 /* Studio: what the code line under the pointer draws (decision 46). */
 .pick-linked { outline: 2px dashed var(--primary); outline-offset: 2px; border-radius: 4px; }
@@ -193,7 +308,7 @@ svg.pick-linked { outline: none; filter: drop-shadow(0 0 3px var(--primary)) dro
   cursor: pointer;
 }
 
-/* Numbered dots on picked places, matching the tray rows. */
+/* Numbered dots on picked places, matching the chips. */
 .pick-badge {
   position: fixed;
   z-index: 996;
@@ -208,59 +323,6 @@ svg.pick-linked { outline: none; filter: drop-shadow(0 0 3px var(--primary)) dro
   cursor: pointer;
 }
 
-/* Rows grouped by section. */
-.pick-tray-list, .pick-tray-list ol { list-style: none; margin: 0; padding: 0; }
-.pick-group + .pick-group { margin-top: 10px; }
-.pick-group-title {
-  margin-bottom: 4px;
-  color: var(--muted-foreground);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.pick-row { display: flex; flex-direction: column; gap: 4px; padding: 1px 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent); }
-.pick-row-head { display: flex; align-items: center; gap: 4px; }
-.pick-row-head .pick-tray-icon { border-color: transparent; background: transparent; }
-.pick-row-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 2px;
-  border: 0;
-  background: transparent;
-  color: var(--foreground);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.pick-row-number {
-  flex: none;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font: 700 11px/20px var(--font-mono, monospace);
-  text-align: center;
-}
-.pick-row-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono, monospace); font-size: 12px; }
-.pick-row.is-open .pick-row-label { white-space: normal; overflow-wrap: anywhere; }
-.pick-row-noted { flex: none; color: var(--muted-foreground); }
-.is-stale .pick-row-label, .is-stale .pick-entry-pointer { text-decoration: line-through; }
-.pick-row-detail { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding-left: 28px; }
-.pick-row-detail .pick-tray-button { padding: 3px 10px; font-size: 12px; }
-.pick-row .pick-entry-note, .pick-row .pick-entry-stale { margin-left: 28px; width: calc(100% - 28px); }
-
-/* Phones: a one-line bar that opens into a sheet. */
-.pick-tray.is-narrow { bottom: 0; width: 100vw; max-height: 85vh; border-radius: 14px 14px 0 0; }
-.pick-tray.is-narrow .pick-tray-head { flex-wrap: nowrap; padding: 8px 10px; }
-.pick-tray.is-narrow.is-collapsed .pick-tray-head { padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
-.pick-tray.is-narrow .pick-tray-body { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
-.pick-tray.is-narrow .pick-row-main { padding: 8px 2px; }
 @media (max-width: 640px) {
-  .pick-toggle-label { display: none; }
-  .pick-pill { top: auto; bottom: 64px; }
+  .pick-pill { top: auto; bottom: calc(var(--pick-bar-height, 56px) + 10px); }
 }

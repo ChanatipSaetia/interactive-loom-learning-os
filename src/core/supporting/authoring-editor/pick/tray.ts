@@ -31,8 +31,9 @@ export type PickMode = 'comment' | 'ask'
 
 export interface PickTrayState {
   entries: PickEntry[]
+  /** `ask` is Answer only: the agent is told not to change files. */
   mode: PickMode
-  /** Question for the Ask mode. */
+  /** The message typed in the bar (the question in Answer only). */
   question: string
 }
 
@@ -149,7 +150,9 @@ export function trayReport(topicId: string, state: PickTrayState, resolve: PickR
   const entries: PickReportEntry[] = orderPickEntries(resolvePickEntries(state.entries, resolve), fileOrder)
     .filter((e) => !e.stale || e.keep)
     .map((e) => ({ topicId, file: e.file, anchor: e.anchor, line: e.line, unsaved: e.unsaved, note: e.note }))
-  return pickReport({ topicId, entries, source, question: state.mode === 'ask' ? state.question : undefined })
+  return state.mode === 'ask'
+    ? pickReport({ topicId, entries, source, question: state.question })
+    : pickReport({ topicId, entries, source, message: state.question })
 }
 
 // --- localStorage --------------------------------------------------------------

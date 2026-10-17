@@ -3,10 +3,15 @@
  * decision 56), kept in localStorage under `loom-ai-thread:<topicId>`.
  *
  * Messages store what the person wrote, the picks they sent (as chips) and
- * the replies, never copies of the source: every request resolves the
- * thread's picks against the current sources (see `context.ts`). Older
- * turns are dropped, oldest first, once the profile's token budget is
- * spent; the system prompt and the topic context are always sent.
+ * the replies. A user message also keeps the <topic-context> block it was
+ * sent with (built from the current sources at that moment, see
+ * `context.ts`), so every later request repeats the earlier turns byte for
+ * byte and servers can reuse their prompt cache (decision 63).
+ *
+ * Once the history outgrows the profile's token budget, the oldest turns
+ * are dropped in one step, down to half the budget, and the thread keeps
+ * where it starts (`start`): the prefix then stays the same for the
+ * following requests instead of shifting by one turn each time.
  */
 import type { ChatMessage } from './client'
 import type { ContextPointer } from './context'
@@ -49,11 +54,17 @@ export interface ThreadMessage {
   problems?: string[]
   /** User messages Studio sent itself: the validation retry. */
   auto?: boolean
+  /** User messages: the <topic-context> block sent with it ('' when nothing was new). */
+  context?: string
+  /** User messages: keys of the parts that block carries (see `buildTopicContext`). */
+  sent?: string[]
   at: number
 }
 
 export interface AssistantThread {
   messages: ThreadMessage[]
+  /** Id of the first message still sent; earlier ones were dropped for the token budget. */
+  start?: string
 }
 
 export const EMPTY_THREAD: AssistantThread = { messages: [] }
@@ -82,6 +93,10 @@ function readMessage(value: unknown): ThreadMessage | null {
     out.picks = Array.isArray(message.picks) ? message.picks.map(readPick).filter((p): p is ThreadPick => p !== null) : []
     out.mode = message.mode === 'ask' ? 'ask' : 'comment'
     if (message.auto === true) out.auto = true
+    if (typeof message.context === 'string') {
+      out.context = message.context
+      out.sent = Array.isArray(message.sent) ? message.sent.filter((k): k is string => typeof k === 'string') : []
+    }
   } else {
     // A reply that was still streaming when the page closed ends there.
     out.status = message.status === 'streaming' ? 'stopped' : message.status && ['done', 'stopped', 'error'].includes(message.status) ? message.status : 'done'
@@ -102,9 +117,9 @@ export function loadThread(topicId: string): AssistantThread {
   try {
     const raw = localStorage.getItem(storageKey(topicId))
     if (!raw) return EMPTY_THREAD
-    const parsed = JSON.parse(raw) as { messages?: unknown }
+    const parsed = JSON.parse(raw) as { messages?: unknown; start?: unknown }
     const messages = Array.isArray(parsed.messages) ? parsed.messages.map(readMessage).filter((m): m is ThreadMessage => m !== null) : []
-    return { messages }
+    return typeof parsed.start === 'string' && messages.some((m) => m.id === parsed.start) ? { messages, start: parsed.start } : { messages }
   } catch {
     return EMPTY_THREAD
   }
@@ -122,9 +137,10 @@ export function saveThread(topicId: string, thread: AssistantThread): void {
 /** Rough token count: characters ÷ 4. */
 export const estimateTokens = (text: string) => Math.ceil(text.length / 4)
 
-/** What a user message says to the model: its picks (with comments), then the text. */
+/** What a user message says to the model: its topic context, its picks (with comments), then the text. */
 export function userMessageContent(message: ThreadMessage): string {
   const parts: string[] = []
+  if (message.context) parts.push(message.context)
   const picks = message.picks ?? []
   if (picks.length) {
     const list = picks
@@ -162,27 +178,59 @@ export interface HistoryForRequest {
   firstSent: number
 }
 
+function contentOf(message: ThreadMessage): string | null {
+  return message.role === 'user' ? userMessageContent(message) : assistantMessageContent(message)
+}
+
+const costOf = (message: ThreadMessage) => {
+  const content = contentOf(message)
+  return content === null ? 0 : estimateTokens(content) + 4
+}
+
 /**
- * The thread as chat messages, newest kept first until `budget` tokens are
- * used. The last user message is always sent, whatever its size.
+ * Where the history sent with the next request starts: at `start` (the
+ * thread's current start) while everything from there fits `budget` tokens;
+ * otherwise at the first user turn from which the rest fits half the budget.
+ * It always starts on a user turn (chat templates of many local models want
+ * that), and the last user message is always sent, whatever its size.
  */
-export function historyForRequest(thread: readonly ThreadMessage[], budget: number): HistoryForRequest {
-  const sent: Array<{ index: number; message: ChatMessage }> = []
-  let used = 0
-  let sentUser = false
-  for (let i = thread.length - 1; i >= 0; i--) {
-    const message = thread[i]
-    const content = message.role === 'user' ? userMessageContent(message) : assistantMessageContent(message)
-    if (content === null) continue
-    const cost = estimateTokens(content) + 4
-    if (sentUser && used + cost > budget) break
-    used += cost
-    sent.unshift({ index: i, message: { role: message.role, content } })
-    if (message.role === 'user') sentUser = true
+export function historyStart(thread: readonly ThreadMessage[], budget: number, start?: string): number {
+  const users = thread.flatMap((m, i) => (m.role === 'user' ? [i] : []))
+  if (!users.length) return thread.length
+  const from = Math.max(0, thread.findIndex((m) => m.id === start))
+  let index = users.find((i) => i >= from) ?? users[users.length - 1]
+  const costs = thread.map(costOf)
+  const rest = (i: number) => costs.slice(i).reduce((a, b) => a + b, 0)
+  if (rest(index) <= budget) return index
+  for (const i of users) {
+    if (i < index) continue
+    index = i
+    if (rest(i) <= budget / 2) break
   }
-  // Chat templates of many local models want the history to start with a user turn.
-  while (sent.length && sent[0].message.role === 'assistant') sent.shift()
-  return { messages: sent.map((s) => s.message), firstSent: sent[0]?.index ?? thread.length }
+  return index
+}
+
+/** The thread from `from` on, as chat messages; failed replies are left out. */
+export function historyMessages(thread: readonly ThreadMessage[], from: number): ChatMessage[] {
+  const out: ChatMessage[] = []
+  for (const message of thread.slice(from)) {
+    const content = contentOf(message)
+    if (content !== null) out.push({ role: message.role, content })
+  }
+  return out
+}
+
+/** The history for the next request with the thread starting at `start`. */
+export function historyForRequest(thread: readonly ThreadMessage[], budget: number, start?: string): HistoryForRequest {
+  const firstSent = historyStart(thread, budget, start)
+  return { messages: historyMessages(thread, firstSent), firstSent }
+}
+
+/** Keys of the topic-context parts the given messages already carry. */
+export function knownContext(messages: readonly ThreadMessage[]): Set<string> {
+  const known = new Set<string>()
+  for (const message of messages) message.sent?.forEach((key) => known.add(key))
+  return known
 }
 
 /** Every place picked in the thread, once each, in the order first sent. */

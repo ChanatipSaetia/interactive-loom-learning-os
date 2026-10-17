@@ -70,8 +70,9 @@ test('Viewer: picks go to the model with their current source, and replies strea
   await question.scrollIntoViewIfNeeded()
   await question.click({ modifiers: ['Alt'], position: { x: 8, y: 8 } })
   await expect(page.getByTestId('pick-entry')).toHaveCount(1)
+  // The message bar sends the picks with the message.
   await page.getByTestId('pick-composer').fill('Is this question fair?')
-  await page.getByTestId('pick-send').click()
+  await page.getByTestId('pick-composer').press('Enter')
 
   const reply = page.getByTestId('ai-reply')
   await expect(reply).toHaveAttribute('data-status', 'done')
@@ -84,16 +85,20 @@ test('Viewer: picks go to the model with their current source, and replies strea
   const [system, user] = chats[0].messages
   expect(system.role).toBe('system')
   expect(system.content).toContain('Loom Viewer is read-only')
-  expect(system.content).toContain('### sections/quiz.oui: q1 (line')
-  expect(system.content).toContain('QuizQuestion(id: string')
+  // The topic context goes with the user turn, so the system prompt stays cacheable.
+  expect(system.content).not.toContain('### sections/quiz.oui')
+  expect(user.content).toContain('### sections/quiz.oui: q1 (line')
+  expect(user.content).toContain('QuizQuestion(id: string')
   expect(user.content).toContain('- sections/quiz.oui #q1')
 
-  // A follow-up sends the thread.
+  // A follow-up sends the thread, with the earlier turns exactly as before.
   await page.getByTestId('pick-composer').fill('Thanks')
-  await page.getByTestId('pick-composer').press('ControlOrMeta+Enter')
+  await page.getByTestId('pick-composer').press('Enter')
   await expect(page.getByTestId('ai-reply')).toHaveCount(2)
   await expect(page.getByTestId('ai-reply').nth(1)).toHaveAttribute('data-status', 'done')
   expect(chats[1].messages.map((m) => m.role)).toEqual(['system', 'user', 'assistant', 'user'])
+  expect(chats[1].messages.slice(0, 2)).toEqual(chats[0].messages)
+  expect(chats[1].messages[3].content).toBe('Thanks')
 
   // The thread survives a reload.
   await page.reload()
@@ -139,10 +144,10 @@ test('Studio: the request carries unsaved edits', async ({ page }) => {
   await page.getByTestId('pick-send').click()
   await expect(page.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done')
 
-  const system = chats[0].messages[0].content
-  expect(system).toContain('inside Loom Studio')
-  expect(system).toContain('### sections/quiz.oui (whole file) (unsaved edits)')
-  expect(system).toContain('// Draft note')
+  const [system, user] = chats[0].messages
+  expect(system.content).toContain('inside Loom Studio')
+  expect(user.content).toContain('### sections/quiz.oui (whole file) (unsaved edits)')
+  expect(user.content).toContain('// Draft note')
 })
 
 test('Studio: a proposed edit is applied to the buffer, and Save writes it', async ({ page }) => {
@@ -175,7 +180,7 @@ test('Studio: a proposed edit is applied to the buffer, and Save writes it', asy
     '```',
   ].join('\n')
   await page.getByTestId('pick-composer').fill(`REPLY<<${proposal}>>`)
-  await page.getByTestId('pick-send').click()
+  await page.getByTestId('pick-composer').press('Enter')
 
   const card = page.getByTestId('ai-edit')
   await expect(card).toBeVisible()
@@ -228,7 +233,7 @@ test('Studio: Apply all adds a new section and lists it in topic.oui, written on
     '```',
   ].join('\n')
   await page.getByTestId('pick-composer').fill(`REPLY<<${proposal}>>`)
-  await page.getByTestId('pick-send').click()
+  await page.getByTestId('pick-composer').press('Enter')
   await expect(page.getByTestId('ai-edit')).toHaveCount(2)
   await expect(page.getByTestId('ai-proposal')).toContainText('The edits apply and validate.')
 

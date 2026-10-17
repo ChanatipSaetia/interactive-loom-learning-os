@@ -107,7 +107,7 @@ body {
 
 /* --- Shell ------------------------------------------------------------------ */
 
-.studio-shell { display: flex; flex-direction: column; height: 100vh; }
+.studio-shell { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 
 .studio-header {
   display: flex;
@@ -292,6 +292,8 @@ body {
 .studio-code-editor .cm-editor { height: 100%; }
 .studio-form { padding: 16px; }
 .studio-preview { flex: 1; overflow-y: auto; padding: 24px; }
+/* The end of the preview scrolls clear of the Pick message bar floating over it. */
+.studio-preview { padding-bottom: calc(var(--pick-bar-height, 0px) + 24px); }
 
 .studio-loading { padding: 16px; color: var(--muted-foreground); }
 .studio-hint { color: var(--muted-foreground); font-size: 13px; margin: 0 0 16px; }
@@ -368,3 +370,80 @@ body {
   .studio-editor-pane { border-right: none; border-bottom: 1px solid var(--border); }
   .studio-sidebar { width: 220px; }
 }
+
+/* --- Phones: one row of header actions and one pane at a time --------------- */
+
+.studio-menu-wrap { position: relative; }
+.studio-button--icon { padding: 6px 8px; }
+.studio-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 210px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--foreground) 20%, transparent);
+}
+.studio-menu .studio-button { justify-content: flex-start; border-color: transparent; background: transparent; padding: 9px 10px; }
+.studio-menu .studio-button:hover:not(:disabled) { background: var(--accent); }
+.studio-menu .theme-toggle-label { display: inline; }
+.studio-menu > :first-child { align-self: flex-start; margin-bottom: 4px; }
+
+.studio-panes {
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--studio-surface);
+}
+.studio-panes button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.studio-panes button.is-active { background: var(--card); color: var(--foreground); box-shadow: 0 0 0 1px var(--border); }
+.studio-panes button:disabled { opacity: 0.4; cursor: default; }
+
+@media (max-width: 640px) {
+  .studio-header { gap: 8px; padding: 6px 10px; }
+  .studio-brand-label, .studio-header-folder { display: none; }
+  .studio-header-actions { flex-wrap: nowrap; gap: 6px; }
+  .studio-status { position: absolute; top: 100%; right: 10px; z-index: 5; padding: 4px 8px; border-radius: 6px; background: var(--card); }
+  .studio-header { position: relative; }
+}
+
+/* `data-pane` is set on phones only. */
+.studio-body[data-pane] { flex-direction: column; padding-bottom: var(--pick-bar-height, 0px); }
+.studio-body[data-pane] .studio-sidebar { width: auto; flex: 1; border-right: 0; }
+.studio-body[data-pane] .studio-editor { flex-direction: column; }
+.studio-body[data-pane] .studio-editor-pane,
+.studio-body[data-pane] .studio-preview-pane { flex: 1; border: 0; }
+.studio-body[data-pane="sections"] .studio-main { display: none; }
+.studio-body[data-pane="edit"] .studio-sidebar,
+.studio-body[data-pane="edit"] .studio-preview-pane { display: none; }
+.studio-body[data-pane="preview"] .studio-sidebar,
+.studio-body[data-pane="preview"] .studio-editor-pane { display: none; }
+.studio-body[data-pane] .studio-preview { padding: 16px 14px; }
+.studio-body[data-pane] .studio-topic-form { padding: 16px; }
+.studio-body[data-pane] .studio-section-actions { display: inline-flex; }
+.studio-body[data-pane] .studio-section-item { padding: 6px 4px 6px 2px; }
+/* The switch already says Preview; the bar stays only to say the preview is the last valid version. */
+.studio-body[data-pane] .studio-preview-pane > .studio-tabs:not(:has(.studio-stale)) { display: none; }

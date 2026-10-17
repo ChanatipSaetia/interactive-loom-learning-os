@@ -26,7 +26,7 @@ import {
 } from '../core/supporting/authoring-editor/workspace'
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from './compileTopic'
 import { copyText } from '../core/ui-system/clipboard'
-import { PickMode, PickSection, PickToggle, sourceResolver } from '../core/supporting/authoring-editor/pick'
+import { PickMode, PickSection, sourceResolver } from '../core/supporting/authoring-editor/pick'
 import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext } from '../core/supporting/authoring-editor/assistant'
 import type { PickSource } from '../core/learning-engine/composition/oui/pick-report'
 import '../core/delivery/web-app-shell/layout.css'
@@ -260,7 +260,6 @@ export function ViewerApp() {
               </span>
             )}
             <LoomToolsNav current="viewer" />
-            {topic && <PickToggle active={picking} onChange={setPicking} className="viewer-pill" />}
             {topic && <AssistantToggle assistant={assistant} className="viewer-pill" />}
             {loaded && (
               <button
@@ -309,7 +308,7 @@ export function ViewerApp() {
             assistant={pickAssistant}
           />
         )}
-        {topic && <AssistantDock assistant={assistant} resolve={pickResolver} onShowPicks={() => setPicking(true)} />}
+        {topic && <AssistantDock assistant={assistant} resolve={pickResolver} />}
       </div>
     </UISystemProvider>
   )

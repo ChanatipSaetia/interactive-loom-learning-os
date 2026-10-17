@@ -175,22 +175,23 @@ describe('Loom Viewer', () => {
       const toggle = screen.getByTestId('pick-toggle')
       fireEvent.click(toggle)
       expect(toggle.getAttribute('aria-pressed')).toBe('true')
-      expect(screen.getByTestId('pick-tray').textContent).toContain('Click part of a section')
+      expect(screen.getByTestId('pick-composer').getAttribute('placeholder')).toContain('Click part of a section')
 
       fireEvent.click(await screen.findByText(/Hello from the viewer/))
       fireEvent.click(screen.getByRole('heading', { level: 2 }))
       fireEvent.click(screen.getByText(/Hello from the viewer/))
-      // Rows are grouped in reading order: topic.oui, then the sections.
+      // Chips are in reading order: topic.oui, then the sections.
       const entries = screen.getAllByTestId('pick-entry')
       expect(entries).toHaveLength(2)
-      expect(entries[0].textContent).toContain('Whole section')
+      expect(entries[0].textContent).toContain('whole section')
       expect(entries[1].textContent).toContain('root.paragraphs[0]')
-      // A row opens to show its full pointer.
+      // A chip opens to show its full pointer and a comment box.
       fireEvent.click(screen.getAllByTestId('pick-row')[1])
-      expect(entries[1].textContent).toContain('kafka/sections/intro.oui:2 #root.paragraphs[0]')
+      expect(screen.getByTestId('pick-editor').textContent).toContain('kafka/sections/intro.oui:2 #root.paragraphs[0]')
 
-      fireEvent.click(screen.getAllByTestId('pick-add-note')[1])
       fireEvent.change(screen.getByTestId('pick-entry-note'), { target: { value: 'Say why logs matter.' } })
+      // With the assistant on the page, Copy for agent is in the ⋯ menu.
+      fireEvent.click(screen.getByTestId('pick-more'))
       fireEvent.click(screen.getByTestId('pick-copy'))
       await waitFor(() => expect(writeText).toHaveBeenCalled())
       expect((writeText.mock.calls[0] as unknown as [string])[0]).toBe(
@@ -201,12 +202,13 @@ describe('Loom Viewer', () => {
 
       fireEvent.keyDown(window, { key: 'Escape' })
       expect(toggle.getAttribute('aria-pressed')).toBe('false')
-      // The tray stays while it has entries, and is kept for the next visit.
-      expect(screen.getByTestId('pick-tray')).toBeInTheDocument()
+      // The picks are kept for the next visit.
+      expect(screen.getAllByTestId('pick-entry')).toHaveLength(2)
       unmount()
       render(<ViewerApp />)
       await openPasted(pickTopic())
       expect(screen.getAllByTestId('pick-entry')).toHaveLength(2)
+      fireEvent.click(screen.getAllByTestId('pick-row')[1])
       expect((screen.getByTestId('pick-entry-note') as HTMLTextAreaElement).value).toBe('Say why logs matter.')
       localStorage.clear()
     })
@@ -215,10 +217,10 @@ describe('Loom Viewer', () => {
       localStorage.clear()
       render(<ViewerApp />)
       await openPasted(pickTopic())
-      expect(screen.queryByTestId('pick-tray')).toBeNull()
+      expect(screen.queryByTestId('pick-entry')).toBeNull()
 
       fireEvent.click(await screen.findByText(/Hello from the viewer/))
-      expect(screen.queryByTestId('pick-tray')).toBeNull()
+      expect(screen.queryByTestId('pick-entry')).toBeNull()
       fireEvent.click(screen.getByText(/Hello from the viewer/), { altKey: true })
       expect(screen.getAllByTestId('pick-entry')).toHaveLength(1)
 
@@ -232,7 +234,8 @@ describe('Loom Viewer', () => {
       event.clipboardData = { getData: () => pickTopic().replace('SectionRef("intro")', '').replace(/\/\/ === sections\/intro\.oui ===[\s\S]*$/, '') }
       fireEvent(document.body, event)
       await waitFor(() => expect(screen.getByTestId('pick-entry').className).toContain('is-stale'))
-      expect(screen.getByTestId('pick-entry').textContent).toContain('No longer in the topic')
+      fireEvent.click(screen.getByTestId('pick-row'))
+      expect(screen.getByTestId('pick-editor').textContent).toContain('No longer in the topic')
       localStorage.clear()
     })
   })

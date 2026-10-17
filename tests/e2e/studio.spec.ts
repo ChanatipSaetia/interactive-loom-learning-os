@@ -139,9 +139,9 @@ test.describe('Loom Studio', () => {
     await page.keyboard.press('ControlOrMeta+Shift+M')
     await expect(page.getByTestId('pick-entry')).toHaveCount(2)
     // Rows are in reading order, so the root (line 1) comes first.
-    await expect(page.getByTestId('pick-entry').first()).toContainText('Whole section')
+    await expect(page.getByTestId('pick-entry').first()).toContainText('whole section')
     await page.getByTestId('pick-row').first().click()
-    await expect(page.getByTestId('pick-entry').first()).toContainText('concept-map.oui:1 #root')
+    await expect(page.getByTestId('pick-editor')).toContainText('concept-map.oui:1 #root')
 
     // Hovering a code line outlines what its statement draws.
     await page.locator('[data-testid="oui-code-editor"] .cm-line', { hasText: new RegExp(`^${statement}\\s*=`) }).hover()
