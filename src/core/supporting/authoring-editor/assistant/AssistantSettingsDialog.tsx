@@ -42,6 +42,7 @@ type TestState = { kind: 'idle' } | { kind: 'running' } | { kind: 'done'; report
 const FAILURE_TITLES: Record<AssistantFailureKind, string> = {
   'invalid-url': 'Not a valid base URL',
   'mixed-content': 'Blocked: http from an https page',
+  'local-network': 'Local network access needed',
   network: 'Could not reach the server',
   auth: 'API key refused',
   'not-found': 'Wrong path',

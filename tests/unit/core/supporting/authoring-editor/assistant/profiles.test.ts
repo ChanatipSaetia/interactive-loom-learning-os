@@ -92,6 +92,7 @@ describe('failureHint', () => {
     expect(failureHint('auth', 'openrouter', ctx)).toContain('openrouter.ai/keys')
     expect(failureHint('no-models', 'ollama', ctx)).toContain('ollama pull')
     expect(failureHint('not-found', 'custom', ctx)).toContain('/v1')
-    expect(failureHint('mixed-content', 'custom', { ...ctx, host: '192.168.1.2:1234' })).toContain('192.168.1.2:1234')
+    expect(failureHint('mixed-content', 'custom', { ...ctx, host: 'models.example.com' })).toContain('models.example.com')
+    expect(failureHint('local-network', 'llamacpp', { ...ctx, host: '192.168.1.112:8080' })).toMatch(/192\.168\.1\.112:8080 is plain http[\s\S]*Local network access/)
   })
 })

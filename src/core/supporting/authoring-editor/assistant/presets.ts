@@ -64,8 +64,10 @@ export function failureHint(kind: AssistantFailureKind, preset: AssistantPresetI
   switch (kind) {
     case 'invalid-url':
       return 'Enter the full base URL, starting with http:// or https://, e.g. http://localhost:11434/v1.'
+    case 'local-network':
+      return `This page is served over https and ${ctx.host} is plain http. Chrome allows it for servers on your local network (including Tailscale's 100.x addresses) once you let this site access devices on your local network: answer the prompt with Allow, or allow "Local network access" in the site settings (the icon left of the address), then test again. A name that points to a public address is refused; use its https address. Other browsers block it; use Chrome, run Studio on your computer (npm run studio), or give the server an https address (e.g. tailscale serve). Also check that the server listens on the network (llama-server --host 0.0.0.0, OLLAMA_HOST=0.0.0.0) and allows this page (CORS).`
     case 'mixed-content':
-      return `This page is served over https, so the browser blocks plain http to ${ctx.host}. Use http://localhost instead, an https address (for example a tunnel), or run Studio on your computer (npm run studio).`
+      return `This page is served over https, so the browser blocks plain http to ${ctx.host}. Use http://localhost or a local-network address (192.168.x.x, 10.x.x.x, Tailscale's 100.x.x.x, <name>.local), an https address (for example a tunnel), or run Studio on your computer (npm run studio).`
     case 'network': {
       const specific =
         NETWORK_HINTS[preset]?.(ctx) ??

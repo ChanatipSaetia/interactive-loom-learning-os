@@ -109,6 +109,7 @@ function PickChips({ picks, resolve }: { picks: ThreadPick[]; resolve: PickResol
 const FAILURE_TITLES: Partial<Record<AssistantFailureKind, string>> = {
   network: 'Could not reach the server',
   'mixed-content': 'Blocked: http from an https page',
+  'local-network': 'Local network access needed',
   auth: 'API key refused',
   'not-found': 'Wrong path or model',
   'bad-response': 'Not an OpenAI-compatible answer',

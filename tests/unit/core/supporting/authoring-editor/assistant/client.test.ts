@@ -4,6 +4,7 @@ import {
   SSEDecoder,
   chatCompletion,
   listModels,
+  isLocalNetworkHost,
   normalizeBaseUrl,
   testConnection,
 } from '../../../../../../src/core/supporting/authoring-editor/assistant'
@@ -47,6 +48,17 @@ describe('SSEDecoder', () => {
     const decoder = new SSEDecoder()
     expect(decoder.push('data: [DONE]')).toEqual([])
     expect(decoder.flush()).toEqual(['[DONE]'])
+  })
+})
+
+describe('isLocalNetworkHost', () => {
+  it('knows private IP literals and .local names', () => {
+    for (const host of ['192.168.1.112', '10.0.0.5', '100.100.124.7', '100.64.0.1', '100.127.255.254', '172.16.0.1', '172.31.255.1', '169.254.1.1', 'nas.local', '[fd12::1]', '[fe80::1]']) {
+      expect(isLocalNetworkHost(host)).toBe(true)
+    }
+    for (const host of ['172.32.0.1', '100.63.0.1', '100.128.0.1', '8.8.8.8', 'localhost', 'example.com', 'local.example.com', '[2001:db8::1]']) {
+      expect(isLocalNetworkHost(host)).toBe(false)
+    }
   })
 })
 
@@ -97,11 +109,40 @@ describe('listModels and testConnection', () => {
     expect(report).toMatchObject({ ok: false, error: { kind: 'network', message: 'Could not reach localhost:11434.' } })
   })
 
-  it('blocks plain http to another host from an https page without sending anything', async () => {
+  it('blocks plain http to a public IP from an https page without sending anything', async () => {
     const fetch = vi.fn()
-    const report = await testConnection({ baseUrl: 'http://192.168.1.20:1234/v1' }, { fetch, pageUrl: 'https://example.github.io/viewer.html' })
+    const report = await testConnection({ baseUrl: 'http://8.8.8.8:8080/v1' }, { fetch, pageUrl: 'https://example.github.io/viewer.html' })
     expect(report).toMatchObject({ ok: false, error: { kind: 'mixed-content' } })
     expect(fetch).not.toHaveBeenCalled()
+  })
+
+  it('sends Tailscale addresses and names over http as local-network requests; https and loopback stay unmarked', async () => {
+    const fetch = vi.fn(async () => json({ data: [{ id: 'm' }] }))
+    const https = { pageUrl: 'https://example.github.io/' }
+    await testConnection({ baseUrl: 'http://100.100.124.7:8080/v1' }, { fetch, ...https })
+    await testConnection({ baseUrl: 'http://box.tail1234.ts.net:8080/v1' }, { fetch, ...https })
+    await testConnection({ baseUrl: 'https://openrouter.ai/api/v1' }, { fetch, ...https })
+    await testConnection({ baseUrl: 'http://localhost:11434/v1' }, { fetch, ...https })
+    const marks = fetch.mock.calls.map((call) => (call as unknown as [string, RequestInit & { targetAddressSpace?: string }])[1].targetAddressSpace)
+    expect(marks).toEqual(['local', 'local', undefined, undefined])
+  })
+
+  it('sends plain http to the local network from an https page, marked for Local Network Access', async () => {
+    const fetch = vi.fn(async () => json({ data: [{ id: 'm' }] }))
+    const report = await testConnection({ baseUrl: 'http://192.168.1.112:8080/v1' }, { fetch, pageUrl: 'https://example.github.io/viewer.html' })
+    expect(report).toEqual({ ok: true, models: ['m'] })
+    expect(fetch).toHaveBeenCalledWith('http://192.168.1.112:8080/v1/models', expect.objectContaining({ targetAddressSpace: 'local' }))
+  })
+
+  it('says local network access is needed when such a request fails', async () => {
+    const fetch = async () => {
+      throw new TypeError('Failed to fetch')
+    }
+    const report = await testConnection({ baseUrl: 'http://studio-box.local:1234/v1' }, { fetch, pageUrl: 'https://example.github.io/' })
+    expect(report).toMatchObject({ ok: false, error: { kind: 'local-network' } })
+    // The same failure from an http page is an ordinary network error.
+    const plain = await testConnection({ baseUrl: 'http://studio-box.local:1234/v1' }, { fetch, pageUrl: 'http://localhost:5173/' })
+    expect(plain).toMatchObject({ ok: false, error: { kind: 'network' } })
   })
 
   it('lets an https page call http://localhost', async () => {
