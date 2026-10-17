@@ -9,7 +9,7 @@ import {
   createTopicZip,
   readTopicArchive,
 } from '../../core/supporting/authoring-editor/workspace'
-import { PickMode, PickToggle, sourceResolver, statementOfAnchor, type PickModeApi, type PickTarget } from '../../core/supporting/authoring-editor/pick'
+import { PickMode, sourceResolver, statementOfAnchor, type PickModeApi, type PickTarget } from '../../core/supporting/authoring-editor/pick'
 import {
   AssistantDock,
   AssistantToggle,
@@ -245,7 +245,6 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
               )}
               <LoomToolsNav current="studio" newTab />
               <ThemeToggle />
-              <PickToggle active={picking} onChange={setPicking} className="studio-button" />
               <AssistantToggle assistant={assistant} className="studio-button" />
               <button type="button" className="studio-button" onClick={() => importInput.current?.click()} title="Import a topic from a .loom.oui file or a .zip" data-testid="studio-import">
                 <Upload size={15} /> Import
@@ -316,8 +315,8 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
                 )}
             </main>
           </div>
-          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} fileOrder={pickFileOrder} onPick={onPick} apiRef={pickApi} assistant={pickBridgeOf(assistant)} />
-          <AssistantDock assistant={assistant} resolve={pickResolver} onShowPicks={() => setPicking(true)} />
+          <PickMode topicId={snap.topicId} active={picking} onActiveChange={setPicking} resolve={pickResolver} source={FOLDER_SOURCE} fileOrder={pickFileOrder} onPick={onPick} apiRef={pickApi} assistant={pickBridgeOf(assistant)} over=".studio-preview-pane" />
+          <AssistantDock assistant={assistant} resolve={pickResolver} />
         </div>
       </HUDProvider>
     </ProgressProvider>

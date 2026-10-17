@@ -35,6 +35,8 @@ export interface PickReportInput {
   source?: PickSource
   /** Set to ask a question about the entries instead of commenting. */
   question?: string
+  /** A message that goes after the entries (when there is no question). */
+  message?: string
 }
 
 export function pickSourceNote(source?: PickSource): string {
@@ -56,17 +58,19 @@ const indent = (text: string) => text.trim().split('\n').map((l) => `  ${l}`.tri
  * The text to paste into the agent: bare pointer lines when every entry is a
  * mention, a "Comments on …" list when any entry has a note, or an
  * "Answer about … (do not change any files)" list when a question is set.
- * Empty when there is nothing to copy.
+ * A `message` follows the entries after a blank line. Empty when there is
+ * nothing to copy.
  */
-export function pickReport({ topicId, entries, source, question }: PickReportInput): string {
+export function pickReport({ topicId, entries, source, question, message }: PickReportInput): string {
   if (entries.length === 0) return ''
   const pointers = entries.map((e) => formatPickPointer(e, source))
   const ask = question?.trim()
   const hasNotes = entries.some((e) => e.note.trim())
+  const after = !ask && message?.trim() ? `\n${message.trim()}\n` : ''
 
-  if (!ask && !hasNotes) return `${pointers.join('\n')}\n`
+  if (!ask && !hasNotes) return `${pointers.join('\n')}\n${after}`
 
   const list = entries.map((e, i) => `- ${pointers[i]}${e.note.trim() ? `\n${indent(e.note)}` : ''}`).join('\n')
   if (ask) return `Answer about the Loom topic "${topicId}" (do not change any files):\n${list}\n\n${ask}\n`
-  return `Comments on the Loom topic "${topicId}":\n${list}\n`
+  return `Comments on the Loom topic "${topicId}":\n${list}\n${after}`
 }

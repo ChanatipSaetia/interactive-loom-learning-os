@@ -163,9 +163,10 @@
 
 .ai-panel {
   position: fixed;
-  z-index: 998; /* above the page, under the Pick tray and outline */
+  z-index: 998; /* above the page, under the Pick bar and outline */
   right: 0;
-  bottom: 0;
+  /* The Pick message bar docks under it. */
+  bottom: var(--pick-bar-height, 0px);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -179,7 +180,7 @@
 .ai-panel.is-narrow {
   left: 0;
   top: 8vh;
-  bottom: var(--ai-bar-height, 96px);
+  bottom: var(--pick-bar-height, 64px);
   border: 1px solid var(--border);
   border-radius: 14px 14px 0 0;
 }
@@ -219,24 +220,6 @@
 .ai-icon-button:hover:not(:disabled) { border-color: var(--border); color: var(--foreground); }
 .ai-icon-button:disabled { opacity: 0.4; cursor: default; }
 
-.ai-tabs {
-  display: inline-flex;
-  padding: 2px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-.ai-tabs button {
-  padding: 4px 14px;
-  border: 0;
-  border-radius: 6px;
-  background: none;
-  color: var(--muted-foreground);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-.ai-tabs button.is-active { background: var(--primary); color: var(--primary-foreground); }
-
 .ai-panel-model {
   display: flex;
   gap: 6px;
@@ -256,56 +239,6 @@
 }
 .ai-panel-model select { flex: 0 1 40%; }
 .ai-panel-model input { flex: 1 1 60%; font-family: var(--font-mono, monospace); }
-
-/* The message box at the foot of the panel. */
-.ai-composer {
-  padding: 8px 10px 10px;
-  border-top: 1px solid var(--border);
-}
-.ai-composer-picks {
-  margin: 0 0 6px;
-  font-size: 0.78rem;
-  color: var(--muted-foreground);
-}
-.ai-composer-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-}
-.ai-composer textarea {
-  flex: 1;
-  min-width: 0;
-  max-height: 30vh;
-  box-sizing: border-box;
-  resize: none;
-  padding: 7px 9px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--background);
-  color: var(--foreground);
-  font: inherit;
-  line-height: 1.4;
-}
-.ai-composer textarea:focus-visible { outline: 2px solid var(--primary); outline-offset: -1px; }
-.ai-composer-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--background);
-  color: var(--foreground);
-  cursor: pointer;
-}
-.ai-composer-button.is-primary {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--primary-foreground);
-}
-.ai-composer-button:disabled { opacity: 0.5; cursor: default; }
 
 .ai-messages {
   flex: 1;
@@ -385,19 +318,6 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-}
-.ai-panel-foot {
-  display: flex;
-  justify-content: center;
-  padding: 8px;
-  border-top: 1px solid var(--border);
-}
-.ai-panel-foot kbd {
-  padding: 0 4px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-size: 11px;
-  color: var(--muted-foreground);
 }
 
 /* --- Rendered replies (decision 61) ------------------------------------------- */

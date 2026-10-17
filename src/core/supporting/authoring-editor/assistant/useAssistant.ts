@@ -10,8 +10,7 @@
  * history do not already hold. The block is stored with the message, so the
  * next request repeats it unchanged.
  *
- * Messages are written in the panel's message box (with whatever the Pick
- * tray holds) or sent from the tray (`send`).
+ * Messages are written in the Pick message bar, which hands them to `send`.
  *
  * With an `editor` (Studio), replies may propose `oui-edit` blocks
  * (decisions 54 and 58): each finished reply is dry-run against the current
@@ -51,16 +50,6 @@ export interface AssistantDraft {
   mode: 'comment' | 'ask'
   message: string
   picks: ThreadPick[]
-}
-
-/** The Pick tray as the panel's message box sees it: its picks go with the next message. */
-export interface AssistantTray {
-  /** Places in the tray. */
-  count: number
-  /** The tray's draft: mode, its own message and picks. */
-  take(): AssistantDraft
-  /** Empty the tray after its draft was sent. */
-  clear(): void
 }
 
 /** Where Studio puts proposed edits: the editor buffers, never the disk. */
@@ -157,8 +146,6 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
   editorRef.current = editor
   const threadRef = useRef(thread)
   threadRef.current = thread
-  const trayRef = useRef<AssistantTray | null>(null)
-  const [trayCount, setTrayCount] = useState(0)
 
   const profile = activeProfile(settings)
   const busy = thread.messages.some((m) => m.status === 'streaming')
@@ -281,7 +268,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
   }, [app, fetchImpl, patchMessage, setThread, topicId])
 
   /**
-   * Send a draft from the tray. Resolves to true once it is sent (the tray
+   * Send a draft from the message bar. Resolves to true once it is sent (the bar
    * then clears); false when it was not (no profile yet, the notice was
    * declined, or a reply is still streaming).
    */
@@ -312,23 +299,6 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     void run([...thread.messages, message], profile)
     return true
   }, [busy, profile, run, thread.messages])
-
-  /** Send what was typed in the panel, together with the Pick tray's picks (which then clear). */
-  const sendMessage = useCallback(async (text: string): Promise<boolean> => {
-    const tray = trayRef.current
-    const draft = tray?.take()
-    const picks = draft?.picks ?? []
-    const message = [draft?.message.trim() ?? '', text.trim()].filter(Boolean).join('\n\n')
-    const ok = await send({ mode: picks.length && draft ? draft.mode : 'comment', message, picks })
-    if (ok && draft && (picks.length || draft.message.trim())) tray?.clear()
-    return ok
-  }, [send])
-
-  /** The Pick tray registers itself here (null when it goes away). */
-  const connectTray = useCallback((tray: AssistantTray | null) => {
-    trayRef.current = tray
-    setTrayCount(tray?.count ?? 0)
-  }, [])
 
   const answerNotice = useCallback((ok: boolean) => {
     setNotice(null)
@@ -431,10 +401,6 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     settingsOpen,
     notice,
     send,
-    sendMessage,
-    connectTray,
-    /** Places in the Pick tray, sent with the panel's next message. */
-    trayCount,
     stop,
     retry,
     newChat,

@@ -28,6 +28,13 @@ describe('Pick report', () => {
     )
   })
 
+  it('adds the message typed in the bar after the entries', () => {
+    expect(pickReport({ topicId: 'kafka', entries: [q5], message: ' Make it harder. ' }))
+      .toBe('kafka/sections/quiz-basics.oui:22 #q5\n\nMake it harder.\n')
+    expect(pickReport({ topicId: 'kafka', entries: [{ ...q5, note: 'Typo.' }], message: 'Thanks' }))
+      .toBe('Comments on the Loom topic "kafka":\n- kafka/sections/quiz-basics.oui:22 #q5\n  Typo.\n\nThanks\n')
+  })
+
   it('asks a question without changing files', () => {
     const report = pickReport({ topicId: 'kafka', entries: [q2, q5], question: ' Why do these differ? ' })
     expect(report).toBe(

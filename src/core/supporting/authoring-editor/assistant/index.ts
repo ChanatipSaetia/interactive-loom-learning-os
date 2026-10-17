@@ -71,4 +71,4 @@ export {
 } from './thread'
 export type { AssistantThread, EditHunkState, HistoryForRequest, ThreadMessage, ThreadMessageStatus, ThreadPick } from './thread'
 export { hostOf, retryMessage, useAssistant } from './useAssistant'
-export type { AssistantDraft, AssistantEditor, AssistantTray, AssistantState, RemoteNotice, UseAssistantOptions } from './useAssistant'
+export type { AssistantDraft, AssistantEditor, AssistantState, RemoteNotice, UseAssistantOptions } from './useAssistant'

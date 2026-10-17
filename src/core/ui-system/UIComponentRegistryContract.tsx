@@ -284,7 +284,8 @@ export function Modal({ open, onClose, title, children, maxWidth = 'lg' }: Modal
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      // Above the Pick bar and the AI assistant panel (z-index 999 and 998).
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -345,7 +346,7 @@ export function PageModal({ open, onClose, title, header, children, maxWidth = '
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[1100] overflow-y-auto bg-black/60 backdrop-blur-sm"
       onClick={onClose}
       role="dialog"
       aria-modal="true"

@@ -70,10 +70,9 @@ test('Viewer: picks go to the model with their current source, and replies strea
   await question.scrollIntoViewIfNeeded()
   await question.click({ modifiers: ['Alt'], position: { x: 8, y: 8 } })
   await expect(page.getByTestId('pick-entry')).toHaveCount(1)
-  // The panel's message box sends the picks with the message.
-  await expect(page.getByTestId('ai-composer-picks')).toContainText('1 picked place')
-  await page.getByTestId('ai-composer').fill('Is this question fair?')
-  await page.getByTestId('ai-composer').press('Enter')
+  // The message bar sends the picks with the message.
+  await page.getByTestId('pick-composer').fill('Is this question fair?')
+  await page.getByTestId('pick-composer').press('Enter')
 
   const reply = page.getByTestId('ai-reply')
   await expect(reply).toHaveAttribute('data-status', 'done')
@@ -93,8 +92,8 @@ test('Viewer: picks go to the model with their current source, and replies strea
   expect(user.content).toContain('- sections/quiz.oui #q1')
 
   // A follow-up sends the thread, with the earlier turns exactly as before.
-  await page.getByTestId('ai-composer').fill('Thanks')
-  await page.getByTestId('ai-composer').press('Enter')
+  await page.getByTestId('pick-composer').fill('Thanks')
+  await page.getByTestId('pick-composer').press('Enter')
   await expect(page.getByTestId('ai-reply')).toHaveCount(2)
   await expect(page.getByTestId('ai-reply').nth(1)).toHaveAttribute('data-status', 'done')
   expect(chats[1].messages.map((m) => m.role)).toEqual(['system', 'user', 'assistant', 'user'])
@@ -180,8 +179,8 @@ test('Studio: a proposed edit is applied to the buffer, and Save writes it', asy
     `q1 = QuizQuestion("q1", "Which directive keeps a response out of a CDN but lets the browser cache it?", [QuizChoice("a", "private", true, "Correct."), QuizChoice("b", "no-store", false, "That stops the browser too.")], "${hint}")`,
     '```',
   ].join('\n')
-  await page.getByTestId('ai-composer').fill(`REPLY<<${proposal}>>`)
-  await page.getByTestId('ai-composer').press('Enter')
+  await page.getByTestId('pick-composer').fill(`REPLY<<${proposal}>>`)
+  await page.getByTestId('pick-composer').press('Enter')
 
   const card = page.getByTestId('ai-edit')
   await expect(card).toBeVisible()
@@ -233,8 +232,8 @@ test('Studio: Apply all adds a new section and lists it in topic.oui, written on
     'root = Text("Summary", ["That is all."])',
     '```',
   ].join('\n')
-  await page.getByTestId('ai-composer').fill(`REPLY<<${proposal}>>`)
-  await page.getByTestId('ai-composer').press('Enter')
+  await page.getByTestId('pick-composer').fill(`REPLY<<${proposal}>>`)
+  await page.getByTestId('pick-composer').press('Enter')
   await expect(page.getByTestId('ai-edit')).toHaveCount(2)
   await expect(page.getByTestId('ai-proposal')).toContainText('The edits apply and validate.')
 

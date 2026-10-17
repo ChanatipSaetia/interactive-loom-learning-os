@@ -292,6 +292,8 @@ body {
 .studio-code-editor .cm-editor { height: 100%; }
 .studio-form { padding: 16px; }
 .studio-preview { flex: 1; overflow-y: auto; padding: 24px; }
+/* The end of the preview scrolls clear of the Pick message bar floating over it. */
+.studio-preview { padding-bottom: calc(var(--pick-bar-height, 0px) + 24px); }
 
 .studio-loading { padding: 16px; color: var(--muted-foreground); }
 .studio-hint { color: var(--muted-foreground); font-size: 13px; margin: 0 0 16px; }

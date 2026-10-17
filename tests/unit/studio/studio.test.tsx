@@ -76,9 +76,9 @@ describe('Loom Studio', () => {
     fireEvent.click(screen.getByTestId('pick-toggle'))
     fireEvent.click(await screen.findByText('Hello.'))
     fireEvent.click(screen.getByTestId('pick-row'))
-    expect(screen.getByTestId('pick-entry').textContent).toContain('demo/sections/intro.oui:1 #root.paragraphs[0]')
+    expect(screen.getByTestId('pick-editor').textContent).toContain('demo/sections/intro.oui:1 #root.paragraphs[0]')
     act(() => workspace.setSource('intro', '// Edited\nroot = Text("Intro", ["Hello."])\n'))
-    await waitFor(() => expect(screen.getByTestId('pick-entry').textContent).toContain('demo/sections/intro.oui:2 #root.paragraphs[0] (unsaved)'))
+    await waitFor(() => expect(screen.getByTestId('pick-editor').textContent).toContain('demo/sections/intro.oui:2 #root.paragraphs[0] (unsaved)'))
     localStorage.clear()
   })
 

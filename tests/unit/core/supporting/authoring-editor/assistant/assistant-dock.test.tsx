@@ -91,26 +91,26 @@ describe('AssistantDock with the Pick tray', () => {
     expect(screen.queryByTestId('ai-reply')).toBeNull()
   })
 
-  it('keeps asking from the panel, repeating the earlier turns unchanged so the server can reuse its cache', async () => {
+  it('keeps asking from the message bar, repeating the earlier turns unchanged so the server can reuse its cache', async () => {
     seed('http://localhost:11434/v1')
     const fetchImpl = mockFetch()
     render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
 
-    // The panel's message box sends the tray's picks with the message.
+    // The bar sends its picks with the message.
     fireEvent.click(screen.getByTestId('ai-toggle'))
-    expect(screen.getByTestId('ai-composer-picks')).toHaveTextContent('1 picked place')
-    fireEvent.change(screen.getByTestId('ai-composer'), { target: { value: 'Is it fair?' } })
-    fireEvent.keyDown(screen.getByTestId('ai-composer'), { key: 'Enter' })
+    fireEvent.change(screen.getByTestId('pick-composer'), { target: { value: 'Is it fair?' } })
+    fireEvent.keyDown(screen.getByTestId('pick-composer'), { key: 'Enter' })
     await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
     expect(screen.queryByTestId('pick-entry')).toBeNull()
-    expect(screen.getByTestId('ai-composer')).toHaveValue('')
+    expect(screen.getByTestId('pick-composer')).toHaveValue('')
+    // While a reply streams the bar shows Stop; it is Send again after.
     expect(screen.getByTestId('ai-chip')).toHaveTextContent('Check › q1')
 
     // A follow-up: Shift+Enter is a new line, Enter sends.
-    fireEvent.change(screen.getByTestId('ai-composer'), { target: { value: 'And q2?' } })
-    fireEvent.keyDown(screen.getByTestId('ai-composer'), { key: 'Enter', shiftKey: true })
+    fireEvent.change(screen.getByTestId('pick-composer'), { target: { value: 'And q2?' } })
+    fireEvent.keyDown(screen.getByTestId('pick-composer'), { key: 'Enter', shiftKey: true })
     expect(fetchImpl.mock.calls.filter(([u]) => u.endsWith('/chat/completions'))).toHaveLength(1)
-    fireEvent.keyDown(screen.getByTestId('ai-composer'), { key: 'Enter' })
+    fireEvent.keyDown(screen.getByTestId('pick-composer'), { key: 'Enter' })
     await waitFor(() => expect(screen.getAllByTestId('ai-reply')[1]).toHaveAttribute('data-status', 'done'))
 
     const [first, second] = fetchImpl.mock.calls
