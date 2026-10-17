@@ -36,6 +36,9 @@ export interface FileStatement {
   name: string
   /** 1-based line the statement starts on. */
   line: number
+  /** Offsets of the statement in the source (name to end of expression). */
+  start: number
+  end: number
   text: string
   /** Component at the top of the expression, e.g. `QuizQuestion`. */
   component?: string
@@ -76,6 +79,8 @@ export function fileStatements(source: string): FileStatement[] {
     return {
       name: statement.name,
       line: lineOf(statement.start),
+      start: statement.start,
+      end: statement.end,
       text: source.slice(statement.start, statement.end),
       component: statement.component,
       calls: [...calls],

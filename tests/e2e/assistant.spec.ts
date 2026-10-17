@@ -144,3 +144,106 @@ test('Studio: the request carries unsaved edits', async ({ page }) => {
   expect(system).toContain('### sections/quiz.oui (whole file) (unsaved edits)')
   expect(system).toContain('// Draft note')
 })
+
+test('Studio: a proposed edit is applied to the buffer, and Save writes it', async ({ page }) => {
+  const chats = captureChats(page)
+  await page.goto('/studio.html')
+  await page.evaluate(async (files) => {
+    const root = await navigator.storage.getDirectory()
+    await root.removeEntry('assistant-edit', { recursive: true }).catch(() => {})
+    const dir = await root.getDirectoryHandle('assistant-edit', { create: true })
+    for (const [rel, text] of Object.entries(files)) {
+      const parts = rel.split('/')
+      let d = dir
+      for (const p of parts.slice(0, -1)) d = await d.getDirectoryHandle(p, { create: true })
+      const w = await (await d.getFileHandle(parts[parts.length - 1], { create: true })).createWritable()
+      await w.write(text)
+      await w.close()
+    }
+    await (window as unknown as { __loomStudio: { openFolder(d: FileSystemDirectoryHandle): Promise<void> } }).__loomStudio.openFolder(dir)
+  }, topicFiles())
+  await expect(page.getByTestId('studio-workspace')).toBeVisible()
+  await connect(page)
+
+  // The mock answers `REPLY<<…>>` with exactly that text: here, an edit to the quiz's hint.
+  const hint = 'Shared caches are CDNs and proxies.'
+  const proposal = [
+    'I made the hint more concrete.',
+    '',
+    '```oui-edit file=sections/quiz.oui',
+    `q1 = QuizQuestion("q1", "Which directive keeps a response out of a CDN but lets the browser cache it?", [QuizChoice("a", "private", true, "Correct."), QuizChoice("b", "no-store", false, "That stops the browser too.")], "${hint}")`,
+    '```',
+  ].join('\n')
+  await page.getByTestId('pick-composer').fill(`REPLY<<${proposal}>>`)
+  await page.getByTestId('pick-send').click()
+
+  const card = page.getByTestId('ai-edit')
+  await expect(card).toBeVisible()
+  await expect(page.getByTestId('ai-proposal')).toContainText('The edits apply and validate.')
+  await expect(page.getByTestId('ai-edit-diff')).toContainText(hint)
+  expect(chats).toHaveLength(1)
+  expect(chats[0].messages[0].content).toContain('## Proposing Changes')
+
+  await page.getByTestId('ai-edit-apply').click()
+  await expect(card).toHaveAttribute('data-state', 'applied')
+  await expect(page.getByTestId('studio-save')).toContainText('Save (1)')
+  await expect(page.locator('.cm-content')).toContainText(hint)
+
+  await page.getByTestId('studio-save').click()
+  await expect(page.getByTestId('studio-save')).toContainText('Saved')
+  const saved = await page.evaluate(async () => {
+    const dir = await (await (await navigator.storage.getDirectory()).getDirectoryHandle('assistant-edit')).getDirectoryHandle('sections')
+    return (await (await dir.getFileHandle('quiz.oui')).getFile()).text()
+  })
+  expect(saved).toContain(hint)
+})
+
+test('Studio: Apply all adds a new section and lists it in topic.oui, written on Save', async ({ page }) => {
+  await page.goto('/studio.html')
+  await page.evaluate(async () => {
+    const root = await navigator.storage.getDirectory()
+    await root.removeEntry('assistant-create', { recursive: true }).catch(() => {})
+    const dir = await root.getDirectoryHandle('assistant-create', { create: true })
+    const write = async (d: FileSystemDirectoryHandle, name: string, text: string) => {
+      const w = await (await d.getFileHandle(name, { create: true })).createWritable()
+      await w.write(text)
+      await w.close()
+    }
+    await write(dir, 'topic.oui', 'root = Topic("Create", "Demo", "A demo.", [SectionRef("intro")])\n')
+    await write(await dir.getDirectoryHandle('sections', { create: true }), 'intro.oui', 'root = Text("Intro", ["Hello."])\n')
+    await (window as unknown as { __loomStudio: { openFolder(d: FileSystemDirectoryHandle): Promise<void> } }).__loomStudio.openFolder(dir)
+  })
+  await expect(page.getByTestId('studio-workspace')).toBeVisible()
+  await connect(page)
+
+  const proposal = [
+    'Added a summary section.',
+    '',
+    '```oui-edit file=topic.oui',
+    'root = Topic("Create", "Demo", "A demo.", [SectionRef("intro"), SectionRef("summary")])',
+    '```',
+    '',
+    '```oui-edit file=sections/summary.oui mode=create',
+    'root = Text("Summary", ["That is all."])',
+    '```',
+  ].join('\n')
+  await page.getByTestId('pick-composer').fill(`REPLY<<${proposal}>>`)
+  await page.getByTestId('pick-send').click()
+  await expect(page.getByTestId('ai-edit')).toHaveCount(2)
+  await expect(page.getByTestId('ai-proposal')).toContainText('The edits apply and validate.')
+
+  await page.getByTestId('ai-edit-apply-all').click()
+  await expect(page.locator('[data-testid="ai-edit"][data-state="applied"]')).toHaveCount(2)
+  await expect(page.getByTestId('studio-section-summary')).toBeVisible()
+  await expect(page.getByTestId('studio-save')).toContainText('Save (2)')
+
+  await page.getByTestId('studio-save').click()
+  await expect(page.getByTestId('studio-save')).toContainText('Saved')
+  const saved = await page.evaluate(async () => {
+    const dir = await (await navigator.storage.getDirectory()).getDirectoryHandle('assistant-create')
+    const read = async (d: FileSystemDirectoryHandle, name: string) => (await (await d.getFileHandle(name)).getFile()).text()
+    return { topic: await read(dir, 'topic.oui'), summary: await read(await dir.getDirectoryHandle('sections'), 'summary.oui') }
+  })
+  expect(saved.topic).toContain('SectionRef("summary")')
+  expect(saved.summary).toContain('That is all.')
+})

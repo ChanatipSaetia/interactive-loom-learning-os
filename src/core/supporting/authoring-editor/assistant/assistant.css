@@ -393,3 +393,83 @@
 .ai-tok-number, .ai-tok-keyword { color: var(--ctp-peach, var(--foreground)); }
 .ai-tok-comment { color: var(--muted-foreground); font-style: italic; }
 .ai-tok-state, .ai-tok-builtin { color: var(--ctp-mauve, var(--foreground)); }
+
+/* --- Edit cards (Studio, decisions 54 and 58) ---------------------------------- */
+
+.ai-edit {
+  margin: 0 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  overflow: hidden;
+}
+.ai-edit.is-applied { border-color: color-mix(in srgb, var(--ctp-green, var(--primary)) 55%, var(--border)); }
+.ai-edit.is-rejected { opacity: 0.7; }
+.ai-edit.is-failed { border-color: color-mix(in srgb, var(--destructive) 50%, var(--border)); }
+.ai-edit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.ai-edit-file { font: 600 12px/1.4 var(--font-mono, monospace); }
+.ai-edit-summary { color: var(--muted-foreground); }
+.ai-edit-state {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.ai-edit-state--applied { background: color-mix(in srgb, var(--ctp-green, var(--primary)) 20%, transparent); color: var(--ctp-green, var(--primary)); }
+.ai-edit-state--rejected { background: color-mix(in srgb, var(--foreground) 10%, transparent); color: var(--muted-foreground); }
+.ai-edit-state--failed { background: color-mix(in srgb, var(--destructive) 15%, transparent); color: var(--destructive); }
+.ai-edit-error {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 10px;
+  color: var(--destructive);
+  font-size: 12px;
+}
+.ai-edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--border);
+}
+.ai-edit-actions .ai-button { padding: 4px 10px; font-size: 12px; }
+.ai-diff {
+  margin: 0;
+  max-height: 320px;
+  overflow: auto;
+  padding: 6px 0;
+  font: 12px/1.5 var(--font-mono, monospace);
+}
+.ai-diff > span { display: block; padding: 0 10px; white-space: pre; }
+.ai-diff-add { background: color-mix(in srgb, var(--ctp-green, #40a02b) 16%, transparent); }
+.ai-diff-remove { background: color-mix(in srgb, var(--destructive) 14%, transparent); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--destructive) 60%, transparent); }
+.ai-diff-gap { color: var(--muted-foreground); text-align: center; }
+.ai-proposal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.ai-proposal .ai-note { flex-basis: 100%; }
+.ai-proposal-ok { display: inline-flex; align-items: center; gap: 6px; color: var(--ctp-green, var(--primary)); font-size: 12px; font-weight: 600; }
+.ai-proposal-problems {
+  flex-basis: 100%;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--ctp-yellow, var(--destructive)) 50%, var(--border));
+  border-radius: 8px;
+  font-size: 12px;
+}
+.ai-proposal-problems strong { display: inline-flex; align-items: center; gap: 6px; }
+.ai-proposal-problems ul, .ai-auto-problems { margin: 4px 0 0; padding-left: 18px; list-style: disc; }
+.ai-message--user.is-auto { background: color-mix(in srgb, var(--ctp-yellow, var(--primary)) 10%, var(--card)); font-size: 12px; }

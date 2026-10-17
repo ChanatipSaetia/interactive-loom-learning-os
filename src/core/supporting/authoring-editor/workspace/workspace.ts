@@ -211,6 +211,30 @@ export class TopicWorkspace {
     this.emit()
   }
 
+  /**
+   * Add a section without writing anything: the file and topic.oui are
+   * written by `save()` (an AI assistant's proposal, grill-log-ai-assistant.md).
+   */
+  insertSection(name: string, source: string, index = this.sections.length) {
+    const problem = this.checkSectionName(name)
+    if (problem) throw new WorkspaceError(problem)
+    const sections = [...this.sections]
+    sections.splice(Math.max(0, Math.min(index, sections.length)), 0, TopicWorkspace.sectionState(this.folder.name, name, source, ''))
+    this.sections = sections
+    this.emit()
+  }
+
+  /** Put the sections in `names` order without writing (saved with topic.oui). Every section must be listed once. */
+  setSectionOrder(names: readonly string[]) {
+    const byName = new Map(this.sections.map((s) => [s.name, s]))
+    if (names.length !== byName.size || names.some((n) => !byName.has(n)) || new Set(names).size !== names.length) {
+      throw new WorkspaceError('The section order must list every section exactly once.')
+    }
+    if (names.join('\n') === this.sections.map((s) => s.name).join('\n')) return
+    this.sections = names.map((n) => byName.get(n)!)
+    this.emit()
+  }
+
   dismissNotices() {
     this.notices = []
     this.emit()

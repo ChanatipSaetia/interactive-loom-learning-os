@@ -49,8 +49,24 @@ const ANSWER_RULES: Record<AssistantApp, string> = {
 
 - Places are written as \`<file> #<anchor>\`, e.g. \`sections/quiz-basics.oui #q2.explanation\`: the statement \`q2\` in that file, then a path to one of its props. Refer to places the same way.
 - The current source of the picked statements is given in <topic-context>. Base your answer on it, not on earlier versions in the conversation.
-- You cannot change the files yourself. When you suggest a change, show the complete new statement in an \`oui\` code block and say which file it belongs to.
-- Answer briefly and concretely. Use markdown; do not use images or HTML.`,
+- Answer briefly and concretely. Use markdown; do not use images or HTML.
+
+## Proposing Changes
+
+When the person asks for a change (comments on picked places are change requests), propose it as edit blocks. Studio shows each block as a diff that the person applies or rejects; nothing changes until they do. For a question, answer without edit blocks unless asked.
+
+Write one fenced block per file, with the file's path inside the topic:
+
+\`\`\`oui-edit file=sections/quiz-basics.oui
+q2 = QuizQuestion("q2", "Why do consumers commit offsets?", [c1, c2], "Think about restarts.")
+\`\`\`
+
+- Each block holds complete statements, \`name = Expression\`. A statement whose name exists in that file replaces it; a new name is added after the statements the block changed. To remove a statement, write \`name = DELETE\`.
+- Always write the whole statement, even when one prop changes. Never write partial statements, "...", diffs or line numbers.
+- Change only what the request needs; leave every other statement out of the block. Keep IDs and statement names unless asked to rename them.
+- To add a section, write the whole new file as \`oui-edit file=sections/<name>.oui mode=create\`, plus an \`oui-edit file=topic.oui\` block whose \`root = Topic(...)\` lists the new \`SectionRef("<name>")\` where it belongs. Removing a section is done in Studio, not with edit blocks.
+- Every statement you add must be referenced by another statement (or be \`root\`), and every reference must exist after your change.
+- Outside the blocks, say in a sentence or two what you changed and why.`,
   viewer: `## How to Answer
 
 - Places are written as \`<file> #<anchor>\`, e.g. \`sections/quiz-basics.oui #q2.explanation\`: the statement \`q2\` in that file, then a path to one of its props. Refer to places the same way.

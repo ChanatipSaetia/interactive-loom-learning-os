@@ -13,6 +13,7 @@ import { useNarrow } from '../pick/PickMode'
 import type { PickResolver } from '../pick/tray'
 import { statementOfAnchor } from '../pick/tray'
 import { AssistantMarkdown } from './AssistantMarkdown'
+import { EditCard, ProposalBar, useEditBlocks } from './AssistantEdits'
 import { AssistantSettingsDialog } from './AssistantSettingsDialog'
 import { failureHint, type AssistantPresetId } from './presets'
 import { historyForRequest, type ThreadMessage, type ThreadPick } from './thread'
@@ -115,14 +116,20 @@ const FAILURE_TITLES: Partial<Record<AssistantFailureKind, string>> = {
   'invalid-url': 'Not a valid base URL',
 }
 
-function Reply({ message, preset, last, onRetry }: { message: ThreadMessage; preset: AssistantPresetId; last: boolean; onRetry: () => void }) {
+function Reply({ assistant, message, preset, last, onRetry }: { assistant: AssistantState; message: ThreadMessage; preset: AssistantPresetId; last: boolean; onRetry: () => void }) {
   const streaming = message.status === 'streaming'
+  const blocks = useEditBlocks(message)
+  // Studio turns oui-edit blocks into edit cards; elsewhere they stay code.
+  const renderEdit = assistant.canEdit
+    ? (index: number) => (blocks[index] ? <EditCard assistant={assistant} message={message} block={blocks[index]} /> : null)
+    : undefined
   const failed = message.status === 'error' && message.error
   const page = typeof location !== 'undefined' ? location : undefined
   return (
     <div className="ai-message ai-message--assistant" data-testid="ai-reply" data-status={message.status}>
-      {message.text ? <AssistantMarkdown text={message.text} /> : streaming ? <p className="ai-thinking"><Loader2 size={14} className="ai-spin" /> Thinking…</p> : null}
+      {message.text ? <AssistantMarkdown text={message.text} renderEdit={renderEdit} /> : streaming ? <p className="ai-thinking"><Loader2 size={14} className="ai-spin" /> Thinking…</p> : null}
       {message.status === 'stopped' && <p className="ai-note">(stopped)</p>}
+      {assistant.canEdit && <ProposalBar assistant={assistant} message={message} />}
       {failed && (
         <div className="ai-test-fail" role="alert">
           <strong><AlertTriangle size={14} /> {FAILURE_TITLES[message.error!.kind as AssistantFailureKind] ?? 'Request failed'}</strong>
@@ -307,13 +314,15 @@ export function AssistantDock({ assistant, resolve, onShowPicks, fetchImpl }: As
                   <p className="ai-cut" data-testid="ai-cut">Earlier messages are not sent: they do not fit the token budget.</p>
                 )}
                 {message.role === 'user' ? (
-                  <div className="ai-message ai-message--user" data-testid="ai-user-message">
+                  <div className={`ai-message ai-message--user${message.auto ? ' is-auto' : ''}`} data-testid="ai-user-message">
+                    {message.auto && <span className="ai-note">Sent by Studio: the proposed edits did not check out</span>}
                     {message.picks && message.picks.length > 0 && <PickChips picks={message.picks} resolve={resolve} />}
-                    {message.text && <p className="ai-user-text">{message.text}</p>}
+                    {message.text && !message.auto && <p className="ai-user-text">{message.text}</p>}
+                    {message.auto && <ul className="ai-auto-problems">{message.text.split('\n').filter((l) => l.startsWith('- ')).map((l, i) => <li key={i}>{l.slice(2)}</li>)}</ul>}
                     {message.mode === 'ask' && <span className="ai-note">Question</span>}
                   </div>
                 ) : (
-                  <Reply message={message} preset={profile?.preset ?? 'custom'} last={index === lastIndex} onRetry={assistant.retry} />
+                  <Reply assistant={assistant} message={message} preset={profile?.preset ?? 'custom'} last={index === lastIndex} onRetry={assistant.retry} />
                 )}
               </div>
             ))}

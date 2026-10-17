@@ -1,6 +1,6 @@
 # Grill Log — AI Assistant for Pick in Studio and Viewer
 
-Status: **Phases 1–2 done (connection, answer-only chat); phases 3–4 open**
+Status: **Phases 1–3 done (connection, chat, Studio edits); phase 4 (docs) open**
 
 ## Goal
 
@@ -81,6 +81,23 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 - Phones: the open chat is a sheet above the tray, which becomes a one-line message bar; its "N picked" button is the Picks tab and turns Pick mode on.
 - Code blocks in replies are highlighted only when they are openui-lang (`oui` or unlabelled `name = Component(`); other languages show as plain monospace.
 - Tests: `tests/unit/core/learning-engine/composition/oui/assistant-prompt.test.ts`; `assistant/{context,thread,markdown,assistant-dock}.test.*` (send and clear, remote notice accepted and declined, no profile, failure and Retry); `tests/e2e/assistant.spec.ts` against the mock server (Viewer: pick, send, follow-up, thread after reload; Studio: the request carries unsaved edits). The existing Studio e2e tests still pass.
+
+## Phase 3 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| `oui-edit` blocks: `parseEditBlocks` (same `marked` walk as the renderer, so block n is card n; paths like `kafka/sections/x.oui` are normalised), `applyEditBlock` (replace / add after the last touched statement / `DELETE` / `mode=create`), `applyOrder` (new files, sections, then topic.oui), `checkProposal` (dry run + validation, ignoring errors the file already had), `diffLines` | `assistant/edits.ts` |
+| Studio rules in the prompt ("Proposing Changes": the block format, whole statements only, new sections with a topic.oui block) | `composition/oui/assistant-prompt.ts` |
+| After each reply in Studio: parse, dry-run, store per-block state (`edits`) and `problems`; when there are problems, a user message marked `auto` sends them back once (`retryMessage`) | `assistant/useAssistant.ts` (`AssistantEditor`, `applyEdit`, `applyAllEdits`, `rejectEdit`, `showEdit`) |
+| History: each block goes back as `[Proposed edit to <file>: applied / rejected / pending / failed: …]` | `assistant/thread.ts` |
+| Edit cards (diff against the current buffer, Apply, Reject, Show in code; Show proposal once decided) and the proposal bar (Apply all, dry-run result) | `assistant/AssistantEdits.tsx`; `AssistantMarkdown` renders `oui-edit` blocks through `renderEdit` |
+| Studio's editor: section blocks go to `setSource`, new sections to `insertSection`, topic.oui to `updateMetadata` + `setSectionOrder`; Show in code selects the section and flashes the statement | `src/studio/components/StudioWorkspace.tsx`; `TopicWorkspace.insertSection` / `setSectionOrder` (buffered, written by Save) |
+
+- **Deviation from decision 54:** the diff is shown in the edit card, not inline in the code editor. Apply puts the new text in the buffer (marked unsaved, with the usual diagnostics and preview) and Show in code flashes the statement there; Save writes the files.
+- **Deviation from decision 58:** a statement name that does not exist in the file is always added; there is no "does not look new" check. Wrong additions show up in the dry run when they break references; an added statement nothing references is only a warning, as when typed by hand.
+- Removing a section from topic.oui is refused when applied ("Remove sections with Delete in the section list"): Delete stays the one way to remove files. Blocks can be applied even when the dry run found problems; the card and the bar say what is wrong.
+- In Viewer, `oui-edit` blocks (which its prompt never asks for) render as highlighted code.
+- Tests: `assistant/edits.test.ts`; Studio cases in `assistant-dock.test.tsx` (apply, reject, the automatic retry and what it sends); `thread.test.ts` (edit outcomes in the history); `workspace.test.ts` (buffered insert and reorder); `tests/e2e/assistant.spec.ts` (an applied edit is saved; Apply all adds a section and its SectionRef, written on Save).
 
 ## Open Questions
 

@@ -6,6 +6,17 @@
 export { AssistantDock, AssistantToggle, pickBridgeOf } from './AssistantPanel'
 export type { AssistantDockProps } from './AssistantPanel'
 export { AssistantMarkdown } from './AssistantMarkdown'
+export { EditCard, ProposalBar } from './AssistantEdits'
+export {
+  applyEditBlock,
+  applyOrder,
+  checkProposal,
+  diffLines,
+  parseEditBlock,
+  parseEditBlocks,
+  sectionNameOf,
+} from './edits'
+export type { DiffLine, EditBlock, EditStatement, HunkResult, ProposalCheck, StatementChange } from './edits'
 export { AssistantSettingsDialog } from './AssistantSettingsDialog'
 export type { AssistantSettingsDialogProps } from './AssistantSettingsDialog'
 export {
@@ -53,6 +64,6 @@ export {
   threadPointers,
   userMessageContent,
 } from './thread'
-export type { AssistantThread, HistoryForRequest, ThreadMessage, ThreadMessageStatus, ThreadPick } from './thread'
-export { hostOf, useAssistant } from './useAssistant'
-export type { AssistantDraft, AssistantState, RemoteNotice, UseAssistantOptions } from './useAssistant'
+export type { AssistantThread, EditHunkState, HistoryForRequest, ThreadMessage, ThreadMessageStatus, ThreadPick } from './thread'
+export { hostOf, retryMessage, useAssistant } from './useAssistant'
+export type { AssistantDraft, AssistantEditor, AssistantState, RemoteNotice, UseAssistantOptions } from './useAssistant'

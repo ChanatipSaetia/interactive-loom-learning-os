@@ -6,11 +6,18 @@
  * Every request is built afresh: the system prompt for the components in
  * play, the <topic-context> block from the current sources (`getContext`),
  * and as much of the thread as the profile's token budget allows.
+ *
+ * With an `editor` (Studio), replies may propose `oui-edit` blocks
+ * (decisions 54 and 58): each finished reply is dry-run against the current
+ * buffers, and when the result does not validate the problems go back to the
+ * model once, automatically. Applying a block writes the buffer only; Save
+ * writes the files.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getLoomAssistantPrompt, type AssistantApp } from '../../../learning-engine/composition/oui/assistant-prompt'
 import { AssistantError, chatCompletion, isLoopbackHost, listModels } from './client'
 import { buildTopicContext, type AssistantTopicContext } from './context'
+import { applyEditBlock, applyOrder, checkProposal, parseEditBlocks } from './edits'
 import {
   activeProfile,
   connectionOf,
@@ -27,6 +34,7 @@ import {
   saveThread,
   threadPointers,
   type AssistantThread,
+  type EditHunkState,
   type ThreadMessage,
   type ThreadPick,
 } from './thread'
@@ -37,11 +45,26 @@ export interface AssistantDraft {
   picks: ThreadPick[]
 }
 
+/** Where Studio puts proposed edits: the editor buffers, never the disk. */
+export interface AssistantEditor {
+  /** Put a file's new text into the buffers; returns why it could not, or null. */
+  write(file: string, source: string): string | null
+  /** Show a statement in the code editor. */
+  reveal(file: string, statement?: string): void
+}
+
+/** The message Studio sends itself when a proposal does not validate. */
+export function retryMessage(problems: readonly string[]): string {
+  return `Your proposed edits do not check out:\n${problems.map((p) => `- ${p}`).join('\n')}\n\nSend corrected oui-edit blocks (complete statements) for the files involved.`
+}
+
 export interface UseAssistantOptions {
   topicId: string
   app: AssistantApp
   /** The topic as it is now; called when a request is built. */
   getContext: () => AssistantTopicContext
+  /** Studio: lets replies propose edits that are applied to the buffers. */
+  editor?: AssistantEditor
   /** For tests: replaces `fetch`. */
   fetchImpl?: typeof fetch
 }
@@ -98,7 +121,7 @@ export interface RemoteNotice {
   profileName: string
 }
 
-export function useAssistant({ topicId, app, getContext, fetchImpl }: UseAssistantOptions) {
+export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: UseAssistantOptions) {
   const [settings, setSettings] = useState<AssistantSettings>(loadAssistantSettings)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
@@ -112,6 +135,10 @@ export function useAssistant({ topicId, app, getContext, fetchImpl }: UseAssista
   panelOpenRef.current = panelOpen
   const contextRef = useRef(getContext)
   contextRef.current = getContext
+  const editorRef = useRef(editor)
+  editorRef.current = editor
+  const threadRef = useRef(thread)
+  threadRef.current = thread
 
   const profile = activeProfile(settings)
   const busy = thread.messages.some((m) => m.status === 'streaming')
@@ -154,8 +181,12 @@ export function useAssistant({ topicId, app, getContext, fetchImpl }: UseAssista
     setThread((t) => ({ messages: t.messages.map((m) => (m.id === id ? { ...m, ...(typeof patch === 'function' ? patch(m) : patch) } : m)) }))
   }, [setThread])
 
-  /** Ask the model about `messages` (which end with the user's message). */
-  const run = useCallback(async (messages: ThreadMessage[], profile: AssistantProfile) => {
+  /**
+   * Ask the model about `messages` (which end with the user's message).
+   * `retry` marks the automatic second request after a proposal that did
+   * not validate; it never triggers another one.
+   */
+  const run = useCallback(async (messages: ThreadMessage[], profile: AssistantProfile, retry = false): Promise<void> => {
     const controller = new AbortController()
     abort.current?.abort()
     abort.current = controller
@@ -172,6 +203,7 @@ export function useAssistant({ topicId, app, getContext, fetchImpl }: UseAssista
     const context = buildTopicContext(contextRef.current(), threadPointers(messages))
     const system = `${getLoomAssistantPrompt({ app, components: context.components, fullReference: profile.fullReference })}\n\n${context.text}`
     const history = historyForRequest(messages, profile.tokenBudget)
+    let followUp: ThreadMessage[] | null = null
     try {
       const result = await chatCompletion(
         connectionOf(profile),
@@ -183,7 +215,18 @@ export function useAssistant({ topicId, app, getContext, fetchImpl }: UseAssista
         },
         { fetch: fetchImpl },
       )
-      patchMessage(reply.id, { text: result.text, status: 'done' })
+      const done: ThreadMessage = { ...reply, text: result.text, status: 'done' }
+      const blocks = editorRef.current ? parseEditBlocks(result.text) : []
+      if (blocks.length) {
+        const check = checkProposal(topicId, blocks, contextRef.current().files)
+        done.edits = blocks.map((b): EditHunkState => (b.error ? { state: 'failed', error: b.error } : { state: 'pending' }))
+        done.problems = check.problems
+        if (check.problems.length && !retry) {
+          const auto: ThreadMessage = { id: newMessageId(), role: 'user', text: retryMessage(check.problems), picks: [], mode: 'comment', auto: true, at: Date.now() }
+          followUp = [...messages, done, auto]
+        }
+      }
+      patchMessage(reply.id, { text: done.text, status: 'done', edits: done.edits, problems: done.problems })
     } catch (error) {
       const failure = error instanceof AssistantError ? error : new AssistantError('bad-response', String(error))
       if (failure.kind === 'aborted') {
@@ -193,9 +236,10 @@ export function useAssistant({ topicId, app, getContext, fetchImpl }: UseAssista
       }
     } finally {
       if (abort.current === controller) abort.current = null
-      if (!panelOpenRef.current) setUnread(true)
+      if (!panelOpenRef.current && !followUp) setUnread(true)
     }
-  }, [app, fetchImpl, patchMessage, setThread])
+    if (followUp && !controller.signal.aborted) await run(followUp, profile, true)
+  }, [app, fetchImpl, patchMessage, setThread, topicId])
 
   /**
    * Send a draft from the tray. Resolves to true once it is sent (the tray
@@ -246,6 +290,50 @@ export function useAssistant({ topicId, app, getContext, fetchImpl }: UseAssista
     if (messages.length) void run(messages, profile)
   }, [busy, profile, run, thread.messages])
 
+  const setHunk = useCallback((messageId: string, index: number, hunk: EditHunkState) => {
+    patchMessage(messageId, (m) => {
+      const edits = [...(m.edits ?? [])]
+      edits[index] = hunk
+      return { edits }
+    })
+  }, [patchMessage])
+
+  /** Apply one proposed block to the buffers; returns the changed statement to show, if any. */
+  const applyOne = useCallback((message: ThreadMessage, index: number): { file: string; statement?: string } | null => {
+    const target = editorRef.current
+    const block = parseEditBlocks(message.text)[index]
+    if (!target || !block) return null
+    const result = applyEditBlock(contextRef.current().files[block.file], block)
+    const error = result.ok ? target.write(block.file, result.source) : result.error ?? 'The edit could not be applied.'
+    setHunk(message.id, index, error ? { state: 'failed', error } : { state: 'applied' })
+    if (error) return null
+    return { file: block.file, statement: result.changes.find((c) => c.kind !== 'delete' && c.kind !== 'create')?.name ?? 'root' }
+  }, [setHunk])
+
+  const applyEdit = useCallback((messageId: string, index: number) => {
+    const message = threadRef.current.messages.find((m) => m.id === messageId)
+    if (!message) return
+    const shown = applyOne(message, index)
+    if (shown) editorRef.current?.reveal(shown.file, shown.statement)
+  }, [applyOne])
+
+  /** Apply every pending block: new files, then sections, then topic.oui. */
+  const applyAllEdits = useCallback((messageId: string) => {
+    const message = threadRef.current.messages.find((m) => m.id === messageId)
+    if (!message) return
+    let first: { file: string; statement?: string } | null = null
+    for (const block of applyOrder(parseEditBlocks(message.text))) {
+      if ((message.edits?.[block.index]?.state ?? 'pending') !== 'pending') continue
+      const shown = applyOne(message, block.index)
+      first ??= shown
+    }
+    if (first) editorRef.current?.reveal(first.file, first.statement)
+  }, [applyOne])
+
+  const rejectEdit = useCallback((messageId: string, index: number) => setHunk(messageId, index, { state: 'rejected' }), [setHunk])
+
+  const showEdit = useCallback((file: string, statement?: string) => editorRef.current?.reveal(file, statement), [])
+
   const newChat = useCallback(() => {
     abort.current?.abort()
     setThread(EMPTY_THREAD)
@@ -289,6 +377,13 @@ export function useAssistant({ topicId, app, getContext, fetchImpl }: UseAssista
     openSettings: () => setSettingsOpen(true),
     closeSettings: () => setSettingsOpen(false),
     answerNotice,
+    /** Studio: replies can propose edits. */
+    canEdit: !!editor,
+    currentFiles: () => contextRef.current().files,
+    applyEdit,
+    applyAllEdits,
+    rejectEdit,
+    showEdit,
     updateSettings,
     updateProfile,
     selectProfile,

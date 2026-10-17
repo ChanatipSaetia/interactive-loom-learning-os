@@ -7,11 +7,19 @@
  * the topic source or comments to whoever wrote the URL), and links show
  * their full address and open in a new tab without a referrer. Only
  * http(s) and mailto links are links. openui-lang code blocks are
- * highlighted with the editor's scanner.
+ * highlighted with the editor's scanner, and in Studio `oui-edit` blocks
+ * become edit cards (`renderEdit`).
  */
 import { Fragment, useMemo, type ReactNode } from 'react'
 import { marked, type Token, type Tokens } from 'marked'
 import { scan } from '../oui-language'
+import { isEditLang } from './edits'
+
+/** Where `oui-edit` blocks go: `renderEdit(n)` for the n-th one, in document order. */
+interface RenderContext {
+  renderEdit?: (index: number) => ReactNode
+  edits: number
+}
 
 const SAFE_LINK = /^(https?:|mailto:)/i
 
@@ -98,7 +106,7 @@ function inline(tokens: Token[] | undefined, key = ''): ReactNode[] {
   })
 }
 
-function block(tokens: Token[], key = ''): ReactNode[] {
+function block(tokens: Token[], ctx: RenderContext, key = ''): ReactNode[] {
   return tokens.map((token, i) => {
     const k = `${key}${i}`
     switch (token.type) {
@@ -112,6 +120,7 @@ function block(tokens: Token[], key = ''): ReactNode[] {
       }
       case 'code': {
         const code = token as Tokens.Code
+        if (ctx.renderEdit && isEditLang(code.lang)) return <Fragment key={k}>{ctx.renderEdit(ctx.edits++)}</Fragment>
         const lang = (code.lang ?? '').split(/\s/)[0].toLowerCase()
         const oui = OUI_LANGS.has(lang) || (!lang && looksLikeOUI(code.text))
         return (
@@ -121,10 +130,14 @@ function block(tokens: Token[], key = ''): ReactNode[] {
         )
       }
       case 'blockquote':
-        return <blockquote key={k}>{block((token as Tokens.Blockquote).tokens, k)}</blockquote>
+        return <blockquote key={k}>{block((token as Tokens.Blockquote).tokens, ctx, k)}</blockquote>
       case 'list': {
         const list = token as Tokens.List
-        const items = list.items.map((item, j) => <li key={j}>{item.loose ? block(item.tokens, `${k}.${j}`) : inline(item.tokens, `${k}.${j}`)}</li>)
+        // Tight items hold inline text; anything else (a code block in a list) renders as blocks.
+        const items = list.items.map((item, j) => {
+          const blocks = item.loose || item.tokens.some((t) => t.type !== 'text' && t.type !== 'checkbox')
+          return <li key={j}>{blocks ? block(item.tokens, ctx, `${k}.${j}`) : inline(item.tokens, `${k}.${j}`)}</li>
+        })
         return list.ordered
           ? <ol key={k} start={typeof list.start === 'number' && list.start !== 1 ? list.start : undefined}>{items}</ol>
           : <ul key={k}>{items}</ul>
@@ -159,7 +172,7 @@ function block(tokens: Token[], key = ''): ReactNode[] {
   })
 }
 
-export function AssistantMarkdown({ text }: { text: string }) {
+export function AssistantMarkdown({ text, renderEdit }: { text: string; renderEdit?: (index: number) => ReactNode }) {
   const tokens = useMemo(() => {
     try {
       return marked.lexer(text, { gfm: true })
@@ -168,5 +181,5 @@ export function AssistantMarkdown({ text }: { text: string }) {
     }
   }, [text])
   if (!tokens) return <div className="ai-md"><p>{text}</p></div>
-  return <div className="ai-md">{block(tokens)}</div>
+  return <div className="ai-md">{block(tokens, { renderEdit, edits: 0 })}</div>
 }

@@ -57,6 +57,15 @@ describe('assistant thread', () => {
     expect(history.messages[1].content).toBe('Half\n\n(stopped before the end)')
   })
 
+  it('sends proposed edits back as one line each with their outcome', () => {
+    const text = 'Two fixes.\n\n```oui-edit file=sections/quiz.oui\nq1 = QuizQuestion("q1", "?", [])\n```\n\n```oui-edit file=sections/new.oui mode=create\nroot = Text("New", [])\n```\n\n```oui-edit file=topic.oui\nroot = Topic()\n```'
+    const message = reply('2', text, { edits: [{ state: 'applied' }, { state: 'failed', error: 'nope' }] })
+    const history = historyForRequest([user('1', 'Fix it'), message], 1000)
+    expect(history.messages[1].content).toBe(
+      'Two fixes.\n\n[Proposed edit to sections/quiz.oui: applied]\n\n[Proposed edit to sections/new.oui: failed: nope]\n\n[Proposed edit to topic.oui: pending]',
+    )
+  })
+
   it('collects every picked place once', () => {
     const pick = { file: 'a.oui', anchor: 'q1', label: '', note: '' }
     expect(threadPointers([user('1', '', { picks: [pick] }), reply('2', 'ok'), user('3', '', { picks: [pick, { ...pick, anchor: 'q2' }] })])).toEqual([

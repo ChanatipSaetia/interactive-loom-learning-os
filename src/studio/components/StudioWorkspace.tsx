@@ -10,7 +10,16 @@ import {
   readTopicArchive,
 } from '../../core/supporting/authoring-editor/workspace'
 import { PickMode, PickToggle, sourceResolver, statementOfAnchor, type PickModeApi, type PickTarget } from '../../core/supporting/authoring-editor/pick'
-import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext } from '../../core/supporting/authoring-editor/assistant'
+import {
+  AssistantDock,
+  AssistantToggle,
+  pickBridgeOf,
+  sectionNameOf,
+  useAssistant,
+  type AssistantEditor,
+  type AssistantTopicContext,
+} from '../../core/supporting/authoring-editor/assistant'
+import { compileOUITopic } from '../../core/learning-engine/composition/oui/compile'
 import { ThemeToggle } from '../../core/ui-system/motion/theme-toggle'
 import { LoomToolsNav } from '../../core/delivery/web-app-shell/LoomToolsNav'
 import { useWorkspace } from '../useWorkspace'
@@ -82,7 +91,44 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
       unsaved,
     }
   }, [workspace])
-  const assistant = useAssistant({ topicId: snap.topicId, app: 'studio', getContext: getAssistantContext })
+  // Applied proposals go into the buffers (unsaved) and show in the code; Save writes them.
+  const assistantEditor = useMemo((): AssistantEditor => ({
+    write(file, source) {
+      try {
+        if (file === 'topic.oui') {
+          const topic = compileOUITopic(source)
+          const errors = topic.issues.filter((i) => i.tier < 3)
+          if (!topic.value || errors.length) return `topic.oui would not compile: ${errors[0]?.message ?? 'no Topic(...) root'}`
+          const { sections, ...metadata } = topic.value
+          const current = workspace.getSnapshot().sections.map((s) => s.name)
+          const unknown = sections.filter((name) => !current.includes(name))
+          if (unknown.length) return `Apply the new section sections/${unknown[0]}.oui first.`
+          const missing = current.filter((name) => !sections.includes(name))
+          if (missing.length) return `topic.oui would no longer list ${missing.join(', ')}. Remove sections with Delete in the section list.`
+          workspace.updateMetadata(metadata)
+          workspace.setSectionOrder(sections)
+          return null
+        }
+        const name = sectionNameOf(file)
+        if (!name) return `${file} is not a section file.`
+        if (workspace.section(name)) workspace.setSource(name, source)
+        else workspace.insertSection(name, source)
+        return null
+      } catch (e) {
+        return e instanceof Error ? e.message : String(e)
+      }
+    },
+    reveal(file, statement) {
+      const name = sectionNameOf(file)
+      if (!name) {
+        setSelected(TOPIC_ITEM)
+        return
+      }
+      setSelected(name)
+      setReveal({ file, statement: statement ?? 'root' })
+    },
+  }), [workspace])
+  const assistant = useAssistant({ topicId: snap.topicId, app: 'studio', getContext: getAssistantContext, editor: assistantEditor })
 
   const run = useCallback(async (action: () => Promise<void>, success?: string) => {
     try {

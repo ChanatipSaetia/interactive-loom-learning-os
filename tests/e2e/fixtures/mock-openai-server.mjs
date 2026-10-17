@@ -1,7 +1,8 @@
 /**
  * A tiny OpenAI-compatible server for AI assistant tests
  * (grill-log-ai-assistant.md, decision 62): canned `GET /v1/models` and a
- * streaming `POST /v1/chat/completions` that echoes the last user message.
+ * streaming `POST /v1/chat/completions` that echoes the last user message
+ * (or, for `REPLY<<text>>` in it, answers with exactly that text).
  *
  *   node tests/e2e/fixtures/mock-openai-server.mjs [port] [--no-cors]
  *
@@ -34,7 +35,9 @@ export function startMockOpenAI({ port = 0, cors = true, models = ['mock-small',
       req.on('end', () => {
         const request = JSON.parse(body || '{}')
         const last = [...(request.messages ?? [])].reverse().find((message) => message.role === 'user')
-        const reply = `Echo: ${last?.content ?? ''}`
+        // `REPLY<<…>>` in the last user message is answered with exactly that text.
+        const scripted = /REPLY<<([\s\S]*?)>>/.exec(last?.content ?? '')
+        const reply = scripted ? scripted[1] : `Echo: ${last?.content ?? ''}`
         if (!request.stream) {
           return res
             .writeHead(200, { 'content-type': 'application/json' })

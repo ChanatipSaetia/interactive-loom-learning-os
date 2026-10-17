@@ -42,7 +42,7 @@ function streamOf(...pieces: string[]): Response {
 }
 
 function mockFetch() {
-  return vi.fn(async (url: string, _init?: RequestInit) => {
+  return vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) => {
     if (url.endsWith('/models')) return new Response(JSON.stringify({ data: [{ id: 'm1' }] }), { headers: { 'content-type': 'application/json' } })
     return streamOf('Fair ', 'enough.')
   })
@@ -137,5 +137,88 @@ describe('AssistantDock with the Pick tray', () => {
     fireEvent.click(screen.getByTestId('ai-retry'))
     await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
     expect(screen.getAllByTestId('ai-reply')).toHaveLength(1)
+  })
+})
+
+describe('Studio edits', () => {
+  const edit = (body: string, info = 'file=sections/quiz.oui') => `Changed it.\n\n\`\`\`oui-edit ${info}\n${body}\n\`\`\``
+
+  function StudioHarness({ fetchImpl, buffers, revealed }: { fetchImpl: typeof fetch; buffers: Record<string, string>; revealed: string[] }) {
+    const assistant = useAssistant({
+      topicId: 'demo',
+      app: 'studio',
+      getContext: () => ({ topicId: 'demo', files: { ...buffers }, fileOrder: Object.keys(buffers), diagnostics: {} }),
+      editor: {
+        write: (file, source) => {
+          buffers[file] = source
+          return null
+        },
+        reveal: (file, statement) => revealed.push(`${file}#${statement}`),
+      },
+      fetchImpl,
+    })
+    return (
+      <>
+        <PickMode topicId="demo" active={false} onActiveChange={() => {}} resolve={sourceResolver(buffers)} assistant={pickBridgeOf(assistant)} />
+        <AssistantDock assistant={assistant} resolve={sourceResolver(buffers)} fetchImpl={fetchImpl} />
+      </>
+    )
+  }
+
+  function replies(...texts: string[]) {
+    const queue = [...texts]
+    return vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) => {
+      if (url.endsWith('/models')) return new Response('{"data":[{"id":"m1"}]}', { headers: { 'content-type': 'application/json' } })
+      return streamOf(queue.shift() ?? 'No more.')
+    })
+  }
+
+  it('shows a proposed edit as a diff and applies it to the buffer', async () => {
+    seed('http://localhost:11434/v1')
+    const buffers = { ...files }
+    const revealed: string[] = []
+    const fetchImpl = replies(edit('q1 = QuizQuestion("q1", "Why, exactly?", [QuizChoice("a", "Yes", true, "Right.")])'))
+    render(<StudioHarness fetchImpl={fetchImpl as unknown as typeof fetch} buffers={buffers} revealed={revealed} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-edit')).toBeInTheDocument())
+
+    const system = JSON.parse(fetchImpl.mock.calls.find(([u]) => u.endsWith('/chat/completions'))![1]!.body as string).messages[0].content
+    expect(system).toContain('```oui-edit file=')
+    expect(screen.getByTestId('ai-edit-diff')).toHaveTextContent('+ q1 = QuizQuestion("q1", "Why, exactly?"')
+    expect(screen.getByTestId('ai-proposal')).toHaveTextContent('The edits apply and validate.')
+    expect(fetchImpl.mock.calls.filter(([u]) => u.endsWith('/chat/completions'))).toHaveLength(1)
+
+    fireEvent.click(screen.getByTestId('ai-edit-apply'))
+    expect(screen.getByTestId('ai-edit')).toHaveAttribute('data-state', 'applied')
+    expect(buffers['sections/quiz.oui']).toContain('"Why, exactly?"')
+    expect(revealed).toEqual(['sections/quiz.oui#q1'])
+  })
+
+  it('rejects an edit without touching the buffer', async () => {
+    seed('http://localhost:11434/v1')
+    const buffers = { ...files }
+    render(<StudioHarness fetchImpl={replies(edit('q1 = QuizQuestion("q1", "Other?", [QuizChoice("a", "Yes", true, "Right.")])')) as unknown as typeof fetch} buffers={buffers} revealed={[]} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-edit')).toBeInTheDocument())
+    fireEvent.click(screen.getByTestId('ai-edit-reject'))
+    expect(screen.getByTestId('ai-edit')).toHaveAttribute('data-state', 'rejected')
+    expect(buffers['sections/quiz.oui']).toBe(files['sections/quiz.oui'])
+  })
+
+  it('sends the problems back once when a proposal does not validate', async () => {
+    seed('http://localhost:11434/v1')
+    const fetchImpl = replies(edit('q1 = DELETE'), edit('q1 = QuizQuestion("q1", "Fixed?", [QuizChoice("a", "Yes", true, "Right.")])'))
+    render(<StudioHarness fetchImpl={fetchImpl as unknown as typeof fetch} buffers={{ ...files }} revealed={[]} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')).toHaveLength(2))
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')[1]).toHaveAttribute('data-status', 'done'))
+
+    const chats = fetchImpl.mock.calls.filter(([u]) => u.endsWith('/chat/completions'))
+    expect(chats).toHaveLength(2)
+    const second = JSON.parse(chats[1][1]!.body as string).messages
+    expect(second.at(-1).content).toMatch(/^Your proposed edits do not check out:\n- sections\/quiz.oui /)
+    expect(second.at(-2).content).toBe('Changed it.\n\n[Proposed edit to sections/quiz.oui: pending]')
+    expect(screen.getAllByTestId('ai-user-message')[1]).toHaveTextContent('Sent by Studio')
+    expect(screen.getAllByTestId('ai-proposal')[1]).toHaveTextContent('The edits apply and validate.')
   })
 })

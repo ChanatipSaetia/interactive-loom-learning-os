@@ -164,3 +164,30 @@ describe('structural actions', () => {
     expect(topicOnDisk(folder)).toMatchObject({ title: 'Unsaved Title', sections: ['quiz', 'intro'] })
   })
 })
+
+describe('buffered structure (AI assistant proposals)', () => {
+  it('inserts a section and reorders without writing until save', async () => {
+    const folder = demoFolder()
+    const ws = await TopicWorkspace.open(folder)
+    ws.insertSection('summary', 'root = Text("Summary", ["Done."])\n')
+    ws.setSectionOrder(['intro', 'summary', 'quiz'])
+    expect(folder.files.has('sections/summary.oui')).toBe(false)
+    expect(topicOnDisk(folder)?.sections).toEqual(['intro', 'quiz'])
+    const snap = ws.getSnapshot()
+    expect(snap.dirtySections).toEqual(['summary'])
+    expect(snap.topicDirty).toBe(true)
+
+    await ws.save()
+    expect(folder.files.get('sections/summary.oui')).toBe('root = Text("Summary", ["Done."])\n')
+    expect(topicOnDisk(folder)?.sections).toEqual(['intro', 'summary', 'quiz'])
+    expect(ws.isDirty).toBe(false)
+  })
+
+  it('refuses bad names and incomplete orders', async () => {
+    const ws = await TopicWorkspace.open(demoFolder())
+    expect(() => ws.insertSection('intro', 'root = Text("X", [])\n')).toThrow(WorkspaceError)
+    expect(() => ws.insertSection('Bad Name', 'root = Text("X", [])\n')).toThrow(WorkspaceError)
+    expect(() => ws.setSectionOrder(['intro'])).toThrow(WorkspaceError)
+    expect(() => ws.setSectionOrder(['intro', 'intro'])).toThrow(WorkspaceError)
+  })
+})

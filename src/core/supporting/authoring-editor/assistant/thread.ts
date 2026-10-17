@@ -23,6 +23,12 @@ export interface ThreadPick {
 
 export type ThreadMessageStatus = 'streaming' | 'done' | 'stopped' | 'error'
 
+/** What became of one proposed `oui-edit` block (decision 54). */
+export interface EditHunkState {
+  state: 'pending' | 'applied' | 'rejected' | 'failed'
+  error?: string
+}
+
 export interface ThreadMessage {
   id: string
   role: 'user' | 'assistant'
@@ -37,6 +43,12 @@ export interface ThreadMessage {
   error?: { kind: string; message: string }
   /** Assistant messages: where the answer came from. */
   via?: { host: string; model: string }
+  /** Assistant messages in Studio: one state per `oui-edit` block, in reply order. */
+  edits?: EditHunkState[]
+  /** Assistant messages with edits: what the dry run found wrong (empty when they check out). */
+  problems?: string[]
+  /** User messages Studio sent itself: the validation retry. */
+  auto?: boolean
   at: number
 }
 
@@ -69,11 +81,19 @@ function readMessage(value: unknown): ThreadMessage | null {
   if (message.role === 'user') {
     out.picks = Array.isArray(message.picks) ? message.picks.map(readPick).filter((p): p is ThreadPick => p !== null) : []
     out.mode = message.mode === 'ask' ? 'ask' : 'comment'
+    if (message.auto === true) out.auto = true
   } else {
     // A reply that was still streaming when the page closed ends there.
     out.status = message.status === 'streaming' ? 'stopped' : message.status && ['done', 'stopped', 'error'].includes(message.status) ? message.status : 'done'
     if (message.error && typeof message.error.message === 'string') out.error = { kind: String(message.error.kind ?? 'http'), message: message.error.message }
     if (message.via && typeof message.via.host === 'string' && typeof message.via.model === 'string') out.via = { host: message.via.host, model: message.via.model }
+    if (Array.isArray(message.edits)) {
+      out.edits = message.edits.map((e) => ({
+        state: e && ['pending', 'applied', 'rejected', 'failed'].includes(e.state) ? e.state : 'pending',
+        ...(e && typeof e.error === 'string' ? { error: e.error } : {}),
+      }))
+    }
+    if (Array.isArray(message.problems)) out.problems = message.problems.filter((p): p is string => typeof p === 'string')
   }
   return out
 }
@@ -117,10 +137,23 @@ export function userMessageContent(message: ThreadMessage): string {
   return parts.join('\n\n')
 }
 
-/** What an earlier reply says to the model; failed replies are left out. */
+const EDIT_BLOCK = /^[ \t]*```oui-edit([^\n]*)\n[\s\S]*?\n[ \t]*```[ \t]*$/gm
+
+/**
+ * What an earlier reply says to the model; failed replies are left out.
+ * Proposed edits go back as one line each with what became of them, not the
+ * whole block again (decision 56).
+ */
 function assistantMessageContent(message: ThreadMessage): string | null {
   if (message.status === 'error' || !message.text.trim()) return null
-  return message.status === 'stopped' ? `${message.text}\n\n(stopped before the end)` : message.text
+  let index = 0
+  const text = message.text.replace(EDIT_BLOCK, (_block, info: string) => {
+    const file = /\bfile=("?)([^\s"]+)\1/.exec(info)?.[2] ?? '?'
+    const hunk = message.edits?.[index++]
+    const state = hunk?.state === 'failed' ? `failed: ${hunk.error ?? 'could not be applied'}` : hunk?.state ?? 'pending'
+    return `[Proposed edit to ${file}: ${state}]`
+  })
+  return message.status === 'stopped' ? `${text}\n\n(stopped before the end)` : text
 }
 
 export interface HistoryForRequest {
