@@ -20,6 +20,7 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 | Visual OKF Section Editor & Live Preview | [grill-log-okf-section-editor.md](grill-log-okf-section-editor.md) |
 | OKF Section Validation & Diagnostics | [grill-log-okf-section-validation.md](grill-log-okf-section-validation.md) |
 | Pick & Comment in Studio / Viewer (references for AI agents) | [grill-log-pick-and-comment.md](grill-log-pick-and-comment.md) |
+| AI Assistant for Pick (OpenAI-compatible API from the browser) | [grill-log-ai-assistant.md](grill-log-ai-assistant.md) |
 | Creating / editing topics & flowchart schemas | [docs/creating-topics.md](docs/creating-topics.md) |
 | Design system & sensory experience | [DESIGN.md](DESIGN.md) |
 | Hex campaign maps (gamification) | [docs/creating-hexmaps.md](docs/creating-hexmaps.md) |
