@@ -1,0 +1,85 @@
+import { BookOpen, ChevronLeft, ChevronRight, LayoutGrid, Pause, Play } from 'lucide-react'
+import type { Beat } from '../../../learning-engine/sub-contexts/present-kernel'
+import { gateKey } from '../beat-runner'
+
+export interface PresentControlsProps {
+  beats: Beat[][]
+  labels: string[]
+  section: number
+  beat: number
+  solved: ReadonlySet<string>
+  complete: boolean
+  playing: boolean
+  overview: boolean
+  /** Reading-time hold of the current beat in ms, while autoplay waits on it. */
+  holding: number | null
+  where: string
+  onPrev: () => void
+  onNext: () => void
+  onPlay: () => void
+  onOverview: () => void
+  onJump: (section: number) => void
+  onExit: () => void
+}
+
+/** Prev / play / next, the progress rail (one tick per beat; gates diamonds, explore beats circles), overview and exit. */
+export function PresentControls(p: PresentControlsProps) {
+  const atStart = p.section === 0 && p.beat === 0
+  return (
+    <div className="present-controls" role="toolbar" aria-label="Present controls" data-testid="present-controls">
+      <button type="button" className="present-ctl" onClick={p.onPrev} disabled={atStart} aria-label="Previous beat" data-testid="present-prev">
+        <ChevronLeft size={18} />
+      </button>
+      <button
+        type="button"
+        className="present-ctl present-ctl--main"
+        onClick={p.onPlay}
+        aria-label={p.playing ? 'Pause autoplay' : p.complete ? 'Replay' : 'Play'}
+        aria-pressed={p.playing}
+        data-testid="present-play"
+      >
+        {p.playing ? <Pause size={18} /> : <Play size={18} />}
+      </button>
+      <button type="button" className="present-ctl" onClick={p.onNext} disabled={p.complete} aria-label="Next beat" data-testid="present-next">
+        <ChevronRight size={18} />
+      </button>
+      <span className="present-where" aria-live="polite" data-testid="present-where">{p.where}</span>
+      <button type="button" className="present-ctl present-ctl--text" onClick={p.onOverview} aria-pressed={p.overview} data-testid="present-overview">
+        <LayoutGrid size={15} /> <span>Overview</span>
+      </button>
+      <button type="button" className="present-ctl present-ctl--text" onClick={p.onExit} data-testid="present-exit">
+        <BookOpen size={15} /> <span>Read</span>
+      </button>
+      <div className="present-rail" data-testid="present-rail">
+        {p.beats.map((beats, s) => (
+          <button
+            key={s}
+            type="button"
+            className="present-seg"
+            style={{ flexGrow: beats.length }}
+            onClick={() => p.onJump(s)}
+            aria-label={`Go to section ${s + 1}: ${p.labels[s]}`}
+            aria-current={s === p.section && !p.complete ? 'step' : undefined}
+          >
+            {beats.map((b, i) => {
+              const past = p.complete || s < p.section || (s === p.section && i < p.beat)
+              const now = !p.complete && s === p.section && i === p.beat
+              const cls = [
+                'present-tick',
+                b.kind !== 'show' && `is-${b.kind}`,
+                past && 'is-past',
+                now && 'is-now',
+                b.kind === 'gate' && p.solved.has(gateKey(s, i)) && 'is-solved',
+              ].filter(Boolean).join(' ')
+              return (
+                <span key={i} className={cls}>
+                  {now && p.holding !== null && <i style={{ animationDuration: `${p.holding}ms` }} />}
+                </span>
+              )
+            })}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}

@@ -6,7 +6,7 @@
  * again, so changes made by an AI show up without reopening anything.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, FileUp, FolderOpen, RefreshCw, Sparkles } from 'lucide-react'
+import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, FileUp, FolderOpen, Play, RefreshCw, Sparkles } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
@@ -29,6 +29,7 @@ import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, PickSection, sourceResolver } from '../core/supporting/authoring-editor/pick'
 import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext } from '../core/supporting/authoring-editor/assistant'
 import type { PickSource } from '../core/learning-engine/composition/oui/pick-report'
+import { PresentMode, preloadPresenters, type PresentSection } from '../core/supporting/presentation'
 import '../core/delivery/web-app-shell/layout.css'
 
 type ReadTopics = () => Promise<TopicFiles[]>
@@ -58,6 +59,22 @@ interface PickerWindow {
 }
 
 const pickers = () => window as unknown as PickerWindow
+
+/** The topic's sections that compiled, in order, for Present mode. */
+function presentSectionsOf(topic: ViewerTopic): PresentSection[] {
+  return topic.sections.flatMap((s, sectionIndex) => (s.config ? [{ name: s.name, sectionIndex, config: s.config }] : []))
+}
+
+/** Read mode's element for a section (its Pick wrapper). */
+const readSectionElement = (name: string) =>
+  document.querySelector<HTMLElement>(`.topic-content [data-oui-anchor="root"][data-oui-file="sections/${CSS.escape(name)}.oui"]`)
+
+/** Present starts at the section being read: the first one still on screen below the top bar (decision 89). */
+function sectionInView(sections: PresentSection[]): number {
+  const top = document.querySelector('.topnav')?.getBoundingClientRect().bottom ?? 0
+  const found = sections.findIndex((s) => (readSectionElement(s.name)?.getBoundingClientRect().bottom ?? -1) > top + 40)
+  return found < 0 ? 0 : found
+}
 
 /** Where the open topic lives, for the note after copied pointers. */
 function pickSourceOf(loaded: Loaded): PickSource {
@@ -107,6 +124,9 @@ export function ViewerApp() {
   const [status, setStatus] = useState<Status | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const [picking, setPicking] = useState(false)
+  const [mode, setMode] = useState<'read' | 'present'>('read')
+  const [presentStart, setPresentStart] = useState(0)
+  const presentAt = useRef(0)
   const current = useRef({ loaded, selected })
   current.current = { loaded, selected }
 
@@ -118,6 +138,7 @@ export function ViewerApp() {
       setError(null)
       setStatus(null)
       setPicking(false)
+      setMode('read')
       window.scrollTo(0, 0)
     } catch (e) {
       setError(message(e))
@@ -224,6 +245,29 @@ export function ViewerApp() {
     source: pickSource,
   }), [topic, pickFileOrder, pickSource])
   const assistant = useAssistant({ topicId: topic?.topicId ?? '', app: 'viewer', getContext: getAssistantContext })
+  const presentSections = useMemo(() => (topic ? presentSectionsOf(topic) : []), [topic])
+  const presenting = mode === 'present' && !!topic && presentSections.length > 0
+  // Present renderers load while the learner reads, so the switch is instant
+  useEffect(() => preloadPresenters(presentSections), [presentSections])
+
+  const startPresent = useCallback(() => {
+    setPresentStart(sectionInView(presentSections))
+    setPicking(false)
+    setMode('present')
+    window.scrollTo(0, 0)
+  }, [presentSections])
+  const onPresentSection = useCallback((sectionIndex: number) => { presentAt.current = sectionIndex }, [])
+  const exitPresent = useCallback((sectionIndex: number) => {
+    setMode('read')
+    const name = topic?.sections[sectionIndex]?.name
+    // Back where the learner was in Present, once Read has laid out
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const el = name ? readSectionElement(name) : null
+      if (!el) return
+      const bar = document.querySelector('.topnav')?.getBoundingClientRect().height ?? 0
+      window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - bar - 12)
+    }))
+  }, [topic])
   const pickAssistant = pickBridgeOf(assistant)
 
   return (
@@ -241,6 +285,7 @@ export function ViewerApp() {
                   value={selected}
                   onChange={(e) => {
                     setSelected(Number(e.target.value))
+                    setMode('read')
                     window.scrollTo(0, 0)
                   }}
                   aria-label="Topic"
@@ -260,7 +305,17 @@ export function ViewerApp() {
               </span>
             )}
             <LoomToolsNav current="viewer" />
-            {topic && <AssistantToggle assistant={assistant} className="viewer-pill" />}
+            {topic && presentSections.length > 0 && (
+              <div className="viewer-mode" role="group" aria-label="Viewer mode" data-testid="viewer-mode">
+                <button type="button" aria-pressed={!presenting} onClick={() => presenting && exitPresent(presentAt.current)} data-testid="viewer-mode-read">
+                  <BookOpen size={14} /> <span className="viewer-pill-label">Read</span>
+                </button>
+                <button type="button" aria-pressed={presenting} onClick={() => !presenting && startPresent()} data-testid="viewer-mode-present">
+                  <Play size={14} /> <span className="viewer-pill-label">Present</span>
+                </button>
+              </div>
+            )}
+            {topic && !presenting && <AssistantToggle assistant={assistant} className="viewer-pill" />}
             {loaded && (
               <button
                 type="button"
@@ -284,7 +339,21 @@ export function ViewerApp() {
           </div>
         </header>
         <main className="main-content">
-          {topic
+          {topic && presenting
+            ? (
+              <ProgressProvider>
+                <HUDProvider>
+                  <PresentMode
+                    key={`${loaded.source}:${topic.topicId}:${loaded.revision}`}
+                    sections={presentSections}
+                    start={presentStart}
+                    onExit={exitPresent}
+                    onSectionChange={onPresentSection}
+                  />
+                </HUDProvider>
+              </ProgressProvider>
+            )
+            : topic
             ? <TopicView key={`${loaded.source}:${topic.topicId}:${loaded.revision}`} topic={topic} />
             : (
               <Landing
@@ -297,7 +366,7 @@ export function ViewerApp() {
               />
             )}
         </main>
-        {topic && (
+        {topic && !presenting && (
           <PickMode
             topicId={topic.topicId}
             active={picking}
@@ -308,7 +377,7 @@ export function ViewerApp() {
             assistant={pickAssistant}
           />
         )}
-        {topic && <AssistantDock assistant={assistant} resolve={pickResolver} />}
+        {topic && !presenting && <AssistantDock assistant={assistant} resolve={pickResolver} />}
       </div>
     </UISystemProvider>
   )

@@ -1,0 +1,360 @@
+/* Present mode stage (grill-log-presenting-mode.md). Colours come from the app theme tokens. */
+
+.present-mode {
+  --present-highlight: color-mix(in srgb, var(--ctp-yellow) 38%, transparent);
+  --present-accent: var(--primary);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 320px;
+  padding: 14px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+}
+
+.present-stage-area {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.present-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background-color: var(--ctp-crust);
+  background-image: radial-gradient(color-mix(in srgb, var(--foreground) 9%, transparent) 1.2px, transparent 1.3px);
+  background-size: 22px 22px;
+  box-shadow: inset 0 0 0 1px var(--border);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.present-viewport {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  transform-origin: 0 0;
+}
+
+.present-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* ---- regions: one section each, at the stage's own size ---- */
+
+.present-region {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 40px 52px;
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 0 0 1px var(--border), 0 30px 60px -40px rgba(0, 0, 0, 0.5);
+  user-select: text;
+  --present-fs-hero: 68px;
+  --present-fs-h2: 36px;
+  --present-fs-body: 23px;
+  --present-fs-card: 19px;
+  --present-fs-small: 15px;
+}
+
+.present-region-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: none;
+}
+
+.present-region-head h2 {
+  margin: 0;
+  font: 600 var(--present-fs-h2) / 1.15 var(--font-display);
+  text-wrap: balance;
+}
+
+.present-kind {
+  flex: none;
+  padding: 6px 12px;
+  border: 1.5px solid currentColor;
+  border-radius: var(--radius-full);
+  color: var(--present-accent);
+  font: 600 var(--present-fs-small) / 1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.present-region.is-done .present-region-head::after {
+  content: '✓';
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--ctp-green);
+  color: var(--ctp-crust);
+  font: 700 16px / 1 var(--font-ui);
+}
+
+.present-region-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden auto;
+  scrollbar-width: none;
+}
+
+.present-region-body::-webkit-scrollbar { display: none; }
+
+/* A Read section shown as one beat may be taller than the region: let it scroll visibly */
+.present-region-body.is-fallback { scrollbar-width: thin; }
+.present-fallback { min-height: 0; }
+
+.present-loading {
+  margin: auto;
+  color: var(--muted-foreground);
+  font: 400 var(--present-fs-small) / 1 var(--font-mono);
+}
+
+/* Portrait stage (narrow screens): same regions, tighter padding and smaller type */
+.present-stage.is-portrait .present-region {
+  gap: 14px;
+  padding: 30px 28px;
+  --present-fs-hero: 54px;
+  --present-fs-h2: 27px;
+  --present-fs-body: 20px;
+  --present-fs-card: 17px;
+  --present-fs-small: 14px;
+}
+
+/* ---- what a beat shows (beatMarks in present-kernel.ts) ---- */
+
+.present-region [data-beat]:not([data-shown]):not([data-leaving]) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.present-w { display: inline-block; }
+
+.present-region strong {
+  background: linear-gradient(var(--present-highlight), var(--present-highlight)) no-repeat 0 88% / 100% 46%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0 0.06em;
+}
+
+/* ---- overlay: not moved by the camera ---- */
+
+.present-turn {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  translate: -50% 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px 9px 16px;
+  border-radius: var(--radius-full);
+  background: var(--foreground);
+  color: var(--background);
+  font: 600 14px / 1 var(--font-mono);
+  white-space: nowrap;
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.45);
+}
+
+.present-turn > i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--present-accent);
+  animation: present-dot 3s ease-in-out infinite;
+}
+
+.present-turn button {
+  padding: 7px 12px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--present-accent);
+  color: var(--primary-foreground);
+  font: inherit;
+  cursor: pointer;
+}
+
+@keyframes present-dot { 50% { transform: scale(1.6); opacity: 0.6; } }
+
+.present-complete {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.present-complete-card {
+  pointer-events: auto;
+  max-width: 420px;
+  margin: 16px;
+  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-radius: var(--radius-md);
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 0 0 1px var(--border), 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+}
+
+.present-complete-card h2 { margin: 0; font: 700 28px / 1.15 var(--font-display); }
+.present-complete-card p { margin: 0; color: var(--muted-foreground); font: 400 16px / 1.5 var(--font-body); }
+.present-complete-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.present-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--foreground);
+  font: 600 14px / 1 var(--font-ui);
+  cursor: pointer;
+}
+
+.present-button--primary {
+  border-color: var(--present-accent);
+  background: var(--present-accent);
+  color: var(--primary-foreground);
+}
+
+/* ---- controls ---- */
+
+.present-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  flex: none;
+}
+
+.present-ctl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--foreground);
+  font: 600 13px / 1 var(--font-ui);
+  cursor: pointer;
+}
+
+.present-ctl:disabled { opacity: 0.4; cursor: default; }
+.present-ctl[aria-pressed='true'] { border-color: var(--present-accent); color: var(--present-accent); }
+.present-ctl--main { min-width: 48px; border-color: var(--foreground); background: var(--foreground); color: var(--background); }
+.present-ctl--main[aria-pressed='true'] { color: var(--background); }
+
+.present-ctl:focus-visible,
+.present-seg:focus-visible,
+.present-button:focus-visible,
+.present-turn button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.present-where {
+  flex: 1;
+  min-width: 12ch;
+  color: var(--muted-foreground);
+  font: 400 13px / 1.2 var(--font-mono);
+}
+
+.present-rail {
+  order: 10;
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.present-seg {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.present-tick {
+  position: relative;
+  flex: 1;
+  min-width: 3px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--border);
+}
+
+.present-tick.is-past,
+.present-tick.is-now { background: var(--muted-foreground); }
+
+.present-tick i {
+  position: absolute;
+  inset: 0;
+  background: var(--present-accent);
+  transform-origin: 0 50%;
+  animation: present-hold linear forwards;
+}
+
+@keyframes present-hold { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.present-tick.is-gate,
+.present-tick.is-explore {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin: 0 2px;
+  background: none;
+  border: 2px solid var(--muted-foreground);
+  box-sizing: border-box;
+}
+
+.present-tick.is-gate { border-radius: 2px; rotate: 45deg; }
+.present-tick.is-explore { border-radius: 50%; }
+.present-tick.is-now.is-gate,
+.present-tick.is-now.is-explore { border-color: var(--present-accent); }
+.present-tick.is-gate.is-solved { background: var(--ctp-green); border-color: var(--ctp-green); }
+
+@media (max-width: 640px) {
+  .present-ctl--text span { display: none; }
+  .present-rail { gap: 3px; }
+  .present-tick.is-gate,
+  .present-tick.is-explore { width: 7px; height: 7px; margin: 0 1px; border-width: 1.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .present-turn > i,
+  .present-tick i { animation: none; }
+  .present-tick.is-now i { transform: none; }
+}

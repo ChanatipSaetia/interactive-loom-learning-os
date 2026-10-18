@@ -8,6 +8,7 @@
 import type { Variants } from 'motion/react'
 import {
   EASE_OUT,
+  EASE_IN,
   EASE_IN_OUT,
   EASE_DRAWER,
   SPRING_PRESS,
@@ -19,6 +20,7 @@ import {
 
 export {
   EASE_OUT,
+  EASE_IN,
   EASE_IN_OUT,
   EASE_DRAWER,
   SPRING_PRESS,
@@ -43,6 +45,8 @@ export type SoundEffect =
   | 'error'
   | 'boundary'
   | 'complete'
+  | 'whoosh'
+  | 'draw'
 
 export interface SoundContract {
   /** Whether audio is currently muted */
@@ -222,6 +226,45 @@ export function createAudioEngine(): AudioEngine {
         })
         break
       }
+      case 'whoosh': {
+        // Camera move: filtered noise sweeping up
+        const len = Math.ceil(audioCtx.sampleRate * 0.5)
+        const buffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate)
+        const data = buffer.getChannelData(0)
+        for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1
+        const src = audioCtx.createBufferSource()
+        const filter = audioCtx.createBiquadFilter()
+        const gain = audioCtx.createGain()
+        src.buffer = buffer
+        filter.type = 'bandpass'
+        filter.Q.value = 0.8
+        filter.frequency.setValueAtTime(300, now)
+        filter.frequency.exponentialRampToValueAtTime(1400, now + 0.5)
+        gain.gain.setValueAtTime(0.001, now)
+        gain.gain.exponentialRampToValueAtTime(0.18, now + 0.2)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5)
+        src.connect(filter)
+        filter.connect(gain)
+        gain.connect(mainGain)
+        src.start(now)
+        src.stop(now + 0.5)
+        break
+      }
+      case 'draw': {
+        // A line drawing: soft rising tone
+        const osc = audioCtx.createOscillator()
+        const gain = audioCtx.createGain()
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(380, now)
+        osc.frequency.exponentialRampToValueAtTime(640, now + 0.3)
+        gain.gain.setValueAtTime(0.001, now)
+        gain.gain.exponentialRampToValueAtTime(0.12, now + 0.05)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3)
+        connect(osc, gain)
+        osc.start(now)
+        osc.stop(now + 0.3)
+        break
+      }
     }
   }
 
@@ -295,6 +338,36 @@ export const MOTION_DRAWER: Variants = {
   exit: { x: '100%', transition: { duration: 0.2, ease: EASE_OUT } },
 }
 
+
+/**
+ * Present mode motion (Motion Rules in grill-log-presenting-mode.md): durations in ms and easing
+ * curves, applied by the Present stage to the elements a section marks for each beat.
+ */
+export const PRESENT_MOTION = {
+  /** An element entering: rise, fade, unfold, stack */
+  element: 420,
+  /** Leaving is quicker than entering */
+  exit: 250,
+  /** A line or bar drawing */
+  draw: 650,
+  /** Camera move between sections */
+  camera: 800,
+  /** A badge popping in */
+  pop: 380,
+  /** Stagger between siblings entering together */
+  stagger: 60,
+  /** Gap between words of text arriving phrase by phrase, and the pause after a phrase */
+  word: 34,
+  phrasePause: 150,
+  /** Highlighter sweep over bold text */
+  highlight: 520,
+  /** Cross-fade used for every beat when reduced motion is on */
+  reduced: 200,
+  /** Largest translate used by entrances, in px */
+  rise: 16,
+  ease: { out: EASE_OUT, in: EASE_IN, inOut: EASE_IN_OUT },
+} as const
+
 // ---------------------------------------------------------------------------
 // SensoryFeedbackContract — unified interface
 // ---------------------------------------------------------------------------
@@ -313,6 +386,8 @@ export interface SensoryFeedbackContract {
     staggerChild: Variants
     press: typeof MOTION_PRESS
     drawer: Variants
+    /** Present mode durations and curves */
+    present: typeof PRESENT_MOTION
     /** Easing curves */
     easeOut: typeof EASE_OUT
     easeInOut: typeof EASE_IN_OUT
