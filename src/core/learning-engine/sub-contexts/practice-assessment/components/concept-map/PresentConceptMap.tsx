@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
@@ -45,20 +45,35 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
     return ids
   }, [selected, edges])
 
-  // Frame everything shown so far (the first group before the section starts)
+  // A tall (phone) canvas cannot fit the whole map readably: it frames the group being introduced
+  const svgRef = useRef<SVGSVGElement | null>(null)
+  const [tall, setTall] = useState(false)
+  useEffect(() => {
+    const el = svgRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(([entry]) => setTall(entry.contentRect.width < entry.contentRect.height))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  // Frame everything shown so far (the first group before the section starts); on a tall canvas only
+  // the current group, and the whole map once exploring
   const viewBox = useMemo(() => {
     const upTo = exploring ? groups.length : Math.max(0, beat)
-    const shown = Object.values(layout.nodes).filter((n) => (groupIndex.get(n.id) ?? 0) <= upTo)
+    const shown = Object.values(layout.nodes).filter((n) => {
+      const g = groupIndex.get(n.id) ?? 0
+      return tall && !exploring ? g === upTo : g <= upTo
+    })
     if (!shown.length) return `0 0 ${Math.max(1, layout.width)} ${Math.max(1, layout.height)}`
     const minX = Math.min(...shown.map((n) => (n.x ?? 0) - getNodeWidth(n.title) / 2)) - PAD
     const maxX = Math.max(...shown.map((n) => (n.x ?? 0) + getNodeWidth(n.title) / 2)) + PAD
     const minY = Math.min(...shown.map((n) => (n.y ?? 0) - NODE_HEIGHT / 2)) - PAD
     const maxY = Math.max(...shown.map((n) => (n.y ?? 0) + NODE_HEIGHT / 2)) + PAD
     // Never closer than the map at its own size, so a lone concept is not blown up
-    const w = Math.max(maxX - minX, 900)
-    const h = Math.max(maxY - minY, 420)
+    const w = Math.max(maxX - minX, tall ? 360 : 900)
+    const h = Math.max(maxY - minY, tall ? 480 : 420)
     return `${(minX + maxX - w) / 2} ${(minY + maxY - h) / 2} ${w} ${h}`
-  }, [beat, exploring, layout, groups.length, groupIndex])
+  }, [beat, exploring, layout, groups.length, groupIndex, tall])
 
   const toggle = (id: string) => {
     if (!exploring || !active) return
@@ -71,6 +86,7 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
     <div className={`present-cm${exploring && active ? ' is-exploring' : ''}`} data-testid="present-concept-map">
       <div className="concept-map-canvas-wrapper present-cm-canvas">
       <motion.svg
+        ref={svgRef}
         className="present-cm-svg"
         initial={false}
         animate={{ viewBox }}

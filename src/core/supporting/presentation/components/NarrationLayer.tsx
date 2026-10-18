@@ -9,6 +9,8 @@ export const HIGHLIGHT_CLASS = 'present-narr-hl'
 const CALLOUT_W = 300
 /** Room kept free at the bottom of the region for the stage's caption line and turn pill. */
 const CAPTION_BAND = 120
+/** A callout's height for framing it with a spotlight (it is measured only once drawn). */
+const CALLOUT_H = 96
 const EASE = [0.16, 1, 0.3, 1] as const
 
 interface PlacedCallout {
@@ -38,17 +40,19 @@ export function NarrationLayer({ step, region, stage, onFocus }: {
 
   useLayoutEffect(() => {
     const body = region.querySelector<HTMLElement>('.present-region-body') ?? region
+    // Only what the learner can see: elements of a later beat are still hidden
+    const visible = (target: string) => targetElements(body, target).filter((el) => !el.closest('[data-beat]:not([data-shown])'))
     const lit: Element[] = []
     const placed: PlacedCallout[] = []
     let focus: Box | null = null
     for (const effect of step.effects ?? []) {
       if (effect.kind === 'highlight') {
-        for (const el of targetElements(body, effect.target)) {
+        for (const el of visible(effect.target)) {
           el.classList.add(HIGHLIGHT_CLASS)
           lit.push(el)
         }
       } else if (effect.kind === 'callout') {
-        const target = unionBox(targetElements(body, effect.target).map((el) => boxOf(el, region, stage)))
+        const target = unionBox(visible(effect.target).map((el) => boxOf(el, region, stage)))
         if (!target) continue
         const bottom = stage.h - CAPTION_BAND
         const above = target.y + target.h + 150 > bottom && target.y > 170
@@ -61,8 +65,12 @@ export function NarrationLayer({ step, region, stage, onFocus }: {
           arrow: Math.min(Math.max(20, target.x + target.w / 2 - x), CALLOUT_W - 20),
         })
       } else {
-        focus = unionBox(effect.targets.flatMap((t) => targetElements(body, t)).map((el) => boxOf(el, region, stage)))
+        focus = unionBox(effect.targets.flatMap(visible).map((el) => boxOf(el, region, stage)))
       }
+    }
+    // A spotlight frames the step's callouts too, so the zoom never cuts them off
+    if (focus) {
+      focus = unionBox([focus, ...placed.map((c) => ({ x: c.x, y: c.above ? c.y - CALLOUT_H : c.y, w: CALLOUT_W, h: CALLOUT_H }))])
     }
     setCallouts(placed)
     setSpot(focus)

@@ -62,6 +62,7 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 97 | What the voice reads | **Only the narration, where a section has one.** In a section with a narration file the voice reads the authored captions and callouts, and beats without a step are silent; sections without a file read their on-screen text (decision 79). |
 | 98 | Step timing | **With the motion.** The caption (and voice) starts as the beat enters; highlights, callouts and the spotlight appear once the beat's entrance has landed. Each step lasts until the voice finishes, or its reading time without the voice; the beat then holds as usual. Next moves to the next beat. |
 | 99 | Default | **Captions and effects always show; the voice stays opt-in (`N`).** |
+| 100 | Phones | **On a phone the stage is the screen itself, at scale 1**, with phone-sized type, so sections lay out and read as Read mode does on a phone (landscape keeps its fixed 1200×675 stage scaled to fit). The concept map frames the group being introduced on a tall canvas; the flowchart may zoom to 1× on a step. The stage's boxes never scroll, so a focused button cannot shift the camera. |
 
 ## Motion Rules
 
@@ -284,7 +285,9 @@ jumping just re-renders. Renderers never animate or set motion styles themselves
   is measured once the section (or a neighbour) has drawn. During a beat its steps play in turn: the
   caption (and voice) starts with the entrance, the effects once the entrance has landed, each step
   lasts until the voice ends or its reading time passes, and autoplay waits for the last one. In a
-  narrated section the voice reads only the steps (decision 97).
+  narrated section the voice reads only the steps (decision 97). Steps stay up at least 2 s (3.2 s
+  with effects) so a spotlight's camera move can land; effects only use targets already shown, and a
+  spotlight frames the step's callouts too.
 - `NarrationLayer` draws highlights (outline pulse; drop-shadow for SVG), callouts (kept clear of
   the caption band at the bottom) and the spotlight (a dimming frame; the camera zooms with
   `focusCamera`, up to 2×). The caption sits over the stage, outside the camera.

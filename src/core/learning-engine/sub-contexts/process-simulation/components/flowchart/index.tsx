@@ -705,6 +705,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0, pr
           forkHighlights={forkHighlights}
           storyRoute={storyRoute}
           onSwitchPath={playback.jumpTo}
+          focusMaxScale={present?.maxZoom}
         />
 
         {/* Canvas tools - fullscreen + zoom, stacked vertically top-left */}

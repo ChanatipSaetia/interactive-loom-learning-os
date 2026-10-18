@@ -116,6 +116,10 @@ async function loadView(type: string): Promise<SectionView> {
 
 const formatAnchor = (anchor: OUIAnchor | undefined) => (anchor ? `${anchor.statement}${anchor.path}` : undefined)
 
+/** Shortest time a narration step stays up, without and with effects (decision 98). */
+const STEP_MIN_MS = 2000
+const STEP_WITH_EFFECTS_MS = 3200
+
 /** Words a narration step says: its caption and callouts. */
 const stepWords = (step: NarrationStepData) =>
   [step.caption ?? '', ...(step.effects ?? []).map((e) => (e.kind === 'callout' ? e.text : ''))].join(' ').trim().split(/\s+/).filter(Boolean).length
@@ -263,8 +267,27 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
       window.removeEventListener('resize', measure)
     }
   }, [])
-  const stage: Size = box.w > 0 && box.w < PORTRAIT_BELOW ? STAGE_PORTRAIT : STAGE_LANDSCAPE
-  const scale = box.w > 0 ? Math.min(box.w / stage.w, box.h / stage.h) : 1
+  // Landscape lays out on a fixed 1200×675 stage scaled to fit; on a phone the stage is the space
+  // itself at scale 1, so sections lay out (and read) as Read mode does on a phone
+  const portrait = box.w > 0 && box.w < PORTRAIT_BELOW
+  const portraitW = Math.round(Math.max(STAGE_PORTRAIT.w, box.w))
+  const portraitH = Math.round(Math.max(STAGE_PORTRAIT.h, box.h))
+  const stage: Size = useMemo(() => (portrait ? { w: portraitW, h: portraitH } : STAGE_LANDSCAPE), [portrait, portraitW, portraitH])
+  const scale = portrait ? 1 : box.w > 0 ? Math.min(box.w / stage.w, box.h / stage.h) : 1
+
+  // The stage never scrolls: focusing a button near a region's edge would otherwise scroll these
+  // overflow-hidden boxes and shift the camera off its section
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const boxes = Array.from(root.querySelectorAll<HTMLElement>('.present-stage-area, .present-stage, .present-viewport'))
+    const pin = (e: Event) => {
+      const el = e.currentTarget as HTMLElement
+      if (el.scrollTop || el.scrollLeft) el.scrollTo(0, 0)
+    }
+    boxes.forEach((el) => el.addEventListener('scroll', pin))
+    return () => boxes.forEach((el) => el.removeEventListener('scroll', pin))
+  }, [])
   const world = worldSize(sections.length, stage)
 
   // ---- camera ----
@@ -377,16 +400,19 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
         return cur.cursor >= beatSteps.length - 1 ? { ...cur, done: true } : { ...cur, cursor: cur.cursor + 1 }
       })
     }
+    // Long enough to see the effects land (and the camera arrive for a spotlight), however short the words
+    const least = (step.effects?.length ? STEP_WITH_EFFECTS_MS : STEP_MIN_MS) + (landed === beatKey ? 0 : 600)
+    const started = Date.now()
     if (narrating) {
       const stop = say(() => stepSpeech(rootRef.current), reduced ? 0 : 350)
       const reading = speech.current
-      void reading?.then(() => window.setTimeout(finish, 400))
+      void reading?.then(() => window.setTimeout(finish, Math.max(400, least - (Date.now() - started))))
       return () => {
         cancelled = true
         stop()
       }
     }
-    const timer = window.setTimeout(finish, holdMs(stepWords(step)) + 350)
+    const timer = window.setTimeout(finish, Math.max(least, holdMs(stepWords(step)) + 350))
     return () => {
       cancelled = true
       window.clearTimeout(timer)
@@ -562,8 +588,8 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     <div className="present-mode" ref={rootRef} data-testid="present-mode">
       <div className="present-stage-area" ref={stageAreaRef}>
         <div
-          className={`present-stage${stage === STAGE_PORTRAIT ? ' is-portrait' : ''}`}
-          style={{ width: stage.w * scale, height: stage.h * scale }}
+          className={`present-stage${portrait ? ' is-portrait' : ''}`}
+          style={{ width: stage.w * scale, height: stage.h * scale, ['--present-stage-h' as string]: `${stage.h}px` }}
           onPointerDown={(e) => { pointer.current = { x: e.clientX, y: e.clientY } }}
           onPointerUp={onPointerUp}
           role="region"
