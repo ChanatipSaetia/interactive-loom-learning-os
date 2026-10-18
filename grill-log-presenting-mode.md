@@ -77,6 +77,7 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 111 | Motion that helps follow | **A `zoom` motion and an agenda rail.** `zoom` settles a beat's key statement into place from slightly larger (a headline, a takeaway, an ending). Sections played one part at a time (bullets, taxonomy, text whose paragraphs all open with a term) show an agenda beside the part on stage: the parts' short names, the current one lit with a bar growing in, the ones done ticked; it moves with CSS, is skipped by the voice and hidden on phones. The roadmap draws its path, then its steps pop on along it. |
 | 112 | What the sandboxes explain | **Every choice's gains and costs, and every variable's trend.** Tradeoff: after a step's choices arrive, each choice that has gains or costs gets its own beat (`stepN.choiceK`): its card comes forward and a panel under the cards lists its gains and costs by title (descriptions stay in Read), which the voice reads; the recommendation then lands in the same panel with why it fits. Formula: one sweep per variable that can move (`sweep1`, `sweep2`, …), from its min to its max with the others at their defaults; as it plays, a trend panel states what each metric that moves does ("Recall rises 59 → 101", "peaks at …", "dips to …"), computed from the formulas, and the voice reads it. Revises decision 104 (the sweep) and the tradeoff part of 109. |
 | 113 | How many scenario endings | **All of them.** The stage walks one path to every ending (the shortest walk to it): weaker endings first in branch order, so each path leaves the one before as late as possible, the best ending last. A later path starts at the fork where it parts, with the choices tried there struck through; each ending says which one it is ("Ending 2 of 4"); endings below the best rating are marked *wrong* on the rail, the best (and equal ones) *right*. Beat IDs `pathP.choiceN` and `pathP.choiceN.next`. Revises decisions 103 and 110 (one weaker path, then the best). |
+| 114 | Every section introduced; the decision tree framed | **The voice names each section as it starts, and frame lines say what a walk is.** A section's first beat opens with its kind and title as on its header ("Quiz. Caching basics."), with or without an authored step on that beat, unless what the beat reads already says the title; the intro, which has no header, opens with its own title beat. Renderers can mark a stage line `FRAME`: the voice reads it on its beat even where an authored step plays, unless the step's caption already says it. The decision tree shows two: "An example: one path through this tree" from `start`, and "The result of these decisions" over the recommendation on `result`. The heading and the frame lines are stage labels like "Question 1 of 3", in English; a narration file can still say more. Refines decisions 97, 108 and 110. |
 
 ## Motion Rules
 
@@ -137,7 +138,7 @@ a performed answer (decision 103). The `code` names are the beat IDs a narration
 | `concept-map` | `group1`, … one per `Concept.category` group, in first-appearance order; its `ConceptLink`s draw once both ends are on screen · `map` the whole map, when there is more than one group |
 | `flowchart` | `step1`, … one per `JourneyStep` of the first `Journey`, through the existing journey playback; the camera follows the active node |
 | `scenario` | `start` `intro` and the start node's `prompt` · then one path per ending, weaker ones first, the best last: `pathP.choiceN` the choice picked on its card and `pathP.choiceN.next` where it leads, the last on its `Outcome` (*wrong* below the best rating, else *right*); a later path starts at its fork (decisions 110 and 113) |
-| `decision-tree` | `start` the tree drawing in and the root `prompt` · per answer down to a `DecisionLeaf` (the recommended `DecisionChoice`, else the first): `answerN` picked on its question with its rationale, `qN+1` the next question · `result` *right* the recommendation (decision 110) |
+| `decision-tree` | `start` the tree drawing in and the root `prompt`, framed as an example path · per answer down to a `DecisionLeaf` (the recommended `DecisionChoice`, else the first): `answerN` picked on its question with its rationale, `qN+1` the next question · `result` *right* the recommendation, framed as the result of these decisions (decisions 110, 114) |
 | `tradeoff-sandbox` | per `TradeoffStep` (numbered across scenarios): `stepN` its choices by label with their effects · `stepN.choiceK` each choice with gains or costs, listed by title under the cards (decision 112) · `stepN.recommended` the `recommended` choice focused, with the first two sentences of why it fits · `result1`, … per scenario with a recommendation, the metrics with every recommended choice picked |
 | `formula-sandbox` | `formulas` the formulas, sliders and gauges · `sweep1`, … per `FormulaVariable` that can move, a ghost hand sweeps it from `min` to `max` while each `FormulaMetric` recomputes (`evaluateFormula`) and its trend is stated (decision 112) |
 | `quiz` | per `QuizQuestion` n: `qn` question and choices · `qn.wrong` *wrong*: the first wrong choice, its hint and explanation · `qn.right` *right*: the right choice over its explanation |
@@ -386,6 +387,15 @@ pure and tested directly.
   are stage labels like "Question 1 of 3"; a narration file can say more.
 - `scenarioPlan` keeps one walk per ending; `tried` lists every choice taken from the same card on an
   earlier path.
+
+### Decision 114 — Implementation Notes
+
+- `narration.ts`: `headingSpeech(kind, title)`, `frameSpeech(region, beat)` (elements marked `FRAME`,
+  `data-present-frame`, on the beat), `mentions(text, words)` and `notSaidIn(caption, parts)` to skip what
+  is already said. `PresentMode` adds the heading to the first beat's speech (before the beat's on-screen
+  text, or before the first authored step with that beat's frame lines).
+- Tests: `narration.test.ts` (heading, frames, skipping what the caption says) and the decision-tree
+  renderer's frame lines in `performed.test.tsx`.
 
 ## Open Questions
 

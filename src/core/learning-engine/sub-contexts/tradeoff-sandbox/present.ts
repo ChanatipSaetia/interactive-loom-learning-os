@@ -85,13 +85,13 @@ export function decisionTreePlan(data: DecisionTreePresentData): DecisionTreeSte
   const walk = decisionTreeWalk(data)
   if (!walk.length) return []
   const nodes = data.nodes ?? {}
-  const steps: DecisionTreeStep[] = [{ id: 'start', about: 'The tree and the first question', node: 0, picked: false }]
+  const steps: DecisionTreeStep[] = [{ id: 'start', about: 'An example path through the tree: the tree and the first question', node: 0, picked: false }]
   for (let i = 1; i < walk.length; i++) {
     const choice = walk[i].choice
     steps.push({ id: `answer${i}`, about: `Answers ${quoted(choice?.text ?? choice?.label ?? '')}`, node: i - 1, picked: true })
     const next = nodes[walk[i].nodeId]
     steps.push(next?.leaf && !choicesOf(next).length
-      ? { id: 'result', about: `The recommendation: ${brief(next.leaf.recommendation ?? '')}`, node: i, picked: false }
+      ? { id: 'result', about: `The result of these decisions: ${brief(next.leaf.recommendation ?? '')}`, node: i, picked: false }
       : { id: `q${i + 1}`, about: `Question ${i + 1}: ${brief(next?.prompt ?? next?.text ?? next?.title ?? '')}`, node: i, picked: false })
   }
   return steps

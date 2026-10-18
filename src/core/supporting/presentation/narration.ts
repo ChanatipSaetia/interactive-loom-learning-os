@@ -29,6 +29,33 @@ export function stepSpeech(root: HTMLElement | null): SpeechPart[] {
   return [...(caption ? partsOf(caption) : []), ...callouts.flatMap(partsOf)]
 }
 
+/**
+ * What opens a section, read before its first beat: its kind and title ("Quiz. Caching basics."), so
+ * every section is introduced, also when its first beat is an authored step or a question.
+ */
+export function headingSpeech(kind: string, title?: string): SpeechPart[] {
+  return textParts([kind, title?.trim()].filter(Boolean).join('\n'))
+}
+
+/** The beat's `FRAME` lines, read with an authored step too. */
+export function frameSpeech(region: HTMLElement, beat: number): SpeechPart[] {
+  return Array.from(region.querySelectorAll<HTMLElement>(`[data-beat="${beat}"][data-present-frame]`)).flatMap((el) => partsOf(el))
+}
+
+/** The text already says `words` (ignoring case and punctuation), so they need not be read again. */
+export function mentions(text: string, words: string): boolean {
+  const said = squash(text)
+  const w = squash(words)
+  return !!said && !!w && said.includes(w)
+}
+
+/** Leaves out the parts the authored caption already says, so nothing is read twice. */
+export function notSaidIn(caption: string | undefined, parts: SpeechPart[]): SpeechPart[] {
+  return parts.filter((p) => !mentions(caption ?? '', p.text))
+}
+
+const squash = (text: string) => text.toLowerCase().replace(/[\s.!?:;,]+/g, ' ').trim()
+
 function partsOf(el: HTMLElement): SpeechPart[] {
   // What the beat's line already says (`QUIET`) stays unread
   const words = Array.from(el.querySelectorAll<HTMLElement>(`.${PRESENT_WORD_CLASS}`)).filter((w) => !w.closest('[data-quiet]'))
