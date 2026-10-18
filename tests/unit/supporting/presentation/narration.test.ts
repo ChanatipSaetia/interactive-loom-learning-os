@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { SPOKEN_CLASS, beatSpeech, createNarrator } from '../../../../src/core/supporting/presentation/narration'
+import { SPOKEN_CLASS, beatSpeech, createNarrator, frameSpeech, headingSpeech, mentions, notSaidIn } from '../../../../src/core/supporting/presentation/narration'
 
 class FakeUtterance {
   text: string
@@ -51,6 +51,23 @@ describe('narration', () => {
       <div data-beat="0"><span data-quiet>01</span> Step one</div>
       <p data-beat="0"><span class="present-w">Said</span> <span data-quiet><span class="present-w">skipped</span></span></p>`)
     expect(beatSpeech(r, 0).map((p) => p.text)).toEqual(['Step one.', 'Said'])
+  })
+
+  it("names a section by its kind and title", () => {
+    expect(headingSpeech('Quiz', 'Caching basics')).toEqual([{ text: 'Quiz. Caching basics.' }])
+    expect(headingSpeech('Bullets')).toEqual([{ text: 'Bullets.' }])
+  })
+
+  it("reads a beat's frame lines, but not what the caption already says", () => {
+    const r = region(`
+      <p data-beat="0" data-present-frame>An example: one path through this tree</p>
+      <p data-beat="0">Is the data shared?</p>
+      <p data-beat="3" data-present-frame>The result of these decisions</p>`)
+    expect(frameSpeech(r, 0)).toEqual([{ text: 'An example: one path through this tree.' }])
+    expect(notSaidIn('Here is an example: one path through this tree!', frameSpeech(r, 0))).toEqual([])
+    expect(notSaidIn('Is the data shared?', frameSpeech(r, 3))).toEqual([{ text: 'The result of these decisions.' }])
+    expect(mentions('Welcome to Caching Basics.', 'caching basics')).toBe(true)
+    expect(mentions('', 'caching')).toBe(false)
   })
 
   it('speaks the parts rewritten for speech and lights the word being spoken', async () => {

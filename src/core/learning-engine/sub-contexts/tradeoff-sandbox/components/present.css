@@ -5,6 +5,7 @@
 .present-dt { display: grid; grid-template-columns: minmax(200px, 0.7fr) 2fr; gap: 32px; align-items: start; }
 .present-dt-tree { width: 100%; max-height: 440px; overflow: visible; }
 .present-dt-side { min-width: 0; }
+.present-dt-frame { margin: 0 0 10px; color: var(--present-accent); font: 600 var(--present-fs-small) / 1.2 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
 .present-dt .dt-decision { gap: 14px; padding: 18px 22px; }
 .present-dt .dt-decision-header { padding-bottom: 10px; }
 .present-dt .dt-decision-prompt { font-size: var(--present-fs-body); }

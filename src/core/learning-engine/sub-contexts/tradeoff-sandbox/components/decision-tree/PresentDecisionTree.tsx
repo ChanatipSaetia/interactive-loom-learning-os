@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { ArrowRight, ThumbsUp } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { QUIET, beatMarks, focus, lead, type PresentRendererProps } from '../../../present-kernel'
+import { FRAME, QUIET, beatMarks, focus, lead, type PresentRendererProps } from '../../../present-kernel'
 import { choicesOf, decisionTreePlan, decisionTreeWalk, drawTree, type DecisionTreePresentData } from '../../present'
 import './decision-tree.css'
 import '../present.css'
@@ -19,7 +19,7 @@ const R = 9
  * whole tree draws in, level by level, beside the first question, its answers shown by label only;
  * then the answer taken lights up on that same card with its rationale while the others step back and
  * its branch lights in the drawing; then the card turns into the next question, until the
- * recommendation.
+ * recommendation. A frame line says the walk is an example, and the recommendation its result.
  */
 export default function PresentDecisionTree({ data, beat }: PresentRendererProps<DecisionTreePresentData>) {
   const pick = usePickAnchors()
@@ -81,6 +81,12 @@ export default function PresentDecisionTree({ data, beat }: PresentRendererProps
         })}
       </svg>
       <div className="present-dt-side">
+        {/* The walk is one example path through the tree, and its leaf is what those answers lead to */}
+        {leaf ? (
+          <p key="result-frame" className="present-dt-frame" {...mark(askAt, { delay: 100 })} {...FRAME}>The result of these decisions</p>
+        ) : (
+          <p key="example-frame" className="present-dt-frame" {...mark(0, { delay: 200 })} {...FRAME}>An example: one path through this tree</p>
+        )}
         {leaf ? (
           <div key={`leaf-${here}`} className="dt-leaf" role="status" {...mark(askAt, { motion: 'zoom', delay: 250, sound: 'success' })}>
             <div className="dt-leaf-card" {...pick(leaf)}>

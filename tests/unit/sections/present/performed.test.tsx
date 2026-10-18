@@ -132,4 +132,17 @@ describe('decision tree renderer (decision 110)', () => {
     expect(document.querySelector('.dt-leaf-block-text')?.textContent).toBe('Covers both. It is the default.')
     expect(screen.queryByText('Costs more')).toBeNull()
   })
+
+  it('says the walk is an example, and the recommendation is its result, in lines the voice reads', () => {
+    const { unmount } = draw(0)
+    const example = screen.getByText('An example: one path through this tree')
+    expect(example).toHaveAttribute('data-present-frame')
+    expect(example).toHaveAttribute('data-beat', '0')
+    unmount()
+    draw(2)
+    const result = screen.getByText('The result of these decisions')
+    expect(result).toHaveAttribute('data-present-frame')
+    expect(result).toHaveAttribute('data-beat', '2')
+    expect(screen.queryByText('An example: one path through this tree')).toBeNull()
+  })
 })

@@ -29,7 +29,7 @@ import {
   type Size,
 } from '../camera'
 import { enterBeat, revealBeat, revealElements, type BeatEntrance } from '../motion'
-import { beatSpeech, createNarrator, stepSpeech, type SpeechPart } from '../narration'
+import { beatSpeech, createNarrator, frameSpeech, headingSpeech, mentions, notSaidIn, stepSpeech, type SpeechPart } from '../narration'
 import { stepsByBeat } from '../narration-steps'
 import { focusElements, type Box } from '../narration-targets'
 import { NarrationLayer } from './NarrationLayer'
@@ -357,6 +357,18 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     setLanded(`${state.section}:${state.beat}:${epoch}`)
   }, [state.mode, state.section, state.beat, epoch])
 
+  /**
+   * A section's first beat opens by naming it, its kind and title as on its header, unless what the
+   * beat reads already says the title. The intro has no header: its own first beat is its title.
+   */
+  const headingOf = (i: number, beat: number, parts: SpeechPart[]): SpeechPart[] => {
+    const section = sections[i]
+    if (beat !== 0 || !section || section.config.type === 'intro') return []
+    const title = section.config.props.title as string | undefined
+    if (title && mentions(parts.map((p) => p.text).join(' '), title)) return []
+    return headingSpeech(kindLabel(section.config.type), title)
+  }
+
   // Play the beat's narration steps in turn: each lasts until the voice finishes, or its reading time
   useEffect(() => {
     if (!step || stepsDone || overview || complete || !currentReady) return
@@ -372,7 +384,13 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     const least = (step.effects?.length ? STEP_WITH_EFFECTS_MS : STEP_MIN_MS) + (landed === beatKey ? 0 : 600)
     const started = Date.now()
     if (narrating) {
-      const stop = say(() => stepSpeech(rootRef.current), reduced ? 0 : 350)
+      // The first step of a beat opens with the section's heading (first beat) and the beat's frame lines
+      const first = run.cursor === 0
+      const stop = say(() => {
+        const region = regionRefs.current[state.section]
+        const parts = [...(first && region ? notSaidIn(step.caption, frameSpeech(region, state.beat)) : []), ...stepSpeech(rootRef.current)]
+        return first ? [...headingOf(state.section, state.beat, parts), ...parts] : parts
+      }, reduced ? 0 : 350)
       const reading = speech.current
       void reading?.then(() => window.setTimeout(finish, Math.max(400, least - (Date.now() - started))))
       return () => {
@@ -393,7 +411,11 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
   useEffect(() => {
     const region = regionRefs.current[state.section]
     if (!narrating || authored || complete || overview || !currentReady || !region) return
-    return say(() => beatSpeech(region, state.beat), reduced ? 0 : 250)
+    return say(() => {
+      const parts = beatSpeech(region, state.beat)
+      return [...headingOf(state.section, state.beat, parts), ...parts]
+    }, reduced ? 0 : 250)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [narrating, authored, state.section, state.beat, epoch, complete, overview, currentReady, reduced, say])
 
   // Light the beat's main content once its entrance has landed (decision 105); an authored step that

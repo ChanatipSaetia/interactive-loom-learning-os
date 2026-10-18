@@ -153,6 +153,13 @@ export const focus = (on: boolean) => (on ? { 'data-focus': '' } : {})
  */
 export const QUIET = { 'data-quiet': '' } as const
 
+/**
+ * Put on a stage line that frames the beat ("An example walk through the tree", "The result of these
+ * decisions"): the voice reads it on its beat even when an authored narration step plays there, unless
+ * the step's caption already says it.
+ */
+export const FRAME = { 'data-present-frame': '' } as const
+
 /** Markdown or HTML as plain text, for a beat's `about`. */
 export function plain(text: string): string {
   return text
