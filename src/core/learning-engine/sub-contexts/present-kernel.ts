@@ -33,6 +33,8 @@ export type BeatMotion =
   | 'unfold'
   | 'stack'
   | 'pop'
+  /** Settles into place from slightly larger: the beat's key statement (a headline, a takeaway). */
+  | 'zoom'
   /** Wipes in left to right (top to bottom with `--present-dir: v`); an SVG path with pathLength="1" strokes itself. */
   | 'draw'
   | 'children'
@@ -171,3 +173,13 @@ export function brief(text: string, max = 60): string {
 
 /** A choice or label quoted inside a beat's `about`. */
 export const quoted = (text: string) => `“${brief(text)}”`
+
+/**
+ * The opening of a longer text, for the stage (decision 109): its first `sentences` sentences, the rest
+ * left to Read. Text without sentence stops (Thai, a single long sentence) comes back whole.
+ */
+export function lead(text: string | undefined, sentences = 1): string {
+  if (!text) return ''
+  const parts = text.trim().split(/(?<=[^\s.]{3}[.!?]|[。！？])\s+(?=\S)/)
+  return parts.slice(0, sentences).join(' ')
+}

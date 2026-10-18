@@ -30,3 +30,15 @@
 .present-trail li + li::before { content: ''; width: 18px; height: 2px; margin-right: 2px; background: var(--border); }
 .present-trail-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--present-accent, var(--primary)); }
 .present-trail-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* A choice picked on its card (decision 110): it lights while the others step back; one tried before is struck through */
+.present-scenario .scenario-choice { transition: opacity 0.35s ease, border-color 0.3s ease, background-color 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+.present-scenario .scenario-choice.is-picked { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 14%, var(--card)); transform: translateX(6px); }
+.present-scenario .scenario-choice.is-dim { opacity: 0.45; }
+.present-scenario .scenario-choice.is-tried .scenario-choice-text { text-decoration: line-through; text-decoration-color: var(--ctp-red); }
+.present-scenario-picked { flex: none; width: 20px; height: 20px; margin-left: auto; color: var(--primary); }
+.present-scenario-tried { flex: none; width: 18px; height: 18px; margin-left: auto; color: var(--ctp-red); }
+
+@media (prefers-reduced-motion: reduce) {
+  .present-scenario .scenario-choice { transition: none; }
+}

@@ -98,6 +98,10 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
         tl.add(el, { opacity: [0, 1], scale: [0.7, 1], duration: P.pop, ease: OUT }, t)
         if (onSound) tl.call(() => onSound('click'), t + P.pop / 2)
         break
+      case 'zoom':
+        hide(el)
+        tl.add(el, { opacity: [0, 1], scale: [1.12, 1], duration: P.element + 160, ease: OUT }, t)
+        break
       case 'draw': {
         targets.add(el)
         if (typeof SVGGeometryElement !== 'undefined' && (el as Element) instanceof SVGGeometryElement) {

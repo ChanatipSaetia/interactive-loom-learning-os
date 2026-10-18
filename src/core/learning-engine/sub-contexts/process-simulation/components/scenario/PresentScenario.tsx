@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, ArrowRight, Check, CheckCircle2, X } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
 import { beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
@@ -16,10 +16,11 @@ const GRADES: Record<ScenarioRating, string> = { 'a': 'A', 'b-plus': 'B+', 'b-mi
 const good = (rating: ScenarioRating) => rating === 'a' || rating === 'b-plus'
 
 /**
- * Scenario in Present mode (scenarioPlan), walked by the stage (decision 103): the setup and the first
- * situation arrive; then a weaker path is taken choice by choice, each choice joining the trail above
- * while the card turns into the next situation, until its outcome lands with its grade; then the walk
- * goes back to where the paths part and follows the best path to its outcome.
+ * Scenario in Present mode (scenarioPlan), walked by the stage (decisions 103 and 110): the setup and
+ * the first situation arrive; then a weaker path is taken choice by choice, each choice lighting up on
+ * the card it is asked on while the others step back, then joining the trail above as the card turns
+ * into the next situation, until its outcome lands with its grade; then the walk goes back to the fork,
+ * where the choice tried is struck through, and follows the best path to its outcome.
  */
 export default function PresentScenario({ data, beat }: PresentRendererProps<ScenarioPresentData>) {
   const pick = usePickAnchors()
@@ -27,10 +28,16 @@ export default function PresentScenario({ data, beat }: PresentRendererProps<Sce
   const nodes = data.nodes ?? {}
   const plan = useMemo(() => scenarioPlan(data), [data])
   const at = Math.min(Math.max(0, beat), Math.max(0, plan.length - 1))
-  const path = plan[at]?.path ?? [{ nodeId: data.startNode ?? 'start' }]
+  const step = plan[at]
+  const path = step?.path ?? [{ nodeId: data.startNode ?? 'start' }]
   const here = path[path.length - 1]
   const node = nodes[here.nodeId]
   const outcome = node?.outcome
+  // The beat the card on stage arrived on: it stays while its choice is picked on the next beat
+  const sameCard = (k: number) => plan[k]?.path.length === path.length && plan[k]?.path[path.length - 1]?.nodeId === here.nodeId
+  let askAt = at
+  while (askAt > 0 && sameCard(askAt - 1)) askAt--
+  const pickAt = step?.picked ? at : -1
 
   return (
     <div className="present-scenario scenario-section" data-testid="present-scenario">
@@ -57,7 +64,7 @@ export default function PresentScenario({ data, beat }: PresentRendererProps<Sce
           {path.slice(1).map((p, i) => {
             const newest = i === path.length - 2
             return (
-              <li key={`${i}-${p.nodeId}`} {...(newest && mark(at, { motion: 'unfold' }))} {...focus(newest && beat === at)}>
+              <li key={`${i}-${p.nodeId}`} {...(newest && mark(askAt, { motion: 'unfold' }))}>
                 <span className="present-trail-dot" aria-hidden />
                 <span className="present-trail-text">{p.choice ? scenarioText(p.choice) : p.nodeId}</span>
               </li>
@@ -66,8 +73,8 @@ export default function PresentScenario({ data, beat }: PresentRendererProps<Sce
         </ol>
       )}
       {outcome ? (
-        <div key={`outcome-${at}`} className="scenario-outcome" role="status" {...mark(at, { delay: 250, sound: good(outcome.rating) ? 'success' : 'error' })}>
-          <div className="scenario-outcome-card" style={{ borderColor: RATING_COLORS[outcome.rating], backgroundColor: RATING_BG[outcome.rating] }} {...focus(beat === at)} {...pick(outcome)}>
+        <div key={`outcome-${at}`} className="scenario-outcome" role="status" {...mark(askAt, { motion: 'zoom', delay: 250, sound: good(outcome.rating) ? 'success' : 'error' })}>
+          <div className="scenario-outcome-card" style={{ borderColor: RATING_COLORS[outcome.rating], backgroundColor: RATING_BG[outcome.rating] }} {...focus(beat === askAt)} {...pick(outcome)}>
             <div className="scenario-outcome-header">
               {good(outcome.rating)
                 ? <CheckCircle2 className="scenario-outcome-icon" style={{ color: RATING_COLORS[outcome.rating] }} />
@@ -95,32 +102,41 @@ export default function PresentScenario({ data, beat }: PresentRendererProps<Sce
         </div>
       ) : node ? (
         <div
-          key={`node-${at}`}
-          className="scenario-decision"
-          {...mark(at, { motion: 'fade', delay: at === 0 && data.intro ? 400 : 250 })}
+          key={`node-${path.length}-${here.nodeId}`}
+          className={`scenario-decision${step?.picked ? ' is-answered' : ''}`}
+          {...mark(askAt, { motion: 'fade', delay: askAt === 0 && data.intro ? 400 : 250 })}
           {...pick(node)}
         >
           <div className="scenario-decision-header">
             <span className="scenario-step-counter">Step {path.length}</span>
           </div>
-          <h4 className="scenario-decision-prompt" {...mark(at, { motion: 'words', delay: at === 0 && data.intro ? 600 : 350 })} {...focus(at === 0 && beat === 0)} {...pick(node, 'prompt')}>
+          <h4 className="scenario-decision-prompt" {...mark(askAt, { motion: 'words', delay: askAt === 0 && data.intro ? 600 : 350 })} {...focus(beat === askAt)} {...pick(node, 'prompt')}>
             <PresentWords text={node.prompt ?? node.text ?? ''} />
           </h4>
           <div className="scenario-choices" role="list" aria-label="Choices">
-            {(node.choices ?? []).map((c, j) => (
-              <div
-                key={c.id ?? j}
-                role="listitem"
-                className="scenario-choice"
-                data-testid={`present-scenario-choice-${c.id ?? j}`}
-                {...mark(at, { delay: (at === 0 && data.intro ? 1200 : 700) + j * 70 })}
-                {...pick(c)}
-              >
-                <span className="scenario-choice-badge" aria-hidden>{LETTERS[j]}</span>
-                <span className="scenario-choice-text" {...pick(c, 'text')}>{scenarioText(c)}</span>
-                <ArrowRight className="scenario-choice-arrow" aria-hidden />
-              </div>
-            ))}
+            {(node.choices ?? []).map((c, j) => {
+              const isPicked = !!step?.picked && c === step.picked
+              const isTried = !!step?.tried && c === step.tried
+              const cls = ['scenario-choice', isPicked && 'is-picked', isTried && 'is-tried', step?.picked && !isPicked && 'is-dim'].filter(Boolean).join(' ')
+              return (
+                <div
+                  key={c.id ?? j}
+                  role="listitem"
+                  className={cls}
+                  data-testid={`present-scenario-choice-${c.id ?? j}`}
+                  {...mark(askAt, { delay: (askAt === 0 && data.intro ? 1200 : 700) + j * 70 })}
+                  {...focus(isPicked && beat === pickAt)}
+                  {...pick(c)}
+                >
+                  <span className="scenario-choice-badge" aria-hidden>{LETTERS[j]}</span>
+                  <span className="scenario-choice-text" {...pick(c, 'text')}>{scenarioText(c)}</span>
+                  {isTried && <X className="present-scenario-tried" aria-label="Tried before" />}
+                  {isPicked
+                    ? <Check className="present-scenario-picked" aria-label="Chosen" {...mark(pickAt, { motion: 'pop', delay: 250, sound: 'click' })} />
+                    : <ArrowRight className="scenario-choice-arrow" aria-hidden />}
+                </div>
+              )
+            })}
           </div>
         </div>
       ) : null}

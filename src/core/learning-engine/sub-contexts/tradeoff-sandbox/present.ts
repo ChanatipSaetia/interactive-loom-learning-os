@@ -3,7 +3,7 @@
  * grill-log-presenting-mode.md). Each function reads the compiled section props only; every beat
  * plays by itself (decision 101). Beat IDs name the beats for narration files (decision 108).
  */
-import { brief, quoted, show, type Beat, type SectionPresenter } from '../present-kernel'
+import { answer, brief, quoted, show, type Beat, type SectionPresenter } from '../present-kernel'
 import type { DecisionTreeChoice, DecisionTreeNode, FormulaMetric, FormulaVariable, TradeoffScenario } from './schema'
 
 export type TradeoffPresentData = { title?: string; scenarios?: TradeoffScenario[] }
@@ -69,15 +69,36 @@ export function decisionTreeWalk(data: DecisionTreePresentData): Array<{ nodeId:
   }
 }
 
-/** The tree drawing in with the first question (`start`), then one answer per beat until a recommendation (`answer1`, `answer2`, …). */
-export function decisionTreeBeats(data: DecisionTreePresentData): Beat[] {
+/**
+ * What one decision-tree beat shows: the card of `walk[node]`, and whether the choice the walk takes
+ * there is picked on it (an answer beat) or not yet (a question, or the recommendation at a leaf).
+ */
+export type DecisionTreeStep = { id: string; about: string; node: number; picked: boolean }
+
+/**
+ * Ask, then answer on the same card, so the choice is shown and explained while it is made (decision
+ * 110): the tree with the first question (`start`), the answer taken there (`answer1`), the next
+ * question (`q2`), its answer (`answer2`), …, then the recommendation the walk reaches (`result`).
+ */
+export function decisionTreePlan(data: DecisionTreePresentData): DecisionTreeStep[] {
   const walk = decisionTreeWalk(data)
-  if (!walk.length) return [show('start', 'The tree')]
-  const last = walk.length - 1
-  return [
-    show('start', 'The tree and the first question'),
-    ...walk.slice(1).map((p, i) => show(`answer${i + 1}`, `Answers ${quoted(p.choice?.text ?? p.choice?.label ?? '')}${i + 1 === last ? ', reaching the recommendation' : ''}`)),
-  ]
+  if (!walk.length) return []
+  const nodes = data.nodes ?? {}
+  const steps: DecisionTreeStep[] = [{ id: 'start', about: 'The tree and the first question', node: 0, picked: false }]
+  for (let i = 1; i < walk.length; i++) {
+    const choice = walk[i].choice
+    steps.push({ id: `answer${i}`, about: `Answers ${quoted(choice?.text ?? choice?.label ?? '')}`, node: i - 1, picked: true })
+    const next = nodes[walk[i].nodeId]
+    steps.push(next?.leaf && !choicesOf(next).length
+      ? { id: 'result', about: `The recommendation: ${brief(next.leaf.recommendation ?? '')}`, node: i, picked: false }
+      : { id: `q${i + 1}`, about: `Question ${i + 1}: ${brief(next?.prompt ?? next?.text ?? next?.title ?? '')}`, node: i, picked: false })
+  }
+  return steps
+}
+
+export function decisionTreeBeats(data: DecisionTreePresentData): Beat[] {
+  const plan = decisionTreePlan(data)
+  return plan.length ? plan.map((s) => (s.id === 'result' ? answer('right', s.id, s.about) : show(s.id, s.about))) : [show('start', 'The tree')]
 }
 
 /** What each tradeoff beat shows: a step's choices, or that step's recommended choice. */

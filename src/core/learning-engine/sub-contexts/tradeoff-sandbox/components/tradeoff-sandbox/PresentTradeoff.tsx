@@ -1,8 +1,8 @@
 import { useMemo, type CSSProperties } from 'react'
-import { Check, Star, X } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { QUIET, beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
+import { QUIET, beatMarks, focus, lead, type PresentRendererProps } from '../../../present-kernel'
 import type { TradeoffMetricDef, TradeoffScenario } from '../../schema'
 import { tradeoffPlan, tradeoffSummaries, type TradeoffPresentData } from '../../present'
 import { MetricBar } from './index'
@@ -46,9 +46,9 @@ function Summary({ scenario }: { scenario: TradeoffScenario }) {
               <h4 className="step-title" {...pick(step, 'title')}>{step.title}</h4>
             </div>
             <span className="present-sandbox-pills" role="list" aria-label={step.title}>
-              {step.choices.map((c) => (
-                <span key={c.id} role="listitem" className={`present-pill${chosen[step.id] === c.id ? ' is-on' : ''}`} {...pick(c)}>
-                  {step.recommended === c.id && <Star size={11} className="present-pill-star" aria-label="Recommended" />}
+              {step.choices.filter((c) => chosen[step.id] === c.id).map((c) => (
+                <span key={c.id} role="listitem" className="present-pill is-on" {...pick(c)}>
+                  <Star size={11} className="present-pill-star" aria-label="Recommended" />
                   {c.label}
                 </span>
               ))}
@@ -62,10 +62,10 @@ function Summary({ scenario }: { scenario: TradeoffScenario }) {
 
 /**
  * Tradeoff sandbox in Present mode (tradeoffBeats), on Read's compare cards: per step, its choices arrive
- * side by side, each effect chip popping in (green where it helps, red where it costs) above its gains
- * and costs; then the recommended choice comes forward with its star and why it fits while the others
- * dim. Last, each scenario shows Read's
- * "Try it" sandbox with the recommended choices picked, and where they leave its metrics.
+ * side by side by name, each effect chip popping in (green where it helps, red where it costs); then the
+ * recommended choice comes forward with its star and the opening of why it fits while the others dim.
+ * Descriptions, gains and costs stay in Read (decision 109). Last, each scenario shows Read's "Try it"
+ * metrics with the recommended choices picked.
  */
 export default function PresentTradeoff({ data, beat }: PresentRendererProps<TradeoffPresentData>) {
   const pick = usePickAnchors()
@@ -90,7 +90,7 @@ export default function PresentTradeoff({ data, beat }: PresentRendererProps<Tra
             <header className="compare-step-header">
               <span className="compare-step-eyebrow">{scenarios.length > 1 ? `${scenario.title} · ` : ''}Question {ki + 1} of {scenario.steps.length}</span>
               <h5 className="compare-step-title" {...mark(at, { motion: 'words' })} {...focus(beat === at)} {...pick(step, 'title')}><PresentWords text={step.title} /></h5>
-              {step.description && <p className="compare-step-desc" {...mark(at, { delay: 300 })} {...pick(step, 'description')}>{step.description}</p>}
+              {step.description && <p className="compare-step-desc" {...mark(at, { delay: 300 })} {...pick(step, 'description')}>{lead(step.description)}</p>}
             </header>
             <div className="compare-grid" style={{ '--compare-cols': columns } as CSSProperties}>
               {step.choices.map((c, j) => {
@@ -111,7 +111,6 @@ export default function PresentTradeoff({ data, beat }: PresentRendererProps<Tra
                         </span>
                       )}
                     </div>
-                    {c.description && <p className="compare-card-summary" {...pick(c, 'description')}>{c.description}</p>}
                     {effects.length > 0 && (
                       <ul className="compare-effects" aria-label="Effects">
                         {effects.map((m, k) => {
@@ -124,47 +123,12 @@ export default function PresentTradeoff({ data, beat }: PresentRendererProps<Tra
                         })}
                       </ul>
                     )}
-                    {(c.pros.length > 0 || c.cons.length > 0) && (
-                      <div className="present-procons">
-                        {c.pros.length > 0 && (
-                          <div className="compare-block compare-block-gains">
-                            <span className="compare-block-title">Gains</span>
-                            <ul className="compare-pros">
-                              {c.pros.map((pro, p) => (
-                                <li key={p} className="compare-pro" {...pick(pro)}>
-                                  <Check className="compare-icon compare-icon-pro" strokeWidth={3} />
-                                  <div className="compare-procon-content">
-                                    <span className="compare-procon-title" {...pick(pro, 'title')}>{pro.title}</span>
-                                    {pro.description && <span className="compare-procon-desc" {...pick(pro, 'description')}>{pro.description}</span>}
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        {c.cons.length > 0 && (
-                          <div className="compare-block compare-block-costs">
-                            <span className="compare-block-title">Costs</span>
-                            <ul className="compare-cons">
-                              {c.cons.map((con, p) => (
-                                <li key={p} className="compare-con" {...pick(con)}>
-                                  <X className="compare-icon compare-icon-con" strokeWidth={3} />
-                                  <div className="compare-procon-content">
-                                    <span className="compare-procon-title" {...pick(con, 'title')}>{con.title}</span>
-                                    {con.description && <span className="compare-procon-desc" {...pick(con, 'description')}>{con.description}</span>}
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {isRec && rec >= 0 && (c.whyThisFits || c.whenToUse) && (
+                    {/* Rendered from its beat on, so the card keeps its size until then */}
+                    {isRec && rec >= 0 && beat >= rec && (c.whyThisFits || c.whenToUse) && (
                       <div className="compare-card-details" {...mark(rec, { delay: 350 })}>
                         <p {...pick(c, c.whyThisFits ? 'whyThisFits' : 'whenToUse')}>
                           <span className="compare-block-title">{c.whyThisFits ? 'Why it fits' : 'When to use'}</span>
-                          <PresentWords text={(c.whyThisFits ?? c.whenToUse) as string} />
+                          <PresentWords text={lead(c.whyThisFits ?? c.whenToUse, 2)} />
                         </p>
                       </div>
                     )}

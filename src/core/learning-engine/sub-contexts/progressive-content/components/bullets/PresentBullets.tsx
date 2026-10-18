@@ -1,5 +1,6 @@
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
-import { beatMarks, type BeatMarkAttributes, type BeatMarkOptions } from '../../../present-kernel'
+import { PresentAgenda } from '../../../PresentAgenda'
+import { beatMarks, focus, type BeatMarkAttributes, type BeatMarkOptions } from '../../../present-kernel'
 import type { PresentRendererProps } from '../../../present-kernel'
 import type { BulletItem } from '../../schema'
 import type { BulletsPresentData } from '../../present'
@@ -26,7 +27,7 @@ function Children({ items, at, mark, depth, start, ordered }: { items: BulletIte
     <ul className={`bullet-children${ordered ? ' bullet-children-ordered' : ''}`}>
       {items.map((child, i) => {
         const own = delay
-        delay += 80 + (child.children?.length ?? 0) * 80
+        delay += 160 + (child.children?.length ?? 0) * 120
         return (
           <li key={i} className="bullet-item" {...mark(at, { motion: 'unfold', delay: own })} {...pick(child)}>
             <div className="bullet-item-row">
@@ -41,26 +42,35 @@ function Children({ items, at, mark, depth, start, ordered }: { items: BulletIte
   )
 }
 
-/** Bullets in Present mode, as the Read card grid: one top-level card per beat, its sub-points unfolding inside it (bulletsBeats). */
+/**
+ * Bullets in Present mode, on the Read card: one top-level bullet per beat (bulletsBeats), each card
+ * replacing the last with its point as the headline and its sub-points unfolding out of it; an agenda
+ * of the top-level points shows where the list is (decisions 109 and 111).
+ */
 export default function PresentBullets({ data, beat }: PresentRendererProps<BulletsPresentData>) {
   const mark = beatMarks(beat)
   const pick = usePickAnchors()
   const items = data.items ?? []
   const ordered = !!data.ordered
+  const last = items.length - 1
 
-  return (
-    <ul className={`bullets-list ${ordered ? 'bullets-list-ordered' : 'bullets-list-unordered'} present-bullets`} data-testid="present-bullets">
+  const cards = (
+    <ul className={`bullets-list ${ordered ? 'bullets-list-ordered' : 'bullets-list-unordered'} present-bullets present-scenes`} data-testid="present-bullets">
       {items.map((item, i) => (
-        <li key={i} className="bullets-card" {...mark(i)} {...pick(item)}>
+        <li key={i} className="bullets-card" {...mark(i, { motion: 'fade', ...(i < last && { until: i }) })} {...pick(item)}>
           <div className="bullets-card-header">
             <div className="bullet-item-row">
               <Marker depth={0} ordered={ordered} />
-              <span className="bullet-text bullet-text-parent" {...pick(item, 'text')}>{item.text}</span>
+              <span className="bullet-text bullet-text-parent present-headline" {...mark(i, { motion: 'zoom' })} {...focus(beat === i)} {...pick(item, 'text')}>{item.text}</span>
             </div>
           </div>
-          {!!item.children?.length && <Children items={item.children} at={i} mark={mark} depth={1} start={320} ordered={ordered} />}
+          {!!item.children?.length && <Children items={item.children} at={i} mark={mark} depth={1} start={450} ordered={ordered} />}
         </li>
       ))}
     </ul>
   )
+
+  return items.length > 1
+    ? <div className="present-with-agenda"><PresentAgenda items={items.map((it) => it.text)} current={beat} label="Points" />{cards}</div>
+    : cards
 }

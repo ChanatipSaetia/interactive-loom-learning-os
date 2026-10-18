@@ -12,6 +12,10 @@
 .present-dt .dt-choice { padding: 12px 14px; font: inherit; color: inherit; }
 .present-dt .dt-choice-label { font-size: var(--present-fs-card); }
 .present-dt .dt-choice-desc { font-size: calc(var(--present-fs-card) - 2px); }
+/* The answer taken lights on its card while the others step back (decision 110) */
+.present-dt .dt-choice { transition: opacity 0.35s ease, border-color 0.3s ease, background-color 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+.present-dt .dt-choice.is-picked { transform: translateX(6px); }
+.present-dt .dt-choice.is-dim { opacity: 0.45; }
 .present-dt .dt-leaf-card { gap: 14px; padding: 18px 22px; }
 .present-dt .dt-leaf-header { padding-bottom: 10px; }
 .present-dt .dt-leaf-body { gap: 10px; }
@@ -54,16 +58,9 @@
 .present-tradeoff .compare-step-title { font-size: calc(var(--present-fs-body) + 4px); }
 .present-tradeoff .compare-step-desc { font-size: calc(var(--present-fs-card) - 1px); }
 .present-tradeoff .compare-grid { gap: 12px; align-items: start; }
-.present-tradeoff .compare-card { gap: 8px; padding: 12px 14px; transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease; }
-.present-tradeoff .compare-card-label { font-size: calc(var(--present-fs-card) - 1px); }
-.present-tradeoff .compare-card-summary { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; font-size: calc(var(--present-fs-card) - 3px); }
-.present-tradeoff .compare-block { padding: 6px 10px; gap: 4px; }
-.present-procons { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; align-items: start; }
-.present-tradeoff .compare-pros,
-.present-tradeoff .compare-cons { gap: 3px; }
-.present-tradeoff .compare-procon-title { font-size: 13px; }
-.present-tradeoff .compare-procon-desc { display: none; }
-.present-tradeoff .compare-card-details { font-size: calc(var(--present-fs-card) - 3px); }
+.present-tradeoff .compare-card { gap: 12px; padding: 16px 18px; transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease; }
+.present-tradeoff .compare-card-label { font-size: var(--present-fs-card); }
+.present-tradeoff .compare-card-details { font-size: calc(var(--present-fs-card) - 1px); line-height: 1.5; }
 .present-tradeoff .compare-card-details .compare-block-title { margin-bottom: 4px; }
 .present-tradeoff-rec { transform: translateY(-6px); }
 .present-tradeoff .compare-effect { transform-origin: left center; }
