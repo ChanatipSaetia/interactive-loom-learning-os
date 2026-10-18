@@ -70,7 +70,7 @@ const Workflow = Icons.Workflow;
 export { TYPES, COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, DYNAMIC_ICONS, NODE_W, NODE_H, INITIAL_SCHEMA };
 export type { UnifiedFlowchartSchema, FlowchartEntity, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup, FlowchartStep, FlowchartStepData, FlowchartStepLinear, FlowchartStepBranchOption, FlowchartJourney, FlowchartViewConfig, FlowchartProps, ProcessGroup, FlowchartStateMachineState, FlowchartStateMachine };
 
-export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: FlowchartProps) {
+export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0, present }: FlowchartProps) {
   const rawId = useId();
   const instanceId = useMemo(() => rawId.replace(/:/g, ''), [rawId]);
 
@@ -123,6 +123,15 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
 
   // Playback state (shared across all views in grid mode)
   const playback = usePlaybackState({ schema: localSchema });
+
+  // Present mode drives the first journey step by step
+  const presentStep = present?.step;
+  const firstJourneyId = localSchema.journeys?.[0]?.id;
+  const { jumpTo } = playback;
+  useEffect(() => {
+    if (presentStep === undefined || !firstJourneyId) return;
+    jumpTo(firstJourneyId, presentStep);
+  }, [presentStep, firstJourneyId, jumpTo]);
 
   // Resolve active node/relation IDs across all views from journey step data
   const resolvedHighlights = useMemo(() => {
@@ -662,11 +671,11 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
 
   return (
     <div
-      className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}`}
+      className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}${present ? ' is-presenting' : ''}`}
       data-testid="flowchart-section"
-      onKeyDown={handlePlaybackKeyDown}
+      onKeyDown={present ? undefined : handlePlaybackKeyDown}
     >
-      <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FlowchartHelpModal} titleTestId="flowchart-title" />
+      {!present && <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FlowchartHelpModal} titleTestId="flowchart-title" />}
 
       {/* Canvas View */}
       <div
@@ -699,7 +708,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
         />
 
         {/* Canvas tools - fullscreen + zoom, stacked vertically top-left */}
-        <div className="flowchart-canvas-tools" data-testid="flowchart-canvas-tools">
+        {!present && <div className="flowchart-canvas-tools" data-testid="flowchart-canvas-tools">
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
             className="flowchart-canvas-tool-btn"
@@ -740,10 +749,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
               </button>
             </div>
           )}
-        </div>
+        </div>}
 
         {/* Floating view switcher - top-center */}
-        {visibleViewKeys.length > 1 && (
+        {!present && visibleViewKeys.length > 1 && (
           <div className="flowchart-view-menu" data-testid="flowchart-view-tabs">
             <Tabs
               value={activeViewKey}
@@ -810,7 +819,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
         )}
 
         {/* Floating unified controls dock overlay at bottom-center */}
-        <div className="flowchart-controls-dock-container" data-testid="flowchart-controls-dock">
+        {!present && <div className="flowchart-controls-dock-container" data-testid="flowchart-controls-dock">
           <AnimatePresence mode="wait" initial={false}>
             {/* The mini player needs a journey to drive; without one the panel stays open */}
             {hasDock && (isDockCollapsed && currentJourney ? (
@@ -852,9 +861,9 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0 }: 
               </motion.div>
             ))}
           </AnimatePresence>
-        </div>
+        </div>}
 
-        {activeStep && (
+        {!present && activeStep && (
           <Button
             variant="outline"
             size="sm"
