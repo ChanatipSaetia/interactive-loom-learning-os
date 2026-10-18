@@ -17,17 +17,8 @@ export interface SpeechPart {
 /** What the beat shows, in reading order: word spans one by one, other marked elements whole. */
 export function beatSpeech(region: HTMLElement, beat: number): SpeechPart[] {
   const els = Array.from(region.querySelectorAll<HTMLElement>(`[data-beat="${beat}"]`))
-  const top = els.filter((el) => !els.some((o) => o !== el && o.contains(el)) && !el.closest('[aria-hidden="true"]:not([data-present-region])'))
+  const top = els.filter((el) => !els.some((o) => o !== el && o.contains(el)) && !el.closest('[aria-hidden="true"]:not([data-present-region]), [data-quiet]'))
   return top.flatMap((el) => partsOf(el))
-}
-
-/** The elements a solved gate wants read, skipping those already read. */
-export function saySpeech(region: HTMLElement, said: WeakSet<Element>): SpeechPart[] {
-  return Array.from(region.querySelectorAll<HTMLElement>('[data-say]')).flatMap((el) => {
-    if (said.has(el)) return []
-    said.add(el)
-    return partsOf(el)
-  })
 }
 
 /** A narration step's words (decision 94): the stage's caption, then each callout of the current section. */
@@ -39,10 +30,20 @@ export function stepSpeech(root: HTMLElement | null): SpeechPart[] {
 }
 
 function partsOf(el: HTMLElement): SpeechPart[] {
-  const words = Array.from(el.querySelectorAll<HTMLElement>(`.${PRESENT_WORD_CLASS}`))
+  // What the beat's line already says (`QUIET`) stays unread
+  const words = Array.from(el.querySelectorAll<HTMLElement>(`.${PRESENT_WORD_CLASS}`)).filter((w) => !w.closest('[data-quiet]'))
   if (words.length) return words.map((w) => ({ text: w.textContent ?? '', el: w }))
+  if (el.querySelector('[data-quiet]')) {
+    const copy = el.cloneNode(true) as HTMLElement
+    copy.querySelectorAll('[data-quiet]').forEach((q) => q.remove())
+    return textParts(copy.textContent ?? '')
+  }
+  return textParts(el.innerText ?? el.textContent ?? '')
+}
+
+function textParts(raw: string): SpeechPart[] {
   // Each line of a card or list ends as a sentence, so the voice pauses between them
-  const text = (el.innerText ?? el.textContent ?? '')
+  const text = raw
     .split(/\n+/)
     .map((line) => line.trim())
     .filter(Boolean)

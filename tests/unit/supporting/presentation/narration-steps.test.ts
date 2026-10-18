@@ -2,19 +2,19 @@ import { describe, it, expect } from 'vitest'
 import { defaultBeat, stepsByBeat } from '../../../../src/core/supporting/presentation/narration-steps'
 import { revealingBeat, targetElements, unionBox } from '../../../../src/core/supporting/presentation/narration-targets'
 import { focusCamera, regionOrigin, STAGE_LANDSCAPE } from '../../../../src/core/supporting/presentation/camera'
-import { explore, gate, show } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
+import { answer, show } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
 
 describe('narration steps ride on beats', () => {
-  it('without a known target, ride on the last show beat before the first gate or explore beat', () => {
-    expect(defaultBeat([show(), show(), explore()])).toBe(1)
-    expect(defaultBeat([show(), gate()])).toBe(0)
-    expect(defaultBeat([gate(), show()])).toBe(0)
+  it('without a known target, ride on the last beat before the first performed answer', () => {
+    expect(defaultBeat([show(), show(), answer('wrong'), answer('right')])).toBe(1)
+    expect(defaultBeat([show(), answer('right')])).toBe(0)
+    expect(defaultBeat([answer('right'), show()])).toBe(0)
     expect(defaultBeat([show(), show()])).toBe(1)
   })
 
   it('group under the beat that reveals their target, in written order, adding no beats', () => {
-    expect(stepsByBeat([show(), gate(), show()], 3, [2, 0, 0])).toEqual([[1, 2], [], [0]])
-    expect(stepsByBeat([show(), explore()], 1)).toEqual([[0], []])
+    expect(stepsByBeat([show(), answer('right'), show()], 3, [2, 0, 0])).toEqual([[1, 2], [], [0]])
+    expect(stepsByBeat([show(), answer('right')], 1)).toEqual([[0], []])
     expect(stepsByBeat([show()], 2, [5, undefined])).toEqual([[0, 1]])
   })
 })

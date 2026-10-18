@@ -12,11 +12,6 @@
 .present-dt .dt-choice { padding: 12px 14px; font: inherit; color: inherit; }
 .present-dt .dt-choice-label { font-size: var(--present-fs-card); }
 .present-dt .dt-choice-desc { font-size: calc(var(--present-fs-card) - 2px); }
-.present-dt .dt-choice:disabled { cursor: default; }
-.present-dt .dt-choice:disabled:hover { transform: none; box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08); }
-.present-dt .dt-choice:disabled:not(.dt-choice-recommended):hover { border-color: color-mix(in srgb, var(--border) 80%, transparent); background-color: color-mix(in srgb, var(--ctp-base) 90%, transparent); }
-.present-dt .dt-choice:disabled:not(.dt-choice-recommended):hover .dt-choice-badge { background: color-mix(in srgb, var(--ctp-surface0) 80%, transparent); color: var(--ctp-subtext0); border-color: color-mix(in srgb, var(--ctp-overlay0) 30%, transparent); }
-.present-dt .dt-choice:disabled:hover .dt-choice-arrow { color: var(--ctp-overlay0); transform: none; }
 .present-dt .dt-leaf-card { gap: 14px; padding: 18px 22px; }
 .present-dt .dt-leaf-header { padding-bottom: 10px; }
 .present-dt .dt-leaf-body { gap: 10px; }
@@ -73,12 +68,8 @@
 .present-tradeoff-rec { transform: translateY(-6px); }
 .present-tradeoff .compare-effect { transform-origin: left center; }
 
-.present-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-.present-pill { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-full); background: var(--card); color: var(--ink, var(--foreground)); font: 500 13px / 1.2 var(--font-ui); cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease; }
-.present-pill:disabled { cursor: default; }
-.present-pill:not(:disabled):hover { border-color: var(--secondary); }
-.present-pill[aria-pressed='true'],
-.present-pill[aria-selected='true'] { border-color: var(--ctp-green); background: var(--pale-green, color-mix(in srgb, var(--ctp-green) 14%, var(--card))); color: var(--ctp-green); }
+.present-pill { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-full); background: var(--card); color: var(--ink, var(--foreground)); font: 500 13px / 1.2 var(--font-ui); transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease; }
+.present-pill.is-on { border-color: var(--ctp-green); background: var(--pale-green, color-mix(in srgb, var(--ctp-green) 14%, var(--card))); color: var(--ctp-green); }
 .present-pill-star { color: var(--ctp-green); fill: currentColor; }
 .present-sandbox.tradeoff-layout { gap: 14px; }
 .present-sandbox .metric-dashboard { padding: 14px 20px; }
@@ -101,8 +92,6 @@
 .present-formula .slider-group { gap: 8px; }
 .present-formula .slider-header { gap: 8px; align-items: center; }
 .present-slider-track { position: relative; display: block; }
-.present-formula .range-input:disabled::-webkit-slider-thumb { cursor: default; }
-.present-formula.is-exploring .range-input { cursor: pointer; }
 .present-formula .slider-group.is-swept .slider-value { color: var(--ctp-peach); border-color: color-mix(in srgb, var(--ctp-peach) 40%, transparent); background: color-mix(in srgb, var(--ctp-peach) 15%, transparent); }
 .present-ghost { position: absolute; top: 4px; translate: -30% 0; color: var(--foreground); filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)); pointer-events: none; }
 .present-formula .sandbox-metrics { gap: 14px; padding: 16px 18px; min-width: 0; }
@@ -112,7 +101,6 @@
 .present-gauge-value { font-variant-numeric: tabular-nums; }
 .present-formula .gauge-fill { transition-duration: 0.12s; }
 .present-gauge-desc { color: var(--ctp-subtext0); font: 400 12px / 1.4 var(--font-body); }
-.present-formula-caption { margin: 2px 0 0; color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.4 var(--font-body); }
 
 .present-stage.is-portrait .present-formula.sandbox-layout { grid-template-columns: 1fr; gap: 14px; }
 .present-stage.is-portrait .present-sandbox .metric-bars { grid-template-columns: 1fr; }

@@ -67,6 +67,9 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
   for (const el of marked(root, 'data-beat', beat)) {
     const motion = (el.dataset.motion ?? 'rise') as BeatMotion
     const t = at0 + (reduced ? 0 : Number(el.dataset.delay ?? 0) + staggerIndex(el) * P.stagger)
+    // A marked sound plays as the element lands, not as it starts moving
+    const sound = el.dataset.sound as SoundEffect | undefined
+    if (sound && onSound) tl.call(() => onSound(sound), reduced ? at0 : t + Math.round(P.element * 0.6))
     if (reduced) {
       if (motion === 'draw') continue
       hide(el)

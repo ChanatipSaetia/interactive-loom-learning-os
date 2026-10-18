@@ -6,13 +6,11 @@
 .present-quiz-question { grid-area: 1 / 1; align-self: start; max-width: 900px; overflow: visible; }
 .present-quiz-question .quiz-question-text { font-size: calc(var(--present-fs-body) + 1px); }
 .present-quiz-question .quiz-choice { font-size: var(--present-fs-card); transition: opacity 0.26s var(--present-ease-in, ease-in), transform 0.26s var(--present-ease-in, ease-in), border-color 0.2s, background 0.2s; }
-.present-quiz-question .quiz-choice:disabled { cursor: default; }
 .present-quiz-question .quiz-explanation { overflow: hidden; }
 .present-quiz-question .quiz-explanation-text { font-size: calc(var(--present-fs-card) - 1px); }
 .present-quiz-hint-icon { display: inline; vertical-align: -2px; color: var(--ctp-yellow); }
 .present-quiz-choice.is-wrong { animation: present-nudge 0.3s ease-out; }
-.present-quiz-choice.is-falling { opacity: 0; transform: translateY(18px); }
-.present-quiz-choice.is-gone { display: none; }
+.present-quiz-choice.is-dim { opacity: 0.45; }
 
 /* ---- flashcards: the Read deck's card (Tailwind classes in the component), sized for the stage ---- */
 
@@ -42,9 +40,6 @@
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
-.present-card-face.is-front:not(:disabled) { cursor: pointer; }
-.present-card-face.is-front:not(:disabled):hover { border-color: color-mix(in srgb, var(--primary) 50%, var(--border)); }
-.present-card-face.is-front:disabled { opacity: 1; }
 .present-card-face.is-back { transform: rotateY(180deg); justify-content: center; }
 .present-card-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 36px; padding-bottom: 14px; }
 .present-card-body { display: flex; flex-direction: column; gap: 14px; margin: auto 0; }

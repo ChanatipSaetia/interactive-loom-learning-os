@@ -39,43 +39,27 @@
 .present-region .sequence-drop-slot { min-height: 44px; }
 .present-region .template-chips-bank { padding: 14px; gap: 8px; min-height: 0; }
 
-/* The learner's moves are animated by FLIP; only colours transition here */
+/* Only colours transition here; placing is a beat entrance */
 .present-region .sequence-drag-item,
 .present-region .template-chip-item,
 .present-region .sequence-drop-slot,
 .present-region .reflection-blank-dropzone { transition-property: border-color, background-color, box-shadow, opacity, color; }
-.present-region .sequence-drag-item:disabled:not(.placed),
-.present-region .template-chip-item:disabled:not(.used) { cursor: default; transform: none; }
-.present-region .sequence-verify-btn:disabled,
-.present-region .template-verify-btn:disabled { opacity: 0.55; cursor: default; transform: none; box-shadow: none; filter: none; }
 
 /* ---- a placed step or chip ---- */
 
 .sequence-placed-wrapper.present-slot-item { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; gap: 10px; }
-.sequence-placed-wrapper.present-slot-item:not(:disabled) { cursor: pointer; }
-.present-slot-remove { flex: none; color: var(--ctp-overlay1); }
 .present-slot-mark { flex: none; }
 
 .present-chip.is-placed { padding: 0; border: 0; background: none; color: var(--primary); font: inherit; white-space: nowrap; }
-.present-chip.is-placed:not(:disabled) { cursor: pointer; }
 
-/* ---- the gate's verdicts ---- */
+/* ---- the solved state ---- */
 
 .sequence-drop-slot.is-ok,
 .reflection-blank-dropzone.is-ok { border-color: var(--ctp-green); background: color-mix(in srgb, var(--ctp-green) 12%, var(--card)); }
 .sequence-drop-slot.is-ok .sequence-placed-text,
 .sequence-drop-slot.is-ok .present-slot-mark,
 .reflection-blank-dropzone.is-ok .present-chip { color: var(--ctp-green); }
-.sequence-drop-slot.is-off,
-.reflection-blank-dropzone.is-off { border-color: var(--ctp-red); background: color-mix(in srgb, var(--ctp-red) 12%, var(--card)); animation: present-nudge 0.3s ease-out; }
-.sequence-drop-slot.is-off .sequence-placed-text,
-.sequence-drop-slot.is-off .present-slot-mark,
-.reflection-blank-dropzone.is-off .present-chip { color: var(--ctp-red); }
 
 .present-stage.is-portrait .present-seq-body.is-split { grid-template-columns: 1fr; }
 .present-stage.is-portrait .reflection-blank-dropzone { min-width: 90px; }
 
-@media (prefers-reduced-motion: reduce) {
-  .sequence-drop-slot.is-off,
-  .reflection-blank-dropzone.is-off { animation: none; }
-}

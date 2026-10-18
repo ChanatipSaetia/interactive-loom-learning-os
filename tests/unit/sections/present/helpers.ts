@@ -14,4 +14,5 @@ export function propsOf<T>(source: string): T {
 /** A section file from the repo's own topics. */
 export const content = (path: string): string => readFileSync(`public/content/${path}`, 'utf8')
 
-export const kinds = (beats: Array<{ kind: string }>) => beats.map((b) => b.kind)
+/** Each beat as `show`, or the answer it performs (`wrong`, `right`). */
+export const kinds = (beats: Array<{ answer?: string }>) => beats.map((b) => b.answer ?? 'show')

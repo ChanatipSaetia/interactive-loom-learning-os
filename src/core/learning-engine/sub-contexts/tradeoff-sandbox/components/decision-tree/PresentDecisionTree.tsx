@@ -1,18 +1,13 @@
-import { useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { ArrowRight, RotateCcw, ThumbsUp } from 'lucide-react'
-import { useSound } from '../../../../../ui-system/sensory/SoundContext'
+import { useMemo } from 'react'
+import { ArrowRight, ThumbsUp } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { SAY, beatMarks, type PresentRendererProps } from '../../../present-kernel'
-import type { DecisionNodeSelected } from '../../events'
-import type { DecisionTreeChoice } from '../../schema'
-import { choicesOf, drawTree, nextOf, type DecisionTreePresentData } from '../../present'
+import { QUIET, beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
+import { choicesOf, decisionTreeWalk, drawTree, type DecisionTreePresentData } from '../../present'
 import './decision-tree.css'
 import '../present.css'
 
 const LETTERS = 'ABCDEFGH'
-const EASE = [0.16, 1, 0.3, 1] as const
 /** Tree drawing grid, in SVG units. */
 const GX = 60
 const GY = 70
@@ -20,51 +15,33 @@ const M = 22
 const R = 9
 
 /**
- * Decision tree in Present mode (decisionTreeBeats): the whole tree draws in, level by level, beside the
- * first question; then the learner answers. Each answer lights its branch in the drawing and the card
- * turns into the next question, until a recommendation. Start over goes back to the root.
+ * Decision tree in Present mode (decisionTreeBeats), answered by the stage (decision 103): the whole
+ * tree draws in, level by level, beside the first question; then each beat takes the recommended
+ * answer (else the first), lights its branch in the drawing and turns the card into the next
+ * question, until a recommendation.
  */
-export default function PresentDecisionTree({ data, beat, active, gate, onEvent }: PresentRendererProps<DecisionTreePresentData>) {
+export default function PresentDecisionTree({ data, beat }: PresentRendererProps<DecisionTreePresentData>) {
   const pick = usePickAnchors()
-  const { playSound } = useSound()
   const mark = beatMarks(beat)
   const nodes = useMemo(() => data.nodes ?? {}, [data.nodes])
   const root = data.root ?? ''
   const tree = useMemo(() => drawTree(root, nodes), [root, nodes])
   const pos = useMemo(() => new Map(tree.nodes.map((n) => [n.id, { x: M + n.x * GX + GX / 2, y: M + n.y * GY }])), [tree])
-  const [path, setPath] = useState<string[]>([root])
+  const walk = useMemo(() => decisionTreeWalk(data), [data])
+  const at = Math.min(Math.max(0, beat), Math.max(0, walk.length - 1))
+  const path = walk.length ? walk.slice(0, at + 1).map((p) => p.nodeId) : [root]
   const hereId = path[path.length - 1]
   const node = nodes[hereId]
   const choices = choicesOf(node)
   const leaf = node?.leaf && !choices.length ? node.leaf : undefined
-  const live = active && beat >= 1
   const taken = new Set(path.slice(1).map((id, i) => `${path[i]}->${id}`))
-
-  const choose = (choice: DecisionTreeChoice) => {
-    const to = nextOf(choice)
-    if (!live || !nodes[to]) return
-    const event: DecisionNodeSelected = { type: 'DecisionNodeSelected', nodeId: hereId, choiceId: choice.id ?? '', nextNodeId: to, timestamp: Date.now() }
-    onEvent?.(event as unknown as { type: string })
-    setPath((p) => [...p, to])
-    const next = nodes[to]
-    if (next.leaf && !choicesOf(next).length) {
-      playSound('success')
-      gate.solve()
-    } else {
-      playSound('whoosh')
-    }
-  }
-  const startOver = () => {
-    playSound('stepPrev')
-    setPath([root])
-  }
 
   const width = M * 2 + tree.width * GX
   const height = M * 2 + tree.depth * GY
 
   return (
     <div className="present-dt" data-testid="present-decision-tree">
-      <svg className="present-dt-tree" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" aria-hidden>
+      <svg className="present-dt-tree" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" aria-hidden {...QUIET}>
         {tree.links.map((l, i) => {
           const a = pos.get(l.from)
           const b = pos.get(l.to)
@@ -96,105 +73,78 @@ export default function PresentDecisionTree({ data, beat, active, gate, onEvent 
         })}
       </svg>
       <div className="present-dt-side">
-        <AnimatePresence mode="wait" initial={false}>
-          {leaf ? (
-            <motion.div
-              key={`leaf-${hereId}`}
-              className="dt-leaf"
-              initial={{ opacity: 0, y: 24, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, x: -24 }}
-              transition={{ duration: 0.45, ease: EASE }}
-              role="status"
-            >
-              <div className="dt-leaf-card" {...pick(leaf)}>
-                <div className="dt-leaf-header">
-                  <div className="dt-leaf-icon" aria-hidden>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                      <polyline points="22 4 12 14.01 9 11.01" />
-                    </svg>
-                  </div>
-                  <h4 className="dt-leaf-heading">Recommendation</h4>
+        {leaf ? (
+          <div key={`leaf-${at}`} className="dt-leaf" role="status" {...mark(at, { delay: 250, sound: 'success' })}>
+            <div className="dt-leaf-card" {...focus(beat === at)} {...pick(leaf)}>
+              <div className="dt-leaf-header">
+                <div className="dt-leaf-icon" aria-hidden>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
                 </div>
-                <div className="dt-leaf-body">
-                  <div className="dt-leaf-recommendation">
-                    <p className="dt-leaf-rec-text" {...SAY} {...pick(leaf, 'recommendation')}>{leaf.recommendation}</p>
-                  </div>
-                  {leaf.explanation && (
-                    <div className="dt-leaf-explanation">
-                      <span className="dt-leaf-block-label">Explanation</span>
-                      <p className="dt-leaf-block-text" {...SAY} {...pick(leaf, 'explanation')}>{leaf.explanation}</p>
-                    </div>
-                  )}
-                  {!!leaf.tradeoffs?.length && (
-                    <div className="dt-leaf-tradeoffs">
-                      <span className="dt-leaf-block-label">Trade-offs</span>
-                      <ul className="dt-leaf-tradeoff-list">
-                        {leaf.tradeoffs.map((t, i) => (
-                          <motion.li key={i} className="dt-leaf-tradeoff-item" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 + i * 0.08, duration: 0.3, ease: EASE }} {...pick(leaf.tradeoffs, i)}>{t}</motion.li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-                <div className="dt-leaf-footer">
-                  <button type="button" className="dt-reset-btn" onClick={startOver} disabled={!live} data-testid="present-dt-again">
-                    <RotateCcw className="dt-reset-icon" aria-hidden />
-                    Start over
-                  </button>
-                </div>
+                <h4 className="dt-leaf-heading">Recommendation</h4>
               </div>
-            </motion.div>
-          ) : node ? (
-            <motion.div
-              key={`node-${hereId}`}
-              className="dt-decision"
-              initial={{ opacity: 0, x: 32 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -32 }}
-              transition={{ duration: 0.4, ease: EASE }}
-              {...mark(0, { motion: 'fade', delay: 300 })}
-              {...pick(node)}
-            >
-              <div className="dt-decision-header">
-                <span className="dt-step-counter">Step {path.length}</span>
+              <div className="dt-leaf-body">
+                <div className="dt-leaf-recommendation">
+                  <p className="dt-leaf-rec-text" {...pick(leaf, 'recommendation')}>{leaf.recommendation}</p>
+                </div>
+                {leaf.explanation && (
+                  <div className="dt-leaf-explanation">
+                    <span className="dt-leaf-block-label">Explanation</span>
+                    <p className="dt-leaf-block-text" {...pick(leaf, 'explanation')}>{leaf.explanation}</p>
+                  </div>
+                )}
+                {!!leaf.tradeoffs?.length && (
+                  <div className="dt-leaf-tradeoffs">
+                    <span className="dt-leaf-block-label">Trade-offs</span>
+                    <ul className="dt-leaf-tradeoff-list">
+                      {leaf.tradeoffs.map((t, i) => (
+                        <li key={i} className="dt-leaf-tradeoff-item" {...pick(leaf.tradeoffs, i)}>{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-              <h4 className="dt-decision-prompt" {...mark(0, { motion: 'words', delay: 500 })} {...pick(node, 'prompt')}>
-                <PresentWords text={node.prompt ?? node.text ?? node.title ?? ''} />
-              </h4>
-              <div className="dt-choices" role="group" aria-label="Your answer">
-                {choices.map((c, j) => (
-                  <button
-                    key={c.id ?? j}
-                    type="button"
-                    className={`dt-choice${c.recommended ? ' dt-choice-recommended' : ''}${live ? ' present-breathe' : ''}`}
-                    onClick={() => choose(c)}
-                    disabled={!live}
-                    data-testid={`present-dt-choice-${c.id ?? j}`}
-                    {...mark(0, { delay: 1100 + j * 70 })}
-                    {...pick(c)}
-                  >
-                    <span className="dt-choice-badge" aria-hidden>{LETTERS[j]}</span>
-                    <span className="dt-choice-content">
-                      <span className="dt-choice-label" {...pick(c, 'text')}>
-                        {c.text ?? c.label}
-                        {c.recommended && (
-                          <span className="dt-recommended-badge">
-                            <ThumbsUp className="dt-recommended-icon" aria-hidden />
-                            Recommended
-                          </span>
-                        )}
-                      </span>
-                      {c.rationale && <span className="dt-choice-desc" {...pick(c, 'rationale')}>{c.rationale}</span>}
+            </div>
+          </div>
+        ) : node ? (
+          <div key={`node-${at}`} className="dt-decision" {...mark(at, { motion: 'fade', delay: at === 0 ? 300 : 200 })} {...pick(node)}>
+            <div className="dt-decision-header">
+              <span className="dt-step-counter">Step {path.length}</span>
+            </div>
+            <h4 className="dt-decision-prompt" {...mark(at, { motion: 'words', delay: at === 0 ? 500 : 300 })} {...focus(beat === at)} {...pick(node, 'prompt')}>
+              <PresentWords text={node.prompt ?? node.text ?? node.title ?? ''} />
+            </h4>
+            <div className="dt-choices" role="list" aria-label="Answers">
+              {choices.map((c, j) => (
+                <div
+                  key={c.id ?? j}
+                  role="listitem"
+                  className={`dt-choice${c.recommended ? ' dt-choice-recommended' : ''}`}
+                  data-testid={`present-dt-choice-${c.id ?? j}`}
+                  {...mark(at, { delay: (at === 0 ? 1100 : 700) + j * 70 })}
+                  {...pick(c)}
+                >
+                  <span className="dt-choice-badge" aria-hidden>{LETTERS[j]}</span>
+                  <span className="dt-choice-content">
+                    <span className="dt-choice-label" {...pick(c, 'text')}>
+                      {c.text ?? c.label}
+                      {c.recommended && (
+                        <span className="dt-recommended-badge">
+                          <ThumbsUp className="dt-recommended-icon" aria-hidden />
+                          Recommended
+                        </span>
+                      )}
                     </span>
-                    <ArrowRight className="dt-choice-arrow" aria-hidden />
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+                    {c.rationale && <span className="dt-choice-desc" {...pick(c, 'rationale')}>{c.rationale}</span>}
+                  </span>
+                  <ArrowRight className="dt-choice-arrow" aria-hidden />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { beatMarks, splitWords, wordsHtml, PRESENT_WORD_CLASS } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
+import { answer, beatMarks, listOf, plain, show, splitWords, wordsHtml, PRESENT_WORD_CLASS } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
 import { PresentRegistry, beatsOf } from '../../../../src/core/learning-engine/registry/present-registry'
 import { registerCorePresenters } from '../../../../src/core/learning-engine/registry/register-core-presenters'
 
@@ -10,6 +10,20 @@ describe('present kernel', () => {
     expect(mark(2)).toEqual({ 'data-beat': 2, 'data-motion': 'rise' })
     expect(beatMarks(3)(1, { until: 2 })).toEqual({ 'data-beat': 1, 'data-motion': 'rise', 'data-until': 2 })
     expect(beatMarks(-1)(0)['data-shown']).toBeUndefined()
+    expect(beatMarks(0)(0, { sound: 'success' })['data-sound']).toBe('success')
+  })
+
+  it('makes beats with a narrator line and the answer they perform', () => {
+    expect(show()).toEqual({})
+    expect(show('Here is the map.')).toEqual({ say: 'Here is the map.' })
+    expect(answer('wrong', 'Suppose we answer “A”.')).toEqual({ say: 'Suppose we answer “A”.', answer: 'wrong' })
+  })
+
+  it('turns markdown into plain words for a narrator line', () => {
+    expect(plain('Use **max-age** and `no-cache`, see [docs](https://x.y).\n- Item')).toBe('Use max-age and no-cache, see docs. Item')
+    expect(plain('bleed_dps + poison_dps')).toBe('bleed_dps + poison_dps')
+    expect(listOf(['a', 'b', 'c'])).toBe('a, b and c')
+    expect(listOf(['a'])).toBe('a')
   })
 
   it('splits text into words with the space after each', () => {
@@ -43,7 +57,7 @@ describe('present registry', () => {
   })
 
   it('gives a type without a presenter one show beat', () => {
-    expect(beatsOf({ type: 'unknown-type', props: {} })).toEqual([{ kind: 'show' }])
-    expect(beatsOf({ type: 'text', props: { paragraphs: [] } })).toEqual([{ kind: 'show' }])
+    expect(beatsOf({ type: 'unknown-type', props: {} })).toEqual([{}])
+    expect(beatsOf({ type: 'text', props: { paragraphs: [] } })).toEqual([{}])
   })
 })

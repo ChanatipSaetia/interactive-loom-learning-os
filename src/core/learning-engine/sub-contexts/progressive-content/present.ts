@@ -1,8 +1,9 @@
 /**
  * Present mode beats for the progressive-content section types (Beat Derivation in
- * grill-log-presenting-mode.md). Each function reads the compiled section props only.
+ * grill-log-presenting-mode.md). Each function reads the compiled section props only; every beat
+ * plays by itself (decision 101), and the voice reads what each beat puts on screen.
  */
-import { explore, show, type Beat, type SectionPresenter } from '../present-kernel'
+import { listOf, show, type Beat, type SectionPresenter } from '../present-kernel'
 import type { BulletItem, GalleryItem, IntroSectionData, OpenUISectionData, PillarLayerSectionData, TaxonomyCategory, TextSectionData } from './schema'
 
 type Props<T> = Omit<T, 'type'> & { title?: string; heading?: string }
@@ -45,9 +46,14 @@ export function galleryBeats(data: GalleryPresentData): Beat[] {
   return (data.items ?? []).map(() => show())
 }
 
-/** All the cards cascading in, then free browsing. */
+/** All the cards cascading in while the narrator names them, then each card opened in turn. */
 export function taxonomyBeats(data: TaxonomyPresentData): Beat[] {
-  return data.categories?.length ? [show(), explore()] : [show()]
+  const categories = data.categories ?? []
+  if (!categories.length) return [show()]
+  return [
+    show(`${categories.length} ${categories.length === 1 ? 'category' : 'categories'}: ${listOf(categories.map((c) => c.title))}.`),
+    ...categories.map(() => show()),
+  ]
 }
 
 export const introPresenter: SectionPresenter<IntroPresentData> = {

@@ -7,8 +7,8 @@ import { boxOf, targetElements, unionBox, type Box } from '../narration-targets'
 
 export const HIGHLIGHT_CLASS = 'present-narr-hl'
 const CALLOUT_W = 300
-/** Room kept free at the bottom of the region for the stage's caption line and turn pill. */
-const CAPTION_BAND = 120
+/** Room kept free at the bottom of the region, clear of its edge. */
+const CAPTION_BAND = 48
 /** A callout's height for framing it with a spotlight (it is measured only once drawn). */
 const CALLOUT_H = 96
 const EASE = [0.16, 1, 0.3, 1] as const

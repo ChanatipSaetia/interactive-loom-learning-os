@@ -18,10 +18,6 @@
 .present-scenario .scenario-choices { gap: 10px; }
 .present-scenario .scenario-choice { padding: 12px 14px; font: inherit; color: inherit; }
 .present-scenario .scenario-choice-text { font-size: var(--present-fs-card); }
-.present-scenario .scenario-choice:disabled { cursor: default; }
-.present-scenario .scenario-choice:disabled:hover { transform: none; border-color: color-mix(in srgb, var(--border, var(--ctp-overlay0)) 80%, transparent); background-color: color-mix(in srgb, var(--ctp-base) 90%, transparent); box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08); }
-.present-scenario .scenario-choice:disabled:hover .scenario-choice-badge { background: color-mix(in srgb, var(--ctp-surface0) 80%, transparent); color: var(--ctp-subtext0); border-color: color-mix(in srgb, var(--ctp-overlay0) 30%, transparent); }
-.present-scenario .scenario-choice:disabled:hover .scenario-choice-arrow { color: var(--ctp-overlay0); transform: none; }
 .present-scenario .scenario-outcome-card { gap: 14px; padding: 18px 22px; }
 .present-scenario .scenario-outcome-header { padding-bottom: 10px; }
 .present-scenario .scenario-outcome-body { gap: 10px; }

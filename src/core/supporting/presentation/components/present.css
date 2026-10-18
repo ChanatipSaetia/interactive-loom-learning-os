@@ -116,6 +116,9 @@
 
 .present-region-body::-webkit-scrollbar { display: none; }
 
+/* Present plays by itself (decision 101): sections take no pointer input, so nothing hovers or presses */
+.present-region-body:not(.is-fallback) { pointer-events: none; }
+
 /* A Read section shown as one beat may be taller than the region: let it scroll visibly */
 .present-region-body.is-fallback { scrollbar-width: thin; }
 .present-fallback { min-height: 0; }
@@ -154,17 +157,24 @@
   padding: 0 0.06em;
 }
 
-/* What a gate waits on breathes (Motion Rules: Breathe) */
-.present-region .present-breathe { animation: present-breathe 3s ease-in-out infinite; }
-.present-region .present-breathe:nth-child(2) { animation-delay: 0.35s; }
-.present-region .present-breathe:nth-child(3) { animation-delay: 0.7s; }
-.present-region .present-breathe:nth-child(4) { animation-delay: 1.05s; }
-@keyframes present-breathe {
-  0%, 100% { box-shadow: 0 0 0 0 transparent; }
-  50% { box-shadow: 0 0 0 7px var(--present-highlight); }
+/* A beat's main content lights up while the beat plays (decision 105, Motion Rules: Focus) */
+.present-region .present-focus {
+  outline: 2px solid var(--present-accent, var(--primary));
+  outline-offset: 5px;
+  box-shadow: 0 0 0 9px var(--present-highlight);
+  animation: present-focus-in 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.present-region svg .present-focus,
+.present-region g.present-focus {
+  outline: none;
+  box-shadow: none;
+  filter: drop-shadow(0 0 6px var(--present-accent, var(--primary))) drop-shadow(0 0 2px var(--present-accent, var(--primary)));
+}
+@keyframes present-focus-in {
+  from { outline-offset: 14px; outline-color: transparent; box-shadow: 0 0 0 0 transparent; }
 }
 
-/* Answer buttons shared by the gate renderers (quiz, scenario, decision tree) */
+/* Answer choices shared by the quiz, scenario and decision tree renderers *//* Answer buttons shared by the gate renderers (quiz, scenario, decision tree) */
 .present-choice {
   position: relative;
   display: flex;
@@ -205,44 +215,6 @@
 }
 
 /* ---- overlay: not moved by the camera ---- */
-
-.present-turn {
-  position: absolute;
-  left: 50%;
-  bottom: 20px;
-  translate: -50% 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 10px 9px 16px;
-  border-radius: var(--radius-full);
-  background: var(--foreground);
-  color: var(--background);
-  font: 600 14px / 1 var(--font-mono);
-  white-space: nowrap;
-  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.45);
-}
-
-.present-turn > i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--present-accent);
-  animation: present-dot 3s ease-in-out infinite;
-}
-
-.present-turn button {
-  padding: 7px 12px;
-  border: 0;
-  border-radius: var(--radius-full);
-  background: var(--present-accent);
-  color: var(--primary-foreground);
-  font: inherit;
-  cursor: pointer;
-}
-
-@keyframes present-dot { 50% { transform: scale(1.6); opacity: 0.6; } }
 
 .present-complete {
   position: absolute;
@@ -323,8 +295,7 @@
 
 .present-ctl:focus-visible,
 .present-seg:focus-visible,
-.present-button:focus-visible,
-.present-turn button:focus-visible {
+.present-button:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
@@ -379,33 +350,33 @@
 
 @keyframes present-hold { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-.present-tick.is-gate,
-.present-tick.is-explore {
+.present-tick.is-wrong,
+.present-tick.is-right {
   flex: none;
   width: 9px;
   height: 9px;
   margin: 0 2px;
+  border-radius: 50%;
   background: none;
   border: 2px solid var(--muted-foreground);
   box-sizing: border-box;
 }
-
-.present-tick.is-gate { border-radius: 2px; rotate: 45deg; }
-.present-tick.is-explore { border-radius: 50%; }
-.present-tick.is-now.is-gate,
-.present-tick.is-now.is-explore { border-color: var(--present-accent); }
-.present-tick.is-gate.is-solved { background: var(--ctp-green); border-color: var(--ctp-green); }
+.present-tick.is-wrong { border-color: var(--ctp-red); }
+.present-tick.is-right { border-color: var(--ctp-green); }
+.present-tick.is-past.is-wrong { background: var(--ctp-red); }
+.present-tick.is-past.is-right { background: var(--ctp-green); }
+.present-tick.is-now.is-wrong,
+.present-tick.is-now.is-right { background: var(--present-accent); border-color: var(--present-accent); }
 
 @media (max-width: 640px) {
   .present-ctl--text span { display: none; }
   .present-rail { gap: 3px; }
-  .present-tick.is-gate,
-  .present-tick.is-explore { width: 7px; height: 7px; margin: 0 1px; border-width: 1.5px; }
+  .present-tick.is-wrong,
+  .present-tick.is-right { width: 7px; height: 7px; margin: 0 1px; border-width: 1.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .present-region .present-breathe { animation: none; box-shadow: 0 0 0 4px var(--present-highlight); }
-  .present-turn > i,
+  .present-region .present-focus { animation: none; }
   .present-tick i { animation: none; }
   .present-tick.is-now i { transform: none; }
 }
@@ -474,25 +445,31 @@
 .present-callout-text { margin: 0; font: 400 15px / 1.45 var(--font-body); }
 
 /* The step's caption line, not moved by the camera */
+.present-caption-bar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-height: calc(2 * 1.4em + 20px);
+  font: 500 17px / 1.4 var(--font-body);
+}
+
 .present-caption {
-  position: absolute;
-  left: 50%;
-  bottom: 66px;
-  translate: -50% 0;
-  z-index: 9;
-  max-width: min(760px, 88%);
+  max-width: min(860px, 100%);
   margin: 0;
   padding: 10px 18px;
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--foreground) 92%, transparent);
   color: var(--background);
   text-align: center;
-  font: 500 17px / 1.4 var(--font-body);
+  font: inherit;
   box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.45);
   pointer-events: none;
 }
 
-.present-stage.is-portrait .present-caption { bottom: 60px; max-width: 94%; padding: 8px 12px; font-size: 14px; }
+@media (max-width: 640px) {
+  .present-caption-bar { font-size: 14px; }
+  .present-caption { padding: 8px 12px; }
+}
 .present-caption .present-spoken { color: var(--background); text-shadow: none; text-decoration: underline 2px; text-underline-offset: 4px; }
 
 @media (prefers-reduced-motion: reduce) {

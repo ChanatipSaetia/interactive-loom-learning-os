@@ -55,3 +55,17 @@ export function unionBox(boxes: Box[]): Box | null {
   const y = Math.min(...real.map((b) => b.y))
   return { x, y, w: Math.max(...real.map((b) => b.x + b.w)) - x, h: Math.max(...real.map((b) => b.y + b.h)) - y }
 }
+
+/**
+ * What the stage lights while a beat plays (decision 105): the elements its section marked with
+ * `focus()`, else the outermost elements the beat brings on screen.
+ */
+export function focusElements(region: HTMLElement, beat: number): HTMLElement[] {
+  const body = region.querySelector<HTMLElement>('.present-region-body') ?? region
+  const visible = (el: HTMLElement) => !el.closest('[data-beat]:not([data-shown])')
+  const marked = Array.from(body.querySelectorAll<HTMLElement>('[data-focus]')).filter(visible)
+  if (marked.length) return marked
+  const els = Array.from(body.querySelectorAll<HTMLElement>(`[data-beat="${beat}"]`)).filter(visible)
+  // A Read section standing in for a missing renderer is the whole region: nothing to point at
+  return els.filter((el) => !els.some((o) => o !== el && o.contains(el)) && !el.classList.contains('present-fallback'))
+}

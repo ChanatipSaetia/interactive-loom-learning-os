@@ -1,13 +1,11 @@
 import { BookOpen, ChevronLeft, ChevronRight, LayoutGrid, Pause, Play, Volume2, VolumeX } from 'lucide-react'
 import type { Beat } from '../../../learning-engine/sub-contexts/present-kernel'
-import { gateKey } from '../beat-runner'
 
 export interface PresentControlsProps {
   beats: Beat[][]
   labels: string[]
   section: number
   beat: number
-  solved: ReadonlySet<string>
   complete: boolean
   playing: boolean
   overview: boolean
@@ -27,7 +25,7 @@ export interface PresentControlsProps {
   onExit: () => void
 }
 
-/** Prev / play / next, the progress rail (one tick per beat; gates diamonds, explore beats circles), overview and exit. */
+/** Prev / play / next, the progress rail (one tick per beat; performed answers marked red or green), overview and exit. */
 export function PresentControls(p: PresentControlsProps) {
   const atStart = p.section === 0 && p.beat === 0
   return (
@@ -82,10 +80,9 @@ export function PresentControls(p: PresentControlsProps) {
               const now = !p.complete && s === p.section && i === p.beat
               const cls = [
                 'present-tick',
-                b.kind !== 'show' && `is-${b.kind}`,
+                b.answer && `is-${b.answer}`,
                 past && 'is-past',
                 now && 'is-now',
-                b.kind === 'gate' && p.solved.has(gateKey(s, i)) && 'is-solved',
               ].filter(Boolean).join(' ')
               return (
                 <span key={i} className={cls}>

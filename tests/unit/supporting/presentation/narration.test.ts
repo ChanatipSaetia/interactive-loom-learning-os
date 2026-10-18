@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { SPOKEN_CLASS, beatSpeech, createNarrator, saySpeech } from '../../../../src/core/supporting/presentation/narration'
+import { SPOKEN_CLASS, beatSpeech, createNarrator } from '../../../../src/core/supporting/presentation/narration'
 
 class FakeUtterance {
   text: string
@@ -45,11 +45,12 @@ describe('narration', () => {
     expect(parts[0].el?.textContent).toBe('Cache')
   })
 
-  it('reads what a solved gate marked once', () => {
-    const r = region('<p data-say>Right: it is fresh.</p><p>Other</p>')
-    const read = new WeakSet<Element>()
-    expect(saySpeech(r, read).map((p) => p.text)).toEqual(['Right: it is fresh.'])
-    expect(saySpeech(r, read)).toEqual([])
+  it('leaves unread what the narrator line already says (QUIET)', () => {
+    const r = region(`
+      <svg data-beat="0" data-quiet><text>Node</text></svg>
+      <div data-beat="0"><span data-quiet>01</span> Step one</div>
+      <p data-beat="0"><span class="present-w">Said</span> <span data-quiet><span class="present-w">skipped</span></span></p>`)
+    expect(beatSpeech(r, 0).map((p) => p.text)).toEqual(['Step one.', 'Said'])
   })
 
   it('speaks the parts rewritten for speech and lights the word being spoken', async () => {

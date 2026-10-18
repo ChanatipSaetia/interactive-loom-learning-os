@@ -56,9 +56,12 @@ why = IntroWhy("Origin requests cost time.")
     expect(galleryBeats(props)).toHaveLength(props.items.length)
   })
 
-  it('taxonomy-browser: the cards, then free browsing', () => {
+  it('taxonomy-browser: the cards with a line naming them, then each card opened in turn', () => {
     const props = propsOf<Parameters<typeof taxonomyBeats>[0]>(cachingDirectives)
-    expect(kinds(taxonomyBeats(props))).toEqual(['show', 'explore'])
+    const beats = taxonomyBeats(props)
+    expect(beats).toHaveLength(1 + props.categories.length)
+    expect(beats[0].say).toContain(props.categories[0].title)
+    expect(beats.slice(1).every((b) => !b.say && !b.answer)).toBe(true)
     expect(kinds(taxonomyBeats({ categories: [] }))).toEqual(['show'])
   })
 })

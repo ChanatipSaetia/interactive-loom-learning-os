@@ -45,8 +45,6 @@
 /* Many cards: three lines of description each; the full text is in the card's detail */
 .present-region .present-taxonomy.is-many .taxonomy-browser-description { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .present-stage.is-portrait .present-region .present-taxonomy .taxonomy-browser-grid { grid-template-columns: 1fr; gap: 0.75rem; }
-.present-region .present-taxonomy:not(.is-exploring) .taxonomy-browser-card { cursor: default; }
-.present-region .present-taxonomy-hint { margin: 0; color: var(--muted-foreground); font: 500 0.875rem / 1.4 var(--font-mono); }
 
 /* The Read detail dialog, opened over the cards inside the region */
 .present-region .present-taxonomy-overlay { position: absolute; inset: 0; z-index: 5; border-radius: 16px; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); }
