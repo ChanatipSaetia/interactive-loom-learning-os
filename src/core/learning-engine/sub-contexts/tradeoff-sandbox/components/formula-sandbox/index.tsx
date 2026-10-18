@@ -5,6 +5,9 @@ import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTi
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { FormulaHelpModal } from './FormulaHelpModal'
 import './formula-sandbox.css'
+import { evaluateFormula } from './evaluate'
+
+export { evaluateFormula }
 
 /**
  * Convert a JS formula string to human-readable math notation.
@@ -60,23 +63,6 @@ export interface FormulaSandboxProps {
   variables: OKFFormulaVariable[]
   metrics: OKFFormulaMetric[]
   sectionIndex?: number
-}
-
-export function evaluateFormula(formulaStr: string, variablesState: Record<string, number>): number {
-  let expression = formulaStr
-  for (const [key, val] of Object.entries(variablesState)) {
-    const regex = new RegExp(`\\b${key}\\b`, 'g')
-    expression = expression.replace(regex, String(val))
-  }
-
-  try {
-    // Safe evaluation using Function
-    const fn = new Function('Math', `return (${expression})`)
-    return fn(Math)
-  } catch (err) {
-    console.error('Failed to evaluate formula:', formulaStr, 'Expression:', expression, err)
-    return 0
-  }
 }
 
 export function computeMetricRange(formulaStr: string, variables: OKFFormulaVariable[]): { min: number; max: number } {

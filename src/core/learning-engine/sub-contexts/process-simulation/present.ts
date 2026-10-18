@@ -53,15 +53,26 @@ const shared = (a: ScenarioPath, b: ScenarioPath) => {
 
 /**
  * What one scenario beat shows: the path walked so far (its last node is the card on stage), the choice
- * picked on that card in this beat if any, and the choice tried there earlier on the weaker walk.
+ * picked on that card in this beat if any, the choices tried there on earlier paths, and, on an ending,
+ * which ending it is.
  */
-export type ScenarioStep = { id: string; about: string; path: ScenarioPath; picked?: ScenarioChoice; tried?: ScenarioChoice; answer?: 'wrong' | 'right' }
+export type ScenarioStep = {
+  id: string
+  about: string
+  path: ScenarioPath
+  picked?: ScenarioChoice
+  tried?: ScenarioChoice[]
+  ending?: { index: number; count: number }
+  answer?: 'wrong' | 'right'
+}
 
 /**
- * The walk the stage performs (decisions 103 and 110): the setup (`start`); when a weaker ending
- * exists, its path first, each choice picked on the card it is asked on (`wrong1`, `wrong2`, …) and
- * then where it leads (`wrong1.next`, …, the last one its outcome); then back at the fork, where the
- * paths part, along the best path the same way (`right1`, `right1.next`, …, the last one its outcome).
+ * The walks the stage performs (decisions 103, 110 and 113): the setup (`start`), then one path to every
+ * ending (the shortest walk to it), weaker endings first in branch order so each path leaves the last
+ * one as late as possible, the best ending last. Along path P each choice is picked on the card it is
+ * asked on (`pathP.choiceN`), then where it leads (`pathP.choiceN.next`, the last one its ending); a
+ * later path starts back at the fork where it leaves the one before, with the choices tried there
+ * struck through.
  */
 export function scenarioPlan(data: ScenarioPresentData): ScenarioStep[] {
   const nodes = data.nodes ?? {}
@@ -70,40 +81,42 @@ export function scenarioPlan(data: ScenarioPresentData): ScenarioStep[] {
   const all = walks(nodes, start)
   const opening: ScenarioStep = { id: 'start', about: 'The setup and the first situation', path: [{ nodeId: start }] }
   if (!all.length) return [opening]
-  const best = [...all].sort((a, b) => rank(nodes, b) - rank(nodes, a) || a.length - b.length)[0]
-  // The weaker walk that leaves the best one earliest, the weakest of those
-  const worse = all
-    .filter((w) => rank(nodes, w) < rank(nodes, best))
-    .sort((a, b) => shared(a, best) - shared(b, best) || rank(nodes, a) - rank(nodes, b) || a.length - b.length)[0]
+  // One walk per ending: the shortest that reaches it
+  const byEnd = new Map<string, ScenarioPath>()
+  for (const w of all) {
+    const end = w[w.length - 1].nodeId
+    const known = byEnd.get(end)
+    if (!known || w.length < known.length) byEnd.set(end, w)
+  }
+  const endings = [...byEnd.values()]
+  const best = [...endings].sort((a, b) => rank(nodes, b) - rank(nodes, a) || a.length - b.length)[0]
+  const order = [...endings.filter((w) => w !== best).sort((a, b) => all.indexOf(a) - all.indexOf(b)), best]
+  const top = rank(nodes, best)
   const steps: ScenarioStep[] = [opening]
-  const walk = (path: ScenarioPath, from: number, tone: 'wrong' | 'right', tried?: ScenarioChoice) => {
+  order.forEach((path, p) => {
+    const from = p === 0 ? 1 : shared(order[p - 1], path)
     for (let k = from; k < path.length; k++) {
       const choice = path[k].choice ?? {}
-      const id = `${tone}${k - from + 1}`
+      const id = `path${p + 1}.choice${k - from + 1}`
       const end = k === path.length - 1
-      const back = !!tried && k === from
+      // Choices taken from this card on the paths before
+      const tried = order.slice(0, p).flatMap((w) => (w[k - 1]?.nodeId === path[k - 1].nodeId && w[k]?.choice && w[k].choice !== choice ? [w[k].choice as ScenarioChoice] : []))
+      const unique = tried.filter((c, i) => tried.indexOf(c) === i)
       steps.push({
         id,
-        about: `${back ? 'Back at the fork, chooses' : 'Chooses'} ${quoted(scenarioText(choice))}`,
+        about: `Path ${p + 1}: ${p > 0 && k === from ? 'back at the fork, chooses' : 'chooses'} ${quoted(scenarioText(choice))}`,
         path: path.slice(0, k),
         picked: choice,
-        ...(back && { tried }),
+        ...(unique.length && { tried: unique }),
       })
       steps.push({
         id: `${id}.next`,
-        about: end ? `The ${tone === 'wrong' ? 'weaker' : 'best'} outcome` : `The next situation: ${brief(nodes[path[k].nodeId]?.prompt ?? nodes[path[k].nodeId]?.text ?? '')}`,
+        about: end ? `Path ${p + 1}: ending ${p + 1} of ${order.length}` : `Path ${p + 1}: the next situation: ${brief(nodes[path[k].nodeId]?.prompt ?? nodes[path[k].nodeId]?.text ?? '')}`,
         path: path.slice(0, k + 1),
-        ...(end && { answer: tone }),
+        ...(end && { ending: { index: p + 1, count: order.length }, answer: rank(nodes, path) >= top ? 'right' as const : 'wrong' as const }),
       })
     }
-  }
-  if (worse) {
-    walk(worse, 1, 'wrong')
-    const fork = shared(worse, best)
-    walk(best, fork, 'right', worse[fork]?.choice)
-  } else {
-    walk(best, 1, 'right')
-  }
+  })
   return steps
 }
 
