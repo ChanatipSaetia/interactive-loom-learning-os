@@ -125,6 +125,26 @@ describe('Loom Studio', () => {
     expect(screen.getByRole('alert').textContent).toMatch(/Fix the errors in the code first/)
   })
 
+  it('adds, checks and removes a section narration in the Narration tab', async () => {
+    const { folder, workspace } = await renderWorkspace()
+    fireEvent.click(screen.getByTestId('studio-section-quiz').querySelector('.studio-section-main')!)
+    fireEvent.click(screen.getByTestId('studio-tab-narration'))
+    fireEvent.click(screen.getByTestId('studio-narration-add'))
+    expect(workspace.section('quiz')?.narration?.source).toContain('Highlight("q1")')
+    expect(screen.getByTestId('studio-save').textContent).toContain('Save (1)')
+    expect(await screen.findByTestId('studio-narration')).toBeInTheDocument()
+
+    act(() => workspace.setNarration('quiz', 'root = Narration([s1])\ns1 = NarrationStep("Look", [Highlight("q2")])\n'))
+    expect(screen.getByTestId('studio-diagnostics').textContent).toMatch(/Line 2: "q2" does not name a statement of sections\/quiz.oui/)
+    fireEvent.keyDown(window, { key: 's', ctrlKey: true })
+    await waitFor(() => expect(folder.files.get('sections/quiz.narrate.oui')).toContain('"q2"'))
+
+    fireEvent.click(screen.getByTestId('studio-narration-remove'))
+    fireEvent.keyDown(window, { key: 's', ctrlKey: true })
+    await waitFor(() => expect(folder.files.has('sections/quiz.narrate.oui')).toBe(false))
+    expect(screen.getByTestId('studio-narration-add')).toBeInTheDocument()
+  })
+
   it('edits through the visual form', async () => {
     const { workspace } = await renderWorkspace()
     fireEvent.click(screen.getByTestId('studio-tab-form'))

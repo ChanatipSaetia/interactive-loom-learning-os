@@ -276,8 +276,8 @@ const ouiHover = hoverTooltip((view, pos) => {
   return { pos: hover.range.start, end: hover.range.end, above: true, create: () => tooltipDom(renderTooltipMarkdown(hover.contents)) }
 })
 
-function ouiLinter(kind: OUIFileKind) {
-  return linter((view) => getDiagnostics(view.state.doc.toString(), kind).map((d): Diagnostic => ({
+function ouiLinter(kind: OUIFileKind, hints: () => OUIWorkspaceHints) {
+  return linter((view) => getDiagnostics(view.state.doc.toString(), kind, hints()).map((d): Diagnostic => ({
     from: d.range.start,
     to: Math.max(d.range.end, d.range.start),
     severity: d.severity,
@@ -326,7 +326,7 @@ export function ouiLanguageSupport({ kind = 'section', hints = () => ({}) }: OUI
     autocompletion({ override: [ouiCompletionSource(kind, hints)], icons: true }),
     signatureField,
     ouiHover,
-    ouiLinter(kind),
+    ouiLinter(kind, hints),
     lintGutter(),
     definitionHandlers,
   ]

@@ -31,9 +31,15 @@ describe('parseEditBlocks', () => {
       reply(block('', 'q = A()'), block('file=../etc/passwd', 'q = A()'), block('file=sections/quiz.oui', '// nothing'), block('file=topic.oui mode=create', 'root = Topic()')),
     )
     expect(noFile.error).toMatch(/no file=/)
-    expect(badPath.error).toMatch(/is not topic.oui or sections/)
+    expect(badPath.error).toMatch(/is not topic.oui, sections\/<name>.oui or sections\/<name>.narrate.oui/)
     expect(empty.error).toMatch(/no `name = …` statements/)
     expect(createTopic.error).toMatch(/already exists/)
+  })
+
+  it('accepts narration files and checks them against their section', () => {
+    const [b] = parseEditBlocks(block('file=sections/quiz.narrate.oui mode=create', 'root = Narration([s1])\ns1 = NarrationStep("Look here.", [Highlight("q9")])'))
+    expect(b.error).toBeUndefined()
+    expect(b.statements.map((s) => s.name)).toEqual(['root', 's1'])
   })
 
   it('marks DELETE statements', () => {

@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react'
 import { motion } from 'motion/react'
+import { Check, CheckCircle2, X } from 'lucide-react'
 import { flipId, useFlip } from '../../../../../ui-system'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
@@ -9,6 +10,7 @@ import type { ReflectionSequenceChallenge } from '../../schema'
 import type { ReflectionAnswered, ReflectionCompleted } from '../../events'
 import type { SequencePresentData } from '../../present'
 import { startingOrder, useSlotGate } from '../useSlotGate'
+import './reflection-sequence.css'
 import '../present.css'
 
 type Mark = (at: number, options?: BeatMarkOptions) => BeatMarkAttributes
@@ -43,54 +45,89 @@ function Challenge({ challenge, index, total, mark, live, solved, onSolved, onEv
   })
   const canPlace = live && gate.phase === 'placing' && !gate.done
   const at = 2 * index
-  const item = (id: string, j: number) => {
-    const it = byId.get(id)
-    if (!it) return null
-    const m = gate.markOf(id)
-    return (
-      <button
-        key={id}
-        type="button"
-        className={`present-slot-item${m ? ` is-${m}` : ''}`}
-        onClick={() => { playSound('click'); gate.place(id) }}
-        disabled={!canPlace}
-        {...flipId(id)}
-        {...mark(at, { delay: 400 + j * 50 })}
-        {...pick(it)}
-      >
-        {it.text}
-      </button>
-    )
-  }
   const nextEmpty = gate.slots.indexOf(null)
+  const textOf = (id: string) => byId.get(id)?.text ?? id
 
   return (
-    <div className="present-reflection" ref={rootRef} {...mark(at, { motion: 'fade', ...(index < total - 1 && { until: at + 1 }) })} {...pick(challenge)}>
-      <p className="present-reflection-prompt" {...mark(at, { motion: 'words' })} {...pick(challenge, 'prompt')}><PresentWords text={challenge.prompt} /></p>
-      <div className="present-sequence">
-        <div>
-          <p className="present-col-label" {...mark(at, { motion: 'fade', delay: 300 })}>Steps</p>
-          <div className="present-pool">{gate.pool.map(item)}</div>
+    <div className="sequence-card present-reflection" ref={rootRef} {...mark(at, { motion: 'fade', ...(index < total - 1 && { until: at + 1 }) })} {...pick(challenge)}>
+      <div className="sequence-prompt-banner">
+        <span className="sequence-prompt-text present-reflection-prompt" {...mark(at, { motion: 'words' })} {...pick(challenge, 'prompt')}><PresentWords text={challenge.prompt} /></span>
+      </div>
+
+      {/* A long sequence puts the pool beside the slots so both fit the region */}
+      <div className={`present-seq-body${ids.length > 5 ? ' is-split' : ''}`}>
+        {/* The pool keeps every step's place, as in Read: a placed step leaves a faded copy behind */}
+        <div className="sequence-pool present-pool">
+          {ids.map((id, j) => {
+            const it = byId.get(id)
+            if (!it) return null
+            if (!gate.pool.includes(id)) {
+              return <div key={id} className="sequence-drag-item placed" aria-hidden {...mark(at, { delay: 400 + j * 50 })}>{it.text}</div>
+            }
+            return (
+              <button
+                key={id}
+                type="button"
+                className="sequence-drag-item present-slot-item"
+                onClick={() => { playSound('click'); gate.place(id) }}
+                disabled={!canPlace}
+                {...flipId(id)}
+                {...mark(at, { delay: 400 + j * 50 })}
+                {...pick(it)}
+              >
+                <span {...pick(it, 'text')}>{it.text}</span>
+              </button>
+            )
+          })}
         </div>
-        <div>
-          <p className="present-col-label" {...mark(at, { motion: 'fade', delay: 300 })}>Order</p>
-          <ol className="present-slots">
-            {gate.slots.map((id, i) => (
-              <li key={i} className="present-slot" {...mark(at, { motion: 'fade', delay: 600 + i * 50 })}>
-                <span className="present-slot-num">{i + 1}</span>
-                <div className={`present-drop${canPlace && i === nextEmpty ? ' present-breathe is-next' : ''}`}>{id && item(id, i)}</div>
-              </li>
-            ))}
-          </ol>
+
+        <div className="sequence-slots-list present-slots">
+          {gate.slots.map((id, i) => {
+            const m = id ? gate.markOf(id) : undefined
+            const next = canPlace && i === nextEmpty
+            return (
+              <div
+                key={i}
+                className={`sequence-drop-slot${id ? ' filled' : ''}${next ? ' highlight-target present-breathe' : ''}${m ? ` is-${m}` : ''}`}
+                {...mark(at, { motion: 'fade', delay: 600 + i * 50 })}
+              >
+                <span className="sequence-slot-num">{String(i + 1).padStart(2, '0')}</span>
+                <div className="sequence-slot-content">
+                  {id ? (
+                    <button
+                      type="button"
+                      className={`sequence-placed-wrapper present-slot-item${m ? ` is-${m}` : ''}`}
+                      onClick={() => { playSound('click'); gate.place(id) }}
+                      disabled={!canPlace}
+                      aria-label={canPlace ? `Take back: ${textOf(id)}` : undefined}
+                      {...flipId(id)}
+                      {...pick(byId.get(id), 'text')}
+                    >
+                      <span className="sequence-placed-text">{textOf(id)}</span>
+                      {m === 'ok' ? <Check size={15} className="present-slot-mark" aria-label="Right place" />
+                        : m === 'off' ? <X size={15} className="present-slot-mark" aria-label="Wrong place" />
+                        : canPlace ? <X size={14} className="present-slot-remove" aria-hidden /> : null}
+                    </button>
+                  ) : (
+                    <span className="sequence-slot-placeholder">{next ? 'Tap a step to place it here' : 'Drop step card here'}</span>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
-      <div className="present-reflection-foot">
+
+      <div className="sequence-footer present-reflection-foot">
         {!gate.done && gate.phase === 'placing' ? (
-          <button type="button" className={`present-button present-button--primary${canPlace && gate.full ? ' present-breathe' : ''}`} disabled={!canPlace || !gate.full} onClick={() => gate.check()} {...mark(at, { motion: 'fade', delay: 800 })}>
-            Check order
+          <button type="button" className={`sequence-verify-btn${canPlace && gate.full ? ' present-breathe' : ''}`} disabled={!canPlace || !gate.full} onClick={() => gate.check()} {...mark(at, { motion: 'fade', delay: 800 })}>
+            Verify Sequence Model
           </button>
         ) : gate.done ? (
-          <motion.p className="present-reflection-result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} role="status" {...SAY}>That is the right order.</motion.p>
+          <motion.div className="sequence-feedback-msg success present-reflection-result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} role="status">
+            <CheckCircle2 size={16} className="feedback-icon" aria-hidden />
+            <span {...SAY}>That is the right order.</span>
+          </motion.div>
         ) : null}
       </div>
     </div>

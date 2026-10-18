@@ -18,21 +18,21 @@ export interface ScenarioSectionProps {
   sectionIndex?: number
 }
 
-const RATING_COLORS: Record<ScenarioRating, string> = {
+export const RATING_COLORS: Record<ScenarioRating, string> = {
   'a': 'var(--ctp-green)',
   'b-plus': 'var(--ctp-teal)',
   'b-minus': 'var(--ctp-yellow)',
   'c': 'var(--ctp-red)',
 }
 
-const RATING_BG: Record<ScenarioRating, string> = {
+export const RATING_BG: Record<ScenarioRating, string> = {
   'a': 'color-mix(in srgb, var(--ctp-green) 8%, transparent)',
   'b-plus': 'rgba(117, 191, 165, 0.08)',
   'b-minus': 'rgba(213, 199, 136, 0.08)',
   'c': 'color-mix(in srgb, var(--ctp-red) 8%, transparent)',
 }
 
-const RATING_LABELS: Record<ScenarioRating, string> = {
+export const RATING_LABELS: Record<ScenarioRating, string> = {
   'a': 'Excellent',
   'b-plus': 'Good',
   'b-minus': 'Fair',

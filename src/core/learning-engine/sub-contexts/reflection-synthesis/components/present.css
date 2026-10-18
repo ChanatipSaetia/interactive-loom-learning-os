@@ -1,75 +1,81 @@
-/* Present mode renderers for reflection-synthesis sections. Sizes come from the region (--present-fs-*). */
+/*
+ * Present mode renderers for reflection-synthesis sections. They draw with the Read sections' classes
+ * (reflection-sequence.css, reflection-template.css); this file only sizes them for the region
+ * (--present-fs-*), stacks the challenges, and adds the gate's states (right, wrong, next).
+ */
 
 .present-reflections { display: grid; }
-.present-reflection { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 16px; }
-.present-reflection-prompt { margin: 0; max-width: 44em; font: 400 var(--present-fs-body) / 1.5 var(--font-body); }
-.present-reflection-foot { display: flex; align-items: center; gap: 16px; min-height: 48px; }
-.present-reflection-result { margin: 0; max-width: 46em; font: 400 var(--present-fs-card) / 1.5 var(--font-body); }
-.present-col-label { margin: 0 0 8px; color: var(--muted-foreground); font: 600 var(--present-fs-small) / 1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.present-reflection { grid-area: 1 / 1; min-width: 0; }
+.present-region .present-reflection { gap: 16px; }
 
-/* ---- sequence ---- */
+/* ---- type at the region's size ---- */
 
-.present-sequence { display: grid; grid-template-columns: 1fr 1.15fr; gap: 28px; align-items: start; }
-.present-pool,
-.present-slots { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.present-pool:empty { min-height: 1px; }
-.present-slot { display: flex; align-items: center; gap: 10px; }
-.present-slot-num { flex: none; width: 1.4em; color: var(--muted-foreground); text-align: right; font: 600 var(--present-fs-small) / 1 var(--font-mono); }
-.present-drop { flex: 1; display: flex; min-height: 46px; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); }
-.present-drop:has(.present-slot-item) { border-color: transparent; }
-.present-drop.is-next { border-color: var(--primary); }
+.present-region .sequence-prompt-text,
+.present-region .template-prompt { font-size: var(--present-fs-card); line-height: 1.5; }
+.present-region .sequence-drag-item,
+.present-region .sequence-placed-text,
+.present-region .sequence-slot-placeholder,
+.present-region .template-chip-item,
+.present-region .reflection-blank-dropzone { font-size: calc(var(--present-fs-card) - 2px); }
+.present-region .template-sentence-container { font-size: var(--present-fs-card); line-height: 2.4; padding: 20px 24px; }
+.present-region .sequence-verify-btn,
+.present-region .template-verify-btn { width: auto; font-size: 14px; }
+.present-region .sequence-footer,
+.present-region .template-footer { flex-direction: row; align-items: center; min-height: 48px; }
+.present-region .sequence-feedback-msg,
+.present-region .template-feedback-msg { width: auto; font-size: calc(var(--present-fs-card) - 2px); }
 
-.present-slot-item {
-  position: relative;
-  width: 100%;
-  min-height: 46px;
-  padding: 7px 36px 7px 12px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--card);
-  color: var(--foreground);
-  text-align: left;
-  font: 400 calc(var(--present-fs-card) - 2px) / 1.3 var(--font-body);
-}
+/* Compact slots so a long sequence fits the region; past five steps the pool sits beside the slots */
+.present-seq-body { display: flex; flex-direction: column; gap: 16px; }
+.present-seq-body.is-split { display: grid; grid-template-columns: 1.2fr 1fr; align-items: start; }
+.present-region .is-split .sequence-slots-list { gap: 6px; }
+.present-region .is-split .sequence-drop-slot { min-height: 38px; padding: 4px 14px; }
+.present-region .is-split .sequence-drag-item { min-height: 32px; padding: 5px 11px; font-size: calc(var(--present-fs-card) - 3px); line-height: 1.3; }
+.present-region .is-split .sequence-placed-text { font-size: calc(var(--present-fs-card) - 3px); }
+.present-region .is-split .sequence-pool { padding: 10px; gap: 6px; }
+.present-region .sequence-pool { padding: 14px; gap: 8px; min-height: 0; }
+.present-region .sequence-drag-item { min-height: 40px; padding: 8px 14px; }
+.present-region .sequence-slots-list { gap: 8px; }
+.present-region .sequence-drop-slot { min-height: 44px; }
+.present-region .template-chips-bank { padding: 14px; gap: 8px; min-height: 0; }
 
-/* ---- template ---- */
+/* The learner's moves are animated by FLIP; only colours transition here */
+.present-region .sequence-drag-item,
+.present-region .template-chip-item,
+.present-region .sequence-drop-slot,
+.present-region .reflection-blank-dropzone { transition-property: border-color, background-color, box-shadow, opacity, color; }
+.present-region .sequence-drag-item:disabled:not(.placed),
+.present-region .template-chip-item:disabled:not(.used) { cursor: default; transform: none; }
+.present-region .sequence-verify-btn:disabled,
+.present-region .template-verify-btn:disabled { opacity: 0.55; cursor: default; transform: none; box-shadow: none; filter: none; }
 
-.present-template { margin: 0; max-width: 42em; font: 400 calc(var(--present-fs-body) + 1px) / 2.3 var(--font-body); }
-.present-blank { display: inline-flex; vertical-align: middle; min-width: 200px; min-height: 44px; margin: 0 4px; border-bottom: 2px dashed var(--border); border-radius: 8px 8px 0 0; }
-.present-blank:has(.present-chip) { min-width: 0; border-color: transparent; }
-.present-blank.is-next { border-bottom: 2px solid var(--primary); }
-.present-chips { display: flex; flex-wrap: wrap; gap: 10px; min-height: 48px; align-content: flex-start; }
+/* ---- a placed step or chip ---- */
 
-.present-chip {
-  padding: 10px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-full);
-  background: var(--card);
-  color: var(--foreground);
-  white-space: nowrap;
-  font: 600 calc(var(--present-fs-card) - 2px) / 1.2 var(--font-mono);
-}
-.present-chip.is-spent { opacity: 0.4; }
+.sequence-placed-wrapper.present-slot-item { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; gap: 10px; }
+.sequence-placed-wrapper.present-slot-item:not(:disabled) { cursor: pointer; }
+.present-slot-remove { flex: none; color: var(--ctp-overlay1); }
+.present-slot-mark { flex: none; }
 
-/* ---- shared states ---- */
+.present-chip.is-placed { padding: 0; border: 0; background: none; color: var(--primary); font: inherit; white-space: nowrap; }
+.present-chip.is-placed:not(:disabled) { cursor: pointer; }
 
-.present-slot-item:not(:disabled),
-.present-chip:not(:disabled) { cursor: pointer; }
-.present-slot-item:not(:disabled):hover,
-.present-chip:not(:disabled):hover { border-color: var(--primary); }
-.present-slot-item:disabled,
-.present-chip:disabled { opacity: 1; }
-.present-chip.is-spent:disabled { opacity: 0.4; }
-.present-slot-item.is-ok,
-.present-chip.is-ok { border-color: var(--ctp-green); }
-.present-slot-item.is-off,
-.present-chip.is-off { border-color: var(--ctp-red); animation: present-nudge 0.3s ease-out; }
-.present-slot-item.is-ok::after { content: '✓'; position: absolute; right: 14px; top: 50%; translate: 0 -50%; color: var(--ctp-green); font: 600 16px / 1 var(--font-mono); }
+/* ---- the gate's verdicts ---- */
 
-.present-stage.is-portrait .present-sequence { grid-template-columns: 1fr; gap: 14px; }
-.present-stage.is-portrait .present-blank { min-width: 150px; }
+.sequence-drop-slot.is-ok,
+.reflection-blank-dropzone.is-ok { border-color: var(--ctp-green); background: color-mix(in srgb, var(--ctp-green) 12%, var(--card)); }
+.sequence-drop-slot.is-ok .sequence-placed-text,
+.sequence-drop-slot.is-ok .present-slot-mark,
+.reflection-blank-dropzone.is-ok .present-chip { color: var(--ctp-green); }
+.sequence-drop-slot.is-off,
+.reflection-blank-dropzone.is-off { border-color: var(--ctp-red); background: color-mix(in srgb, var(--ctp-red) 12%, var(--card)); animation: present-nudge 0.3s ease-out; }
+.sequence-drop-slot.is-off .sequence-placed-text,
+.sequence-drop-slot.is-off .present-slot-mark,
+.reflection-blank-dropzone.is-off .present-chip { color: var(--ctp-red); }
+
+.present-stage.is-portrait .present-seq-body.is-split { grid-template-columns: 1fr; }
+.present-stage.is-portrait .reflection-blank-dropzone { min-width: 90px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .present-slot-item.is-off,
-  .present-chip.is-off { animation: none; }
+  .sequence-drop-slot.is-off,
+  .reflection-blank-dropzone.is-off { animation: none; }
 }

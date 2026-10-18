@@ -63,7 +63,7 @@ export interface TradeoffSandboxSectionProps extends SectionResultProps<Record<s
   sectionId?: string
 }
 
-function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; value: number; max: number; instanceId?: string }) {
+export function MetricBar({ metric, value, max, instanceId }: { metric: MetricDef; value: number; max: number; instanceId?: string }) {
   const pick = usePickAnchors()
   const clamped = Math.max(metric.min ?? 0, Math.min(metric.max ?? 100, value))
   const pct = max !== 0 ? (clamped / max) * 100 : 0

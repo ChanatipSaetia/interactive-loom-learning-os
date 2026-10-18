@@ -4,7 +4,8 @@
  */
 import { compileOUITopic, sourceMapOf, type OUISourceMap, type OUITopicManifest } from '../core/learning-engine/composition/oui/compile'
 import { bundleToSections } from '../core/learning-engine/composition/okf/sections'
-import { validateOUISection } from '../core/learning-engine/validation/oui-gateway'
+import { validateOUINarration, validateOUISection } from '../core/learning-engine/validation/oui-gateway'
+import { NARRATION_FILE, type NarrationData } from '../core/learning-engine/composition/oui/narration'
 import type { SectionConfig } from '../core/learning-engine/registry'
 import type { TopicFiles } from '../core/supporting/authoring-editor/workspace'
 
@@ -15,6 +16,8 @@ export interface ViewerSection {
   /** Where the compiled section data came from (for Pick mode). */
   sourceMap?: OUISourceMap
   error?: string
+  /** Its narration for Present mode, from sections/<name>.narrate.oui (decision 91). */
+  narration?: NarrationData
 }
 
 export interface ViewerTopic {
@@ -25,6 +28,8 @@ export interface ViewerTopic {
   sections: ViewerSection[]
   /** The topic's source files, by path (for Pick mode line hints). */
   files: Record<string, string>
+  /** Problems in narration files, including warnings: a narration only plays in Present, so they show here. */
+  narrationErrors: Array<{ file: string; error: string }>
 }
 
 const formatIssues = (issues: Array<{ line?: number; message: string }>) =>
@@ -34,7 +39,7 @@ export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic 
   const topic = compileOUITopic(files['topic.oui'] ?? '')
   const topicErrors = topic.issues.filter((i) => i.tier < 3)
   if (!topic.value || topicErrors.length) {
-    return { topicId, manifest: null, error: `topic.oui has errors:\n${formatIssues(topicErrors)}`, sections: [], files }
+    return { topicId, manifest: null, error: `topic.oui has errors:\n${formatIssues(topicErrors)}`, sections: [], files, narrationErrors: [] }
   }
 
   const sections = topic.value.sections.map((name): ViewerSection => {
@@ -46,7 +51,22 @@ export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic 
     if (!result.payload || blocking.length) return { name, config: null, error: formatIssues(blocking) || `${file} cannot be compiled.` }
     return { name, config: bundleToSections([result.payload])[0], sourceMap: sourceMapOf(result.payload) }
   })
-  return { topicId, manifest: topic.value, sections, files }
+
+  const narrationErrors: ViewerTopic['narrationErrors'] = []
+  const listed = new Set(topic.value.sections)
+  for (const path of Object.keys(files).sort()) {
+    const name = NARRATION_FILE.exec(path)?.[1]
+    if (!name) continue
+    const section = sections.find((s) => s.name === name)
+    if (!listed.has(name)) {
+      narrationErrors.push({ file: path, error: `There is no section "${name}" in topic.oui for this narration.` })
+      continue
+    }
+    const result = validateOUINarration(files[path], files[`sections/${name}.oui`], { topicId, sectionName: name, file: path })
+    if (result.diagnostics.length) narrationErrors.push({ file: path, error: formatIssues(result.diagnostics) })
+    if (section && result.payload && !result.diagnostics.some((d) => d.tier < 3)) section.narration = result.payload
+  }
+  return { topicId, manifest: topic.value, sections, files, narrationErrors }
 }
 
 /**
@@ -60,6 +80,7 @@ export function topicErrorReport(topic: ViewerTopic): string | null {
   for (const section of topic.sections) {
     if (section.error) parts.push(`sections/${section.name}.oui\n${section.error}`)
   }
+  for (const { file, error } of topic.narrationErrors) parts.push(`${file}\n${error}`)
   if (parts.length === 0) return null
   return `Loom Viewer found these errors in the topic "${topic.topicId}". Fix only what they point at, keep everything else unchanged, and give me the complete updated topic as one .loom.oui file.\n\n${parts.join('\n\n')}\n`
 }

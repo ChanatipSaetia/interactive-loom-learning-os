@@ -15,6 +15,7 @@ import {
   AssistantToggle,
   pickBridgeOf,
   sectionNameOf,
+  narrationNameOf,
   useAssistant,
   type AssistantEditor,
   type AssistantTopicContext,
@@ -87,13 +88,15 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
     for (const s of current.sections) {
       const lines = s.validation.diagnostics.map((d) => `${d.line ? `line ${d.line}: ` : ''}${d.message}${d.fixHint ? ` (fix: ${d.fixHint})` : ''}`)
       if (lines.length) diagnostics[`sections/${s.name}.oui`] = lines
+      const narration = s.narration?.validation.diagnostics.map((d) => `${d.line ? `line ${d.line}: ` : ''}${d.message}${d.fixHint ? ` (fix: ${d.fixHint})` : ''}`)
+      if (narration?.length) diagnostics[`sections/${s.name}.narrate.oui`] = narration
     }
-    const unsaved = new Set(current.dirtySections.map((name) => `sections/${name}.oui`))
+    const unsaved = new Set(current.dirtySections.flatMap((name) => [`sections/${name}.oui`, `sections/${name}.narrate.oui`]))
     if (current.topicDirty) unsaved.add('topic.oui')
     return {
       topicId: current.topicId,
       files,
-      fileOrder: ['topic.oui', ...current.sections.map((s) => `sections/${s.name}.oui`)],
+      fileOrder: ['topic.oui', ...current.sections.flatMap((s) => (s.narration ? [`sections/${s.name}.oui`, `sections/${s.name}.narrate.oui`] : [`sections/${s.name}.oui`]))],
       diagnostics,
       unsaved,
     }
@@ -116,6 +119,12 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
           workspace.setSectionOrder(sections)
           return null
         }
+        const narrated = narrationNameOf(file)
+        if (narrated) {
+          if (!workspace.section(narrated)) return `There is no section sections/${narrated}.oui for this narration.`
+          workspace.setNarration(narrated, source)
+          return null
+        }
         const name = sectionNameOf(file)
         if (!name) return `${file} is not a section file.`
         if (workspace.section(name)) workspace.setSource(name, source)
@@ -126,7 +135,7 @@ export function StudioWorkspace({ workspace, onOpenFolder, onReload, initialSect
       }
     },
     reveal(file, statement) {
-      const name = sectionNameOf(file)
+      const name = sectionNameOf(file) ?? narrationNameOf(file)
       if (!name) {
         setSelected(TOPIC_ITEM)
         return

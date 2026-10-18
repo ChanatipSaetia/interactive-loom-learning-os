@@ -1,12 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import { motion } from 'motion/react'
-import { ThumbsUp } from 'lucide-react'
+import { Check, Star, X } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { PresentWords } from '../../../PresentWords'
 import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import type { TradeoffMetricDef, TradeoffScenario } from '../../schema'
 import { tradeoffPlan, type TradeoffPresentData } from '../../present'
+import { MetricBar } from './index'
+import './tradeoff-sandbox.css'
 import '../present.css'
 
 const good = (metric: TradeoffMetricDef, delta: number) => ((metric.direction ?? 'higher') === 'higher' ? delta > 0 : delta < 0)
@@ -21,37 +23,31 @@ function totals(scenario: TradeoffScenario, chosen: Record<string, string>): Rec
   return values
 }
 
-/** The learner's sandbox: pick a choice per step and watch the metrics move. */
+/** The learner's sandbox, as Read's "Try it" tab: the metric dashboard, and one card per step to pick a choice in. */
 function Sandbox({ scenario, live }: { scenario: TradeoffScenario; live: boolean }) {
   const pick = usePickAnchors()
   const { playSound } = useSound()
   const [chosen, setChosen] = useState<Record<string, string>>({})
   const values = totals(scenario, chosen)
   return (
-    <div className="present-sandbox">
-      <div className="present-sandbox-meters">
-        {scenario.metrics.map((m) => {
-          const v = values[m.id] ?? m.baseValue
-          const lo = m.min ?? 0
-          const hi = m.max ?? 100
-          const delta = v - m.baseValue
-          return (
-            <div key={m.id} className="present-meter" {...pick(m)}>
-              <span className="present-meter-head">
-                <span {...pick(m, 'label')}>{m.label}</span>
-                <span className={`present-meter-value${delta ? (good(m, delta) ? ' is-good' : ' is-bad') : ''}`}>{v}</span>
-              </span>
-              <span className="present-meter-track">
-                <span className={`present-meter-fill${delta ? (good(m, delta) ? ' is-good' : ' is-bad') : ''}`} style={{ width: `${Math.max(0, Math.min(100, ((v - lo) / (hi - lo || 1)) * 100))}%` }} />
-              </span>
-            </div>
-          )
-        })}
+    <div className="tradeoff-layout present-sandbox">
+      <div className="metric-dashboard">
+        <div className="dashboard-header">
+          <h4 className="dashboard-title">Metric Dashboard</h4>
+          <span className="progress-indicator">{Object.keys(chosen).length} / {scenario.steps.length}</span>
+        </div>
+        <div className="metric-bars">
+          {scenario.metrics.map((m) => (
+            <MetricBar key={m.id} metric={m} value={values[m.id] ?? m.baseValue} max={m.max ?? 100} />
+          ))}
+        </div>
       </div>
-      <div className="present-sandbox-steps">
+      <div className="steps-panel present-sandbox-steps">
         {scenario.steps.map((step) => (
-          <div key={step.id} className="present-sandbox-step" {...pick(step)}>
-            <span className="present-sandbox-step-title" {...pick(step, 'title')}>{step.title}</span>
+          <div key={step.id} className={`step-section${chosen[step.id] ? '' : ' step-section-unselected'}`} {...pick(step)}>
+            <div className="step-header">
+              <h4 className="step-title" {...pick(step, 'title')}>{step.title}</h4>
+            </div>
             <span className="present-sandbox-pills" role="group" aria-label={step.title}>
               {step.choices.map((c) => (
                 <button
@@ -66,6 +62,7 @@ function Sandbox({ scenario, live }: { scenario: TradeoffScenario; live: boolean
                   }}
                   {...pick(c)}
                 >
+                  {step.recommended === c.id && <Star size={11} className="present-pill-star" aria-label="Recommended" />}
                   {c.label}
                 </button>
               ))}
@@ -78,9 +75,10 @@ function Sandbox({ scenario, live }: { scenario: TradeoffScenario; live: boolean
 }
 
 /**
- * Tradeoff sandbox in Present mode (tradeoffBeats): per step, its choices arrive side by side with each
- * effect's bar growing (green where it helps, red where it costs); then the recommended choice comes
- * forward with why it fits while the others step back. The last beat is the sandbox, scenario by scenario.
+ * Tradeoff sandbox in Present mode (tradeoffBeats), on Read's compare cards: per step, its choices arrive
+ * side by side, each effect chip popping in (green where it helps, red where it costs) above its gains
+ * and costs; then the recommended choice comes forward with its star and why it fits while the others
+ * dim. The last beat is Read's "Try it" sandbox, scenario by scenario.
  */
 export default function PresentTradeoff({ data, beat, beats, active }: PresentRendererProps<TradeoffPresentData>) {
   const pick = usePickAnchors()
@@ -95,58 +93,105 @@ export default function PresentTradeoff({ data, beat, beats, active }: PresentRe
   const steps = plan.flatMap((b, i) => (b.recommended ? [] : [{ ...b, at: i, rec: plan[i + 1]?.recommended ? i + 1 : -1 }]))
 
   return (
-    <div className="present-tradeoff" data-testid="present-tradeoff">
+    <div className="present-tradeoff compare-scenarios" data-testid="present-tradeoff">
       {steps.map(({ scenario: si, step: ki, at, rec }) => {
         const scenario = scenarios[si]
         const step = scenario.steps[ki]
         const last = Math.max(at, rec)
-        const maxDelta = Math.max(1, ...step.choices.flatMap((c) => Object.values(c.metrics).map(Math.abs)))
         const focused = rec >= 0 && beat >= rec
+        const columns = step.choices.length === 4 ? 2 : Math.min(step.choices.length, 3)
         return (
-          <div key={`${si}-${ki}`} className="present-tradeoff-step" {...mark(at, { motion: 'fade', until: last })} {...pick(step)}>
-            <p className="present-tradeoff-kicker">{scenarios.length > 1 ? `${scenario.title} · ` : ''}Step {ki + 1} of {scenario.steps.length}</p>
-            <p className="present-tradeoff-title" {...mark(at, { motion: 'words' })} {...pick(step, 'title')}><PresentWords text={step.title} /></p>
-            {step.description && <p className="present-tradeoff-desc" {...mark(at, { delay: 300 })} {...pick(step, 'description')}>{step.description}</p>}
-            <div className="present-tradeoff-choices">
+          <section key={`${si}-${ki}`} className="compare-step present-tradeoff-step" {...mark(at, { motion: 'fade', until: last })} {...pick(step)}>
+            <header className="compare-step-header">
+              <span className="compare-step-eyebrow">{scenarios.length > 1 ? `${scenario.title} · ` : ''}Question {ki + 1} of {scenario.steps.length}</span>
+              <h5 className="compare-step-title" {...mark(at, { motion: 'words' })} {...pick(step, 'title')}><PresentWords text={step.title} /></h5>
+              {step.description && <p className="compare-step-desc" {...mark(at, { delay: 300 })} {...pick(step, 'description')}>{step.description}</p>}
+            </header>
+            <div className="compare-grid" style={{ '--compare-cols': columns } as CSSProperties}>
               {step.choices.map((c, j) => {
                 const isRec = step.recommended === c.id
+                const effects = scenario.metrics.filter((m) => c.metrics[m.id])
+                const cls = [
+                  'compare-card',
+                  focused && isRec && 'compare-card-recommended compare-card-focused present-tradeoff-rec',
+                  focused && !isRec && 'compare-card-dimmed',
+                ].filter(Boolean).join(' ')
                 return (
-                  <div
-                    key={c.id}
-                    className={`present-tradeoff-card${focused && isRec ? ' is-rec' : ''}${focused && !isRec ? ' is-back' : ''}`}
-                    {...mark(at, { delay: 500 + j * 110 })}
-                    {...pick(c)}
-                  >
-                    <span className="present-tradeoff-card-head">
-                      <span className="present-tradeoff-card-label" {...pick(c, 'label')}>{c.label}</span>
-                      {isRec && rec >= 0 && <span className="present-rec-badge" {...mark(rec, { motion: 'pop', delay: 250 })}><ThumbsUp size={13} aria-hidden /> Recommended</span>}
-                    </span>
-                    <span className="present-tradeoff-card-desc" {...pick(c, 'description')}>{c.description}</span>
-                    <span className="present-effects">
-                      {scenario.metrics.filter((m) => c.metrics[m.id]).map((m, k) => {
-                        const d = c.metrics[m.id]
-                        return (
-                          <span key={m.id} className={`present-effect ${good(m, d) ? 'is-good' : 'is-bad'}`}>
-                            <span className="present-effect-label">{m.label} <b>{d > 0 ? '+' : '−'}{Math.abs(d)}</b></span>
-                            <span className="present-effect-bar" style={{ width: `${(Math.abs(d) / maxDelta) * 100}%` }} {...mark(at, { motion: 'draw', delay: 800 + j * 110 + k * 70 })} />
-                          </span>
-                        )
-                      })}
-                    </span>
+                  <div key={c.id} className={cls} {...mark(at, { delay: 500 + j * 110 })} {...pick(c)}>
+                    <div className="compare-card-header">
+                      <span className="compare-card-label" {...pick(c, 'label')}>{c.label}</span>
+                      {isRec && rec >= 0 && (
+                        <span className="compare-recommended-badge" title="Recommended" aria-label="Recommended" {...mark(rec, { motion: 'pop', delay: 250 })}>
+                          <Star size={14} style={{ fill: 'currentColor' }} />
+                        </span>
+                      )}
+                    </div>
+                    {c.description && <p className="compare-card-summary" {...pick(c, 'description')}>{c.description}</p>}
+                    {effects.length > 0 && (
+                      <ul className="compare-effects" aria-label="Effects">
+                        {effects.map((m, k) => {
+                          const d = c.metrics[m.id]
+                          return (
+                            <li key={m.id} className={`compare-effect ${good(m, d) ? 'compare-effect-good' : 'compare-effect-bad'}`} {...mark(at, { motion: 'pop', delay: 800 + j * 110 + k * 70 })} {...pick(m, 'label')}>
+                              {m.label} {d > 0 ? '+' : '−'}{Math.abs(d)}
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    )}
+                    {(c.pros.length > 0 || c.cons.length > 0) && (
+                      <div className="present-procons">
+                        {c.pros.length > 0 && (
+                          <div className="compare-block compare-block-gains">
+                            <span className="compare-block-title">Gains</span>
+                            <ul className="compare-pros">
+                              {c.pros.map((pro, p) => (
+                                <li key={p} className="compare-pro" {...pick(pro)}>
+                                  <Check className="compare-icon compare-icon-pro" strokeWidth={3} />
+                                  <div className="compare-procon-content">
+                                    <span className="compare-procon-title" {...pick(pro, 'title')}>{pro.title}</span>
+                                    {pro.description && <span className="compare-procon-desc" {...pick(pro, 'description')}>{pro.description}</span>}
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {c.cons.length > 0 && (
+                          <div className="compare-block compare-block-costs">
+                            <span className="compare-block-title">Costs</span>
+                            <ul className="compare-cons">
+                              {c.cons.map((con, p) => (
+                                <li key={p} className="compare-con" {...pick(con)}>
+                                  <X className="compare-icon compare-icon-con" strokeWidth={3} />
+                                  <div className="compare-procon-content">
+                                    <span className="compare-procon-title" {...pick(con, 'title')}>{con.title}</span>
+                                    {con.description && <span className="compare-procon-desc" {...pick(con, 'description')}>{con.description}</span>}
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     {isRec && rec >= 0 && (c.whyThisFits || c.whenToUse) && (
-                      <span className="present-tradeoff-why" {...mark(rec, { motion: 'words', delay: 450 })} {...pick(c, c.whyThisFits ? 'whyThisFits' : 'whenToUse')}>
-                        <PresentWords text={(c.whyThisFits ?? c.whenToUse) as string} />
-                      </span>
+                      <div className="compare-card-details" {...mark(rec, { delay: 350 })}>
+                        <p {...pick(c, c.whyThisFits ? 'whyThisFits' : 'whenToUse')}>
+                          <span className="compare-block-title">{c.whyThisFits ? 'Why it fits' : 'When to use'}</span>
+                          <PresentWords text={(c.whyThisFits ?? c.whenToUse) as string} />
+                        </p>
+                      </div>
                     )}
                   </div>
                 )
               })}
             </div>
-          </div>
+          </section>
         )
       })}
       {plan.length > 0 && (
-        <div className="present-tradeoff-step" {...mark(exploreBeat, { motion: 'fade' })}>
+        <div className="present-tradeoff-step present-tradeoff-try" {...mark(exploreBeat, { motion: 'fade' })}>
           {scenarios.length > 1 && (
             <div className="present-tabs" role="tablist">
               {scenarios.map((s, i) => (
@@ -154,7 +199,7 @@ export default function PresentTradeoff({ data, beat, beats, active }: PresentRe
               ))}
             </div>
           )}
-          <p className="present-tradeoff-kicker" {...mark(exploreBeat, { motion: 'fade', delay: 200 })}>Try a combination: pick one choice per step.</p>
+          <p className="compare-step-hint" {...mark(exploreBeat, { motion: 'fade', delay: 200 })}>Try a combination: pick one choice per step.</p>
           <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <Sandbox scenario={scenarios[tab]} live={exploring && active} />
           </motion.div>

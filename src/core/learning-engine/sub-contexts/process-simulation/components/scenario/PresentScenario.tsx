@@ -1,19 +1,21 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { RotateCcw } from 'lucide-react'
+import { AlertCircle, ArrowRight, CheckCircle2, RotateCcw } from 'lucide-react'
+import { Button } from '../../../../../ui-system/motion/button'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
 import { SAY, beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import type { ScenarioChoice, ScenarioOutcome } from '../../schema'
 import type { ScenarioPresentData } from '../../present'
+import { RATING_BG, RATING_COLORS, RATING_LABELS } from './index'
+import './scenario.css'
 import '../present.css'
 
 type ScenarioRating = ScenarioOutcome['rating']
 
 const LETTERS = 'ABCDEFGH'
 const GRADES: Record<ScenarioRating, string> = { 'a': 'A', 'b-plus': 'B+', 'b-minus': 'B−', 'c': 'C' }
-const GRADE_COLORS: Record<ScenarioRating, string> = { 'a': 'var(--ctp-green)', 'b-plus': 'var(--ctp-teal)', 'b-minus': 'var(--ctp-yellow)', 'c': 'var(--ctp-red)' }
 const EASE = [0.16, 1, 0.3, 1] as const
 
 const nextOf = (c: ScenarioChoice) => c.next ?? c.nextNode ?? ''
@@ -56,19 +58,25 @@ export default function PresentScenario({ data, beat, active, gate }: PresentRen
   }
 
   return (
-    <div className="present-scenario" data-testid="present-scenario">
+    <div className="present-scenario scenario-section" data-testid="present-scenario">
       <AnimatePresence initial={false}>
         {data.intro && path.length === 1 && (
-          <motion.p
-            key="intro"
-            className="present-scenario-intro"
-            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-            transition={{ duration: 0.35, ease: EASE }}
-            {...mark(0, { motion: 'words' })}
-            {...(data.id ? pick.byId('Scenario', data.id, 'intro') : {})}
-          >
-            <PresentWords text={data.intro} />
-          </motion.p>
+          <motion.div key="intro" className="scenario-intro" exit={{ opacity: 0, height: 0, marginBottom: -16 }} transition={{ duration: 0.35, ease: EASE }}>
+            <div className="scenario-intro-card present-scenario-intro" {...mark(0, { motion: 'fade' })}>
+              <div className="scenario-intro-header">
+                <div className="scenario-intro-icon" aria-hidden>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                  </svg>
+                </div>
+                <p className="scenario-intro-text" {...mark(0, { motion: 'words' })} {...(data.id ? pick.byId('Scenario', data.id, 'intro') : {})}>
+                  <PresentWords text={data.intro} />
+                </p>
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
       {path.length > 1 && (
@@ -85,57 +93,82 @@ export default function PresentScenario({ data, beat, active, gate }: PresentRen
         {outcome ? (
           <motion.div
             key={`outcome-${here.nodeId}`}
-            className="present-scenario-card present-outcome"
-            style={{ ['--grade' as string]: GRADE_COLORS[outcome.rating] }}
+            className="scenario-outcome"
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, x: -24 }}
             transition={{ duration: 0.45, ease: EASE }}
             role="status"
-            {...pick(outcome)}
           >
-            <motion.span className="present-grade" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.25, type: 'spring', stiffness: 380, damping: 18 }} aria-label={`Grade ${GRADES[outcome.rating]}`}>
-              {GRADES[outcome.rating]}
-            </motion.span>
-            <div className="present-outcome-body">
-              <p className="present-outcome-verdict" {...SAY} {...pick(outcome, 'verdict')}>{outcome.verdict}</p>
-              <p className="present-outcome-lesson" {...SAY} {...pick(outcome, 'lesson')}>{outcome.lesson}</p>
+            <div className="scenario-outcome-card" style={{ borderColor: RATING_COLORS[outcome.rating], backgroundColor: RATING_BG[outcome.rating] }} {...pick(outcome)}>
+              <div className="scenario-outcome-header">
+                {outcome.rating === 'a' || outcome.rating === 'b-plus'
+                  ? <CheckCircle2 className="scenario-outcome-icon" style={{ color: RATING_COLORS[outcome.rating] }} />
+                  : <AlertCircle className="scenario-outcome-icon" style={{ color: RATING_COLORS[outcome.rating] }} />}
+                <h4 className="scenario-outcome-title">Outcome</h4>
+                <motion.span
+                  className="scenario-rating-badge"
+                  style={{ backgroundColor: RATING_COLORS[outcome.rating], color: 'var(--ctp-crust)' }}
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.25, type: 'spring', stiffness: 380, damping: 18 }}
+                  aria-label={`${RATING_LABELS[outcome.rating]}, grade ${GRADES[outcome.rating]}`}
+                >
+                  {RATING_LABELS[outcome.rating]} · {GRADES[outcome.rating]}
+                </motion.span>
+              </div>
+              <div className="scenario-outcome-body">
+                <div className="scenario-outcome-block">
+                  <span className="scenario-outcome-block-label">What Happened</span>
+                  <p className="scenario-outcome-block-text" {...SAY} {...pick(outcome, 'verdict')}>{outcome.verdict}</p>
+                </div>
+                <div className="scenario-outcome-block">
+                  <span className="scenario-outcome-block-label">Key Lesson</span>
+                  <p className="scenario-outcome-block-text" {...SAY} {...pick(outcome, 'lesson')}>{outcome.lesson}</p>
+                </div>
+              </div>
               {fork && (
-                <button type="button" className="present-button" onClick={tryAnother} disabled={!live} data-testid="present-scenario-again">
-                  <RotateCcw size={16} aria-hidden /> Try another path
-                </button>
+                <div className="scenario-outcome-footer">
+                  <Button variant="outline" size="sm" onClick={tryAnother} disabled={!live} data-testid="present-scenario-again">
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Try another path
+                  </Button>
+                </div>
               )}
             </div>
           </motion.div>
         ) : node ? (
           <motion.div
             key={`node-${here.nodeId}`}
-            className="present-scenario-card"
+            className="scenario-decision"
             initial={{ opacity: 0, x: 32 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -32 }}
             transition={{ duration: 0.4, ease: EASE }}
+            {...mark(0, { motion: 'fade', delay: data.intro ? 400 : 0 })}
             {...pick(node)}
           >
-            <p className="present-scenario-prompt" {...mark(0, { motion: 'words', delay: data.intro ? 600 : 0 })} {...pick(node, 'prompt')}>
+            <div className="scenario-decision-header">
+              <span className="scenario-step-counter">Step {path.length}</span>
+            </div>
+            <h4 className="scenario-decision-prompt" {...mark(0, { motion: 'words', delay: data.intro ? 600 : 0 })} {...pick(node, 'prompt')}>
               <PresentWords text={node.prompt ?? node.text ?? ''} />
-            </p>
-            <div className="present-scenario-choices" role="group" aria-label="What do you do?">
+            </h4>
+            <div className="scenario-choices" role="group" aria-label="What do you do?">
               {(node.choices ?? []).map((c, j) => (
                 <button
                   key={c.id ?? j}
                   type="button"
-                  className={`present-choice${live ? ' present-breathe' : ''}`}
+                  className={`scenario-choice${live ? ' present-breathe' : ''}`}
                   onClick={() => choose(c)}
                   disabled={!live}
                   data-testid={`present-scenario-choice-${c.id ?? j}`}
                   {...mark(0, { delay: (data.intro ? 1200 : 600) + j * 70 })}
                   {...pick(c)}
                 >
-                  <span className="present-choice-row">
-                    <span className="present-choice-letter" aria-hidden>{LETTERS[j]}</span>
-                    <span className="present-choice-text" {...pick(c, 'text')}>{textOf(c)}</span>
-                  </span>
+                  <span className="scenario-choice-badge" aria-hidden>{LETTERS[j]}</span>
+                  <span className="scenario-choice-text" {...pick(c, 'text')}>{textOf(c)}</span>
+                  <ArrowRight className="scenario-choice-arrow" aria-hidden />
                 </button>
               ))}
             </div>

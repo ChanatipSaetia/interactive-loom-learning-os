@@ -13,6 +13,7 @@
  * topic; anything else is ignored on import.
  */
 import { CONTENT_ID } from '../../../learning-engine/composition/oui/catalog-gen'
+import { NARRATION_FILE } from '../../../learning-engine/composition/oui/narration'
 
 export interface TopicFiles {
   /** Topic folder name. */
@@ -33,16 +34,17 @@ export const SOURCE_EXTENSION = '.loom.oui'
 const TOPIC_FILE = 'topic.oui'
 const SECTION_FILE = /^sections\/([^/]+)\.oui$/
 
-/** True for paths that belong to a topic folder (`topic.oui`, `sections/<name>.oui`). */
+/** True for paths that belong to a topic folder (`topic.oui`, `sections/<name>.oui`, `sections/<name>.narrate.oui`). */
 export function isTopicPath(path: string): boolean {
-  if (path === TOPIC_FILE) return true
+  if (path === TOPIC_FILE || NARRATION_FILE.test(path)) return true
   const match = SECTION_FILE.exec(path)
   return !!match && CONTENT_ID.test(match[1])
 }
 
-/** Topic files in a stable order: topic.oui first, then sections by name. */
+/** Topic files in a stable order: topic.oui first, then sections by name, each followed by its narration. */
 function sortedPaths(files: Record<string, string>): string[] {
-  return Object.keys(files).sort((a, b) => (a === TOPIC_FILE ? -1 : b === TOPIC_FILE ? 1 : a.localeCompare(b)))
+  const key = (path: string) => path.replace(/\.narrate\.oui$/, '.oui\u0001')
+  return Object.keys(files).sort((a, b) => (a === TOPIC_FILE ? -1 : b === TOPIC_FILE ? 1 : key(a).localeCompare(key(b))))
 }
 
 // ============================================================================
@@ -60,7 +62,7 @@ const FILE_MARKER = /^\/\/\s*={3,}\s*(\S+?)\s*={3,}\s*$/
  */
 const LOOSE_MARKER = /^\/\/[\s=\-─═#*~_>]*(?:(?:file|path|filename)\s*:\s*)?`?([\w./-]+\.oui)`?[\s=\-─═#*~_<]*$/i
 
-/** The topic file a marker line names (`topic.oui`, `sections/<name>.oui`), or null for an ordinary comment. */
+/** The topic file a marker line names (`topic.oui`, `sections/<name>.oui`, `sections/<name>.narrate.oui`), or null for an ordinary comment. */
 function markerPath(line: string): string | null {
   const strict = FILE_MARKER.exec(line)
   const loose = strict ?? LOOSE_MARKER.exec(line)
@@ -71,7 +73,7 @@ function markerPath(line: string): string | null {
   const path = sections >= 0 ? raw.slice(sections) : raw.endsWith(TOPIC_FILE) && /(^|\/)topic\.oui$/.test(raw) ? TOPIC_FILE : raw
   if (isTopicPath(path)) return path
   if (strict) {
-    throw new TopicArchiveError(`"${raw}" is not a topic file. Use topic.oui or sections/<name>.oui (lowercase letters, digits, - and _).`)
+    throw new TopicArchiveError(`"${raw}" is not a topic file. Use topic.oui, sections/<name>.oui or sections/<name>.narrate.oui (lowercase letters, digits, - and _).`)
   }
   return null
 }

@@ -30,6 +30,14 @@ export function saySpeech(region: HTMLElement, said: WeakSet<Element>): SpeechPa
   })
 }
 
+/** A narration step's words (decision 94): the stage's caption, then each callout of the current section. */
+export function stepSpeech(root: HTMLElement | null): SpeechPart[] {
+  if (!root) return []
+  const caption = root.querySelector<HTMLElement>('.present-caption')
+  const callouts = Array.from(root.querySelectorAll<HTMLElement>('.present-region.is-current .present-callout-text'))
+  return [...(caption ? partsOf(caption) : []), ...callouts.flatMap(partsOf)]
+}
+
 function partsOf(el: HTMLElement): SpeechPart[] {
   const words = Array.from(el.querySelectorAll<HTMLElement>(`.${PRESENT_WORD_CLASS}`))
   if (words.length) return words.map((w) => ({ text: w.textContent ?? '', el: w }))

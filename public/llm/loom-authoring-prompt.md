@@ -6,6 +6,7 @@ A topic is a folder named after its topic ID (lowercase letters, digits, `-` and
 
 - `topic.oui`: `root = Topic(...)`, the catalog metadata and the ordered list of `SectionRef("<name>")`.
 - `sections/<name>.oui`: one section per file, `root = <Section>(...)` where `<Section>` is a section component (Intro, Text, Bullets, Flowchart, Quiz, …), or a standard OpenUI section (see Standard OpenUI Sections).
+- `sections/<name>.narrate.oui` (optional): `root = Narration(...)`, extra explanation for that section when the learner plays the topic in Present mode (see Narration Files). Not listed in topic.oui.
 
 Every file is its own openui-lang program: it has its own `root` and its own statement names, so names may repeat across files.
 In the rules below, "program" means one file. The `root` of `topic.oui` is `Topic(...)`; the `root` of a section file is a section component.
@@ -417,6 +418,20 @@ Catalog(topics: TopicRef[]) — Content catalog (root of index.oui): the ordered
 TopicRef(id: string) — Includes the topic folder <id>/topic.oui in the catalog.
   - id: Topic folder name under the content root.
 
+### Narration (sections/<name>.narrate.oui)
+Narration(steps: NarrationStep[]) — Root of a narration file sections/<name>.narrate.oui: the steps Present mode adds to that section.
+  - steps: The narrated steps in order, as NarrationStep references.
+NarrationStep(caption?: string, effects?: (Highlight | Callout | Spotlight)[]) — One narrated step: a caption line and effects. It plays right after the beat that shows its first target (untargeted steps before the first question or exploring).
+  - caption: Subtitle line shown (and read aloud) for the step; null for none.
+  - effects: Highlight, Callout and Spotlight calls for the step.
+Highlight(target: string) — Narration effect: outlines and pulses one element of the section for its step.
+  - target: Pick pointer to what it points at in the section file: a statement name, optionally with a prop path, e.g. "noCache", "q2.explanation", "root.categories[0]".
+Callout(target: string, text: string) — Narration effect: a note that pops up beside one element of the section, with explanation the section does not say itself.
+  - target: Pick pointer to what it points at in the section file: a statement name, optionally with a prop path, e.g. "noCache", "q2.explanation", "root.categories[0]".
+  - text: The note, one or two short sentences. Narration reads it after the caption.
+Spotlight(targets: string[]) — Narration effect: the camera moves in on these elements and dims the rest of the section.
+  - targets: Pick pointers of the elements to frame together, e.g. ["noCache", "noStore"].
+
 ## Hoisting & Statement Order
 
 openui-lang supports hoisting: a reference can be used BEFORE it is defined. The parser resolves all references after the full input is parsed.
@@ -524,9 +539,27 @@ table = Table([Col("Tea", ["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"]), C
 tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C after 5 minutes in an open cup.")
 ```
 
+## Narration Files
+
+Loom Viewer can play a topic as guided motion (Present mode): each section reveals itself step by step. A section may add a narration file, `sections/<name>.narrate.oui`, with explanation its content does not say: a caption line, highlights, callout notes beside parts of the section and a spotlight that zooms in. Write one only when the user asks for narration, or for a section where a short extra explanation clearly helps (a misread term, the one thing to compare).
+
+- Its `root` is `Narration([steps])`; each `NarrationStep(caption, [effects])` is one step, played right after the part of the section it points at appears. Effects: `Highlight(target)`, `Callout(target, text)`, `Spotlight([targets])`.
+- A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline.
+- Captions are one sentence; callouts one or two short sentences. They are read aloud, so write them as speech. Add facts or a comparison, not a repeat of the section's own text.
+- In the single .oui file, the narration file follows its section: `// === sections/vocabulary.narrate.oui ===`.
+
+Example, for the `sections/vocabulary.oui` file of the example topic:
+
+```
+root = Narration([pair, bitter, time])
+pair = NarrationStep("Two words explain most bitter cups of green tea.", [Spotlight(["catechins", "steep"])])
+bitter = NarrationStep("Catechins are the bitterness.", [Highlight("catechins"), Callout("catechins", "They dissolve faster in hotter water, so water at 75 °C keeps the cup sweet.")])
+time = NarrationStep("Steep time is the dial you control.", [Callout("steep", "Every extra minute adds more catechins than flavour. Pour off all the water when the time is up.")])
+```
+
 ## Loom Authoring Rules
 
-- In the single .oui file, start EVERY file with its own marker line written exactly as `// === topic.oui ===` or `// === sections/<name>.oui ===` (three `=` on each side, no folder prefix). Each file holds exactly one `root =` statement; never put two sections in one file.
+- In the single .oui file, start EVERY file with its own marker line written exactly as `// === topic.oui ===`, `// === sections/<name>.oui ===` or `// === sections/<name>.narrate.oui ===` (three `=` on each side, no folder prefix). Each file holds exactly one `root =` statement; never put two sections in one file.
 - Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.
 - Start with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.
 - Mix interactive section types. Never build a topic out of Text sections only.

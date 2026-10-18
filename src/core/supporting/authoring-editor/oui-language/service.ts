@@ -5,8 +5,8 @@
  * editor. All positions are string offsets; adapters convert to their own
  * coordinate systems.
  */
-import { compileOUICatalog, compileOUITopic } from '../../../learning-engine/composition/oui/compile'
-import { validateOUISection } from '../../../learning-engine/validation/oui-gateway'
+import { compileOUICatalog, compileOUINarration, compileOUITopic, indexStatementLines } from '../../../learning-engine/composition/oui/compile'
+import { validateOUINarration, validateOUISection } from '../../../learning-engine/validation/oui-gateway'
 import {
   cursorContext,
   indexStatements,
@@ -22,7 +22,7 @@ import { getOUILanguageSpec, type OUIComponentSpec, type OUILanguageSpec, type O
 // Types
 // ============================================================================
 
-export type OUIFileKind = 'section' | 'topic' | 'catalog'
+export type OUIFileKind = 'section' | 'topic' | 'catalog' | 'narration'
 
 export interface OUIRange {
   start: number
@@ -79,12 +79,15 @@ export interface OUIWorkspaceHints {
   sectionNames?: string[]
   /** Topic folder IDs of the content root. */
   topicIds?: string[]
+  /** For a narration file: its section's source, to check the targets against. */
+  sectionSource?: string
 }
 
 export function fileKindFromPath(path: string): OUIFileKind {
   const file = path.split(/[\\/]/).pop() ?? path
   if (file === 'index.oui') return 'catalog'
   if (file === 'topic.oui') return 'topic'
+  if (file.endsWith('.narrate.oui')) return 'narration'
   return 'section'
 }
 
@@ -215,7 +218,7 @@ function componentDoc(component: OUIComponentSpec): string {
 }
 
 function rootSnippets(kind: OUIFileKind, replace: OUIRange, spec: OUILanguageSpec): OUICompletion[] {
-  const names = kind === 'topic' ? ['Topic'] : kind === 'catalog' ? ['Catalog'] : spec.sectionComponents
+  const names = kind === 'topic' ? ['Topic'] : kind === 'catalog' ? ['Catalog'] : kind === 'narration' ? ['Narration'] : spec.sectionComponents
   return names.map((name, i) => {
     const component = spec.components.get(name)!
     return {
@@ -256,6 +259,9 @@ export function getCompletions(
     const key = exp.component && exp.param ? `${exp.component.name}.${exp.param.name}` : ''
     if (key === 'SectionRef.name' || key === 'RoadmapStep.sectionId') hints.sectionNames?.forEach((n) => values.set(n, { detail: 'section file', kind: 'id' }))
     if (key === 'TopicRef.id') hints.topicIds?.forEach((n) => values.set(n, { detail: 'topic folder', kind: 'id' }))
+    if ((key === 'Highlight.target' || key === 'Callout.target' || key === 'Spotlight.targets') && hints.sectionSource !== undefined) {
+      for (const name of indexStatementLines(hints.sectionSource).keys()) values.set(name, { detail: 'section statement', kind: 'id' })
+    }
     return [...values].map(([value, info], i) => ({
       label: value,
       kind: info.kind,
@@ -508,9 +514,12 @@ interface RawDiagnostic {
   fixHint?: string
 }
 
-export function getDiagnostics(source: string, kind: OUIFileKind = 'section'): OUIDiagnostic[] {
+export function getDiagnostics(source: string, kind: OUIFileKind = 'section', hints: OUIWorkspaceHints = {}): OUIDiagnostic[] {
   let raw: RawDiagnostic[]
   if (kind === 'section') raw = validateOUISection(source).diagnostics
+  else if (kind === 'narration') {
+    raw = hints.sectionSource === undefined ? compileOUINarration(source).issues : validateOUINarration(source, hints.sectionSource).diagnostics
+  }
   else raw = (kind === 'topic' ? compileOUITopic(source) : compileOUICatalog(source)).issues
 
   const doc = analyze(source)

@@ -15,6 +15,7 @@ export {
   parseEditBlock,
   parseEditBlocks,
   sectionNameOf,
+  narrationNameOf,
 } from './edits'
 export type { DiffLine, EditBlock, EditStatement, HunkResult, ProposalCheck, StatementChange } from './edits'
 export { AssistantSettingsDialog } from './AssistantSettingsDialog'

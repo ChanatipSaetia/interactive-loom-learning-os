@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { RotateCcw, ThumbsUp } from 'lucide-react'
+import { ArrowRight, RotateCcw, ThumbsUp } from 'lucide-react'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
@@ -8,6 +8,7 @@ import { SAY, beatMarks, type PresentRendererProps } from '../../../present-kern
 import type { DecisionNodeSelected } from '../../events'
 import type { DecisionTreeChoice } from '../../schema'
 import { choicesOf, drawTree, nextOf, type DecisionTreePresentData } from '../../present'
+import './decision-tree.css'
 import '../present.css'
 
 const LETTERS = 'ABCDEFGH'
@@ -99,60 +100,95 @@ export default function PresentDecisionTree({ data, beat, active, gate, onEvent 
           {leaf ? (
             <motion.div
               key={`leaf-${hereId}`}
-              className="present-dt-card present-dt-leaf"
+              className="dt-leaf"
               initial={{ opacity: 0, y: 24, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.45, ease: EASE }}
               role="status"
-              {...pick(leaf)}
             >
-              <p className="present-dt-kicker">Recommendation</p>
-              <p className="present-dt-rec" {...SAY} {...pick(leaf, 'recommendation')}>{leaf.recommendation}</p>
-              {leaf.explanation && <p className="present-dt-why" {...SAY} {...pick(leaf, 'explanation')}>{leaf.explanation}</p>}
-              {!!leaf.tradeoffs?.length && (
-                <ul className="present-dt-tradeoffs">
-                  {leaf.tradeoffs.map((t, i) => (
-                    <motion.li key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 + i * 0.08, duration: 0.3, ease: EASE }} {...pick(leaf.tradeoffs, i)}>{t}</motion.li>
-                  ))}
-                </ul>
-              )}
-              <button type="button" className="present-button" onClick={startOver} disabled={!live} data-testid="present-dt-again">
-                <RotateCcw size={16} aria-hidden /> Start over
-              </button>
+              <div className="dt-leaf-card" {...pick(leaf)}>
+                <div className="dt-leaf-header">
+                  <div className="dt-leaf-icon" aria-hidden>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                  </div>
+                  <h4 className="dt-leaf-heading">Recommendation</h4>
+                </div>
+                <div className="dt-leaf-body">
+                  <div className="dt-leaf-recommendation">
+                    <p className="dt-leaf-rec-text" {...SAY} {...pick(leaf, 'recommendation')}>{leaf.recommendation}</p>
+                  </div>
+                  {leaf.explanation && (
+                    <div className="dt-leaf-explanation">
+                      <span className="dt-leaf-block-label">Explanation</span>
+                      <p className="dt-leaf-block-text" {...SAY} {...pick(leaf, 'explanation')}>{leaf.explanation}</p>
+                    </div>
+                  )}
+                  {!!leaf.tradeoffs?.length && (
+                    <div className="dt-leaf-tradeoffs">
+                      <span className="dt-leaf-block-label">Trade-offs</span>
+                      <ul className="dt-leaf-tradeoff-list">
+                        {leaf.tradeoffs.map((t, i) => (
+                          <motion.li key={i} className="dt-leaf-tradeoff-item" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 + i * 0.08, duration: 0.3, ease: EASE }} {...pick(leaf.tradeoffs, i)}>{t}</motion.li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+                <div className="dt-leaf-footer">
+                  <button type="button" className="dt-reset-btn" onClick={startOver} disabled={!live} data-testid="present-dt-again">
+                    <RotateCcw className="dt-reset-icon" aria-hidden />
+                    Start over
+                  </button>
+                </div>
+              </div>
             </motion.div>
           ) : node ? (
             <motion.div
               key={`node-${hereId}`}
-              className="present-dt-card"
+              className="dt-decision"
               initial={{ opacity: 0, x: 32 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -32 }}
               transition={{ duration: 0.4, ease: EASE }}
+              {...mark(0, { motion: 'fade', delay: 300 })}
               {...pick(node)}
             >
-              <p className="present-dt-kicker">Question {path.length}</p>
-              <p className="present-dt-prompt" {...mark(0, { motion: 'words', delay: 500 })} {...pick(node, 'prompt')}>
+              <div className="dt-decision-header">
+                <span className="dt-step-counter">Step {path.length}</span>
+              </div>
+              <h4 className="dt-decision-prompt" {...mark(0, { motion: 'words', delay: 500 })} {...pick(node, 'prompt')}>
                 <PresentWords text={node.prompt ?? node.text ?? node.title ?? ''} />
-              </p>
-              <div className="present-dt-choices" role="group" aria-label="Your answer">
+              </h4>
+              <div className="dt-choices" role="group" aria-label="Your answer">
                 {choices.map((c, j) => (
                   <button
                     key={c.id ?? j}
                     type="button"
-                    className={`present-choice${live ? ' present-breathe' : ''}`}
+                    className={`dt-choice${c.recommended ? ' dt-choice-recommended' : ''}${live ? ' present-breathe' : ''}`}
                     onClick={() => choose(c)}
                     disabled={!live}
                     data-testid={`present-dt-choice-${c.id ?? j}`}
                     {...mark(0, { delay: 1100 + j * 70 })}
                     {...pick(c)}
                   >
-                    <span className="present-choice-row">
-                      <span className="present-choice-letter" aria-hidden>{LETTERS[j]}</span>
-                      <span className="present-choice-text" {...pick(c, 'text')}>{c.text ?? c.label}</span>
-                      {c.recommended && <ThumbsUp className="present-choice-mark present-dt-thumb" size={16} aria-label="Recommended" />}
+                    <span className="dt-choice-badge" aria-hidden>{LETTERS[j]}</span>
+                    <span className="dt-choice-content">
+                      <span className="dt-choice-label" {...pick(c, 'text')}>
+                        {c.text ?? c.label}
+                        {c.recommended && (
+                          <span className="dt-recommended-badge">
+                            <ThumbsUp className="dt-recommended-icon" aria-hidden />
+                            Recommended
+                          </span>
+                        )}
+                      </span>
+                      {c.rationale && <span className="dt-choice-desc" {...pick(c, 'rationale')}>{c.rationale}</span>}
                     </span>
-                    {c.rationale && <span className="present-choice-why present-dt-rationale" {...pick(c, 'rationale')}>{c.rationale}</span>}
+                    <ArrowRight className="dt-choice-arrow" aria-hidden />
                   </button>
                 ))}
               </div>

@@ -1,183 +1,97 @@
-/* Present mode renderers for progressive-content sections. Sizes come from the region (--present-fs-*). */
+/*
+ * Present mode renderers for progressive-content sections. They use the Read sections' markup and
+ * stylesheets; this file only fits them to the stage region (1200×675, 600×960 portrait) and adds what
+ * Read has no equivalent for.
+ */
 
-.present-kicker {
-  margin: 0;
-  color: var(--muted-foreground);
-  font: 600 var(--present-fs-small) / 1 var(--font-mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+/* Read styles own emphasis here, not the stage's highlighter */
+.present-region :is(.topic-intro-section, .text-section, .bullets-list, .taxonomy-browser-section, .pillar-layer-section) strong {
+  background: none;
+  padding: 0;
 }
 
-.present-hero {
-  margin: 0;
-  font: 700 var(--present-fs-hero) / 1.02 var(--font-display);
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-.present-tagline,
-.present-subhead {
-  margin: 0;
-  max-width: 36em;
-  color: var(--muted-foreground);
-  font: 400 var(--present-fs-body) / 1.45 var(--font-body);
-}
-
-.present-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-  padding: 20px 22px;
-  border-radius: var(--radius-md);
-  background: var(--card);
-}
-
-.present-card h3 {
-  margin: 0;
-  color: var(--primary);
-  font: 600 var(--present-fs-small) / 1 var(--font-mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.present-card p { margin: 0; font: 400 var(--present-fs-card) / 1.5 var(--font-body); }
-.present-card .present-strong { font-weight: 600; }
+/* Hover lifts are for the page; on stage the beat motion moves cards */
+.present-region :is(.topic-intro-block, .roadmap-step-card, .bullets-card, .taxonomy-browser-card):not(:hover) { transform: none; }
 
 /* ---- intro ---- */
 
-.present-intro { display: flex; flex-direction: column; gap: 18px; min-height: 100%; }
-.present-intro-head { display: flex; flex-direction: column; gap: 10px; }
-.present-intro-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-top: auto; }
-.present-intro .present-card { padding: 16px 20px; gap: 6px; }
-.present-intro .present-card p { font-size: calc(var(--present-fs-card) - 1px); line-height: 1.45; }
-.present-intro-grid.no-roadmap { grid-template-columns: 1fr; }
-.present-intro-grid.no-roadmap .present-intro-col { flex-direction: row; }
-.present-intro-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.present-intro-col > .present-card { flex: 1; }
+.present-region .topic-intro-section { margin: 0; animation: none; }
+.present-region .topic-intro-hero { margin-bottom: 1.25rem; }
+.present-region .topic-intro-badges { margin-bottom: 0.75rem; }
+.present-region .topic-intro-pillars { margin-bottom: 1.25rem; }
+.present-stage:not(.is-portrait) .present-region .topic-intro-pillars { grid-template-columns: 1fr 1fr; }
+.present-stage:not(.is-portrait) .present-region .roadmap-pipeline { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.present-stage.is-portrait .present-region .topic-intro-pillars { grid-template-columns: 1fr; }
+.present-stage.is-portrait .present-region .roadmap-pipeline { grid-template-columns: 1fr; }
 
-.present-dots { margin: 2px 0 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 4px; font: 400 calc(var(--present-fs-card) - 1px) / 1.45 var(--font-body); }
+/* ---- text: the Read paragraph, at reading size for the stage ---- */
 
-.present-road { position: relative; list-style: none; margin: 4px 0 0; padding: 0 0 0 26px; display: flex; flex-direction: column; gap: 12px; }
-.present-road-line { position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: var(--muted-foreground); --present-dir: v; }
-.present-road li { position: relative; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
-.present-road li::before {
-  content: '';
-  position: absolute;
-  left: -26px;
-  top: 0.35em;
-  width: 14px;
-  height: 14px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  border: 2px solid var(--primary);
-  background: var(--card);
-}
-.present-road-title { font: 600 var(--present-fs-card) / 1.3 var(--font-display); }
-.present-road-type { color: var(--muted-foreground); font: 400 calc(var(--present-fs-small) - 1px) / 1.3 var(--font-mono); }
-
-/* ---- text ---- */
-
-.present-text { display: flex; flex-direction: column; gap: 18px; max-width: 46em; }
-.present-paragraph { font: 400 var(--present-fs-body) / 1.6 var(--font-body); }
-.present-paragraph p { margin: 0; }
-.present-paragraph p + p { margin-top: 0.6em; }
-.present-paragraph code {
-  padding: 0.04em 0.32em;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  background: var(--card);
-  font: 0.86em var(--font-mono);
-}
-.present-paragraph a { color: var(--primary); }
+.present-region .text-section { margin: 0; max-width: 52em; }
+.present-region .text-paragraph { font-size: var(--present-fs-card); line-height: 1.75; }
 
 /* ---- bullets ---- */
 
-.present-bullets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
-.present-bullet { display: flex; flex-direction: column; gap: 6px; }
-.present-bullet-text { font: 600 calc(var(--present-fs-body) + 1px) / 1.3 var(--font-display); }
-.present-bullets.is-ordered { counter-reset: present-bullet; }
-.present-bullets.is-ordered .present-bullet-text::before {
-  counter-increment: present-bullet;
-  content: counter(present-bullet) '. ';
-  color: var(--primary);
-}
-.present-sub { position: relative; list-style: none; margin: 4px 0 0; padding: 0 0 0 24px; display: flex; flex-direction: column; gap: 8px; }
-.present-sub li { position: relative; font: 400 var(--present-fs-card) / 1.45 var(--font-body); }
-.present-sub li::before { content: ''; position: absolute; left: -19px; top: 0.72em; width: 12px; height: 2px; background: var(--muted-foreground); }
-.present-stem { position: absolute; left: 5px; top: 4px; bottom: 12px; width: 2px; background: var(--muted-foreground); --present-dir: v; }
-
-/* ---- openui ---- */
-
-.present-openui { display: flex; flex-direction: column; gap: 14px; }
-
-/* ---- portrait stage ---- */
-
-.present-stage.is-portrait .present-intro-grid { grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
-.present-stage.is-portrait .present-intro-grid.no-roadmap .present-intro-col { flex-direction: column; }
-.present-stage.is-portrait .present-card { padding: 14px 16px; }
-
-/* ---- pillar & layer ---- */
-
-.present-pillar { display: flex; flex-direction: column; gap: 14px; }
-.present-pillar .pillar-layer-matrix { flex: none; }
-
-/* ---- image gallery ---- */
-
-.present-gallery { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.6fr 1fr; gap: 28px; }
-.present-gallery-frame { position: relative; min-height: 0; overflow: hidden; border-radius: var(--radius-md); background: var(--ctp-crust); box-shadow: inset 0 0 0 1px var(--border); }
-.present-gallery-shot { position: absolute; inset: 0; margin: 0; display: grid; place-items: center; overflow: hidden; }
-.present-gallery-shot img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: 40% 40%; }
-.present-gallery-shot.is-live img { animation: present-push-in 9s ease-in-out forwards; }
-@keyframes present-push-in { from { transform: scale(1); } to { transform: scale(1.07) translate(-1.2%, -0.8%); } }
-.present-gallery-side { display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; min-width: 0; }
-.present-gallery-captions { display: grid; }
-.present-gallery-caption { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 6px; }
-.present-gallery-caption p { margin: 0; font: 400 var(--present-fs-body) / 1.45 var(--font-body); }
-.present-gallery-caption small { color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.3 var(--font-mono); }
-.present-gallery-dots { display: flex; gap: 8px; }
-.present-gallery-dots i { width: 8px; height: 8px; border-radius: 4px; background: var(--border); transition: width 0.3s, background 0.3s; }
-.present-gallery-dots i.is-current { width: 22px; background: var(--primary); }
+.present-region .bullets-list { margin: 0; }
+.present-stage:not(.is-portrait) .present-region .bullets-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.present-stage.is-portrait .present-region .bullets-list { grid-template-columns: 1fr; gap: 0.85rem; }
 
 /* ---- taxonomy ---- */
 
-.present-taxonomy { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-.present-taxonomy-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.present-taxonomy-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  padding: 12px 14px;
-  border: 1.5px solid var(--border);
-  border-top: 3px solid var(--accent);
-  border-radius: var(--radius-sm);
-  background: var(--card);
-  color: var(--foreground);
-  text-align: left;
-  font: inherit;
-  transition: opacity 0.3s, border-color 0.2s;
-}
-.present-taxonomy-card svg { flex: none; color: var(--accent); }
-.present-taxonomy-card:not(:disabled) { cursor: pointer; }
-.present-taxonomy-card:not(:disabled):hover,
-.present-taxonomy-card.is-open { border-color: var(--accent); }
-.present-taxonomy-card:disabled { opacity: 1; }
-.present-taxonomy-card.is-dim { opacity: 0.45; }
-.present-taxonomy-card-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.present-taxonomy-card-title { font: 600 var(--present-fs-card) / 1.2 var(--font-display); }
-.present-taxonomy-card-sub { color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.3 var(--font-ui); }
-.present-taxonomy-detail .present-card { gap: 8px; }
-.present-taxonomy-detail-title { font: 600 calc(var(--present-fs-card) + 4px) / 1.2 var(--font-display) !important; }
-.present-taxonomy-analogy { color: var(--muted-foreground); font-style: italic !important; }
-.present-taxonomy-scope { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.present-taxonomy-scope h4 { margin: 0 0 4px; color: var(--muted-foreground); font: 600 var(--present-fs-small) / 1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; }
-.present-taxonomy-scope ul { margin: 0; padding-left: 1.1em; font: 400 calc(var(--present-fs-card) - 2px) / 1.4 var(--font-body); }
-.present-taxonomy-hint { margin: 0; color: var(--muted-foreground); font: 400 var(--present-fs-body) / 1.4 var(--font-body); }
+.present-region .present-taxonomy { position: relative; margin: 0; display: flex; flex-direction: column; gap: 12px; min-height: 100%; }
+.present-stage:not(.is-portrait) .present-region .present-taxonomy .taxonomy-browser-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.present-stage:not(.is-portrait) .present-region .present-taxonomy.is-many .taxonomy-browser-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.85rem; }
+.present-stage:not(.is-portrait) .present-region .present-taxonomy.is-lots .taxonomy-browser-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.present-stage:not(.is-portrait) .present-region .present-taxonomy.is-many .taxonomy-browser-card { padding: 0.9rem 1.1rem; gap: 0.5rem; }
+/* Many cards: three lines of description each; the full text is in the card's detail */
+.present-region .present-taxonomy.is-many .taxonomy-browser-description { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.present-stage.is-portrait .present-region .present-taxonomy .taxonomy-browser-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+.present-region .present-taxonomy:not(.is-exploring) .taxonomy-browser-card { cursor: default; }
+.present-region .present-taxonomy-hint { margin: 0; color: var(--muted-foreground); font: 500 0.875rem / 1.4 var(--font-mono); }
 
-.present-stage.is-portrait .present-gallery { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
-.present-stage.is-portrait .present-taxonomy { grid-template-columns: 1fr; }
+/* The Read detail dialog, opened over the cards inside the region */
+.present-region .present-taxonomy-overlay { position: absolute; inset: 0; z-index: 5; border-radius: 16px; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); }
+.present-region .present-taxonomy-dialog {
+  position: absolute;
+  z-index: 6;
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+  width: min(620px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--card) 97%, transparent);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.45);
+}
+
+.present-stage.is-portrait .present-region .present-taxonomy-dialog { max-height: 780px; }
+
+/* ---- pillar & layer ---- */
+
+.present-region .present-pillar { display: flex; flex-direction: column; gap: 14px; margin: 0; }
+.present-region .present-pillar .pillar-layer-description { margin: 0; }
+.present-region .present-pillar .pillar-layer-matrix { flex: none; }
+
+/* ---- openui ---- */
+
+.present-region .present-openui { margin: 0; }
+
+/* ---- image gallery: the Read image frame and lightbox caption ---- */
+
+.present-region .present-gallery { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.present-region .present-gallery-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.present-region .present-gallery-frame { flex: 1; min-height: 0; }
+.present-region .present-gallery-shot { position: absolute; inset: 0; margin: 0; padding: 8px; display: grid; place-items: center; overflow: hidden; }
+.present-region .present-gallery-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.5rem; transform-origin: 40% 40%; }
+.present-region .present-gallery-img.is-live { animation: present-push-in 9s ease-in-out forwards; }
+@keyframes present-push-in { from { transform: scale(1); } to { transform: scale(1.07) translate(-1.2%, -0.8%); } }
+.present-region .present-gallery-captions { display: grid; }
+.present-region .present-gallery-caption { grid-area: 1 / 1; font-size: var(--present-fs-card); }
+.present-region .present-gallery-caption p { margin: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .present-gallery-shot.is-live img { animation: none; }
+  .present-gallery-img.is-live { animation: none; }
 }

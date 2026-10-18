@@ -1,0 +1,18 @@
+root = Narration([overview, misread, compare, privacy])
+
+overview = NarrationStep("Four directives decide whether a cache may keep a response, and for how long.", [Spotlight(["maxAge", "noCache", "noStore", "private"])])
+
+misread = NarrationStep("The name no-cache is the one people misread.", [
+  Highlight("noCache"),
+  Callout("noCache", "no-cache does not mean do not cache. The copy is kept; it is only checked with the server before each reuse."),
+])
+
+compare = NarrationStep("If nothing may be kept at all, that is no-store.", [
+  Spotlight(["noCache", "noStore"]),
+  Callout("noStore", "Banking pages use no-store: nothing touches a disk, so every visit goes back to the server."),
+])
+
+privacy = NarrationStep("private is about who may keep it, not how long.", [
+  Highlight("private"),
+  Callout("private", "The browser may cache it; a shared CDN may not. Use it for pages that differ per signed-in user."),
+])

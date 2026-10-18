@@ -34,6 +34,7 @@ import {
   type OpenUIDirective,
 } from '../../sub-contexts/progressive-content/openui-standard'
 import type { OKFSectionData, OKFSectionMeta } from '../okf/types'
+import type { NarrationData } from './narration'
 
 // ============================================================================
 // Types
@@ -521,6 +522,17 @@ export function compileOUITopic(source: string): OUICompileResult<OUITopicManife
     return { value: null, rootComponent: program.rootComponent, issues: [...program.issues, issue], sourceMap: program.sourceMap }
   }
   return { ...program, value: program.value as OUITopicManifest | null }
+}
+
+/** Compile a narration file `sections/<name>.narrate.oui` (root must be `Narration`). */
+export function compileOUINarration(source: string): OUICompileResult<NarrationData> {
+  const program = compileProgram(source)
+  if (program.root && program.rootComponent !== 'Narration') {
+    const issue = wrongRoot('Narration(…)', program.rootComponent)
+    issue.line = program.sourceMap.lineOf('root')
+    return { value: null, rootComponent: program.rootComponent, issues: [...program.issues, issue], sourceMap: program.sourceMap }
+  }
+  return { ...program, value: program.value as NarrationData | null }
 }
 
 /** Compile the content `index.oui` catalog (root must be `Catalog`). */

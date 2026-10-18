@@ -4,16 +4,17 @@ import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import { conceptCategories, type ConceptMapPresentData } from '../../present'
-import { NODE_HEIGHT, getCategoryColor, getNodeWidth, layoutConceptMap } from './index'
+import { NODE_HEIGHT, getCategoryColor, getCategoryFill, getNodeWidth, layoutConceptMap } from './index'
+import './concept-map.css'
 import '../present.css'
 
 /** Categories the Read map has no colour for take these, in order, so each group stands apart. */
 const GROUP_COLORS = ['var(--ctp-mauve)', 'var(--ctp-sky)', 'var(--ctp-green)', 'var(--ctp-peach)', 'var(--ctp-yellow)', 'var(--ctp-teal)', 'var(--ctp-pink)', 'var(--ctp-sapphire)']
 const PAD = 48
-const fill = (color: string) => `color-mix(in srgb, ${color} 15%, var(--ctp-surface0))`
 
 /**
- * Concept map in Present mode (conceptMapBeats): the Read layout of the whole map, built up one category
+ * Concept map in Present mode (conceptMapBeats), drawn with the Read map's nodes, links, labels and
+ * legend: the Read layout of the whole map, built up one category
  * at a time. Each group's concepts pop in while the view widens to hold everything shown so far; a link
  * draws once both its ends are on screen. The last beat frames the whole map and lets the learner tap a
  * concept to light up its links.
@@ -28,10 +29,9 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
   const groups = useMemo(() => conceptCategories(data), [data])
   const groupIndex = useMemo(() => new Map(Object.values(nodes).map((n) => [n.id, Math.max(0, groups.indexOf(n.category))])), [nodes, groups])
   const groupOf = (id: string) => groupIndex.get(id) ?? 0
-  const colorOf = (category: string) => {
-    const known = getCategoryColor(category)
-    return known === getCategoryColor('') ? GROUP_COLORS[Math.max(0, groups.indexOf(category)) % GROUP_COLORS.length] : known
-  }
+  const known = (category: string) => getCategoryColor(category) !== getCategoryColor('')
+  const colorOf = (category: string) => (known(category) ? getCategoryColor(category) : GROUP_COLORS[Math.max(0, groups.indexOf(category)) % GROUP_COLORS.length])
+  const fillOf = (category: string) => (known(category) ? getCategoryFill(category) : `color-mix(in srgb, ${colorOf(category)} 15%, var(--ctp-surface0))`)
   const exploreBeat = beats.length - 1
   const exploring = groups.length > 0 && beat >= exploreBeat
   const [selected, setSelected] = useState<string | null>(null)
@@ -69,6 +69,7 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
 
   return (
     <div className={`present-cm${exploring && active ? ' is-exploring' : ''}`} data-testid="present-concept-map">
+      <div className="concept-map-canvas-wrapper present-cm-canvas">
       <motion.svg
         className="present-cm-svg"
         initial={false}
@@ -86,7 +87,7 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
           return (
             <path
               key={`edge-${i}`}
-              className={`present-cm-edge${linked && !dimmed([e.from, e.to]) ? ' is-lit' : ''}${dimmed([e.from, e.to]) ? ' is-dim' : ''}`}
+              className={`cm-edge present-cm-edge${linked && !dimmed([e.from, e.to]) ? ' cm-edge-highlight' : ''}${dimmed([e.from, e.to]) ? ' cm-edge-dimmed' : ''}`}
               d={`M ${a.p1.x} ${a.p1.y} L ${a.p2.x} ${a.p2.y}`}
               pathLength={1}
               {...mark(at, { motion: 'draw', delay })}
@@ -102,15 +103,18 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
           return (
             <g
               key={n.id}
-              className={`present-cm-node${past ? ' is-past' : ''}${selected === n.id ? ' is-selected' : ''}${dimmed([n.id]) ? ' is-dim' : ''}`}
+              className={`cm-node-group present-cm-node${past ? ' is-past' : ''}${selected === n.id ? ' cm-node-highlight is-selected' : ''}${dimmed([n.id]) ? ' cm-node-dimmed' : ''}`}
               onClick={() => toggle(n.id)}
               data-testid={`present-cm-node-${n.id}`}
               {...mark(g, { motion: 'pop', delay: 120 + (i % 12) * 60 })}
               {...pick(nodes[n.id])}
             >
-              <rect x={(n.x ?? 0) - w / 2} y={(n.y ?? 0) - NODE_HEIGHT / 2} width={w} height={NODE_HEIGHT} rx={16} fill={fill(color)} stroke={color} />
-              <text x={n.x} y={(n.y ?? 0) - 6} className="present-cm-title" {...pick(nodes[n.id], 'title')}>{n.title}</text>
-              <text x={n.x} y={(n.y ?? 0) + 13} className="present-cm-category" fill={color}>{n.category}</text>
+              <rect x={(n.x ?? 0) - w / 2} y={(n.y ?? 0) - NODE_HEIGHT / 2} width={w} height={NODE_HEIGHT} rx={16} fill={fillOf(n.category)} stroke={color} strokeWidth={selected === n.id ? 3 : 2} />
+              <text x={n.x} y={(n.y ?? 0) - 6} textAnchor="middle" dominantBaseline="middle" className="cm-node-title" fill="var(--ctp-text)" {...pick(nodes[n.id], 'title')}>{n.title}</text>
+              <text x={n.x} y={(n.y ?? 0) + 12} textAnchor="middle" dominantBaseline="middle" className="cm-node-category" fill={color} {...pick(nodes[n.id], 'category')}>{n.category}</text>
+              {selected === n.id && (
+                <rect x={(n.x ?? 0) - w / 2 - 5} y={(n.y ?? 0) - NODE_HEIGHT / 2 - 5} width={w + 10} height={NODE_HEIGHT + 10} rx={18} fill="none" stroke={color} strokeWidth={1.5} strokeDasharray="4 3" opacity={0.6} />
+              )}
             </g>
           )
         })}
@@ -120,26 +124,28 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
           const at = Math.max(groupOf(e.from), groupOf(e.to))
           const x = (a.p1.x + a.p2.x) / 2
           const y = (a.p1.y + a.p2.y) / 2
-          const w = e.label.length * 6.6 + 14
+          const lit = !!linked && !dimmed([e.from, e.to])
+          const off = dimmed([e.from, e.to])
+          const w = e.label.length * 6 + 10
+          const state = `${lit ? ' cm-edge-label-highlight' : ''}${off ? ' cm-edge-label-dimmed' : ''}`
           return (
-            <g key={`label-${i}`} className={`present-cm-label${dimmed([e.from, e.to]) ? ' is-dim' : ''}`} {...mark(at, { motion: 'fade', delay: 900 + i * 40 })} {...pick(e, 'label')}>
-              <rect x={x - w / 2} y={y - 10} width={w} height={20} rx={5} />
-              <text x={x} y={y + 1}>{e.label}</text>
+            <g key={`label-${i}`} className={`cm-edge-label-group present-cm-label${lit ? ' cm-edge-label-group-highlight' : ''}`} {...mark(at, { motion: 'fade', delay: 900 + i * 40 })} {...pick(e, 'label')}>
+              <rect x={x - w / 2} y={y - 14} width={w} height={15} rx={4} className={`cm-edge-label-bg${state}`} />
+              <text x={x} y={y - 6} textAnchor="middle" className={`cm-edge-label${state}`}>{e.label}</text>
             </g>
           )
         })}
       </motion.svg>
-      <div className="present-cm-foot">
-        <ul className="present-cm-legend">
-          {groups.map((c, g) => (
-            <li key={c} className={!exploring && g === beat ? 'is-now' : undefined} {...mark(g, { motion: 'rise' })}>
-              <span className="present-cm-dot" style={{ background: colorOf(c) }} />
-              {c}
-            </li>
-          ))}
-        </ul>
-        {exploring && <p className="present-cm-hint" {...mark(exploreBeat, { motion: 'fade', delay: 600 })}>Tap a concept to see what it connects to.</p>}
+      <div className="concept-map-legend present-cm-legend">
+        {groups.map((c, g) => (
+          <div key={c} className={`concept-map-legend-item${!exploring && g === beat ? ' is-now' : ''}`} {...mark(g, { motion: 'fade' })}>
+            <span className="concept-map-legend-dot" style={{ backgroundColor: colorOf(c) }} />
+            <span>{c}</span>
+          </div>
+        ))}
       </div>
+      </div>
+      {exploring && <p className="present-cm-hint" {...mark(exploreBeat, { motion: 'fade', delay: 600 })}>Tap a concept to see what it connects to.</p>}
     </div>
   )
 }

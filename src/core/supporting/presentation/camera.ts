@@ -84,3 +84,21 @@ export function regionAt(point: { x: number; y: number }, count: number, stage: 
   }
   return -1
 }
+
+/** Largest zoom of a narration Spotlight (decision 94). */
+export const MAX_FOCUS_ZOOM = 2
+
+/**
+ * Camera on region `index` framing `box` (region coordinates) with some room around it: zoomed in up
+ * to MAX_FOCUS_ZOOM and kept inside the region's edges. A narration Spotlight uses it.
+ */
+export function focusCamera(index: number, stage: Size, box: { x: number; y: number; w: number; h: number }, columns = COLUMNS): Camera {
+  const o = regionOrigin(index, stage, columns)
+  const pad = 48
+  const z = Math.min(MAX_FOCUS_ZOOM, Math.max(1, Math.min(stage.w / (box.w + pad * 2), stage.h / (box.h + pad * 2))))
+  const hw = stage.w / 2 / z
+  const hh = stage.h / 2 / z
+  const x = Math.min(Math.max(o.x + box.x + box.w / 2, o.x + hw), o.x + stage.w - hw)
+  const y = Math.min(Math.max(o.y + box.y + box.h / 2, o.y + hh), o.y + stage.h - hh)
+  return { x, y, z }
+}
