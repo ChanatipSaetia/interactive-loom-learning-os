@@ -50,7 +50,7 @@ a = NarrationStep("q1", "No quiz here.")
 `, section, ctx)
     expect(result.status).toBe('warning')
     expect(result.diagnostics[0].message).toBe('"q1" is not a beat of sections/directives.oui, so this step never plays.')
-    expect(result.diagnostics[0].fixHint).toBe('Its beats are cards, card1, card2, card3, card4.')
+    expect(result.diagnostics[0].fixHint).toBe('Its beats are title, cards, card1, card2, card3, card4.')
   })
 
   it('needs its section and the Narration root', () => {

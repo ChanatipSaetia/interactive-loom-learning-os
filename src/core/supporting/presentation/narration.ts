@@ -29,14 +29,6 @@ export function stepSpeech(root: HTMLElement | null): SpeechPart[] {
   return [...(caption ? partsOf(caption) : []), ...callouts.flatMap(partsOf)]
 }
 
-/**
- * What opens a section, read before its first beat: its kind and title ("Quiz. Caching basics."), so
- * every section is introduced, also when its first beat is an authored step or a question.
- */
-export function headingSpeech(kind: string, title?: string): SpeechPart[] {
-  return textParts([kind, title?.trim()].filter(Boolean).join('\n'))
-}
-
 /** The beat's `FRAME` lines, read with an authored step too. */
 export function frameSpeech(region: HTMLElement, beat: number): SpeechPart[] {
   return Array.from(region.querySelectorAll<HTMLElement>(`[data-beat="${beat}"][data-present-frame]`)).flatMap((el) => partsOf(el))

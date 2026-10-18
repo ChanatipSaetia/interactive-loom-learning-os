@@ -143,6 +143,49 @@
   --present-fs-small: 12px;
 }
 
+/* ---- a section's title beat (decision 114): a card over the section before its own beats ---- */
+
+.present-title-card {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: 40px 72px;
+  border-radius: inherit;
+  background: var(--background);
+}
+
+.present-title-kind {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border: 1.5px solid currentColor;
+  border-radius: var(--radius-full);
+  color: var(--present-accent);
+  font: 600 var(--present-fs-small) / 1 var(--font-mono);
+  letter-spacing: 0.12em;
+}
+
+.present-title-name {
+  margin: 0;
+  font: 700 var(--present-fs-hero) / 1.05 var(--font-display);
+  text-wrap: balance;
+}
+
+.present-title-heading,
+.present-title-lead {
+  margin: 0;
+  max-width: 34em;
+  font-size: var(--present-fs-body);
+  line-height: 1.45;
+}
+
+.present-title-lead { color: var(--muted-foreground); }
+
+.present-stage.is-portrait .present-title-card { padding: 28px 24px; }
+
 /* ---- what a beat shows (beatMarks in present-kernel.ts) ---- */
 
 .present-region [data-beat]:not([data-shown]):not([data-leaving]) {

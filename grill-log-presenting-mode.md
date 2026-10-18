@@ -77,7 +77,7 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 111 | Motion that helps follow | **A `zoom` motion and an agenda rail.** `zoom` settles a beat's key statement into place from slightly larger (a headline, a takeaway, an ending). Sections played one part at a time (bullets, taxonomy, text whose paragraphs all open with a term) show an agenda beside the part on stage: the parts' short names, the current one lit with a bar growing in, the ones done ticked; it moves with CSS, is skipped by the voice and hidden on phones. The roadmap draws its path, then its steps pop on along it. |
 | 112 | What the sandboxes explain | **Every choice's gains and costs, and every variable's trend.** Tradeoff: after a step's choices arrive, each choice that has gains or costs gets its own beat (`stepN.choiceK`): its card comes forward and a panel under the cards lists its gains and costs by title (descriptions stay in Read), which the voice reads; the recommendation then lands in the same panel with why it fits. Formula: one sweep per variable that can move (`sweep1`, `sweep2`, …), from its min to its max with the others at their defaults; as it plays, a trend panel states what each metric that moves does ("Recall rises 59 → 101", "peaks at …", "dips to …"), computed from the formulas, and the voice reads it. Revises decision 104 (the sweep) and the tradeoff part of 109. |
 | 113 | How many scenario endings | **All of them.** The stage walks one path to every ending (the shortest walk to it): weaker endings first in branch order, so each path leaves the one before as late as possible, the best ending last. A later path starts at the fork where it parts, with the choices tried there struck through; each ending says which one it is ("Ending 2 of 4"); endings below the best rating are marked *wrong* on the rail, the best (and equal ones) *right*. Beat IDs `pathP.choiceN` and `pathP.choiceN.next`. Revises decisions 103 and 110 (one weaker path, then the best). |
-| 114 | Every section introduced; the decision tree framed | **The voice names each section as it starts, and frame lines say what a walk is.** A section's first beat opens with its kind and title as on its header ("Quiz. Caching basics."), with or without an authored step on that beat, unless what the beat reads already says the title; the intro, which has no header, opens with its own title beat. Renderers can mark a stage line `FRAME`: the voice reads it on its beat even where an authored step plays, unless the step's caption already says it. The decision tree shows two: "An example: one path through this tree" from `start`, and "The result of these decisions" over the recommendation on `result`. The heading and the frame lines are stage labels like "Question 1 of 3", in English; a narration file can still say more. Refines decisions 97, 108 and 110. |
+| 114 | How a section opens | **On its own `title` beat, which a narration step can script.** Every section but the intro starts with a `title` beat: a card over the section with its kind, title, `heading` and `Lead` text (`lead.what`), which then steps aside for the section's own beats. A `NarrationStep("title", …)` says the section's intro in the author's words; without one the voice reads the card ("Quiz. Knowledge Check."). The intro's first beat is already its title, so it gets none. Renderers can also mark a stage line `FRAME`: the voice reads it on its beat even where an authored step plays, unless the step's caption already says it. The decision tree shows two: "An example: one path through this tree" from `start`, and "The result of these decisions" over the recommendation on `result`. Kind names and frame lines are stage labels like "Question 1 of 3", in English. Refines decisions 97, 108 and 110. |
 
 ## Motion Rules
 
@@ -125,7 +125,8 @@ A movement that means nothing is a short fade.
 Decisions 82, 101–104 and 108. Each rule reads the compiled section data (`SectionConfig.props`, typed
 by the sub-context's `schema.ts`) and nothing else. Every beat plays by itself; *wrong* / *right* marks
 a performed answer (decision 103). The `code` names are the beat IDs a narration file's steps name
-(`BEAT_IDS` in `composition/oui/narration.ts`, listed in the authoring prompt).
+(`BEAT_IDS` in `composition/oui/narration.ts`, listed in the authoring prompt). Every type but
+`intro` plays a `title` beat (its title card) before the beats below (decision 114).
 
 | Section type | Beats (from the OUI props) |
 |---|---|
@@ -390,12 +391,18 @@ pure and tested directly.
 
 ### Decision 114 — Implementation Notes
 
-- `narration.ts`: `headingSpeech(kind, title)`, `frameSpeech(region, beat)` (elements marked `FRAME`,
-  `data-present-frame`, on the beat), `mentions(text, words)` and `notSaidIn(caption, parts)` to skip what
-  is already said. `PresentMode` adds the heading to the first beat's speech (before the beat's on-screen
-  text, or before the first authored step with that beat's frame lines).
-- Tests: `narration.test.ts` (heading, frames, skipping what the caption says) and the decision-tree
-  renderer's frame lines in `performed.test.tsx`.
+- Kernel: `TITLE_BEAT`, `titleBeatCount(type)` and `withTitleBeat(type, beats)`; `beatsOf` and
+  `coreBeatsOf` return the stage's beats with the title beat first, so validation, Studio's Add
+  narration and `stepsByBeat` see it. Renderers are unchanged: `SectionBody` gives them their own
+  beats and the beat less the title beat, so the title beat is their beat -1, and the stage's DOM work
+  (entrance, reveal, speech, focus, reading hold) uses that body beat.
+- `SectionTitleCard` (in `PresentMode.tsx`) draws the card marked `beatMarks(body)(-1, { until: -1 })`.
+- `narration.ts`: `frameSpeech(region, beat)` (elements marked `FRAME`, `data-present-frame`),
+  `mentions(text, words)` and `notSaidIn(caption, parts)`; the first authored step of a beat reads the
+  beat's frame lines its caption does not say.
+- Tests: title beats in `present-kernel.test.ts` and `viewer.test.tsx` (the card, then the section; a
+  scripted `title` step), frames in `narration.test.ts`, the decision-tree frame lines in
+  `performed.test.tsx`.
 
 ## Open Questions
 

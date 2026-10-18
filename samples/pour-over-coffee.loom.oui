@@ -24,7 +24,8 @@ bloom = Flashcard("bloom", "Bloom", "/bluːm/", "technique", "A first small pour
 extraction = Flashcard("extraction", "Extraction", "/ɪkˈstrækʃən/", "concept", "How much of the coffee dissolves into the water.", "Acids dissolve first, then sugars, then bitter compounds. Too little extraction tastes sour and thin; too much tastes bitter and dry. A finer grind or hotter water extracts more; a coarser grind or cooler water extracts less.", "Every fix for a bad cup is a change in extraction.")
 
 // === sections/vocabulary.narrate.oui ===
-root = Narration([w1, b1, w2, b2])
+root = Narration([t, w1, b1, w2, b2])
+t = NarrationStep("title", "Before we brew, two words you will hear in every brew guide.")
 w1 = NarrationStep("card1", "First word: the bloom.", [Highlight("bloom")])
 b1 = NarrationStep("card1.back", "Fresh coffee is full of gas from roasting, so you wet it and wait half a minute.", [Callout("bloom", "Bubbles on the surface are the gas escaping. Old coffee barely blooms.")])
 w2 = NarrationStep("card2", "Next: extraction.")
@@ -37,13 +38,14 @@ bloomStep = Bullet("Bloom: pour 30 g of water and wait 30–45 seconds", [Bullet
 pour = Bullet("Pour the rest in slow circles up to 250 g", [Bullet("Keep the stream in the centre, away from the paper"), Bullet("Aim to finish dripping at 2½–3½ minutes")])
 
 // === sections/brew-steps.narrate.oui ===
-root = Narration([i1, i2, i3])
+root = Narration([t, i1, i2, i3])
+t = NarrationStep("title", "Now the brew itself, in three steps from kettle to cup.")
 i1 = NarrationStep("item1", "Start with hot water, just off the boil, and a rinsed filter.", [Highlight("heat")])
 i2 = NarrationStep("item2", "Then the bloom: a little water, and a short wait.", [Highlight("bloomStep")])
 i3 = NarrationStep("item3", "Finally pour the rest slowly. The total time tells you how the grind did.", [Callout("pour", "Faster than 2½ minutes: grind finer. Slower than 3½: grind coarser.")])
 
 // === sections/knowledge-check.oui ===
-root = Quiz("Knowledge Check", [q1, q2])
+root = Quiz("Knowledge Check", [q1, q2], "Two questions", Lead("Fix a sour cup and explain the bloom."))
 q1 = QuizQuestion("q1", "Your cup tastes sour and thin, and it finished dripping in 2 minutes. What do you change?", [QuizChoice("a", "Grind coarser", false, "A coarser grind extracts even less, so the cup gets more sour."), QuizChoice("b", "Grind finer", true, "A finer grind slows the water and extracts more, moving the cup from sour towards sweet.")], "Sour means too little extraction.")
 q2 = QuizQuestion("q2", "Why do you pause after the first small pour?", [QuizChoice("a", "To let the water cool down", false, "The pause is not about temperature; the kettle water is already at 92–96 °C."), QuizChoice("b", "To let the roasting gas escape", true, "That is the bloom: once the gas is out, the water reaches the coffee evenly.")], "Think back to the bloom card.")
 
@@ -65,7 +67,8 @@ kalita = DecisionNode("kalita", null, null, DecisionLeaf("Kalita Wave", "The fla
 v60 = DecisionNode("v60", null, null, DecisionLeaf("Hario V60", "The cone and large hole make the flow depend on how you pour. It can brew a brighter cup, but it takes practice.", ["Less forgiving while you learn"]))
 
 // === sections/choose-a-brewer.narrate.oui ===
-root = Narration([d1, d2, d3, d4, d5])
+root = Narration([t, d1, d2, d3, d4, d5])
+t = NarrationStep("title", "Last, which dripper should you buy? Let's answer it for one brewer.")
 d1 = NarrationStep("start", "There are many drippers. The first question is how much coffee you make.", [Highlight("cups")])
 d2 = NarrationStep("answer1", "Say you brew one cup at a time.")
 d3 = NarrationStep("q2", "Then it comes down to how much the brewer should forgive.")

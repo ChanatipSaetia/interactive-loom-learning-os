@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { SPOKEN_CLASS, beatSpeech, createNarrator, frameSpeech, headingSpeech, mentions, notSaidIn } from '../../../../src/core/supporting/presentation/narration'
+import { SPOKEN_CLASS, beatSpeech, createNarrator, frameSpeech, mentions, notSaidIn } from '../../../../src/core/supporting/presentation/narration'
 
 class FakeUtterance {
   text: string
@@ -51,11 +51,6 @@ describe('narration', () => {
       <div data-beat="0"><span data-quiet>01</span> Step one</div>
       <p data-beat="0"><span class="present-w">Said</span> <span data-quiet><span class="present-w">skipped</span></span></p>`)
     expect(beatSpeech(r, 0).map((p) => p.text)).toEqual(['Step one.', 'Said'])
-  })
-
-  it("names a section by its kind and title", () => {
-    expect(headingSpeech('Quiz', 'Caching basics')).toEqual([{ text: 'Quiz. Caching basics.' }])
-    expect(headingSpeech('Bullets')).toEqual([{ text: 'Bullets.' }])
   })
 
   it("reads a beat's frame lines, but not what the caption already says", () => {
