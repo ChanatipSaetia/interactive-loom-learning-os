@@ -59,7 +59,7 @@ const NARRATION = `## Narration Files
 
 Loom Viewer can play a topic as guided motion (Present mode): each section reveals itself step by step. A section may add a narration file, \`sections/<name>.narrate.oui\`, with explanation its content does not say: a caption line, highlights, callout notes beside parts of the section and a spotlight that zooms in. Write one only when the user asks for narration, or for a section where a short extra explanation clearly helps (a misread term, the one thing to compare).
 
-- Its \`root\` is \`Narration([steps])\`; each \`NarrationStep(caption, [effects])\` is one step, played right after the part of the section it points at appears. Effects: \`Highlight(target)\`, \`Callout(target, text)\`, \`Spotlight([targets])\`.
+- Its \`root\` is \`Narration([steps])\`; each \`NarrationStep(caption, [effects])\` is one step, played while the part of the section it points at appears (it adds no extra stop). Effects: \`Highlight(target)\`, \`Callout(target, text)\`, \`Spotlight([targets])\`.
 - A target is a string naming a statement of the section file, optionally with a prop: \`"catechins"\`, \`"q1.hint"\`, \`"root.items[0]"\`. Name the statements you will point at in the section file (e.g. \`catechins = Flashcard(...)\`) rather than writing them inline.
 - Captions are one sentence; callouts one or two short sentences. They are read aloud, so write them as speech. Add facts or a comparison, not a repeat of the section's own text.
 - In the single .oui file, the narration file follows its section: \`// === sections/vocabulary.narrate.oui ===\`.

@@ -131,12 +131,12 @@ describe('Loom Viewer', () => {
 
     fireEvent.click(screen.getByTestId('viewer-mode-present'))
     const where = () => screen.getByTestId('present-where').textContent
-    expect(where()).toBe('Text · 1 of 3')
-    for (const target of ['Text · 2 of 3', 'Text · 3 of 3']) {
-      fireEvent.click(screen.getByTestId('present-next'))
-      if (where() !== target) fireEvent.click(screen.getByTestId('present-next'))
-      await waitFor(() => expect(where()).toBe(target))
-    }
+    // The step rides on the section's own beats: no extra stop on the rail (decision 96)
+    expect(where()).toBe('Text · 1 of 2')
+    expect(screen.queryByTestId('present-caption')).toBeNull()
+    fireEvent.click(screen.getByTestId('present-next'))
+    if (where() !== 'Text · 2 of 2') fireEvent.click(screen.getByTestId('present-next'))
+    await waitFor(() => expect(where()).toBe('Text · 2 of 2'))
     expect((await screen.findByTestId('present-caption')).textContent).toBe('Both paragraphs say one thing.')
   })
 
