@@ -154,6 +154,16 @@
   padding: 0 0.06em;
 }
 
+/* What a gate waits on breathes (Motion Rules: Breathe) */
+.present-region .present-breathe { animation: present-breathe 3s ease-in-out infinite; }
+.present-region .present-breathe:nth-child(2) { animation-delay: 0.35s; }
+.present-region .present-breathe:nth-child(3) { animation-delay: 0.7s; }
+.present-region .present-breathe:nth-child(4) { animation-delay: 1.05s; }
+@keyframes present-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 0 7px var(--present-highlight); }
+}
+
 /* ---- overlay: not moved by the camera ---- */
 
 .present-turn {
@@ -354,6 +364,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .present-region .present-breathe { animation: none; box-shadow: 0 0 0 4px var(--present-highlight); }
   .present-turn > i,
   .present-tick i { animation: none; }
   .present-tick.is-now i { transform: none; }

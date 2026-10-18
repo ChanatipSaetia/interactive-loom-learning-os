@@ -1,0 +1,81 @@
+/* Present mode renderers for reflection-synthesis sections. Sizes come from the region (--present-fs-*). */
+
+.present-reflections { display: grid; }
+.present-reflection { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 16px; }
+.present-reflection-prompt { margin: 0; max-width: 44em; font: 400 var(--present-fs-body) / 1.5 var(--font-body); }
+.present-reflection-foot { display: flex; align-items: center; gap: 16px; min-height: 48px; }
+.present-reflection-result { margin: 0; max-width: 46em; font: 400 var(--present-fs-card) / 1.5 var(--font-body); }
+.present-col-label { margin: 0 0 8px; color: var(--muted-foreground); font: 600 var(--present-fs-small) / 1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* ---- sequence ---- */
+
+.present-sequence { display: grid; grid-template-columns: 1fr 1.15fr; gap: 28px; align-items: start; }
+.present-pool,
+.present-slots { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.present-pool:empty { min-height: 1px; }
+.present-slot { display: flex; align-items: center; gap: 10px; }
+.present-slot-num { flex: none; width: 1.4em; color: var(--muted-foreground); text-align: right; font: 600 var(--present-fs-small) / 1 var(--font-mono); }
+.present-drop { flex: 1; display: flex; min-height: 46px; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); }
+.present-drop:has(.present-slot-item) { border-color: transparent; }
+.present-drop.is-next { border-color: var(--primary); }
+
+.present-slot-item {
+  position: relative;
+  width: 100%;
+  min-height: 46px;
+  padding: 7px 36px 7px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--foreground);
+  text-align: left;
+  font: 400 calc(var(--present-fs-card) - 2px) / 1.3 var(--font-body);
+}
+
+/* ---- template ---- */
+
+.present-template { margin: 0; max-width: 42em; font: 400 calc(var(--present-fs-body) + 1px) / 2.3 var(--font-body); }
+.present-blank { display: inline-flex; vertical-align: middle; min-width: 200px; min-height: 44px; margin: 0 4px; border-bottom: 2px dashed var(--border); border-radius: 8px 8px 0 0; }
+.present-blank:has(.present-chip) { min-width: 0; border-color: transparent; }
+.present-blank.is-next { border-bottom: 2px solid var(--primary); }
+.present-chips { display: flex; flex-wrap: wrap; gap: 10px; min-height: 48px; align-content: flex-start; }
+
+.present-chip {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--card);
+  color: var(--foreground);
+  white-space: nowrap;
+  font: 600 calc(var(--present-fs-card) - 2px) / 1.2 var(--font-mono);
+}
+.present-chip.is-spent { opacity: 0.4; }
+
+/* ---- shared states ---- */
+
+.present-slot-item:not(:disabled),
+.present-chip:not(:disabled) { cursor: pointer; }
+.present-slot-item:not(:disabled):hover,
+.present-chip:not(:disabled):hover { border-color: var(--primary); }
+.present-slot-item:disabled,
+.present-chip:disabled { opacity: 1; }
+.present-chip.is-spent:disabled { opacity: 0.4; }
+.present-slot-item.is-ok,
+.present-chip.is-ok { border-color: var(--ctp-green); }
+.present-slot-item.is-off,
+.present-chip.is-off { border-color: var(--ctp-red); animation: present-nudge 0.3s ease-out; }
+.present-slot-item.is-ok::after { content: '✓'; position: absolute; right: 14px; top: 50%; translate: 0 -50%; color: var(--ctp-green); font: 600 16px / 1 var(--font-mono); }
+
+@keyframes present-nudge {
+  20% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+
+.present-stage.is-portrait .present-sequence { grid-template-columns: 1fr; gap: 14px; }
+.present-stage.is-portrait .present-blank { min-width: 150px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .present-slot-item.is-off,
+  .present-chip.is-off { animation: none; }
+}

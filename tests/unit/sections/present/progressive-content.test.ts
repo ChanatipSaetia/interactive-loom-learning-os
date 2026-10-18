@@ -1,6 +1,4 @@
 import { describe, it, expect } from 'vitest'
-import { validateOUISection } from '../../../../src/core/learning-engine/validation/oui-gateway'
-import { bundleToSections } from '../../../../src/core/learning-engine/composition/okf/sections'
 import {
   bulletsBeats,
   galleryBeats,
@@ -10,23 +8,11 @@ import {
   taxonomyBeats,
   textBeats,
 } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-ignore Node's fs has no types in this project; tests read content fixtures like layout-metrics.ts
-import { readFileSync } from 'fs'
+import { content, kinds, propsOf } from './helpers'
 
-const content = (path: string): string => readFileSync(`public/content/${path}`, 'utf8')
 const worldHistoryLayers = content('world-history/sections/pillar-layer.oui')
 const monkGallery = content('poe2-flicker-monk/sections/image-gallery.oui')
 const cachingDirectives = content('http-caching/sections/directives.oui')
-
-/** Compile a section the way Loom Viewer does and return its props. */
-function propsOf<T>(source: string): T {
-  const result = validateOUISection(source, { topicId: 't', sectionName: 's', file: 'sections/s.oui' })
-  if (!result.payload) throw new Error(JSON.stringify(result.diagnostics))
-  return bundleToSections([result.payload])[0].props as T
-}
-
-const kinds = (beats: Array<{ kind: string }>) => beats.map((b) => b.kind)
 
 describe('progressive-content beats', () => {
   it('intro: title, What, Why, then the roadmap when there is one', () => {

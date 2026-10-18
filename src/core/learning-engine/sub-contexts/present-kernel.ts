@@ -43,6 +43,8 @@ export interface PresentRendererProps<D = Record<string, unknown>> {
   gate: PresentGate
   /** This section is the one on stage (not done, not in the overview): its explore and gate beats take input. */
   active: boolean
+  /** The section's domain events, the same ones its Read component emits (decision 71). */
+  onEvent?: (event: { type: string; [key: string]: unknown }) => void
 }
 
 export interface SectionPresenter<D = Record<string, unknown>> {

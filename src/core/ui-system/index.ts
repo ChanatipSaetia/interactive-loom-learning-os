@@ -107,6 +107,10 @@ export type {
   SensoryFeedbackContract,
 } from './SensoryFeedbackContract'
 
+// FLIP for elements the learner moves (corrects for scaled ancestors)
+export { useFlip, flipId, playFlip, SPRING_PRESS_EASING } from './motion/flip'
+export type { FlipOptions } from './motion/flip'
+
 // Pick anchors — mark elements for Loom Studio / Viewer Pick mode
 export { PickAnchorProvider, usePickAnchor, usePickAnchors } from './pick-anchor'
 export type { PickAnchorScope, PickAnchorAttributes, PickAnchorFn } from './pick-anchor'
