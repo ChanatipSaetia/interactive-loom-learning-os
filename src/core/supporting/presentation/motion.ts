@@ -67,6 +67,9 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
   for (const el of marked(root, 'data-beat', beat)) {
     const motion = (el.dataset.motion ?? 'rise') as BeatMotion
     const t = at0 + (reduced ? 0 : Number(el.dataset.delay ?? 0) + staggerIndex(el) * P.stagger)
+    // A marked sound plays as the element lands, not as it starts moving
+    const sound = el.dataset.sound as SoundEffect | undefined
+    if (sound && onSound) tl.call(() => onSound(sound), reduced ? at0 : t + Math.round(P.element * 0.6))
     if (reduced) {
       if (motion === 'draw') continue
       hide(el)
@@ -189,6 +192,27 @@ export function revealBeat(root: HTMLElement, beat: number, smooth: boolean): vo
   if (!els.length) return
   const top = Math.min(...els.map((el) => offsetWithin(el, body)))
   const bottom = Math.max(...els.map((el) => offsetWithin(el, body) + el.offsetHeight))
+  scrollBodyTo(body, top, bottom, smooth)
+}
+
+/**
+ * Scroll a region's body so these elements (a beat's lit main content) are in view; measured on
+ * screen, so SVG parts and a scaled stage work too.
+ */
+export function revealElements(root: HTMLElement, els: Element[], smooth: boolean): void {
+  const body = root.querySelector<HTMLElement>('.present-region-body')
+  if (!body || !els.length || body.scrollHeight <= body.clientHeight) return
+  const frame = body.getBoundingClientRect()
+  const k = frame.height / body.clientHeight || 1
+  const rects = els.map((el) => el.getBoundingClientRect()).filter((r) => r.height > 0)
+  if (!rects.length) return
+  const top = body.scrollTop + (Math.min(...rects.map((r) => r.top)) - frame.top) / k
+  const bottom = body.scrollTop + (Math.max(...rects.map((r) => r.bottom)) - frame.top) / k
+  scrollBodyTo(body, top, bottom, smooth)
+}
+
+/** Scroll so `top`..`bottom` (body content coordinates) is in view, its top first when it does not fit. */
+function scrollBodyTo(body: HTMLElement, top: number, bottom: number, smooth: boolean): void {
   const pad = 24
   let next = body.scrollTop
   if (bottom + pad > body.scrollTop + body.clientHeight) next = bottom + pad - body.clientHeight

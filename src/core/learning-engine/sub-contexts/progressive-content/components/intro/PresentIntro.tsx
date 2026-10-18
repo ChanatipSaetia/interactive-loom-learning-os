@@ -1,7 +1,7 @@
 import { ArrowRight, BookOpen, CheckCircle2, Clock, Layers, Lightbulb, MapPin, Sparkles, Target } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
+import { beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
 import type { IntroPresentData } from '../../present'
 import './intro.css'
 import '../present.css'
@@ -36,7 +36,7 @@ export default function PresentIntro({ data, beat }: PresentRendererProps<IntroP
             </div>
           )}
         </div>
-        {data.title && <h1 className="topic-intro-title" {...mark(0, { motion: 'words' })}><PresentWords text={data.title} /></h1>}
+        {data.title && <h1 className="topic-intro-title" {...mark(0, { motion: 'words' })} {...focus(beat === 0)}><PresentWords text={data.title} /></h1>}
         {data.subtitle && <p className="topic-intro-subtitle" {...mark(0, { motion: 'words', delay: 260 })}><PresentWords text={data.subtitle} /></p>}
       </div>
 

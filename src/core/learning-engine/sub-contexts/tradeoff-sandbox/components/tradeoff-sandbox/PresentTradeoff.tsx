@@ -1,12 +1,10 @@
-import { useMemo, useState, type CSSProperties } from 'react'
-import { motion } from 'motion/react'
+import { useMemo, type CSSProperties } from 'react'
 import { Check, Star, X } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
-import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { PresentWords } from '../../../PresentWords'
-import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
+import { QUIET, beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
 import type { TradeoffMetricDef, TradeoffScenario } from '../../schema'
-import { tradeoffPlan, type TradeoffPresentData } from '../../present'
+import { tradeoffPlan, tradeoffSummaries, type TradeoffPresentData } from '../../present'
 import { MetricBar } from './index'
 import './tradeoff-sandbox.css'
 import '../present.css'
@@ -23,11 +21,10 @@ function totals(scenario: TradeoffScenario, chosen: Record<string, string>): Rec
   return values
 }
 
-/** The learner's sandbox, as Read's "Try it" tab: the metric dashboard, and one card per step to pick a choice in. */
-function Sandbox({ scenario, live }: { scenario: TradeoffScenario; live: boolean }) {
+/** Read's "Try it" tab with the recommended choice picked at every step: the metric dashboard and one card per step. */
+function Summary({ scenario }: { scenario: TradeoffScenario }) {
   const pick = usePickAnchors()
-  const { playSound } = useSound()
-  const [chosen, setChosen] = useState<Record<string, string>>({})
+  const chosen = Object.fromEntries(scenario.steps.flatMap((st) => (st.recommended ? [[st.id, st.recommended]] : [])))
   const values = totals(scenario, chosen)
   return (
     <div className="tradeoff-layout present-sandbox">
@@ -42,29 +39,18 @@ function Sandbox({ scenario, live }: { scenario: TradeoffScenario; live: boolean
           ))}
         </div>
       </div>
-      <div className="steps-panel present-sandbox-steps">
+      <div className="steps-panel present-sandbox-steps" {...QUIET}>
         {scenario.steps.map((step) => (
           <div key={step.id} className={`step-section${chosen[step.id] ? '' : ' step-section-unselected'}`} {...pick(step)}>
             <div className="step-header">
               <h4 className="step-title" {...pick(step, 'title')}>{step.title}</h4>
             </div>
-            <span className="present-sandbox-pills" role="group" aria-label={step.title}>
+            <span className="present-sandbox-pills" role="list" aria-label={step.title}>
               {step.choices.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  className="present-pill"
-                  aria-pressed={chosen[step.id] === c.id}
-                  disabled={!live}
-                  onClick={() => {
-                    playSound('click')
-                    setChosen((s) => (s[step.id] === c.id ? Object.fromEntries(Object.entries(s).filter(([k]) => k !== step.id)) : { ...s, [step.id]: c.id }))
-                  }}
-                  {...pick(c)}
-                >
+                <span key={c.id} role="listitem" className={`present-pill${chosen[step.id] === c.id ? ' is-on' : ''}`} {...pick(c)}>
                   {step.recommended === c.id && <Star size={11} className="present-pill-star" aria-label="Recommended" />}
                   {c.label}
-                </button>
+                </span>
               ))}
             </span>
           </div>
@@ -78,16 +64,15 @@ function Sandbox({ scenario, live }: { scenario: TradeoffScenario; live: boolean
  * Tradeoff sandbox in Present mode (tradeoffBeats), on Read's compare cards: per step, its choices arrive
  * side by side, each effect chip popping in (green where it helps, red where it costs) above its gains
  * and costs; then the recommended choice comes forward with its star and why it fits while the others
- * dim. The last beat is Read's "Try it" sandbox, scenario by scenario.
+ * dim. Last, each scenario shows Read's
+ * "Try it" sandbox with the recommended choices picked, and where they leave its metrics.
  */
-export default function PresentTradeoff({ data, beat, beats, active }: PresentRendererProps<TradeoffPresentData>) {
+export default function PresentTradeoff({ data, beat }: PresentRendererProps<TradeoffPresentData>) {
   const pick = usePickAnchors()
   const mark = beatMarks(beat)
   const scenarios = useMemo(() => data.scenarios ?? [], [data.scenarios])
   const plan = useMemo(() => tradeoffPlan(data), [data])
-  const exploreBeat = beats.length - 1
-  const exploring = plan.length > 0 && beat >= exploreBeat
-  const [tab, setTab] = useState(0)
+  const summaries = useMemo(() => tradeoffSummaries(data), [data])
 
   // The beats of each step: where its choices arrive, and where its recommendation does (if any)
   const steps = plan.flatMap((b, i) => (b.recommended ? [] : [{ ...b, at: i, rec: plan[i + 1]?.recommended ? i + 1 : -1 }]))
@@ -104,7 +89,7 @@ export default function PresentTradeoff({ data, beat, beats, active }: PresentRe
           <section key={`${si}-${ki}`} className="compare-step present-tradeoff-step" {...mark(at, { motion: 'fade', until: last })} {...pick(step)}>
             <header className="compare-step-header">
               <span className="compare-step-eyebrow">{scenarios.length > 1 ? `${scenario.title} · ` : ''}Question {ki + 1} of {scenario.steps.length}</span>
-              <h5 className="compare-step-title" {...mark(at, { motion: 'words' })} {...pick(step, 'title')}><PresentWords text={step.title} /></h5>
+              <h5 className="compare-step-title" {...mark(at, { motion: 'words' })} {...focus(beat === at)} {...pick(step, 'title')}><PresentWords text={step.title} /></h5>
               {step.description && <p className="compare-step-desc" {...mark(at, { delay: 300 })} {...pick(step, 'description')}>{step.description}</p>}
             </header>
             <div className="compare-grid" style={{ '--compare-cols': columns } as CSSProperties}>
@@ -117,7 +102,7 @@ export default function PresentTradeoff({ data, beat, beats, active }: PresentRe
                   focused && !isRec && 'compare-card-dimmed',
                 ].filter(Boolean).join(' ')
                 return (
-                  <div key={c.id} className={cls} {...mark(at, { delay: 500 + j * 110 })} {...pick(c)}>
+                  <div key={c.id} className={cls} {...mark(at, { delay: 500 + j * 110 })} {...focus(isRec && beat === rec)} {...pick(c)}>
                     <div className="compare-card-header">
                       <span className="compare-card-label" {...pick(c, 'label')}>{c.label}</span>
                       {isRec && rec >= 0 && (
@@ -190,21 +175,19 @@ export default function PresentTradeoff({ data, beat, beats, active }: PresentRe
           </section>
         )
       })}
-      {plan.length > 0 && (
-        <div className="present-tradeoff-step present-tradeoff-try" {...mark(exploreBeat, { motion: 'fade' })}>
-          {scenarios.length > 1 && (
-            <div className="present-tabs" role="tablist">
-              {scenarios.map((s, i) => (
-                <button key={s.id} type="button" role="tab" aria-selected={tab === i} className="present-pill" disabled={!exploring || !active} onClick={() => setTab(i)} {...pick(s, 'title')}>{s.title}</button>
-              ))}
+      {summaries.map((si, k) => {
+        const at = plan.length + k
+        const scenario = scenarios[si]
+        return (
+          <div key={scenario.id} className="present-tradeoff-step present-tradeoff-try" {...mark(at, { motion: 'fade', ...(k < summaries.length - 1 && { until: at }) })}>
+            {scenarios.length > 1 && <p className="compare-step-eyebrow" {...pick(scenario, 'title')}>{scenario.title}</p>}
+            <p className="compare-step-hint">The recommended choice at every step</p>
+            <div {...focus(beat === at)}>
+              <Summary scenario={scenario} />
             </div>
-          )}
-          <p className="compare-step-hint" {...mark(exploreBeat, { motion: 'fade', delay: 200 })}>Try a combination: pick one choice per step.</p>
-          <motion.div key={tab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <Sandbox scenario={scenarios[tab]} live={exploring && active} />
-          </motion.div>
-        </div>
-      )}
+          </div>
+        )
+      })}
     </div>
   )
 }

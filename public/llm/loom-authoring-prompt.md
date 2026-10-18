@@ -6,7 +6,7 @@ A topic is a folder named after its topic ID (lowercase letters, digits, `-` and
 
 - `topic.oui`: `root = Topic(...)`, the catalog metadata and the ordered list of `SectionRef("<name>")`.
 - `sections/<name>.oui`: one section per file, `root = <Section>(...)` where `<Section>` is a section component (Intro, Text, Bullets, Flowchart, Quiz, …), or a standard OpenUI section (see Standard OpenUI Sections).
-- `sections/<name>.narrate.oui` (optional): `root = Narration(...)`, extra explanation for that section when the learner plays the topic in Present mode (see Narration Files). Not listed in topic.oui.
+- `sections/<name>.narrate.oui`: `root = Narration(...)`, the script the section plays to when the learner plays the topic in Present mode (see Narration Files). One per section; not listed in topic.oui.
 
 Every file is its own openui-lang program: it has its own `root` and its own statement names, so names may repeat across files.
 In the rules below, "program" means one file. The `root` of `topic.oui` is `Topic(...)`; the `root` of a section file is a section component.
@@ -419,10 +419,11 @@ TopicRef(id: string) — Includes the topic folder <id>/topic.oui in the catalog
   - id: Topic folder name under the content root.
 
 ### Narration (sections/<name>.narrate.oui)
-Narration(steps: NarrationStep[]) — Root of a narration file sections/<name>.narrate.oui: the steps Present mode adds to that section.
+Narration(steps: NarrationStep[]) — Root of a narration file sections/<name>.narrate.oui: the script Present mode plays the section to, step by step.
   - steps: The narrated steps in order, as NarrationStep references.
-NarrationStep(caption?: string, effects?: (Highlight | Callout | Spotlight)[]) — One narrated step: a caption line and effects. It plays during the beat that shows its first target (untargeted steps with the last beat before the first question or exploring).
-  - caption: Subtitle line shown (and read aloud) for the step; null for none.
+NarrationStep(beat: string, caption?: string, effects?: (Highlight | Callout | Spotlight)[]) — One narrated step: the beat it plays on, a caption line read aloud, and effects. Several steps on one beat play in turn.
+  - beat: The beat it plays on, by its ID for the section type, e.g. "q1", "q1.wrong", "q1.right" for a quiz, "p2" for a text paragraph (see Narration Files).
+  - caption: Subtitle line shown and read aloud while the beat plays, in the topic's language; null for none.
   - effects: Highlight, Callout and Spotlight calls for the step.
 Highlight(target: string) — Narration effect: outlines and pulses one element of the section for its step.
   - target: Pick pointer to what it points at in the section file: a statement name, optionally with a prop path, e.g. "noCache", "q2.explanation", "root.categories[0]".
@@ -541,20 +542,43 @@ tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C a
 
 ## Narration Files
 
-Loom Viewer can play a topic as guided motion (Present mode): each section reveals itself step by step. A section may add a narration file, `sections/<name>.narrate.oui`, with explanation its content does not say: a caption line, highlights, callout notes beside parts of the section and a spotlight that zooms in. Write one only when the user asks for narration, or for a section where a short extra explanation clearly helps (a misread term, the one thing to compare).
+Loom Viewer can play a topic hands-free (Present mode): each section plays beat by beat, answers its own quiz questions (a wrong try, then the right answer), walks scenarios and decision trees, and lights the main content of each beat. Write a narration file for every section, `sections/<name>.narrate.oui`: it is the script the narrator reads, beat by beat. A beat with no step reads its on-screen text instead.
 
-- Its `root` is `Narration([steps])`; each `NarrationStep(caption, [effects])` is one step, played while the part of the section it points at appears (it adds no extra stop). Effects: `Highlight(target)`, `Callout(target, text)`, `Spotlight([targets])`.
-- A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline.
-- Captions are one sentence; callouts one or two short sentences. They are read aloud, so write them as speech. Add facts or a comparison, not a repeat of the section's own text.
+- Its `root` is `Narration([steps])`; each `NarrationStep(beat, caption, [effects])` plays on the beat it names. Give every beat of the section one step, in beat order; several steps on one beat play in turn.
+- `caption` is what the narrator says: one or two spoken sentences in the topic's language. Explain and connect, do not just repeat the screen: on a quiz's `.wrong` beat say why that answer is tempting and wrong, on its `.right` beat why the right one is right.
+- Effects (optional): `Highlight(target)`, `Callout(target, text)` (a note beside an element, one or two short sentences, read after the caption), `Spotlight([targets])` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline.
 - In the single .oui file, the narration file follows its section: `// === sections/vocabulary.narrate.oui ===`.
+
+Beat IDs by section type (n counts from 1):
+
+| Section type | Beats |
+|---|---|
+| `intro` | `title`, `what`, `why`, `roadmap` (when it has a roadmap) |
+| `text` | `p1`, `p2`, … one per paragraph |
+| `bullets` | `item1`, `item2`, … one per top-level bullet |
+| `pillar-layer` | `layer1`, `layer2`, … one per layer |
+| `image-gallery` | `image1`, `image2`, … one per image |
+| `taxonomy-browser` | `cards` (all cards), then `card1`, `card2`, … each card opened |
+| `concept-map` | `group1`, `group2`, … one per category in order of first appearance, then `map` (the whole map, when there is more than one category) |
+| `flowchart` | `step1`, `step2`, … one per step of the first journey |
+| `scenario` | `start`; when a choice leads to a weaker ending, `wrong1`, `wrong2`, … along that path (the last one shows its outcome); then `right1`, `right2`, … along the best path from where the two part (the last one shows its outcome) |
+| `decision-tree` | `start`, then `answer1`, `answer2`, … one per answer taken (the recommended choice, else the first) down to a recommendation |
+| `tradeoff-sandbox` | `step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.recommended` when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation |
+| `formula-sandbox` | `formulas`, then `sweep` (the first variable moving from its default to its max, when they differ) |
+| `quiz` | `q1`, `q1.wrong`, `q1.right`, `q2`, … per question: asked, its first wrong choice tried, the right answer given |
+| `flashcards` | `card1`, `card1.back`, `card2`, … per card: its word, then its definition |
+| `reflection-sequence` | `c1`, `c1.solved`, `c2`, … per challenge: the prompt, then the right order |
+| `reflection-template` | `c1`, `c1.solved`, `c2`, … per challenge: the prompt, then the blanks filled in |
+| `openui` | `all` |
 
 Example, for the `sections/vocabulary.oui` file of the example topic:
 
 ```
-root = Narration([pair, bitter, time])
-pair = NarrationStep("Two words explain most bitter cups of green tea.", [Spotlight(["catechins", "steep"])])
-bitter = NarrationStep("Catechins are the bitterness.", [Highlight("catechins"), Callout("catechins", "They dissolve faster in hotter water, so water at 75 °C keeps the cup sweet.")])
-time = NarrationStep("Steep time is the dial you control.", [Callout("steep", "Every extra minute adds more catechins than flavour. Pour off all the water when the time is up.")])
+root = Narration([word1, back1, word2, back2])
+word1 = NarrationStep("card1", "First word: catechins.", [Highlight("catechins")])
+back1 = NarrationStep("card1.back", "They are the bitterness in green tea.", [Callout("catechins", "They dissolve faster in hotter water, so water at 75 °C keeps the cup sweet.")])
+word2 = NarrationStep("card2", "Next: steep.")
+back2 = NarrationStep("card2.back", "Steep time is the dial you control.", [Callout("steep", "Every extra minute adds more catechins than flavour. Pour off all the water when the time is up.")])
 ```
 
 ## Loom Authoring Rules
@@ -563,6 +587,7 @@ time = NarrationStep("Steep time is the dial you control.", [Callout("steep", "E
 - Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.
 - Start with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.
 - Mix interactive section types. Never build a topic out of Text sections only.
+- Write a narration file for every section, one NarrationStep per beat of that section type (see Narration Files), in the topic's language.
 - Quizzes and reflection challenges only test what an earlier section of the topic teaches. Each QuizQuestion has exactly one choice with `correct` set to true.
 - IDs (`id` props) are unique within their section. Props that point at an ID (`next`, `root`, `startNode`, `recommended`, `solution`, `continuesAs`, `initialState`, `dependsOn`) must name an ID that exists in the same section.
 - Flowcharts follow the Event Storming cycle EVENT → POLICY → COMMAND → System (handledBy) → EVENT for every step. Every declared Actor starts (`initiatedBy`) or receives (`sendsTo`) at least one step, and every declared System handles (`handledBy`), is called by (`delegatesTo`) or receives (`sendsTo`) at least one step. Set `sendsTo` on every step whose events go to another actor or system: the Sequence and System Architecture views draw only declared messages. When a System has a StateMachine, set `enters` on each Event that moves it into a new state (a MachineState ID); the State Machine view draws its transitions only from those. Set `data` on an Event when the data it carries matters to the lesson (e.g. "Query embedding vector"); the Data Flow view names the data with it. Set `async` on a Step or BranchOption whose command is fired without waiting for a reply (e.g. a queued job or a notification). Set `initialView` on the Flowchart when another view tells the lesson better than Event Storming: "sequence" for a protocol or request/response exchange, "architecture" for which systems talk to which, "swimlanes" for who does what, "data-flow" for how data changes, "state-machine" for the lifecycle of one object.

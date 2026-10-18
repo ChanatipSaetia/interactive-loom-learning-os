@@ -273,7 +273,7 @@ describe('viewer topic compilation', () => {
 })
 
 describe('narration files (sections/<name>.narrate.oui)', () => {
-  const NARRATION = 'root = Narration([s1])\ns1 = NarrationStep("Why ask why?", [Highlight("q1")])\n'
+  const NARRATION = 'root = Narration([s1])\ns1 = NarrationStep("q1", "Why ask why?", [Highlight("q1")])\n'
   const narrated = (): TopicFiles => ({ topicId: 'demo', files: { ...demo().files, 'sections/quiz.narrate.oui': NARRATION } })
 
   it('travel in the single file, right after their section, and in zips and folders', async () => {
@@ -294,10 +294,10 @@ describe('narration files (sections/<name>.narrate.oui)', () => {
     expect(snap.notices).toEqual([])
     expect(workspace.section('quiz')?.narration?.validation.status).toBe('valid')
 
-    workspace.setNarration('quiz', 'root = Narration([s1])\ns1 = NarrationStep("Look", [Highlight("nope")])\n')
+    workspace.setNarration('quiz', 'root = Narration([s1])\ns1 = NarrationStep("q1", "Look", [Highlight("nope")])\n')
     expect(workspace.getSnapshot().dirtySections).toEqual(['quiz'])
     expect(workspace.section('quiz')?.narration?.validation.diagnostics[0].message).toMatch(/"nope" does not name a statement/)
-    workspace.setNarration('intro', 'root = Narration([s1])\ns1 = NarrationStep("Hello.")\n')
+    workspace.setNarration('intro', 'root = Narration([s1])\ns1 = NarrationStep("title", "Hello.")\n')
     await workspace.save()
     expect(folder.files.get('sections/intro.narrate.oui')).toContain('Hello.')
     expect(Object.keys(workspace.exportFiles().files)).toContain('sections/quiz.narrate.oui')
@@ -315,9 +315,9 @@ describe('narration files (sections/<name>.narrate.oui)', () => {
 
   it('compile in Viewer, which lists their problems and narration without a section', () => {
     const topic = compileViewerTopic({ topicId: 'demo', files: { ...narrated().files, 'sections/gone.narrate.oui': NARRATION } })
-    expect(topic.sections.find((s) => s.name === 'quiz')?.narration?.steps).toEqual([{ caption: 'Why ask why?', effects: [{ kind: 'highlight', target: 'q1' }] }])
+    expect(topic.sections.find((s) => s.name === 'quiz')?.narration?.steps).toEqual([{ beat: 'q1', caption: 'Why ask why?', effects: [{ kind: 'highlight', target: 'q1' }] }])
     expect(topic.narrationErrors).toEqual([{ file: 'sections/gone.narrate.oui', error: 'There is no section "gone" in topic.oui for this narration.' }])
-    const warned = compileViewerTopic({ topicId: 'demo', files: { ...demo().files, 'sections/quiz.narrate.oui': NARRATION.replace('q1', 'q7') } })
+    const warned = compileViewerTopic({ topicId: 'demo', files: { ...demo().files, 'sections/quiz.narrate.oui': NARRATION.replace('Highlight("q1")', 'Highlight("q7")') } })
     expect(warned.narrationErrors[0].error).toMatch(/^line 2: "q7" does not name a statement of sections\/quiz.oui/)
   })
 })

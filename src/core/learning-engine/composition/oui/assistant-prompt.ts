@@ -34,7 +34,7 @@ const ROLE: Record<AssistantApp, string> = {
 
 const TOPIC_RULES = `## Loom Topics
 
-- A topic is a folder: \`topic.oui\` holds \`root = Topic(...)\` with the ordered \`SectionRef("<name>")\` list; each \`sections/<name>.oui\` holds one section, \`root = <Section>(...)\`. An optional \`sections/<name>.narrate.oui\` holds \`root = Narration(...)\`: captions, highlights, callouts and spotlights that section adds in Loom Viewer's Present mode; its targets are strings naming statements of the section file (e.g. \`"q2.explanation"\`). It is not listed in topic.oui; write a new one with \`mode=create\`.
+- A topic is a folder: \`topic.oui\` holds \`root = Topic(...)\` with the ordered \`SectionRef("<name>")\` list; each \`sections/<name>.oui\` holds one section, \`root = <Section>(...)\`. \`sections/<name>.narrate.oui\` holds \`root = Narration(...)\`, the narrator's script for that section in Loom Viewer's Present mode: \`NarrationStep(beat, caption, [effects])\` per beat, where \`beat\` is the section type's beat ID (\`"q1"\`, \`"q1.wrong"\`, \`"q1.right"\` for a quiz, \`"p2"\` for a text paragraph, \`"card1.back"\` for a flashcard) and the effects' targets are strings naming statements of the section file (e.g. \`"q2.explanation"\`). Keep it in step when a section's items change. It is not listed in topic.oui; write a new one with \`mode=create\`.
 - Every file is its own openui-lang program with its own \`root\` and its own statement names.
 - A file whose first line is \`// @openui "<title>"\` is a standard OpenUI section written with the stock OpenUI components (Card, Table, BarChart, …) instead of Loom components.
 

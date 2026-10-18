@@ -1,21 +1,18 @@
 import { describe, it, expect } from 'vitest'
-import { defaultBeat, stepsByBeat } from '../../../../src/core/supporting/presentation/narration-steps'
-import { revealingBeat, targetElements, unionBox } from '../../../../src/core/supporting/presentation/narration-targets'
+import { stepsByBeat } from '../../../../src/core/supporting/presentation/narration-steps'
+import { focusElements, targetElements, unionBox } from '../../../../src/core/supporting/presentation/narration-targets'
 import { focusCamera, regionOrigin, STAGE_LANDSCAPE } from '../../../../src/core/supporting/presentation/camera'
-import { explore, gate, show } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
+import { answer, show } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
 
-describe('narration steps ride on beats', () => {
-  it('without a known target, ride on the last show beat before the first gate or explore beat', () => {
-    expect(defaultBeat([show(), show(), explore()])).toBe(1)
-    expect(defaultBeat([show(), gate()])).toBe(0)
-    expect(defaultBeat([gate(), show()])).toBe(0)
-    expect(defaultBeat([show(), show()])).toBe(1)
+describe('narration steps play on the beat they name (decision 108)', () => {
+  const beats = [show('q1'), answer('wrong', 'q1.wrong'), answer('right', 'q1.right')]
+
+  it('group under their beat, in written order, adding no beats', () => {
+    expect(stepsByBeat(beats, [{ beat: 'q1.right' }, { beat: 'q1' }, { beat: 'q1.right' }])).toEqual([[1], [], [0, 2]])
   })
 
-  it('group under the beat that reveals their target, in written order, adding no beats', () => {
-    expect(stepsByBeat([show(), gate(), show()], 3, [2, 0, 0])).toEqual([[1, 2], [], [0]])
-    expect(stepsByBeat([show(), explore()], 1)).toEqual([[0], []])
-    expect(stepsByBeat([show()], 2, [5, undefined])).toEqual([[0, 1]])
+  it('drop steps that name no beat of the section', () => {
+    expect(stepsByBeat(beats, [{ beat: 'q9' }])).toEqual([[], [], []])
   })
 })
 
@@ -32,10 +29,13 @@ describe('narration targets', () => {
     expect(targetElements(root, 'missing')).toEqual([])
   })
 
-  it('are revealed by the latest beat mark above them', () => {
-    expect(revealingBeat(targetElements(root, 'noCache'), root)).toBe(0)
-    expect(revealingBeat(targetElements(root, 'root'), root)).toBe(2)
-    expect(revealingBeat([], root)).toBeUndefined()
+  it('light what a beat marks with focus, else the outermost elements it shows', () => {
+    const region = document.createElement('section')
+    region.innerHTML = '<div class="present-region-body"><p data-beat="0" data-shown>a</p><div data-beat="1"><p data-beat="1">b</p></div></div>'
+    expect(focusElements(region, 0).map((e) => e.textContent)).toEqual(['a'])
+    expect(focusElements(region, 1)).toEqual([])
+    region.querySelector('p')?.setAttribute('data-focus', '')
+    expect(focusElements(region, 1).map((e) => e.textContent)).toEqual(['a'])
   })
 
   it('frame together, and a spotlight zooms in on them within the region', () => {

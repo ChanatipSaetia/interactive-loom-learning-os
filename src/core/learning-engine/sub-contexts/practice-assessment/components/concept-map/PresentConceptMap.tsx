@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'motion/react'
-import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
-import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
+import { QUIET, beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
 import { conceptCategories, type ConceptMapPresentData } from '../../present'
 import { NODE_HEIGHT, getCategoryColor, getCategoryFill, getNodeWidth, layoutConceptMap } from './index'
 import './concept-map.css'
@@ -15,13 +14,12 @@ const PAD = 48
 /**
  * Concept map in Present mode (conceptMapBeats), drawn with the Read map's nodes, links, labels and
  * legend: the Read layout of the whole map, built up one category
- * at a time. Each group's concepts pop in while the view widens to hold everything shown so far; a link
- * draws once both its ends are on screen. The last beat frames the whole map and lets the learner tap a
- * concept to light up its links.
+ * at a time. Each group's concepts pop in and light up while the view widens to hold everything shown
+ * so far; a link draws once both its ends are on screen. With more than
+ * one group, the last beat frames the whole map.
  */
-export default function PresentConceptMap({ data, beat, beats, active }: PresentRendererProps<ConceptMapPresentData>) {
+export default function PresentConceptMap({ data, beat }: PresentRendererProps<ConceptMapPresentData>) {
   const pick = usePickAnchors()
-  const { playSound } = useSound()
   const mark = beatMarks(beat)
   const nodes = useMemo(() => data.nodes ?? {}, [data.nodes])
   const edges = useMemo(() => (data.edges ?? []).filter((e) => nodes[e.from] && nodes[e.to]), [data.edges, nodes])
@@ -32,18 +30,7 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
   const known = (category: string) => getCategoryColor(category) !== getCategoryColor('')
   const colorOf = (category: string) => (known(category) ? getCategoryColor(category) : GROUP_COLORS[Math.max(0, groups.indexOf(category)) % GROUP_COLORS.length])
   const fillOf = (category: string) => (known(category) ? getCategoryFill(category) : `color-mix(in srgb, ${colorOf(category)} 15%, var(--ctp-surface0))`)
-  const exploreBeat = beats.length - 1
-  const exploring = groups.length > 0 && beat >= exploreBeat
-  const [selected, setSelected] = useState<string | null>(null)
-  const linked = useMemo(() => {
-    if (!selected) return null
-    const ids = new Set([selected])
-    edges.forEach((e) => {
-      if (e.from === selected) ids.add(e.to)
-      if (e.to === selected) ids.add(e.from)
-    })
-    return ids
-  }, [selected, edges])
+  const whole = groups.length > 1 && beat >= groups.length
 
   // A tall (phone) canvas cannot fit the whole map readably: it frames the group being introduced
   const svgRef = useRef<SVGSVGElement | null>(null)
@@ -57,12 +44,12 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
   }, [])
 
   // Frame everything shown so far (the first group before the section starts); on a tall canvas only
-  // the current group, and the whole map once exploring
+  // the current group, and the whole map on its own beat
   const viewBox = useMemo(() => {
-    const upTo = exploring ? groups.length : Math.max(0, beat)
+    const upTo = whole ? groups.length : Math.max(0, beat)
     const shown = Object.values(layout.nodes).filter((n) => {
       const g = groupIndex.get(n.id) ?? 0
-      return tall && !exploring ? g === upTo : g <= upTo
+      return tall && !whole ? g === upTo : g <= upTo
     })
     if (!shown.length) return `0 0 ${Math.max(1, layout.width)} ${Math.max(1, layout.height)}`
     const minX = Math.min(...shown.map((n) => (n.x ?? 0) - getNodeWidth(n.title) / 2)) - PAD
@@ -73,17 +60,10 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
     const w = Math.max(maxX - minX, tall ? 360 : 900)
     const h = Math.max(maxY - minY, tall ? 480 : 420)
     return `${(minX + maxX - w) / 2} ${(minY + maxY - h) / 2} ${w} ${h}`
-  }, [beat, exploring, layout, groups.length, groupIndex, tall])
-
-  const toggle = (id: string) => {
-    if (!exploring || !active) return
-    playSound('click')
-    setSelected((s) => (s === id ? null : id))
-  }
-  const dimmed = (ids: string[]) => !!linked && !ids.every((id) => linked.has(id))
+  }, [beat, whole, layout, groups.length, groupIndex, tall])
 
   return (
-    <div className={`present-cm${exploring && active ? ' is-exploring' : ''}`} data-testid="present-concept-map">
+    <div className="present-cm" data-testid="present-concept-map">
       <div className="concept-map-canvas-wrapper present-cm-canvas">
       <motion.svg
         ref={svgRef}
@@ -103,7 +83,7 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
           return (
             <path
               key={`edge-${i}`}
-              className={`cm-edge present-cm-edge${linked && !dimmed([e.from, e.to]) ? ' cm-edge-highlight' : ''}${dimmed([e.from, e.to]) ? ' cm-edge-dimmed' : ''}`}
+              className="cm-edge present-cm-edge"
               d={`M ${a.p1.x} ${a.p1.y} L ${a.p2.x} ${a.p2.y}`}
               pathLength={1}
               {...mark(at, { motion: 'draw', delay })}
@@ -115,22 +95,19 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
           const g = groupOf(n.id)
           const color = colorOf(n.category)
           const w = getNodeWidth(n.title)
-          const past = !exploring && g < beat
+          const past = !whole && g < beat
           return (
             <g
               key={n.id}
-              className={`cm-node-group present-cm-node${past ? ' is-past' : ''}${selected === n.id ? ' cm-node-highlight is-selected' : ''}${dimmed([n.id]) ? ' cm-node-dimmed' : ''}`}
-              onClick={() => toggle(n.id)}
+              className={`cm-node-group present-cm-node${past ? ' is-past' : ''}`}
               data-testid={`present-cm-node-${n.id}`}
               {...mark(g, { motion: 'pop', delay: 120 + (i % 12) * 60 })}
+              {...focus(!whole && g === beat)}
               {...pick(nodes[n.id])}
             >
-              <rect x={(n.x ?? 0) - w / 2} y={(n.y ?? 0) - NODE_HEIGHT / 2} width={w} height={NODE_HEIGHT} rx={16} fill={fillOf(n.category)} stroke={color} strokeWidth={selected === n.id ? 3 : 2} />
+              <rect x={(n.x ?? 0) - w / 2} y={(n.y ?? 0) - NODE_HEIGHT / 2} width={w} height={NODE_HEIGHT} rx={16} fill={fillOf(n.category)} stroke={color} strokeWidth={2} />
               <text x={n.x} y={(n.y ?? 0) - 6} textAnchor="middle" dominantBaseline="middle" className="cm-node-title" fill="var(--ctp-text)" {...pick(nodes[n.id], 'title')}>{n.title}</text>
               <text x={n.x} y={(n.y ?? 0) + 12} textAnchor="middle" dominantBaseline="middle" className="cm-node-category" fill={color} {...pick(nodes[n.id], 'category')}>{n.category}</text>
-              {selected === n.id && (
-                <rect x={(n.x ?? 0) - w / 2 - 5} y={(n.y ?? 0) - NODE_HEIGHT / 2 - 5} width={w + 10} height={NODE_HEIGHT + 10} rx={18} fill="none" stroke={color} strokeWidth={1.5} strokeDasharray="4 3" opacity={0.6} />
-              )}
             </g>
           )
         })}
@@ -140,28 +117,24 @@ export default function PresentConceptMap({ data, beat, beats, active }: Present
           const at = Math.max(groupOf(e.from), groupOf(e.to))
           const x = (a.p1.x + a.p2.x) / 2
           const y = (a.p1.y + a.p2.y) / 2
-          const lit = !!linked && !dimmed([e.from, e.to])
-          const off = dimmed([e.from, e.to])
           const w = e.label.length * 6 + 10
-          const state = `${lit ? ' cm-edge-label-highlight' : ''}${off ? ' cm-edge-label-dimmed' : ''}`
           return (
-            <g key={`label-${i}`} className={`cm-edge-label-group present-cm-label${lit ? ' cm-edge-label-group-highlight' : ''}`} {...mark(at, { motion: 'fade', delay: 900 + i * 40 })} {...pick(e, 'label')}>
-              <rect x={x - w / 2} y={y - 14} width={w} height={15} rx={4} className={`cm-edge-label-bg${state}`} />
-              <text x={x} y={y - 6} textAnchor="middle" className={`cm-edge-label${state}`}>{e.label}</text>
+            <g key={`label-${i}`} className="cm-edge-label-group present-cm-label" {...mark(at, { motion: 'fade', delay: 900 + i * 40 })} {...pick(e, 'label')}>
+              <rect x={x - w / 2} y={y - 14} width={w} height={15} rx={4} className="cm-edge-label-bg" />
+              <text x={x} y={y - 6} textAnchor="middle" className="cm-edge-label">{e.label}</text>
             </g>
           )
         })}
       </motion.svg>
-      <div className="concept-map-legend present-cm-legend">
+      <div className="concept-map-legend present-cm-legend" {...QUIET}>
         {groups.map((c, g) => (
-          <div key={c} className={`concept-map-legend-item${!exploring && g === beat ? ' is-now' : ''}`} {...mark(g, { motion: 'fade' })}>
+          <div key={c} className={`concept-map-legend-item${!whole && g === beat ? ' is-now' : ''}`} {...mark(g, { motion: 'fade' })}>
             <span className="concept-map-legend-dot" style={{ backgroundColor: colorOf(c) }} />
             <span>{c}</span>
           </div>
         ))}
       </div>
       </div>
-      {exploring && <p className="present-cm-hint" {...mark(exploreBeat, { motion: 'fade', delay: 600 })}>Tap a concept to see what it connects to.</p>}
     </div>
   )
 }

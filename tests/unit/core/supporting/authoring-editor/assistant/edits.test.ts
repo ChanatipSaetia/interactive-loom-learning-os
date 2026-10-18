@@ -37,7 +37,7 @@ describe('parseEditBlocks', () => {
   })
 
   it('accepts narration files and checks them against their section', () => {
-    const [b] = parseEditBlocks(block('file=sections/quiz.narrate.oui mode=create', 'root = Narration([s1])\ns1 = NarrationStep("Look here.", [Highlight("q9")])'))
+    const [b] = parseEditBlocks(block('file=sections/quiz.narrate.oui mode=create', 'root = Narration([s1])\ns1 = NarrationStep("q1", "Look here.", [Highlight("q9")])'))
     expect(b.error).toBeUndefined()
     expect(b.statements.map((s) => s.name)).toEqual(['root', 's1'])
   })

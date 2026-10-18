@@ -36,10 +36,10 @@ export const PresentRegistry = {
 }
 
 /**
- * The beats of a section. A type without a presenter yet is one `show` beat that shows its Read
+ * The beats of a section. A type without a presenter yet is one beat, `all`, that shows its Read
  * component, so any topic plays from start to end.
  */
 export function beatsOf(config: SectionConfig): Beat[] {
   const beats = presenters.get(config.type)?.toBeats(config.props)
-  return beats && beats.length > 0 ? beats : [show()]
+  return beats && beats.length > 0 ? beats : [show('all', 'The whole section')]
 }

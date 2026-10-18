@@ -3,7 +3,7 @@ import { useReducedMotion } from 'motion/react'
 import { Pointer } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
-import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
+import { QUIET, beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
 import type { FormulaMetric, FormulaVariable } from '../../schema'
 import type { FormulaPresentData } from '../../present'
 import { evaluateFormula, getMetricUnitAndFormat, humanizeFormula } from './index'
@@ -50,7 +50,7 @@ function rangesOf(metrics: FormulaMetric[], variables: FormulaVariable[]): Recor
 /**
  * Formula sandbox in Present mode (formulaBeats): the formulas, sliders and metric gauges arrive; then a
  * ghost hand sweeps the first variable from its default to its max while every metric recomputes and
- * its gauge follows; the last beat hands the sliders to the learner.
+ * its gauge follows. Without a script, the voice reads the formulas.
  */
 export default function PresentFormula({ data, beat, beats, active }: PresentRendererProps<FormulaPresentData>) {
   const pick = usePickAnchors()
@@ -62,19 +62,18 @@ export default function PresentFormula({ data, beat, beats, active }: PresentRen
   const ranges = useMemo(() => rangesOf(metrics, variables), [metrics, variables])
   const defaults = useMemo(() => Object.fromEntries(variables.map((v) => [v.id, v.defaultValue])), [variables])
   const first = variables[0]
-  const sweepBeat = beats.length === 3 ? 1 : -1
-  const exploreBeat = beats.length - 1
-  const exploring = beats[exploreBeat]?.kind === 'explore' && beat >= exploreBeat
+  const sweepBeat = beats.length === 2 ? 1 : -1
   const [values, setValues] = useState(defaults)
   const [sweeping, setSweeping] = useState(false)
   const computed = useMemo(() => compute(metrics, values), [metrics, values])
 
   // Before the sweep the sliders sit at their defaults; on its beat the sweep plays (or lands at once when
-  // the section is not live or motion is reduced); after it the values are the learner's
+  // the section is not live or motion is reduced)
   useEffect(() => {
-    if (!first || sweepBeat < 0 || beat > sweepBeat) return
+    if (!first || sweepBeat < 0) return
     const swept = { ...defaults, [first.id]: first.max }
     if (beat < sweepBeat) return setValues(defaults)
+    if (beat > sweepBeat) return setValues(swept)
     if (!active || reduced) return setValues(swept)
     setValues(defaults)
     let frame = 0
@@ -103,9 +102,9 @@ export default function PresentFormula({ data, beat, beats, active }: PresentRen
   const pct = (v: number, min: number, max: number) => (max > min ? Math.max(0, Math.min(100, ((v - min) / (max - min)) * 100)) : 0)
 
   return (
-    <div className={`present-formula sandbox-layout${exploring && active ? ' is-exploring' : ''}`} data-testid="present-formula">
+    <div className="present-formula sandbox-layout" data-testid="present-formula">
       <div className="controls-panel">
-        <div className="formula-explanation">
+        <div className="formula-explanation" {...focus(beat === 0)}>
           <span className="present-formula-heading">System Formulas:</span>
           {metrics.map((m, i) => (
             <span key={m.id} className="present-formula-line" {...mark(0, { delay: 150 + i * 90 })} {...pick(m, 'formula')}>
@@ -113,7 +112,7 @@ export default function PresentFormula({ data, beat, beats, active }: PresentRen
             </span>
           ))}
         </div>
-        <div className="present-sliders">
+        <div className="present-sliders" {...QUIET}>
           {variables.map((v, i) => {
             const swept = sweeping && v.id === first.id
             return (
@@ -133,8 +132,8 @@ export default function PresentFormula({ data, beat, beats, active }: PresentRen
                     max={v.max}
                     step={v.step}
                     value={values[v.id] ?? v.defaultValue}
-                    disabled={!exploring || !active}
-                    onChange={(e) => setValues((s) => ({ ...s, [v.id]: parseFloat(e.target.value) }))}
+                    readOnly
+                    tabIndex={-1}
                     data-testid={`present-formula-slider-${v.id}`}
                   />
                   {swept && (
@@ -148,7 +147,7 @@ export default function PresentFormula({ data, beat, beats, active }: PresentRen
           })}
         </div>
       </div>
-      <div className="sandbox-metrics">
+      <div className="sandbox-metrics" {...QUIET} {...focus(beat === sweepBeat)}>
         <h4 className="present-formula-metrics-title" {...mark(0, { motion: 'fade', delay: 700 })}>Computed Metrics</h4>
         {metrics.map((m, i) => {
           const val = computed[m.id] ?? 0
@@ -164,9 +163,6 @@ export default function PresentFormula({ data, beat, beats, active }: PresentRen
             </div>
           )
         })}
-        <p className="present-formula-caption" {...mark(sweepBeat >= 0 ? sweepBeat : exploreBeat, { motion: 'fade' })}>
-          {exploring || sweepBeat < 0 ? 'Drag the sliders to see how each metric responds.' : `Watch what happens as ${first.label} goes from ${first.defaultValue} to ${first.max}.`}
-        </p>
       </div>
     </div>
   )

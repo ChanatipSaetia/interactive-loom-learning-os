@@ -4,6 +4,8 @@ import { LazyOUICodeEditor, VisualFormEditor } from '../../core/supporting/autho
 import type { SectionState, TopicWorkspace } from '../../core/supporting/authoring-editor/workspace'
 import { statementAtLine, type PickTarget } from '../../core/supporting/authoring-editor/pick'
 import { indexStatementLines } from '../../core/learning-engine/composition/oui/compile'
+import { narrationTemplate } from '../../core/learning-engine/composition/oui/narration'
+import { sectionBeatsOf } from '../../core/learning-engine/validation/oui-gateway'
 import { SectionPreview } from './SectionPreview'
 
 interface Props {
@@ -17,12 +19,6 @@ interface Props {
 }
 
 type Tab = 'code' | 'form' | 'narration'
-
-/** A first narration for a section: one step pointing at its first named statement (decision 91). */
-function narrationTemplate(sectionSource: string): string {
-  const target = [...indexStatementLines(sectionSource).keys()].find((n) => n !== 'root') ?? 'root'
-  return `root = Narration([step1])\n\nstep1 = NarrationStep("A caption shown and read aloud for this step.", [\n  Highlight("${target}"),\n  Callout("${target}", "A note that explains more than the section says."),\n])\n`
-}
 
 export function SectionEditor({ workspace, section, sectionNames, reveal, onAddToTray }: Props) {
   const [tab, setTab] = useState<Tab>('code')
@@ -114,11 +110,12 @@ export function SectionEditor({ workspace, section, sectionNames, reveal, onAddT
             ) : (
               <div className="studio-form studio-narration-empty">
                 <p className="studio-hint">
-                  A narration file adds explanation to this section in Loom Viewer&apos;s <strong>Present</strong> mode: a caption line, highlights,
-                  callout notes beside parts of the section and a spotlight that zooms in. Each step points at statements of this file by name.
+                  A narration file is the script this section plays to in Loom Viewer&apos;s <strong>Present</strong> mode: for each beat, a line the
+                  narrator says, with optional highlights, callout notes and a spotlight that point at statements of this file by name. Beats without a
+                  step read what they show on screen.
                   It is saved as <code>sections/{section.name}.narrate.oui</code>.
                 </p>
-                <button type="button" className="studio-button" onClick={() => workspace.setNarration(section.name, narrationTemplate(section.source))} data-testid="studio-narration-add">
+                <button type="button" className="studio-button" onClick={() => workspace.setNarration(section.name, narrationTemplate(sectionBeatsOf(section.source) ?? []))} data-testid="studio-narration-add">
                   <Clapperboard size={14} /> Add narration
                 </button>
               </div>

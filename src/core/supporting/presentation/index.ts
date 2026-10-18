@@ -5,13 +5,9 @@ export { PresentMode, kindLabel, preloadPresenters } from './components/PresentM
 export type { PresentModeProps, PresentSection } from './components/PresentMode'
 export {
   beatToDraw,
-  gateKey,
   holdMs,
   initialRunnerState,
-  isBlocked,
   isComplete,
-  isWaiting,
-  kindAt,
   runnerReducer,
 } from './beat-runner'
 export type { RunnerAction, RunnerState } from './beat-runner'
