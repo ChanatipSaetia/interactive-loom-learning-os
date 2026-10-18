@@ -124,14 +124,14 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0, pr
   // Playback state (shared across all views in grid mode)
   const playback = usePlaybackState({ schema: localSchema });
 
-  // Present mode drives the first journey step by step
+  // Present mode drives the first journey step by step (again after a new schema resets playback)
   const presentStep = present?.step;
   const firstJourneyId = localSchema.journeys?.[0]?.id;
   const { jumpTo } = playback;
   useEffect(() => {
     if (presentStep === undefined || !firstJourneyId) return;
     jumpTo(firstJourneyId, presentStep);
-  }, [presentStep, firstJourneyId, jumpTo]);
+  }, [presentStep, firstJourneyId, jumpTo, localSchema]);
 
   // Resolve active node/relation IDs across all views from journey step data
   const resolvedHighlights = useMemo(() => {

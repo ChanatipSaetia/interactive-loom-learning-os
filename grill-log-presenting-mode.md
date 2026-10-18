@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Phase 1 done (runtime, Viewer toggle, intro/text/bullets/openui); phases 2–6 planned**
+Status: **Phases 1–4 done (runtime, Viewer toggle, every section type but the two sandboxes); phases 5–6 planned**
 
 ## Goal
 
@@ -197,6 +197,26 @@ jumping just re-renders. Renderers never animate or set motion styles themselves
 - Only the current section and its neighbours mount (decision 85); others show their header.
 - Tests: runner, camera, kernel and registry, beat rules compiled from `.oui` fixtures, and a Viewer
   test that plays a topic to the end and back. Checked in Chromium at 1280px and 400px.
+
+### Phase 4 — Implementation Notes
+
+- `flowchart` renders the Read `Flowchart` with `present={{ step }}`: the first journey holds at the
+  beat's step and the section's own title, tools, view tabs and dock are hidden, so its camera and
+  step caption do the presenting. A hidden copy of each step's title and reason (`.present-sr`) gives
+  the stage the words to time the beat by. The step is re-applied when a new schema resets playback.
+- `concept-map` uses `layoutConceptMap` (exported next to the Read layout): every connected group
+  laid out by `layoutTopDownPlanar`, side by side in one SVG. The view (`viewBox`, animated) widens
+  each beat to frame every concept shown so far, never closer than 900×420 units. Categories the
+  Read map has no colour for take a palette colour in group order.
+- `draw` on an SVG path with `pathLength="1"` strokes it along the path (stroke-dashoffset) instead
+  of the clip-path wipe; links in the concept map and decision tree use it.
+- `scenario` and `decision-tree` keep the walked path in renderer state. The scenario collects the
+  choices as a trail and grades outcomes A, B+, B−, C; the decision tree draws the whole tree
+  (`drawTree`: leaves side by side, shared answers and loops as dashed cross links) and lights the
+  branches taken. Reaching an outcome or a leaf solves the gate; Try another path and Start over stay
+  available afterwards. The decision tree emits `DecisionNodeSelected`.
+- Answer-button styles (`.present-choice`) moved to the stage stylesheet, shared by quiz, scenario
+  and decision tree.
 
 Tests per phase: every `toBeats` gets a unit test in `tests/unit/sections/present/` that compiles
 a small `.oui` fixture and checks beat kinds and count; the runner, camera and speech normalizer are

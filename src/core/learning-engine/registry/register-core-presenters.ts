@@ -8,7 +8,9 @@ import {
   taxonomyPresenter,
   textPresenter,
 } from '../sub-contexts/progressive-content/present'
-import { flashcardsPresenter, quizPresenter } from '../sub-contexts/practice-assessment/present'
+import { conceptMapPresenter, flashcardsPresenter, quizPresenter } from '../sub-contexts/practice-assessment/present'
+import { flowchartPresenter, scenarioPresenter } from '../sub-contexts/process-simulation/present'
+import { decisionTreePresenter } from '../sub-contexts/tradeoff-sandbox/present'
 import { sequencePresenter, templatePresenter } from '../sub-contexts/reflection-synthesis/present'
 
 /**
@@ -27,4 +29,8 @@ export function registerCorePresenters(): void {
   PresentRegistry.register('flashcards', flashcardsPresenter)
   PresentRegistry.register('reflection-sequence', sequencePresenter)
   PresentRegistry.register('reflection-template', templatePresenter)
+  PresentRegistry.register('flowchart', flowchartPresenter)
+  PresentRegistry.register('scenario', scenarioPresenter)
+  PresentRegistry.register('concept-map', conceptMapPresenter)
+  PresentRegistry.register('decision-tree', decisionTreePresenter)
 }

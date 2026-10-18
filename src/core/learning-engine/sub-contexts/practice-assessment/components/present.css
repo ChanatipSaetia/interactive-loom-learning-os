@@ -9,38 +9,6 @@
 .present-quiz-choices { display: flex; flex-direction: column; gap: 10px; }
 .present-quiz-hint { margin: 0; color: var(--muted-foreground); font: 400 var(--present-fs-card) / 1.4 var(--font-body); }
 
-.present-choice {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 13px 16px;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--card);
-  color: var(--foreground);
-  text-align: left;
-  font: inherit;
-  transition: opacity 0.26s var(--present-ease-in, ease-in), transform 0.26s var(--present-ease-in, ease-in), border-color 0.2s;
-}
-.present-choice:not(:disabled) { cursor: pointer; }
-.present-choice:not(:disabled):hover { border-color: var(--primary); }
-.present-choice:disabled { opacity: 1; }
-.present-choice-row { display: flex; align-items: center; gap: 12px; }
-.present-choice-letter {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--background);
-  color: var(--muted-foreground);
-  font: 600 13px / 1 var(--font-mono);
-}
-.present-choice-text { font: 500 var(--present-fs-card) / 1.35 var(--font-ui); }
-.present-choice-mark { margin-left: auto; flex: none; }
-.present-choice-why { display: block; overflow: hidden; font: 400 calc(var(--present-fs-card) - 1px) / 1.5 var(--font-body); }
 .present-choice.is-right { border-color: var(--ctp-green); }
 .present-choice.is-right .present-choice-letter { background: var(--ctp-green); color: var(--ctp-crust); }
 .present-choice.is-right .present-choice-mark { color: var(--ctp-green); }
@@ -50,11 +18,6 @@
 .present-choice.is-falling { opacity: 0; transform: translateY(18px); }
 .present-choice.is-gone { display: none; }
 
-@keyframes present-nudge {
-  20% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-3px); }
-}
 
 /* ---- flashcards ---- */
 
@@ -108,4 +71,40 @@
   .present-card-stack,
   .present-card-inner { transition-duration: 1ms; }
   .present-choice.is-wrong { animation: none; }
+}
+
+/* ---- concept map ---- */
+
+.present-cm { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.present-cm-svg { flex: 1; min-height: 0; width: 100%; overflow: visible; }
+
+.present-cm-node { transform-box: fill-box; transform-origin: center; transition: opacity 0.3s ease; }
+.present-cm-node rect { stroke-width: 2; transition: stroke-width 0.2s ease; }
+.present-cm-node.is-past { opacity: 0.55; }
+.present-cm-node.is-selected rect { stroke-width: 4; }
+.present-cm-node.is-dim,
+.present-cm-label.is-dim { opacity: 0.15; }
+.present-cm.is-exploring .present-cm-node { cursor: pointer; }
+.present-cm.is-exploring .present-cm-node:hover rect { stroke-width: 3; }
+.present-cm-title { fill: var(--foreground); text-anchor: middle; dominant-baseline: middle; font: 600 13px / 1 var(--font-body); }
+.present-cm-category { text-anchor: middle; dominant-baseline: middle; font: 500 10px / 1 var(--font-mono); letter-spacing: 0.04em; }
+
+.present-cm-edge { fill: none; stroke: var(--ctp-surface2); stroke-width: 2.5; transition: stroke 0.2s ease, opacity 0.3s ease; }
+.present-cm-edge.is-lit { stroke: var(--present-accent, var(--primary)); stroke-width: 3.5; }
+.present-cm-edge.is-dim { opacity: 0.12; }
+.present-cm-label { transition: opacity 0.3s ease; }
+.present-cm-label rect { fill: var(--ctp-mantle); stroke: var(--ctp-surface1); stroke-width: 0.75; }
+.present-cm-label text { fill: var(--muted-foreground); text-anchor: middle; dominant-baseline: middle; font: 500 11px / 1 var(--font-mono); }
+
+.present-cm-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 24px; padding-top: 10px; }
+.present-cm-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; }
+.present-cm-legend li { display: flex; align-items: center; gap: 6px; color: var(--muted-foreground); font: 500 var(--present-fs-small) / 1.2 var(--font-mono); transition: color 0.3s ease; }
+.present-cm-legend li.is-now { color: var(--foreground); }
+.present-cm-dot { width: 10px; height: 10px; border-radius: 50%; }
+.present-cm-hint { margin: 0 0 0 auto; color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.2 var(--font-body); }
+
+@media (prefers-reduced-motion: reduce) {
+  .present-cm-node,
+  .present-cm-edge,
+  .present-cm-label { transition: none; }
 }

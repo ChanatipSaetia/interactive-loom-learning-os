@@ -1,0 +1,40 @@
+/* Present mode renderers for tradeoff-sandbox sections. Sizes come from the region (--present-fs-*). */
+
+/* ---- decision tree ---- */
+
+.present-dt { display: grid; grid-template-columns: minmax(220px, 0.8fr) 2fr; gap: 36px; align-items: start; }
+.present-dt-tree { width: 100%; max-height: 440px; overflow: visible; }
+.present-dt-side { min-width: 0; }
+.present-dt-card { display: flex; flex-direction: column; gap: 12px; }
+.present-dt-kicker { margin: 0; color: var(--muted-foreground); font: 600 var(--present-fs-small) / 1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; }
+.present-dt-prompt { margin: 0; font: 400 var(--present-fs-body) / 1.5 var(--font-body); }
+.present-dt-choices { display: flex; flex-direction: column; gap: 10px; }
+.present-dt-rationale { color: var(--muted-foreground); padding-left: 40px; }
+.present-dt-thumb { color: var(--ctp-green); }
+
+.present-dt-link { fill: none; stroke: var(--ctp-surface2); stroke-width: 2.5; transition: stroke 0.3s ease, stroke-width 0.3s ease; }
+.present-dt-link.is-cross { stroke-dasharray: 4 5; opacity: 0.6; }
+.present-dt-link.is-taken { stroke: var(--present-accent, var(--primary)); stroke-width: 4; opacity: 1; }
+.present-dt-node { transform-box: fill-box; transform-origin: center; }
+.present-dt-node circle:not(.present-dt-ring),
+.present-dt-node rect { fill: var(--card); stroke: var(--ctp-overlay0); stroke-width: 2; transition: fill 0.3s ease, stroke 0.3s ease; }
+.present-dt-node.is-leaf rect { stroke: var(--ctp-green); }
+.present-dt-node.is-visited circle:not(.present-dt-ring),
+.present-dt-node.is-visited rect { fill: var(--present-accent, var(--primary)); stroke: var(--present-accent, var(--primary)); }
+.present-dt-ring { fill: none; stroke: var(--present-accent, var(--primary)); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: present-dt-ring 1.8s ease-out infinite; }
+@keyframes present-dt-ring {
+  0% { opacity: 0.9; transform: scale(0.7); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+.present-dt-leaf { padding: 20px 22px; border: 2px solid var(--ctp-green); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--ctp-green) 7%, var(--card)); align-items: flex-start; }
+.present-dt-rec { margin: 0; font: 600 calc(var(--present-fs-body) + 2px) / 1.35 var(--font-display); }
+.present-dt-why { margin: 0; font: 400 var(--present-fs-card) / 1.55 var(--font-body); }
+.present-dt-tradeoffs { display: flex; flex-direction: column; gap: 6px; margin: 0; padding-left: 1.2em; color: var(--muted-foreground); font: 400 calc(var(--present-fs-card) - 1px) / 1.45 var(--font-body); }
+
+.present-stage.is-portrait .present-dt { grid-template-columns: 1fr; gap: 18px; }
+.present-stage.is-portrait .present-dt-tree { max-height: 170px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .present-dt-ring { animation: none; }
+}
