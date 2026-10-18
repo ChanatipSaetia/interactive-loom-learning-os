@@ -1,5 +1,6 @@
-import { Fragment, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { motion } from 'motion/react'
+import { CheckCircle2 } from 'lucide-react'
 import { flipId, useFlip } from '../../../../../ui-system'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
@@ -9,6 +10,7 @@ import type { ReflectionTemplateChallenge } from '../../schema'
 import type { ReflectionAnswered, ReflectionCompleted } from '../../events'
 import type { TemplatePresentData } from '../../present'
 import { startingOrder, useSlotGate } from '../useSlotGate'
+import './reflection-template.css'
 import '../present.css'
 
 type Mark = (at: number, options?: BeatMarkOptions) => BeatMarkAttributes
@@ -49,61 +51,83 @@ function Challenge({ challenge, index, total, mark, live, solved, onSolved, onEv
   })
   const canPlace = live && gate.phase === 'placing' && !gate.done
   const at = 2 * index
-  const chip = (id: string, j = 0) => {
-    const c = byId.get(id)
-    if (!c) return null
-    const m = gate.markOf(id)
-    const spent = gate.done && !solution.includes(id)
-    return (
-      <button
-        key={id}
-        type="button"
-        className={`present-chip${m ? ` is-${m}` : ''}${spent ? ' is-spent' : ''}`}
-        onClick={() => { playSound('click'); gate.place(id) }}
-        disabled={!canPlace}
-        {...flipId(id)}
-        {...mark(at, { delay: 700 + j * 60 })}
-        {...pick(c)}
-      >
-        {c.text}
-      </button>
-    )
-  }
   const nextEmpty = gate.slots.indexOf(null)
   let zone = -1
 
   return (
-    <div className="present-reflection" ref={rootRef} {...mark(at, { motion: 'fade', ...(index < total - 1 && { until: at + 1 }) })} {...pick(challenge)}>
-      <p className="present-reflection-prompt" {...mark(at, { motion: 'words' })} {...pick(challenge, 'prompt')}><PresentWords text={challenge.prompt} /></p>
-      <p className="present-template" {...mark(at, { delay: 450 })} {...pick(challenge, 'template')}>
+    <div className="template-body present-reflection" ref={rootRef} {...mark(at, { motion: 'fade', ...(index < total - 1 && { until: at + 1 }) })} {...pick(challenge)}>
+      <div className="template-prompt present-reflection-prompt" {...mark(at, { motion: 'words' })} {...pick(challenge, 'prompt')}><PresentWords text={challenge.prompt} /></div>
+
+      <div className="template-sentence-container present-template" {...mark(at, { delay: 450 })} {...pick(challenge, 'template')}>
         {segments.map((seg, i) => {
-          if (!isZone(seg)) return <Fragment key={i}>{seg}</Fragment>
+          if (!isZone(seg)) return <span key={i}>{seg}</span>
           zone += 1
           const id = gate.slots[zone]
+          const c = id ? byId.get(id) : undefined
+          const m = id ? gate.markOf(id) : undefined
+          const next = canPlace && zone === nextEmpty
           return (
-            <span key={i} className={`present-blank${canPlace && zone === nextEmpty ? ' present-breathe is-next' : ''}`}>
-              {id && chip(id)}
+            <span key={i} className={`reflection-blank-dropzone${id ? ' filled' : ''}${next ? ' highlight-target present-breathe' : ''}${m ? ` is-${m}` : ''}`}>
+              {c ? (
+                <button
+                  type="button"
+                  className={`present-chip is-placed${m ? ` is-${m}` : ''}`}
+                  onClick={() => { playSound('click'); gate.place(c.id) }}
+                  disabled={!canPlace}
+                  aria-label={canPlace ? `Take back: ${c.text}` : undefined}
+                  {...flipId(c.id)}
+                  {...pick(c)}
+                >
+                  {c.text}
+                </button>
+              ) : '[ ? ]'}
             </span>
           )
         })}
-      </p>
-      <div className="present-chips">{gate.pool.map((id, j) => chip(id, j))}</div>
-      <div className="present-reflection-foot">
+      </div>
+
+      {/* The bank keeps every chip's place, as in Read: a placed chip leaves a faded copy behind */}
+      <div className="template-chips-bank present-chips">
+        {ids.map((id, j) => {
+          const c = byId.get(id)
+          if (!c) return null
+          if (!gate.pool.includes(id)) {
+            return <div key={id} className="template-chip-item used" aria-hidden {...mark(at, { delay: 700 + j * 60 })}>{c.text}</div>
+          }
+          const spent = gate.done && !solution.includes(id)
+          return (
+            <button
+              key={id}
+              type="button"
+              className={`template-chip-item present-chip${spent ? ' used' : ''}`}
+              onClick={() => { playSound('click'); gate.place(id) }}
+              disabled={!canPlace}
+              {...flipId(id)}
+              {...mark(at, { delay: 700 + j * 60 })}
+              {...pick(c)}
+            >
+              {c.text}
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="template-footer present-reflection-foot">
         {!gate.done && gate.phase === 'placing' ? (
-          <button type="button" className={`present-button present-button--primary${canPlace && gate.full ? ' present-breathe' : ''}`} disabled={!canPlace || !gate.full} onClick={() => gate.check()} {...mark(at, { motion: 'fade', delay: 900 })}>
-            Check
+          <button type="button" className={`template-verify-btn${canPlace && gate.full ? ' present-breathe' : ''}`} disabled={!canPlace || !gate.full} onClick={() => gate.check()} {...mark(at, { motion: 'fade', delay: 900 })}>
+            Verify Explanation
           </button>
         ) : gate.done ? (
-          // The explanation may hold inline HTML, rendered as the Read view renders it
-          <motion.p
-            className="present-reflection-result"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            role="status"
-            {...SAY}
-            {...pick(challenge, 'explanation')}
-            dangerouslySetInnerHTML={{ __html: challenge.explanation ?? 'That completes it.' }}
-          />
+          <motion.div className="template-feedback-msg success present-reflection-result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} role="status">
+            <CheckCircle2 size={16} className="feedback-icon" aria-hidden />
+            {/* The explanation may hold inline HTML, rendered as the Read view renders it */}
+            <div
+              className="feedback-text-content"
+              {...SAY}
+              {...pick(challenge, 'explanation')}
+              dangerouslySetInnerHTML={{ __html: challenge.explanation ?? 'That completes it.' }}
+            />
+          </motion.div>
         ) : null}
       </div>
     </div>

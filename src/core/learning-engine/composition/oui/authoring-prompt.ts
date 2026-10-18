@@ -25,6 +25,7 @@ A topic is a folder named after its topic ID (lowercase letters, digits, \`-\` a
 
 - \`topic.oui\`: \`root = Topic(...)\`, the catalog metadata and the ordered list of \`SectionRef("<name>")\`.
 - \`sections/<name>.oui\`: one section per file, \`root = <Section>(...)\` where \`<Section>\` is a section component (Intro, Text, Bullets, Flowchart, Quiz, …), or a standard OpenUI section (see Standard OpenUI Sections).
+- \`sections/<name>.narrate.oui\` (optional): \`root = Narration(...)\`, extra explanation for that section when the learner plays the topic in Present mode (see Narration Files). Not listed in topic.oui.
 
 Every file is its own openui-lang program: it has its own \`root\` and its own statement names, so names may repeat across files.
 In the rules below, "program" means one file. The \`root\` of \`topic.oui\` is \`Topic(...)\`; the \`root\` of a section file is a section component.
@@ -46,6 +47,27 @@ Answer in the format the user asks for. If they do not say, use the single .oui 
 2. **Folder of .oui files**: one code block per file, each preceded by its path (\`<topic-id>/topic.oui\`, \`<topic-id>/sections/<name>.oui\`) so the user can save them into that folder.
 
 The user opens the result in Loom Viewer (${LOOM_PAGES_URL}viewer.html) or imports it into Loom Studio. Outside the code block(s), say nothing or at most one short sentence.`
+
+/** A narration file for the example's vocabulary section (checked by unit tests). */
+export const NARRATION_EXAMPLE = `root = Narration([pair, bitter, time])
+pair = NarrationStep("Two words explain most bitter cups of green tea.", [Spotlight(["catechins", "steep"])])
+bitter = NarrationStep("Catechins are the bitterness.", [Highlight("catechins"), Callout("catechins", "They dissolve faster in hotter water, so water at 75 °C keeps the cup sweet.")])
+time = NarrationStep("Steep time is the dial you control.", [Callout("steep", "Every extra minute adds more catechins than flavour. Pour off all the water when the time is up.")])
+`
+
+const NARRATION = `## Narration Files
+
+Loom Viewer can play a topic as guided motion (Present mode): each section reveals itself step by step. A section may add a narration file, \`sections/<name>.narrate.oui\`, with explanation its content does not say: a caption line, highlights, callout notes beside parts of the section and a spotlight that zooms in. Write one only when the user asks for narration, or for a section where a short extra explanation clearly helps (a misread term, the one thing to compare).
+
+- Its \`root\` is \`Narration([steps])\`; each \`NarrationStep(caption, [effects])\` is one step, played right after the part of the section it points at appears. Effects: \`Highlight(target)\`, \`Callout(target, text)\`, \`Spotlight([targets])\`.
+- A target is a string naming a statement of the section file, optionally with a prop: \`"catechins"\`, \`"q1.hint"\`, \`"root.items[0]"\`. Name the statements you will point at in the section file (e.g. \`catechins = Flashcard(...)\`) rather than writing them inline.
+- Captions are one sentence; callouts one or two short sentences. They are read aloud, so write them as speech. Add facts or a comparison, not a repeat of the section's own text.
+- In the single .oui file, the narration file follows its section: \`// === sections/vocabulary.narrate.oui ===\`.
+
+Example, for the \`sections/vocabulary.oui\` file of the example topic:
+
+\`\`\`
+${NARRATION_EXAMPLE}\`\`\``
 
 const STANDARD_OPENUI = `## Standard OpenUI Sections
 
@@ -118,7 +140,7 @@ Example section file:
 ${TABLE_CHART_EXAMPLE}\`\`\``
 
 const AUTHORING_RULES = [
-  'In the single .oui file, start EVERY file with its own marker line written exactly as `// === topic.oui ===` or `// === sections/<name>.oui ===` (three `=` on each side, no folder prefix). Each file holds exactly one `root =` statement; never put two sections in one file.',
+  'In the single .oui file, start EVERY file with its own marker line written exactly as `// === topic.oui ===`, `// === sections/<name>.oui ===` or `// === sections/<name>.narrate.oui ===` (three `=` on each side, no folder prefix). Each file holds exactly one `root =` statement; never put two sections in one file.',
   'Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.',
   'Start with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.',
   'Mix interactive section types. Never build a topic out of Text sections only.',
@@ -213,5 +235,5 @@ export function getLoomAuthoringPrompt(): string {
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)
   prompt = dropStreamingNotes(prompt)
-  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
+  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${NARRATION}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
 }

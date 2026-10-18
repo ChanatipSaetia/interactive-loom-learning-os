@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Implemented (phases 1–6): a Present renderer for every section type, narration, Refresh keeping the place**
+Status: **Implemented: phases 1–6, Read-mode styles and authored narration files (decisions 90–95)**
 
 ## Goal
 
@@ -52,6 +52,12 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 87 | Beat timelines | **One anime.js `createTimeline` per beat**, as `useAnimation` already does. Skipping calls the timeline's completion so it jumps to its end state; going back renders the earlier beat's end state directly, never plays a timeline in reverse. |
 | 88 | Remembering the place | **No.** Present mode keeps nothing between visits; closing it or reopening the topic starts fresh. |
 | 89 | Where Present starts | **At any section.** Switching to Present starts at the section the learner is reading (the first one whose top is in view); the progress rail and the overview jump to any section at any time, past unsolved gates too. |
+| 90 | How Present looks | **Like Read mode.** Each `Present<Type>` renderer is built on its Read section's markup and CSS classes (cards, badges, chips, colours, type); only beat marks, motion and the sizing the 1200×675 region needs are Present's own. Refines decision 84. |
+| 91 | Authored narration | **An optional narration file per section: `sections/<name>.narrate.oui`**, an OpenUI program with root `Narration([...])`. It adds explanation that is not in the section's content (callouts, highlights, a zoom, a caption line). A section without one plays as before. Revises decision 67 (authors may now write narration, never required) and decision 83 (callout text comes from the narration file). |
+| 92 | Pointing at content | **Targets are strings in Pick pointer form**: a statement name of the section file, optionally with a prop path (`"noCache"`, `"q2.explanation"`, `"root.categories[0]"`). Validation checks the statement exists in the section and its first prop is a prop of that component. In Present a target matches the elements whose Pick anchor equals it or starts with it (`noCache.…`, `noCache[…`); Present now tags Pick anchors like Read. |
+| 93 | Narration and derived beats | **Added to them.** Each `NarrationStep` becomes a `show` beat played right after the derived beat that reveals its first target (found from the rendered section: the target's closest `data-beat`). A step without targets, or whose target is not found, plays after the last `show` beat before the first gate or explore beat (else at the end). Steps keep their written order. |
+| 94 | Effects | **`Highlight(target)`** outlines and pulses a target; **`Callout(target, text)`** pops a note beside it; **`Spotlight([targets])`** moves the camera in on the targets and dims the rest of the section; the step's **caption** is a subtitle line. Effects last for their step. Narration (decision 79) reads the caption, then each callout. |
+| 95 | Authoring support | **The full pipeline**: components with field docs in the OUI library (prompt, JSON schema, hovers), `npm run oui:schema` outputs, the agent skill, validation in Viewer and Studio, Studio edits a section's narration in a **Narration** tab next to Code and Form, and every topic reader and writer (folder, `.zip`, `.loom.oui`, pasted text, assistant edits) keeps `sections/<name>.narrate.oui`. |
 
 ## Motion Rules
 
@@ -256,10 +262,36 @@ jumping just re-renders. Renderers never animate or set motion styles themselves
 - The design-system doc the plan mentions (`DESIGN.md`) is not in the repository; the *Motion
   Rules* above remain the reference.
 
+### Decisions 90–95 — Implementation Notes
+
+- Read styles (decision 90): every `Present<Type>` renderer renders its Read section's markup and
+  imports its CSS; each subdomain's `components/present.css` keeps only stage sizing, motion states
+  and the few Present-only parts (the scenario trail, the decision tree drawing, the formula ghost
+  hand, in-stage taxonomy detail). Gates keep their Present mechanics (tap to place, FLIP glides,
+  fall-away answers) on Read-styled elements.
+- Narration files: components in `composition/oui/narration.ts` (in the OUI library, so the prompt,
+  JSON Schema and hovers have them); `compileOUINarration`; `validateOUINarration(source,
+  sectionSource)` checks targets (tier 3, as warnings). Viewer lists narration problems in its error
+  summary (warnings too, since a narration only plays in Present) and passes `narration` and the
+  section's `sourceMap` to Present.
+- Present wraps each section in a `PickAnchorProvider` so renderers tag `data-oui-anchor`;
+  `narration-targets.ts` resolves targets and finds the derived beat that reveals them;
+  `narration-steps.ts` merges steps into the timeline (`PlayBeat.derived` is what the renderer
+  draws). Placement is measured once the section (or a neighbour) has drawn; the current beat is
+  kept when placement moves it.
+- `NarrationLayer` draws highlights (outline pulse; drop-shadow for SVG), callouts (kept clear of
+  the caption band at the bottom) and the spotlight (a dimming frame; the camera zooms with
+  `focusCamera`, up to 2×). The caption sits over the stage, outside the camera.
+- Authoring: `fileKindFromPath` → `'narration'` with target completions and diagnostics when the
+  section source is known (Studio, VS Code); Studio's **Narration** tab adds a file from a template,
+  edits, saves, removes it, and moves or deletes it with its section; assistant `oui-edit` blocks may
+  write `sections/<name>.narrate.oui`; every topic reader and writer keeps the file; the authoring
+  prompt has a *Narration Files* section with a validated example.
+
 Tests per phase: every `toBeats` gets a unit test in `tests/unit/sections/present/` that compiles
 a small `.oui` fixture and checks beat kinds and count; the runner, camera and speech normalizer are
 pure and tested directly.
 
 ## Open Questions
 
-None. Decisions 88–89 answered the last two.
+None. Decisions 90–95 answered the follow-up on styles and authored narration.

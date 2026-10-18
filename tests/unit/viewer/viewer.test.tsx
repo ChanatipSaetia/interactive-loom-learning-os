@@ -113,6 +113,33 @@ describe('Loom Viewer', () => {
     expect(screen.queryByTestId('present-stage')).toBeNull()
   })
 
+  it('plays the narration steps of a section in Present (sections/<name>.narrate.oui)', async () => {
+    render(<ViewerApp />)
+    const narrated = {
+      topicId: 'narrated',
+      files: {
+        'topic.oui': 'root = Topic("Narrated", "Architecture", "", [SectionRef("words")])\n',
+        'sections/words.oui': 'root = Text("Words", ["First paragraph.", "Second paragraph."])\n',
+        'sections/words.narrate.oui': 'root = Narration([s1])\ns1 = NarrationStep("Both paragraphs say one thing.")\n',
+      },
+    }
+    fireEvent.click(screen.getByTestId('viewer-paste-toggle'))
+    fireEvent.change(screen.getByTestId('viewer-paste-input'), { target: { value: createTopicSource([narrated]) } })
+    fireEvent.click(screen.getByTestId('viewer-paste-open'))
+    await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
+    expect(screen.queryByTestId('viewer-error-summary')).toBeNull()
+
+    fireEvent.click(screen.getByTestId('viewer-mode-present'))
+    const where = () => screen.getByTestId('present-where').textContent
+    expect(where()).toBe('Text · 1 of 3')
+    for (const target of ['Text · 2 of 3', 'Text · 3 of 3']) {
+      fireEvent.click(screen.getByTestId('present-next'))
+      if (where() !== target) fireEvent.click(screen.getByTestId('present-next'))
+      await waitFor(() => expect(where()).toBe(target))
+    }
+    expect((await screen.findByTestId('present-caption')).textContent).toBe('Both paragraphs say one thing.')
+  })
+
   it('keeps the place in Present across a Refresh while the section is still there', async () => {
     const files = (sections: string[]) => ({
       topicId: 'two',

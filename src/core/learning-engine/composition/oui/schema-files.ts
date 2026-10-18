@@ -16,7 +16,7 @@ const SCHEMA_PATH = 'llm/loom-oui.schema.json'
 function llmsTxt(): string {
   return `# Interactive Loom
 
-> Interactive learning app. A topic is a folder of OpenUI Lang (\`.oui\`) files: \`topic.oui\` plus one \`sections/<name>.oui\` per section. An LLM can write a whole topic as one \`.loom.oui\` file or a folder of \`.oui\` files, and the user opens it in Loom Viewer.
+> Interactive learning app. A topic is a folder of OpenUI Lang (\`.oui\`) files: \`topic.oui\` plus one \`sections/<name>.oui\` per section, and optionally \`sections/<name>.narrate.oui\` narration for Present mode. An LLM can write a whole topic as one \`.loom.oui\` file or a folder of \`.oui\` files, and the user opens it in Loom Viewer.
 
 ## Authoring
 

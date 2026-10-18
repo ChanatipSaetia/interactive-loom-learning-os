@@ -12,7 +12,8 @@
 import { marked, type Token } from 'marked'
 import { CONTENT_ID } from '../../../learning-engine/composition/oui/catalog-gen'
 import { compileOUITopic } from '../../../learning-engine/composition/oui/compile'
-import { validateOUISection } from '../../../learning-engine/validation/oui-gateway'
+import { validateOUINarration, validateOUISection } from '../../../learning-engine/validation/oui-gateway'
+import { NARRATION_FILE } from '../../../learning-engine/composition/oui/narration'
 import { fileStatements } from './context'
 
 export interface EditStatement {
@@ -66,10 +67,13 @@ function normalizePath(raw: string): string {
   return parts.join('/')
 }
 
-const SECTION_FILE = /^sections\/([^/]+)\.oui$/
+const SECTION_FILE = /^sections\/([^/.]+)\.oui$/
 
 /** The section name of `sections/<name>.oui`, or undefined. */
 export const sectionNameOf = (file: string) => SECTION_FILE.exec(file)?.[1]
+
+/** The section name of a narration file `sections/<name>.narrate.oui`, or undefined. */
+export const narrationNameOf = (file: string) => NARRATION_FILE.exec(file)?.[1]
 
 export function parseEditBlock(lang: string, body: string, index: number): EditBlock {
   const fileMatch = /\bfile=("?)([^\s"]+)\1/.exec(lang)
@@ -77,9 +81,9 @@ export function parseEditBlock(lang: string, body: string, index: number): EditB
   const file = fileMatch ? normalizePath(fileMatch[2]) : ''
   const block: EditBlock = { index, file, create, body, statements: [] }
   if (!file) return { ...block, error: 'The block has no file=… path.' }
-  const name = sectionNameOf(file)
+  const name = sectionNameOf(file) ?? narrationNameOf(file)
   if (file !== 'topic.oui' && (!name || !CONTENT_ID.test(name))) {
-    return { ...block, error: `"${file}" is not topic.oui or sections/<name>.oui (lowercase letters, digits, - and _).` }
+    return { ...block, error: `"${file}" is not topic.oui, sections/<name>.oui or sections/<name>.narrate.oui (lowercase letters, digits, - and _).` }
   }
   if (create && file === 'topic.oui') return { ...block, error: 'topic.oui already exists; change it without mode=create.' }
   block.statements = fileStatements(body).map((s) => ({ name: s.name, text: s.text, remove: /^\S+\s*=\s*DELETE\s*$/.test(s.text) }))
@@ -169,6 +173,12 @@ function fileErrors(topicId: string, file: string, files: Record<string, string>
       if (files[`sections/${name}.oui`] === undefined) errors.push(`SectionRef("${name}") has no sections/${name}.oui.`)
     }
     return errors
+  }
+  const narrated = narrationNameOf(file)
+  if (narrated) {
+    return validateOUINarration(source, files[`sections/${narrated}.oui`], { topicId, sectionName: narrated, file })
+      .diagnostics.filter((d) => d.tier < 3)
+      .map(describe)
   }
   const name = sectionNameOf(file) ?? file
   return validateOUISection(source, { topicId, sectionName: name, file })

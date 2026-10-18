@@ -11,7 +11,9 @@
 // Diagnostics carry the source line of the statement that produced them.
 // ============================================================================
 
-import { compileOUISection, type OUIIssue, type OUISectionPayload, type OUISourceMap } from '../composition/oui/compile'
+import { compileOUINarration, compileOUISection, indexStatementLines, type OUIIssue, type OUISectionPayload, type OUISourceMap } from '../composition/oui/compile'
+import { getLoomOUIComponent } from '../composition/oui/library'
+import { targetProp, targetStatement, type NarrationData } from '../composition/oui/narration'
 import { contextToDiagnostic } from './types'
 import type { ValidationContext, ValidationDiagnostic, ValidationResult } from './types'
 import { tier2Validate, tier3Validate } from './gateway'
@@ -83,4 +85,91 @@ export function validateOUISection(
     payload: diagnostics.some((d) => d.tier === 1) ? null : payload,
     diagnostics,
   }
+}
+
+/** Each top-level statement of a section source and the component it calls (`q2 = Question(…)` → q2: Question). */
+function statementComponents(source: string): Map<string, string | undefined> {
+  const out = new Map<string, string | undefined>()
+  for (const name of indexStatementLines(source).keys()) {
+    const call = new RegExp(`^${name.replace(/[$]/g, '\\$&')}\\s*=\\s*([A-Z][\\w.]*)\\s*\\(`, 'm').exec(source)
+    out.set(name, call?.[1])
+  }
+  return out
+}
+
+/**
+ * Validate a narration file `sections/<name>.narrate.oui` (decisions 91–95 in
+ * grill-log-presenting-mode.md) against its section's source. Tier 1–2 come from the compiler;
+ * tier 3 checks that every target names a statement of the section (and a prop of its component).
+ *
+ * @param sectionSource - The section's `.oui` source, or undefined when the topic has no such section
+ */
+export function validateOUINarration(
+  source: string,
+  sectionSource: string | undefined,
+  context?: ValidationContext,
+): ValidationResult<NarrationData | null> {
+  const compiled = compileOUINarration(source)
+  const diagnostics = compiled.issues.map((issue) => issueToDiagnostic(issue, context))
+  const narration = compiled.value
+  const section = context?.sectionName ? `sections/${context.sectionName}.oui` : 'its section file'
+
+  if (sectionSource === undefined) {
+    diagnostics.push({
+      tier: 3,
+      line: 1,
+      message: `There is no ${section} for this narration to play with.`,
+      fixHint: 'Name the file after a section of the topic: sections/<name>.narrate.oui next to sections/<name>.oui.',
+      ...contextToDiagnostic(context),
+    })
+  } else if (narration && !diagnostics.some((d) => d.tier === 1)) {
+    const statements = statementComponents(sectionSource)
+    const names = [...statements.keys()]
+    for (const step of narration.steps ?? []) {
+      for (const effect of step.effects ?? []) {
+        const line = compiled.sourceMap.lineOf(compiled.sourceMap.statementOf(effect) ?? compiled.sourceMap.statementOf(step) ?? 'root')
+        for (const target of effect.kind === 'spotlight' ? effect.targets : [effect.target]) {
+          const statement = targetStatement(target)
+          if (!statements.has(statement)) {
+            diagnostics.push({
+              tier: 3,
+              line,
+              field: target,
+              message: `"${target}" does not name a statement of ${section}.`,
+              fixHint: `Point at one of its statements: ${names.slice(0, 12).join(', ')}${names.length > 12 ? ', …' : ''}.`,
+              ...contextToDiagnostic(context),
+            })
+            continue
+          }
+          const prop = targetProp(target)
+          const component = getLoomOUIComponent(statements.get(statement) ?? '')
+          const shape = (component?.definition as unknown as { props?: { shape?: Record<string, unknown> } } | undefined)?.props?.shape
+          if (prop && shape && !(prop in shape)) {
+            diagnostics.push({
+              tier: 3,
+              line,
+              field: target,
+              message: `"${target}": ${component?.name} has no prop "${prop}".`,
+              fixHint: `Its props are ${Object.keys(shape).join(', ')}.`,
+              ...contextToDiagnostic(context),
+            })
+          }
+        }
+      }
+      if (!step.caption && !step.effects?.length) {
+        diagnostics.push({
+          tier: 3,
+          line: compiled.sourceMap.lineOf(compiled.sourceMap.statementOf(step) ?? 'root'),
+          message: 'This step has no caption and no effects, so it shows nothing.',
+          fixHint: 'Give it a caption or an effect, or remove it.',
+          ...contextToDiagnostic(context),
+        })
+      }
+    }
+  }
+
+  let status: ValidationResult['status'] = 'valid'
+  if (diagnostics.some((d) => d.tier === 1 || d.tier === 2)) status = 'error'
+  else if (diagnostics.some((d) => d.tier === 3)) status = 'warning'
+  return { status, payload: diagnostics.some((d) => d.tier === 1) ? null : narration, diagnostics }
 }

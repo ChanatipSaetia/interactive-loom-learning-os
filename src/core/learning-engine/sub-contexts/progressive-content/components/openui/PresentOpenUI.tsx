@@ -19,8 +19,8 @@ export default function PresentOpenUI({ data, beat }: PresentRendererProps<OpenU
   const mark = beatMarks(beat)
   useInsertionEffect(() => ensureLoomOpenUITheme(), [])
   return (
-    <div className="present-openui">
-      {data.heading && <p className="present-subhead" {...mark(0, { motion: 'fade' })}>{data.heading}</p>}
+    <div className="openui-section present-openui">
+      {data.heading && <h4 className="openui-section-heading" {...mark(0, { motion: 'fade' })}>{data.heading}</h4>}
       <div className="loom-openui-scope openui-section-body" {...mark(0, { motion: 'children' })}>
         <Renderer response={data.source} library={loomOpenUILibrary} onAction={handleAction} publishObservability={false} />
       </div>

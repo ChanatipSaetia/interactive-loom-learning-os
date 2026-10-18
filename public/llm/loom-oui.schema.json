@@ -190,6 +190,21 @@
     },
     "TopicRef": {
       "$ref": "#/$defs/TopicRef"
+    },
+    "Narration": {
+      "$ref": "#/$defs/Narration"
+    },
+    "NarrationStep": {
+      "$ref": "#/$defs/NarrationStep"
+    },
+    "Highlight": {
+      "$ref": "#/$defs/Highlight"
+    },
+    "Callout": {
+      "$ref": "#/$defs/Callout"
+    },
+    "Spotlight": {
+      "$ref": "#/$defs/Spotlight"
     }
   },
   "required": [
@@ -255,7 +270,12 @@
     "Topic",
     "SectionRef",
     "Catalog",
-    "TopicRef"
+    "TopicRef",
+    "Narration",
+    "NarrationStep",
+    "Highlight",
+    "Callout",
+    "Spotlight"
   ],
   "additionalProperties": false,
   "$defs": {
@@ -2508,6 +2528,101 @@
       ],
       "additionalProperties": false,
       "description": "Includes the topic folder <id>/topic.oui in the catalog."
+    },
+    "Narration": {
+      "type": "object",
+      "properties": {
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NarrationStep"
+          },
+          "description": "The narrated steps in order, as NarrationStep references."
+        }
+      },
+      "required": [
+        "steps"
+      ],
+      "additionalProperties": false,
+      "description": "Root of a narration file sections/<name>.narrate.oui: the steps Present mode adds to that section."
+    },
+    "NarrationStep": {
+      "type": "object",
+      "properties": {
+        "caption": {
+          "type": "string",
+          "description": "Subtitle line shown (and read aloud) for the step; null for none."
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Highlight"
+              },
+              {
+                "$ref": "#/$defs/Callout"
+              },
+              {
+                "$ref": "#/$defs/Spotlight"
+              }
+            ]
+          },
+          "description": "Highlight, Callout and Spotlight calls for the step."
+        }
+      },
+      "additionalProperties": false,
+      "description": "One narrated step: a caption line and effects. It plays right after the beat that shows its first target (untargeted steps before the first question or exploring)."
+    },
+    "Highlight": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "description": "Pick pointer to what it points at in the section file: a statement name, optionally with a prop path, e.g. \"noCache\", \"q2.explanation\", \"root.categories[0]\"."
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "additionalProperties": false,
+      "description": "Narration effect: outlines and pulses one element of the section for its step."
+    },
+    "Callout": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "description": "Pick pointer to what it points at in the section file: a statement name, optionally with a prop path, e.g. \"noCache\", \"q2.explanation\", \"root.categories[0]\"."
+        },
+        "text": {
+          "type": "string",
+          "description": "The note, one or two short sentences. Narration reads it after the caption."
+        }
+      },
+      "required": [
+        "target",
+        "text"
+      ],
+      "additionalProperties": false,
+      "description": "Narration effect: a note that pops up beside one element of the section, with explanation the section does not say itself."
+    },
+    "Spotlight": {
+      "type": "object",
+      "properties": {
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Pick pointers of the elements to frame together, e.g. [\"noCache\", \"noStore\"]."
+        }
+      },
+      "required": [
+        "targets"
+      ],
+      "additionalProperties": false,
+      "description": "Narration effect: the camera moves in on these elements and dims the rest of the section."
     }
   }
 }

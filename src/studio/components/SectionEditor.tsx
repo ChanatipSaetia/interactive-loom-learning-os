@@ -1,5 +1,5 @@
 import { Suspense, useCallback, useMemo, useRef, useState } from 'react'
-import { AlertCircle, AlertTriangle, Code2, Eye, FormInput } from 'lucide-react'
+import { AlertCircle, AlertTriangle, Clapperboard, Code2, Eye, FormInput, Trash2 } from 'lucide-react'
 import { LazyOUICodeEditor, VisualFormEditor } from '../../core/supporting/authoring-editor'
 import type { SectionState, TopicWorkspace } from '../../core/supporting/authoring-editor/workspace'
 import { statementAtLine, type PickTarget } from '../../core/supporting/authoring-editor/pick'
@@ -16,7 +16,13 @@ interface Props {
   onAddToTray?: (target: PickTarget) => void
 }
 
-type Tab = 'code' | 'form'
+type Tab = 'code' | 'form' | 'narration'
+
+/** A first narration for a section: one step pointing at its first named statement (decision 91). */
+function narrationTemplate(sectionSource: string): string {
+  const target = [...indexStatementLines(sectionSource).keys()].find((n) => n !== 'root') ?? 'root'
+  return `root = Narration([step1])\n\nstep1 = NarrationStep("A caption shown and read aloud for this step.", [\n  Highlight("${target}"),\n  Callout("${target}", "A note that explains more than the section says."),\n])\n`
+}
 
 export function SectionEditor({ workspace, section, sectionNames, reveal, onAddToTray }: Props) {
   const [tab, setTab] = useState<Tab>('code')
@@ -41,10 +47,12 @@ export function SectionEditor({ workspace, section, sectionNames, reveal, onAddT
     const statement = statementAtLine(sourceRef.current, line)
     if (statement) onAddToTray?.({ file, anchor: statement, section: title, label: statement === 'root' ? title : `${title} › ${statement}` })
   }, [file, title, onAddToTray])
-  const diagnostics = section.validation.diagnostics
+  const narration = section.narration
+  const diagnostics = tab === 'narration' ? narration?.validation.diagnostics ?? [] : section.validation.diagnostics
   const blocking = diagnostics.some((d) => d.tier < 3)
   const payload = blocking ? null : section.validation.payload
   const hints = useMemo(() => ({ sectionNames }), [sectionNames])
+  const narrationHints = useMemo(() => ({ sectionSource: section.source }), [section.source])
 
   return (
     <div className="studio-editor" data-testid="studio-section-editor">
@@ -56,7 +64,18 @@ export function SectionEditor({ workspace, section, sectionNames, reveal, onAddT
           <button type="button" role="tab" aria-selected={tab === 'form'} className={tab === 'form' ? 'is-active' : ''} onClick={() => setTab('form')} data-testid="studio-tab-form">
             <FormInput size={14} /> Form
           </button>
-          <span className="studio-tabs-file">sections/{section.name}.oui</span>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'narration'}
+            className={tab === 'narration' ? 'is-active' : ''}
+            onClick={() => setTab('narration')}
+            title="Callouts, highlights and captions this section adds in Loom Viewer's Present mode"
+            data-testid="studio-tab-narration"
+          >
+            <Clapperboard size={14} /> Narration{narration?.source.trim() ? ' •' : ''}
+          </button>
+          <span className="studio-tabs-file">sections/{section.name}{tab === 'narration' ? '.narrate' : ''}.oui</span>
         </div>
 
         {diagnostics.length > 0 && (
@@ -75,7 +94,36 @@ export function SectionEditor({ workspace, section, sectionNames, reveal, onAddT
         )}
 
         <div className="studio-editor-body">
-          {tab === 'code' ? (
+          {tab === 'narration' ? (
+            narration ? (
+              <div className="studio-narration" data-testid="studio-narration">
+                <Suspense fallback={<div className="studio-loading">Loading editor…</div>}>
+                  <LazyOUICodeEditor
+                    value={narration.source}
+                    onChange={(value) => workspace.setNarration(section.name, value)}
+                    hints={narrationHints}
+                    fileKind="narration"
+                    className="studio-code-editor"
+                    ariaLabel={`Narration of ${section.name}`}
+                  />
+                </Suspense>
+                <button type="button" className="studio-button studio-narration-remove" onClick={() => workspace.setNarration(section.name, '')} data-testid="studio-narration-remove">
+                  <Trash2 size={13} /> Remove narration
+                </button>
+              </div>
+            ) : (
+              <div className="studio-form studio-narration-empty">
+                <p className="studio-hint">
+                  A narration file adds explanation to this section in Loom Viewer&apos;s <strong>Present</strong> mode: a caption line, highlights,
+                  callout notes beside parts of the section and a spotlight that zooms in. Each step points at statements of this file by name.
+                  It is saved as <code>sections/{section.name}.narrate.oui</code>.
+                </p>
+                <button type="button" className="studio-button" onClick={() => workspace.setNarration(section.name, narrationTemplate(section.source))} data-testid="studio-narration-add">
+                  <Clapperboard size={14} /> Add narration
+                </button>
+              </div>
+            )
+          ) : tab === 'code' ? (
             <Suspense fallback={<div className="studio-loading">Loading editor…</div>}>
               <LazyOUICodeEditor
                 value={section.source}

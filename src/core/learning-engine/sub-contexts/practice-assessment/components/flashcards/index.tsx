@@ -17,6 +17,35 @@ export interface FlashcardDeckProps {
   sectionIndex?: number;
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  hierarchy: 'Hierarchy',
+  layout: 'Space & Margins',
+  typography: 'Typography',
+  interaction: 'Tactile States',
+  accessibility: 'Accessibility'
+};
+
+/** A card's category pill, as the front of the card shows it (also used by Present mode). */
+export function FlashcardCategoryBadge({ category }: { category: string }) {
+  return (
+    <span className="px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-widest bg-[color-mix(in_srgb,var(--secondary)_14%,transparent)] text-[var(--secondary)] border border-[color-mix(in_srgb,var(--secondary)_35%,transparent)] rounded-full">
+      {CATEGORY_LABELS[category] || category}
+    </span>
+  );
+}
+
+/** The faint corner crosshairs of a card face. */
+export function FlashcardCrosshairs() {
+  return (
+    <>
+      <div className="absolute top-3 left-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
+      <div className="absolute top-3 right-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
+      <div className="absolute bottom-3 left-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
+      <div className="absolute bottom-3 right-3 text-muted-foreground/30 font-bold text-[10px] pointer-events-none">+</div>
+    </>
+  );
+}
+
 export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: FlashcardDeckProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -85,20 +114,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
     }
   };
 
-  const getCategoryBadge = (category: string) => {
-    const labels: Record<string, string> = {
-      hierarchy: 'Hierarchy',
-      layout: 'Space & Margins',
-      typography: 'Typography',
-      interaction: 'Tactile States',
-      accessibility: 'Accessibility'
-    };
-    return (
-      <span className="px-3 py-1.5 text-xs font-mono font-bold uppercase tracking-widest bg-[color-mix(in_srgb,var(--secondary)_14%,transparent)] text-[var(--secondary)] border border-[color-mix(in_srgb,var(--secondary)_35%,transparent)] rounded-full">
-        {labels[category] || category}
-      </span>
-    );
-  };
+  const getCategoryBadge = (category: string) => <FlashcardCategoryBadge category={category} />;
 
   // Card slide transition variants
   const slideVariants: Variants = {

@@ -62,7 +62,7 @@ const pickers = () => window as unknown as PickerWindow
 
 /** The topic's sections that compiled, in order, for Present mode. */
 function presentSectionsOf(topic: ViewerTopic): PresentSection[] {
-  return topic.sections.flatMap((s, sectionIndex) => (s.config ? [{ name: s.name, sectionIndex, config: s.config }] : []))
+  return topic.sections.flatMap((s, sectionIndex) => (s.config ? [{ name: s.name, sectionIndex, config: s.config, sourceMap: s.sourceMap, narration: s.narration }] : []))
 }
 
 /** Read mode's element for a section (its Pick wrapper). */
@@ -90,6 +90,7 @@ function viewerDiagnostics(topic: ViewerTopic): Record<string, string[]> {
   for (const section of topic.sections) {
     if (section.error) out[`sections/${section.name}.oui`] = section.error.split('\n').filter(Boolean)
   }
+  for (const { file, error } of topic.narrationErrors) out[file] = error.split('\n').filter(Boolean)
   return out
 }
 
@@ -581,7 +582,7 @@ function CopyErrorsButton({ text, label, testId }: { text: string; label: string
 function TopicView({ topic }: { topic: ViewerTopic }) {
   const title = topic.manifest?.title ?? topic.topicId
   const report = useMemo(() => topicErrorReport(topic), [topic])
-  const errorCount = (topic.error ? 1 : 0) + topic.sections.filter((s) => s.error).length
+  const errorCount = (topic.error ? 1 : 0) + topic.sections.filter((s) => s.error).length + topic.narrationErrors.length
   const meta = useMemo(
     () => [topic.manifest?.category, topic.manifest?.difficulty].filter(Boolean).join(' · '),
     [topic.manifest],
@@ -621,6 +622,12 @@ function TopicView({ topic }: { topic: ViewerTopic }) {
                   <li key={section.name} data-testid="viewer-section-error">
                     <strong>sections/{section.name}.oui</strong>
                     <pre>{section.error}</pre>
+                  </li>
+                ))}
+                {topic.narrationErrors.map(({ file, error }) => (
+                  <li key={file} data-testid="viewer-section-error">
+                    <strong>{file}</strong>
+                    <pre>{error}</pre>
                   </li>
                 ))}
               </ul>

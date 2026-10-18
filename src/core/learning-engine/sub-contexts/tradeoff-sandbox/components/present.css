@@ -1,123 +1,125 @@
 /* Present mode renderers for tradeoff-sandbox sections. Sizes come from the region (--present-fs-*). */
 
-/* ---- decision tree ---- */
+/* ---- decision tree: the Read cards (decision-tree.css) beside a drawing of the tree ---- */
 
-.present-dt { display: grid; grid-template-columns: minmax(220px, 0.8fr) 2fr; gap: 36px; align-items: start; }
+.present-dt { display: grid; grid-template-columns: minmax(200px, 0.7fr) 2fr; gap: 32px; align-items: start; }
 .present-dt-tree { width: 100%; max-height: 440px; overflow: visible; }
 .present-dt-side { min-width: 0; }
-.present-dt-card { display: flex; flex-direction: column; gap: 12px; }
-.present-dt-kicker { margin: 0; color: var(--muted-foreground); font: 600 var(--present-fs-small) / 1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; }
-.present-dt-prompt { margin: 0; font: 400 var(--present-fs-body) / 1.5 var(--font-body); }
-.present-dt-choices { display: flex; flex-direction: column; gap: 10px; }
-.present-dt-rationale { color: var(--muted-foreground); padding-left: 40px; }
-.present-dt-thumb { color: var(--ctp-green); }
+.present-dt .dt-decision { gap: 14px; padding: 18px 22px; }
+.present-dt .dt-decision-header { padding-bottom: 10px; }
+.present-dt .dt-decision-prompt { font-size: var(--present-fs-body); }
+.present-dt .dt-choices { gap: 10px; }
+.present-dt .dt-choice { padding: 12px 14px; font: inherit; color: inherit; }
+.present-dt .dt-choice-label { font-size: var(--present-fs-card); }
+.present-dt .dt-choice-desc { font-size: calc(var(--present-fs-card) - 2px); }
+.present-dt .dt-choice:disabled { cursor: default; }
+.present-dt .dt-choice:disabled:hover { transform: none; box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08); }
+.present-dt .dt-choice:disabled:not(.dt-choice-recommended):hover { border-color: color-mix(in srgb, var(--border) 80%, transparent); background-color: color-mix(in srgb, var(--ctp-base) 90%, transparent); }
+.present-dt .dt-choice:disabled:not(.dt-choice-recommended):hover .dt-choice-badge { background: color-mix(in srgb, var(--ctp-surface0) 80%, transparent); color: var(--ctp-subtext0); border-color: color-mix(in srgb, var(--ctp-overlay0) 30%, transparent); }
+.present-dt .dt-choice:disabled:hover .dt-choice-arrow { color: var(--ctp-overlay0); transform: none; }
+.present-dt .dt-leaf-card { gap: 14px; padding: 18px 22px; }
+.present-dt .dt-leaf-header { padding-bottom: 10px; }
+.present-dt .dt-leaf-body { gap: 10px; }
+.present-dt .dt-leaf-recommendation { padding: 12px 16px; }
+.present-dt .dt-leaf-rec-text { font-size: var(--present-fs-body); line-height: 1.45; }
+.present-dt .dt-leaf-explanation,
+.present-dt .dt-leaf-tradeoffs { padding: 10px 14px; gap: 6px; }
+.present-dt .dt-leaf-block-text,
+.present-dt .dt-leaf-tradeoff-item { font-size: calc(var(--present-fs-card) - 1px); line-height: 1.5; }
+.present-dt .dt-leaf-footer { padding-top: 10px; }
+.present-dt .dt-reset-btn { font: 500 14px / 1 var(--font-ui); }
 
 .present-dt-link { fill: none; stroke: var(--ctp-surface2); stroke-width: 2.5; transition: stroke 0.3s ease, stroke-width 0.3s ease; }
 .present-dt-link.is-cross { stroke-dasharray: 4 5; opacity: 0.6; }
-.present-dt-link.is-taken { stroke: var(--present-accent, var(--primary)); stroke-width: 4; opacity: 1; }
+.present-dt-link.is-taken { stroke: var(--primary); stroke-width: 4; opacity: 1; }
 .present-dt-node { transform-box: fill-box; transform-origin: center; }
 .present-dt-node circle:not(.present-dt-ring),
-.present-dt-node rect { fill: var(--card); stroke: var(--ctp-overlay0); stroke-width: 2; transition: fill 0.3s ease, stroke 0.3s ease; }
-.present-dt-node.is-leaf rect { stroke: var(--ctp-green); }
-.present-dt-node.is-visited circle:not(.present-dt-ring),
-.present-dt-node.is-visited rect { fill: var(--present-accent, var(--primary)); stroke: var(--present-accent, var(--primary)); }
-.present-dt-ring { fill: none; stroke: var(--present-accent, var(--primary)); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: present-dt-ring 1.8s ease-out infinite; }
+.present-dt-node rect { fill: var(--ctp-mantle); stroke: var(--ctp-overlay0); stroke-width: 2; transition: fill 0.3s ease, stroke 0.3s ease; }
+.present-dt-node.is-leaf rect { stroke: var(--secondary); }
+.present-dt-node.is-visited circle:not(.present-dt-ring) { fill: var(--primary); stroke: var(--primary); }
+.present-dt-node.is-visited rect { fill: var(--secondary); stroke: var(--secondary); }
+.present-dt-ring { fill: none; stroke: var(--primary); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: present-dt-ring 1.8s ease-out infinite; }
 @keyframes present-dt-ring {
   0% { opacity: 0.9; transform: scale(0.7); }
   100% { opacity: 0; transform: scale(1.5); }
 }
 
-.present-dt-leaf { padding: 20px 22px; border: 2px solid var(--ctp-green); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--ctp-green) 7%, var(--card)); align-items: flex-start; }
-.present-dt-rec { margin: 0; font: 600 calc(var(--present-fs-body) + 2px) / 1.35 var(--font-display); }
-.present-dt-why { margin: 0; font: 400 var(--present-fs-card) / 1.55 var(--font-body); }
-.present-dt-tradeoffs { display: flex; flex-direction: column; gap: 6px; margin: 0; padding-left: 1.2em; color: var(--muted-foreground); font: 400 calc(var(--present-fs-card) - 1px) / 1.45 var(--font-body); }
-
-.present-stage.is-portrait .present-dt { grid-template-columns: 1fr; gap: 18px; }
-.present-stage.is-portrait .present-dt-tree { max-height: 170px; }
+.present-stage.is-portrait .present-dt { grid-template-columns: 1fr; gap: 16px; }
+.present-stage.is-portrait .present-dt-tree { max-height: 150px; }
 
 @media (prefers-reduced-motion: reduce) {
   .present-dt-ring { animation: none; }
 }
 
-/* ---- tradeoff sandbox ---- */
+/* ---- tradeoff sandbox: Read's compare cards and "Try it" dashboard (tradeoff-sandbox.css), sized for the stage ---- */
 
-.present-tradeoff { display: grid; }
+.present-tradeoff.compare-scenarios { display: grid; gap: 0; align-items: start; }
 .present-tradeoff-step { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.present-tradeoff-kicker { margin: 0; color: var(--muted-foreground); font: 600 var(--present-fs-small) / 1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
-.present-tradeoff-title { margin: 0; font: 600 var(--present-fs-body) / 1.35 var(--font-display); }
-.present-tradeoff-desc { margin: 0; max-width: 54em; color: var(--muted-foreground); font: 400 var(--present-fs-card) / 1.5 var(--font-body); }
-.present-tradeoff-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; align-items: start; }
-.present-tradeoff-card { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 2px solid var(--border); border-radius: var(--radius-md); background: var(--card); transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease; }
-.present-tradeoff-card.is-rec { border-color: var(--ctp-green); transform: translateY(-6px); }
-.present-tradeoff-card.is-back { opacity: 0.45; transform: scale(0.97); }
-.present-tradeoff-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font: 600 var(--present-fs-card) / 1.3 var(--font-ui); }
-.present-tradeoff-card-label { font-weight: 600; }
-.present-rec-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: var(--radius-full); background: var(--ctp-green); color: var(--ctp-crust); font: 600 11px / 1 var(--font-mono); transform-origin: left center; }
-.present-tradeoff-card-desc { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; color: var(--muted-foreground); font: 400 calc(var(--present-fs-card) - 2px) / 1.45 var(--font-body); }
-.present-effects { display: flex; flex-direction: column; gap: 6px; }
-.present-effect { display: flex; flex-direction: column; gap: 3px; }
-.present-effect-label { color: var(--muted-foreground); font: 500 12px / 1.2 var(--font-mono); }
-.present-effect.is-good b { color: var(--ctp-green); }
-.present-effect.is-bad b { color: var(--ctp-red); }
-.present-effect-bar { display: block; height: 6px; min-width: 6px; border-radius: 3px; }
-.present-effect.is-good .present-effect-bar { background: var(--ctp-green); }
-.present-effect.is-bad .present-effect-bar { background: var(--ctp-red); }
-.present-tradeoff-why { font: 400 calc(var(--present-fs-card) - 1px) / 1.5 var(--font-body); }
+.present-tradeoff .compare-step { padding: 0; gap: 10px; border: 0; }
+.present-tradeoff .compare-step-title { font-size: calc(var(--present-fs-body) + 4px); }
+.present-tradeoff .compare-step-desc { font-size: calc(var(--present-fs-card) - 1px); }
+.present-tradeoff .compare-grid { gap: 12px; align-items: start; }
+.present-tradeoff .compare-card { gap: 8px; padding: 12px 14px; transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease; }
+.present-tradeoff .compare-card-label { font-size: calc(var(--present-fs-card) - 1px); }
+.present-tradeoff .compare-card-summary { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; font-size: calc(var(--present-fs-card) - 3px); }
+.present-tradeoff .compare-block { padding: 6px 10px; gap: 4px; }
+.present-procons { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; align-items: start; }
+.present-tradeoff .compare-pros,
+.present-tradeoff .compare-cons { gap: 3px; }
+.present-tradeoff .compare-procon-title { font-size: 13px; }
+.present-tradeoff .compare-procon-desc { display: none; }
+.present-tradeoff .compare-card-details { font-size: calc(var(--present-fs-card) - 3px); }
+.present-tradeoff .compare-card-details .compare-block-title { margin-bottom: 4px; }
+.present-tradeoff-rec { transform: translateY(-6px); }
+.present-tradeoff .compare-effect { transform-origin: left center; }
 
 .present-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-.present-pill { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-full); background: var(--card); color: var(--foreground); font: 600 13px / 1.2 var(--font-ui); cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease; }
+.present-pill { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-full); background: var(--card); color: var(--ink, var(--foreground)); font: 500 13px / 1.2 var(--font-ui); cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease; }
 .present-pill:disabled { cursor: default; }
-.present-pill:not(:disabled):hover { border-color: var(--primary); }
+.present-pill:not(:disabled):hover { border-color: var(--secondary); }
 .present-pill[aria-pressed='true'],
-.present-pill[aria-selected='true'] { border-color: var(--present-accent, var(--primary)); background: color-mix(in srgb, var(--present-accent, var(--primary)) 18%, var(--card)); }
-.present-sandbox { display: grid; grid-template-columns: 1fr 1.3fr; gap: 28px; align-items: start; }
-.present-sandbox-meters,
-.present-sandbox-steps { display: flex; flex-direction: column; gap: 14px; }
-.present-meter { display: flex; flex-direction: column; gap: 6px; }
-.present-meter-head { display: flex; justify-content: space-between; gap: 12px; font: 500 var(--present-fs-card) / 1.2 var(--font-ui); }
-.present-meter-value { font-weight: 600; font-family: var(--font-mono); }
-.present-meter-value.is-good { color: var(--ctp-green); }
-.present-meter-value.is-bad { color: var(--ctp-red); }
-.present-meter-track,
-.present-gauge-track { display: block; height: 10px; overflow: hidden; border-radius: 5px; background: var(--ctp-surface0); }
-.present-meter-fill,
-.present-gauge-fill { display: block; height: 100%; border-radius: 5px; background: var(--ctp-blue); transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease; }
-.present-meter-fill.is-good { background: var(--ctp-green); }
-.present-meter-fill.is-bad { background: var(--ctp-red); }
-.present-sandbox-step { display: flex; flex-direction: column; gap: 6px; }
-.present-sandbox-step-title { font: 600 var(--present-fs-small) / 1.2 var(--font-ui); }
-.present-sandbox-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.present-pill[aria-selected='true'] { border-color: var(--ctp-green); background: var(--pale-green, color-mix(in srgb, var(--ctp-green) 14%, var(--card))); color: var(--ctp-green); }
+.present-pill-star { color: var(--ctp-green); fill: currentColor; }
+.present-sandbox.tradeoff-layout { gap: 14px; }
+.present-sandbox .metric-dashboard { padding: 14px 20px; }
+.present-sandbox .dashboard-header { margin-bottom: 10px; }
+.present-sandbox .metric-bars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; }
+.present-sandbox-steps.steps-panel { gap: 12px; padding-bottom: 0; touch-action: auto; }
+.present-sandbox .step-section { padding: 12px 14px; min-width: 200px; }
+.present-sandbox .step-section:hover { transform: none; }
+.present-sandbox .step-title { white-space: normal; }
+.present-sandbox-pills { display: flex; flex-wrap: wrap; gap: 6px; }
 
-/* ---- formula sandbox ---- */
+/* ---- formula sandbox: Read's two panels (formula-sandbox.css), sized for the stage ---- */
 
-.present-formula { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
-.present-formula-left { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.present-formulas { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 12px 14px; border-radius: var(--radius-md); background: var(--ctp-mantle); list-style: none; font: 400 calc(var(--present-fs-card) - 3px) / 1.4 var(--font-body); }
-.present-formulas code { font: 500 0.92em / 1.4 var(--font-mono); color: var(--ctp-sky); }
-.present-formula-name { font-weight: 600; }
-.present-sliders { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 20px; }
-.present-slider { display: flex; flex-direction: column; gap: 6px; }
-.present-slider-head { display: flex; justify-content: space-between; gap: 12px; font: 500 var(--present-fs-card) / 1.2 var(--font-ui); }
-.present-slider-head output { font: 600 var(--present-fs-card) / 1.2 var(--font-mono); color: var(--present-accent, var(--primary)); }
+.present-formula.sandbox-layout { grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: start; }
+.present-formula .controls-panel { gap: 14px; padding: 16px 18px; min-width: 0; }
+.present-formula .formula-explanation { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; font-size: 12.5px; line-height: 1.5; }
+.present-formula-heading { font-weight: 700; color: var(--ctp-subtext1); }
+.present-formula-line { display: block; }
+.present-sliders { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px 18px; }
+.present-formula .slider-group { gap: 8px; }
+.present-formula .slider-header { gap: 8px; align-items: center; }
 .present-slider-track { position: relative; display: block; }
-.present-slider-track input { width: 100%; accent-color: var(--present-accent, var(--primary)); }
-.present-formula.is-exploring .present-slider-track input { cursor: pointer; }
-.present-slider.is-swept .present-slider-head output { color: var(--ctp-peach); }
-.present-ghost { position: absolute; top: 6px; translate: -30% 0; color: var(--foreground); filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)); pointer-events: none; }
-.present-formula-metrics { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-.present-gauge { display: flex; flex-direction: column; gap: 6px; }
-.present-gauge-head { display: flex; justify-content: space-between; gap: 12px; font: 500 var(--present-fs-card) / 1.2 var(--font-ui); }
-.present-gauge-value { font: 600 calc(var(--present-fs-card) + 2px) / 1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ctp-sky); }
-.present-gauge-fill { background: var(--ctp-sky); transition-duration: 0.12s; }
-.present-gauge-desc { color: var(--muted-foreground); font: 400 calc(var(--present-fs-card) - 3px) / 1.4 var(--font-body); }
-.present-formula-caption { margin: 4px 0 0; color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.4 var(--font-body); }
+.present-formula .range-input:disabled::-webkit-slider-thumb { cursor: default; }
+.present-formula.is-exploring .range-input { cursor: pointer; }
+.present-formula .slider-group.is-swept .slider-value { color: var(--ctp-peach); border-color: color-mix(in srgb, var(--ctp-peach) 40%, transparent); background: color-mix(in srgb, var(--ctp-peach) 15%, transparent); }
+.present-ghost { position: absolute; top: 4px; translate: -30% 0; color: var(--foreground); filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)); pointer-events: none; }
+.present-formula .sandbox-metrics { gap: 14px; padding: 16px 18px; min-width: 0; }
+.present-formula-metrics-title { margin: 0; color: var(--ctp-overlay2); font: 700 13px / 1.2 var(--font-ui); letter-spacing: 0.5px; text-transform: uppercase; }
+.present-formula .sim-metric-val { cursor: default; text-decoration: none; }
+.present-formula .sim-metric-val:hover { background: transparent; color: var(--primary); }
+.present-gauge-value { font-variant-numeric: tabular-nums; }
+.present-formula .gauge-fill { transition-duration: 0.12s; }
+.present-gauge-desc { color: var(--ctp-subtext0); font: 400 12px / 1.4 var(--font-body); }
+.present-formula-caption { margin: 2px 0 0; color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.4 var(--font-body); }
 
-.present-stage.is-portrait .present-sandbox,
-.present-stage.is-portrait .present-formula { grid-template-columns: 1fr; gap: 20px; }
-.present-stage.is-portrait .present-tradeoff-choices { grid-template-columns: 1fr; gap: 10px; }
+.present-stage.is-portrait .present-formula.sandbox-layout { grid-template-columns: 1fr; gap: 14px; }
+.present-stage.is-portrait .present-sandbox .metric-bars { grid-template-columns: 1fr; }
+.present-stage.is-portrait .present-sandbox-steps.steps-panel { flex-direction: column; }
+.present-stage.is-portrait .present-tradeoff .compare-grid { grid-template-columns: 1fr; gap: 10px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .present-tradeoff-card,
-  .present-meter-fill,
-  .present-gauge-fill { transition: none; }
+  .present-tradeoff .compare-card,
+  .present-formula .gauge-fill { transition: none; }
 }

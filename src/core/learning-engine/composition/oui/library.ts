@@ -19,6 +19,7 @@ import { processSimulationOUIComponents } from '../../sub-contexts/process-simul
 import { progressiveContentOUIComponents } from '../../sub-contexts/progressive-content/openui'
 import { reflectionSynthesisOUIComponents } from '../../sub-contexts/reflection-synthesis/openui'
 import { tradeoffSandboxOUIComponents } from '../../sub-contexts/tradeoff-sandbox/openui'
+import { NARRATION_COMPONENTS } from './narration'
 
 // ============================================================================
 // Topic & catalog manifest components
@@ -104,6 +105,7 @@ export const LOOM_OUI_COMPONENTS: LoomOUIComponent[] = [
   ...SUBDOMAIN_GROUPS.flatMap((g) => g.components),
   Lead,
   ...MANIFEST_COMPONENTS,
+  ...NARRATION_COMPONENTS,
 ]
 
 const componentsByName = new Map(LOOM_OUI_COMPONENTS.map((c) => [c.name, c]))
@@ -127,6 +129,7 @@ export const loomOUILibrary: Library = createLibrary({
     ...SUBDOMAIN_GROUPS.map((g) => ({ name: g.name, components: g.components.map((c) => c.name) })),
     { name: 'Shared', components: [Lead.name] },
     { name: 'Topic & Catalog', components: MANIFEST_COMPONENTS.map((c) => c.name) },
+    { name: 'Narration (sections/<name>.narrate.oui)', components: NARRATION_COMPONENTS.map((c) => c.name) },
   ],
 })
 

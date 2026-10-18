@@ -23,6 +23,7 @@ Always write a **topic folder**, one file per program, using the "Folder of .oui
   sections/
     intro.oui          root = Intro(...)
     <name>.oui         one section per file, no // === marker lines
+    <name>.narrate.oui optional narration for that section in Present mode (see "Narration Files" in the reference)
 ```
 
 - **Inside the Interactive Loom repository** (it has `public/content/` and `src/core/learning-engine/`): create the folder at `public/content/<topic-id>/`.
@@ -42,6 +43,7 @@ Always write a **topic folder**, one file per program, using the "Folder of .oui
 - System `kind` says what it is (aggregate, service, database or external); events that move a StateMachine into a new state set `enters`; `data` names what an event carries when it matters; `async` marks fire-and-forget steps.
 - Each quiz question has exactly one correct choice and only tests what an earlier section teaches.
 - Section types are mixed; tables and charts are standard OpenUI sections with literal data.
+- A narration file `sections/<name>.narrate.oui` (only when asked, or where a short extra explanation clearly helps) sits next to its section, is not listed in `topic.oui`, and every target names a statement of that section file. Renaming a section renames its narration file too.
 
 ## Pointers and comments from Loom Studio and Loom Viewer
 

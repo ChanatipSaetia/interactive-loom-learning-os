@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
-import { Check, X } from 'lucide-react'
+import { Check, Lightbulb, X } from 'lucide-react'
 import { flipId, useFlip } from '../../../../../ui-system'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
@@ -8,6 +8,7 @@ import { PresentWords } from '../../../PresentWords'
 import { SAY, beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import type { QuizOptionSelected, QuizCompleted } from '../../events'
 import type { QuizPresentData } from '../../present'
+import './quiz.css'
 import '../present.css'
 
 const LETTERS = 'ABCDEFGH'
@@ -15,9 +16,9 @@ const ANTICIPATION = 120
 const FALL = 300
 
 /**
- * Quiz in Present mode (quizBeats): per question, the question and choices arrive, then the learner
- * answers. A wrong choice shows its explanation and stays open; the right one waits a beat, the others
- * fall away, and it moves up and grows into its explanation.
+ * Quiz in Present mode (quizBeats), drawn as the Read question card: per question, the card and its
+ * choices arrive, then the learner answers. A wrong choice turns red with its explanation and the learner
+ * tries again; the right one waits a beat, the others fall away, and it moves up over its explanation.
  */
 export default function PresentQuiz({ data, beat, active, gate, onEvent }: PresentRendererProps<QuizPresentData>) {
   const questions = data.questions ?? []
@@ -48,6 +49,8 @@ export default function PresentQuiz({ data, beat, active, gate, onEvent }: Prese
         const correct = q.choices.find((c) => c.correct)
         const solved = beat > answerBeat || (beat === answerBeat && gate.solved) || (!!correct && picks.includes(correct.id))
         const live = active && beat === answerBeat && !solved && !busy
+        const lastWrong = !solved ? q.choices.find((c) => c.id === picks[picks.length - 1] && !c.correct) : undefined
+        const explained = solved ? correct : lastWrong
         const choose = (choiceId: string) => {
           if (!live || picks.includes(choiceId)) return
           const choice = q.choices.find((c) => c.id === choiceId)
@@ -82,18 +85,27 @@ export default function PresentQuiz({ data, beat, active, gate, onEvent }: Prese
         }
 
         return (
-          <div key={q.id} className="present-quiz-question" {...mark(2 * i, { motion: 'fade', ...(i < last && { until: answerBeat }) })} {...pick(q)}>
-            <p className="present-quiz-counter">Question {i + 1} of {questions.length}</p>
-            <p className="present-quiz-prompt" {...mark(2 * i, { motion: 'words', delay: 120 })} {...pick(q, 'question')}><PresentWords text={q.question} /></p>
-            <div className="present-quiz-choices" role="group" aria-label={`Answers to question ${i + 1}`}>
+          <div key={q.id} className="quiz-question-card present-quiz-question" {...mark(2 * i, { motion: 'fade', ...(i < last && { until: answerBeat }) })} {...pick(q)}>
+            <div className="quiz-question-header">
+              <div className="quiz-question-number">Q{i + 1}</div>
+              <div className="quiz-question-counter">{i + 1} / {questions.length}</div>
+            </div>
+            <h4 className="quiz-question-text" {...mark(2 * i, { motion: 'words', delay: 120 })} {...pick(q, 'question')}><PresentWords text={q.question} /></h4>
+            {q.hint && !!lastWrong && (
+              <motion.div className="quiz-hint" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} {...pick(q, 'hint')}>
+                <span className="quiz-hint-text"><Lightbulb className="quiz-hint-icon present-quiz-hint-icon" aria-hidden /> {q.hint}</span>
+              </motion.div>
+            )}
+            <div className="quiz-choices" role="group" aria-label={`Answers to question ${i + 1}`}>
               {q.choices.map((c, j) => {
                 const wrong = picks.includes(c.id) && !c.correct
                 const right = solved && c.correct
                 const gone = solved && !c.correct
                 const cls = [
-                  'present-choice',
-                  wrong && 'is-wrong',
-                  right && 'is-right',
+                  'quiz-choice',
+                  'present-quiz-choice',
+                  wrong && 'quiz-choice-wrong is-wrong',
+                  right && 'quiz-choice-correct',
                   gone && 'is-gone',
                   falling === q.id && !c.correct && 'is-falling',
                   live && !wrong && 'present-breathe',
@@ -110,23 +122,27 @@ export default function PresentQuiz({ data, beat, active, gate, onEvent }: Prese
                     {...mark(2 * i, { delay: 500 + j * 60 })}
                     {...pick(c)}
                   >
-                    <span className="present-choice-row">
-                      <span className="present-choice-letter" aria-hidden>{LETTERS[j]}</span>
-                      <span className="present-choice-text">{c.text}</span>
-                      {right && <Check className="present-choice-mark" size={18} aria-label="Correct" />}
-                      {wrong && <X className="present-choice-mark" size={18} aria-label="Wrong" />}
-                    </span>
-                    {(wrong || right) && (
-                      <motion.span className="present-choice-why" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }} {...(right ? SAY : {})} {...pick(c, 'explanation')}>
-                        {c.explanation}
-                      </motion.span>
-                    )}
+                    <span className="quiz-choice-label" aria-hidden>{LETTERS[j]}</span>
+                    <span className="quiz-choice-text" {...pick(c, 'text')}>{c.text}</span>
+                    {right && <Check className="quiz-choice-feedback-icon quiz-choice-feedback-correct" aria-label="Correct" />}
+                    {wrong && <X className="quiz-choice-feedback-icon quiz-choice-feedback-wrong" aria-label="Wrong" />}
                   </button>
                 )
               })}
             </div>
-            {q.hint && picks.some((id) => !q.choices.find((c) => c.id === id)?.correct) && !solved && (
-              <motion.p className="present-quiz-hint" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} {...pick(q, 'hint')}>Hint: {q.hint}</motion.p>
+            {explained && (
+              <motion.div
+                key={explained.id}
+                className={`quiz-explanation ${solved ? 'quiz-explanation-correct' : 'quiz-explanation-wrong'}`}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="quiz-explanation-result">
+                  {solved ? <><Check className="quiz-explanation-icon" /><span>Correct</span></> : <><X className="quiz-explanation-icon" /><span>Not quite, try again</span></>}
+                </div>
+                <p className="quiz-explanation-text" {...(solved ? SAY : {})} {...pick(explained, 'explanation')}>{explained.explanation}</p>
+              </motion.div>
             )}
           </div>
         )

@@ -5,13 +5,14 @@ import { PresentWords } from '../../../PresentWords'
 import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import type { FlashcardFlipped } from '../../events'
 import type { FlashcardsPresentData } from '../../present'
+import { FlashcardCategoryBadge, FlashcardCrosshairs } from './index'
 import '../present.css'
 
 const LEAVE = 420
 
 /**
- * Flashcards in Present mode (flashcardsBeats): the deck arrives, then the learner flips each card and
- * says whether they knew it. "Again" sends a card to the back; the gate opens when every card is known.
+ * Flashcards in Present mode (flashcardsBeats), drawn as the Read deck's card: the deck arrives, then
+ * the learner flips each card and says whether they knew it. "Again" sends a card to the back; the gate opens when every card is known.
  */
 export default function PresentFlashcards({ data, beat, beats, active, gate, onEvent }: PresentRendererProps<FlashcardsPresentData>) {
   const terms = data.terms ?? []
@@ -74,13 +75,36 @@ export default function PresentFlashcards({ data, beat, beats, active, gate, onE
               {...pick(term)}
             >
               <div className="present-card-inner">
-                <button type="button" className="present-card-face is-front" onClick={flip} disabled={!isTop || !live} tabIndex={isTop ? 0 : -1} aria-label={`Flip card: ${term.word}`}>
-                  <span className="present-card-word">{term.word}</span>
-                  {term.pronunciation && <span className="present-card-sub">{term.pronunciation}</span>}
-                  {live && isTop && <span className="present-card-sub">tap to flip</span>}
+                <button
+                  type="button"
+                  className="present-card-face is-front bg-card border border-border shadow-sm rounded-lg"
+                  onClick={flip}
+                  disabled={!isTop || !live}
+                  tabIndex={isTop ? 0 : -1}
+                  aria-label={`Flip card: ${term.word}`}
+                >
+                  <FlashcardCrosshairs />
+                  <span className="present-card-toolbar border-b border-border">
+                    <FlashcardCategoryBadge category={term.category} />
+                    <span className="text-xs text-muted-foreground uppercase tracking-widest font-mono">{live && isTop ? 'Flip card ↺' : `${terms.length - deck.length + 1} / ${terms.length}`}</span>
+                  </span>
+                  <span className="present-card-body">
+                    <span className="present-card-word font-light tracking-tight text-foreground font-display" {...pick(term, 'word')}>{term.word}</span>
+                    {term.pronunciation && (
+                      <span className="text-sm font-mono text-muted-foreground font-medium tracking-wider uppercase" {...pick(term, 'pronunciation')}>
+                        Phonetic: <span className="text-foreground italic">/{term.pronunciation}/</span>
+                      </span>
+                    )}
+                  </span>
                 </button>
-                <div className="present-card-face is-back" aria-hidden={!(isTop && flipped)}>
-                  <p {...pick(term, 'shortDefinition')}>{term.shortDefinition}</p>
+                <div className="present-card-face is-back bg-card text-foreground rounded-lg border border-border shadow-md" aria-hidden={!(isTop && flipped)}>
+                  <FlashcardCrosshairs />
+                  <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest block">Standard Concept</span>
+                  <span className="present-card-back-word font-light tracking-tight text-foreground font-display">{term.word}</span>
+                  <span className="present-card-quote">
+                    <span className="present-card-quote-bar bg-primary/50" aria-hidden />
+                    <p className="text-muted-foreground italic font-serif leading-relaxed" {...pick(term, 'shortDefinition')}>“{term.shortDefinition}”</p>
+                  </span>
                 </div>
               </div>
             </div>

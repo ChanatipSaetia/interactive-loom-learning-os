@@ -1,13 +1,13 @@
 /**
  * Every committed OpenUI Lang content file must compile and validate:
  * the catalog, each topic manifest, and each section (no tier 1/2/3 diagnostics),
- * and all cross-file references (TopicRef → topic.oui, SectionRef → section file)
- * must resolve.
+ * and all cross-file references (TopicRef → topic.oui, SectionRef → section file,
+ * narration targets → section statements) must resolve.
  */
 import { describe, it, expect } from 'vitest'
 import { compileOUICatalog, compileOUITopic } from '../../../src/core/learning-engine/composition/oui/compile'
 import { generateCatalogSource } from '../../../src/core/learning-engine/composition/oui/catalog-gen'
-import { validateOUISection } from '../../../src/core/learning-engine/validation/oui-gateway'
+import { validateOUINarration, validateOUISection } from '../../../src/core/learning-engine/validation/oui-gateway'
 
 declare global {
   interface ImportMeta {
@@ -48,13 +48,22 @@ describe('public/content', () => {
           expect(result.diagnostics, rel).toEqual([])
         }
       })
+
+      it('has valid narration files whose targets exist', () => {
+        for (const name of topic.value?.sections ?? []) {
+          const rel = `${topicId}/sections/${name}.narrate.oui`
+          if (file(rel) === undefined) continue
+          const result = validateOUINarration(file(rel)!, file(`${topicId}/sections/${name}.oui`), { topicId, sectionName: name, file: rel })
+          expect(result.diagnostics, rel).toEqual([])
+        }
+      })
     })
   }
 
   it('has no section files that no topic includes', () => {
     const referenced = new Set(
       (catalog.value?.topics ?? []).flatMap((t) =>
-        (compileOUITopic(file(`${t}/topic.oui`) ?? '').value?.sections ?? []).map((s) => `/public/content/${t}/sections/${s}.oui`)),
+        (compileOUITopic(file(`${t}/topic.oui`) ?? '').value?.sections ?? []).flatMap((s) => [`/public/content/${t}/sections/${s}.oui`, `/public/content/${t}/sections/${s}.narrate.oui`])),
     )
     const orphans = Object.keys(FILES).filter((f) => f.includes('/sections/') && !referenced.has(f))
     expect(orphans).toEqual([])

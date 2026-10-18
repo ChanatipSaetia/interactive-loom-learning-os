@@ -6,6 +6,7 @@
  * into this extension at build time (so rebuild after changing the Loom
  * component library).
  */
+import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import {
@@ -65,8 +66,21 @@ async function workspaceHints(document: vscode.TextDocument): Promise<OUIWorkspa
   const entries = await list(sectionsDir)
   return {
     sectionNames: entries
-      .filter(([name, type]) => type === vscode.FileType.File && name.endsWith('.oui'))
+      .filter(([name, type]) => type === vscode.FileType.File && name.endsWith('.oui') && !name.endsWith('.narrate.oui'))
       .map(([name]) => name.slice(0, -'.oui'.length)),
+    sectionSource: kind === 'narration' ? narratedSection(document) : undefined,
+  }
+}
+
+/** A narration file's section source (`x.narrate.oui` → `x.oui` next to it), to check targets against. */
+function narratedSection(document: vscode.TextDocument): string | undefined {
+  const file = document.uri.fsPath.replace(/\.narrate\.oui$/, '.oui')
+  const open = vscode.workspace.textDocuments.find((d) => d.uri.fsPath === file)
+  if (open) return open.getText()
+  try {
+    return fs.readFileSync(file, 'utf8')
+  } catch {
+    return undefined
   }
 }
 
@@ -77,7 +91,9 @@ function registerDiagnostics(context: vscode.ExtensionContext) {
   const refresh = (document: vscode.TextDocument) => {
     if (document.languageId !== LANGUAGE) return
     const source = document.getText()
-    const diagnostics = getDiagnostics(source, fileKindFromPath(document.uri.fsPath)).map((d) => {
+    const kind = fileKindFromPath(document.uri.fsPath)
+    const hints = kind === 'narration' && document.uri.scheme === 'file' ? { sectionSource: narratedSection(document) } : {}
+    const diagnostics = getDiagnostics(source, kind, hints).map((d) => {
       const message = d.fixHint ? `${d.message}\nHint: ${d.fixHint}` : d.message
       const diagnostic = new vscode.Diagnostic(
         toRange(document, d.range),
