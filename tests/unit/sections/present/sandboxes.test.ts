@@ -12,7 +12,7 @@ describe('sandbox beats', () => {
       { scenario: 0, step: 0, recommended: false },
       { scenario: 0, step: 0, recommended: true },
     ])
-    expect(kinds(tradeoffBeats(props)).at(-1)).toBe('explore')
+    expect(kinds(tradeoffBeats(props)).pop()).toBe('explore')
     expect(kinds(tradeoffBeats({ scenarios: [] }))).toEqual(['show'])
   })
 
