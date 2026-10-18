@@ -12,7 +12,7 @@ export default function PresentFlowchart({ data, beat, sectionIndex }: PresentRe
   const steps = data.schema?.journeys?.[0]?.steps ?? []
   const mark = beatMarks(beat)
   return (
-    <div className="present-flowchart" data-testid="present-flowchart" {...mark(0, { motion: 'fade' })}>
+    <div className="present-flowchart" data-testid="present-flowchart">
       <Flowchart title={data.title} schema={data.schema} sectionIndex={sectionIndex} present={{ step: steps.length ? Math.max(0, beat) : -1 }} />
       {steps.map((s, i) => (
         <span key={i} className="present-sr" {...mark(i, { motion: 'fade' })}>{s.title}. {s.reason}</span>

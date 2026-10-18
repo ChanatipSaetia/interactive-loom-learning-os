@@ -4,7 +4,7 @@ import { RotateCcw } from 'lucide-react'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
+import { SAY, beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import type { ScenarioChoice, ScenarioOutcome } from '../../schema'
 import type { ScenarioPresentData } from '../../present'
 import '../present.css'
@@ -98,8 +98,8 @@ export default function PresentScenario({ data, beat, active, gate }: PresentRen
               {GRADES[outcome.rating]}
             </motion.span>
             <div className="present-outcome-body">
-              <p className="present-outcome-verdict" {...pick(outcome, 'verdict')}>{outcome.verdict}</p>
-              <p className="present-outcome-lesson" {...pick(outcome, 'lesson')}>{outcome.lesson}</p>
+              <p className="present-outcome-verdict" {...SAY} {...pick(outcome, 'verdict')}>{outcome.verdict}</p>
+              <p className="present-outcome-lesson" {...SAY} {...pick(outcome, 'lesson')}>{outcome.lesson}</p>
               {fork && (
                 <button type="button" className="present-button" onClick={tryAnother} disabled={!live} data-testid="present-scenario-again">
                   <RotateCcw size={16} aria-hidden /> Try another path

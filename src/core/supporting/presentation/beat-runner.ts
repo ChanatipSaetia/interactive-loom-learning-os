@@ -23,8 +23,8 @@ export type RunnerAction =
 
 export const gateKey = (section: number, beat: number) => `${section}:${beat}`
 
-export function initialRunnerState(start = 0): RunnerState {
-  return { section: Math.max(0, start), beat: 0, mode: 'enter', solved: new Set() }
+export function initialRunnerState(start = 0, beat = 0): RunnerState {
+  return { section: Math.max(0, start), beat: Math.max(0, beat), mode: 'enter', solved: new Set() }
 }
 
 export const isComplete = (state: RunnerState, sections: Beat[][]) => state.section >= sections.length

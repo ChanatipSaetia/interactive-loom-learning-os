@@ -134,3 +134,9 @@ export function wordsHtml(html: string): string {
 
 /** Number of words in a beat's text, for the reading-time hold (decision 69). */
 export const wordCount = (text: string) => splitWords(text).length
+
+/**
+ * Put on what narration should read once a gate is solved (an explanation, an outcome, a
+ * recommendation): `<p {...SAY}>`.
+ */
+export const SAY = { 'data-say': '' } as const

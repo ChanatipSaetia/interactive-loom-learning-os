@@ -5,7 +5,7 @@ import { flipId, useFlip } from '../../../../../ui-system'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
+import { SAY, beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import type { QuizOptionSelected, QuizCompleted } from '../../events'
 import type { QuizPresentData } from '../../present'
 import '../present.css'
@@ -117,7 +117,7 @@ export default function PresentQuiz({ data, beat, active, gate, onEvent }: Prese
                       {wrong && <X className="present-choice-mark" size={18} aria-label="Wrong" />}
                     </span>
                     {(wrong || right) && (
-                      <motion.span className="present-choice-why" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }} {...pick(c, 'explanation')}>
+                      <motion.span className="present-choice-why" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }} {...(right ? SAY : {})} {...pick(c, 'explanation')}>
                         {c.explanation}
                       </motion.span>
                     )}

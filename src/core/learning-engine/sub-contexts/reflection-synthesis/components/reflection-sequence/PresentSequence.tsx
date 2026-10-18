@@ -4,7 +4,7 @@ import { flipId, useFlip } from '../../../../../ui-system'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { beatMarks, type BeatMarkAttributes, type BeatMarkOptions, type PresentRendererProps } from '../../../present-kernel'
+import { SAY, beatMarks, type BeatMarkAttributes, type BeatMarkOptions, type PresentRendererProps } from '../../../present-kernel'
 import type { ReflectionSequenceChallenge } from '../../schema'
 import type { ReflectionAnswered, ReflectionCompleted } from '../../events'
 import type { SequencePresentData } from '../../present'
@@ -90,7 +90,7 @@ function Challenge({ challenge, index, total, mark, live, solved, onSolved, onEv
             Check order
           </button>
         ) : gate.done ? (
-          <motion.p className="present-reflection-result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} role="status">That is the right order.</motion.p>
+          <motion.p className="present-reflection-result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} role="status" {...SAY}>That is the right order.</motion.p>
         ) : null}
       </div>
     </div>

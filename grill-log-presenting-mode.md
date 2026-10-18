@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Phases 1–5 done (runtime, Viewer toggle, a Present renderer for every section type); phase 6 (narration, docs) planned**
+Status: **Implemented (phases 1–6): a Present renderer for every section type, narration, Refresh keeping the place**
 
 ## Goal
 
@@ -234,6 +234,27 @@ jumping just re-renders. Renderers never animate or set motion styles themselves
   order, so derived metrics (`bleed_dps + poison_dps`) work; the Read sandbox's
   `computeMetricRange` does not see earlier metrics and logs errors for them (left as is).
 - Labels avoid `<strong>`, which the stage styles as a highlighter mark.
+
+### Phase 6 — Implementation Notes
+
+- Narration (`narration.ts`): off by default; the **Narration** button (or `N`) is disabled when the
+  browser lists no voice. Each beat is read as it arrives: the top-level elements marked for it, word
+  spans one by one (the spoken one gets `.present-spoken` from the voice's word boundaries), other
+  elements as their text with a pause after each line. When a gate is solved, the elements its
+  renderer marked with `SAY` are read once (the quiz's right explanation, the reflection result, the
+  scenario outcome, the decision-tree recommendation). Text in Thai, Japanese, Korean, Chinese,
+  Cyrillic or Arabic script picks a voice for that language when the browser has one.
+- With narration on, autoplay waits for the voice to finish (never longer than twice the reading
+  hold plus 3 s), then holds 0.7 s.
+- `speech-text.ts` rewrites file names and paths (`/app.3f9a.js` → "app dot j s"; hashes dropped,
+  short extensions spelled), URLs, `key=value` header values and a few symbols and abbreviations.
+- Refresh (decision 86): Viewer records the section and beat Present reports; after a refresh Present
+  restarts at the section with the same name and that beat (clamped), or at the topic start when
+  the section is gone.
+- The flowchart renderer marks only its hidden step text, so neither the reading hold nor the voice
+  takes in the whole canvas.
+- The design-system doc the plan mentions (`DESIGN.md`) is not in the repository; the *Motion
+  Rules* above remain the reference.
 
 Tests per phase: every `toBeats` gets a unit test in `tests/unit/sections/present/` that compiles
 a small `.oui` fixture and checks beat kinds and count; the runner, camera and speech normalizer are

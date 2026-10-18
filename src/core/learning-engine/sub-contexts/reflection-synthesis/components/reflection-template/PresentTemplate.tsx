@@ -4,7 +4,7 @@ import { flipId, useFlip } from '../../../../../ui-system'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { beatMarks, type BeatMarkAttributes, type BeatMarkOptions, type PresentRendererProps } from '../../../present-kernel'
+import { SAY, beatMarks, type BeatMarkAttributes, type BeatMarkOptions, type PresentRendererProps } from '../../../present-kernel'
 import type { ReflectionTemplateChallenge } from '../../schema'
 import type { ReflectionAnswered, ReflectionCompleted } from '../../events'
 import type { TemplatePresentData } from '../../present'
@@ -100,6 +100,7 @@ function Challenge({ challenge, index, total, mark, live, solved, onSolved, onEv
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             role="status"
+            {...SAY}
             {...pick(challenge, 'explanation')}
             dangerouslySetInnerHTML={{ __html: challenge.explanation ?? 'That completes it.' }}
           />
