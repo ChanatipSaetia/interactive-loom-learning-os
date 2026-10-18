@@ -1,7 +1,23 @@
 import { describe, it, expect } from 'vitest'
 import { validateOUISection } from '../../../../src/core/learning-engine/validation/oui-gateway'
 import { bundleToSections } from '../../../../src/core/learning-engine/composition/okf/sections'
-import { bulletsBeats, introBeats, openuiBeats, textBeats } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
+import {
+  bulletsBeats,
+  galleryBeats,
+  introBeats,
+  openuiBeats,
+  pillarLayerBeats,
+  taxonomyBeats,
+  textBeats,
+} from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-ignore Node's fs has no types in this project; tests read content fixtures like layout-metrics.ts
+import { readFileSync } from 'fs'
+
+const content = (path: string): string => readFileSync(`public/content/${path}`, 'utf8')
+const worldHistoryLayers = content('world-history/sections/pillar-layer.oui')
+const monkGallery = content('poe2-flicker-monk/sections/image-gallery.oui')
+const cachingDirectives = content('http-caching/sections/directives.oui')
 
 /** Compile a section the way Loom Viewer does and return its props. */
 function propsOf<T>(source: string): T {
@@ -39,5 +55,24 @@ why = IntroWhy("Origin requests cost time.")
 
   it('openui: a single beat', () => {
     expect(kinds(openuiBeats())).toEqual(['show'])
+  })
+
+  it('pillar-layer: one beat per layer', () => {
+    const props = propsOf<Parameters<typeof pillarLayerBeats>[0]>(worldHistoryLayers)
+    const layers = props.section?.layers ?? []
+    expect(layers.length).toBeGreaterThan(1)
+    expect(pillarLayerBeats(props)).toHaveLength(layers.length)
+  })
+
+  it('image-gallery: one beat per image', () => {
+    const props = propsOf<Parameters<typeof galleryBeats>[0]>(monkGallery)
+    expect(props.items.length).toBeGreaterThan(1)
+    expect(galleryBeats(props)).toHaveLength(props.items.length)
+  })
+
+  it('taxonomy-browser: the cards, then free browsing', () => {
+    const props = propsOf<Parameters<typeof taxonomyBeats>[0]>(cachingDirectives)
+    expect(kinds(taxonomyBeats(props))).toEqual(['show', 'explore'])
+    expect(kinds(taxonomyBeats({ categories: [] }))).toEqual(['show'])
   })
 })

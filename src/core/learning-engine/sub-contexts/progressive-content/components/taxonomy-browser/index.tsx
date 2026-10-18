@@ -23,9 +23,9 @@ export interface TaxonomyCategory {
   color: TaxonomyAccentColor
 }
 
-function resolveIcon(name: string): ComponentType<any> {
+export function resolveIcon(name: string): ComponentType<Icons.LucideProps> {
   const iconKey = name as keyof typeof Icons
-  const icon = (Icons as unknown as Record<string, ComponentType<any>>)[iconKey]
+  const icon = (Icons as unknown as Record<string, ComponentType<Icons.LucideProps>>)[iconKey]
   return icon || Icons.Circle
 }
 
@@ -35,7 +35,7 @@ export interface TaxonomyBrowserSectionProps {
   sectionIndex?: number
 }
 
-const colorAccentMap: Record<TaxonomyAccentColor, string> = {
+export const colorAccentMap: Record<TaxonomyAccentColor, string> = {
   blue: 'var(--ctp-blue)',
   peach: 'var(--ctp-peach)',
   pink: 'var(--ctp-pink)',

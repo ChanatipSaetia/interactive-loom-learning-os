@@ -61,7 +61,7 @@ function getBlockClipPath(shape?: string, colSpan = 1, rowSpan = 1): string | un
   }
 }
 
-interface PlacedBlock {
+export interface PlacedBlock {
   key: string
   block: PillarLayerBlock
   idx: number
@@ -91,23 +91,9 @@ function reachable(start: string, edges: Map<string, string[]>): Set<string> {
  * blocks wrapped underneath. `depends_on` is shown as a "Uses" line on each block, and tapping a block traces
  * everything it needs (below) and everything it affects (above).
  */
-export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
-  title,
-  description,
-  section,
-  layers: propLayers,
-  matrix_blocks: propBlocks,
-  sectionIndex = 0,
-}) => {
-  const layers = useMemo(() => section?.layers || propLayers || [], [section, propLayers])
-  const matrix_blocks = useMemo(() => section?.matrix_blocks || propBlocks || [], [section, propBlocks])
-  const sectionTitle = title || section?.title
-  const sectionDescription = description || section?.description
-
-  const [selectedKey, setSelectedKey] = useState<string | null>(null)
-  const pick = usePickAnchors()
-
-  const placed = useMemo<PlacedBlock[]>(() => matrix_blocks.map((block, idx) => {
+/** Where each block sits in the layer grid (shared by the Read and Present views). */
+export function placePillarBlocks(layers: PillarLayerLayer[], matrix_blocks: PillarLayerBlock[]): PlacedBlock[] {
+  return matrix_blocks.map((block, idx) => {
     const lIdx = layers.findIndex((l) => l.id === block.layer_id)
     let colStart = block.col_offset ?? 0
     let colSpan = block.col_span || 1
@@ -130,7 +116,26 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
       rowSpan,
       clipPath: getBlockClipPath(shape, colSpan, rowSpan),
     }
-  }), [matrix_blocks, layers])
+  })
+}
+
+export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
+  title,
+  description,
+  section,
+  layers: propLayers,
+  matrix_blocks: propBlocks,
+  sectionIndex = 0,
+}) => {
+  const layers = useMemo(() => section?.layers || propLayers || [], [section, propLayers])
+  const matrix_blocks = useMemo(() => section?.matrix_blocks || propBlocks || [], [section, propBlocks])
+  const sectionTitle = title || section?.title
+  const sectionDescription = description || section?.description
+
+  const [selectedKey, setSelectedKey] = useState<string | null>(null)
+  const pick = usePickAnchors()
+
+  const placed = useMemo(() => placePillarBlocks(layers, matrix_blocks), [matrix_blocks, layers])
 
   const maxCols = Math.max(1, ...placed.map((p) => p.colStart + p.colSpan))
   const titles = useMemo(() => new Map(placed.map((p) => [p.key, p.block.title])), [placed])

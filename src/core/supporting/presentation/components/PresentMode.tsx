@@ -97,12 +97,12 @@ async function loadView(type: string): Promise<SectionView> {
   return { kind: 'read', Component: (await loader()).default as ComponentType<Record<string, unknown>> }
 }
 
-function SectionBody({ section, view, beat, gate }: { section: PresentSection; view: SectionView; beat: number; gate: PresentGate }) {
+function SectionBody({ section, view, beat, gate, active }: { section: PresentSection; view: SectionView; beat: number; gate: PresentGate; active: boolean }) {
   const beats = useMemo(() => beatsOf(section.config), [section.config])
   let body: ReactNode
   if (view.kind === 'present') {
     const Renderer = view.Component
-    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} gate={gate} />
+    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} gate={gate} active={active} />
   } else {
     // No Present renderer yet: the Read section, entering as one beat
     const Read = view.kind === 'read' ? view.Component : null
@@ -439,7 +439,7 @@ export function PresentMode({ sections, start = 0, onExit, onSectionChange }: Pr
                       </header>
                     )}
                     <div className={`present-region-body${PresentRegistry.get(section.config.type) ? '' : ' is-fallback'}`}>
-                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} gate={gate} />}
+                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} gate={gate} active={i === state.section && !complete && !overview} />}
                       {mounted && !viewReady(i) && i === state.section && <p className="present-loading" role="status">Loading…</p>}
                     </div>
                   </section>

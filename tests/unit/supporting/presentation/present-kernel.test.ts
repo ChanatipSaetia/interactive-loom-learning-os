@@ -38,8 +38,8 @@ describe('present registry', () => {
     registerCorePresenters()
   })
 
-  it('registers the phase 1 section types', () => {
-    expect(PresentRegistry.list().sort()).toEqual(['bullets', 'intro', 'openui', 'text'])
+  it('registers the section types that have a Present renderer', () => {
+    expect(PresentRegistry.list().sort()).toEqual(['bullets', 'image-gallery', 'intro', 'openui', 'pillar-layer', 'taxonomy-browser', 'text'])
   })
 
   it('gives a type without a presenter one show beat', () => {

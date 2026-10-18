@@ -41,6 +41,8 @@ export interface PresentRendererProps<D = Record<string, unknown>> {
   beat: number
   sectionIndex: number
   gate: PresentGate
+  /** This section is the one on stage (not done, not in the overview): its explore and gate beats take input. */
+  active: boolean
 }
 
 export interface SectionPresenter<D = Record<string, unknown>> {

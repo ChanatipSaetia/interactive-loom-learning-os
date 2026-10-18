@@ -116,3 +116,68 @@
 .present-stage.is-portrait .present-intro-grid { grid-template-columns: 1fr; gap: 12px; margin-top: 0; }
 .present-stage.is-portrait .present-intro-grid.no-roadmap .present-intro-col { flex-direction: column; }
 .present-stage.is-portrait .present-card { padding: 14px 16px; }
+
+/* ---- pillar & layer ---- */
+
+.present-pillar { display: flex; flex-direction: column; gap: 14px; }
+.present-pillar .pillar-layer-matrix { flex: none; }
+
+/* ---- image gallery ---- */
+
+.present-gallery { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.6fr 1fr; gap: 28px; }
+.present-gallery-frame { position: relative; min-height: 0; overflow: hidden; border-radius: var(--radius-md); background: var(--ctp-crust); box-shadow: inset 0 0 0 1px var(--border); }
+.present-gallery-shot { position: absolute; inset: 0; margin: 0; display: grid; place-items: center; overflow: hidden; }
+.present-gallery-shot img { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: 40% 40%; }
+.present-gallery-shot.is-live img { animation: present-push-in 9s ease-in-out forwards; }
+@keyframes present-push-in { from { transform: scale(1); } to { transform: scale(1.07) translate(-1.2%, -0.8%); } }
+.present-gallery-side { display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; min-width: 0; }
+.present-gallery-captions { display: grid; }
+.present-gallery-caption { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 6px; }
+.present-gallery-caption p { margin: 0; font: 400 var(--present-fs-body) / 1.45 var(--font-body); }
+.present-gallery-caption small { color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.3 var(--font-mono); }
+.present-gallery-dots { display: flex; gap: 8px; }
+.present-gallery-dots i { width: 8px; height: 8px; border-radius: 4px; background: var(--border); transition: width 0.3s, background 0.3s; }
+.present-gallery-dots i.is-current { width: 22px; background: var(--primary); }
+
+/* ---- taxonomy ---- */
+
+.present-taxonomy { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.present-taxonomy-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.present-taxonomy-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--foreground);
+  text-align: left;
+  font: inherit;
+  transition: opacity 0.3s, border-color 0.2s;
+}
+.present-taxonomy-card svg { flex: none; color: var(--accent); }
+.present-taxonomy-card:not(:disabled) { cursor: pointer; }
+.present-taxonomy-card:not(:disabled):hover,
+.present-taxonomy-card.is-open { border-color: var(--accent); }
+.present-taxonomy-card:disabled { opacity: 1; }
+.present-taxonomy-card.is-dim { opacity: 0.45; }
+.present-taxonomy-card-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.present-taxonomy-card-title { font: 600 var(--present-fs-card) / 1.2 var(--font-display); }
+.present-taxonomy-card-sub { color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.3 var(--font-ui); }
+.present-taxonomy-detail .present-card { gap: 8px; }
+.present-taxonomy-detail-title { font: 600 calc(var(--present-fs-card) + 4px) / 1.2 var(--font-display) !important; }
+.present-taxonomy-analogy { color: var(--muted-foreground); font-style: italic !important; }
+.present-taxonomy-scope { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.present-taxonomy-scope h4 { margin: 0 0 4px; color: var(--muted-foreground); font: 600 var(--present-fs-small) / 1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+.present-taxonomy-scope ul { margin: 0; padding-left: 1.1em; font: 400 calc(var(--present-fs-card) - 2px) / 1.4 var(--font-body); }
+.present-taxonomy-hint { margin: 0; color: var(--muted-foreground); font: 400 var(--present-fs-body) / 1.4 var(--font-body); }
+
+.present-stage.is-portrait .present-gallery { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+.present-stage.is-portrait .present-taxonomy { grid-template-columns: 1fr; }
+
+@media (prefers-reduced-motion: reduce) {
+  .present-gallery-shot.is-live img { animation: none; }
+}
