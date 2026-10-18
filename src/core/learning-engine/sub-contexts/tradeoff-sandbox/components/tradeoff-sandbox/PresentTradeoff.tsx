@@ -64,7 +64,7 @@ function Summary({ scenario }: { scenario: TradeoffScenario }) {
  * Tradeoff sandbox in Present mode (tradeoffBeats), on Read's compare cards: per step, its choices arrive
  * side by side, each effect chip popping in (green where it helps, red where it costs) above its gains
  * and costs; then the recommended choice comes forward with its star and why it fits while the others
- * dim. The narrator says each step, its options and the recommendation. Last, each scenario shows Read's
+ * dim. Last, each scenario shows Read's
  * "Try it" sandbox with the recommended choices picked, and where they leave its metrics.
  */
 export default function PresentTradeoff({ data, beat }: PresentRendererProps<TradeoffPresentData>) {
@@ -86,7 +86,7 @@ export default function PresentTradeoff({ data, beat }: PresentRendererProps<Tra
         const focused = rec >= 0 && beat >= rec
         const columns = step.choices.length === 4 ? 2 : Math.min(step.choices.length, 3)
         return (
-          <section key={`${si}-${ki}`} className="compare-step present-tradeoff-step" {...mark(at, { motion: 'fade', until: last })} {...QUIET} {...pick(step)}>
+          <section key={`${si}-${ki}`} className="compare-step present-tradeoff-step" {...mark(at, { motion: 'fade', until: last })} {...pick(step)}>
             <header className="compare-step-header">
               <span className="compare-step-eyebrow">{scenarios.length > 1 ? `${scenario.title} · ` : ''}Question {ki + 1} of {scenario.steps.length}</span>
               <h5 className="compare-step-title" {...mark(at, { motion: 'words' })} {...focus(beat === at)} {...pick(step, 'title')}><PresentWords text={step.title} /></h5>
@@ -181,7 +181,7 @@ export default function PresentTradeoff({ data, beat }: PresentRendererProps<Tra
         return (
           <div key={scenario.id} className="present-tradeoff-step present-tradeoff-try" {...mark(at, { motion: 'fade', ...(k < summaries.length - 1 && { until: at }) })}>
             {scenarios.length > 1 && <p className="compare-step-eyebrow" {...pick(scenario, 'title')}>{scenario.title}</p>}
-            <p className="compare-step-hint" {...QUIET}>The recommended choice at every step</p>
+            <p className="compare-step-hint">The recommended choice at every step</p>
             <div {...focus(beat === at)}>
               <Summary scenario={scenario} />
             </div>

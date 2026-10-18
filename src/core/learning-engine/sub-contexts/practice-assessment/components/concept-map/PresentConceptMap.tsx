@@ -15,7 +15,7 @@ const PAD = 48
  * Concept map in Present mode (conceptMapBeats), drawn with the Read map's nodes, links, labels and
  * legend: the Read layout of the whole map, built up one category
  * at a time. Each group's concepts pop in and light up while the view widens to hold everything shown
- * so far, and the narrator names them; a link draws once both its ends are on screen. With more than
+ * so far; a link draws once both its ends are on screen. With more than
  * one group, the last beat frames the whole map.
  */
 export default function PresentConceptMap({ data, beat }: PresentRendererProps<ConceptMapPresentData>) {
@@ -74,7 +74,6 @@ export default function PresentConceptMap({ data, beat }: PresentRendererProps<C
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label={data.title ?? 'Concept map'}
-        {...QUIET}
       >
         {edges.map((e, i) => {
           const a = layout.edgeAnchors[`${e.from}->${e.to}`]

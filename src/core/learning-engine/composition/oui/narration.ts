@@ -1,11 +1,12 @@
 /**
- * Narration files (decisions 91–95 in grill-log-presenting-mode.md): `sections/<name>.narrate.oui`
- * adds explanation to a section in Loom Viewer's Present mode. Its root is `Narration([...])`; each
- * `NarrationStep` has an optional caption and effects that point at the section's statements by
- * Pick pointer (`"noCache"`, `"q2.explanation"`).
+ * Narration files (decisions 91–95 and 108 in grill-log-presenting-mode.md): `sections/<name>.narrate.oui`
+ * is the script a section plays to in Loom Viewer's Present mode. Its root is `Narration([...])`; each
+ * `NarrationStep` names the beat it plays on (`"q1.wrong"`), with an optional caption and effects that
+ * point at the section's statements by Pick pointer (`"noCache"`, `"q2.explanation"`).
  */
 import { z } from 'zod'
 import { defineOUIComponent } from '../../sub-contexts/openui-kernel'
+import type { Beat } from '../../sub-contexts/present-kernel'
 
 /** File of a section's narration, next to `sections/<name>.oui`. */
 export const narrationPath = (section: string) => `sections/${section}.narrate.oui`
@@ -42,20 +43,22 @@ export const Spotlight = defineOUIComponent({
 
 export const NarrationStep = defineOUIComponent({
   name: 'NarrationStep',
-  description: 'One narrated step: a caption line and effects. It plays during the beat that shows its first target (untargeted steps with the last beat before the first question or exploring).',
+  description: 'One narrated step: the beat it plays on, a caption line read aloud, and effects. Several steps on one beat play in turn.',
   props: z.object({
+    beat: z.string(),
     caption: z.string().optional(),
     effects: z.array(z.union([Highlight.ref, Callout.ref, Spotlight.ref])).optional(),
   }),
   fields: {
-    caption: 'Subtitle line shown (and read aloud) for the step; null for none.',
+    beat: 'The beat it plays on, by its ID for the section type, e.g. "q1", "q1.wrong", "q1.right" for a quiz, "p2" for a text paragraph (see Narration Files).',
+    caption: 'Subtitle line shown and read aloud while the beat plays, in the topic\'s language; null for none.',
     effects: 'Highlight, Callout and Spotlight calls for the step.',
   },
 })
 
 export const Narration = defineOUIComponent({
   name: 'Narration',
-  description: 'Root of a narration file sections/<name>.narrate.oui: the steps Present mode adds to that section.',
+  description: 'Root of a narration file sections/<name>.narrate.oui: the script Present mode plays the section to, step by step.',
   props: z.object({ steps: z.array(NarrationStep.ref) }),
   fields: { steps: 'The narrated steps in order, as NarrationStep references.' },
 })
@@ -68,6 +71,8 @@ export type NarrationEffect =
   | { kind: 'spotlight'; targets: string[] }
 
 export interface NarrationStepData {
+  /** The beat ID it plays on (decision 108). */
+  beat: string
   caption?: string
   effects?: NarrationEffect[]
 }
@@ -86,3 +91,37 @@ export const targetStatement = (target: string) => /^[^.[]*/.exec(target)?.[0] ?
 
 /** The first prop a target names, if any: "q2.explanation" → "explanation", "root.items[0]" → "items". */
 export const targetProp = (target: string) => /^[^.[]*\.([A-Za-z_]\w*)/.exec(target)?.[1]
+
+/**
+ * Beat IDs per section type, as each type's `toBeats` names them (decision 108); `n` counts from 1.
+ * The authoring prompt lists them; a unit test checks them against `toBeats`.
+ */
+export const BEAT_IDS: Record<string, string> = {
+  intro: '`title`, `what`, `why`, `roadmap` (when it has a roadmap)',
+  text: '`p1`, `p2`, … one per paragraph',
+  bullets: '`item1`, `item2`, … one per top-level bullet',
+  'pillar-layer': '`layer1`, `layer2`, … one per layer',
+  'image-gallery': '`image1`, `image2`, … one per image',
+  'taxonomy-browser': '`cards` (all cards), then `card1`, `card2`, … each card opened',
+  'concept-map': '`group1`, `group2`, … one per category in order of first appearance, then `map` (the whole map, when there is more than one category)',
+  flowchart: '`step1`, `step2`, … one per step of the first journey',
+  scenario: '`start`; when a choice leads to a weaker ending, `wrong1`, `wrong2`, … along that path (the last one shows its outcome); then `right1`, `right2`, … along the best path from where the two part (the last one shows its outcome)',
+  'decision-tree': '`start`, then `answer1`, `answer2`, … one per answer taken (the recommended choice, else the first) down to a recommendation',
+  'tradeoff-sandbox': '`step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.recommended` when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation',
+  'formula-sandbox': '`formulas`, then `sweep` (the first variable moving from its default to its max, when they differ)',
+  quiz: '`q1`, `q1.wrong`, `q1.right`, `q2`, … per question: asked, its first wrong choice tried, the right answer given',
+  flashcards: '`card1`, `card1.back`, `card2`, … per card: its word, then its definition',
+  'reflection-sequence': '`c1`, `c1.solved`, `c2`, … per challenge: the prompt, then the right order',
+  'reflection-template': '`c1`, `c1.solved`, `c2`, … per challenge: the prompt, then the blanks filled in',
+  openui: '`all`',
+}
+
+/**
+ * A first narration file for a section (Studio's Add narration, decision 108): one step per beat, its
+ * caption a placeholder saying what the beat shows, for the author to rewrite as speech.
+ */
+export function narrationTemplate(beats: Beat[]): string {
+  const name = (id: string) => id.replace(/\W+/g, '_')
+  const steps = beats.map((b) => `// ${b.about ?? b.id}\n${name(b.id)} = NarrationStep(${JSON.stringify(b.id)}, ${JSON.stringify(b.about ?? '')})`)
+  return `// One step per beat: rewrite each caption as what the narrator says, in the topic's language.\nroot = Narration([${beats.map((b) => name(b.id)).join(', ')}])\n\n${steps.join('\n\n')}\n`
+}

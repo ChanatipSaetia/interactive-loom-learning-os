@@ -14,6 +14,9 @@
 import { compileOUINarration, compileOUISection, indexStatementLines, type OUIIssue, type OUISectionPayload, type OUISourceMap } from '../composition/oui/compile'
 import { getLoomOUIComponent } from '../composition/oui/library'
 import { targetProp, targetStatement, type NarrationData } from '../composition/oui/narration'
+import { bundleToSections } from '../composition/okf/sections'
+import { coreBeatsOf } from '../registry/register-core-presenters'
+import type { Beat } from '../sub-contexts/present-kernel'
 import { contextToDiagnostic } from './types'
 import type { ValidationContext, ValidationDiagnostic, ValidationResult } from './types'
 import { tier2Validate, tier3Validate } from './gateway'
@@ -98,9 +101,19 @@ function statementComponents(source: string): Map<string, string | undefined> {
 }
 
 /**
- * Validate a narration file `sections/<name>.narrate.oui` (decisions 91–95 in
+ * The beats a section plays in Present mode, from its source (decision 108): their IDs are what a
+ * narration file's steps name. Null when the section does not compile.
+ */
+export function sectionBeatsOf(sectionSource: string): Beat[] | null {
+  const payload = validateOUISection(sectionSource).payload
+  return payload ? coreBeatsOf(bundleToSections([payload])[0]) : null
+}
+
+/**
+ * Validate a narration file `sections/<name>.narrate.oui` (decisions 91–95 and 108 in
  * grill-log-presenting-mode.md) against its section's source. Tier 1–2 come from the compiler;
- * tier 3 checks that every target names a statement of the section (and a prop of its component).
+ * tier 3 checks that every step names a beat of the section and every target names a statement of
+ * the section (and a prop of its component).
  *
  * @param sectionSource - The section's `.oui` source, or undefined when the topic has no such section
  */
@@ -125,7 +138,18 @@ export function validateOUINarration(
   } else if (narration && !diagnostics.some((d) => d.tier === 1)) {
     const statements = statementComponents(sectionSource)
     const names = [...statements.keys()]
+    const beats = sectionBeatsOf(sectionSource)?.map((b) => b.id)
     for (const step of narration.steps ?? []) {
+      if (beats && !beats.includes(step.beat)) {
+        diagnostics.push({
+          tier: 3,
+          line: compiled.sourceMap.lineOf(compiled.sourceMap.statementOf(step) ?? 'root'),
+          field: step.beat,
+          message: `"${step.beat}" is not a beat of ${section}, so this step never plays.`,
+          fixHint: `Its beats are ${beats.slice(0, 16).join(', ')}${beats.length > 16 ? ', …' : ''}.`,
+          ...contextToDiagnostic(context),
+        })
+      }
       for (const effect of step.effects ?? []) {
         const line = compiled.sourceMap.lineOf(compiled.sourceMap.statementOf(effect) ?? compiled.sourceMap.statementOf(step) ?? 'root')
         for (const target of effect.kind === 'spotlight' ? effect.targets : [effect.target]) {

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { QUIET, beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
+import { beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
 import type { ScenarioOutcome } from '../../schema'
 import { scenarioPlan, scenarioText, type ScenarioPresentData } from '../../present'
 import { RATING_BG, RATING_COLORS, RATING_LABELS } from './index'
@@ -57,7 +57,7 @@ export default function PresentScenario({ data, beat }: PresentRendererProps<Sce
           {path.slice(1).map((p, i) => {
             const newest = i === path.length - 2
             return (
-              <li key={`${i}-${p.nodeId}`} {...(newest && mark(at, { motion: 'unfold' }))} {...(newest && QUIET)} {...focus(newest && beat === at)}>
+              <li key={`${i}-${p.nodeId}`} {...(newest && mark(at, { motion: 'unfold' }))} {...focus(newest && beat === at)}>
                 <span className="present-trail-dot" aria-hidden />
                 <span className="present-trail-text">{p.choice ? scenarioText(p.choice) : p.nodeId}</span>
               </li>

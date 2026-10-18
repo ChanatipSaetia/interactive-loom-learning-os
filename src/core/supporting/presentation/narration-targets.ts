@@ -23,23 +23,6 @@ export function targetElements(root: Element, target: string): Element[] {
   return hits.filter((el) => !hits.some((other) => other !== el && other.contains(el)))
 }
 
-/**
- * The derived beat that reveals the first of these elements: the latest `data-beat` on each one's
- * way up to the region (0 when nothing hides it), the earliest over the elements. Undefined when
- * there are none.
- */
-export function revealingBeat(elements: Element[], region: Element): number | undefined {
-  if (!elements.length) return undefined
-  return Math.min(...elements.map((el) => {
-    let beat = 0
-    for (let n: Element | null = el; n && n !== region; n = n.parentElement) {
-      const value = n.getAttribute('data-beat')
-      if (value !== null) beat = Math.max(beat, Number(value))
-    }
-    return beat
-  }))
-}
-
 /** An element's box in region (stage) coordinates, whatever the camera zoom and stage scale. */
 export function boxOf(el: Element, region: Element, stage: Size): Box {
   const r = region.getBoundingClientRect()

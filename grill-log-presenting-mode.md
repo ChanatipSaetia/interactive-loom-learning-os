@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Implemented: phases 1–6, Read-mode styles and authored narration files (decisions 90–95), hands-free play (decisions 101–107)**
+Status: **Implemented: phases 1–6, Read-mode styles and authored narration files (decisions 90–95), hands-free play (decisions 101–107), narration scripted per beat in OUI (decision 108)**
 
 ## Goal
 
@@ -65,12 +65,13 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 99 | Default | **Captions and effects always show; the voice stays opt-in (`N`).** |
 | 100 | Phones | **On a phone the stage is the screen itself, at scale 1**, with phone-sized type, so sections lay out and read as Read mode does on a phone (landscape keeps its fixed 1200×675 stage scaled to fit). The concept map frames the group being introduced on a tall canvas; the flowchart may zoom to 1× on a step. The stage's boxes never scroll, so a focused button cannot shift the camera. |
 | 101 | Interaction | **None needed: Present plays every section by itself.** There are no gates or explore beats; every beat enters, is narrated, holds and moves on, and autoplay is on from the start. The viewer can still pause, step, go back, jump on the rail and open the overview, but sections take no pointer input. Revises decisions 65 (the viewer watches; pausing sets the pace), 69 and 70. |
-| 102 | Narration on every beat | **Every beat is narrated, and the voice is on by default** (`N` mutes it; without a browser voice the captions carry on alone). A beat may carry a narrator line (`Beat.say`, derived from the content by `toBeats`): it shows as a subtitle under the stage and is read first, then the voice reads what the beat puts on screen. Beats whose on-screen text says it all (a paragraph, a bullet, an intro block) have no line. What a line already says is marked `QUIET` so the voice does not read it twice. Captions sit in a bar under the stage, never over the content. Revises decisions 79, 97 (beats of a narrated section without an authored step play their own line) and 99. |
+| 102 | Narration on every beat | **Every beat is narrated, and the voice is on by default** (`N` mutes it; without a browser voice the captions carry on alone). A beat may carry a narrator line (`Beat.say`, derived from the content by `toBeats`): it shows as a subtitle under the stage and is read first, then the voice reads what the beat puts on screen. Beats whose on-screen text says it all (a paragraph, a bullet, an intro block) have no line. What a line already says is marked `QUIET` so the voice does not read it twice. Captions sit in a bar under the stage, never over the content. Revises decisions 79, 97 (beats of a narrated section without an authored step play their own line) and 99. The derived line moved to the narration file in decision 108. |
 | 103 | Performed answers | **The stage answers, and shows a wrong answer before the right one where the content has one.** Quiz: per question, ask; try the first wrong choice (it turns red with the hint and its explanation, error sound); then the right choice (green with its explanation, the others step back, success sound). Scenario: when a weaker ending exists, walk the path to it choice by choice, go back to where it leaves the best path, then walk the best path to its outcome. Decision tree: take the recommended answer (else the first) at each node down to a leaf. Reflection sequence and template: the steps settle into the right order, the right chips fill the blanks. The rail marks wrong tries red and right answers green. Revises decisions 69 and 70. |
 | 104 | Former explore beats | **Each becomes something the stage shows**: the taxonomy opens each card in turn; the concept map ends on the whole map; the tradeoff sandbox ends on Read's sandbox with every recommended choice picked; the formula sandbox ends after its sweep. Flashcards play per card: the word, then the flip to its definition. |
 | 105 | Highlight | **Every beat lights its main content** once its entrance has landed: what the renderer marks with `focus()` (the question, the tried choice, the outcome, the card being read), else what the beat brings on screen. An authored step with its own `Highlight` or `Spotlight` takes over while it plays. |
 | 106 | Progress | **Present emits no learner events.** The stage answers, not the learner, so quiz scores and reflection results are only recorded in Read mode. Revises decision 71. |
-| 107 | Narrator wording | **Short fixed English phrases around the content's own words** ("Suppose we answer “…”.", "The right answer is “…”.", "We choose “…”."), built in each `toBeats`. Localising them for non-English topics is left for later. |
+| 107 | Narrator wording | ~~Short fixed English phrases built in each `toBeats`.~~ Superseded by decision 108: no narrator wording lives in code. |
+| 108 | Where narration is written | **In OUI, per beat, in the section's narration file.** Every beat has a stable ID derived from the content (`q1`, `q1.wrong`, `q1.right`, `card2.back`, `p3`, …; table in *Beat Derivation*), and `NarrationStep(beat, caption, [effects])` names the beat it plays on. Several steps on one beat play in turn. A beat without a step shows no caption and the voice reads its on-screen text; the derived `say` lines of decision 102 are gone. Validation warns about a step whose beat the section does not have and lists its beats; Studio's **Add narration** writes one step per beat, its caption a placeholder saying what the beat shows; the authoring prompt and the `loom-topic-writer` skill write a narration file for every section, in the topic's language. Revises decisions 91, 93, 96, 97 and 102 (steps no longer attach by their first target), and answers the open question of decision 107. |
 
 ## Motion Rules
 
@@ -113,29 +114,30 @@ A movement that means nothing is a short fade.
 
 ## Beat Derivation
 
-Decisions 82 and 101–104. Each rule reads the compiled section data (`SectionConfig.props`, typed by
-the sub-context's `schema.ts`) and nothing else. Every beat plays by itself; *line* is the narrator's
-`say` line (decision 102), *wrong* / *right* a performed answer (decision 103).
+Decisions 82, 101–104 and 108. Each rule reads the compiled section data (`SectionConfig.props`, typed
+by the sub-context's `schema.ts`) and nothing else. Every beat plays by itself; *wrong* / *right* marks
+a performed answer (decision 103). The `code` names are the beat IDs a narration file's steps name
+(`BEAT_IDS` in `composition/oui/narration.ts`, listed in the authoring prompt).
 
 | Section type | Beats (from the OUI props) |
 |---|---|
-| `intro` | title and tagline · `IntroWhat` · `IntroWhy` · the `RoadmapStep` list (line draws, steps rise) |
-| `text` | one per paragraph of the markdown body; **bold** gets the highlighter sweep |
-| `bullets` | one per top-level `Bullet`; its children unfold out of it |
-| `pillar-layer` | one per `Layer`, settling onto the stack from the bottom; `MatrixBlock`s fill with the layer they belong to |
-| `image-gallery` | one per `GalleryImage`: the image with a slow push-in (ambient, outside the beat timeline) and its caption |
-| `taxonomy-browser` | all `TaxonomyCategory` cards cascading in (line names them) · each card opened in turn, the voice reading its overview and deep dive |
-| `concept-map` | one per `Concept.category` group, in first-appearance order (line: the category and its concepts); its `ConceptLink`s draw once both ends are on screen · the whole map (line) when there is more than one group |
-| `flowchart` | one per `JourneyStep` of the first `Journey`, through the existing journey playback; the camera follows the active node |
-| `scenario` | `intro` and the start node's `prompt` · when a weaker ending exists, its path choice by choice (line "We choose …"), ending *wrong* on its `Outcome` · back to where it leaves the best path (line "Let's go back and choose … instead") and on along the best path, ending *right* on its outcome |
-| `decision-tree` | the tree drawing in and the root `prompt` · one per answer down to a `DecisionLeaf`, taking the recommended `DecisionChoice` (else the first; line "We answer …") |
-| `tradeoff-sandbox` | per `TradeoffStep`: its choices with their effects (line: the step and its options), then the `recommended` choice focused (line: the recommendation and why it fits) · per scenario with a recommendation, Read's sandbox with every recommended choice picked (line) |
-| `formula-sandbox` | the formulas, sliders and gauges · a ghost hand sweeps the first `FormulaVariable` from `defaultValue` to `max` while each `FormulaMetric` recomputes (`evaluateFormula`) and counts (line announces it) |
-| `quiz` | per `QuizQuestion`: question and choices · *wrong*: the first wrong choice, its hint and explanation (line "Suppose we answer …") · *right*: the right choice over its explanation (line "The right answer is …") |
-| `flashcards` | per `Flashcard`: the `word` on the front · the flip to its `shortDefinition` |
-| `reflection-sequence` | per challenge: prompt and items · *right*: the items settle into the `solution` order (line) |
-| `reflection-template` | per challenge: prompt and template · *right*: the right chips pop into the blanks (line reads the filled sentence), then the `explanation` |
-| `openui` | one beat: each top-level child fades in |
+| `intro` | `title` title and tagline · `what` `IntroWhat` · `why` `IntroWhy` · `roadmap` the `RoadmapStep` list (line draws, steps rise) |
+| `text` | `p1`, `p2`, … one per paragraph of the markdown body; **bold** gets the highlighter sweep |
+| `bullets` | `item1`, … one per top-level `Bullet`; its children unfold out of it |
+| `pillar-layer` | `layer1`, … one per `Layer`, settling onto the stack from the bottom; `MatrixBlock`s fill with the layer they belong to |
+| `image-gallery` | `image1`, … one per `GalleryImage`: the image with a slow push-in (ambient, outside the beat timeline) and its caption |
+| `taxonomy-browser` | `cards` all `TaxonomyCategory` cards cascading in · `card1`, … each card opened in turn |
+| `concept-map` | `group1`, … one per `Concept.category` group, in first-appearance order; its `ConceptLink`s draw once both ends are on screen · `map` the whole map, when there is more than one group |
+| `flowchart` | `step1`, … one per `JourneyStep` of the first `Journey`, through the existing journey playback; the camera follows the active node |
+| `scenario` | `start` `intro` and the start node's `prompt` · when a weaker ending exists, `wrong1`, … along its path, the last *wrong* on its `Outcome` · `right1`, … back to where it leaves the best path and on along it, the last *right* on its outcome |
+| `decision-tree` | `start` the tree drawing in and the root `prompt` · `answer1`, … one per answer down to a `DecisionLeaf`, taking the recommended `DecisionChoice` (else the first) |
+| `tradeoff-sandbox` | per `TradeoffStep` (numbered across scenarios): `stepN` its choices with their effects, `stepN.recommended` the `recommended` choice focused · `result1`, … per scenario with a recommendation, Read's sandbox with every recommended choice picked |
+| `formula-sandbox` | `formulas` the formulas, sliders and gauges · `sweep` a ghost hand sweeps the first `FormulaVariable` from `defaultValue` to `max` while each `FormulaMetric` recomputes (`evaluateFormula`) and counts |
+| `quiz` | per `QuizQuestion` n: `qn` question and choices · `qn.wrong` *wrong*: the first wrong choice, its hint and explanation · `qn.right` *right*: the right choice over its explanation |
+| `flashcards` | per `Flashcard` n: `cardn` the `word` on the front · `cardn.back` the flip to its `shortDefinition` |
+| `reflection-sequence` | per challenge n: `cn` prompt and items · `cn.solved` *right*: the items settle into the `solution` order |
+| `reflection-template` | per challenge n: `cn` prompt and template · `cn.solved` *right*: the right chips pop into the blanks, then the `explanation` |
+| `openui` | `all` one beat: each top-level child fades in |
 
 ## Implementation Plan
 
@@ -311,8 +313,8 @@ pure and tested directly.
 
 ### Decisions 101–107 — Implementation Notes
 
-- Kernel (`present-kernel.ts`): `Beat` is `{ say?, answer? }` (no `kind`); `show(say?)` and
-  `answer('wrong' | 'right', say?)` build beats. `PresentRendererProps` lost `gate` and `onEvent`;
+- Kernel (`present-kernel.ts`): `Beat` is `{ say?, answer? }` (no `kind`; since decision 108
+  `{ id, answer?, about? }`); `show(say?)` and `answer('wrong' | 'right', say?)` build beats. `PresentRendererProps` lost `gate` and `onEvent`;
   `active` remains for timed motion such as the formula sweep. `beatMarks()` takes a `sound`
   (played by `enterBeat` as the element lands: `error` on a wrong try, `success` on a right answer,
   `flip` on a flashcard). `focus(on)` marks a beat's main content, `QUIET` what the narrator line
@@ -333,8 +335,23 @@ pure and tested directly.
   at each beat), the runner without gates, untargeted narration steps riding on the beat before the
   first performed answer, and `QUIET` in `beatSpeech()`.
 
+### Decision 108 — Implementation Notes
+
+- `Beat` is `{ id, answer?, about? }`: `show(id, about?)`, `answer(kind, id, about?)`; `about` says in
+  a few words what the beat shows (Studio's template, nothing on stage). The `say` line is removed.
+- `NarrationStep(beat, caption?, effects?)` (`composition/oui/narration.ts`), `BEAT_IDS` per section
+  type for the prompt (a test checks it covers every presenter), `narrationTemplate(beats)` for Studio.
+- `registry/register-core-presenters.ts` exports `CORE_PRESENTERS` and `coreBeatsOf(config)`;
+  `sectionBeatsOf(source)` in `validation/oui-gateway.ts` compiles a section and returns its beats, for
+  validation and the template.
+- Runtime: `stepsByBeat(beats, steps)` groups steps by beat ID; the measured target placement
+  (`revealingBeat`, `defaultBeat`) is gone. While a taxonomy card is open, only its detail carries the
+  card's Pick anchors, so a step's effects land on what is in view.
+- Without a script the voice reads the beat's on-screen text; `QUIET` now only hides what is not worth
+  reading (drawing labels, slot numbers, the item pool, the formula sliders, card descriptions in the grid).
+
 ## Open Questions
 
-- Narrator phrases are English (decision 107). A Thai or Japanese topic gets English framing around
-  its own words; the voice picks a voice for the topic's script. Localising the phrases needs its own
-  grill session.
+- Beat IDs follow the content's order (`q2` is the second question), so inserting a question or a card
+  shifts the IDs after it and the narration file must follow (validation flags steps whose beat is gone,
+  not steps that now land on a different item).

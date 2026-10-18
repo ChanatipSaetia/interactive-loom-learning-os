@@ -67,7 +67,7 @@ function Challenge({ challenge, index, total, beat, mark }: {
 
       {solved && (
         <div className="sequence-footer present-reflection-foot">
-          <div className="sequence-feedback-msg success present-reflection-result" role="status" {...mark(solveAt, { motion: 'fade', delay: 300 + challenge.solution.length * 160, sound: 'success' })} {...QUIET}>
+          <div className="sequence-feedback-msg success present-reflection-result" role="status" {...mark(solveAt, { motion: 'fade', delay: 300 + challenge.solution.length * 160, sound: 'success' })}>
             <CheckCircle2 size={16} className="feedback-icon" aria-hidden />
             <span>That is the right order.</span>
           </div>
@@ -80,7 +80,7 @@ function Challenge({ challenge, index, total, beat, mark }: {
 /**
  * Reflection sequence in Present mode (sequenceBeats), solved by the stage (decision 103): per
  * challenge, the prompt and items arrive; then the steps settle into their slots in the right order,
- * one after another, while the narrator reads them.
+ * one after another, while the voice reads them.
  */
 export default function PresentSequence({ data, beat }: PresentRendererProps<SequencePresentData>) {
   const challenges = data.challenges ?? []

@@ -8,7 +8,7 @@ import {
   taxonomyBeats,
   textBeats,
 } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
-import { content, kinds, propsOf } from './helpers'
+import { content, ids, kinds, propsOf } from './helpers'
 
 const worldHistoryLayers = content('world-history/sections/pillar-layer.oui')
 const monkGallery = content('poe2-flicker-monk/sections/image-gallery.oui')
@@ -20,7 +20,7 @@ describe('progressive-content beats', () => {
 what = IntroWhat("Caches keep copies.")
 why = IntroWhy("Origin requests cost time.")
 `)
-    expect(kinds(introBeats(withRoadmap))).toEqual(['show', 'show', 'show', 'show'])
+    expect(ids(introBeats(withRoadmap))).toEqual(['title', 'what', 'why', 'roadmap'])
     const without = propsOf<Parameters<typeof introBeats>[0]>(`root = Intro("HTTP Caching", what, why)
 what = IntroWhat("Caches keep copies.")
 why = IntroWhy("Origin requests cost time.")
@@ -31,6 +31,7 @@ why = IntroWhy("Origin requests cost time.")
   it('text: one beat per paragraph', () => {
     const props = propsOf<Parameters<typeof textBeats>[0]>('root = Text("What a cache keeps", ["First **paragraph**.", "Second.", "Third."])\n')
     expect(kinds(textBeats(props))).toEqual(['show', 'show', 'show'])
+    expect(textBeats(props)[0]).toEqual({ id: 'p1', about: 'Paragraph 1: First paragraph.' })
   })
 
   it('bullets: one beat per top-level bullet, children included', () => {
@@ -56,12 +57,11 @@ why = IntroWhy("Origin requests cost time.")
     expect(galleryBeats(props)).toHaveLength(props.items.length)
   })
 
-  it('taxonomy-browser: the cards with a line naming them, then each card opened in turn', () => {
+  it('taxonomy-browser: the cards, then each card opened in turn', () => {
     const props = propsOf<Parameters<typeof taxonomyBeats>[0]>(cachingDirectives)
     const beats = taxonomyBeats(props)
     expect(beats).toHaveLength(1 + props.categories.length)
-    expect(beats[0].say).toContain(props.categories[0].title)
-    expect(beats.slice(1).every((b) => !b.say && !b.answer)).toBe(true)
+    expect(ids(beats)).toEqual(['cards', ...props.categories.map((_, i) => `card${i + 1}`)])
     expect(kinds(taxonomyBeats({ categories: [] }))).toEqual(['show'])
   })
 })

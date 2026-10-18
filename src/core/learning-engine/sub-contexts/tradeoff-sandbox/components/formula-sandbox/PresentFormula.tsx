@@ -50,7 +50,7 @@ function rangesOf(metrics: FormulaMetric[], variables: FormulaVariable[]): Recor
 /**
  * Formula sandbox in Present mode (formulaBeats): the formulas, sliders and metric gauges arrive; then a
  * ghost hand sweeps the first variable from its default to its max while every metric recomputes and
- * its gauge follows. The narrator reads the formulas, then says what the sweep shows.
+ * its gauge follows. Without a script, the voice reads the formulas.
  */
 export default function PresentFormula({ data, beat, beats, active }: PresentRendererProps<FormulaPresentData>) {
   const pick = usePickAnchors()

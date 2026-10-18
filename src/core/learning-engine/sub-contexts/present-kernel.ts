@@ -15,12 +15,14 @@ import type { SoundEffect } from '../../ui-system'
  */
 export interface Beat {
   /**
-   * The narrator's line for the beat, derived from the content: shown as the caption and read before
-   * what the beat puts on screen. Unset when the on-screen text says it all (a paragraph, a bullet).
+   * The beat's name, stable for the section's content: a narration file attaches its steps to it with
+   * `NarrationStep("q1.wrong", …)` (decision 108). Unique within the section.
    */
-  say?: string
+  id: string
   /** The beat performs an answer: a wrong try (and why it is wrong) or the right answer (decision 103). */
   answer?: 'wrong' | 'right'
+  /** What the beat shows, in a few words, for authors (Studio's narration template, diagnostics). */
+  about?: string
 }
 
 /** How a marked element enters (Motion Rules in the grill log). */
@@ -51,9 +53,9 @@ export interface SectionPresenter<D = Record<string, unknown>> {
   load: () => Promise<{ default: ComponentType<PresentRendererProps<D>> }>
 }
 
-export const show = (say?: string): Beat => (say ? { say } : {})
+export const show = (id: string, about?: string): Beat => ({ id, ...(about && { about }) })
 /** A performed answer: `answer('wrong', …)` tries a wrong choice, `answer('right', …)` gives the right one. */
-export const answer = (kind: 'wrong' | 'right', say?: string): Beat => ({ ...(say && { say }), answer: kind })
+export const answer = (kind: 'wrong' | 'right', id: string, about?: string): Beat => ({ id, answer: kind, ...(about && { about }) })
 
 export interface BeatMarkOptions {
   motion?: BeatMotion
@@ -144,12 +146,12 @@ export const wordCount = (text: string) => splitWords(text).length
 export const focus = (on: boolean) => (on ? { 'data-focus': '' } : {})
 
 /**
- * Put on what the voice should not read out, because the beat's `say` line already says it (a
- * drawing's labels, a choice the line quotes): `<svg {...QUIET}>`.
+ * Put on what the voice should not read out when a beat has no authored narration (a drawing's
+ * labels, slot numbers, a pool the beat only moves): `<svg {...QUIET}>`.
  */
 export const QUIET = { 'data-quiet': '' } as const
 
-/** Markdown or HTML as plain text for a narrator's line. */
+/** Markdown or HTML as plain text, for a beat's `about`. */
 export function plain(text: string): string {
   return text
     .replace(/<[^>]+>/g, '')
@@ -161,14 +163,11 @@ export function plain(text: string): string {
     .trim()
 }
 
-/** A choice or label quoted inside a narrator's line. */
-export const quoted = (text: string) => `“${plain(text)}”`
-
-/** Items joined for speech: "a, b and c". */
-export const listOf = (items: string[]) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`)
-
-/** Ends a line with a full stop unless it already ends a sentence. */
-export const sentence = (text: string) => {
+/** Text cut to a few words, for a beat's `about`. */
+export function brief(text: string, max = 60): string {
   const t = plain(text)
-  return !t || /[.!?…:]$/.test(t) ? t : `${t}.`
+  return t.length > max ? `${t.slice(0, max - 1).trimEnd()}…` : t
 }
+
+/** A choice or label quoted inside a beat's `about`. */
+export const quoted = (text: string) => `“${brief(text)}”`

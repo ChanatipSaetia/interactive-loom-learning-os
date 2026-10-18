@@ -116,6 +116,9 @@
 
 .present-region-body::-webkit-scrollbar { display: none; }
 
+/* Room around the content so a lit element's ring (decision 105) is never cut off at the body's edge */
+.present-region-body { margin: -12px; padding: 12px; }
+
 /* Present plays by itself (decision 101): sections take no pointer input, so nothing hovers or presses */
 .present-region-body:not(.is-fallback) { pointer-events: none; }
 
@@ -160,8 +163,8 @@
 /* A beat's main content lights up while the beat plays (decision 105, Motion Rules: Focus) */
 .present-region .present-focus {
   outline: 2px solid var(--present-accent, var(--primary));
-  outline-offset: 5px;
-  box-shadow: 0 0 0 9px var(--present-highlight);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 7px var(--present-highlight);
   animation: present-focus-in 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .present-region svg .present-focus,
@@ -397,7 +400,7 @@
 /* ---- authored narration (decision 94) ---- */
 
 /* Effects over the current section, in region coordinates */
-.present-narr { position: absolute; inset: 0; z-index: 4; overflow: hidden; border-radius: var(--radius-lg); pointer-events: none; }
+.present-narr { position: absolute; inset: 0; z-index: 8; overflow: hidden; border-radius: var(--radius-lg); pointer-events: none; }
 
 .present-narr-spot {
   position: absolute;

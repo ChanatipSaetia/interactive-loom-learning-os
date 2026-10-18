@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { answer, beatMarks, listOf, plain, show, splitWords, wordsHtml, PRESENT_WORD_CLASS } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
+import { answer, beatMarks, brief, plain, show, splitWords, wordsHtml, PRESENT_WORD_CLASS } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
 import { PresentRegistry, beatsOf } from '../../../../src/core/learning-engine/registry/present-registry'
-import { registerCorePresenters } from '../../../../src/core/learning-engine/registry/register-core-presenters'
+import { CORE_PRESENTERS, registerCorePresenters } from '../../../../src/core/learning-engine/registry/register-core-presenters'
+import { BEAT_IDS } from '../../../../src/core/learning-engine/composition/oui/narration'
 
 describe('present kernel', () => {
   it('marks elements with their beat and shows them from that beat on', () => {
@@ -13,17 +14,16 @@ describe('present kernel', () => {
     expect(beatMarks(0)(0, { sound: 'success' })['data-sound']).toBe('success')
   })
 
-  it('makes beats with a narrator line and the answer they perform', () => {
-    expect(show()).toEqual({})
-    expect(show('Here is the map.')).toEqual({ say: 'Here is the map.' })
-    expect(answer('wrong', 'Suppose we answer “A”.')).toEqual({ say: 'Suppose we answer “A”.', answer: 'wrong' })
+  it('makes beats with an ID, what they show and the answer they perform', () => {
+    expect(show('map')).toEqual({ id: 'map' })
+    expect(show('map', 'The whole map')).toEqual({ id: 'map', about: 'The whole map' })
+    expect(answer('wrong', 'q1.wrong', 'Tries “A”')).toEqual({ id: 'q1.wrong', answer: 'wrong', about: 'Tries “A”' })
   })
 
-  it('turns markdown into plain words for a narrator line', () => {
+  it('turns markdown into plain words for a beat description', () => {
     expect(plain('Use **max-age** and `no-cache`, see [docs](https://x.y).\n- Item')).toBe('Use max-age and no-cache, see docs. Item')
     expect(plain('bleed_dps + poison_dps')).toBe('bleed_dps + poison_dps')
-    expect(listOf(['a', 'b', 'c'])).toBe('a, b and c')
-    expect(listOf(['a'])).toBe('a')
+    expect(brief('x'.repeat(80))).toHaveLength(60)
   })
 
   it('splits text into words with the space after each', () => {
@@ -56,8 +56,13 @@ describe('present registry', () => {
     expect(PresentRegistry.list().sort()).toEqual(['bullets', 'concept-map', 'decision-tree', 'flashcards', 'flowchart', 'formula-sandbox', 'image-gallery', 'intro', 'openui', 'pillar-layer', 'quiz', 'reflection-sequence', 'reflection-template', 'scenario', 'taxonomy-browser', 'text', 'tradeoff-sandbox'])
   })
 
-  it('gives a type without a presenter one show beat', () => {
-    expect(beatsOf({ type: 'unknown-type', props: {} })).toEqual([{}])
-    expect(beatsOf({ type: 'text', props: { paragraphs: [] } })).toEqual([{}])
+  it('gives a type without a presenter one beat, all', () => {
+    const all = [{ id: 'all', about: 'The whole section' }]
+    expect(beatsOf({ type: 'unknown-type', props: {} })).toEqual(all)
+    expect(beatsOf({ type: 'text', props: { paragraphs: [] } })).toEqual(all)
+  })
+
+  it('documents the beat IDs of every type with a presenter (decision 108)', () => {
+    expect(Object.keys(BEAT_IDS).sort()).toEqual(Object.keys(CORE_PRESENTERS).sort())
   })
 })

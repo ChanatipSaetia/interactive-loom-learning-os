@@ -80,7 +80,7 @@ function Detail({ category, at, mark }: { category: TaxonomyCategory; at: number
 
 /**
  * Taxonomy browser in Present mode, as the Read card grid (taxonomyBeats): the cards cascade in while the
- * narrator names them, then the stage opens each card in turn and the voice reads its details.
+ * voice reads their titles, then the stage opens each card in turn and the voice reads its details.
  */
 export default function PresentTaxonomy({ data, beat }: PresentRendererProps<TaxonomyPresentData>) {
   const mark = beatMarks(beat)
@@ -91,7 +91,8 @@ export default function PresentTaxonomy({ data, beat }: PresentRendererProps<Tax
 
   return (
     <div className={`taxonomy-browser-section present-taxonomy${categories.length > 4 ? ' is-many' : ''}${categories.length > 6 ? ' is-lots' : ''}`} data-testid="present-taxonomy">
-      <div className="taxonomy-browser-grid" {...QUIET}>
+      {/* While a card is open, narration targets find its detail, not the card behind it */}
+      <div className="taxonomy-browser-grid">
         {categories.map((cat, i) => {
           const Icon = resolveIcon(cat.icon)
           const accent = colorAccentMap[cat.color] ?? 'var(--ctp-blue)'
@@ -102,13 +103,13 @@ export default function PresentTaxonomy({ data, beat }: PresentRendererProps<Tax
               style={{ borderTopColor: accent }}
               {...mark(0, { delay: i * 70 })}
               {...focus(open === i)}
-              {...pick(cat)}
+              {...(open === null && pick(cat))}
             >
               <div className="taxonomy-browser-card-icon"><Icon style={{ color: accent }} size={20} strokeWidth={1.5} /></div>
               <div className="taxonomy-browser-card-body">
-                {cat.subtitle && <p className="taxonomy-browser-subtitle" {...pick(cat, 'subtitle')}>{cat.subtitle}</p>}
-                <h4 className="taxonomy-browser-card-title" {...pick(cat, 'title')}>{cat.title}</h4>
-                <p className="taxonomy-browser-description" {...pick(cat, 'description')}>{cat.description}</p>
+                {cat.subtitle && <p className="taxonomy-browser-subtitle" {...(open === null && pick(cat, 'subtitle'))}>{cat.subtitle}</p>}
+                <h4 className="taxonomy-browser-card-title" {...(open === null && pick(cat, 'title'))}>{cat.title}</h4>
+                <p className="taxonomy-browser-description" {...QUIET} {...(open === null && pick(cat, 'description'))}>{cat.description}</p>
               </div>
             </div>
           )

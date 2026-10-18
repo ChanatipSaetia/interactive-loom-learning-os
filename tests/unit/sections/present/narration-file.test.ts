@@ -11,11 +11,12 @@ describe('narration files', () => {
     expect(result.diagnostics).toEqual([])
     expect(result.status).toBe('valid')
     const steps = result.payload?.steps ?? []
-    expect(steps).toHaveLength(4)
-    expect(steps[1]).toEqual({
+    expect(steps).toHaveLength(5)
+    expect(steps[2]).toEqual({
+      beat: 'card2',
       caption: 'The name no-cache is the one people misread.',
       effects: [
-        { kind: 'highlight', target: 'noCache' },
+        { kind: 'highlight', target: 'noCache.title' },
         { kind: 'callout', target: 'noCache', text: expect.stringMatching(/^no-cache does not mean/) },
       ],
     })
@@ -24,7 +25,7 @@ describe('narration files', () => {
 
   it('warns about targets that name no statement or no prop of the section', () => {
     const result = validateOUINarration(`root = Narration([a])
-a = NarrationStep("Look", [Highlight("nocache"), Callout("noCache.colour", "Hi")])
+a = NarrationStep("cards", "Look", [Highlight("nocache"), Callout("noCache.colour", "Hi")])
 `, section, ctx)
     expect(result.status).toBe('warning')
     expect(result.diagnostics.map((d) => d.message)).toEqual([
@@ -37,10 +38,19 @@ a = NarrationStep("Look", [Highlight("nocache"), Callout("noCache.colour", "Hi")
 
   it('accepts prop paths, list indexes and steps with only a caption', () => {
     const result = validateOUINarration(`root = Narration([a, b])
-a = NarrationStep("Only words.")
-b = NarrationStep(null, [Highlight("noCache.description"), Highlight("root.categories[0]")])
+a = NarrationStep("cards", "Only words.")
+b = NarrationStep("card1", null, [Highlight("noCache.description"), Highlight("root.categories[0]")])
 `, section, ctx)
     expect(result.diagnostics).toEqual([])
+  })
+
+  it('warns about steps that name no beat of the section (decision 108)', () => {
+    const result = validateOUINarration(`root = Narration([a])
+a = NarrationStep("q1", "No quiz here.")
+`, section, ctx)
+    expect(result.status).toBe('warning')
+    expect(result.diagnostics[0].message).toBe('"q1" is not a beat of sections/directives.oui, so this step never plays.')
+    expect(result.diagnostics[0].fixHint).toBe('Its beats are cards, card1, card2, card3, card4.')
   })
 
   it('needs its section and the Narration root', () => {

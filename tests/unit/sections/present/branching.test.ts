@@ -3,7 +3,7 @@ import { flowchartBeats, scenarioBeats, scenarioPlan, type FlowchartPresentData,
 import { conceptCategories, conceptMapBeats, type ConceptMapPresentData } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/present'
 import { decisionTreeBeats, decisionTreeWalk, drawTree, type DecisionTreePresentData } from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/present'
 import { layoutConceptMap } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/concept-map'
-import { content, kinds, propsOf } from './helpers'
+import { content, ids, kinds, propsOf } from './helpers'
 
 describe('spatial and branching beats', () => {
   it('flowchart: one beat per step of the first journey', () => {
@@ -14,16 +14,16 @@ describe('spatial and branching beats', () => {
     expect(kinds(flowchartBeats({}))).toEqual(['show'])
   })
 
-  it('concept map: a beat per category in first-appearance order, naming its concepts, then the whole map', () => {
+  it('concept map: a beat per category in first-appearance order, then the whole map', () => {
     const props = propsOf<ConceptMapPresentData>(content('pixijs/sections/concept-map.oui'))
     const groups = conceptCategories(props)
     expect(groups.length).toBeGreaterThan(1)
     expect(groups[0]).toBe(Object.values(props.nodes ?? {})[0].category)
     const beats = conceptMapBeats(props)
     expect(beats).toHaveLength(groups.length + 1)
-    expect(beats[0].say).toMatch(new RegExp(`^${groups[0]}: `))
+    expect(ids(beats)).toEqual([...groups.map((_, i) => `group${i + 1}`), 'map'])
     expect(kinds(conceptMapBeats({ nodes: {} }))).toEqual(['show'])
-    expect(conceptMapBeats({ nodes: { a: { id: 'a', title: 'A', category: 'x' }, b: { id: 'b', title: 'B', category: 'x' } } })).toEqual([{ say: 'x: A and B.' }])
+    expect(ids(conceptMapBeats({ nodes: { a: { id: 'a', title: 'A', category: 'x' }, b: { id: 'b', title: 'B', category: 'x' } } }))).toEqual(['group1'])
   })
 
   it('concept map layout places every group side by side from 0,0', () => {
@@ -48,7 +48,8 @@ describe('spatial and branching beats', () => {
     }
     const plan = scenarioPlan({ nodes, startNode: 'start' })
     expect(plan.map((s) => s.path.map((p) => p.nodeId).join('>'))).toEqual(['start', 'start>burnt', 'start>vents', 'start>vents>great'])
-    expect(plan.map((s) => s.say)).toEqual([undefined, 'We choose “Open it”.', "Let's go back and choose “Keep it shut” instead.", 'We choose “Small”.'])
+    expect(plan.map((s) => s.id)).toEqual(['start', 'wrong1', 'right1', 'right2'])
+    expect(plan[2].about).toBe('Back to the fork, then chooses “Keep it shut”')
     expect(kinds(scenarioBeats({ nodes, startNode: 'start' }))).toEqual(['show', 'wrong', 'show', 'right'])
     // Only good endings: straight down the best path
     const only = { start: { prompt: 'Go?', choices: [{ id: 'y', text: 'Yes', next: 'great' }] }, great: nodes.great }
@@ -71,7 +72,7 @@ describe('spatial and branching beats', () => {
       l2: { leaf: { recommendation: 'Two', explanation: '' } },
     }
     expect(decisionTreeWalk({ root: 'q', nodes }).map((p) => p.nodeId)).toEqual(['q', 'q2', 'l2'])
-    expect(decisionTreeBeats({ root: 'q', nodes })).toEqual([{}, { say: 'We answer “B”.' }, { say: 'We answer “C”.' }])
+    expect(ids(decisionTreeBeats({ root: 'q', nodes }))).toEqual(['start', 'answer1', 'answer2'])
     const props = propsOf<DecisionTreePresentData>(content('pixijs/sections/decision-tree.oui'))
     expect(decisionTreeBeats(props).length).toBeGreaterThan(1)
     expect(kinds(decisionTreeBeats({ root: 'missing', nodes: {} }))).toEqual(['show'])

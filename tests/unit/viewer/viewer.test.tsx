@@ -120,7 +120,7 @@ describe('Loom Viewer', () => {
       files: {
         'topic.oui': 'root = Topic("Narrated", "Architecture", "", [SectionRef("words")])\n',
         'sections/words.oui': 'root = Text("Words", ["First paragraph.", "Second paragraph."])\n',
-        'sections/words.narrate.oui': 'root = Narration([s1])\ns1 = NarrationStep("Both paragraphs say one thing.")\n',
+        'sections/words.narrate.oui': 'root = Narration([s1])\ns1 = NarrationStep("p2", "Both paragraphs say one thing.")\n',
       },
     }
     fireEvent.click(screen.getByTestId('viewer-paste-toggle'))
@@ -131,7 +131,7 @@ describe('Loom Viewer', () => {
 
     fireEvent.click(screen.getByTestId('viewer-mode-present'))
     const where = () => screen.getByTestId('present-where').textContent
-    // The step rides on the section's own beats: no extra stop on the rail (decision 96)
+    // The step plays on the beat it names, adding no stop to the rail (decisions 96, 108)
     expect(where()).toBe('Text · 1 of 2')
     expect(screen.queryByTestId('present-caption')).toBeNull()
     fireEvent.click(screen.getByTestId('present-next'))

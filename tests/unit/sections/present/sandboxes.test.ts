@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { formulaBeats, tradeoffBeats, tradeoffPlan, tradeoffSummaries, type FormulaPresentData, type TradeoffPresentData } from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/present'
-import { content, kinds, propsOf } from './helpers'
+import { content, ids, kinds, propsOf } from './helpers'
 
 describe('sandbox beats', () => {
   it('tradeoff: per step its choices, then its recommended choice, then where the recommendations land', () => {
@@ -14,9 +14,8 @@ describe('sandbox beats', () => {
     ])
     const beats = tradeoffBeats(props)
     expect(beats).toHaveLength(tradeoffPlan(props).length + (props.scenarios ?? []).length)
-    expect(beats[0].say).toContain('The options:')
-    expect(beats[1].say).toMatch(/^The recommended choice: “/)
-    expect(beats.every((b) => b.say)).toBe(true)
+    expect(ids(beats).slice(0, 3)).toEqual(['step1', 'step1.recommended', 'step2'])
+    expect(ids(beats).slice(-(props.scenarios ?? []).length)).toEqual((props.scenarios ?? []).map((_, i) => `result${i + 1}`))
     expect(kinds(tradeoffBeats({ scenarios: [] }))).toEqual(['show'])
   })
 
@@ -29,13 +28,13 @@ describe('sandbox beats', () => {
     expect(tradeoffBeats(props)).toHaveLength(steps.length)
   })
 
-  it('formula: variables and metrics, then the sweep the narrator announces', () => {
+  it('formula: variables and metrics, then the sweep', () => {
     const props = propsOf<FormulaPresentData>(content('kamado-beef/sections/formula-sandbox.oui'))
     const beats = formulaBeats(props)
     const v = props.variables?.[0]
     if (!v) throw new Error('fixture has no variables')
     expect(kinds(beats)).toEqual(['show', 'show'])
-    expect(beats[1].say).toBe(`Watch what happens as ${v.label} goes from ${v.defaultValue} to ${v.max}.`)
+    expect(ids(beats)).toEqual(['formulas', 'sweep'])
     expect(kinds(formulaBeats({ ...props, variables: [{ ...v, defaultValue: v.max }] }))).toEqual(['show'])
     expect(kinds(formulaBeats({ variables: [], metrics: [] }))).toEqual(['show'])
   })

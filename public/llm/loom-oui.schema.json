@@ -2544,14 +2544,18 @@
         "steps"
       ],
       "additionalProperties": false,
-      "description": "Root of a narration file sections/<name>.narrate.oui: the steps Present mode adds to that section."
+      "description": "Root of a narration file sections/<name>.narrate.oui: the script Present mode plays the section to, step by step."
     },
     "NarrationStep": {
       "type": "object",
       "properties": {
+        "beat": {
+          "type": "string",
+          "description": "The beat it plays on, by its ID for the section type, e.g. \"q1\", \"q1.wrong\", \"q1.right\" for a quiz, \"p2\" for a text paragraph (see Narration Files)."
+        },
         "caption": {
           "type": "string",
-          "description": "Subtitle line shown (and read aloud) for the step; null for none."
+          "description": "Subtitle line shown and read aloud while the beat plays, in the topic's language; null for none."
         },
         "effects": {
           "type": "array",
@@ -2571,8 +2575,11 @@
           "description": "Highlight, Callout and Spotlight calls for the step."
         }
       },
+      "required": [
+        "beat"
+      ],
       "additionalProperties": false,
-      "description": "One narrated step: a caption line and effects. It plays during the beat that shows its first target (untargeted steps with the last beat before the first question or exploring)."
+      "description": "One narrated step: the beat it plays on, a caption line read aloud, and effects. Several steps on one beat play in turn."
     },
     "Highlight": {
       "type": "object",

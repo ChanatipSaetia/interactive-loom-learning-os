@@ -35,8 +35,7 @@ function Challenge({ challenge, index, total, beat, mark }: {
     <div className="template-body present-reflection" {...mark(at, { motion: 'fade', ...(index < total - 1 && { until: solveAt }) })} {...pick(challenge)}>
       <div className="template-prompt present-reflection-prompt" {...mark(at, { motion: 'words' })} {...focus(beat === at)} {...pick(challenge, 'prompt')}><PresentWords text={challenge.prompt} /></div>
 
-      {/* The narrator's line reads the sentence once it is filled in */}
-      <div className="template-sentence-container present-template" {...mark(at, { delay: 450 })} {...QUIET} {...focus(beat === solveAt)} {...pick(challenge, 'template')}>
+      <div className="template-sentence-container present-template" {...mark(at, { delay: 450 })} {...focus(beat === solveAt)} {...pick(challenge, 'template')}>
         {segments.map((seg, i) => {
           if (!isZone(seg)) return <span key={i}>{seg}</span>
           zone += 1
@@ -82,7 +81,7 @@ function Challenge({ challenge, index, total, beat, mark }: {
 /**
  * Reflection template in Present mode (templateBeats), solved by the stage (decision 103): per
  * challenge, the prompt and the sentence with blanks arrive; then the right chips pop into the
- * blanks while the narrator reads the finished sentence, and its explanation follows.
+ * blanks, and its explanation follows.
  */
 export default function PresentTemplate({ data, beat }: PresentRendererProps<TemplatePresentData>) {
   const challenges = data.challenges ?? []

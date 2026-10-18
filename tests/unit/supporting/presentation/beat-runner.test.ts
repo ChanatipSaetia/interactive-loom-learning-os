@@ -9,7 +9,7 @@ import {
 } from '../../../../src/core/supporting/presentation/beat-runner'
 import { answer, show } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
 
-const sections = [[show(), show()], [show(), answer('wrong'), answer('right')], [show('Here is the map.')]]
+const sections = [[show('a'), show('b')], [show('q1'), answer('wrong', 'q1.wrong'), answer('right', 'q1.right')], [show('map')]]
 const reduce = runnerReducer(sections)
 const at = (section: number, beat: number, extra: Partial<RunnerState> = {}): RunnerState => ({ ...initialRunnerState(), section, beat, ...extra })
 

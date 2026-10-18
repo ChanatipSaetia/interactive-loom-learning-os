@@ -1,23 +1,17 @@
 /**
- * Which beat each authored narration step rides on (decisions 96–98 in grill-log-presenting-mode.md).
- * Pure: the stage measures which derived beat reveals each step's first target and passes it in;
- * until then (or without a target) a step rides on the last beat before the first performed answer.
+ * Which beat each authored narration step plays on (decision 108 in grill-log-presenting-mode.md):
+ * the one its `beat` names. A step naming no beat of the section does not play (validation warns).
  */
 import type { Beat } from '../../learning-engine/sub-contexts/present-kernel'
-
-/** The beat an untargeted step rides on: the last one before the first performed answer, else the last beat. */
-export function defaultBeat(beats: Beat[]): number {
-  const first = beats.findIndex((b) => b.answer)
-  return first < 0 ? beats.length - 1 : Math.max(0, first - 1)
-}
+import type { NarrationStepData } from '../../learning-engine/composition/oui/narration'
 
 /** Per beat, the indexes of the steps that play during it, in written order. */
-export function stepsByBeat(beats: Beat[], stepCount: number, at: ReadonlyArray<number | undefined> = []): number[][] {
+export function stepsByBeat(beats: Beat[], steps: ReadonlyArray<Pick<NarrationStepData, 'beat'>>): number[][] {
+  const at = new Map(beats.map((b, i) => [b.id, i]))
   const byBeat: number[][] = beats.map(() => [])
-  const fallback = defaultBeat(beats)
-  for (let step = 0; step < stepCount; step++) {
-    const beat = Math.min(beats.length - 1, Math.max(0, at[step] ?? fallback))
-    byBeat[beat]?.push(step)
-  }
+  steps.forEach((step, i) => {
+    const beat = at.get(step.beat)
+    if (beat !== undefined) byBeat[beat].push(i)
+  })
   return byBeat
 }

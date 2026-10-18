@@ -1,7 +1,7 @@
 /**
  * Present mode beats for the process-simulation section types (Beat Derivation in
  * grill-log-presenting-mode.md). Each function reads the compiled section props only; every beat
- * plays by itself (decision 101).
+ * plays by itself (decision 101). Beat IDs name the beats for narration files (decision 108).
  */
 import { answer, quoted, show, type Beat, type SectionPresenter } from '../present-kernel'
 import type { UnifiedFlowchartSchema } from './components/flowchart/types'
@@ -10,10 +10,10 @@ import type { ScenarioChoice, ScenarioNode, ScenarioOutcome } from './schema'
 export type FlowchartPresentData = { title?: string; schema?: UnifiedFlowchartSchema }
 export type ScenarioPresentData = { id?: string; title?: string; intro?: string; nodes?: Record<string, ScenarioNode>; startNode?: string }
 
-/** One beat per step of the first journey, played through the flowchart's own journey playback. */
+/** One beat per step of the first journey (`step1`, `step2`, …), played through the flowchart's own journey playback. */
 export function flowchartBeats(data: FlowchartPresentData): Beat[] {
   const steps = data.schema?.journeys?.[0]?.steps ?? []
-  return steps.length ? steps.map(() => show()) : [show()]
+  return steps.length ? steps.map((_, i) => show(`step${i + 1}`, `Journey step ${i + 1}`)) : [show('chart', 'The chart')]
 }
 
 export const scenarioNext = (c: ScenarioChoice) => c.next ?? c.nextNode ?? ''
@@ -52,18 +52,19 @@ const shared = (a: ScenarioPath, b: ScenarioPath) => {
 }
 
 /** What one scenario beat shows: the path walked so far. */
-export type ScenarioStep = { path: ScenarioPath; say?: string; answer?: 'wrong' | 'right' }
+export type ScenarioStep = { id: string; about: string; path: ScenarioPath; answer?: 'wrong' | 'right' }
 
 /**
- * The walk the stage performs (decision 103): the setup; when a weaker ending exists, the path to it
- * first, choice by choice; then back to where the paths part and on along the best path to its outcome.
+ * The walk the stage performs (decision 103): the setup (`start`); when a weaker ending exists, the
+ * path to it first, choice by choice (`wrong1`, `wrong2`, …, the last one its outcome); then back to
+ * where the paths part and on along the best path (`right1`, `right2`, …, the last one its outcome).
  */
 export function scenarioPlan(data: ScenarioPresentData): ScenarioStep[] {
   const nodes = data.nodes ?? {}
   const start = data.startNode ?? 'start'
   if (!nodes[start]) return []
   const all = walks(nodes, start)
-  const opening: ScenarioStep = { path: [{ nodeId: start }] }
+  const opening: ScenarioStep = { id: 'start', about: 'The setup and the first situation', path: [{ nodeId: start }] }
   if (!all.length) return [opening]
   const best = [...all].sort((a, b) => rank(nodes, b) - rank(nodes, a) || a.length - b.length)[0]
   // The weaker walk that leaves the best one earliest, the weakest of those
@@ -76,8 +77,9 @@ export function scenarioPlan(data: ScenarioPresentData): ScenarioStep[] {
       const text = quoted(scenarioText(path[k].choice ?? {}))
       const end = k === path.length - 1
       steps.push({
+        id: `${tone}${k - from + 1}`,
+        about: `${back && k === from ? 'Back to the fork, then chooses' : 'Chooses'} ${text}${end ? `, reaching the ${tone === 'wrong' ? 'weaker' : 'best'} outcome` : ''}`,
         path: path.slice(0, k + 1),
-        say: back && k === from ? `Let's go back and choose ${text} instead.` : `We choose ${text}.`,
         ...(end && { answer: tone }),
       })
     }
@@ -93,7 +95,7 @@ export function scenarioPlan(data: ScenarioPresentData): ScenarioStep[] {
 
 export function scenarioBeats(data: ScenarioPresentData): Beat[] {
   const plan = scenarioPlan(data)
-  return plan.length ? plan.map((s) => (s.answer ? answer(s.answer, s.say) : show(s.say))) : [show()]
+  return plan.length ? plan.map((s) => (s.answer ? answer(s.answer, s.id, s.about) : show(s.id, s.about))) : [show('start', 'The setup')]
 }
 
 export const flowchartPresenter: SectionPresenter<FlowchartPresentData> = {

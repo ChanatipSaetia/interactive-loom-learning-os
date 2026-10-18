@@ -28,14 +28,14 @@ import {
   type Camera,
   type Size,
 } from '../camera'
-import { enterBeat, revealBeat, type BeatEntrance } from '../motion'
+import { enterBeat, revealBeat, revealElements, type BeatEntrance } from '../motion'
 import { beatSpeech, createNarrator, stepSpeech, type SpeechPart } from '../narration'
 import { stepsByBeat } from '../narration-steps'
-import { focusElements, revealingBeat, targetElements, type Box } from '../narration-targets'
+import { focusElements, type Box } from '../narration-targets'
 import { NarrationLayer } from './NarrationLayer'
 import { PresentWords } from '../../../learning-engine/sub-contexts/PresentWords'
 import { PickAnchorProvider, type PickAnchorScope } from '../../../ui-system/pick-anchor'
-import { stepTargets, type NarrationData, type NarrationStepData } from '../../../learning-engine/composition/oui/narration'
+import type { NarrationData, NarrationStepData } from '../../../learning-engine/composition/oui/narration'
 import type { OUIAnchor, OUISourceMap } from '../../../learning-engine/composition/oui/compile'
 import { PresentControls } from './PresentControls'
 import './present.css'
@@ -113,8 +113,6 @@ const STEP_WITH_EFFECTS_MS = 3200
 /** Class the stage puts on a beat's main content while the beat plays (decision 105). */
 export const FOCUS_CLASS = 'present-focus'
 
-const countWords = (text?: string) => (text ?? '').trim().split(/\s+/).filter(Boolean).length
-
 /** Words a narration step says: its caption and callouts. */
 const stepWords = (step: NarrationStepData) =>
   [step.caption ?? '', ...(step.effects ?? []).map((e) => (e.kind === 'callout' ? e.text : ''))].join(' ').trim().split(/\s+/).filter(Boolean).length
@@ -152,12 +150,8 @@ function SectionBody({ section, view, beat, active }: { section: PresentSection;
 export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSectionChange, autoplay = true }: PresentModeProps) {
   const derived = useMemo(() => sections.map((s) => beatsOf(s.config)), [sections])
   const beats = derived
-  /** Per section, the beat each narration step rides on, once measured from the rendered section (decision 96). */
-  const [stepBeats, setStepBeats] = useState<Record<number, Array<number | undefined>>>({})
-  const stepPlan = useMemo(
-    () => sections.map((s, i) => stepsByBeat(beats[i], s.narration?.steps.length ?? 0, stepBeats[i])),
-    [sections, beats, stepBeats],
-  )
+  /** Per section and beat, the authored narration steps that play on it, by beat ID (decision 108). */
+  const stepPlan = useMemo(() => sections.map((s, i) => stepsByBeat(beats[i], s.narration?.steps ?? [])), [sections, beats])
   const reducer = useMemo(() => runnerReducer(beats), [beats])
   const [state, dispatch] = useReducer(reducer, null, () => initialRunnerState(start, Math.min(startBeat, (beats[start]?.length ?? 1) - 1)))
   const [epoch, setEpoch] = useState(0)
@@ -232,8 +226,6 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
   // The narration steps of the current beat play one after another during it (decisions 96–98)
   const beatKey = `${state.section}:${state.beat}:${epoch}`
   const beatSteps = complete ? [] : stepPlan[state.section]?.[state.beat] ?? []
-  /** The beat's own narrator line, where no authored step rides on it (decision 102). */
-  const line = complete || beatSteps.length ? undefined : beats[state.section]?.[state.beat]?.say
   const [stepRun, setStepRun] = useState({ key: '', cursor: 0, done: false })
   const run = stepRun.key === beatKey ? stepRun : { key: beatKey, cursor: 0, done: beatSteps.length === 0 }
   const step = beatSteps.length ? sections[state.section]?.narration?.steps[beatSteps[Math.min(run.cursor, beatSteps.length - 1)]] : undefined
@@ -365,24 +357,6 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     setLanded(`${state.section}:${state.beat}:${epoch}`)
   }, [state.mode, state.section, state.beat, epoch])
 
-  // Ride each narration step on the beat that reveals its first target, once the section has drawn (decision 96)
-  const mountedKey = sections.map((_, i) => (Math.abs(i - state.section) <= 1 && viewReady(i) ? 1 : 0)).join('')
-  useEffect(() => {
-    const found: Record<number, Array<number | undefined>> = {}
-    sections.forEach((section, i) => {
-      const steps = section.narration?.steps
-      const region = regionRefs.current[i]
-      if (!steps?.length || stepBeats[i] || !region || !viewReady(i) || Math.abs(i - state.section) > 1) return
-      const body = region.querySelector('.present-region-body') ?? region
-      found[i] = steps.map((st) => {
-        const first = stepTargets(st)[0]
-        return first === undefined ? undefined : revealingBeat(targetElements(body, first), region)
-      })
-    })
-    if (Object.keys(found).length) setStepBeats((all) => ({ ...all, ...found }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mountedKey, sections])
-
   // Play the beat's narration steps in turn: each lasts until the voice finishes, or its reading time
   useEffect(() => {
     if (!step || stepsDone || overview || complete || !currentReady) return
@@ -414,14 +388,13 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, stepsDone, beatKey, narrating, overview, complete, currentReady])
 
-  // Read each beat as it arrives: its narrator line, then what it puts on screen; a beat that carries
-  // authored steps reads only those (decisions 97, 102)
+  // A beat with authored steps reads those; any other beat reads what it puts on screen (decisions 97, 108)
   const authored = beatSteps.length > 0
   useEffect(() => {
     const region = regionRefs.current[state.section]
     if (!narrating || authored || complete || overview || !currentReady || !region) return
-    return say(() => [...(line ? stepSpeech(rootRef.current) : []), ...beatSpeech(region, state.beat)], reduced ? 0 : 250)
-  }, [narrating, authored, line, state.section, state.beat, epoch, complete, overview, currentReady, reduced, say])
+    return say(() => beatSpeech(region, state.beat), reduced ? 0 : 250)
+  }, [narrating, authored, state.section, state.beat, epoch, complete, overview, currentReady, reduced, say])
 
   // Light the beat's main content once its entrance has landed (decision 105); an authored step that
   // highlights or spotlights something itself takes over
@@ -431,8 +404,10 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     if (complete || overview || ownEffects || landed !== beatKey || !region) return
     const lit = focusElements(region, state.beat)
     lit.forEach((el) => el.classList.add(FOCUS_CLASS))
+    // What the beat is about stays in view, also in a section taller than the stage
+    revealElements(region, lit, !reduced)
     return () => lit.forEach((el) => el.classList.remove(FOCUS_CLASS))
-  }, [landed, beatKey, complete, overview, ownEffects, state.section, state.beat])
+  }, [landed, beatKey, complete, overview, ownEffects, state.section, state.beat, reduced])
 
   // ---- autoplay: hold for reading time (or until the voice is done) after the entrance, then move on ----
   useEffect(() => {
@@ -443,7 +418,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     const wait = entrance.current?.done ?? Promise.resolve()
     const reading = beatSteps.length ? null : speech.current
     void wait.then(async () => {
-      const ms = beatSteps.length ? 700 : holdMs(wordsOfBeat(regionRefs.current[state.section], state.beat) + countWords(line))
+      const ms = beatSteps.length ? 700 : holdMs(wordsOfBeat(regionRefs.current[state.section], state.beat))
       // A voice that never ends cannot stall the lesson
       if (reading) await Promise.race([reading, new Promise((r) => window.setTimeout(r, ms * 2 + 3000))])
       if (cancelled) return
@@ -455,7 +430,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
       cancelled = true
       clearHold()
     }
-  }, [playing, state.section, state.beat, complete, overview, currentReady, narrating, stepsDone, beatSteps.length, line])
+  }, [playing, state.section, state.beat, complete, overview, currentReady, narrating, stepsDone, beatSteps.length])
 
   useEffect(() => {
     if (complete) setPlaying(false)
@@ -578,7 +553,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
   }
 
   const current = sections[state.section]
-  const caption = step?.caption ?? line
+  const caption = step?.caption
 
   return (
     <div className="present-mode" ref={rootRef} data-testid="present-mode">

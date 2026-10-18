@@ -15,4 +15,5 @@ export function propsOf<T>(source: string): T {
 export const content = (path: string): string => readFileSync(`public/content/${path}`, 'utf8')
 
 /** Each beat as `show`, or the answer it performs (`wrong`, `right`). */
+export const ids = (beats: Array<{ id: string }>) => beats.map((b) => b.id)
 export const kinds = (beats: Array<{ answer?: string }>) => beats.map((b) => b.answer ?? 'show')

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { flashcardsBeats, quizBeats, quizPlan } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/present'
-import { filledTemplate, sequenceBeats, startingOrder, templateBeats } from '../../../../src/core/learning-engine/sub-contexts/reflection-synthesis/present'
+import { sequenceBeats, startingOrder, templateBeats } from '../../../../src/core/learning-engine/sub-contexts/reflection-synthesis/present'
 import PresentQuiz from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/quiz/PresentQuiz'
 import PresentSequence from '../../../../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-sequence/PresentSequence'
-import { content, kinds, propsOf } from './helpers'
+import { content, ids, kinds, propsOf } from './helpers'
 
 window.scrollTo = vi.fn() as unknown as typeof window.scrollTo
 
@@ -14,10 +14,8 @@ describe('performed answers (decision 103)', () => {
     const questions = props.questions ?? []
     expect(questions.length).toBeGreaterThan(1)
     expect(kinds(quizBeats(props))).toEqual(questions.flatMap(() => ['show', 'wrong', 'right']))
-    const [ask, wrong, right] = quizBeats(props)
-    expect(ask.say).toBeUndefined()
-    expect(wrong.say).toBe(`Suppose we answer “${questions[0].choices.find((c) => !c.correct)?.text}”.`)
-    expect(right.say).toBe(`The right answer is “${questions[0].choices.find((c) => c.correct)?.text}”.`)
+    expect(ids(quizBeats(props)).slice(0, 4)).toEqual(['q1', 'q1.wrong', 'q1.right', 'q2'])
+    expect(quizBeats(props)[1].about).toContain(`“${questions[0].choices.find((c) => !c.correct)?.text}”`)
   })
 
   it('quiz: a question with no wrong choice skips the wrong try; one with no right choice is only asked', () => {
@@ -28,6 +26,7 @@ describe('performed answers (decision 103)', () => {
   it('flashcards: per card, its front, then its definition', () => {
     const props = propsOf<Parameters<typeof flashcardsBeats>[0]>(content('pixijs/sections/flashcards.oui'))
     expect(flashcardsBeats(props)).toHaveLength(2 * (props.terms?.length ?? 0))
+    expect(ids(flashcardsBeats(props)).slice(0, 3)).toEqual(['card1', 'card1.back', 'card2'])
     expect(kinds(flashcardsBeats({ terms: [] }))).toEqual(['show'])
   })
 
@@ -37,16 +36,7 @@ describe('performed answers (decision 103)', () => {
     const tpl = propsOf<Parameters<typeof templateBeats>[0]>(content('kamado-beef/sections/reflection-template.oui'))
     const beats = templateBeats(tpl)
     expect(kinds(beats)).toEqual((tpl.challenges ?? []).flatMap(() => ['show', 'right']))
-    expect(beats[1].say).toContain(filledTemplate((tpl.challenges ?? [])[0]).split(' ')[0])
-  })
-
-  it('fills a template with the right chips', () => {
-    expect(filledTemplate({
-      prompt: 'p',
-      template: 'Heat {a} the {b}.',
-      chips: [{ id: 'x', text: 'rises to' }, { id: 'y', text: 'dome' }, { id: 'z', text: 'grate' }],
-      solution: { a: 'x', b: 'y' },
-    })).toBe('Heat rises to the dome.')
+    expect(ids(beats).slice(0, 2)).toEqual(['c1', 'c1.solved'])
   })
 
   it('never starts with the answer already in place', () => {

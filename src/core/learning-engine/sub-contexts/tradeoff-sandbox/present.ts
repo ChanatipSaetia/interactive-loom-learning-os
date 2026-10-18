@@ -1,9 +1,9 @@
 /**
  * Present mode beats for the tradeoff-sandbox section types (Beat Derivation in
  * grill-log-presenting-mode.md). Each function reads the compiled section props only; every beat
- * plays by itself (decision 101).
+ * plays by itself (decision 101). Beat IDs name the beats for narration files (decision 108).
  */
-import { listOf, quoted, sentence, show, type Beat, type SectionPresenter } from '../present-kernel'
+import { brief, quoted, show, type Beat, type SectionPresenter } from '../present-kernel'
 import type { DecisionTreeChoice, DecisionTreeNode, FormulaMetric, FormulaVariable, TradeoffScenario } from './schema'
 
 export type TradeoffPresentData = { title?: string; scenarios?: TradeoffScenario[] }
@@ -69,11 +69,15 @@ export function decisionTreeWalk(data: DecisionTreePresentData): Array<{ nodeId:
   }
 }
 
-/** The tree drawing in with the first question, then one answer per beat until a recommendation. */
+/** The tree drawing in with the first question (`start`), then one answer per beat until a recommendation (`answer1`, `answer2`, …). */
 export function decisionTreeBeats(data: DecisionTreePresentData): Beat[] {
   const walk = decisionTreeWalk(data)
-  if (!walk.length) return [show()]
-  return [show(), ...walk.slice(1).map((p) => show(`We answer ${quoted(p.choice?.text ?? p.choice?.label ?? '')}.`))]
+  if (!walk.length) return [show('start', 'The tree')]
+  const last = walk.length - 1
+  return [
+    show('start', 'The tree and the first question'),
+    ...walk.slice(1).map((p, i) => show(`answer${i + 1}`, `Answers ${quoted(p.choice?.text ?? p.choice?.label ?? '')}${i + 1 === last ? ', reaching the recommendation' : ''}`)),
+  ]
 }
 
 /** What each tradeoff beat shows: a step's choices, or that step's recommended choice. */
@@ -91,32 +95,34 @@ export function tradeoffPlan(data: TradeoffPresentData): TradeoffBeat[] {
 export const tradeoffSummaries = (data: TradeoffPresentData): number[] =>
   (data.scenarios ?? []).flatMap((sc, i) => (sc.steps.some((st) => st.recommended && st.choices.some((c) => c.id === st.recommended)) ? [i] : []))
 
-/** Every step's choices and recommendation, then where the recommended choices leave each scenario's metrics. */
+/**
+ * Every step's choices (`step1`, `step2`, … numbered across scenarios) and its recommendation
+ * (`step1.recommended`, …), then where the recommended choices leave each scenario's metrics
+ * (`result1`, `result2`, …).
+ */
 export function tradeoffBeats(data: TradeoffPresentData): Beat[] {
   const plan = tradeoffPlan(data)
-  if (!plan.length) return [show()]
-  const many = (data.scenarios ?? []).length > 1
-  // The narrator says the step, its options and the recommendation; the cards themselves stay unread
-  const recs = plan.map((b) => {
+  if (!plan.length) return [show('sandbox', 'The sandbox')]
+  let k = 0
+  const steps = plan.map((b) => {
     const step = data.scenarios?.[b.scenario].steps[b.step]
-    if (!step) return show()
-    const choice = step.choices.find((c) => c.id === step.recommended)
-    if (b.recommended && choice) return show(`The recommended choice: ${quoted(choice.label)}. ${sentence(choice.whyThisFits ?? choice.whenToUse ?? '')}`.trim())
-    return show([sentence(step.title), sentence(step.description ?? ''), `The options: ${listOf(step.choices.map((c) => quoted(c.label)))}.`].filter(Boolean).join(' '))
+    if (!b.recommended) k += 1
+    const choice = step?.choices.find((c) => c.id === step.recommended)
+    return b.recommended
+      ? show(`step${k}.recommended`, `Step ${k}: the recommended choice ${quoted(choice?.label ?? '')}`)
+      : show(`step${k}`, `Step ${k}: ${brief(step?.title ?? '')} and its choices`)
   })
-  return [
-    ...recs,
-    ...tradeoffSummaries(data).map((i) => show(`With every recommended choice${many ? ` in ${quoted(data.scenarios?.[i].title ?? '')}` : ''}, the metrics end up here.`)),
-  ]
+  const results = tradeoffSummaries(data).map((i, n) => show(`result${n + 1}`, `The metrics with every recommended choice in ${quoted(data.scenarios?.[i].title ?? '')}`))
+  return [...steps, ...results]
 }
 
-/** The variables and metrics, then a sweep of the first variable from its default to its max. */
+/** The variables and metrics (`formulas`), then a sweep of the first variable from its default to its max (`sweep`). */
 export function formulaBeats(data: FormulaPresentData): Beat[] {
-  if (!data.variables?.length || !data.metrics?.length) return [show()]
+  if (!data.variables?.length || !data.metrics?.length) return [show('formulas', 'The formulas')]
   const first = data.variables[0]
   return first.max !== first.defaultValue
-    ? [show(), show(`Watch what happens as ${first.label} goes from ${first.defaultValue} to ${first.max}.`)]
-    : [show()]
+    ? [show('formulas', 'The formulas, sliders and metrics'), show('sweep', `${quoted(first.label)} moves from ${first.defaultValue} to ${first.max}`)]
+    : [show('formulas', 'The formulas, sliders and metrics')]
 }
 
 export const tradeoffPresenter: SectionPresenter<TradeoffPresentData> = {
