@@ -57,6 +57,8 @@ export interface PresentModeProps {
   onExit: (sectionIndex: number) => void
   /** Called with the section being presented (its index among the topic's sections) whenever it changes. */
   onSectionChange?: (sectionIndex: number) => void
+  /** Domain events from gates, as Read sections emit them (decision 71). */
+  onEvent?: (event: { type: string; [key: string]: unknown }, sectionIndex: number) => void
 }
 
 const KIND_LABELS: Record<string, string> = {
@@ -97,12 +99,13 @@ async function loadView(type: string): Promise<SectionView> {
   return { kind: 'read', Component: (await loader()).default as ComponentType<Record<string, unknown>> }
 }
 
-function SectionBody({ section, view, beat, gate }: { section: PresentSection; view: SectionView; beat: number; gate: PresentGate }) {
+function SectionBody({ section, view, beat, gate, active, onEvent }: { section: PresentSection; view: SectionView; beat: number; gate: PresentGate; active: boolean; onEvent?: PresentModeProps['onEvent'] }) {
+  const emit = useMemo(() => (onEvent ? (event: { type: string }) => onEvent(event, section.sectionIndex) : undefined), [onEvent, section.sectionIndex])
   const beats = useMemo(() => beatsOf(section.config), [section.config])
   let body: ReactNode
   if (view.kind === 'present') {
     const Renderer = view.Component
-    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} gate={gate} />
+    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} gate={gate} active={active} onEvent={emit} />
   } else {
     // No Present renderer yet: the Read section, entering as one beat
     const Read = view.kind === 'read' ? view.Component : null
@@ -115,7 +118,7 @@ function SectionBody({ section, view, beat, gate }: { section: PresentSection; v
   return <SectionErrorBoundary sectionName={String(section.config.props.title ?? section.name)}>{body}</SectionErrorBoundary>
 }
 
-export function PresentMode({ sections, start = 0, onExit, onSectionChange }: PresentModeProps) {
+export function PresentMode({ sections, start = 0, onExit, onSectionChange, onEvent }: PresentModeProps) {
   const beats = useMemo(() => sections.map((s) => beatsOf(s.config)), [sections])
   const reducer = useMemo(() => runnerReducer(beats), [beats])
   const [state, dispatch] = useReducer(reducer, start, initialRunnerState)
@@ -439,7 +442,7 @@ export function PresentMode({ sections, start = 0, onExit, onSectionChange }: Pr
                       </header>
                     )}
                     <div className={`present-region-body${PresentRegistry.get(section.config.type) ? '' : ' is-fallback'}`}>
-                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} gate={gate} />}
+                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} gate={gate} active={i === state.section && !complete && !overview} onEvent={onEvent} />}
                       {mounted && !viewReady(i) && i === state.section && <p className="present-loading" role="status">Loading…</p>}
                     </div>
                   </section>

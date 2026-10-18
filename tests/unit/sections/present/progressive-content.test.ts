@@ -1,16 +1,18 @@
 import { describe, it, expect } from 'vitest'
-import { validateOUISection } from '../../../../src/core/learning-engine/validation/oui-gateway'
-import { bundleToSections } from '../../../../src/core/learning-engine/composition/okf/sections'
-import { bulletsBeats, introBeats, openuiBeats, textBeats } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
+import {
+  bulletsBeats,
+  galleryBeats,
+  introBeats,
+  openuiBeats,
+  pillarLayerBeats,
+  taxonomyBeats,
+  textBeats,
+} from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
+import { content, kinds, propsOf } from './helpers'
 
-/** Compile a section the way Loom Viewer does and return its props. */
-function propsOf<T>(source: string): T {
-  const result = validateOUISection(source, { topicId: 't', sectionName: 's', file: 'sections/s.oui' })
-  if (!result.payload) throw new Error(JSON.stringify(result.diagnostics))
-  return bundleToSections([result.payload])[0].props as T
-}
-
-const kinds = (beats: Array<{ kind: string }>) => beats.map((b) => b.kind)
+const worldHistoryLayers = content('world-history/sections/pillar-layer.oui')
+const monkGallery = content('poe2-flicker-monk/sections/image-gallery.oui')
+const cachingDirectives = content('http-caching/sections/directives.oui')
 
 describe('progressive-content beats', () => {
   it('intro: title, What, Why, then the roadmap when there is one', () => {
@@ -39,5 +41,24 @@ why = IntroWhy("Origin requests cost time.")
 
   it('openui: a single beat', () => {
     expect(kinds(openuiBeats())).toEqual(['show'])
+  })
+
+  it('pillar-layer: one beat per layer', () => {
+    const props = propsOf<Parameters<typeof pillarLayerBeats>[0]>(worldHistoryLayers)
+    const layers = props.section?.layers ?? []
+    expect(layers.length).toBeGreaterThan(1)
+    expect(pillarLayerBeats(props)).toHaveLength(layers.length)
+  })
+
+  it('image-gallery: one beat per image', () => {
+    const props = propsOf<Parameters<typeof galleryBeats>[0]>(monkGallery)
+    expect(props.items.length).toBeGreaterThan(1)
+    expect(galleryBeats(props)).toHaveLength(props.items.length)
+  })
+
+  it('taxonomy-browser: the cards, then free browsing', () => {
+    const props = propsOf<Parameters<typeof taxonomyBeats>[0]>(cachingDirectives)
+    expect(kinds(taxonomyBeats(props))).toEqual(['show', 'explore'])
+    expect(kinds(taxonomyBeats({ categories: [] }))).toEqual(['show'])
   })
 })

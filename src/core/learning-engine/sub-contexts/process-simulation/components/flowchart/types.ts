@@ -361,6 +361,11 @@ export interface FlowchartProps {
   title?: string;
   schema?: UnifiedFlowchartSchema;
   sectionIndex?: number;
+  /**
+   * Present mode: hold the first journey at this step (-1 for the overview before it starts) and hide
+   * the section's own title, tools and playback controls, which the Present stage replaces.
+   */
+  present?: { step: number };
 }
 
 export interface TransformState {

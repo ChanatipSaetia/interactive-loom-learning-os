@@ -38,12 +38,12 @@ describe('present registry', () => {
     registerCorePresenters()
   })
 
-  it('registers the phase 1 section types', () => {
-    expect(PresentRegistry.list().sort()).toEqual(['bullets', 'intro', 'openui', 'text'])
+  it('registers the section types that have a Present renderer', () => {
+    expect(PresentRegistry.list().sort()).toEqual(['bullets', 'flashcards', 'image-gallery', 'intro', 'openui', 'pillar-layer', 'quiz', 'reflection-sequence', 'reflection-template', 'taxonomy-browser', 'text'])
   })
 
   it('gives a type without a presenter one show beat', () => {
-    expect(beatsOf({ type: 'quiz', props: { questions: [] } })).toEqual([{ kind: 'show' }])
+    expect(beatsOf({ type: 'scenario', props: {} })).toEqual([{ kind: 'show' }])
     expect(beatsOf({ type: 'text', props: { paragraphs: [] } })).toEqual([{ kind: 'show' }])
   })
 })
