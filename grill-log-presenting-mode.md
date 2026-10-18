@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Prototype done (phase 0), implementation planned (phases 1–6)**
+Status: **Phase 1 done (runtime, Viewer toggle, intro/text/bullets/openui); phases 2–6 planned**
 
 ## Goal
 
@@ -50,6 +50,8 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 85 | Performance | **Only the current section and its neighbours mount**; every other region renders its header only, which is also what the overview shows. Camera moves and beats animate transform, opacity, clip-path and stroke-dashoffset only. |
 | 86 | Viewer chrome in Present | **Pick and the AI assistant dock are hidden**; Theme, AudioToggle, Refresh and Open stay. Refresh keeps the learner on the same section and beat when the section still exists, else returns to the topic start. |
 | 87 | Beat timelines | **One anime.js `createTimeline` per beat**, as `useAnimation` already does. Skipping calls the timeline's completion so it jumps to its end state; going back renders the earlier beat's end state directly, never plays a timeline in reverse. |
+| 88 | Remembering the place | **No.** Present mode keeps nothing between visits; closing it or reopening the topic starts fresh. |
+| 89 | Where Present starts | **At any section.** Switching to Present starts at the section the learner is reading (the first one whose top is in view); the progress rail and the overview jump to any section at any time, past unsolved gates too. |
 
 ## Motion Rules
 
@@ -126,43 +128,36 @@ Playwright MCP tools (AGENTS.md, *E2E Testing*).
 
 ### Code layout
 
+As built in phase 1 (the beat contract and the registry sit in the learning engine, next to
+`openui-kernel.ts` and `SectionRegistry`, so core sections never import a supporting subdomain):
+
 ```
-src/core/supporting/presentation/         new supporting subdomain (PresentationContext)
-  index.ts                                 public entry: PresentMode, types
-  types.ts                                 Beat, BeatKind, PresentRendererProps, PresentGate
-  registry.ts                              PresentRegistry (lazy, like SectionRegistry) + registerCorePresenters()
-  beat-runner.ts                           pure reducer: position, next/prev/jump, gate and explore rules
-  useBeatRunner.ts                         hook: reducer + autoplay holds + timeline/speech waits
-  camera.ts                                pure: region grid (4-column snake), camera target, overview, clamping
-  narration.ts                             Web Speech wrapper (decision 79)
-  speech-text.ts                           code/URL normalizer for speech (decision 80)
-  components/PresentMode.tsx               stage, world, regions, overlay pill, complete card
-  components/PresentControls.tsx           prev/play/next, rail, Narration, Overview, reduced motion
+src/core/learning-engine/sub-contexts/
+  present-kernel.ts                        Beat, BeatKind, BeatMotion, PresentRendererProps, PresentGate,
+                                           SectionPresenter, beatMarks(), splitWords(), wordsHtml()
+  PresentWords.tsx                         plain text as word spans for the `words` motion
+  <subdomain>/present.ts                   toBeats(data) + SectionPresenter for each section type
+  <subdomain>/components/<type>/Present<Type>.tsx   the renderer (decision 84)
+src/core/learning-engine/registry/
+  present-registry.ts                      PresentRegistry (cached loaders, no React.lazy) + beatsOf()
+  register-core-presenters.ts              registerCorePresenters(), called by src/viewer/main.tsx
+  index.ts                                 SectionRegistry.loader(type) for Read fallbacks
+src/core/supporting/presentation/          PresentationContext
+  beat-runner.ts                           pure reducer: position, next/prev/jump, gate and explore rules, holdMs
+  camera.ts                                pure: 4-column snake grid, region/overview cameras, lean clamping
+  motion.ts                                enterBeat(): one anime.js timeline per beat; revealBeat() scrolling
+  components/PresentMode.tsx               stage, camera, regions, autoplay, keyboard/touch, overlay, complete card
+  components/PresentControls.tsx           prev/play/next, rail, Overview, Read
   components/present.css
-src/core/learning-engine/sub-contexts/<subdomain>/
-  present.ts                               toBeats(data) for each section type of the subdomain
-  components/<type>/Present<Type>.tsx      the renderer (decision 84)
-src/core/ui-system/
-  SensoryFeedbackContract.ts               presentMotion presets (enter, stack, unfold, draw, grow, travel,
-                                           focus, breathe, exit) and SoundEffect += 'whoosh' | 'draw'
-src/viewer/ViewerApp.tsx                   Read | Present toggle; renders <PresentMode topic=…> in Present
+  narration.ts, speech-text.ts             phase 6 (decisions 79–80)
+src/core/ui-system/SensoryFeedbackContract.ts   PRESENT_MOTION durations and curves; SoundEffect += whoosh, draw
+src/viewer/ViewerApp.tsx                   Read | Present toggle, start at the section in view, preload
 ```
 
-Contracts (sketch):
-
-```ts
-type BeatKind = 'show' | 'gate' | 'explore'
-interface Beat { kind: BeatKind; key: string; camera?: string /* pick anchor to lean toward */ }
-interface PresentRendererProps<D> {
-  data: D                 // the same SectionConfig.props Read mode gets
-  beats: Beat[]
-  beat: number            // -1 = not reached yet
-  playing: boolean        // true while beat `beat` is being entered (animate); false = render its end state
-  timeline: PresentTimeline   // anime.js timeline for this beat, owned by the runner
-  gate: PresentGate       // solve(), plus onEvent / onResultChange as in Read mode (decision 71)
-  say: (parts: SpeechPart[]) => void
-}
-```
+A renderer draws the end state of `beat` and marks elements with `beatMarks(beat)(at, { motion,
+delay, until })`; CSS hides marked elements until `data-shown`. The stage plays the entrance of
+the current beat over the marked elements and leaves them to CSS afterwards, so going back or
+jumping just re-renders. Renderers never animate or set motion styles themselves.
 
 ### Phases
 
@@ -186,11 +181,27 @@ interface PresentRendererProps<D> {
    `docs/agents/domain.md` (PresentationContext), AGENTS.md (Viewer paragraph), `DESIGN.md` motion
    section from the *Motion Rules* above.
 
+### Phase 1 — Implementation Notes
+
+- Runtime: `beat-runner.ts`, `camera.ts`, `motion.ts`, `PresentMode`, `PresentControls`. Next or
+  Space finishes the beat in progress first, then moves on; autoplay holds each `show` beat for
+  `holdMs(words)` after its entrance and stops at gates and explore beats; `G` overview, `Esc` back
+  to Read, tap and swipe on touch. Reduced motion cross-fades every entrance and skips draws and
+  camera moves.
+- Section modules are loaded by the stage, not through `React.lazy`/Suspense: with Suspense the
+  first section sometimes stayed empty until another render (a lost retry), and the stage needs to
+  know when a section's DOM exists to animate it. Viewer starts loading the renderers when a topic
+  opens, so switching to Present is instant.
+- Types without a renderer yet (all but intro, text, bullets, openui) show their Read component as
+  one `show` beat, scrolling inside the region.
+- Only the current section and its neighbours mount (decision 85); others show their header.
+- Tests: runner, camera, kernel and registry, beat rules compiled from `.oui` fixtures, and a Viewer
+  test that plays a topic to the end and back. Checked in Chromium at 1280px and 400px.
+
 Tests per phase: every `toBeats` gets a unit test in `tests/unit/sections/present/` that compiles
 a small `.oui` fixture and checks beat kinds and count; the runner, camera and speech normalizer are
 pure and tested directly.
 
 ## Open Questions
 
-- Does Present mode remember the learner's place per topic (`localStorage`, like the Pick tray)?
-- Should a learner be able to start Present from any section, or always from the topic's start?
+None. Decisions 88–89 answered the last two.

@@ -12,6 +12,7 @@ import {
   MOTION_STAGGER_CHILD,
   MOTION_PRESS,
   MOTION_DRAWER,
+  PRESENT_MOTION,
   EASE_OUT,
   EASE_IN_OUT,
   EASE_DRAWER,
@@ -71,6 +72,7 @@ export interface UISystemContract {
       staggerChild: typeof MOTION_STAGGER_CHILD
       press: typeof MOTION_PRESS
       drawer: typeof MOTION_DRAWER
+      present: typeof PRESENT_MOTION
       easeOut: typeof EASE_OUT
       easeInOut: typeof EASE_IN_OUT
       easeDrawer: typeof EASE_DRAWER
@@ -145,6 +147,7 @@ function UISystemValue({ children }: { children: ReactNode }) {
         staggerChild: MOTION_STAGGER_CHILD,
         press: MOTION_PRESS,
         drawer: MOTION_DRAWER,
+        present: PRESENT_MOTION,
         easeOut: EASE_OUT,
         easeInOut: EASE_IN_OUT,
         easeDrawer: EASE_DRAWER,

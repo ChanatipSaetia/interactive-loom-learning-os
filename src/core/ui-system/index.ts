@@ -97,6 +97,8 @@ export {
   MOTION_STAGGER_CHILD,
   MOTION_PRESS,
   MOTION_DRAWER,
+  // Present mode durations and curves
+  PRESENT_MOTION,
 } from './SensoryFeedbackContract'
 export type {
   SoundEffect,

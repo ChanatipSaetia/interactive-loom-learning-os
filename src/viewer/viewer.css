@@ -65,6 +65,23 @@ body {
 .viewer-button:hover { background: var(--accent); }
 .viewer-button { padding: 8px 16px; border-radius: 10px; font-size: 14px; }
 .viewer-pill:disabled { opacity: 0.6; cursor: progress; }
+
+/* Read | Present (grill-log-presenting-mode.md, decision 66) */
+.viewer-mode { display: inline-flex; padding: 2px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); }
+.viewer-mode button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  cursor: pointer;
+}
+.viewer-mode button[aria-pressed='true'] { background: var(--primary); color: var(--primary-foreground); }
+.viewer-mode button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .viewer-spin { animation: viewer-spin 0.8s linear infinite; }
 @keyframes viewer-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .viewer-spin { animation: none; } }

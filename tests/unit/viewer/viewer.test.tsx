@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { ViewerApp } from '../../../src/viewer/ViewerApp'
 import { createTopicSource } from '../../../src/core/supporting/authoring-editor/workspace'
 import { registerCoreSections } from '../../../src/core/learning-engine/registry/register-core-sections'
+import { registerCorePresenters } from '../../../src/core/learning-engine/registry/register-core-presenters'
 
 const topic = (id: string, title: string) => ({
   topicId: id,
@@ -18,6 +19,7 @@ const pickedFile = (name: string, text: string) => ({ name, arrayBuffer: async (
 
 beforeAll(() => {
   registerCoreSections()
+  registerCorePresenters()
   window.scrollTo = vi.fn() as unknown as typeof window.scrollTo
 })
 
@@ -69,6 +71,46 @@ describe('Loom Viewer', () => {
     expect((await screen.findByRole('alert')).textContent).toMatch(/only a topic.oui/)
     fireEvent.click(screen.getByTestId('viewer-copy-load-error'))
     await waitFor(() => expect(writeText).toHaveBeenCalledWith(expect.stringMatching(/^Loom Viewer could not open the topic you wrote:\n\nThis is only a topic.oui/)))
+  })
+
+  it('presents a topic beat by beat and goes back to reading (Present mode)', async () => {
+    render(<ViewerApp />)
+    const two = {
+      topicId: 'two',
+      files: {
+        'topic.oui': 'root = Topic("Two Sections", "Architecture", "", [SectionRef("words"), SectionRef("check")])\n',
+        'sections/words.oui': 'root = Text("Words", ["First paragraph.", "Second paragraph."])\n',
+        'sections/check.oui': 'root = Bullets("Points", [Bullet("One"), Bullet("Two", [Bullet("Two a")])])\n',
+      },
+    }
+    fireEvent.click(screen.getByTestId('viewer-paste-toggle'))
+    fireEvent.change(screen.getByTestId('viewer-paste-input'), { target: { value: createTopicSource([two]) } })
+    fireEvent.click(screen.getByTestId('viewer-paste-open'))
+    await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
+
+    fireEvent.click(screen.getByTestId('viewer-mode-present'))
+    expect(screen.getByTestId('present-stage')).toBeInTheDocument()
+    expect(screen.queryByTestId('viewer-topic')).toBeNull()
+    expect(screen.getByTestId('present-where').textContent).toBe('Text · 1 of 2')
+    await waitFor(() => expect(document.querySelector('[data-testid="present-region-0"] .present-paragraph')?.textContent).toBe('First paragraph.\n'))
+
+    const next = screen.getByTestId('present-next')
+    const step = async (where: string) => {
+      fireEvent.click(next)
+      if (screen.getByTestId('present-where').textContent !== where) fireEvent.click(next)
+      await waitFor(() => expect(screen.getByTestId('present-where').textContent).toBe(where))
+    }
+    await step('Text · 2 of 2')
+    await step('Bullets · 1 of 2')
+    await step('Bullets · 2 of 2')
+    await step('Topic complete')
+    expect(screen.getByTestId('present-complete')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('present-prev'))
+    await waitFor(() => expect(screen.getByTestId('present-where').textContent).toBe('Bullets · 2 of 2'))
+    fireEvent.click(screen.getByTestId('viewer-mode-read'))
+    await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
+    expect(screen.queryByTestId('present-stage')).toBeNull()
   })
 
   it('opens pasted text from the Paste box', async () => {
