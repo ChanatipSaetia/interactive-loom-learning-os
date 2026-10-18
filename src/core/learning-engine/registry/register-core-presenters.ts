@@ -10,7 +10,7 @@ import {
 } from '../sub-contexts/progressive-content/present'
 import { conceptMapPresenter, flashcardsPresenter, quizPresenter } from '../sub-contexts/practice-assessment/present'
 import { flowchartPresenter, scenarioPresenter } from '../sub-contexts/process-simulation/present'
-import { decisionTreePresenter } from '../sub-contexts/tradeoff-sandbox/present'
+import { decisionTreePresenter, formulaPresenter, tradeoffPresenter } from '../sub-contexts/tradeoff-sandbox/present'
 import { sequencePresenter, templatePresenter } from '../sub-contexts/reflection-synthesis/present'
 
 /**
@@ -33,4 +33,6 @@ export function registerCorePresenters(): void {
   PresentRegistry.register('scenario', scenarioPresenter)
   PresentRegistry.register('concept-map', conceptMapPresenter)
   PresentRegistry.register('decision-tree', decisionTreePresenter)
+  PresentRegistry.register('tradeoff-sandbox', tradeoffPresenter)
+  PresentRegistry.register('formula-sandbox', formulaPresenter)
 }

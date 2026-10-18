@@ -2,9 +2,11 @@
  * Present mode beats for the tradeoff-sandbox section types (Beat Derivation in
  * grill-log-presenting-mode.md). Each function reads the compiled section props only.
  */
-import { gate, show, type Beat, type SectionPresenter } from '../present-kernel'
-import type { DecisionTreeChoice, DecisionTreeNode } from './schema'
+import { explore, gate, show, type Beat, type SectionPresenter } from '../present-kernel'
+import type { DecisionTreeChoice, DecisionTreeNode, FormulaMetric, FormulaVariable, TradeoffScenario } from './schema'
 
+export type TradeoffPresentData = { title?: string; scenarios?: TradeoffScenario[] }
+export type FormulaPresentData = { title?: string; variables?: FormulaVariable[]; metrics?: FormulaMetric[] }
 export type DecisionTreePresentData = { id?: string; title?: string; root?: string; nodes?: Record<string, DecisionTreeNode> }
 
 export const choicesOf = (node?: DecisionTreeNode): DecisionTreeChoice[] => node?.choices ?? node?.options ?? []
@@ -53,6 +55,38 @@ export function decisionTreeBeats(data: DecisionTreePresentData): Beat[] {
   return data.root && data.nodes?.[data.root] ? [show(), gate()] : [show()]
 }
 
+/** What each tradeoff beat shows: a step's choices, or that step's recommended choice. */
+export type TradeoffBeat = { scenario: number; step: number; recommended: boolean }
+
+/** Per TradeoffStep: its choices with their effects, then its `recommended` choice when it has one. */
+export function tradeoffPlan(data: TradeoffPresentData): TradeoffBeat[] {
+  return (data.scenarios ?? []).flatMap((sc, scenario) => sc.steps.flatMap((st, step) => [
+    { scenario, step, recommended: false },
+    ...(st.recommended && st.choices.some((c) => c.id === st.recommended) ? [{ scenario, step, recommended: true }] : []),
+  ]))
+}
+
+/** Every step's choices and recommendation, then the sandbox to try combinations in. */
+export function tradeoffBeats(data: TradeoffPresentData): Beat[] {
+  const plan = tradeoffPlan(data)
+  return plan.length ? [...plan.map(() => show()), explore()] : [show()]
+}
+
+/** The variables and metrics, a sweep of the first variable from its default to its max, then the sliders. */
+export function formulaBeats(data: FormulaPresentData): Beat[] {
+  if (!data.variables?.length || !data.metrics?.length) return [show()]
+  const first = data.variables[0]
+  return first.max !== first.defaultValue ? [show(), show(), explore()] : [show(), explore()]
+}
+
+export const tradeoffPresenter: SectionPresenter<TradeoffPresentData> = {
+  toBeats: tradeoffBeats,
+  load: () => import('./components/tradeoff-sandbox/PresentTradeoff'),
+}
+export const formulaPresenter: SectionPresenter<FormulaPresentData> = {
+  toBeats: formulaBeats,
+  load: () => import('./components/formula-sandbox/PresentFormula'),
+}
 export const decisionTreePresenter: SectionPresenter<DecisionTreePresentData> = {
   toBeats: decisionTreeBeats,
   load: () => import('./components/decision-tree/PresentDecisionTree'),

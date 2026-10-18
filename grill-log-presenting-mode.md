@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Phases 1–4 done (runtime, Viewer toggle, every section type but the two sandboxes); phases 5–6 planned**
+Status: **Phases 1–5 done (runtime, Viewer toggle, a Present renderer for every section type); phase 6 (narration, docs) planned**
 
 ## Goal
 
@@ -217,6 +217,23 @@ jumping just re-renders. Renderers never animate or set motion styles themselves
   available afterwards. The decision tree emits `DecisionNodeSelected`.
 - Answer-button styles (`.present-choice`) moved to the stage stylesheet, shared by quiz, scenario
   and decision tree.
+
+### Phase 5 — Implementation Notes
+
+- `tradeoff-sandbox` (`tradeoffPlan`): per step, the choices arrive side by side, each effect's bar
+  drawing in green where it helps and red where it costs (relative to the step's largest change);
+  then the `recommended` choice lifts with its badge and `whyThisFits` (or `whenToUse`) while the
+  others step back. A step without a valid `recommended` has one beat. The explore beat is the
+  sandbox: metric meters summed from the base values as in Read, one pill per choice, a tab per
+  scenario.
+- `formula-sandbox`: formulas (`humanizeFormula`), sliders and gauges arrive; a ghost hand sweeps the
+  first variable from `defaultValue` to `max` (2.6 s, eased, snapped to `step`) while the metrics
+  recompute in order through `evaluateFormula`; the sliders are live on the explore beat. No sweep
+  beat when the first variable starts at its max. Off-stage or with reduced motion the sweep lands
+  at once. Gauge ranges come from moving each slider alone from the defaults, metrics evaluated in
+  order, so derived metrics (`bleed_dps + poison_dps`) work; the Read sandbox's
+  `computeMetricRange` does not see earlier metrics and logs errors for them (left as is).
+- Labels avoid `<strong>`, which the stage styles as a highlighter mark.
 
 Tests per phase: every `toBeats` gets a unit test in `tests/unit/sections/present/` that compiles
 a small `.oui` fixture and checks beat kinds and count; the runner, camera and speech normalizer are
