@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Designed, not started**
+Status: **Prototype done (phase 0), implementation planned (phases 1–6)**
 
 ## Goal
 
@@ -41,6 +41,15 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 76 | Controls | `Space` / `→` next beat, `←` previous, `A` autoplay on/off, `F` fullscreen, `G` overview of sections, `Esc` back to Read. A slim progress rail shows sections and beats; gates are marked on it. Touch: tap to advance, swipe back. |
 | 77 | Reduced motion | **With `prefers-reduced-motion`: no camera moves, beats switch with cross-fades, draws and counts jump to their final state.** Gates and Continue work the same. |
 | 78 | Standard OpenUI sections | **Section-level only**: one fade-in per top-level child, as Pick is section-level for them (decision 49). |
+| 79 | Narration | **The browser's Web Speech voice reads each beat, off by default**, turned on with a **Narration** button (`N`). The words come from the beat's own content (decision 67); a gate reads its prompt, and solving it reads the explanation. When the voice reports word boundaries, the spoken word lights up. Autoplay waits for the voice to finish, with a time-out so a voice that never ends cannot stall the lesson. No voices means the button is disabled and captions carry on alone. |
+| 80 | Code and URLs in narration | **A rule-based speech normalizer, no authoring.** Inline code, file names and header values are rewritten for speech (`/app.3f9a.js` → "app dot j s", `max-age=31536000` → "max-age 31536000"). There is no pronunciation prop; one would break decision 67 and needs its own grill session. |
+| 81 | Sound cues | **The existing `SoundEffect` set plus `whoosh` (camera) and `draw` (a line drawing)**, played through `useSound()` and muted by the Viewer's existing **AudioToggle**, so Present mode adds no second sound switch. A sound fires on the moment of impact, at most one of a kind every 90ms. |
+| 82 | How beats are derived | **Fixed rules per section type, from the compiled section data** (table in *Beat Derivation* below). Each rule lives in that type's `toBeats` and is unit-tested. |
+| 83 | What a renderer may show | **Only what the section's props carry.** The prototype's invented visuals do not ship: no freshness timeline in `text`, no latency counters or request probe in `pillar-layer` (`LayerItem` has only `title` and `description`), no hand-placed concept-map positions (the Read layout `layoutTopDownPlanar` places them), no mock screenshots (a gallery shows its `GalleryImage` files), no hand-written pronunciation. |
+| 84 | Present renderers | **Separate `Present<Type>` components that reuse the Read sections' leaf visuals and pure helpers**, with controlled props. Known reuse: the flowchart's `stateAtStep`, `usePlaybackState` and `useCamera`; the concept map's `layoutTopDownPlanar` (exported); the quiz `QuestionCard` and flashcard card faces once their reveal state is a prop. They tag elements with `usePickAnchors()` like every section, so Pick works on them if it is ever turned on. |
+| 85 | Performance | **Only the current section and its neighbours mount**; every other region renders its header only, which is also what the overview shows. Camera moves and beats animate transform, opacity, clip-path and stroke-dashoffset only. |
+| 86 | Viewer chrome in Present | **Pick and the AI assistant dock are hidden**; Theme, AudioToggle, Refresh and Open stay. Refresh keeps the learner on the same section and beat when the section still exists, else returns to the topic start. |
+| 87 | Beat timelines | **One anime.js `createTimeline` per beat**, as `useAnimation` already does. Skipping calls the timeline's completion so it jumps to its end state; going back renders the earlier beat's end state directly, never plays a timeline in reverse. |
 
 ## Motion Rules
 
@@ -81,46 +90,107 @@ A movement that means nothing is a short fade.
 - **Performance:** animate only transform, opacity, clip-path and stroke-dashoffset. No bounce on
   text; springs only for what the learner touches.
 
-## Section Beats
+## Beat Derivation
 
-| Section | Beats |
+Decision 82. Each rule reads the compiled section data (`SectionConfig.props`, typed by the
+sub-context's `schema.ts`) and nothing else. `show` plays by itself, `gate` waits for the learner,
+`explore` runs the section live with **Continue**.
+
+| Section type | Beats (from the OUI props) |
 |---|---|
-| `intro` | Hero title → What → Why → roadmap steps draw in (`show`) |
-| `text` | Phrase by phrase, highlighter on bold (`show`) |
-| `bullets` | Staggered reveal; children unfold from parents (`show`) |
-| `pillar-layer` | Layers stack bottom-up; matrix cells fill (`show`) |
-| `image-gallery` | Slow pan and zoom per image with its caption (`show`) |
-| `taxonomy-browser` | Category grid cascades in → zoom into each category (`show`) → free browsing (`explore`) |
-| `concept-map` | Nodes by cluster → links draw → labels fade in (`show`) → free panning (`explore`) |
-| `flowchart` | Journey playback, one step per beat; the camera follows the active node; the line draws before the next node appears (`show`) |
-| `scenario` | Situation → choices fan out (`gate`) → consequence → next situation or outcome card |
-| `decision-tree` | Question (`gate`) → path lights up → next question … → recommendation |
-| `tradeoff-sandbox` | Options appear → bars grow → `recommended` highlighted with its reason (`show`) → sandbox (`explore`) |
-| `formula-sandbox` | A ghost hand sweeps one slider once; the result counts and the chart line draws (`show`) → sandbox (`explore`) |
-| `quiz` | Question → options drop in → the expected control breathes (`gate`) → wrong options fall away, the right one grows into the explanation |
-| `flashcards` | Front → learner flips and self-grades (`gate`) → next card |
-| `reflection-sequence` | Shuffled items → learner orders them (`gate`) → wrong items lift and travel along arcs to their slots |
-| `reflection-template` | Template with blanks → learner places chips (`gate`) → chips settle or fly to their right blanks → explanation |
-| `openui` | One fade-in per top-level child (`show`) |
+| `intro` | `show` title and tagline · `show` `IntroWhat` · `show` `IntroWhy` · `show` the `RoadmapStep` list (line draws, steps rise) |
+| `text` | `show` per paragraph of the markdown body; **bold** gets the highlighter sweep |
+| `bullets` | `show` per top-level `Bullet`; its children unfold out of it |
+| `pillar-layer` | `show` per `Layer`, settling onto the stack from the bottom; `MatrixBlock`s fill with the layer they belong to |
+| `image-gallery` | `show` per `GalleryImage`: the image with a slow push-in (ambient, outside the beat timeline) and its caption |
+| `taxonomy-browser` | `show` all `TaxonomyCategory` cards cascading in · `explore` (open any card) |
+| `concept-map` | `show` per `Concept.category` group, in first-appearance order; its `ConceptLink`s draw once both ends are on screen · `explore` (tap a concept to highlight its links) |
+| `flowchart` | `show` per `JourneyStep` of the first `Journey`, through the existing journey playback; the camera follows the active node |
+| `scenario` | `show` `intro` and the start node's `prompt` · `gate` choose a `ScenarioChoice`, follow `next` until a node with an `Outcome` (`verdict`, `lesson`, `rating`); **Try another path** returns to the last fork |
+| `decision-tree` | `show` the tree drawing in and the root `prompt` · `gate` answer `DecisionChoice`s until a `DecisionLeaf` (`recommendation`, `explanation`); **Start over** returns to the root |
+| `tradeoff-sandbox` | per `TradeoffStep`: `show` its choices with metric bars growing, then `show` the `recommended` choice focused · `explore` the sandbox |
+| `formula-sandbox` | `show` the variables and metrics · `show` a ghost hand sweeps the first `FormulaVariable` from `defaultValue` to `max` while each `FormulaMetric` recomputes (`evaluateFormula`) and counts · `explore` the sliders |
+| `quiz` | per `QuizQuestion`: `show` question and choices · `gate` answer (a wrong choice shows its explanation and stays open; the right one grows into its explanation) |
+| `flashcards` | `show` the deck · `gate` flip and grade every `Flashcard` (`word` front, `shortDefinition` back; **Again** sends a card to the back) |
+| `reflection-sequence` | per challenge: `show` prompt and items · `gate` order them, checked against `solution` |
+| `reflection-template` | per challenge: `show` prompt and template · `gate` fill the blanks with chips, checked against `solution` |
+| `openui` | one `show`: each top-level child fades in |
 
-## Rollout Phases
+## Implementation Plan
 
-1. **Prototype:** a standalone motion prototype (quiz, flowchart step, sequence gate on a camera
-   canvas) to judge how the motion feels before any architecture work.
-2. **Runtime:** `supporting/presentation` (stage, camera, beat runner, controls, progress rail),
-   motion presets in `SensoryFeedbackContract`, the Viewer **Read | Present** toggle. Renderers for
-   `intro`, `text`, `bullets`, `pillar-layer`, `image-gallery`, `openui`.
-3. **Gates:** `quiz`, `flashcards`, `reflection-sequence`, `reflection-template`, domain events
-   from gates.
-4. **Spatial and branching:** `flowchart` (reusing journey playback), `concept-map`,
-   `taxonomy-browser`, `scenario`, `decision-tree`.
-5. **Sandboxes:** `tradeoff-sandbox`, `formula-sandbox` (`explore` beats, ghost-hand demo).
+Phase 0, the prototype, is done:
+[Loom Present Prototype](https://claude.ai/artifact/7qfJuQeFFbdbkKyDWdEMec) plays one section of every
+type with narration and sound. Phases 1–6 build the real mode. Each phase ends green on
+`npm run typecheck`, `npm run lint` and `npm run test`, and is checked in the Viewer with the
+Playwright MCP tools (AGENTS.md, *E2E Testing*).
 
-Each phase is done when `npm run typecheck` and `npm run test` pass and the mode is checked in
-the Viewer with Playwright.
+### Code layout
+
+```
+src/core/supporting/presentation/         new supporting subdomain (PresentationContext)
+  index.ts                                 public entry: PresentMode, types
+  types.ts                                 Beat, BeatKind, PresentRendererProps, PresentGate
+  registry.ts                              PresentRegistry (lazy, like SectionRegistry) + registerCorePresenters()
+  beat-runner.ts                           pure reducer: position, next/prev/jump, gate and explore rules
+  useBeatRunner.ts                         hook: reducer + autoplay holds + timeline/speech waits
+  camera.ts                                pure: region grid (4-column snake), camera target, overview, clamping
+  narration.ts                             Web Speech wrapper (decision 79)
+  speech-text.ts                           code/URL normalizer for speech (decision 80)
+  components/PresentMode.tsx               stage, world, regions, overlay pill, complete card
+  components/PresentControls.tsx           prev/play/next, rail, Narration, Overview, reduced motion
+  components/present.css
+src/core/learning-engine/sub-contexts/<subdomain>/
+  present.ts                               toBeats(data) for each section type of the subdomain
+  components/<type>/Present<Type>.tsx      the renderer (decision 84)
+src/core/ui-system/
+  SensoryFeedbackContract.ts               presentMotion presets (enter, stack, unfold, draw, grow, travel,
+                                           focus, breathe, exit) and SoundEffect += 'whoosh' | 'draw'
+src/viewer/ViewerApp.tsx                   Read | Present toggle; renders <PresentMode topic=…> in Present
+```
+
+Contracts (sketch):
+
+```ts
+type BeatKind = 'show' | 'gate' | 'explore'
+interface Beat { kind: BeatKind; key: string; camera?: string /* pick anchor to lean toward */ }
+interface PresentRendererProps<D> {
+  data: D                 // the same SectionConfig.props Read mode gets
+  beats: Beat[]
+  beat: number            // -1 = not reached yet
+  playing: boolean        // true while beat `beat` is being entered (animate); false = render its end state
+  timeline: PresentTimeline   // anime.js timeline for this beat, owned by the runner
+  gate: PresentGate       // solve(), plus onEvent / onResultChange as in Read mode (decision 71)
+  say: (parts: SpeechPart[]) => void
+}
+```
+
+### Phases
+
+1. **Runtime and the simple types.**
+   `types.ts`, `beat-runner.ts` (+ unit tests with fake timers), `camera.ts` (+ tests),
+   `useBeatRunner.ts`, `PresentMode`, `PresentControls`, `PresentRegistry`, motion presets,
+   `whoosh` and `draw` sounds, the Viewer toggle, keyboard and touch controls, reduced motion.
+   Renderers and `toBeats` for `intro`, `text`, `bullets`, `openui`. Viewer opens any topic in
+   Present; unsupported types show their Read component inside the region, one `show` beat, so a
+   topic never breaks mid-way.
+2. **The remaining progressive-content types:** `pillar-layer`, `image-gallery`,
+   `taxonomy-browser` (first `explore` beat).
+3. **Gates:** `quiz`, `flashcards`, `reflection-sequence`, `reflection-template`. Lift the quiz
+   card's and flashcard's reveal state into props; one shared slot-gate hook for sequence and
+   template. Gates emit the Read-mode events, verified by a test against `ProgressProvider`.
+4. **Spatial and branching:** `flowchart` (journey playback, camera follow), `concept-map`
+   (export `layoutTopDownPlanar`), `scenario`, `decision-tree`.
+5. **Sandboxes:** `tradeoff-sandbox`, `formula-sandbox` (ghost-hand sweep through `evaluateFormula`).
+6. **Narration and finish:** `narration.ts`, `speech-text.ts` (+ tests), spoken-word highlight,
+   Refresh keeping the place (decision 86), performance pass (decision 85), docs:
+   `docs/agents/domain.md` (PresentationContext), AGENTS.md (Viewer paragraph), `DESIGN.md` motion
+   section from the *Motion Rules* above.
+
+Tests per phase: every `toBeats` gets a unit test in `tests/unit/sections/present/` that compiles
+a small `.oui` fixture and checks beat kinds and count; the runner, camera and speech normalizer are
+pure and tested directly.
 
 ## Open Questions
 
 - Does Present mode remember the learner's place per topic (`localStorage`, like the Pick tray)?
-- Narration: on-screen captions only, or optional Web Speech text-to-speech later?
 - Should a learner be able to start Present from any section, or always from the topic's start?
