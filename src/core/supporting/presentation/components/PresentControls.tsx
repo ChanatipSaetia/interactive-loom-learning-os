@@ -1,4 +1,4 @@
-import { BookOpen, ChevronLeft, ChevronRight, LayoutGrid, Pause, Play } from 'lucide-react'
+import { BookOpen, ChevronLeft, ChevronRight, LayoutGrid, Pause, Play, Volume2, VolumeX } from 'lucide-react'
 import type { Beat } from '../../../learning-engine/sub-contexts/present-kernel'
 import { gateKey } from '../beat-runner'
 
@@ -18,6 +18,11 @@ export interface PresentControlsProps {
   onNext: () => void
   onPlay: () => void
   onOverview: () => void
+  /** The voice reads each beat. */
+  narrating: boolean
+  /** The browser has a voice to narrate with. */
+  canNarrate: boolean
+  onNarrate: () => void
   onJump: (section: number) => void
   onExit: () => void
 }
@@ -44,6 +49,17 @@ export function PresentControls(p: PresentControlsProps) {
         <ChevronRight size={18} />
       </button>
       <span className="present-where" aria-live="polite" data-testid="present-where">{p.where}</span>
+      <button
+        type="button"
+        className="present-ctl present-ctl--text"
+        onClick={p.onNarrate}
+        disabled={!p.canNarrate}
+        aria-pressed={p.narrating}
+        title={p.canNarrate ? 'Read each beat aloud (N)' : 'This browser has no speech voice'}
+        data-testid="present-narration"
+      >
+        {p.narrating ? <Volume2 size={15} /> : <VolumeX size={15} />} <span>Narration</span>
+      </button>
       <button type="button" className="present-ctl present-ctl--text" onClick={p.onOverview} aria-pressed={p.overview} data-testid="present-overview">
         <LayoutGrid size={15} /> <span>Overview</span>
       </button>

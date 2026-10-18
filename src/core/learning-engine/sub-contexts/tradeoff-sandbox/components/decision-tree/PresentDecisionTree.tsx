@@ -4,7 +4,7 @@ import { RotateCcw, ThumbsUp } from 'lucide-react'
 import { useSound } from '../../../../../ui-system/sensory/SoundContext'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
-import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
+import { SAY, beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import type { DecisionNodeSelected } from '../../events'
 import type { DecisionTreeChoice } from '../../schema'
 import { choicesOf, drawTree, nextOf, type DecisionTreePresentData } from '../../present'
@@ -108,8 +108,8 @@ export default function PresentDecisionTree({ data, beat, active, gate, onEvent 
               {...pick(leaf)}
             >
               <p className="present-dt-kicker">Recommendation</p>
-              <p className="present-dt-rec" {...pick(leaf, 'recommendation')}>{leaf.recommendation}</p>
-              {leaf.explanation && <p className="present-dt-why" {...pick(leaf, 'explanation')}>{leaf.explanation}</p>}
+              <p className="present-dt-rec" {...SAY} {...pick(leaf, 'recommendation')}>{leaf.recommendation}</p>
+              {leaf.explanation && <p className="present-dt-why" {...SAY} {...pick(leaf, 'explanation')}>{leaf.explanation}</p>}
               {!!leaf.tradeoffs?.length && (
                 <ul className="present-dt-tradeoffs">
                   {leaf.tradeoffs.map((t, i) => (

@@ -113,6 +113,42 @@ describe('Loom Viewer', () => {
     expect(screen.queryByTestId('present-stage')).toBeNull()
   })
 
+  it('keeps the place in Present across a Refresh while the section is still there', async () => {
+    const files = (sections: string[]) => ({
+      topicId: 'two',
+      files: {
+        'topic.oui': `root = Topic("Refreshing", "Architecture", "", [${sections.map((n) => `SectionRef("${n}")`).join(', ')}])\n`,
+        'sections/words.oui': 'root = Text("Words", ["First paragraph.", "Second paragraph."])\n',
+        'sections/added.oui': 'root = Text("Added", ["New."])\n',
+        'sections/check.oui': 'root = Bullets("Points", [Bullet("One"), Bullet("Two")])\n',
+      },
+    })
+    let source = createTopicSource([files(['words', 'check'])])
+    const file = { name: 'r.loom.oui', arrayBuffer: async () => new TextEncoder().encode(source).buffer }
+    render(<ViewerApp />)
+    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [file] } })
+    await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
+    fireEvent.click(screen.getByTestId('viewer-mode-present'))
+    const where = () => screen.getByTestId('present-where').textContent
+    for (const target of ['Text · 2 of 2', 'Bullets · 1 of 2', 'Bullets · 2 of 2']) {
+      fireEvent.click(screen.getByTestId('present-next'))
+      if (where() !== target) fireEvent.click(screen.getByTestId('present-next'))
+      await waitFor(() => expect(where()).toBe(target))
+    }
+
+    // A section added before it: same section and beat
+    source = createTopicSource([files(['words', 'added', 'check'])])
+    fireEvent.click(screen.getByTestId('viewer-refresh'))
+    await waitFor(() => expect(screen.getByTestId('viewer-status').textContent).toBe('Refreshed'))
+    await waitFor(() => expect(where()).toBe('Bullets · 2 of 2'))
+    expect(document.querySelector('[data-testid="present-region-2"].is-current')).not.toBeNull()
+
+    // The section removed: back to the start
+    source = createTopicSource([files(['words', 'added'])])
+    fireEvent.click(screen.getByTestId('viewer-refresh'))
+    await waitFor(() => expect(where()).toBe('Text · 1 of 2'))
+  })
+
   it('opens pasted text from the Paste box', async () => {
     render(<ViewerApp />)
     fireEvent.click(screen.getByTestId('viewer-paste-toggle'))

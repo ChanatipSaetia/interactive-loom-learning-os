@@ -1,8 +1,8 @@
 /**
  * Present mode stage (grill-log-presenting-mode.md): the topic's sections as regions on one
  * camera canvas, entered beat by beat. Sections draw themselves for a beat; this component moves
- * the camera, plays each beat's entrance, holds for reading time when autoplay is on, and waits at
- * gates and explore beats.
+ * the camera, plays each beat's entrance, reads it aloud when narration is on, holds for reading time
+ * (or the voice) when autoplay is on, and waits at gates and explore beats.
  */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type ComponentType, type ReactNode } from 'react'
 import { animate, cubicBezier, type JSAnimation } from 'animejs'
@@ -38,6 +38,7 @@ import {
   type Size,
 } from '../camera'
 import { enterBeat, revealBeat, type BeatEntrance } from '../motion'
+import { beatSpeech, createNarrator, saySpeech, type SpeechPart } from '../narration'
 import { PresentControls } from './PresentControls'
 import './present.css'
 
@@ -53,10 +54,12 @@ export interface PresentModeProps {
   sections: PresentSection[]
   /** Section to start at (index into `sections`), decision 89. */
   start?: number
+  /** Beat to start at in that section, e.g. where the learner was before a Refresh (decision 86). */
+  startBeat?: number
   /** Back to Read mode, at the section being presented. */
   onExit: (sectionIndex: number) => void
-  /** Called with the section being presented (its index among the topic's sections) whenever it changes. */
-  onSectionChange?: (sectionIndex: number) => void
+  /** Called with the section being presented (its index among the topic's sections) and its beat whenever either changes. */
+  onSectionChange?: (sectionIndex: number, beat: number) => void
   /** Domain events from gates, as Read sections emit them (decision 71). */
   onEvent?: (event: { type: string; [key: string]: unknown }, sectionIndex: number) => void
 }
@@ -118,10 +121,10 @@ function SectionBody({ section, view, beat, gate, active, onEvent }: { section: 
   return <SectionErrorBoundary sectionName={String(section.config.props.title ?? section.name)}>{body}</SectionErrorBoundary>
 }
 
-export function PresentMode({ sections, start = 0, onExit, onSectionChange, onEvent }: PresentModeProps) {
+export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSectionChange, onEvent }: PresentModeProps) {
   const beats = useMemo(() => sections.map((s) => beatsOf(s.config)), [sections])
   const reducer = useMemo(() => runnerReducer(beats), [beats])
-  const [state, dispatch] = useReducer(reducer, start, initialRunnerState)
+  const [state, dispatch] = useReducer(reducer, null, () => initialRunnerState(start, Math.min(startBeat, (beats[start]?.length ?? 1) - 1)))
   const [epoch, setEpoch] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [overview, setOverview] = useState(false)
@@ -141,6 +144,35 @@ export function PresentMode({ sections, start = 0, onExit, onSectionChange, onEv
   const camera = useRef<Camera | null>(null)
   const shownSection = useRef<number | null>(null)
   const holdTimer = useRef<number | null>(null)
+
+  // ---- narration (decision 79): off by default, disabled when the browser has no voice ----
+  const narrator = useMemo(createNarrator, [])
+  const [narrating, setNarrating] = useState(false)
+  const [voiceReady, setVoiceReady] = useState(() => narrator.available())
+  /** Resolves when what is being read now has been read (or was cut off). */
+  const speech = useRef<Promise<void> | null>(null)
+  const said = useRef(new WeakSet<Element>())
+  useEffect(() => {
+    const update = () => setVoiceReady(narrator.available())
+    update()
+    const off = narrator.onVoices(update)
+    return () => {
+      off()
+      narrator.cancel()
+    }
+  }, [narrator])
+  /** Read what `collect` finds once `delay` has passed (so the words are on screen); returns the cleanup. */
+  const say = useCallback((collect: () => SpeechPart[], delay: number) => {
+    let timer = 0
+    speech.current = new Promise<void>((resolve) => {
+      timer = window.setTimeout(() => void narrator.speak(collect()).then(resolve), delay)
+    })
+    return () => {
+      window.clearTimeout(timer)
+      narrator.cancel()
+      speech.current = null
+    }
+  }, [narrator])
 
   // Load each section type's view, the starting section's first; a section draws (and enters) once its view is here
   const types = useMemo(() => {
@@ -263,32 +295,50 @@ export function PresentMode({ sections, start = 0, onExit, onSectionChange, onEv
     if (region) revealBeat(region, state.beat, false)
   }, [state.mode, state.section, state.beat])
 
-  // ---- autoplay: hold for reading time after the entrance, then move on ----
+  // Read each beat as it arrives, and what a solved gate reveals
+  useEffect(() => {
+    const region = regionRefs.current[state.section]
+    if (!narrating || complete || overview || !currentReady || !region) return
+    return say(() => beatSpeech(region, state.beat), reduced ? 0 : 250)
+  }, [narrating, state.section, state.beat, epoch, complete, overview, currentReady, reduced, say])
+  const solvedHere = kind === 'gate' && state.solved.has(gateKey(state.section, state.beat))
+  useEffect(() => {
+    const region = regionRefs.current[state.section]
+    if (!narrating || !solvedHere || !region) return
+    return say(() => saySpeech(region, said.current), 600)
+  }, [narrating, solvedHere, state.section, say])
+
+  // ---- autoplay: hold for reading time (or until the voice is done) after the entrance, then move on ----
   useEffect(() => {
     clearHold()
     if (!playing || complete || waiting || overview) return
     let cancelled = false
     const wait = entrance.current?.done ?? Promise.resolve()
-    void wait.then(() => {
-      if (cancelled) return
+    const reading = speech.current
+    void wait.then(async () => {
       const ms = holdMs(wordsOfBeat(regionRefs.current[state.section], state.beat))
-      setHolding(ms)
-      holdTimer.current = window.setTimeout(() => dispatch({ type: 'next' }), ms)
+      // A voice that never ends cannot stall the lesson
+      if (reading) await Promise.race([reading, new Promise((r) => window.setTimeout(r, ms * 2 + 3000))])
+      if (cancelled) return
+      const hold = reading ? 700 : ms
+      setHolding(hold)
+      holdTimer.current = window.setTimeout(() => dispatch({ type: 'next' }), hold)
     })
     return () => {
       cancelled = true
       clearHold()
     }
-  }, [playing, state.section, state.beat, state.solved, complete, waiting, overview, currentReady])
+  }, [playing, state.section, state.beat, state.solved, complete, waiting, overview, currentReady, narrating, solvedHere])
 
   useEffect(() => {
     if (complete) setPlaying(false)
   }, [complete])
 
   const presented = sections[Math.min(state.section, sections.length - 1)]?.sectionIndex
+  const presentedBeat = complete ? 0 : state.beat
   useEffect(() => {
-    if (presented !== undefined) onSectionChange?.(presented)
-  }, [presented, onSectionChange])
+    if (presented !== undefined) onSectionChange?.(presented, presentedBeat)
+  }, [presented, presentedBeat, onSectionChange])
 
   // ---- actions ----
   const busy = () => !!cameraAnim.current || !!entrance.current
@@ -354,6 +404,10 @@ export function PresentMode({ sections, start = 0, onExit, onSectionChange, onEv
     setOverview((o) => !o)
   }, [])
 
+  const toggleNarration = useCallback(() => {
+    if (voiceReady) setNarrating((n) => !n)
+  }, [voiceReady])
+
   const solveCurrent = useCallback(() => dispatch({ type: 'solve', section: state.section, beat: state.beat }), [state.section, state.beat])
 
   // ---- keyboard and touch ----
@@ -371,11 +425,12 @@ export function PresentMode({ sections, start = 0, onExit, onSectionChange, onEv
         prev()
       } else if (e.key === 'a' || e.key === 'A') togglePlay()
       else if (e.key === 'g' || e.key === 'G') toggleOverview()
+      else if (e.key === 'n' || e.key === 'N') toggleNarration()
       else if (e.key === 'Escape') exit()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [next, prev, togglePlay, toggleOverview, exit])
+  }, [next, prev, togglePlay, toggleOverview, toggleNarration, exit])
 
   const pointer = useRef<{ x: number; y: number } | null>(null)
   const onPointerUp = (e: React.PointerEvent) => {
@@ -488,6 +543,9 @@ export function PresentMode({ sections, start = 0, onExit, onSectionChange, onEv
         onNext={next}
         onPlay={togglePlay}
         onOverview={toggleOverview}
+        narrating={narrating}
+        canNarrate={voiceReady}
+        onNarrate={toggleNarration}
         onJump={jump}
         onExit={exit}
       />

@@ -419,3 +419,6 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* The word the narration voice is speaking */
+.present-region .present-spoken { color: var(--present-accent, var(--primary)); text-shadow: 0 0 12px color-mix(in srgb, var(--present-accent, var(--primary)) 40%, transparent); transition: color 0.12s ease; }

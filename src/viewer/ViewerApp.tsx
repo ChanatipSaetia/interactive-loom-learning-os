@@ -126,7 +126,9 @@ export function ViewerApp() {
   const [picking, setPicking] = useState(false)
   const [mode, setMode] = useState<'read' | 'present'>('read')
   const [presentStart, setPresentStart] = useState(0)
-  const presentAt = useRef(0)
+  /** Where the learner is in Present (topic section index and beat), for Read and Refresh to return to. */
+  const presentAt = useRef({ sectionIndex: 0, beat: 0 })
+  const [presentBeat, setPresentBeat] = useState(0)
   const current = useRef({ loaded, selected })
   current.current = { loaded, selected }
 
@@ -155,6 +157,11 @@ export function ViewerApp() {
     try {
       const topics = (await read()).map(compileViewerTopic)
       const keep = topics.findIndex((t) => t.topicId === topicId)
+      // Present picks up at the same section and beat when that section is still there (decision 86)
+      const placeName = before.topics[index]?.sections[presentAt.current.sectionIndex]?.name
+      const at = keep < 0 || !placeName ? -1 : presentSectionsOf(topics[keep]).findIndex((s) => s.name === placeName)
+      setPresentStart(Math.max(0, at))
+      setPresentBeat(at < 0 ? 0 : presentAt.current.beat)
       setLoaded({ ...before, topics, revision: before.revision + 1 })
       setSelected(keep < 0 ? 0 : keep)
       setStatus({ kind: 'ok', text: 'Refreshed' })
@@ -252,11 +259,12 @@ export function ViewerApp() {
 
   const startPresent = useCallback(() => {
     setPresentStart(sectionInView(presentSections))
+    setPresentBeat(0)
     setPicking(false)
     setMode('present')
     window.scrollTo(0, 0)
   }, [presentSections])
-  const onPresentSection = useCallback((sectionIndex: number) => { presentAt.current = sectionIndex }, [])
+  const onPresentSection = useCallback((sectionIndex: number, beat: number) => { presentAt.current = { sectionIndex, beat } }, [])
   const exitPresent = useCallback((sectionIndex: number) => {
     setMode('read')
     const name = topic?.sections[sectionIndex]?.name
@@ -307,7 +315,7 @@ export function ViewerApp() {
             <LoomToolsNav current="viewer" />
             {topic && presentSections.length > 0 && (
               <div className="viewer-mode" role="group" aria-label="Viewer mode" data-testid="viewer-mode">
-                <button type="button" aria-pressed={!presenting} onClick={() => presenting && exitPresent(presentAt.current)} data-testid="viewer-mode-read">
+                <button type="button" aria-pressed={!presenting} onClick={() => presenting && exitPresent(presentAt.current.sectionIndex)} data-testid="viewer-mode-read">
                   <BookOpen size={14} /> <span className="viewer-pill-label">Read</span>
                 </button>
                 <button type="button" aria-pressed={presenting} onClick={() => !presenting && startPresent()} data-testid="viewer-mode-present">
@@ -347,6 +355,7 @@ export function ViewerApp() {
                     key={`${loaded.source}:${topic.topicId}:${loaded.revision}`}
                     sections={presentSections}
                     start={presentStart}
+                    startBeat={presentBeat}
                     onExit={exitPresent}
                     onSectionChange={onPresentSection}
                   />

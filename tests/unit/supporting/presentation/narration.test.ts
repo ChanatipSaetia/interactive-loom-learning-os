@@ -1,0 +1,91 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { SPOKEN_CLASS, beatSpeech, createNarrator, saySpeech } from '../../../../src/core/supporting/presentation/narration'
+
+class FakeUtterance {
+  text: string
+  voice: unknown = null
+  lang = ''
+  onboundary: ((e: { charIndex: number; name: string }) => void) | null = null
+  onend: (() => void) | null = null
+  onerror: (() => void) | null = null
+  constructor(text: string) { this.text = text }
+}
+
+let spoken: FakeUtterance[] = []
+const synth = {
+  voices: [{ lang: 'en-US' }, { lang: 'th-TH' }],
+  getVoices() { return this.voices },
+  speak(u: FakeUtterance) { spoken.push(u) },
+  cancel: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+}
+
+function region(html: string): HTMLElement {
+  const el = document.createElement('section')
+  el.innerHTML = html
+  return el
+}
+
+describe('narration', () => {
+  beforeEach(() => {
+    spoken = []
+    vi.stubGlobal('speechSynthesis', synth)
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance)
+  })
+  afterEach(() => vi.unstubAllGlobals())
+
+  it("collects a beat's words in order, word spans one by one", () => {
+    const r = region(`
+      <h3 data-beat="0"><span class="present-w">Cache</span> <span class="present-w">hits</span></h3>
+      <p data-beat="1">Not yet</p>
+      <div data-beat="0"><p data-beat="0">Inner</p> card</div>`)
+    const parts = beatSpeech(r, 0)
+    expect(parts.map((p) => p.text)).toEqual(['Cache', 'hits', 'Inner card.'])
+    expect(parts[0].el?.textContent).toBe('Cache')
+  })
+
+  it('reads what a solved gate marked once', () => {
+    const r = region('<p data-say>Right: it is fresh.</p><p>Other</p>')
+    const read = new WeakSet<Element>()
+    expect(saySpeech(r, read).map((p) => p.text)).toEqual(['Right: it is fresh.'])
+    expect(saySpeech(r, read)).toEqual([])
+  })
+
+  it('speaks the parts rewritten for speech and lights the word being spoken', async () => {
+    const r = region('<p data-beat="0"><span class="present-w">Serve</span> <span class="present-w">/app.3f9a.js</span></p>')
+    const narrator = createNarrator()
+    expect(narrator.available()).toBe(true)
+    const done = narrator.speak(beatSpeech(r, 0))
+    const u = spoken[0]
+    expect(u.text).toBe('Serve app dot j s')
+    u.onboundary?.({ charIndex: 6, name: 'word' })
+    const second = r.querySelectorAll('.present-w')[1]
+    expect(second.classList.contains(SPOKEN_CLASS)).toBe(true)
+    u.onend?.()
+    await done
+    expect(second.classList.contains(SPOKEN_CLASS)).toBe(false)
+  })
+
+  it('picks a voice for the script the text is written in', () => {
+    void createNarrator().speak([{ text: 'สวัสดี' }])
+    expect(spoken[0].lang).toBe('th-TH')
+  })
+
+  it('resolves a cut-off reading and ignores the stopped voice afterwards', async () => {
+    const narrator = createNarrator()
+    const first = narrator.speak([{ text: 'One' }])
+    const second = narrator.speak([{ text: 'Two' }])
+    await first
+    spoken[0].onend?.()
+    expect(spoken).toHaveLength(2)
+    narrator.cancel()
+    await second
+  })
+
+  it('is unavailable without voices', () => {
+    synth.voices = []
+    expect(createNarrator().available()).toBe(false)
+    synth.voices = [{ lang: 'en-US' }, { lang: 'th-TH' }]
+  })
+})

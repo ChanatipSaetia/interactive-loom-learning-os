@@ -65,6 +65,8 @@ Subdomains represent the business capabilities and problem space of the Interact
     *Focus:* Topic index discovery, category grouping, difficulty/tag filtering, and search path resolution.
 11. **📊 Learning Progress Tracking**  
     *Focus:* Section completion tracking, quiz score history, sandbox interaction state retention, and local persistence.
+12. **🎬 Guided Presentation (Present mode)**  
+    *Focus:* Playing a topic in Loom Viewer as guided motion, beat by beat, with gates for the learner, optional narration, and no extra authoring.
 
 ---
 
@@ -182,6 +184,16 @@ Bounded Contexts define the solution space boundaries. Each Bounded Context main
     * `AssessmentEventSubscriberPort` (learning sync): Subscribes to learning events (`SectionCompleted`, `QuizAnswered`) to award XP/items.
 * **Degradation & Fallback:** Maintains `lastValidData` for the active campaign so map edits or transient validation errors in authoring mode never crash active gameplay.
 * **Current code:** [src/core/supporting/gamification/](file:///home/chanatip/interactive_loom_learning_os/src/core/supporting/gamification) — `game-rules.ts` (pure domain functions), `types.ts`, `layout.ts`, `components/`.
+
+---
+
+#### G. Presentation Context (Supporting)
+* **Role:** Plays a topic in Loom Viewer's **Present** mode ([grill-log-presenting-mode.md](../../grill-log-presenting-mode.md)): the sections are regions on one camera canvas, each entered beat by beat. It reads compiled section props only; authors write nothing for it.
+* **Ubiquitous Language:** `Beat` (`show` plays and holds for reading time, `gate` waits for the learner, `explore` hands the section over), `BeatMotion`, `PresentGate`, `SectionPresenter`, Camera, Overview, Narration.
+* **Contracts with the core sub-contexts:** each section type registers a `SectionPresenter` in the `PresentRegistry` (`src/core/learning-engine/registry/present-registry.ts`, `register-core-presenters.ts`): `toBeats(props)` in `sub-contexts/<subdomain>/present.ts` and a lazily loaded `Present<Type>.tsx` renderer. The shared kernel (`sub-contexts/present-kernel.ts`) defines the beat types, `beatMarks()` (marks elements with the beat they enter on and their motion) and `SAY` (what narration reads once a gate is solved). Gates emit the same domain events as Read mode (`QuizOptionSelected`, `ReflectionAnswered`, `DecisionNodeSelected`, …), so `LearnerProgressContext` sees no difference. A type without a presenter plays its Read component as one `show` beat.
+* **Runtime:** pure `beat-runner.ts` (state machine) and `camera.ts` (region grid, overview), `motion.ts` (one anime.js timeline per beat entrance), `narration.ts` + `speech-text.ts` (Web Speech voice, rule-based rewriting of code and URLs), `components/PresentMode.tsx` and `PresentControls.tsx`. Only the current section and its neighbours mount.
+* **Host:** Loom Viewer (`src/viewer/ViewerApp.tsx`) toggles Read | Present, starts at the section in view, returns to the section being presented, and keeps the place across Refresh.
+* **Current code:** [src/core/supporting/presentation/](../../src/core/supporting/presentation)
 
 ---
 
