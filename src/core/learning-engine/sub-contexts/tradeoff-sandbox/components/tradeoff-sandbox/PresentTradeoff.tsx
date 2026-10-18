@@ -1,5 +1,5 @@
 import { useMemo, type CSSProperties } from 'react'
-import { Star } from 'lucide-react'
+import { Check, Star, X } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentWords } from '../../../PresentWords'
 import { QUIET, beatMarks, focus, lead, type PresentRendererProps } from '../../../present-kernel'
@@ -62,10 +62,11 @@ function Summary({ scenario }: { scenario: TradeoffScenario }) {
 
 /**
  * Tradeoff sandbox in Present mode (tradeoffBeats), on Read's compare cards: per step, its choices arrive
- * side by side by name, each effect chip popping in (green where it helps, red where it costs); then the
- * recommended choice comes forward with its star and the opening of why it fits while the others dim.
- * Descriptions, gains and costs stay in Read (decision 109). Last, each scenario shows Read's "Try it"
- * metrics with the recommended choices picked.
+ * side by side by name, each effect chip popping in (green where it helps, red where it costs); then each
+ * choice in turn comes forward while the panel under the cards lists its gains and costs (decision 112);
+ * then the recommended choice takes its star and the panel says why it fits while the others dim.
+ * Descriptions stay in Read (decision 109). Last, each scenario shows Read's "Try it" metrics with the
+ * recommended choices picked.
  */
 export default function PresentTradeoff({ data, beat }: PresentRendererProps<TradeoffPresentData>) {
   const pick = usePickAnchors()
@@ -74,19 +75,27 @@ export default function PresentTradeoff({ data, beat }: PresentRendererProps<Tra
   const plan = useMemo(() => tradeoffPlan(data), [data])
   const summaries = useMemo(() => tradeoffSummaries(data), [data])
 
-  // The beats of each step: where its choices arrive, and where its recommendation does (if any)
-  const steps = plan.flatMap((b, i) => (b.recommended ? [] : [{ ...b, at: i, rec: plan[i + 1]?.recommended ? i + 1 : -1 }]))
+  // The beats of each step: where its choices arrive, where each choice is weighed, where its recommendation lands
+  const steps = plan.flatMap((b, at) => {
+    if (b.show !== 'choices') return []
+    let end = at
+    while (plan[end + 1] && plan[end + 1].show !== 'choices') end++
+    const own = plan.slice(at + 1, end + 1).map((x, k) => ({ ...x, at: at + 1 + k }))
+    return [{ ...b, at, end, weighed: own.filter((x) => x.show === 'choice'), rec: own.find((x) => x.show === 'recommended')?.at ?? -1 }]
+  })
 
   return (
     <div className="present-tradeoff compare-scenarios" data-testid="present-tradeoff">
-      {steps.map(({ scenario: si, step: ki, at, rec }) => {
+      {steps.map(({ scenario: si, step: ki, at, end, weighed, rec }) => {
         const scenario = scenarios[si]
         const step = scenario.steps[ki]
-        const last = Math.max(at, rec)
         const focused = rec >= 0 && beat >= rec
+        const weighing = weighed.find((w) => w.at === beat)?.choice
         const columns = step.choices.length === 4 ? 2 : Math.min(step.choices.length, 3)
+        const recChoice = step.choices.find((c) => c.id === step.recommended)
+        const why = recChoice?.whyThisFits ?? recChoice?.whenToUse
         return (
-          <section key={`${si}-${ki}`} className="compare-step present-tradeoff-step" {...mark(at, { motion: 'fade', until: last })} {...pick(step)}>
+          <section key={`${si}-${ki}`} className="compare-step present-tradeoff-step" {...mark(at, { motion: 'fade', until: end })} {...pick(step)}>
             <header className="compare-step-header">
               <span className="compare-step-eyebrow">{scenarios.length > 1 ? `${scenario.title} · ` : ''}Question {ki + 1} of {scenario.steps.length}</span>
               <h5 className="compare-step-title" {...mark(at, { motion: 'words' })} {...focus(beat === at)} {...pick(step, 'title')}><PresentWords text={step.title} /></h5>
@@ -98,11 +107,13 @@ export default function PresentTradeoff({ data, beat }: PresentRendererProps<Tra
                 const effects = scenario.metrics.filter((m) => c.metrics[m.id])
                 const cls = [
                   'compare-card',
+                  weighing === j && 'present-tradeoff-weighing',
+                  weighing !== undefined && weighing !== j && 'compare-card-dimmed',
                   focused && isRec && 'compare-card-recommended compare-card-focused present-tradeoff-rec',
                   focused && !isRec && 'compare-card-dimmed',
                 ].filter(Boolean).join(' ')
                 return (
-                  <div key={c.id} className={cls} {...mark(at, { delay: 500 + j * 110 })} {...focus(isRec && beat === rec)} {...pick(c)}>
+                  <div key={c.id} className={cls} {...mark(at, { delay: 500 + j * 110 })} {...focus((isRec && beat === rec) || weighing === j)} {...pick(c)}>
                     <div className="compare-card-header">
                       <span className="compare-card-label" {...pick(c, 'label')}>{c.label}</span>
                       {isRec && rec >= 0 && (
@@ -123,19 +134,54 @@ export default function PresentTradeoff({ data, beat }: PresentRendererProps<Tra
                         })}
                       </ul>
                     )}
-                    {/* Rendered from its beat on, so the card keeps its size until then */}
-                    {isRec && rec >= 0 && beat >= rec && (c.whyThisFits || c.whenToUse) && (
-                      <div className="compare-card-details" {...mark(rec, { delay: 350 })}>
-                        <p {...pick(c, c.whyThisFits ? 'whyThisFits' : 'whenToUse')}>
-                          <span className="compare-block-title">{c.whyThisFits ? 'Why it fits' : 'When to use'}</span>
-                          <PresentWords text={lead(c.whyThisFits ?? c.whenToUse, 2)} />
-                        </p>
-                      </div>
-                    )}
                   </div>
                 )
               })}
             </div>
+            {(weighed.length > 0 || (rec >= 0 && why)) && (
+              <div className="present-scenes present-tradeoff-panel">
+                {weighed.map((w, n) => {
+                  const c = step.choices[w.choice ?? 0]
+                  return (
+                    <div key={c.id} className="present-tradeoff-procons" {...mark(w.at, { motion: 'fade', ...((n < weighed.length - 1 || rec >= 0) && { until: w.at }) })}>
+                      <p className="present-tradeoff-panel-title" {...mark(w.at, { motion: 'fade' })}>{c.label}</p>
+                      {c.pros.length > 0 && (
+                        <div className="compare-block compare-block-gains">
+                          <span className="compare-block-title">Gains</span>
+                          <ul className="compare-pros">
+                            {c.pros.map((pro, p) => (
+                              <li key={p} className="compare-pro" {...mark(w.at, { motion: 'unfold', delay: 250 + p * 140 })} {...pick(pro)}>
+                                <Check className="compare-icon compare-icon-pro" strokeWidth={3} />
+                                <span className="compare-procon-title" {...pick(pro, 'title')}>{pro.title}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {c.cons.length > 0 && (
+                        <div className="compare-block compare-block-costs">
+                          <span className="compare-block-title">Costs</span>
+                          <ul className="compare-cons">
+                            {c.cons.map((con, p) => (
+                              <li key={p} className="compare-con" {...mark(w.at, { motion: 'unfold', delay: 250 + (c.pros.length + p) * 140 })} {...pick(con)}>
+                                <X className="compare-icon compare-icon-con" strokeWidth={3} />
+                                <span className="compare-procon-title" {...pick(con, 'title')}>{con.title}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+                {rec >= 0 && recChoice && why && (
+                  <div className="present-tradeoff-why compare-card-details" {...mark(rec, { motion: 'fade', delay: 350 })} {...pick(recChoice, recChoice.whyThisFits ? 'whyThisFits' : 'whenToUse')}>
+                    <p className="present-tradeoff-panel-title"><Star size={14} className="present-pill-star" aria-hidden /> {recChoice.label} · {recChoice.whyThisFits ? 'Why it fits' : 'When to use'}</p>
+                    <p><PresentWords text={lead(why, 2)} /></p>
+                  </div>
+                )}
+              </div>
+            )}
           </section>
         )
       })}

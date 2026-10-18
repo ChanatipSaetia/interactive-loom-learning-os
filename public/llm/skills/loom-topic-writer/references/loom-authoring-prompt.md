@@ -561,10 +561,10 @@ Beat IDs by section type (n counts from 1):
 | `taxonomy-browser` | `cards` (all cards), then `card1`, `card2`, … each card opened |
 | `concept-map` | `group1`, `group2`, … one per category in order of first appearance, then `map` (the whole map, when there is more than one category) |
 | `flowchart` | `step1`, `step2`, … one per step of the first journey |
-| `scenario` | `start`; when a choice leads to a weaker ending, along that path `wrong1` (the choice picked on its card), `wrong1.next` (where it leads), `wrong2`, `wrong2.next`, … (the last `.next` shows its outcome); then from where the two part along the best path `right1`, `right1.next`, `right2`, … (the last `.next` shows its outcome) |
+| `scenario` | `start`; then one path per ending (weaker endings first, the best last): along path P, `pathP.choice1` (the choice picked on its card), `pathP.choice1.next` (where it leads), `pathP.choice2`, … (the last `.next` shows its ending); a later path starts at the fork where it leaves the one before |
 | `decision-tree` | `start` (the first question), then per answer taken (the recommended choice, else the first) `answer1` (picked on its question, with its rationale), `q2` (the next question), `answer2`, …, then `result` (the recommendation) |
-| `tradeoff-sandbox` | `step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.recommended` when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation |
-| `formula-sandbox` | `formulas`, then `sweep` (the first variable moving from its default to its max, when they differ) |
+| `tradeoff-sandbox` | `step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.choice1`, `stepN.choice2`, … (the gains and costs of each choice that has some, numbered in the step) and `stepN.recommended` when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation |
+| `formula-sandbox` | `formulas`, then `sweep1`, `sweep2`, … one per variable that can move (it sweeps from its min to its max while the trend of each metric is stated) |
 | `quiz` | `q1`, `q1.wrong`, `q1.right`, `q2`, … per question: asked, its first wrong choice tried, the right answer given |
 | `flashcards` | `card1`, `card1.back`, `card2`, … per card: its word, then its definition |
 | `reflection-sequence` | `c1`, `c1.solved`, `c2`, … per challenge: the prompt, then the right order |

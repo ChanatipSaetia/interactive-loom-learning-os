@@ -16,11 +16,11 @@ const GRADES: Record<ScenarioRating, string> = { 'a': 'A', 'b-plus': 'B+', 'b-mi
 const good = (rating: ScenarioRating) => rating === 'a' || rating === 'b-plus'
 
 /**
- * Scenario in Present mode (scenarioPlan), walked by the stage (decisions 103 and 110): the setup and
- * the first situation arrive; then a weaker path is taken choice by choice, each choice lighting up on
- * the card it is asked on while the others step back, then joining the trail above as the card turns
- * into the next situation, until its outcome lands with its grade; then the walk goes back to the fork,
- * where the choice tried is struck through, and follows the best path to its outcome.
+ * Scenario in Present mode (scenarioPlan), walked by the stage (decisions 103, 110 and 113): the setup and
+ * the first situation arrive; then a path to every ending, the best one last. Each choice lights up on
+ * the card it is asked on while the others step back, then joins the trail above as the card turns into
+ * the next situation, until the ending lands with its grade ("Ending 2 of 4"); the next path goes back
+ * to the fork where it parts, with the choices tried there struck through.
  */
 export default function PresentScenario({ data, beat }: PresentRendererProps<ScenarioPresentData>) {
   const pick = usePickAnchors()
@@ -79,7 +79,7 @@ export default function PresentScenario({ data, beat }: PresentRendererProps<Sce
               {good(outcome.rating)
                 ? <CheckCircle2 className="scenario-outcome-icon" style={{ color: RATING_COLORS[outcome.rating] }} />
                 : <AlertCircle className="scenario-outcome-icon" style={{ color: RATING_COLORS[outcome.rating] }} />}
-              <h4 className="scenario-outcome-title">Outcome</h4>
+              <h4 className="scenario-outcome-title">{step?.ending && step.ending.count > 1 ? `Ending ${step.ending.index} of ${step.ending.count}` : 'Outcome'}</h4>
               <span
                 className="scenario-rating-badge"
                 style={{ backgroundColor: RATING_COLORS[outcome.rating], color: 'var(--ctp-crust)' }}
@@ -116,7 +116,7 @@ export default function PresentScenario({ data, beat }: PresentRendererProps<Sce
           <div className="scenario-choices" role="list" aria-label="Choices">
             {(node.choices ?? []).map((c, j) => {
               const isPicked = !!step?.picked && c === step.picked
-              const isTried = !!step?.tried && c === step.tried
+              const isTried = !!step?.tried?.includes(c)
               const cls = ['scenario-choice', isPicked && 'is-picked', isTried && 'is-tried', step?.picked && !isPicked && 'is-dim'].filter(Boolean).join(' ')
               return (
                 <div

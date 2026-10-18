@@ -46,11 +46,20 @@ describe('one idea at a time (decision 109)', () => {
     if (first.details) expect(document.body.textContent).not.toContain(first.details)
   })
 
-  it('tradeoff: choices by name and effects, without their gains and costs', () => {
+  it('tradeoff: cards by name and effects; the gains and costs of each choice get their own beat under the cards (decision 112)', () => {
     const data = propsOf<TradeoffPresentData>(content('haystack/sections/tradeoffs.oui'))
-    render(<PresentTradeoff data={data} beats={tradeoffBeats(data)} beat={0} sectionIndex={0} active />)
+    const beats = tradeoffBeats(data)
+    const { rerender } = render(<PresentTradeoff data={data} beats={beats} beat={0} sectionIndex={0} active />)
     expect(document.querySelectorAll('.compare-card').length).toBeGreaterThan(1)
-    expect(document.querySelector('.compare-pros, .compare-cons, .compare-card-summary')).toBeNull()
+    expect(document.querySelector('.compare-card .compare-pros, .compare-card .compare-cons, .compare-card-summary')).toBeNull()
+    const at = beats.findIndex((b) => b.id === 'step1.choice1')
+    rerender(<PresentTradeoff data={data} beats={beats} beat={at} sectionIndex={0} active />)
+    const choice = data.scenarios![0].steps[0].choices[0]
+    const panel = document.querySelector('.present-tradeoff-panel > [data-shown]')
+    expect(panel?.textContent).toContain(choice.label)
+    expect(panel?.textContent).toContain(choice.pros[0].title)
+    expect(panel?.textContent).toContain(choice.cons[0].title)
+    expect(document.querySelectorAll('.compare-card')[0]).toHaveClass('present-tradeoff-weighing')
   })
 })
 

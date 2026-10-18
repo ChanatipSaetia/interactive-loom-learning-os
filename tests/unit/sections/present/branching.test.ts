@@ -48,15 +48,36 @@ describe('spatial and branching beats', () => {
     }
     const plan = scenarioPlan({ nodes, startNode: 'start' })
     expect(plan.map((s) => s.path.map((p) => p.nodeId).join('>'))).toEqual(['start', 'start', 'start>burnt', 'start', 'start>vents', 'start>vents', 'start>vents>great'])
-    expect(plan.map((s) => s.id)).toEqual(['start', 'wrong1', 'wrong1.next', 'right1', 'right1.next', 'right2', 'right2.next'])
+    expect(plan.map((s) => s.id)).toEqual(['start', 'path1.choice1', 'path1.choice1.next', 'path2.choice1', 'path2.choice1.next', 'path2.choice2', 'path2.choice2.next'])
     expect(plan.map((s) => s.picked?.id)).toEqual([undefined, 'open', undefined, 'shut', undefined, 'small', undefined])
-    expect(plan[3].tried?.id).toBe('open')
-    expect(plan[3].about).toBe('Back at the fork, chooses “Keep it shut”')
+    expect(plan[3].tried?.map((c) => c.id)).toEqual(['open'])
+    expect(plan[3].about).toBe('Path 2: back at the fork, chooses “Keep it shut”')
+    expect(plan[6].ending).toEqual({ index: 2, count: 2 })
     expect(kinds(scenarioBeats({ nodes, startNode: 'start' }))).toEqual(['show', 'show', 'wrong', 'show', 'show', 'show', 'right'])
     // Only good endings: straight down the best path
     const only = { start: { prompt: 'Go?', choices: [{ id: 'y', text: 'Yes', next: 'great' }] }, great: nodes.great }
     expect(kinds(scenarioBeats({ nodes: only, startNode: 'start' }))).toEqual(['show', 'show', 'right'])
     expect(kinds(scenarioBeats({}))).toEqual(['show'])
+  })
+
+  it('scenario: walks to every ending, weaker ones first, each later path back at its fork (decision 113)', () => {
+    const outcome = (rating: 'a' | 'b-minus' | 'c') => ({ outcome: { verdict: rating, lesson: '', rating } })
+    const nodes = {
+      start: { prompt: 'Lid?', choices: [{ id: 'open', next: 'burnt' }, { id: 'shut', next: 'vents' }] },
+      vents: { prompt: 'Vents?', choices: [{ id: 'wide', next: 'hot' }, { id: 'small', next: 'great' }] },
+      burnt: outcome('c'),
+      hot: outcome('b-minus'),
+      great: outcome('a'),
+    }
+    const plan = scenarioPlan({ nodes, startNode: 'start' })
+    const endings = plan.filter((s) => s.ending)
+    expect(endings.map((s) => s.path[s.path.length - 1].nodeId)).toEqual(['burnt', 'hot', 'great'])
+    expect(endings.map((s) => s.answer)).toEqual(['wrong', 'wrong', 'right'])
+    // Path 3 parts from path 2 at the vents: only the last choice is replayed, with "wide" struck through
+    const third = plan.filter((s) => s.id.startsWith('path3'))
+    expect(third.map((s) => s.id)).toEqual(['path3.choice1', 'path3.choice1.next'])
+    expect(third[0].picked?.id).toBe('small')
+    expect(third[0].tried?.map((c) => c.id)).toEqual(['wide'])
   })
 
   it('scenario: the repo topic walks to an outcome', () => {

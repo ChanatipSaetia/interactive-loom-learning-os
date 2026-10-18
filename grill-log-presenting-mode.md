@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Implemented: phases 1–6, Read-mode styles and authored narration files (decisions 90–95), hands-free play (decisions 101–107), narration scripted per beat in OUI (decision 108), one idea per beat and answers shown as they are made (decisions 109–111)**
+Status: **Implemented: phases 1–6, Read-mode styles and authored narration files (decisions 90–95), hands-free play (decisions 101–107), narration scripted per beat in OUI (decision 108), one idea per beat and answers shown as they are made (decisions 109–111), gains and costs, trends and every scenario ending (decisions 112–113)**
 
 ## Goal
 
@@ -75,6 +75,8 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 109 | How much a beat shows | **One idea per beat, the key content only; the full text stays in Read.** Content-heavy sections no longer show their whole Read layout: each beat is a scene that replaces the last, and each type picks the parts that carry the idea (table in *Beat Derivation*). Intro: the title, then what it is (the definition, else the summary) with up to three of its points, then why it matters ending on the takeaway, then the roadmap's step titles on a path; tags and roadmap descriptions are left out. Text: one paragraph at a time, a bold opening term as its headline. Bullets: one top-level point at a time with its sub-points. Taxonomy: the cards by name only, then each card with the first two sentences of its description and its analogy; deep dive, primary focus and scope lists are left out. Pillar-layer: blocks by name only. Tradeoff: choices by name with their effect chips, the recommended one with the first two sentences of why it fits; descriptions, gains and costs are left out; the result lists only the recommended choices. Decision-tree answers show their rationale only when taken, and the recommendation the first two sentences of its explanation, without trade-offs. What is left out is not narrated either; a narration file can still say it. Quiz, flashcards, reflections, concept map, flowchart, gallery and formula sandbox already show one idea per beat and are unchanged. |
 | 110 | When a choice is made | **On the card it is asked on, in its own beat, before the walk moves on.** In the decision tree and the scenario a beat used to take the choice and show the next question at once, so the narration about a choice came a beat after it was on screen. Now the choice lights on its card while the others step back (a decision-tree answer with its rationale; a scenario choice with a tick, and at the fork the choice tried before struck through), then the next beat brings the next question, situation or ending. Beat IDs: decision tree `start`, `answer1`, `q2`, `answer2`, …, `result`; scenario `start`, `wrong1`, `wrong1.next`, …, `right1`, `right1.next`, …. Revises decisions 103 and 108 (the ID table). |
 | 111 | Motion that helps follow | **A `zoom` motion and an agenda rail.** `zoom` settles a beat's key statement into place from slightly larger (a headline, a takeaway, an ending). Sections played one part at a time (bullets, taxonomy, text whose paragraphs all open with a term) show an agenda beside the part on stage: the parts' short names, the current one lit with a bar growing in, the ones done ticked; it moves with CSS, is skipped by the voice and hidden on phones. The roadmap draws its path, then its steps pop on along it. |
+| 112 | What the sandboxes explain | **Every choice's gains and costs, and every variable's trend.** Tradeoff: after a step's choices arrive, each choice that has gains or costs gets its own beat (`stepN.choiceK`): its card comes forward and a panel under the cards lists its gains and costs by title (descriptions stay in Read), which the voice reads; the recommendation then lands in the same panel with why it fits. Formula: one sweep per variable that can move (`sweep1`, `sweep2`, …), from its min to its max with the others at their defaults; as it plays, a trend panel states what each metric that moves does ("Recall rises 59 → 101", "peaks at …", "dips to …"), computed from the formulas, and the voice reads it. Revises decision 104 (the sweep) and the tradeoff part of 109. |
+| 113 | How many scenario endings | **All of them.** The stage walks one path to every ending (the shortest walk to it): weaker endings first in branch order, so each path leaves the one before as late as possible, the best ending last. A later path starts at the fork where it parts, with the choices tried there struck through; each ending says which one it is ("Ending 2 of 4"); endings below the best rating are marked *wrong* on the rail, the best (and equal ones) *right*. Beat IDs `pathP.choiceN` and `pathP.choiceN.next`. Revises decisions 103 and 110 (one weaker path, then the best). |
 
 ## Motion Rules
 
@@ -134,10 +136,10 @@ a performed answer (decision 103). The `code` names are the beat IDs a narration
 | `taxonomy-browser` | `cards` all `TaxonomyCategory` cards cascading in, by name · `card1`, … each card opened in turn beside the agenda: title, the first two sentences of its description, its analogy |
 | `concept-map` | `group1`, … one per `Concept.category` group, in first-appearance order; its `ConceptLink`s draw once both ends are on screen · `map` the whole map, when there is more than one group |
 | `flowchart` | `step1`, … one per `JourneyStep` of the first `Journey`, through the existing journey playback; the camera follows the active node |
-| `scenario` | `start` `intro` and the start node's `prompt` · when a weaker ending exists, along its path `wrongN` the choice picked on its card and `wrongN.next` where it leads, the last *wrong* on its `Outcome` · then from the fork along the best path `rightN` and `rightN.next`, the last *right* on its outcome (decision 110) |
+| `scenario` | `start` `intro` and the start node's `prompt` · then one path per ending, weaker ones first, the best last: `pathP.choiceN` the choice picked on its card and `pathP.choiceN.next` where it leads, the last on its `Outcome` (*wrong* below the best rating, else *right*); a later path starts at its fork (decisions 110 and 113) |
 | `decision-tree` | `start` the tree drawing in and the root `prompt` · per answer down to a `DecisionLeaf` (the recommended `DecisionChoice`, else the first): `answerN` picked on its question with its rationale, `qN+1` the next question · `result` *right* the recommendation (decision 110) |
-| `tradeoff-sandbox` | per `TradeoffStep` (numbered across scenarios): `stepN` its choices by label with their effects, `stepN.recommended` the `recommended` choice focused with the first two sentences of why it fits · `result1`, … per scenario with a recommendation, the metrics with every recommended choice picked |
-| `formula-sandbox` | `formulas` the formulas, sliders and gauges · `sweep` a ghost hand sweeps the first `FormulaVariable` from `defaultValue` to `max` while each `FormulaMetric` recomputes (`evaluateFormula`) and counts |
+| `tradeoff-sandbox` | per `TradeoffStep` (numbered across scenarios): `stepN` its choices by label with their effects · `stepN.choiceK` each choice with gains or costs, listed by title under the cards (decision 112) · `stepN.recommended` the `recommended` choice focused, with the first two sentences of why it fits · `result1`, … per scenario with a recommendation, the metrics with every recommended choice picked |
+| `formula-sandbox` | `formulas` the formulas, sliders and gauges · `sweep1`, … per `FormulaVariable` that can move, a ghost hand sweeps it from `min` to `max` while each `FormulaMetric` recomputes (`evaluateFormula`) and its trend is stated (decision 112) |
 | `quiz` | per `QuizQuestion` n: `qn` question and choices · `qn.wrong` *wrong*: the first wrong choice, its hint and explanation · `qn.right` *right*: the right choice over its explanation |
 | `flashcards` | per `Flashcard` n: `cardn` the `word` on the front · `cardn.back` the flip to its `shortDefinition` |
 | `reflection-sequence` | per challenge n: `cn` prompt and items · `cn.solved` *right*: the items settle into the `solution` order |
@@ -371,6 +373,19 @@ pure and tested directly.
   lights on the same card instead of a new one.
 - Tests: `digest.test.tsx` (lead, lead terms, the scenes and what each type leaves out), the decision
   tree renderer in `performed.test.tsx`, the new beat orders in `branching.test.ts`.
+
+### Decisions 112–113 — Implementation Notes
+
+- `tradeoffPlan` returns `{ scenario, step, show: 'choices' | 'choice' | 'recommended', choice? }`; the
+  renderer keeps the cards compact and draws the gains and costs, then the why-it-fits, as scenes of one
+  panel under them.
+- `evaluateFormula` moved to `formula-sandbox/evaluate.ts` (re-exported by the Read component), so
+  `present.ts` can compute without loading React. `computeFormulas` evaluates metrics in order;
+  `formulaTrends(data, variable)` samples the sweep 25 times and reports `rises`, `falls`, `peak` or
+  `dip` with the endpoints (and the turning value), skipping metrics that do not move. The trend words
+  are stage labels like "Question 1 of 3"; a narration file can say more.
+- `scenarioPlan` keeps one walk per ending; `tried` lists every choice taken from the same card on an
+  earlier path.
 
 ## Open Questions
 
