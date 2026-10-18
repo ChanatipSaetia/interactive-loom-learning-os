@@ -11,7 +11,7 @@ import './formula-sandbox.css'
  * e.g. "Math.round(Math.PI * Math.pow(bore_size / 20, 2) * (stroke_length / 10))"
  * →    "π × (Bore Size ÷ 20)² × (Stroke Length ÷ 10)"
  */
-function humanizeFormula(
+export function humanizeFormula(
   formulaStr: string,
   variables: OKFFormulaVariable[],
 ): string {
@@ -62,7 +62,7 @@ export interface FormulaSandboxProps {
   sectionIndex?: number
 }
 
-function evaluateFormula(formulaStr: string, variablesState: Record<string, number>): number {
+export function evaluateFormula(formulaStr: string, variablesState: Record<string, number>): number {
   let expression = formulaStr
   for (const [key, val] of Object.entries(variablesState)) {
     const regex = new RegExp(`\\b${key}\\b`, 'g')
@@ -79,7 +79,7 @@ function evaluateFormula(formulaStr: string, variablesState: Record<string, numb
   }
 }
 
-function computeMetricRange(formulaStr: string, variables: OKFFormulaVariable[]): { min: number; max: number } {
+export function computeMetricRange(formulaStr: string, variables: OKFFormulaVariable[]): { min: number; max: number } {
   // Phase 1: evaluate all 2^V corner points (each var at its min or max).
   // This scales as 2^V — fine up to ~20 variables.
   const cornerCombos: Record<string, number>[] = [{}]
@@ -122,7 +122,7 @@ function computeMetricRange(formulaStr: string, variables: OKFFormulaVariable[])
   return { min, max }
 }
 
-function getMetricUnitAndFormat(metric: OKFFormulaMetric, val: number): { unit: string; display: string } {
+export function getMetricUnitAndFormat(metric: OKFFormulaMetric, val: number): { unit: string; display: string } {
   const match = metric.label.match(/\(([^)]+)\)/)
   const unit = match ? match[1] : ''
 

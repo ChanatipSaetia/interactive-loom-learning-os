@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Phase 1 done (runtime, Viewer toggle, intro/text/bullets/openui); phases 2–6 planned**
+Status: **Phases 1–5 done (runtime, Viewer toggle, a Present renderer for every section type); phase 6 (narration, docs) planned**
 
 ## Goal
 
@@ -197,6 +197,43 @@ jumping just re-renders. Renderers never animate or set motion styles themselves
 - Only the current section and its neighbours mount (decision 85); others show their header.
 - Tests: runner, camera, kernel and registry, beat rules compiled from `.oui` fixtures, and a Viewer
   test that plays a topic to the end and back. Checked in Chromium at 1280px and 400px.
+
+### Phase 4 — Implementation Notes
+
+- `flowchart` renders the Read `Flowchart` with `present={{ step }}`: the first journey holds at the
+  beat's step and the section's own title, tools, view tabs and dock are hidden, so its camera and
+  step caption do the presenting. A hidden copy of each step's title and reason (`.present-sr`) gives
+  the stage the words to time the beat by. The step is re-applied when a new schema resets playback.
+- `concept-map` uses `layoutConceptMap` (exported next to the Read layout): every connected group
+  laid out by `layoutTopDownPlanar`, side by side in one SVG. The view (`viewBox`, animated) widens
+  each beat to frame every concept shown so far, never closer than 900×420 units. Categories the
+  Read map has no colour for take a palette colour in group order.
+- `draw` on an SVG path with `pathLength="1"` strokes it along the path (stroke-dashoffset) instead
+  of the clip-path wipe; links in the concept map and decision tree use it.
+- `scenario` and `decision-tree` keep the walked path in renderer state. The scenario collects the
+  choices as a trail and grades outcomes A, B+, B−, C; the decision tree draws the whole tree
+  (`drawTree`: leaves side by side, shared answers and loops as dashed cross links) and lights the
+  branches taken. Reaching an outcome or a leaf solves the gate; Try another path and Start over stay
+  available afterwards. The decision tree emits `DecisionNodeSelected`.
+- Answer-button styles (`.present-choice`) moved to the stage stylesheet, shared by quiz, scenario
+  and decision tree.
+
+### Phase 5 — Implementation Notes
+
+- `tradeoff-sandbox` (`tradeoffPlan`): per step, the choices arrive side by side, each effect's bar
+  drawing in green where it helps and red where it costs (relative to the step's largest change);
+  then the `recommended` choice lifts with its badge and `whyThisFits` (or `whenToUse`) while the
+  others step back. A step without a valid `recommended` has one beat. The explore beat is the
+  sandbox: metric meters summed from the base values as in Read, one pill per choice, a tab per
+  scenario.
+- `formula-sandbox`: formulas (`humanizeFormula`), sliders and gauges arrive; a ghost hand sweeps the
+  first variable from `defaultValue` to `max` (2.6 s, eased, snapped to `step`) while the metrics
+  recompute in order through `evaluateFormula`; the sliders are live on the explore beat. No sweep
+  beat when the first variable starts at its max. Off-stage or with reduced motion the sweep lands
+  at once. Gauge ranges come from moving each slider alone from the defaults, metrics evaluated in
+  order, so derived metrics (`bleed_dps + poison_dps`) work; the Read sandbox's
+  `computeMetricRange` does not see earlier metrics and logs errors for them (left as is).
+- Labels avoid `<strong>`, which the stage styles as a highlighter mark.
 
 Tests per phase: every `toBeats` gets a unit test in `tests/unit/sections/present/` that compiles
 a small `.oui` fixture and checks beat kinds and count; the runner, camera and speech normalizer are

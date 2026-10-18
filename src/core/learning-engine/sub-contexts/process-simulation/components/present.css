@@ -1,0 +1,31 @@
+/* Present mode renderers for process-simulation sections. Sizes come from the region (--present-fs-*). */
+
+/* ---- flowchart: the section's own canvas, filling the region ---- */
+
+.present-flowchart { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.present-flowchart .flowchart-section { flex: 1; margin: 0; gap: 0; }
+.present-flowchart .flowchart-svg { height: 500px; border-radius: var(--radius-lg); }
+.present-stage.is-portrait .present-flowchart .flowchart-svg { height: 760px; }
+
+/* ---- scenario ---- */
+
+.present-scenario { display: flex; flex-direction: column; gap: 16px; max-width: 900px; }
+.present-scenario-intro { margin: 0; overflow: hidden; color: var(--muted-foreground); font: 400 var(--present-fs-card) / 1.55 var(--font-body); }
+.present-scenario-card { display: flex; flex-direction: column; gap: 14px; }
+.present-scenario-prompt { margin: 0; font: 400 var(--present-fs-body) / 1.5 var(--font-body); }
+.present-scenario-choices { display: flex; flex-direction: column; gap: 10px; }
+
+.present-trail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; margin: 0; padding: 0; list-style: none; }
+.present-trail li { display: flex; align-items: center; gap: 6px; max-width: 32ch; color: var(--muted-foreground); font: 500 var(--present-fs-small) / 1.3 var(--font-ui); }
+.present-trail li + li::before { content: ''; width: 18px; height: 2px; margin-right: 2px; background: var(--border); }
+.present-trail-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--present-accent, var(--primary)); }
+.present-trail-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.present-outcome { flex-direction: row; align-items: flex-start; gap: 22px; padding: 22px 24px; border: 2px solid var(--grade); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--grade) 8%, var(--card)); }
+.present-grade { display: grid; place-items: center; flex: none; width: 76px; height: 76px; border-radius: 50%; background: var(--grade); color: var(--ctp-crust); font: 700 32px / 1 var(--font-display); }
+.present-outcome-body { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.present-outcome-verdict { margin: 0; font: 600 var(--present-fs-body) / 1.4 var(--font-display); }
+.present-outcome-lesson { margin: 0; font: 400 var(--present-fs-card) / 1.55 var(--font-body); }
+
+.present-stage.is-portrait .present-outcome { flex-direction: column; gap: 14px; }
+.present-stage.is-portrait .present-grade { width: 60px; height: 60px; font-size: 26px; }

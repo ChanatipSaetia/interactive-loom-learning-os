@@ -23,6 +23,7 @@ export type BeatMotion =
   | 'unfold'
   | 'stack'
   | 'pop'
+  /** Wipes in left to right (top to bottom with `--present-dir: v`); an SVG path with pathLength="1" strokes itself. */
   | 'draw'
   | 'children'
 

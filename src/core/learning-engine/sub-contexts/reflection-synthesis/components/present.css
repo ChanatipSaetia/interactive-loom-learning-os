@@ -66,12 +66,6 @@
 .present-chip.is-off { border-color: var(--ctp-red); animation: present-nudge 0.3s ease-out; }
 .present-slot-item.is-ok::after { content: '✓'; position: absolute; right: 14px; top: 50%; translate: 0 -50%; color: var(--ctp-green); font: 600 16px / 1 var(--font-mono); }
 
-@keyframes present-nudge {
-  20% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-3px); }
-}
-
 .present-stage.is-portrait .present-sequence { grid-template-columns: 1fr; gap: 14px; }
 .present-stage.is-portrait .present-blank { min-width: 150px; }
 

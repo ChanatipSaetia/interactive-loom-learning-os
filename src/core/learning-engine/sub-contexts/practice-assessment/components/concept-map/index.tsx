@@ -56,9 +56,9 @@ const CATEGORY_FILLS: Record<string, string> = {
   default: 'color-mix(in srgb, var(--ctp-lavender) 15%, var(--ctp-surface0))',
 }
 
-const NODE_HEIGHT = 56
+export const NODE_HEIGHT = 56
 
-function getNodeWidth(title: string): number {
+export function getNodeWidth(title: string): number {
   return Math.min(200, Math.max(100, title.length * 8 + 40))
 }
 
@@ -82,11 +82,11 @@ function getViewportDimensions(cW: number, cH: number): { viewW: number; viewH: 
   return { viewW, viewH }
 }
 
-function getCategoryColor(category: string): string {
+export function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] ?? CATEGORY_COLORS.default
 }
 
-function getCategoryFill(category: string): string {
+export function getCategoryFill(category: string): string {
   return CATEGORY_FILLS[category] ?? CATEGORY_FILLS.default
 }
 
@@ -408,6 +408,38 @@ function layoutTopDownPlanar(
   }
 
   return { nodes: resultNodes, edgeAnchors }
+}
+
+export interface ConceptMapLayout extends ConceptLayoutResult {
+  width: number
+  height: number
+}
+
+/**
+ * The whole map at once: every connected group placed by the Read layout, side by side and moved so
+ * the map starts at 0,0. Present mode draws it in one SVG instead of paging through the groups.
+ */
+export function layoutConceptMap(nodes: Record<string, ConceptNode>, edges: ConceptEdge[], gap = 120): ConceptMapLayout {
+  const result: ConceptMapLayout = { nodes: {}, edgeAnchors: {}, width: 0, height: 0 }
+  let left = 0
+  for (const component of findConnectedComponents(Object.keys(nodes), edges)) {
+    const placed = layoutTopDownPlanar(component, nodes, 0, 0)
+    const placedNodes = Object.values(placed.nodes)
+    const minX = Math.min(...placedNodes.map((n) => (n.x ?? 0) - getNodeWidth(n.title) / 2))
+    const maxX = Math.max(...placedNodes.map((n) => (n.x ?? 0) + getNodeWidth(n.title) / 2))
+    const minY = Math.min(...placedNodes.map((n) => (n.y ?? 0) - NODE_HEIGHT / 2))
+    const maxY = Math.max(...placedNodes.map((n) => (n.y ?? 0) + NODE_HEIGHT / 2))
+    const dx = left - minX
+    const dy = -minY
+    for (const n of placedNodes) result.nodes[n.id] = { ...n, x: (n.x ?? 0) + dx, y: (n.y ?? 0) + dy }
+    for (const [key, { p1, p2 }] of Object.entries(placed.edgeAnchors)) {
+      result.edgeAnchors[key] = { p1: { x: p1.x + dx, y: p1.y + dy }, p2: { x: p2.x + dx, y: p2.y + dy } }
+    }
+    result.width = left + maxX - minX
+    result.height = Math.max(result.height, maxY - minY)
+    left = result.width + gap
+  }
+  return result
 }
 
 function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMapSectionProps) {

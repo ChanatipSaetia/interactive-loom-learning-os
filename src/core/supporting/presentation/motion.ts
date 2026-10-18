@@ -14,7 +14,7 @@ const IN = curve(P.ease.in)
 const IN_OUT = curve(P.ease.inOut)
 
 /** Inline styles a beat may leave behind; cleared when it ends. */
-const TOUCHED = ['opacity', 'transform', 'clip-path', 'background-size']
+const TOUCHED = ['opacity', 'transform', 'clip-path', 'background-size', 'stroke-dasharray', 'stroke-dashoffset']
 
 export interface BeatEntrance {
   timeline: Timeline
@@ -97,6 +97,14 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
         break
       case 'draw': {
         targets.add(el)
+        if (typeof SVGGeometryElement !== 'undefined' && (el as Element) instanceof SVGGeometryElement) {
+          // An SVG line strokes itself along its path (pathLength="1")
+          el.style.strokeDasharray = '1'
+          el.style.strokeDashoffset = '1'
+          tl.add(el, { strokeDashoffset: ['1', '0'], duration: P.draw, ease: IN_OUT }, t)
+          if (onSound) tl.call(() => onSound('draw'), t)
+          break
+        }
         const vertical = getComputedStyle(el).getPropertyValue('--present-dir').trim() === 'v'
         el.style.clipPath = vertical ? 'inset(0% 0% 100% 0%)' : 'inset(0% 100% 0% 0%)'
         tl.add(el, { clipPath: [el.style.clipPath, 'inset(0% 0% 0% 0%)'], duration: P.draw, ease: IN_OUT }, t)
