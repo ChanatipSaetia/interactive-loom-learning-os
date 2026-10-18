@@ -66,6 +66,8 @@ export interface FlowchartViewProps {
   /** Route views: the journey as hand-offs between systems. */
   storyRoute?: StoryRoute | null;
   onSwitchPath?: (journeyId: string, stepIndex: number) => void;
+  /** Closest zoom when framing a step (Present mode zooms in further so labels stay readable). */
+  focusMaxScale?: number;
 }
 
 export function FlowchartView({
@@ -87,7 +89,8 @@ export function FlowchartView({
   stepCaption,
   forkHighlights,
   storyRoute,
-  onSwitchPath
+  onSwitchPath,
+  focusMaxScale,
 }: FlowchartViewProps) {
   const view = schema.views![viewKey];
   const isSequenceView = viewKey === 'SEQUENCE';
@@ -161,6 +164,7 @@ export function FlowchartView({
     const captionEl = stepCaption ? captionRef.current : null;
     const captionH = captionEl?.offsetHeight ?? 0;
     const placement = focusOnBox(focusBBox, {
+      maxScale: focusMaxScale,
       insets: measureOverlayInsets(camera.svgRef.current),
       caption: captionEl && captionH > 0
         ? {
@@ -171,7 +175,7 @@ export function FlowchartView({
         : undefined,
     });
     if (placement) setCaptionPlacement(placement);
-  }, [focusBBox, focusOnBox, stepCaption, camera.svgRef, viewportSize]);
+  }, [focusBBox, focusOnBox, stepCaption, camera.svgRef, viewportSize, focusMaxScale]);
 
   const hasFocusedRef = useRef(false);
   useEffect(() => {

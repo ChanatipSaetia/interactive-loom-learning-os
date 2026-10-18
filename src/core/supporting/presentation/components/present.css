@@ -128,13 +128,13 @@
 
 /* Portrait stage (narrow screens): same regions, tighter padding and smaller type */
 .present-stage.is-portrait .present-region {
-  gap: 14px;
-  padding: 30px 28px;
-  --present-fs-hero: 54px;
-  --present-fs-h2: 27px;
-  --present-fs-body: 20px;
-  --present-fs-card: 17px;
-  --present-fs-small: 14px;
+  gap: 12px;
+  padding: 18px 16px;
+  --present-fs-hero: 32px;
+  --present-fs-h2: 21px;
+  --present-fs-body: 17px;
+  --present-fs-card: 15px;
+  --present-fs-small: 12px;
 }
 
 /* ---- what a beat shows (beatMarks in present-kernel.ts) ---- */

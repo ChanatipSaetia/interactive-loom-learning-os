@@ -421,7 +421,7 @@ TopicRef(id: string) — Includes the topic folder <id>/topic.oui in the catalog
 ### Narration (sections/<name>.narrate.oui)
 Narration(steps: NarrationStep[]) — Root of a narration file sections/<name>.narrate.oui: the steps Present mode adds to that section.
   - steps: The narrated steps in order, as NarrationStep references.
-NarrationStep(caption?: string, effects?: (Highlight | Callout | Spotlight)[]) — One narrated step: a caption line and effects. It plays right after the beat that shows its first target (untargeted steps before the first question or exploring).
+NarrationStep(caption?: string, effects?: (Highlight | Callout | Spotlight)[]) — One narrated step: a caption line and effects. It plays during the beat that shows its first target (untargeted steps with the last beat before the first question or exploring).
   - caption: Subtitle line shown (and read aloud) for the step; null for none.
   - effects: Highlight, Callout and Spotlight calls for the step.
 Highlight(target: string) — Narration effect: outlines and pulses one element of the section for its step.
@@ -543,7 +543,7 @@ tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C a
 
 Loom Viewer can play a topic as guided motion (Present mode): each section reveals itself step by step. A section may add a narration file, `sections/<name>.narrate.oui`, with explanation its content does not say: a caption line, highlights, callout notes beside parts of the section and a spotlight that zooms in. Write one only when the user asks for narration, or for a section where a short extra explanation clearly helps (a misread term, the one thing to compare).
 
-- Its `root` is `Narration([steps])`; each `NarrationStep(caption, [effects])` is one step, played right after the part of the section it points at appears. Effects: `Highlight(target)`, `Callout(target, text)`, `Spotlight([targets])`.
+- Its `root` is `Narration([steps])`; each `NarrationStep(caption, [effects])` is one step, played while the part of the section it points at appears (it adds no extra stop). Effects: `Highlight(target)`, `Callout(target, text)`, `Spotlight([targets])`.
 - A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline.
 - Captions are one sentence; callouts one or two short sentences. They are read aloud, so write them as speech. Add facts or a comparison, not a repeat of the section's own text.
 - In the single .oui file, the narration file follows its section: `// === sections/vocabulary.narrate.oui ===`.

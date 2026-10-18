@@ -42,7 +42,7 @@ export const Spotlight = defineOUIComponent({
 
 export const NarrationStep = defineOUIComponent({
   name: 'NarrationStep',
-  description: 'One narrated step: a caption line and effects. It plays right after the beat that shows its first target (untargeted steps before the first question or exploring).',
+  description: 'One narrated step: a caption line and effects. It plays during the beat that shows its first target (untargeted steps with the last beat before the first question or exploring).',
   props: z.object({
     caption: z.string().optional(),
     effects: z.array(z.union([Highlight.ref, Callout.ref, Spotlight.ref])).optional(),

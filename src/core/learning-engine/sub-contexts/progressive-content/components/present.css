@@ -67,7 +67,7 @@
   box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.45);
 }
 
-.present-stage.is-portrait .present-region .present-taxonomy-dialog { max-height: 780px; }
+.present-stage.is-portrait .present-region .present-taxonomy-dialog { max-height: calc(var(--present-stage-h, 640px) - 120px); }
 
 /* ---- pillar & layer ---- */
 

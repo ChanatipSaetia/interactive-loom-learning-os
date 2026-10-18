@@ -1,30 +1,21 @@
 import { describe, it, expect } from 'vitest'
-import { defaultAfter, mergeBeats } from '../../../../src/core/supporting/presentation/narration-steps'
+import { defaultBeat, stepsByBeat } from '../../../../src/core/supporting/presentation/narration-steps'
 import { revealingBeat, targetElements, unionBox } from '../../../../src/core/supporting/presentation/narration-targets'
 import { focusCamera, regionOrigin, STAGE_LANDSCAPE } from '../../../../src/core/supporting/presentation/camera'
 import { explore, gate, show } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
 
-const steps = [{ caption: 'a' }, { caption: 'b' }, { caption: 'c' }]
-
-describe('narration steps among derived beats', () => {
-  it('play before the first gate or explore beat by default, else at the end', () => {
-    expect(defaultAfter([show(), show(), explore()])).toBe(1)
-    expect(defaultAfter([show(), gate()])).toBe(0)
-    expect(defaultAfter([gate(), show()])).toBe(0)
-    expect(defaultAfter([show(), show()])).toBe(1)
+describe('narration steps ride on beats', () => {
+  it('without a known target, ride on the last show beat before the first gate or explore beat', () => {
+    expect(defaultBeat([show(), show(), explore()])).toBe(1)
+    expect(defaultBeat([show(), gate()])).toBe(0)
+    expect(defaultBeat([gate(), show()])).toBe(0)
+    expect(defaultBeat([show(), show()])).toBe(1)
   })
 
-  it('follow the derived beat that reveals their target, in written order', () => {
-    const merged = mergeBeats([show(), gate(), show()], steps, [2, 0, 0])
-    expect(merged.map((b) => [b.kind, b.derived, b.step])).toEqual([
-      ['show', 0, undefined],
-      ['show', 0, 1],
-      ['show', 0, 2],
-      ['gate', 1, undefined],
-      ['show', 2, undefined],
-      ['show', 2, 0],
-    ])
-    expect(mergeBeats([show(), explore()], steps.slice(0, 1)).map((b) => b.step)).toEqual([undefined, 0, undefined])
+  it('group under the beat that reveals their target, in written order, adding no beats', () => {
+    expect(stepsByBeat([show(), gate(), show()], 3, [2, 0, 0])).toEqual([[1, 2], [], [0]])
+    expect(stepsByBeat([show(), explore()], 1)).toEqual([[0], []])
+    expect(stepsByBeat([show()], 2, [5, undefined])).toEqual([[0, 1]])
   })
 })
 

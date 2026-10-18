@@ -17,7 +17,8 @@ export interface Camera {
 }
 
 export const STAGE_LANDSCAPE: Size = { w: 1200, h: 675 }
-export const STAGE_PORTRAIT: Size = { w: 600, h: 960 }
+/** Smallest portrait stage; on a phone the stage is the screen itself, unscaled, so text stays phone-sized. */
+export const STAGE_PORTRAIT: Size = { w: 320, h: 480 }
 export const COLUMNS = 4
 /** Stage widths below this (in screen pixels) use the portrait stage. */
 export const PORTRAIT_BELOW = 640
