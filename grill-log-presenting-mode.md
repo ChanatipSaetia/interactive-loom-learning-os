@@ -1,6 +1,6 @@
 # Grill Log — Present Mode (Guided Motion Play) in Loom Viewer
 
-Status: **Implemented: phases 1–6, Read-mode styles and authored narration files (decisions 90–95), hands-free play (decisions 101–107), narration scripted per beat in OUI (decision 108)**
+Status: **Implemented: phases 1–6, Read-mode styles and authored narration files (decisions 90–95), hands-free play (decisions 101–107), narration scripted per beat in OUI (decision 108), one idea per beat and answers shown as they are made (decisions 109–111)**
 
 ## Goal
 
@@ -72,6 +72,9 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 106 | Progress | **Present emits no learner events.** The stage answers, not the learner, so quiz scores and reflection results are only recorded in Read mode. Revises decision 71. |
 | 107 | Narrator wording | ~~Short fixed English phrases built in each `toBeats`.~~ Superseded by decision 108: no narrator wording lives in code. |
 | 108 | Where narration is written | **In OUI, per beat, in the section's narration file.** Every beat has a stable ID derived from the content (`q1`, `q1.wrong`, `q1.right`, `card2.back`, `p3`, …; table in *Beat Derivation*), and `NarrationStep(beat, caption, [effects])` names the beat it plays on. Several steps on one beat play in turn. A beat without a step shows no caption and the voice reads its on-screen text; the derived `say` lines of decision 102 are gone. Validation warns about a step whose beat the section does not have and lists its beats; Studio's **Add narration** writes one step per beat, its caption a placeholder saying what the beat shows; the authoring prompt and the `loom-topic-writer` skill write a narration file for every section, in the topic's language. Revises decisions 91, 93, 96, 97 and 102 (steps no longer attach by their first target), and answers the open question of decision 107. |
+| 109 | How much a beat shows | **One idea per beat, the key content only; the full text stays in Read.** Content-heavy sections no longer show their whole Read layout: each beat is a scene that replaces the last, and each type picks the parts that carry the idea (table in *Beat Derivation*). Intro: the title, then what it is (the definition, else the summary) with up to three of its points, then why it matters ending on the takeaway, then the roadmap's step titles on a path; tags and roadmap descriptions are left out. Text: one paragraph at a time, a bold opening term as its headline. Bullets: one top-level point at a time with its sub-points. Taxonomy: the cards by name only, then each card with the first two sentences of its description and its analogy; deep dive, primary focus and scope lists are left out. Pillar-layer: blocks by name only. Tradeoff: choices by name with their effect chips, the recommended one with the first two sentences of why it fits; descriptions, gains and costs are left out; the result lists only the recommended choices. Decision-tree answers show their rationale only when taken, and the recommendation the first two sentences of its explanation, without trade-offs. What is left out is not narrated either; a narration file can still say it. Quiz, flashcards, reflections, concept map, flowchart, gallery and formula sandbox already show one idea per beat and are unchanged. |
+| 110 | When a choice is made | **On the card it is asked on, in its own beat, before the walk moves on.** In the decision tree and the scenario a beat used to take the choice and show the next question at once, so the narration about a choice came a beat after it was on screen. Now the choice lights on its card while the others step back (a decision-tree answer with its rationale; a scenario choice with a tick, and at the fork the choice tried before struck through), then the next beat brings the next question, situation or ending. Beat IDs: decision tree `start`, `answer1`, `q2`, `answer2`, …, `result`; scenario `start`, `wrong1`, `wrong1.next`, …, `right1`, `right1.next`, …. Revises decisions 103 and 108 (the ID table). |
+| 111 | Motion that helps follow | **A `zoom` motion and an agenda rail.** `zoom` settles a beat's key statement into place from slightly larger (a headline, a takeaway, an ending). Sections played one part at a time (bullets, taxonomy, text whose paragraphs all open with a term) show an agenda beside the part on stage: the parts' short names, the current one lit with a bar growing in, the ones done ticked; it moves with CSS, is skipped by the voice and hidden on phones. The roadmap draws its path, then its steps pop on along it. |
 
 ## Motion Rules
 
@@ -88,6 +91,8 @@ once that file exists.
 | **Flip** (3D) | Recall, the hidden side | Flashcards, quiz answer reveals |
 | **Focus** (dim the rest, lift the active item) | "Look here" | Every beat's active element |
 | **Count** (number tween) | Change in a value | Formula outputs, scores |
+| **Settle** (`zoom`: scale down into place) | "This is the point" | A beat's headline, the intro takeaway, a scenario outcome, a decision-tree recommendation |
+| **Advance** (agenda bar grows, item lights) | "We are here" | The agenda beside bullets, taxonomy cards and termed text |
 | **Breathe** (slow glow, about 3s) | "Your turn" | The control a gate waits on |
 
 A movement that means nothing is a short fade.
@@ -121,17 +126,17 @@ a performed answer (decision 103). The `code` names are the beat IDs a narration
 
 | Section type | Beats (from the OUI props) |
 |---|---|
-| `intro` | `title` title and tagline · `what` `IntroWhat` · `why` `IntroWhy` · `roadmap` the `RoadmapStep` list (line draws, steps rise) |
-| `text` | `p1`, `p2`, … one per paragraph of the markdown body; **bold** gets the highlighter sweep |
-| `bullets` | `item1`, … one per top-level `Bullet`; its children unfold out of it |
-| `pillar-layer` | `layer1`, … one per `Layer`, settling onto the stack from the bottom; `MatrixBlock`s fill with the layer they belong to |
+| `intro` | `title` title and tagline (when it has either) · `what` the definition (else the summary) and up to three bullets · `why` the summary, then the impact as the takeaway · `roadmap` the `RoadmapStep` titles on a drawn path. One scene per beat (decision 109) |
+| `text` | `p1`, `p2`, … one paragraph per beat, replacing the last; a bold opening term becomes its headline (agenda when every paragraph has one) |
+| `bullets` | `item1`, … one top-level `Bullet` per beat beside the agenda, replacing the last; its children unfold out of it |
+| `pillar-layer` | `layer1`, … one per `Layer`, settling onto the stack from the bottom; `MatrixBlock`s fill with the layer they belong to, by title only |
 | `image-gallery` | `image1`, … one per `GalleryImage`: the image with a slow push-in (ambient, outside the beat timeline) and its caption |
-| `taxonomy-browser` | `cards` all `TaxonomyCategory` cards cascading in · `card1`, … each card opened in turn |
+| `taxonomy-browser` | `cards` all `TaxonomyCategory` cards cascading in, by name · `card1`, … each card opened in turn beside the agenda: title, the first two sentences of its description, its analogy |
 | `concept-map` | `group1`, … one per `Concept.category` group, in first-appearance order; its `ConceptLink`s draw once both ends are on screen · `map` the whole map, when there is more than one group |
 | `flowchart` | `step1`, … one per `JourneyStep` of the first `Journey`, through the existing journey playback; the camera follows the active node |
-| `scenario` | `start` `intro` and the start node's `prompt` · when a weaker ending exists, `wrong1`, … along its path, the last *wrong* on its `Outcome` · `right1`, … back to where it leaves the best path and on along it, the last *right* on its outcome |
-| `decision-tree` | `start` the tree drawing in and the root `prompt` · `answer1`, … one per answer down to a `DecisionLeaf`, taking the recommended `DecisionChoice` (else the first) |
-| `tradeoff-sandbox` | per `TradeoffStep` (numbered across scenarios): `stepN` its choices with their effects, `stepN.recommended` the `recommended` choice focused · `result1`, … per scenario with a recommendation, Read's sandbox with every recommended choice picked |
+| `scenario` | `start` `intro` and the start node's `prompt` · when a weaker ending exists, along its path `wrongN` the choice picked on its card and `wrongN.next` where it leads, the last *wrong* on its `Outcome` · then from the fork along the best path `rightN` and `rightN.next`, the last *right* on its outcome (decision 110) |
+| `decision-tree` | `start` the tree drawing in and the root `prompt` · per answer down to a `DecisionLeaf` (the recommended `DecisionChoice`, else the first): `answerN` picked on its question with its rationale, `qN+1` the next question · `result` *right* the recommendation (decision 110) |
+| `tradeoff-sandbox` | per `TradeoffStep` (numbered across scenarios): `stepN` its choices by label with their effects, `stepN.recommended` the `recommended` choice focused with the first two sentences of why it fits · `result1`, … per scenario with a recommendation, the metrics with every recommended choice picked |
 | `formula-sandbox` | `formulas` the formulas, sliders and gauges · `sweep` a ghost hand sweeps the first `FormulaVariable` from `defaultValue` to `max` while each `FormulaMetric` recomputes (`evaluateFormula`) and counts |
 | `quiz` | per `QuizQuestion` n: `qn` question and choices · `qn.wrong` *wrong*: the first wrong choice, its hint and explanation · `qn.right` *right*: the right choice over its explanation |
 | `flashcards` | per `Flashcard` n: `cardn` the `word` on the front · `cardn.back` the flip to its `shortDefinition` |
@@ -349,6 +354,23 @@ pure and tested directly.
   card's Pick anchors, so a step's effects land on what is in view.
 - Without a script the voice reads the beat's on-screen text; `QUIET` now only hides what is not worth
   reading (drawing labels, slot numbers, the item pool, the formula sliders, card descriptions in the grid).
+
+### Decisions 109–111 — Implementation Notes
+
+- Kernel: `lead(text, sentences)` keeps the opening sentences (text without stops, such as Thai, stays
+  whole); `BeatMotion` gains `zoom`, played by `enterBeat` as a fade with a scale from 1.12.
+  `PresentAgenda` (next to `PresentWords`) draws the agenda; its styles, `.present-scenes` (scenes
+  sharing one grid cell, each marked `until` its beat) and `.present-headline` live in the stage
+  stylesheet.
+- Intro, text, bullets and taxonomy render one scene per beat; the taxonomy no longer opens a dialog
+  over the grid. Pick anchors stay on what is shown, so narration targets such as
+  `noCache.description` still resolve; a target on a part that is left out finds nothing and its
+  effect is skipped.
+- `decisionTreePlan` and `scenarioPlan` return one step per beat with the card on stage and the choice
+  picked on it; a card keeps its React key from its question beat to its answer beat, so the answer
+  lights on the same card instead of a new one.
+- Tests: `digest.test.tsx` (lead, lead terms, the scenes and what each type leaves out), the decision
+  tree renderer in `performed.test.tsx`, the new beat orders in `branching.test.ts`.
 
 ## Open Questions
 

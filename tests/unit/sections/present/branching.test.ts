@@ -39,7 +39,7 @@ describe('spatial and branching beats', () => {
     expect(Math.max(layout.nodes.a.x ?? 0, layout.nodes.b.x ?? 0)).toBeLessThan(Math.min(layout.nodes.c.x ?? 0, layout.nodes.d.x ?? 0))
   })
 
-  it('scenario: the setup, a weaker path to its outcome, then back to the fork and on along the best path', () => {
+  it('scenario: the setup, a weaker path to its outcome, then back to the fork and on along the best path, each choice picked on its card before it leads on', () => {
     const nodes = {
       start: { prompt: 'Lid?', choices: [{ id: 'open', text: 'Open it', next: 'burnt' }, { id: 'shut', text: 'Keep it shut', next: 'vents' }] },
       vents: { prompt: 'Vents?', choices: [{ id: 'small', text: 'Small', next: 'great' }] },
@@ -47,13 +47,15 @@ describe('spatial and branching beats', () => {
       great: { outcome: { verdict: 'Even heat.', lesson: 'Control the air.', rating: 'a' as const } },
     }
     const plan = scenarioPlan({ nodes, startNode: 'start' })
-    expect(plan.map((s) => s.path.map((p) => p.nodeId).join('>'))).toEqual(['start', 'start>burnt', 'start>vents', 'start>vents>great'])
-    expect(plan.map((s) => s.id)).toEqual(['start', 'wrong1', 'right1', 'right2'])
-    expect(plan[2].about).toBe('Back to the fork, then chooses “Keep it shut”')
-    expect(kinds(scenarioBeats({ nodes, startNode: 'start' }))).toEqual(['show', 'wrong', 'show', 'right'])
+    expect(plan.map((s) => s.path.map((p) => p.nodeId).join('>'))).toEqual(['start', 'start', 'start>burnt', 'start', 'start>vents', 'start>vents', 'start>vents>great'])
+    expect(plan.map((s) => s.id)).toEqual(['start', 'wrong1', 'wrong1.next', 'right1', 'right1.next', 'right2', 'right2.next'])
+    expect(plan.map((s) => s.picked?.id)).toEqual([undefined, 'open', undefined, 'shut', undefined, 'small', undefined])
+    expect(plan[3].tried?.id).toBe('open')
+    expect(plan[3].about).toBe('Back at the fork, chooses “Keep it shut”')
+    expect(kinds(scenarioBeats({ nodes, startNode: 'start' }))).toEqual(['show', 'show', 'wrong', 'show', 'show', 'show', 'right'])
     // Only good endings: straight down the best path
     const only = { start: { prompt: 'Go?', choices: [{ id: 'y', text: 'Yes', next: 'great' }] }, great: nodes.great }
-    expect(kinds(scenarioBeats({ nodes: only, startNode: 'start' }))).toEqual(['show', 'right'])
+    expect(kinds(scenarioBeats({ nodes: only, startNode: 'start' }))).toEqual(['show', 'show', 'right'])
     expect(kinds(scenarioBeats({}))).toEqual(['show'])
   })
 
@@ -64,7 +66,7 @@ describe('spatial and branching beats', () => {
     expect(beats[beats.length - 1]).toBe('right')
   })
 
-  it('decision tree: the tree and first question, then the recommended answer at every step to a leaf', () => {
+  it('decision tree: the tree and first question, then ask and answer at every step down to the recommendation', () => {
     const nodes = {
       q: { prompt: 'Q', choices: [{ id: 'a', text: 'A', next: 'l1' }, { id: 'b', text: 'B', next: 'q2', recommended: true }] },
       q2: { prompt: 'Q2', choices: [{ id: 'c', text: 'C', next: 'l2' }] },
@@ -72,7 +74,8 @@ describe('spatial and branching beats', () => {
       l2: { leaf: { recommendation: 'Two', explanation: '' } },
     }
     expect(decisionTreeWalk({ root: 'q', nodes }).map((p) => p.nodeId)).toEqual(['q', 'q2', 'l2'])
-    expect(ids(decisionTreeBeats({ root: 'q', nodes }))).toEqual(['start', 'answer1', 'answer2'])
+    expect(ids(decisionTreeBeats({ root: 'q', nodes }))).toEqual(['start', 'answer1', 'q2', 'answer2', 'result'])
+    expect(kinds(decisionTreeBeats({ root: 'q', nodes }))).toEqual(['show', 'show', 'show', 'show', 'right'])
     const props = propsOf<DecisionTreePresentData>(content('pixijs/sections/decision-tree.oui'))
     expect(decisionTreeBeats(props).length).toBeGreaterThan(1)
     expect(kinds(decisionTreeBeats({ root: 'missing', nodes: {} }))).toEqual(['show'])

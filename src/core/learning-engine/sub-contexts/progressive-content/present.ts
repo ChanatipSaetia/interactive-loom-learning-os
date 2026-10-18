@@ -16,10 +16,13 @@ export type PillarLayerPresentData = { title?: string; description?: string; sec
 export type GalleryPresentData = Props<{ items: GalleryItem[] }>
 export type TaxonomyPresentData = Props<{ categories: TaxonomyCategory[] }>
 
-/** Title and tagline, What, Why, then the roadmap when there is one: `title`, `what`, `why`, `roadmap`. */
+/**
+ * Title and tagline (when it has either), What, Why, then the roadmap when there is one: `title`,
+ * `what`, `why`, `roadmap`.
+ */
 export function introBeats(data: IntroPresentData): Beat[] {
   return [
-    show('title', 'The title and tagline'),
+    ...(data.title || data.subtitle ? [show('title', 'The title and tagline')] : []),
     show('what', 'What it is'),
     show('why', 'Why it matters'),
     ...(data.roadmap?.length ? [show('roadmap', 'The roadmap')] : []),

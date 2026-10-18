@@ -3,7 +3,7 @@
  * grill-log-presenting-mode.md). Each function reads the compiled section props only; every beat
  * plays by itself (decision 101). Beat IDs name the beats for narration files (decision 108).
  */
-import { answer, quoted, show, type Beat, type SectionPresenter } from '../present-kernel'
+import { answer, brief, quoted, show, type Beat, type SectionPresenter } from '../present-kernel'
 import type { UnifiedFlowchartSchema } from './components/flowchart/types'
 import type { ScenarioChoice, ScenarioNode, ScenarioOutcome } from './schema'
 
@@ -51,13 +51,17 @@ const shared = (a: ScenarioPath, b: ScenarioPath) => {
   return n
 }
 
-/** What one scenario beat shows: the path walked so far. */
-export type ScenarioStep = { id: string; about: string; path: ScenarioPath; answer?: 'wrong' | 'right' }
+/**
+ * What one scenario beat shows: the path walked so far (its last node is the card on stage), the choice
+ * picked on that card in this beat if any, and the choice tried there earlier on the weaker walk.
+ */
+export type ScenarioStep = { id: string; about: string; path: ScenarioPath; picked?: ScenarioChoice; tried?: ScenarioChoice; answer?: 'wrong' | 'right' }
 
 /**
- * The walk the stage performs (decision 103): the setup (`start`); when a weaker ending exists, the
- * path to it first, choice by choice (`wrong1`, `wrong2`, …, the last one its outcome); then back to
- * where the paths part and on along the best path (`right1`, `right2`, …, the last one its outcome).
+ * The walk the stage performs (decisions 103 and 110): the setup (`start`); when a weaker ending
+ * exists, its path first, each choice picked on the card it is asked on (`wrong1`, `wrong2`, …) and
+ * then where it leads (`wrong1.next`, …, the last one its outcome); then back at the fork, where the
+ * paths part, along the best path the same way (`right1`, `right1.next`, …, the last one its outcome).
  */
 export function scenarioPlan(data: ScenarioPresentData): ScenarioStep[] {
   const nodes = data.nodes ?? {}
@@ -72,23 +76,33 @@ export function scenarioPlan(data: ScenarioPresentData): ScenarioStep[] {
     .filter((w) => rank(nodes, w) < rank(nodes, best))
     .sort((a, b) => shared(a, best) - shared(b, best) || rank(nodes, a) - rank(nodes, b) || a.length - b.length)[0]
   const steps: ScenarioStep[] = [opening]
-  const walk = (path: ScenarioPath, from: number, tone: 'wrong' | 'right', back: boolean) => {
+  const walk = (path: ScenarioPath, from: number, tone: 'wrong' | 'right', tried?: ScenarioChoice) => {
     for (let k = from; k < path.length; k++) {
-      const text = quoted(scenarioText(path[k].choice ?? {}))
+      const choice = path[k].choice ?? {}
+      const id = `${tone}${k - from + 1}`
       const end = k === path.length - 1
+      const back = !!tried && k === from
       steps.push({
-        id: `${tone}${k - from + 1}`,
-        about: `${back && k === from ? 'Back to the fork, then chooses' : 'Chooses'} ${text}${end ? `, reaching the ${tone === 'wrong' ? 'weaker' : 'best'} outcome` : ''}`,
+        id,
+        about: `${back ? 'Back at the fork, chooses' : 'Chooses'} ${quoted(scenarioText(choice))}`,
+        path: path.slice(0, k),
+        picked: choice,
+        ...(back && { tried }),
+      })
+      steps.push({
+        id: `${id}.next`,
+        about: end ? `The ${tone === 'wrong' ? 'weaker' : 'best'} outcome` : `The next situation: ${brief(nodes[path[k].nodeId]?.prompt ?? nodes[path[k].nodeId]?.text ?? '')}`,
         path: path.slice(0, k + 1),
         ...(end && { answer: tone }),
       })
     }
   }
   if (worse) {
-    walk(worse, 1, 'wrong', false)
-    walk(best, shared(worse, best), 'right', true)
+    walk(worse, 1, 'wrong')
+    const fork = shared(worse, best)
+    walk(best, fork, 'right', worse[fork]?.choice)
   } else {
-    walk(best, 1, 'right', false)
+    walk(best, 1, 'right')
   }
   return steps
 }

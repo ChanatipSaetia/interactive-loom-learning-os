@@ -97,7 +97,7 @@ export const targetProp = (target: string) => /^[^.[]*\.([A-Za-z_]\w*)/.exec(tar
  * The authoring prompt lists them; a unit test checks them against `toBeats`.
  */
 export const BEAT_IDS: Record<string, string> = {
-  intro: '`title`, `what`, `why`, `roadmap` (when it has a roadmap)',
+  intro: '`title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap)',
   text: '`p1`, `p2`, … one per paragraph',
   bullets: '`item1`, `item2`, … one per top-level bullet',
   'pillar-layer': '`layer1`, `layer2`, … one per layer',
@@ -105,8 +105,8 @@ export const BEAT_IDS: Record<string, string> = {
   'taxonomy-browser': '`cards` (all cards), then `card1`, `card2`, … each card opened',
   'concept-map': '`group1`, `group2`, … one per category in order of first appearance, then `map` (the whole map, when there is more than one category)',
   flowchart: '`step1`, `step2`, … one per step of the first journey',
-  scenario: '`start`; when a choice leads to a weaker ending, `wrong1`, `wrong2`, … along that path (the last one shows its outcome); then `right1`, `right2`, … along the best path from where the two part (the last one shows its outcome)',
-  'decision-tree': '`start`, then `answer1`, `answer2`, … one per answer taken (the recommended choice, else the first) down to a recommendation',
+  scenario: '`start`; when a choice leads to a weaker ending, along that path `wrong1` (the choice picked on its card), `wrong1.next` (where it leads), `wrong2`, `wrong2.next`, … (the last `.next` shows its outcome); then from where the two part along the best path `right1`, `right1.next`, `right2`, … (the last `.next` shows its outcome)',
+  'decision-tree': '`start` (the first question), then per answer taken (the recommended choice, else the first) `answer1` (picked on its question, with its rationale), `q2` (the next question), `answer2`, …, then `result` (the recommendation)',
   'tradeoff-sandbox': '`step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.recommended` when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation',
   'formula-sandbox': '`formulas`, then `sweep` (the first variable moving from its default to its max, when they differ)',
   quiz: '`q1`, `q1.wrong`, `q1.right`, `q2`, … per question: asked, its first wrong choice tried, the right answer given',

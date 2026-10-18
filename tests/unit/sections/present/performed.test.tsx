@@ -4,6 +4,8 @@ import { flashcardsBeats, quizBeats, quizPlan } from '../../../../src/core/learn
 import { sequenceBeats, startingOrder, templateBeats } from '../../../../src/core/learning-engine/sub-contexts/reflection-synthesis/present'
 import PresentQuiz from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/quiz/PresentQuiz'
 import PresentSequence from '../../../../src/core/learning-engine/sub-contexts/reflection-synthesis/components/reflection-sequence/PresentSequence'
+import { decisionTreeBeats } from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/present'
+import PresentDecisionTree from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/components/decision-tree/PresentDecisionTree'
 import { content, ids, kinds, propsOf } from './helpers'
 
 window.scrollTo = vi.fn() as unknown as typeof window.scrollTo
@@ -93,5 +95,41 @@ describe('sequence renderer', () => {
     expect(document.querySelectorAll('.sequence-placed-text')).toHaveLength(0)
     rerender(<PresentSequence data={data} beats={sequenceBeats(data)} beat={1} sectionIndex={0} active />)
     expect([...document.querySelectorAll('.sequence-placed-text')].map((e) => e.textContent)).toEqual(['First', 'Second'])
+  })
+})
+
+describe('decision tree renderer (decision 110)', () => {
+  const data = {
+    root: 'q',
+    nodes: {
+      q: { prompt: 'What are you building?', choices: [{ id: 'a', text: 'Search', next: 'l1', rationale: 'No LLM needed.' }, { id: 'b', text: 'RAG', next: 'l2', recommended: true, rationale: 'Answers from documents.' }] },
+      l1: { leaf: { recommendation: 'BM25 only', explanation: '' } },
+      l2: { leaf: { recommendation: 'Hybrid retrieval', explanation: 'Covers both. It is the default. More detail Read keeps.', tradeoffs: ['Costs more'] } },
+    },
+  }
+  const draw = (beat: number) => render(<PresentDecisionTree data={data} beats={decisionTreeBeats(data)} beat={beat} sectionIndex={0} active />)
+
+  it('asks by answer labels only', () => {
+    draw(0)
+    expect(screen.getByText('RAG')).toBeInTheDocument()
+    expect(screen.queryByText('Answers from documents.')).toBeNull()
+    expect(document.querySelector('.dt-decision-prompt')?.hasAttribute('data-focus')).toBe(true)
+  })
+
+  it('takes the answer on the question card, with its rationale, before moving on', () => {
+    draw(1)
+    expect(screen.getByText('What are you building?')).toBeInTheDocument()
+    expect(screen.getByText('RAG').closest('.dt-choice')).toHaveClass('is-picked')
+    expect(screen.getByText('RAG').closest('[data-focus]')).not.toBeNull()
+    expect(screen.getByText('Search').closest('.dt-choice')).toHaveClass('is-dim')
+    expect(screen.getByText('Answers from documents.')).toBeInTheDocument()
+    expect(document.querySelector('.dt-leaf')).toBeNull()
+  })
+
+  it('then lands on the recommendation with the opening of its explanation', () => {
+    draw(2)
+    expect(document.querySelector('.dt-leaf-rec-text')?.textContent).toBe('Hybrid retrieval')
+    expect(document.querySelector('.dt-leaf-block-text')?.textContent).toBe('Covers both. It is the default.')
+    expect(screen.queryByText('Costs more')).toBeNull()
   })
 })
