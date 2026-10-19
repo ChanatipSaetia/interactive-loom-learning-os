@@ -29,7 +29,7 @@ describe('Loom authoring prompt', () => {
     const [{ files }] = parseTopicSource(AUTHORING_EXAMPLE)
     const result = validateOUINarration(NARRATION_EXAMPLE, files['sections/vocabulary.oui'], { sectionName: 'vocabulary' })
     expect(result.diagnostics).toEqual([])
-    expect(result.payload?.steps).toHaveLength(4)
+    expect(result.payload?.steps).toHaveLength(5)
   })
 
   it('explains the topic layout and the three output formats around the OpenUI Lang spec', () => {

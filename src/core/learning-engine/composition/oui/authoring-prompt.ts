@@ -50,7 +50,8 @@ Answer in the format the user asks for. If they do not say, use the single .oui 
 The user opens the result in Loom Viewer (${LOOM_PAGES_URL}viewer.html) or imports it into Loom Studio. Outside the code block(s), say nothing or at most one short sentence.`
 
 /** A narration file for the example's vocabulary section (checked by unit tests). */
-export const NARRATION_EXAMPLE = `root = Narration([word1, back1, word2, back2])
+export const NARRATION_EXAMPLE = `root = Narration([title, word1, back1, word2, back2])
+title = NarrationStep("title", "Two words every tea brewer uses, and why they matter in the cup.")
 word1 = NarrationStep("card1", "First word: catechins.", [Highlight("catechins")])
 back1 = NarrationStep("card1.back", "They are the bitterness in green tea.", [Callout("catechins", "They dissolve faster in hotter water, so water at 75 °C keeps the cup sweet.")])
 word2 = NarrationStep("card2", "Next: steep.")
@@ -68,7 +69,9 @@ Loom Viewer can play a topic hands-free (Present mode): each section plays beat 
 - Effects (optional): \`Highlight(target)\`, \`Callout(target, text)\` (a note beside an element, one or two short sentences, read after the caption), \`Spotlight([targets])\` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: \`"catechins"\`, \`"q1.hint"\`, \`"root.items[0]"\`. Name the statements you will point at in the section file (e.g. \`catechins = Flashcard(...)\`) rather than writing them inline.
 - In the single .oui file, the narration file follows its section: \`// === sections/vocabulary.narrate.oui ===\`.
 
-Beat IDs by section type (n counts from 1):
+Every section except the intro opens on a \`title\` beat: a card with the section's title, its \`heading\` and its \`Lead\` text. Its step introduces the section: what it is about and why it comes now (without one, the narrator reads the card). The intro's own beats start with its \`title\`.
+
+Beat IDs by section type (n counts from 1; every type but \`intro\` starts with \`title\`):
 
 | Section type | Beats |
 |---|---|

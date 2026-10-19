@@ -1,6 +1,6 @@
 import { PresentRegistry } from './present-registry'
 import type { SectionConfig } from './index'
-import { show, type Beat, type SectionPresenter } from '../sub-contexts/present-kernel'
+import { show, withTitleBeat, type Beat, type SectionPresenter } from '../sub-contexts/present-kernel'
 import {
   bulletsPresenter,
   galleryPresenter,
@@ -45,7 +45,7 @@ export const CORE_PRESENTERS: Record<string, AnyPresenter> = {
  */
 export function coreBeatsOf(config: SectionConfig): Beat[] {
   const beats = CORE_PRESENTERS[config.type]?.toBeats(config.props)
-  return beats && beats.length > 0 ? beats : [show('all', 'The whole section')]
+  return withTitleBeat(config.type, beats && beats.length > 0 ? beats : [show('all', 'The whole section')])
 }
 
 /**

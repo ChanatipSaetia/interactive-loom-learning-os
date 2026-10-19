@@ -56,6 +56,17 @@ export interface SectionPresenter<D = Record<string, unknown>> {
 }
 
 export const show = (id: string, about?: string): Beat => ({ id, ...(about && { about }) })
+/**
+ * Every section but the intro opens on a `title` beat (decision 114): a card with its kind, title,
+ * sub-heading and lead, drawn by the stage before the section's own beats. The intro's own first beat
+ * is already its title.
+ */
+export const TITLE_BEAT = 'title'
+export const titleBeatCount = (type: string): number => (type === 'intro' ? 0 : 1)
+/** The beats the stage plays for a section: its title beat, then the beats its renderer draws. */
+export const withTitleBeat = (type: string, beats: Beat[]): Beat[] =>
+  titleBeatCount(type) ? [show(TITLE_BEAT, 'The section title and what it is about'), ...beats] : beats
+
 /** A performed answer: `answer('wrong', …)` tries a wrong choice, `answer('right', …)` gives the right one. */
 export const answer = (kind: 'wrong' | 'right', id: string, about?: string): Beat => ({ id, answer: kind, ...(about && { about }) })
 

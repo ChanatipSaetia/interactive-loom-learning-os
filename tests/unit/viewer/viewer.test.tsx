@@ -91,8 +91,10 @@ describe('Loom Viewer', () => {
     fireEvent.click(screen.getByTestId('viewer-mode-present'))
     expect(screen.getByTestId('present-stage')).toBeInTheDocument()
     expect(screen.queryByTestId('viewer-topic')).toBeNull()
-    expect(screen.getByTestId('present-where').textContent).toBe('Text · 1 of 2')
-    await waitFor(() => expect(document.querySelector('[data-testid="present-region-0"] .present-paragraph')?.textContent).toBe('First paragraph.\n'))
+    // Each section opens on its title beat (decision 114)
+    expect(screen.getByTestId('present-where').textContent).toBe('Text · 1 of 3')
+    await waitFor(() => expect(document.querySelector('[data-testid="present-region-0"] .present-title-name')?.textContent).toBe('Words'))
+    expect(document.querySelector('[data-testid="present-region-0"] .present-title-card')?.hasAttribute('data-shown')).toBe(true)
 
     const next = screen.getByTestId('present-next')
     const step = async (where: string) => {
@@ -100,14 +102,18 @@ describe('Loom Viewer', () => {
       if (screen.getByTestId('present-where').textContent !== where) fireEvent.click(next)
       await waitFor(() => expect(screen.getByTestId('present-where').textContent).toBe(where))
     }
-    await step('Text · 2 of 2')
-    await step('Bullets · 1 of 2')
-    await step('Bullets · 2 of 2')
+    await step('Text · 2 of 3')
+    await waitFor(() => expect(document.querySelector('[data-testid="present-region-0"] .present-paragraph')?.textContent).toBe('First paragraph.\n'))
+    expect(document.querySelector('[data-testid="present-region-0"] .present-title-card')?.hasAttribute('data-shown')).toBe(false)
+    await step('Text · 3 of 3')
+    await step('Bullets · 1 of 3')
+    await step('Bullets · 2 of 3')
+    await step('Bullets · 3 of 3')
     await step('Topic complete')
     expect(screen.getByTestId('present-complete')).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('present-prev'))
-    await waitFor(() => expect(screen.getByTestId('present-where').textContent).toBe('Bullets · 2 of 2'))
+    await waitFor(() => expect(screen.getByTestId('present-where').textContent).toBe('Bullets · 3 of 3'))
     fireEvent.click(screen.getByTestId('viewer-mode-read'))
     await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
     expect(screen.queryByTestId('present-stage')).toBeNull()
@@ -120,7 +126,7 @@ describe('Loom Viewer', () => {
       files: {
         'topic.oui': 'root = Topic("Narrated", "Architecture", "", [SectionRef("words")])\n',
         'sections/words.oui': 'root = Text("Words", ["First paragraph.", "Second paragraph."])\n',
-        'sections/words.narrate.oui': 'root = Narration([s1])\ns1 = NarrationStep("p2", "Both paragraphs say one thing.")\n',
+        'sections/words.narrate.oui': 'root = Narration([s0, s1])\ns0 = NarrationStep("title", "Two short paragraphs.")\ns1 = NarrationStep("p2", "Both paragraphs say one thing.")\n',
       },
     }
     fireEvent.click(screen.getByTestId('viewer-paste-toggle'))
@@ -132,11 +138,17 @@ describe('Loom Viewer', () => {
     fireEvent.click(screen.getByTestId('viewer-mode-present'))
     const where = () => screen.getByTestId('present-where').textContent
     // The step plays on the beat it names, adding no stop to the rail (decisions 96, 108)
-    expect(where()).toBe('Text · 1 of 2')
+    // The title beat plays the section's intro in the author's words (decision 114)
+    expect(where()).toBe('Text · 1 of 3')
+    expect((await screen.findByTestId('present-caption')).textContent).toBe('Two short paragraphs.')
+    const to = async (target: string) => {
+      fireEvent.click(screen.getByTestId('present-next'))
+      if (where() !== target) fireEvent.click(screen.getByTestId('present-next'))
+      await waitFor(() => expect(where()).toBe(target))
+    }
+    await to('Text · 2 of 3')
     expect(screen.queryByTestId('present-caption')).toBeNull()
-    fireEvent.click(screen.getByTestId('present-next'))
-    if (where() !== 'Text · 2 of 2') fireEvent.click(screen.getByTestId('present-next'))
-    await waitFor(() => expect(where()).toBe('Text · 2 of 2'))
+    await to('Text · 3 of 3')
     expect((await screen.findByTestId('present-caption')).textContent).toBe('Both paragraphs say one thing.')
   })
 
@@ -157,7 +169,7 @@ describe('Loom Viewer', () => {
     await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
     fireEvent.click(screen.getByTestId('viewer-mode-present'))
     const where = () => screen.getByTestId('present-where').textContent
-    for (const target of ['Text · 2 of 2', 'Bullets · 1 of 2', 'Bullets · 2 of 2']) {
+    for (const target of ['Text · 2 of 3', 'Text · 3 of 3', 'Bullets · 1 of 3', 'Bullets · 2 of 3', 'Bullets · 3 of 3']) {
       fireEvent.click(screen.getByTestId('present-next'))
       if (where() !== target) fireEvent.click(screen.getByTestId('present-next'))
       await waitFor(() => expect(where()).toBe(target))
@@ -167,13 +179,13 @@ describe('Loom Viewer', () => {
     source = createTopicSource([files(['words', 'added', 'check'])])
     fireEvent.click(screen.getByTestId('viewer-refresh'))
     await waitFor(() => expect(screen.getByTestId('viewer-status').textContent).toBe('Refreshed'))
-    await waitFor(() => expect(where()).toBe('Bullets · 2 of 2'))
+    await waitFor(() => expect(where()).toBe('Bullets · 3 of 3'))
     expect(document.querySelector('[data-testid="present-region-2"].is-current')).not.toBeNull()
 
     // The section removed: back to the start
     source = createTopicSource([files(['words', 'added'])])
     fireEvent.click(screen.getByTestId('viewer-refresh'))
-    await waitFor(() => expect(where()).toBe('Text · 1 of 2'))
+    await waitFor(() => expect(where()).toBe('Text · 1 of 3'))
   })
 
   it('opens pasted text from the Paste box', async () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { answer, beatMarks, brief, plain, show, splitWords, wordsHtml, PRESENT_WORD_CLASS } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
 import { PresentRegistry, beatsOf } from '../../../../src/core/learning-engine/registry/present-registry'
-import { CORE_PRESENTERS, registerCorePresenters } from '../../../../src/core/learning-engine/registry/register-core-presenters'
+import { CORE_PRESENTERS, coreBeatsOf, registerCorePresenters } from '../../../../src/core/learning-engine/registry/register-core-presenters'
 import { BEAT_IDS } from '../../../../src/core/learning-engine/composition/oui/narration'
 
 describe('present kernel', () => {
@@ -56,10 +56,16 @@ describe('present registry', () => {
     expect(PresentRegistry.list().sort()).toEqual(['bullets', 'concept-map', 'decision-tree', 'flashcards', 'flowchart', 'formula-sandbox', 'image-gallery', 'intro', 'openui', 'pillar-layer', 'quiz', 'reflection-sequence', 'reflection-template', 'scenario', 'taxonomy-browser', 'text', 'tradeoff-sandbox'])
   })
 
-  it('gives a type without a presenter one beat, all', () => {
-    const all = [{ id: 'all', about: 'The whole section' }]
+  it('gives a type without a presenter one beat, all, after its title beat', () => {
+    const all = [{ id: 'title', about: 'The section title and what it is about' }, { id: 'all', about: 'The whole section' }]
     expect(beatsOf({ type: 'unknown-type', props: {} })).toEqual(all)
     expect(beatsOf({ type: 'text', props: { paragraphs: [] } })).toEqual(all)
+  })
+
+  it('opens every section but the intro on a title beat (decision 114)', () => {
+    expect(coreBeatsOf({ type: 'text', props: { paragraphs: ['A', 'B'] } }).map((b) => b.id)).toEqual(['title', 'p1', 'p2'])
+    const intro = coreBeatsOf({ type: 'intro', props: { title: 'T', what: { summary: 'S' }, why: { summary: 'W' } } }).map((b) => b.id)
+    expect(intro.filter((id) => id === 'title')).toHaveLength(1)
   })
 
   it('documents the beat IDs of every type with a presenter (decision 108)', () => {
