@@ -78,6 +78,8 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 112 | What the sandboxes explain | **Every choice's gains and costs, and every variable's trend.** Tradeoff: after a step's choices arrive, each choice that has gains or costs gets its own beat (`stepN.choiceK`): its card comes forward and a panel under the cards lists its gains and costs by title (descriptions stay in Read), which the voice reads; the recommendation then lands in the same panel with why it fits. Formula: one sweep per variable that can move (`sweep1`, `sweep2`, …), from its min to its max with the others at their defaults; as it plays, a trend panel states what each metric that moves does ("Recall rises 59 → 101", "peaks at …", "dips to …"), computed from the formulas, and the voice reads it. Revises decision 104 (the sweep) and the tradeoff part of 109. |
 | 113 | How many scenario endings | **All of them.** The stage walks one path to every ending (the shortest walk to it): weaker endings first in branch order, so each path leaves the one before as late as possible, the best ending last. A later path starts at the fork where it parts, with the choices tried there struck through; each ending says which one it is ("Ending 2 of 4"); endings below the best rating are marked *wrong* on the rail, the best (and equal ones) *right*. Beat IDs `pathP.choiceN` and `pathP.choiceN.next`. Revises decisions 103 and 110 (one weaker path, then the best). |
 | 114 | How a section opens | **On its own `title` beat, which a narration step can script.** Every section but the intro starts with a `title` beat: a card over the section with its kind, title, `heading` and `Lead` text (`lead.what`), which then steps aside for the section's own beats. A `NarrationStep("title", …)` says the section's intro in the author's words; without one the voice reads the card ("Quiz. Knowledge Check."). The intro's first beat is already its title, so it gets none. Renderers can also mark a stage line `FRAME`: the voice reads it on its beat even where an authored step plays, unless the step's caption already says it. The decision tree shows two: "An example: one path through this tree" from `start`, and "The result of these decisions" over the recommendation on `result`. Kind names and frame lines are stage labels like "Question 1 of 3", in English. Refines decisions 97, 108 and 110. |
+| 115 | Reflections step by step | **One beat per item placed or blank filled.** A reflection sequence places its items one slot per beat (`cn.step1`, `cn.step2`, … in `solution` order) and a reflection template fills one blank per beat (`cn.stepK`, in reading order), each focused as it lands, so a narration file can explain each step of the answer; `cn.solved` then turns the answer green (with the template's explanation). `cn` and `cn.solved` keep their IDs, so existing narration files still play. Revises decision 103 (the reflection part). |
+| 116 | Standard OpenUI sections in steps | **One beat per child of a `Card` or `Stack` root.** When the root of a standard OpenUI section is `Card([...])` or `Stack([...])` with more than one child, each child gets its own beat (`part1`, `part2`, … in order), so a narration file can walk through a header, a table, then its takeaway. The program still renders whole, as in Read; each child's element is marked with its beat and, when the child is a statement reference, tagged with that statement as its Pick anchor so `Highlight("table")` lights it. Any other root (Tabs, Accordion, a single child) keeps the one `all` beat. Revises decision 78. |
 
 ## Motion Rules
 
@@ -144,9 +146,9 @@ a performed answer (decision 103). The `code` names are the beat IDs a narration
 | `formula-sandbox` | `formulas` the formulas, sliders and gauges · `sweep1`, … per `FormulaVariable` that can move, a ghost hand sweeps it from `min` to `max` while each `FormulaMetric` recomputes (`evaluateFormula`) and its trend is stated (decision 112) |
 | `quiz` | per `QuizQuestion` n: `qn` question and choices · `qn.wrong` *wrong*: the first wrong choice, its hint and explanation · `qn.right` *right*: the right choice over its explanation |
 | `flashcards` | per `Flashcard` n: `cardn` the `word` on the front · `cardn.back` the flip to its `shortDefinition` |
-| `reflection-sequence` | per challenge n: `cn` prompt and items · `cn.solved` *right*: the items settle into the `solution` order |
-| `reflection-template` | per challenge n: `cn` prompt and template · `cn.solved` *right*: the right chips pop into the blanks, then the `explanation` |
-| `openui` | `all` one beat: each top-level child fades in |
+| `reflection-sequence` | per challenge n: `cn` prompt and items · `cn.step1`, … one per `solution` entry: that item settles into its slot (decision 115) · `cn.solved` *right*: the slots turn green as the right order |
+| `reflection-template` | per challenge n: `cn` prompt and template · `cn.step1`, … one per blank in reading order: its right chip pops in (decision 115) · `cn.solved` *right*: the sentence turns green, then the `explanation` |
+| `openui` | a `Card([...])` or `Stack([...])` root with several children: `part1`, … one per child, in order, each rising in under the ones before (decision 116) · any other root: `all` one beat, each top-level child fades in |
 
 ## Implementation Plan
 
@@ -403,6 +405,29 @@ pure and tested directly.
 - Tests: title beats in `present-kernel.test.ts` and `viewer.test.tsx` (the card, then the section; a
   scripted `title` step), frames in `narration.test.ts`, the decision-tree frame lines in
   `performed.test.tsx`.
+
+### Decision 115 — Implementation Notes
+
+- `reflection-synthesis/present.ts`: `sequenceBeats` and `templateBeats` add a `cn.stepK` show beat per
+  `solution` entry or template blank; `challengeStarts(sizes)` gives each challenge's first beat
+  (`size + 2` beats each) for the renderers, and `templateSegments` / `templateZones` moved there from
+  `PresentTemplate`.
+- `PresentSequence` fills slot K on `cn.stepK` (the item leaves a faded copy in the pool, the slot is
+  focused) and marks the slots `is-ok` with a tick on `cn.solved`; `PresentTemplate` does the same per
+  blank, with its explanation on `cn.solved`. A step beat without a narration step reads the item or
+  chip it places.
+- Tests: the beat orders and the step-by-step renderers in `performed.test.tsx`.
+
+### Decision 116 — Implementation Notes
+
+- `progressive-content/present.ts`: `openuiParts(source)` scans the `root = Card(` / `Stack(` statement's
+  first argument (a list) for its items, as statement names or inline components, skipping strings and
+  nested brackets; `openuiBeats(data)` gives `partN` beats for two or more, else `all`.
+- `PresentOpenUI` renders the program whole and, in a layout effect (before the stage enters the beat),
+  sets `data-beat`, `data-motion` and `data-shown` on each rendered child (past single wrappers, as the
+  `children` motion steps in) and `data-oui-anchor` for reference children. When the rendered children
+  do not line up with the source's, the body plays whole on the first beat.
+- Tests: `progressive-content.test.ts` (parts and beats), `openui.test.tsx` (the marks per beat).
 
 ## Open Questions
 

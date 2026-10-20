@@ -4,6 +4,7 @@ import {
   galleryBeats,
   introBeats,
   openuiBeats,
+  openuiParts,
   pillarLayerBeats,
   taxonomyBeats,
   textBeats,
@@ -40,8 +41,19 @@ why = IntroWhy("Origin requests cost time.")
     expect(bulletsBeats(props)).toHaveLength(2)
   })
 
-  it('openui: a single beat', () => {
-    expect(kinds(openuiBeats())).toEqual(['show'])
+  it('openui: a single beat when the root is not a Card or Stack of several children', () => {
+    expect(ids(openuiBeats())).toEqual(['all'])
+    expect(ids(openuiBeats({ source: 'root = Tabs([TabItem("a", "A", [x]), TabItem("b", "B", [y])])' }))).toEqual(['all'])
+    expect(ids(openuiBeats({ source: 'root = Card([table])\ntable = Table([])' }))).toEqual(['all'])
+  })
+
+  it('openui: one beat per child of a Card or Stack root (decision 116)', () => {
+    const source = '// @openui "Steep Guide"\nroot = Card([header, Table([Col("Tea", ["a, b]", "c"])]), tip])\nheader = CardHeader("x")\ntip = Callout("info", "T", "D")'
+    expect(openuiParts(source)).toEqual([{ name: 'header' }, { component: 'Table' }, { name: 'tip' }])
+    expect(ids(openuiBeats({ source }))).toEqual(['part1', 'part2', 'part3'])
+    expect(openuiBeats({ source })[1].about).toBe('Part 2: Table')
+    expect(openuiParts('root = Stack(\n  [a, b],\n  "row"\n)')).toEqual([{ name: 'a' }, { name: 'b' }])
+    expect(openuiParts('root = Stack(a)')).toBeNull()
   })
 
   it('pillar-layer: one beat per layer', () => {
