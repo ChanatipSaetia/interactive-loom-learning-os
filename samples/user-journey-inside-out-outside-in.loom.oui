@@ -114,12 +114,22 @@ j4 = SequenceItem("wait", "รอผลและกังวลว่าผ่�
 j5 = SequenceItem("salary", "เงินเดือนก้อนแรกเข้าบัญชี")
 
 // === sections/order-steps.narrate.oui ===
-root = Narration([t, a1, a1s, a2, a2s])
+root = Narration([t, a1, a1s1, a1s2, a1s3, a1s4, a1s5, a1s, a2, a2s1, a2s2, a2s3, a2s4, a2s5, a2s])
 t = NarrationStep("title", "ลองเรียงเองดู สองโจทย์ ข้อหนึ่งเป็นขั้นตอนของทีม ข้อสองเป็น journey ของลูกค้า")
-a1 = NarrationStep("c1", "ขั้นตอนทำ journey แบบ outside-in เริ่มจากอะไร และจบที่อะไร")
-a1s = NarrationStep("c1.solved", "เริ่มที่เรื่องจริงของลูกค้า ผ่าน pain point แล้วจึงเข้าหลังบ้าน การไล่เข้าหลังบ้านจึงมาทีหลังเสมอ", [Highlight("i4")])
+a1 = NarrationStep("c1", "ขั้นตอนทำ journey แบบ outside-in เริ่มจากอะไร และจบที่อะไร มาวางทีละขั้น")
+a1s1 = NarrationStep("c1.step1", "ขั้นแรกต้องเป็นเรื่องจริงของลูกค้าเสมอ ก่อนจะมีแผนภาพใดๆ", [Highlight("i1")])
+a1s2 = NarrationStep("c1.step2", "จากเรื่องเล่าหลายคน จึงจัดเป็นขั้น และตั้งชื่อด้วยคำของลูกค้า", [Highlight("i2")])
+a1s3 = NarrationStep("c1.step3", "เมื่อเห็นขั้นครบแล้ว ถึงจะปักหมุดได้ว่าลูกค้าติดตรงไหน", [Highlight("i3")])
+a1s4 = NarrationStep("c1.step4", "ตรงนี้มุม inside-out เข้ามา หลังจากรู้ pain point แล้วเท่านั้น", [Callout("i4", "ถ้าไล่หลังบ้านก่อน เราจะเห็นแต่สิ่งที่องค์กรวัดอยู่แล้ว")])
+a1s5 = NarrationStep("c1.step5", "ปิดท้ายด้วยการจัดลำดับงานแก้ตามผลต่อลูกค้า", [Highlight("i5")])
+a1s = NarrationStep("c1.solved", "ลูกค้าก่อน หลังบ้านทีหลัง นี่คือลำดับของ outside-in")
 a2 = NarrationStep("c2", "ทีนี้ลองมองจากสายตาลูกค้า journey เปิดบัญชีเริ่มตรงไหน")
-a2s = NarrationStep("c2.solved", "เริ่มตั้งแต่รู้ว่าต้องมีบัญชี และจบเมื่อเงินเดือนเข้า ไม่ใช่จบตอนระบบสร้างบัญชีเสร็จ", [Highlight("j5")])
+a2s1 = NarrationStep("c2.step1", "journey เริ่มก่อนลูกค้าเปิดแอป ตั้งแต่เขารู้ว่าต้องมีบัญชีรับเงินเดือน", [Highlight("j1")])
+a2s2 = NarrationStep("c2.step2", "ขั้นนี้เกิดนอกระบบเรา แบบ inside-out จึงมักมองไม่เห็น", [Highlight("j2")])
+a2s3 = NarrationStep("c2.step3", "แล้วจึงสมัครบนมือถือ ซึ่งเป็นจุดที่ inside-out เริ่มนับ", [Highlight("j3")])
+a2s4 = NarrationStep("c2.step4", "ช่วงรอผลคือรอยต่อที่ลูกค้ากังวลที่สุด", [Highlight("j4")])
+a2s5 = NarrationStep("c2.step5", "และ journey จบเมื่อเงินเดือนเข้า ไม่ใช่ตอนระบบสร้างบัญชีเสร็จ", [Highlight("j5")])
+a2s = NarrationStep("c2.solved", "นี่คือ journey ในภาษาลูกค้า ตั้งแต่ต้นจนได้ผลลัพธ์จริง")
 
 // === sections/knowledge-check.oui ===
 root = Quiz("ทดสอบความเข้าใจ", [q1, q2, q3], "สามคำถาม", Lead("แยกสองมุมมองให้ออก และรู้ว่าแต่ละมุมใช้ตอนไหน", "ทุกคำถามมาจากการ์ดคำศัพท์ การเปรียบเทียบ และขั้นตอนที่เพิ่งเห็น", "อ่านชื่อขั้นตอนในโจทย์ให้ดี มันบอกมุมมองได้"))
