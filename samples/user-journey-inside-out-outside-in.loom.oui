@@ -1,0 +1,185 @@
+// @loom-topic user-journey-inside-out-outside-in
+// === topic.oui ===
+root = Topic("User Journey: Inside-Out vs Outside-In", "Product & UX", "สองมุมมองในการออกแบบ user journey: เริ่มจากระบบและแผนกขององค์กร (inside-out) หรือเริ่มจากเป้าหมายและบริบทของลูกค้า (outside-in) แล้วใช้ทั้งสองให้ถูกจังหวะ", [SectionRef("intro"), SectionRef("vocabulary"), SectionRef("two-lenses"), SectionRef("side-by-side"), SectionRef("mapping-flow"), SectionRef("order-steps"), SectionRef("knowledge-check"), SectionRef("onboarding-scenario"), SectionRef("which-lens")], ["user journey", "ux", "customer experience", "service design", "outside-in", "inside-out"], "beginner", "2026-10-20", true)
+
+// === sections/intro.oui ===
+root = Intro("User Journey: Inside-Out vs Outside-In", what, why, [rmVocab, rmLenses, rmFlow, rmCheck, rmScenario, rmTree], "มองจากในบ้าน หรือมองจากสายตาลูกค้า", "20 นาที", 8)
+what = IntroWhat("User journey คือเส้นทางที่ผู้ใช้เดินผ่านเพื่อไปให้ถึงเป้าหมายของตัวเอง ตั้งแต่เริ่มรู้ว่ามีปัญหา จนได้ผลลัพธ์ที่ต้องการ การวาด journey ทำได้สองทิศ: inside-out เริ่มจากกระบวนการ ระบบ และแผนกขององค์กร แล้วไล่ออกไปหาลูกค้า ส่วน outside-in เริ่มจากสิ่งที่ลูกค้าพยายามทำจริง แล้วไล่กลับเข้ามาว่าองค์กรต้องรองรับอะไร", "Outside-in: ออกแบบจากเป้าหมาย คำพูด และอารมณ์ของลูกค้า แล้วค่อยโยงเข้าหาระบบหลังบ้าน; Inside-out: ออกแบบจากโครงสร้าง ขั้นตอน และข้อจำกัดภายในองค์กรเป็นตัวตั้ง", ["Inside-out ตั้งชื่อขั้นตอนตามแผนกหรือระบบ เช่น KYC, Credit Check", "Outside-in ตั้งชื่อขั้นตอนตามสิ่งที่ลูกค้าอยากทำ เช่น อยากรู้ว่าต้องใช้เอกสารอะไร", "Service blueprint เชื่อมสองมุมเข้าหากัน"], ["journey map", "touchpoint", "pain point"])
+why = IntroWhy("ทีมส่วนใหญ่มองเห็นแต่ส่วนงานของตัวเอง จึงวาด journey ตามผังองค์กรโดยไม่รู้ตัว ผลคือแต่ละแผนกทำ KPI ของตัวเองได้ครบ แต่ลูกค้ายังติดอยู่ตรงรอยต่อระหว่างแผนกที่ไม่มีใครเป็นเจ้าของ", "เปลี่ยนคำถามจาก 'ระบบเราทำงานครบไหม' เป็น 'ลูกค้าไปถึงเป้าหมายได้ไหม' แล้วจะเห็นจุดที่ลูกค้าหลุดซึ่ง dashboard ภายในไม่เคยบอก")
+rmVocab = RoadmapStep("คำศัพท์", "flashcards", "รู้จักคำที่ใช้ทุกครั้งเมื่อคุยเรื่อง journey", "vocabulary")
+rmLenses = RoadmapStep("สองมุมมอง", "taxonomy-browser", "เทียบ inside-out, outside-in และ service blueprint", "two-lenses")
+rmFlow = RoadmapStep("ขั้นตอนทำ journey แบบ outside-in", "flowchart", "ไล่ตั้งแต่ฟังเรื่องลูกค้าจนได้ backlog", "mapping-flow")
+rmCheck = RoadmapStep("ทดสอบความเข้าใจ", "quiz", "แยกให้ออกว่าแบบไหนคือ inside-out", "knowledge-check")
+rmScenario = RoadmapStep("สถานการณ์จำลอง", "scenario", "แก้ปัญหาลูกค้าหลุดตอนเปิดบัญชีออนไลน์", "onboarding-scenario")
+rmTree = RoadmapStep("เลือกมุมมองให้เหมาะ", "decision-tree", "ตัดสินใจว่าเมื่อไรควรเริ่มจากมุมไหน", "which-lens")
+
+// === sections/intro.narrate.oui ===
+root = Narration([n1, n2, n3, n4])
+n1 = NarrationStep("title", "วันนี้เราจะคุยเรื่อง user journey สองทิศ คือมองจากในบ้านออกไป กับมองจากสายตาลูกค้าเข้ามา")
+n2 = NarrationStep("what", "journey เดียวกัน วาดได้สองแบบ แบบหนึ่งเรียงตามแผนก อีกแบบเรียงตามสิ่งที่ลูกค้าพยายามทำ", [Highlight("what.definition")])
+n3 = NarrationStep("why", "ถ้าวาดตามผังองค์กร ทุกแผนกจะดูดีหมด แต่ลูกค้าอาจติดอยู่ตรงรอยต่อที่ไม่มีใครดูแล")
+n4 = NarrationStep("roadmap", "เริ่มจากคำศัพท์ เทียบสองมุมมอง ลองทำ journey แบบ outside-in แล้วปิดด้วยแบบทดสอบ สถานการณ์จำลอง และวิธีเลือกมุมมอง")
+
+// === sections/vocabulary.oui ===
+root = Flashcards("คำศัพท์", [journey, touchpoint, painPoint, jtbd, blueprint], "คำที่ใช้บ่อยเวลาออกแบบ journey", Lead("ห้าคำที่จะเจอตลอดบทเรียนนี้", "ถ้าทีมใช้คำเดียวกันแต่ความหมายต่างกัน journey map จะเถียงกันไม่จบ", "พลิกการ์ดทีละใบ แล้วสังเกตว่าคำไหนมองจากฝั่งลูกค้า คำไหนมองจากฝั่งองค์กร"))
+journey = Flashcard("journey", "User Journey", "/ˈjuːzər ˈdʒɜːrni/", "concept", "เส้นทางที่ผู้ใช้เดินเพื่อไปให้ถึงเป้าหมายของตัวเอง", "ลำดับของขั้น (stage) ที่ผู้ใช้ผ่าน พร้อมสิ่งที่เขาทำ คิด และรู้สึกในแต่ละขั้น journey ที่ดีเริ่มก่อนผู้ใช้จะเจอผลิตภัณฑ์ และจบเมื่อเขาได้ผลลัพธ์ที่ต้องการ ไม่ใช่จบเมื่อระบบบันทึกข้อมูลเสร็จ", "ขอบเขตของ journey บอกว่าทีมมองปัญหากว้างแค่ไหน ถ้าเริ่มและจบที่หน้าจอของเรา ก็จะมองไม่เห็นสิ่งที่เกิดก่อนและหลัง")
+touchpoint = Flashcard("touchpoint", "Touchpoint", "/ˈtʌtʃpɔɪnt/", "concept", "จุดที่ลูกค้าสัมผัสกับองค์กร", "ทุกช่องทางที่ลูกค้าเจอองค์กร เช่น แอป เว็บไซต์ อีเมลยืนยัน call center สาขา หรือ SMS แจ้งผล touchpoint หนึ่งมักมีหลายแผนกอยู่เบื้องหลัง", "Inside-out มักนับ touchpoint ตามช่องทางที่องค์กรเป็นเจ้าของ ส่วน outside-in ถามว่าลูกค้าต้องผ่านจุดไหนบ้าง รวมถึงจุดที่อยู่นอกระบบเรา")
+painPoint = Flashcard("pain-point", "Pain Point", "/peɪn pɔɪnt/", "concept", "จุดที่ลูกค้าติดขัด สับสน หรือเลิกกลางทาง", "ช่วงที่ลูกค้าเสียเวลา ไม่รู้ว่าต้องทำอะไรต่อ ต้องทำซ้ำ หรือรู้สึกไม่มั่นใจ เห็นได้จากการสังเกตและสัมภาษณ์ และจากข้อมูลอย่าง drop-off rate หรือเรื่องร้องเรียน", "Pain point ที่ใหญ่ที่สุดมักอยู่ตรงรอยต่อระหว่างแผนก ซึ่ง KPI ของแต่ละแผนกมองไม่เห็น")
+jtbd = Flashcard("jtbd", "Jobs to be Done", "/dʒɒbz tə biː dʌn/", "framework", "งานที่ลูกค้า 'จ้าง' ผลิตภัณฑ์ให้ทำ", "แนวคิดที่ Clayton Christensen ทำให้เป็นที่รู้จัก: ลูกค้าไม่ได้อยากได้ฟีเจอร์ แต่อยากให้งานบางอย่างในชีวิตสำเร็จ เช่น ไม่ได้อยากเปิดบัญชี แต่อยากมีที่รับเงินเดือนก่อนวันเริ่มงาน", "JTBD คือจุดตั้งต้นของ outside-in: ตั้งชื่อ journey ด้วยงานของลูกค้า ไม่ใช่ด้วยชื่อผลิตภัณฑ์")
+blueprint = Flashcard("blueprint", "Service Blueprint", "/ˈsɜːrvɪs ˈbluːprɪnt/", "tool", "แผนภาพที่วาง journey ของลูกค้าไว้ด้านบน และสิ่งที่องค์กรทำไว้ด้านล่าง", "แบ่งเป็นแถว: การกระทำของลูกค้า, frontstage (สิ่งที่ลูกค้าเห็น), backstage (พนักงานและขั้นตอนที่ลูกค้าไม่เห็น) และ support processes (ระบบและข้อมูล) โดยมี line of visibility แยกสิ่งที่ลูกค้าเห็นกับไม่เห็น", "เป็นสะพานระหว่างสองมุม: แถวบนมาจาก outside-in แถวล่างมาจาก inside-out ทำให้โยง pain point ไปหาต้นเหตุหลังบ้านได้")
+
+// === sections/vocabulary.narrate.oui ===
+root = Narration([t, w1, b1, w2, b2, w3, b3, w4, b4, w5, b5])
+t = NarrationStep("title", "ก่อนเริ่ม มาตกลงความหมายของห้าคำที่จะใช้ตลอดบทเรียน")
+w1 = NarrationStep("card1", "คำแรก user journey", [Highlight("journey")])
+b1 = NarrationStep("card1.back", "มันคือเส้นทางสู่เป้าหมายของผู้ใช้ ไม่ใช่เส้นทางของข้อมูลในระบบ", [Callout("journey", "journey เริ่มก่อนลูกค้าเจอเรา และจบเมื่อเขาได้สิ่งที่ต้องการ")])
+w2 = NarrationStep("card2", "ต่อไป touchpoint", [Highlight("touchpoint")])
+b2 = NarrationStep("card2.back", "ทุกจุดที่ลูกค้าเจอองค์กร และเบื้องหลังแต่ละจุดมักมีหลายแผนก")
+w3 = NarrationStep("card3", "คำที่สาม pain point", [Highlight("painPoint")])
+b3 = NarrationStep("card3.back", "จุดที่ลูกค้าติดหรือเลิก และมักซ่อนอยู่ตรงรอยต่อระหว่างแผนก", [Callout("painPoint", "KPI รายแผนกอาจเขียวทั้งหมด ทั้งที่ลูกค้ายังหลุดกลางทาง")])
+w4 = NarrationStep("card4", "คำที่สี่ jobs to be done", [Highlight("jtbd")])
+b4 = NarrationStep("card4.back", "ลูกค้าไม่ได้อยากเปิดบัญชี เขาอยากมีที่รับเงินเดือน นี่คือจุดตั้งต้นของ outside-in")
+w5 = NarrationStep("card5", "คำสุดท้าย service blueprint", [Highlight("blueprint")])
+b5 = NarrationStep("card5.back", "แผนภาพนี้วางมุมลูกค้าไว้ข้างบน มุมองค์กรไว้ข้างล่าง จึงเชื่อมสองมุมเข้าด้วยกัน", [Callout("blueprint", "เส้น line of visibility แยกสิ่งที่ลูกค้าเห็นออกจากงานหลังบ้าน")])
+
+// === sections/two-lenses.oui ===
+root = TaxonomyBrowser("สองมุมมอง", [insideOut, outsideIn, hybrid], "มองจากในบ้าน มองจากลูกค้า และสะพานเชื่อม", Lead("เปรียบเทียบ inside-out, outside-in และ service blueprint ทีละการ์ด", "แต่ละมุมเห็นของคนละอย่าง และมีที่ใช้ของตัวเอง", "ใช้ตัวอย่างการเปิดบัญชีธนาคารออนไลน์ในทุกการ์ด แล้วดูว่าชื่อขั้นตอนต่างกันอย่างไร"))
+insideOut = TaxonomyCategory("Inside-Out", "เริ่มจากองค์กร แล้วไล่ออกไปหาลูกค้า", "Building2", "peach", "วาด journey ตามขั้นตอน ระบบ และแผนกที่มีอยู่ เช่น การเปิดบัญชีเป็น Submit Application → KYC Verification → Credit Check → Account Provisioning → Welcome Email", "มุมนี้ถามว่าองค์กรต้องทำอะไรบ้างเพื่อส่งมอบบริการ ข้อดีคือเข้ากับความรับผิดชอบของแต่ละทีม วัดผลง่าย และเหมาะกับงานที่ข้อจำกัดภายในเป็นตัวกำหนด เช่น กฎหมาย ระบบ core banking หรือต้นทุน จุดอ่อนคือมองไม่เห็นสิ่งที่ลูกค้าทำนอกระบบ (เช่น ไปหาเอกสาร) และรอยต่อระหว่างแผนก", "เหมือนวาดแผนที่ร้านอาหารจากครัว: รู้ว่าแต่ละสถานีทำอะไร แต่ไม่รู้ว่าลูกค้ารอโต๊ะนานแค่ไหน", "ทำให้กระบวนการภายในครบถ้วนและมีประสิทธิภาพ", ["ชื่อขั้นตอนตามแผนกหรือระบบ", "KPI รายแผนก เช่น SLA ของ KYC", "งาน compliance และข้อจำกัดระบบ", "การปรับต้นทุนของ process"], ["ลูกค้าทำอะไรก่อนเข้าแอปและหลังได้บัญชี", "อารมณ์และความสับสนของลูกค้า", "งานที่ลูกค้าอยากให้สำเร็จจริง (JTBD)"])
+outsideIn = TaxonomyCategory("Outside-In", "เริ่มจากลูกค้า แล้วไล่กลับเข้ามาหาองค์กร", "Users", "blue", "วาด journey จากเป้าหมายและคำพูดของลูกค้า เช่น อยากมีบัญชีรับเงินเดือน → หาว่าต้องใช้เอกสารอะไร → สมัครบนมือถือ → รอผลและกังวลว่าผ่านไหม → ได้รับเงินเดือนครั้งแรก", "มุมนี้ถามว่าลูกค้าพยายามทำอะไร และอะไรขวางเขาอยู่ ข้อมูลมาจากการสัมภาษณ์ การสังเกต และ analytics ของพฤติกรรมจริง ขั้นตอนตั้งชื่อด้วยภาษาลูกค้า และ journey มักกว้างกว่าผลิตภัณฑ์ เพราะรวมสิ่งที่ลูกค้าทำนอกระบบด้วย จุดอ่อนคือถ้าไม่โยงกลับเข้าหลังบ้าน ทีมจะได้แค่แผนภาพสวยที่ไม่มีใครเป็นเจ้าของการแก้", "เหมือนนั่งเป็นลูกค้าในร้าน: รู้ว่ารอนานตรงไหน แต่ยังต้องเดินเข้าครัวเพื่อรู้ว่าทำไม", "ทำให้ลูกค้าไปถึงเป้าหมายของตัวเองได้ง่ายที่สุด", ["ชื่อขั้นตอนตามสิ่งที่ลูกค้าอยากทำ", "เป้าหมาย ความคิด อารมณ์ในแต่ละขั้น", "pain point และ drop-off ตรงรอยต่อ", "สิ่งที่ลูกค้าทำนอกช่องทางของเรา"], ["รายละเอียดว่าระบบไหนเก็บข้อมูลอะไร", "การแบ่งงานระหว่างแผนก", "ข้อจำกัดของกฎหมายและระบบ (ต้องดึงเข้ามาทีหลัง)"])
+hybrid = TaxonomyCategory("Service Blueprint", "สะพานเชื่อมสองมุม", "Layers", "mauve", "วาง journey แบบ outside-in ไว้แถวบน แล้วไล่ลงไปว่าแต่ละขั้นมี frontstage, backstage และระบบใดรองรับ ตัวอย่าง: ขั้น 'รอผลและกังวลว่าผ่านไหม' โยงไปที่คิวตรวจ KYC ด้วยมือ 24 ชั่วโมง ที่ไม่ส่งสถานะให้ลูกค้า", "Blueprint ทำให้ pain point ที่เจอจาก outside-in มีที่อยู่หลังบ้านและมีเจ้าของ และทำให้ข้อจำกัดแบบ inside-out (กฎหมาย ระบบ) ปรากฏต่อหน้าทีมที่ออกแบบประสบการณ์ ลำดับที่ได้ผลคือเริ่มจากแถวลูกค้าก่อน แล้วค่อยเติมแถวล่าง", "เหมือนผังร้านที่ตัดขวางให้เห็นทั้งโต๊ะลูกค้าและครัวในภาพเดียว", "โยงทุก pain point ไปหาต้นเหตุและเจ้าของหลังบ้าน", ["Customer actions, frontstage, backstage, support processes", "line of visibility และ line of interaction", "การหาต้นเหตุของ pain point", "การแบ่งเจ้าของงานแก้"], ["การค้นหาว่าลูกค้าต้องการอะไร (ต้องทำ research ก่อน)", "การออกแบบหน้าจอระดับรายละเอียด"])
+
+// === sections/two-lenses.narrate.oui ===
+root = Narration([t, all, c1, c2, c3])
+t = NarrationStep("title", "ตอนนี้มาดูสองมุมมองให้ชัด โดยใช้การเปิดบัญชีธนาคารออนไลน์เป็นตัวอย่างเดียวกัน")
+all = NarrationStep("cards", "มีสามการ์ด สองมุมมองหลัก และหนึ่งเครื่องมือที่เชื่อมมันเข้าด้วยกัน")
+c1 = NarrationStep("card1", "inside-out ตั้งชื่อขั้นตอนตามแผนก เช่น KYC Verification หรือ Credit Check", [Callout("insideOut", "ลูกค้าไม่เคยพูดว่าตัวเองกำลังทำ KYC Verification")])
+c2 = NarrationStep("card2", "outside-in ตั้งชื่อขั้นตอนด้วยภาษาลูกค้า และรวมสิ่งที่เขาทำนอกแอป อย่างการไปหาเอกสาร", [Highlight("outsideIn")])
+c3 = NarrationStep("card3", "service blueprint เอาสองมุมมาวางซ้อนกัน แถวบนคือลูกค้า แถวล่างคือหลังบ้าน", [Callout("hybrid", "เริ่มจากแถวลูกค้าก่อน แล้วค่อยเติมแถวล่าง")])
+
+// === sections/side-by-side.oui ===
+// @openui "เทียบกันทีละด้าน" "Inside-out กับ outside-in ในตัวอย่างเปิดบัญชีออนไลน์"
+root = Card([header, table, tip])
+header = CardHeader("Inside-out vs Outside-in", "journey เดียวกัน ถามคนละคำถาม")
+table = Table([Col("ด้าน", ["คำถามตั้งต้น", "จุดเริ่มของ journey", "จุดจบของ journey", "ชื่อขั้นตอน", "แหล่งข้อมูล", "ตัวชี้วัดหลัก", "สิ่งที่มักมองไม่เห็น"]), Col("Inside-out", ["องค์กรต้องทำอะไรบ้าง?", "ลูกค้ากดส่งใบสมัคร", "ระบบสร้างบัญชีและส่ง welcome email", "KYC Verification, Credit Check, Account Provisioning", "ผังกระบวนการ, SLA, log ของระบบ", "SLA และ throughput รายแผนก", "สิ่งที่ลูกค้าทำนอกระบบ และรอยต่อระหว่างแผนก"]), Col("Outside-in", ["ลูกค้าพยายามทำอะไร และอะไรขวางอยู่?", "ลูกค้ารู้ว่าต้องมีบัญชีรับเงินเดือน", "เงินเดือนก้อนแรกเข้าบัญชี", "หาว่าต้องใช้เอกสารอะไร, รอผลและกังวลว่าผ่านไหม", "สัมภาษณ์, สังเกตการใช้งาน, funnel analytics", "อัตราที่ลูกค้าไปถึงเป้าหมาย และเวลาที่ใช้", "ข้อจำกัดทางกฎหมายและระบบ จนกว่าจะโยงกลับเข้าหลังบ้าน"])])
+tip = Callout("info", "ไม่ใช่ทางเลือกแบบใดแบบหนึ่ง", "เริ่ม outside-in เพื่อรู้ว่าต้องแก้อะไร แล้วใช้มุม inside-out (ผ่าน service blueprint) เพื่อรู้ว่าต้องแก้ที่ไหนและใครเป็นเจ้าของ")
+
+// === sections/side-by-side.narrate.oui ===
+root = Narration([t, a])
+t = NarrationStep("title", "มาวางสองมุมไว้ข้างกัน ทีละด้าน")
+a = NarrationStep("all", "สังเกตจุดเริ่มและจุดจบ inside-out เริ่มเมื่อใบสมัครเข้าระบบ แต่ outside-in เริ่มตั้งแต่ลูกค้ารู้ว่าต้องมีบัญชี และจบเมื่อเงินเดือนเข้า", [Highlight("table"), Callout("tip", "outside-in บอกว่าต้องแก้อะไร inside-out บอกว่าต้องแก้ที่ไหน")])
+
+// === sections/mapping-flow.oui ===
+root = Flowchart("ทำ journey แบบ outside-in", [customer, researcher, productTeam], [researchRepo, journeyMap, blueprintSys, backlog], [shareStory, mapStages, markPain, traceBackstage, prioritize], [fullPass], "จากเรื่องเล่าของลูกค้า ถึง backlog ของทีม", Lead("ห้าขั้นของการทำ journey map แบบ outside-in แล้วโยงกลับเข้าหลังบ้าน", "ถ้าหยุดแค่แผนภาพ journey ก็ไม่มีอะไรเปลี่ยน ต้องโยงไปถึงต้นเหตุและเจ้าของงาน", "ดูมุม swimlanes ว่าใครทำขั้นไหน แล้วลองเปิดมุม data flow ดูว่าข้อมูลเปลี่ยนรูปอย่างไร"), "swimlanes")
+customer = Actor("customer", "ลูกค้า", "คนที่อยากเปิดบัญชีไว้รับเงินเดือน")
+researcher = Actor("researcher", "UX Researcher", "คนที่สัมภาษณ์และสังเกตลูกค้า แล้วสรุปเป็น journey")
+productTeam = Actor("product-team", "Product Team", "PM, designer และ engineer ที่เป็นเจ้าของการแก้ปัญหา")
+researchRepo = System("research-repo", "Research Repository", "ที่เก็บบันทึกสัมภาษณ์ คำพูด และคลิปการใช้งาน", "database")
+journeyMap = System("journey-map", "Journey Map", "แผนภาพขั้นตอน เป้าหมาย และอารมณ์ของลูกค้าในภาษาลูกค้า", "aggregate")
+blueprintSys = System("service-blueprint", "Service Blueprint", "แถว frontstage, backstage และระบบที่อยู่ใต้แต่ละขั้นของลูกค้า", "aggregate")
+backlog = System("backlog", "Product Backlog", "รายการงานแก้ที่จัดลำดับแล้วและมีเจ้าของ", "service")
+shareStory = Step("share-story", "เมื่อ researcher ขอให้เล่าครั้งล่าสุดที่พยายามเปิดบัญชี", "ShareStory", researchRepo, [storyRecorded], customer, null, "map-stages", "เริ่มจากเรื่องจริงของลูกค้า ไม่ใช่จากผังกระบวนการ ถามถึงครั้งล่าสุดที่เกิดขึ้นจริง เพราะคำตอบแบบสมมติมักไม่ตรงกับพฤติกรรม", researchRepo)
+storyRecorded = Event("story-recorded", "Story Recorded", "บันทึกเรื่องเล่าของลูกค้าหลายคนแล้ว", null, "เป้าหมาย, สิ่งที่ทำ, คำพูดจริง, อารมณ์")
+mapStages = Step("map-stages", "เมื่อมีเรื่องเล่าครบหลายคน", "MapJourneyStages", journeyMap, [stagesMapped], researcher, null, "mark-pain", "จัดกลุ่มเรื่องเล่าเป็นขั้น (stage) และตั้งชื่อขั้นด้วยคำของลูกค้า เช่น 'หาว่าต้องใช้เอกสารอะไร' ไม่ใช่ 'Document Collection'", journeyMap)
+stagesMapped = Event("stages-mapped", "Journey Stages Mapped", "journey ตั้งแต่รู้ว่าต้องมีบัญชีจนเงินเดือนเข้า", null, "ขั้นในภาษาลูกค้า, เป้าหมายรายขั้น, เส้นอารมณ์")
+markPain = Step("mark-pain", "เมื่อวาดขั้นของ journey เสร็จ", "MarkPainPoints", journeyMap, [painFound], researcher, null, "trace-backstage", "ใส่ pain point ลงบนขั้นที่มันเกิด พร้อมหลักฐาน เช่น ลูกค้า 4 ใน 6 คนออกจากแอปตอนขอทะเบียนบ้าน เพราะไม่ได้พกติดตัว", productTeam)
+painFound = Event("pain-found", "Pain Points Found", "รู้แล้วว่าลูกค้าติดตรงไหนและติดแค่ไหน", null, "pain point, ขั้นที่เกิด, หลักฐาน, ความถี่")
+traceBackstage = Step("trace-backstage", "เมื่อรู้ว่าลูกค้าติดตรงไหน", "TraceToBackstage", blueprintSys, [causesLinked], productTeam, null, "prioritize", "นี่คือจังหวะที่มุม inside-out เข้ามา: วาง blueprint ใต้ journey แล้วไล่ว่า pain point แต่ละจุดเกิดจาก process หรือระบบไหน", blueprintSys)
+causesLinked = Event("causes-linked", "Root Causes Linked", "pain point แต่ละจุดมีต้นเหตุหลังบ้านและเจ้าของ", null, "pain point → touchpoint → process/ระบบ → ทีมเจ้าของ")
+prioritize = Step("prioritize", "เมื่อโยงต้นเหตุครบ", "PrioritizeFixes", backlog, [fixesPrioritized], null, null, null, "จัดลำดับงานแก้ด้วยผลต่อการที่ลูกค้าไปถึงเป้าหมาย ไม่ใช่ด้วยว่าแผนกไหนเสียงดัง แล้วใส่ตัวชี้วัดแบบ outside-in ไว้วัดผล", productTeam)
+fixesPrioritized = Event("fixes-prioritized", "Fixes Prioritized", "backlog เรียงตามผลต่อลูกค้า และมีเจ้าของทุกงาน")
+fullPass = Journey("full-pass", "ครบหนึ่งรอบ", "จากเรื่องเล่าของลูกค้า ถึงงานแก้ที่มีเจ้าของ", [JourneyStep(shareStory, "ฟังเรื่องจริง", "ถามถึงครั้งล่าสุดที่ลูกค้าพยายามเปิดบัญชี", "outside-in"), JourneyStep(mapStages, "วาดขั้นในภาษาลูกค้า", "จัดเรื่องเล่าเป็นขั้น ตั้งชื่อด้วยคำของลูกค้า", "outside-in"), JourneyStep(markPain, "ปักหมุด pain point", "ใส่ pain point พร้อมหลักฐานบนขั้นที่มันเกิด", "outside-in"), JourneyStep(traceBackstage, "ไล่เข้าหลังบ้าน", "วาง service blueprint แล้วหาต้นเหตุแต่ละจุด", "inside-out"), JourneyStep(prioritize, "จัดลำดับงานแก้", "เรียงงานตามผลต่อลูกค้า และให้ทุกงานมีเจ้าของ", "inside-out")])
+
+// === sections/mapping-flow.narrate.oui ===
+root = Narration([t, s1, s2, s3, s4, s5])
+t = NarrationStep("title", "มาดูว่าการทำ journey แบบ outside-in ทำจริงอย่างไร ตั้งแต่ฟังลูกค้าจนได้งานแก้ที่มีเจ้าของ")
+s1 = NarrationStep("step1", "ทุกอย่างเริ่มที่เรื่องเล่าของลูกค้า ถามถึงครั้งล่าสุดที่เกิดขึ้นจริง ไม่ใช่ถามว่าเขาจะทำอย่างไร", [Highlight("shareStory")])
+s2 = NarrationStep("step2", "จากนั้นจัดเรื่องเล่าเป็นขั้น และตั้งชื่อขั้นด้วยคำของลูกค้าเอง", [Callout("mapStages", "ถ้าชื่อขั้นเป็นชื่อแผนก แปลว่าเรากำลังวาดแบบ inside-out อยู่")])
+s3 = NarrationStep("step3", "แล้วปักหมุด pain point พร้อมหลักฐาน เช่น ลูกค้าส่วนใหญ่หลุดตอนขอทะเบียนบ้าน", [Highlight("markPain")])
+s4 = NarrationStep("step4", "ตรงนี้มุม inside-out เข้ามาช่วย วาง service blueprint แล้วไล่ว่า pain point เกิดจาก process ไหน", [Highlight("traceBackstage")])
+s5 = NarrationStep("step5", "สุดท้ายจัดลำดับงานแก้ด้วยผลต่อลูกค้า และให้ทุกงานมีเจ้าของ", [Highlight("prioritize")])
+
+// === sections/order-steps.oui ===
+root = ReflectionSequence("เรียงลำดับให้ถูก", [c1, c2], "ทวนสิ่งที่เพิ่งเห็น", Lead("เรียงขั้นตอนการทำ journey และเรียงขั้นของลูกค้า", "การเรียงเองช่วยให้จำได้ว่าอะไรต้องมาก่อน", "ข้อแรกคือขั้นตอนทำงานของทีม ข้อสองคือ journey ของลูกค้าในตัวอย่างเปิดบัญชี"))
+c1 = SequenceChallenge("เรียงขั้นตอนทำ journey แบบ outside-in ให้ถูกลำดับ", [i4, i1, i5, i3, i2], [i1, i2, i3, i4, i5])
+i1 = SequenceItem("story", "ฟังเรื่องจริงจากลูกค้า")
+i2 = SequenceItem("stages", "จัดเป็นขั้นและตั้งชื่อด้วยภาษาลูกค้า")
+i3 = SequenceItem("pain", "ปักหมุด pain point พร้อมหลักฐาน")
+i4 = SequenceItem("trace", "ไล่หาต้นเหตุหลังบ้านด้วย service blueprint")
+i5 = SequenceItem("prioritize", "จัดลำดับงานแก้ตามผลต่อลูกค้า")
+c2 = SequenceChallenge("เรียงขั้นของ journey เปิดบัญชีแบบ outside-in จากมุมลูกค้า", [j3, j5, j1, j4, j2], [j1, j2, j3, j4, j5])
+j1 = SequenceItem("need", "รู้ว่าต้องมีบัญชีไว้รับเงินเดือน")
+j2 = SequenceItem("docs", "หาว่าต้องใช้เอกสารอะไร")
+j3 = SequenceItem("apply", "สมัครบนมือถือ")
+j4 = SequenceItem("wait", "รอผลและกังวลว่าผ่านไหม")
+j5 = SequenceItem("salary", "เงินเดือนก้อนแรกเข้าบัญชี")
+
+// === sections/order-steps.narrate.oui ===
+root = Narration([t, a1, a1s, a2, a2s])
+t = NarrationStep("title", "ลองเรียงเองดู สองโจทย์ ข้อหนึ่งเป็นขั้นตอนของทีม ข้อสองเป็น journey ของลูกค้า")
+a1 = NarrationStep("c1", "ขั้นตอนทำ journey แบบ outside-in เริ่มจากอะไร และจบที่อะไร")
+a1s = NarrationStep("c1.solved", "เริ่มที่เรื่องจริงของลูกค้า ผ่าน pain point แล้วจึงเข้าหลังบ้าน การไล่เข้าหลังบ้านจึงมาทีหลังเสมอ", [Highlight("i4")])
+a2 = NarrationStep("c2", "ทีนี้ลองมองจากสายตาลูกค้า journey เปิดบัญชีเริ่มตรงไหน")
+a2s = NarrationStep("c2.solved", "เริ่มตั้งแต่รู้ว่าต้องมีบัญชี และจบเมื่อเงินเดือนเข้า ไม่ใช่จบตอนระบบสร้างบัญชีเสร็จ", [Highlight("j5")])
+
+// === sections/knowledge-check.oui ===
+root = Quiz("ทดสอบความเข้าใจ", [q1, q2, q3], "สามคำถาม", Lead("แยกสองมุมมองให้ออก และรู้ว่าแต่ละมุมใช้ตอนไหน", "ทุกคำถามมาจากการ์ดคำศัพท์ การเปรียบเทียบ และขั้นตอนที่เพิ่งเห็น", "อ่านชื่อขั้นตอนในโจทย์ให้ดี มันบอกมุมมองได้"))
+q1 = QuizQuestion("q1", "Journey map หนึ่งมีขั้นตอน: Submit Application → KYC Verification → Credit Check → Account Provisioning ข้อใดอธิบายได้ถูกที่สุด?", [QuizChoice("a", "เป็น outside-in เพราะเรียงตามลำดับที่ลูกค้าผ่าน", false, "ลำดับถูก แต่ชื่อขั้นเป็นชื่อแผนกและระบบ และเริ่มเมื่อใบสมัครเข้าระบบ ลูกค้าไม่ได้พูดว่ากำลังทำ Credit Check"), QuizChoice("b", "เป็น inside-out เพราะตั้งชื่อขั้นตามแผนกและระบบ", true, "ใช่ นี่คือ journey ที่วาดจากกระบวนการภายใน มันยังไม่เห็นสิ่งที่ลูกค้าทำก่อนสมัคร เช่น การหาเอกสาร")], "ดูว่าใครเป็นคนพูดชื่อขั้นตอนเหล่านี้")
+q2 = QuizQuestion("q2", "ทุกแผนกทำ SLA ได้ตามเป้า แต่ลูกค้ายังเลิกกลางทางจำนวนมาก สาเหตุที่น่าจะเป็นที่สุดคืออะไร?", [QuizChoice("a", "SLA ของแต่ละแผนกยังเร็วไม่พอ", false, "ถ้าดูแค่ SLA เป็นการมองแบบ inside-out อีกครั้ง ปัญหาที่ลูกค้าเจออาจไม่อยู่ในแผนกไหนเลย"), QuizChoice("b", "pain point อยู่ตรงรอยต่อระหว่างแผนก หรืออยู่นอกระบบ ซึ่ง KPI รายแผนกมองไม่เห็น", true, "ถูกต้อง เช่น ช่วงรอผลที่ไม่มีใครแจ้งสถานะ หรือการไปหาเอกสารที่บ้าน ต้องใช้ outside-in จึงจะเห็น")], "นึกถึงการ์ด pain point")
+q3 = QuizQuestion("q3", "ในขั้นตอนทำ journey แบบ outside-in มุม inside-out เข้ามามีบทบาทตอนไหน?", [QuizChoice("a", "ตั้งแต่ขั้นแรก เพื่อกำหนดว่าจะถามลูกค้าเรื่องขั้นตอนไหนของระบบ", false, "ถ้าเริ่มจากขั้นตอนของระบบ คำถามจะพาลูกค้าไปตามผังองค์กร และเราจะพลาดสิ่งที่เขาทำนอกระบบ"), QuizChoice("b", "หลังจากเจอ pain point แล้ว เพื่อไล่หาต้นเหตุหลังบ้านด้วย service blueprint", true, "ใช่ outside-in บอกว่าต้องแก้อะไร จากนั้น blueprint ใช้มุม inside-out บอกว่าต้องแก้ที่ไหนและใครเป็นเจ้าของ")], "ย้อนดูขั้นที่สี่ของ flowchart")
+
+// === sections/knowledge-check.narrate.oui ===
+root = Narration([k1, k1w, k1r, k2, k2w, k2r, k3, k3w, k3r])
+k1 = NarrationStep("q1", "ข้อแรก journey ที่มีขั้น KYC Verification กับ Credit Check เป็นมุมไหน")
+k1w = NarrationStep("q1.wrong", "ลำดับดูเหมือนตามลูกค้า จึงหลอกให้คิดว่าเป็น outside-in แต่ชื่อทุกขั้นเป็นภาษาขององค์กร")
+k1r = NarrationStep("q1.right", "มันคือ inside-out ดูได้จากชื่อขั้นที่เป็นแผนกและระบบ", [Highlight("q1.choices[1]")])
+k2 = NarrationStep("q2", "ข้อสอง SLA เขียวทุกแผนก แต่ลูกค้ายังหลุด")
+k2w = NarrationStep("q2.wrong", "การเร่ง SLA ฟังดูเป็นทางแก้ แต่เป็นการมองจากในบ้านอีกรอบ")
+k2r = NarrationStep("q2.right", "ปัญหาอยู่ตรงรอยต่อหรือนอกระบบ ที่ KPI รายแผนกมองไม่เห็น", [Highlight("q2.choices[1]")])
+k3 = NarrationStep("q3", "ข้อสุดท้าย มุม inside-out เข้ามาตอนไหน")
+k3w = NarrationStep("q3.wrong", "การเริ่มจากขั้นตอนของระบบดูเป็นระเบียบ แต่จะพาคำถามไปตามผังองค์กร")
+k3r = NarrationStep("q3.right", "มันเข้ามาหลังเจอ pain point แล้ว เพื่อหาต้นเหตุและเจ้าของหลังบ้าน", [Highlight("q3.choices[1]")])
+
+// === sections/onboarding-scenario.oui ===
+root = Scenario("สถานการณ์จำลอง: ลูกค้าหลุดตอนเปิดบัญชี", "onboarding-dropoff", [start, insideNode, outsideNode, endC, endBMinus, endBPlus, endA], "คุณเป็น PM ของแอปธนาคาร funnel บอกว่าลูกค้า 60% ที่เริ่มเปิดบัญชีออนไลน์ไม่ได้บัญชีภายใน 7 วัน ทุกแผนกรายงานว่า SLA ของตัวเองผ่านเป้า", "start", "ลูกค้า 60% หลุดระหว่างเปิดบัญชี", "ลองเลือกทางแก้ แล้วดูว่ามุมมองไหนพาไปถึงต้นเหตุ", Lead("ใช้สองมุมมองกับปัญหาจริงหนึ่งเรื่อง", "ทางเลือกแรกที่ดูเร็วที่สุดมักเป็นการมองจากในบ้าน", "เดินหลายเส้นทางแล้วเทียบผลลัพธ์"))
+start = ScenarioNode("start", "ลูกค้าหลุด 60% แต่ทุกแผนกบอกว่า SLA ผ่าน คุณจะเริ่มจากอะไร?", [ScenarioChoice("progress-bar", "ใส่ progress bar และ push notification เตือนให้กลับมาทำต่อ", "end-c"), ScenarioChoice("ask-depts", "เรียกประชุมทุกแผนกให้รายงานว่าขั้นไหนช้า", "inside"), ScenarioChoice("watch", "นั่งดูลูกค้าใหม่ 6 คนลองเปิดบัญชีจริง และสัมภาษณ์คนที่เลิกกลางทาง", "outside")])
+insideNode = ScenarioNode("inside", "ทุกแผนกยืนยันตัวเลขเดิม: KYC ตรวจเสร็จใน 24 ชั่วโมงตาม SLA ระบบสร้างบัญชีเร็ว ไม่มีใครเห็นปัญหาในส่วนของตัวเอง คุณจะทำอะไรต่อ?", [ScenarioChoice("cut-sla", "สั่งลด SLA ของ KYC เหลือ 12 ชั่วโมง", "end-b-minus"), ScenarioChoice("go-watch", "ยอมรับว่าดูจากในบ้านไม่เห็น แล้วไปดูลูกค้าจริง", "outside")])
+outsideNode = ScenarioNode("outside", "4 ใน 6 คนออกจากแอปตอนถูกขอรูปทะเบียนบ้าน เพราะอยู่นอกบ้านและไม่ได้พกติดตัว เมื่อกลับมา แอปให้เริ่มกรอกใหม่หมด อีก 2 คนกังวลระหว่างรอผลเพราะไม่มีใครแจ้งสถานะ คุณจะแก้อย่างไร?", [ScenarioChoice("bigger-button", "ทำปุ่มอัปโหลดเอกสารให้เด่นขึ้นและใส่คำอธิบาย", "end-b-plus"), ScenarioChoice("blueprint", "ไล่ blueprint: บอกรายการเอกสารตั้งแต่หน้าแรก ให้บันทึกแล้วกลับมาทำต่อได้ และส่งสถานะจากคิว KYC ให้ลูกค้า", "end-a")])
+endC = ScenarioNode("end-c", null, null, Outcome("แก้อาการ ไม่ได้แก้สาเหตุ", "การเตือนให้กลับมาไม่ช่วย ถ้าลูกค้ากลับมาแล้วยังไม่มีเอกสารและต้องกรอกใหม่หมด ทางแก้นี้ตั้งจากสมมติฐานของทีม ไม่ได้มาจากทั้งมุมลูกค้าหรือมุมกระบวนการ", "c"))
+endBMinus = ScenarioNode("end-b-minus", null, null, Outcome("เร็วขึ้นในจุดที่ไม่ใช่ปัญหา", "ลด SLA ทำให้ KPI ภายในดีขึ้น แต่ลูกค้าส่วนใหญ่หลุดก่อนจะถึงคิว KYC ด้วยซ้ำ การมองแบบ inside-out ล้วนเห็นแต่ส่วนที่องค์กรวัดอยู่แล้ว", "b-minus"))
+endBPlus = ScenarioNode("end-b-plus", null, null, Outcome("เห็นปัญหาถูกจุด แต่แก้แค่หน้าจอ", "คุณเจอ pain point ด้วย outside-in แล้ว แต่ต้นเหตุไม่ใช่ปุ่ม ลูกค้าไม่มีเอกสารอยู่กับตัว และระบบไม่เก็บสิ่งที่กรอกไว้ ต้องไล่เข้าหลังบ้านจึงจะแก้ได้จริง", "b-plus"))
+endA = ScenarioNode("end-a", null, null, Outcome("ใช้สองมุมให้ถูกจังหวะ", "outside-in บอกว่าลูกค้าติดที่เอกสารและการรอผล service blueprint บอกว่าต้นเหตุอยู่ที่ฟอร์มที่บันทึกไม่ได้และคิว KYC ที่ไม่ส่งสถานะ ทั้งสามงานแก้มีเจ้าของหลังบ้าน และวัดผลด้วยจำนวนลูกค้าที่ได้บัญชีจริง", "a"))
+
+// === sections/onboarding-scenario.narrate.oui ===
+root = Narration([t, st, p1c1, p1n1, p2c1, p2n1, p2c2, p2n2, p3c1, p3n1, p3c2, p3n2, p4c1, p4n1])
+t = NarrationStep("title", "ถึงเวลาลองใช้จริง ลูกค้าหลุดหกสิบเปอร์เซ็นต์ แต่ทุกแผนกบอกว่าตัวเองผ่าน")
+st = NarrationStep("start", "ตัวเลขภายในเขียวทั้งหมด นี่แหละสัญญาณว่าปัญหาอาจอยู่ตรงที่ไม่มีใครวัด", [Highlight("start")])
+p1c1 = NarrationStep("path1.choice1", "ทางแรก เติม progress bar และ notification ดูเร็วและง่าย")
+p1n1 = NarrationStep("path1.choice1.next", "แต่มันแก้อาการ ลูกค้ากลับมาแล้วก็ยังไม่มีเอกสารอยู่ดี", [Highlight("endC")])
+p2c1 = NarrationStep("path2.choice1", "ทางที่สอง ถามทุกแผนกว่าใครช้า")
+p2n1 = NarrationStep("path2.choice1.next", "ทุกแผนกยืนยันว่าผ่านเป้า เพราะเรากำลังถามจากในบ้าน", [Highlight("insideNode")])
+p2c2 = NarrationStep("path2.choice2", "ถ้าเลือกเร่ง SLA ของ KYC ต่อ")
+p2n2 = NarrationStep("path2.choice2.next", "KPI ดีขึ้น แต่ลูกค้าส่วนใหญ่หลุดก่อนถึงคิว KYC ด้วยซ้ำ", [Highlight("endBMinus")])
+p3c1 = NarrationStep("path3.choice1", "ทีนี้ลองไปนั่งดูลูกค้าจริง")
+p3n1 = NarrationStep("path3.choice1.next", "ภาพชัดขึ้นทันที ลูกค้าไม่มีทะเบียนบ้านติดตัว และกลับมาก็ต้องกรอกใหม่หมด", [Highlight("outsideNode")])
+p3c2 = NarrationStep("path3.choice2", "ถ้าแก้แค่ให้ปุ่มอัปโหลดเด่นขึ้น")
+p3n2 = NarrationStep("path3.choice2.next", "เจอจุดถูกแล้ว แต่ต้นเหตุไม่ใช่ปุ่ม", [Highlight("endBPlus")])
+p4c1 = NarrationStep("path4.choice1", "ทางสุดท้าย ไล่ต่อลงไปใน service blueprint")
+p4n1 = NarrationStep("path4.choice1.next", "นี่คือการใช้สองมุมให้ถูกจังหวะ outside-in บอกว่าแก้อะไร blueprint บอกว่าแก้ที่ไหน", [Callout("endA", "วัดผลด้วยจำนวนลูกค้าที่ได้บัญชีจริง ไม่ใช่ SLA")])
+
+// === sections/which-lens.oui ===
+root = DecisionTree("เลือกมุมมองให้เหมาะ", "which-lens", "known", [known, cause, outsideLeaf, complianceLeaf, blueprintLeaf, screenLeaf], "เริ่มจากมุมไหนดี?", "ไม่มีมุมไหนถูกเสมอ ขึ้นกับว่าคุณรู้อะไรแล้วบ้าง", Lead("คู่มือสั้นๆ สำหรับเลือกว่าจะเริ่มจาก inside-out หรือ outside-in", "สองมุมมีที่ใช้ของตัวเอง สิ่งสำคัญคือลำดับ", "ตอบคำถามจากสถานการณ์ของทีมคุณ"))
+known = DecisionNode("known", "ตอนนี้รู้แล้วหรือยังว่าลูกค้าติดตรงไหน?", [DecisionChoice("unknown", "ยังไม่รู้ เห็นแค่ยอดตกหรือเรื่องร้องเรียน", "outside-leaf", "ถ้ายังไม่รู้ว่าลูกค้าติดตรงไหน การดูจากในบ้านจะเห็นแต่สิ่งที่วัดอยู่แล้ว"), DecisionChoice("known-research", "รู้แล้ว จาก research ลูกค้า", "cause", "มี pain point พร้อมหลักฐานแล้ว ขั้นต่อไปคือหาต้นเหตุ", true), DecisionChoice("rule", "ยังไม่รู้ แต่มีกฎหมายหรือข้อบังคับใหม่ที่ต้องทำตาม", "compliance-leaf", "ข้อบังคับเป็นข้อจำกัดภายในที่ต้องทำอยู่แล้ว")])
+cause = DecisionNode("cause", "ต้นเหตุของ pain point อยู่หลังบ้านหรือไม่?", [DecisionChoice("backstage", "ใช่ เกี่ยวกับ process ระบบ หรือหลายแผนก", "blueprint-leaf", "pain point ที่อยู่ตรงรอยต่อต้องไล่ด้วย blueprint จึงจะรู้เจ้าของ", true), DecisionChoice("screen", "ไม่ อยู่ที่หน้าจอหรือข้อความในแอป", "screen-leaf", "ถ้าต้นเหตุอยู่ที่สิ่งที่ลูกค้าเห็น ทีม product แก้ได้เอง")])
+outsideLeaf = DecisionNode("outside-leaf", null, null, DecisionLeaf("เริ่ม outside-in", "สัมภาษณ์และสังเกตลูกค้า วาด journey ในภาษาลูกค้า และหา pain point พร้อมหลักฐานก่อนจะเสนอทางแก้ใดๆ", ["ใช้เวลาหลายสัปดาห์กว่าจะมีข้อสรุป", "ต้องมีคนเข้าถึงลูกค้าจริง"]))
+complianceLeaf = DecisionNode("compliance-leaf", null, null, DecisionLeaf("Inside-out ก่อน แล้วทดสอบกับลูกค้า", "เมื่อข้อบังคับกำหนดว่าต้องเก็บข้อมูลหรือตรวจอะไร ให้เริ่มจากกระบวนการที่ต้องมี แล้วนำ flow ที่ได้ไปทดสอบกับลูกค้า เพื่อหาวิธีทำตามกฎที่ลูกค้าสะดุดน้อยที่สุด", ["ถ้าข้ามการทดสอบกับลูกค้า มักได้ flow ที่ถูกกฎแต่ลูกค้าเลิกกลางทาง"]))
+blueprintLeaf = DecisionNode("blueprint-leaf", null, null, DecisionLeaf("ทำ service blueprint ใต้ journey", "วาง journey แบบ outside-in ไว้แถวบน แล้วใช้มุม inside-out ไล่ว่าแต่ละ pain point เกิดจาก process ระบบ หรือแผนกไหน จากนั้นจัดลำดับงานแก้ตามผลต่อลูกค้าและกำหนดเจ้าของ", ["ต้องได้คนจากหลายแผนกมาร่วมวาด", "อาจเจอต้นเหตุที่แก้ยาก เช่น ระบบ core ที่เปลี่ยนช้า"]))
+screenLeaf = DecisionNode("screen-leaf", null, null, DecisionLeaf("ปรับหน้าจอแล้วทดสอบซ้ำ", "แก้ข้อความ ลำดับ หรือการออกแบบหน้าจอ แล้วทดสอบกับลูกค้าอีกรอบ วัดผลด้วยอัตราที่ลูกค้าผ่านขั้นนั้น", ["ระวังว่าปัญหาที่ดูเหมือนอยู่ที่หน้าจอ อาจมีต้นเหตุหลังบ้านซ่อนอยู่"]))
+
+// === sections/which-lens.narrate.oui ===
+root = Narration([t, d1, d2, d3, d4, d5])
+t = NarrationStep("title", "สุดท้าย เมื่อไรควรเริ่มจากมุมไหน มาไล่ดูหนึ่งเส้นทาง")
+d1 = NarrationStep("start", "คำถามแรกคือ คุณรู้แล้วหรือยังว่าลูกค้าติดตรงไหน", [Highlight("known")])
+d2 = NarrationStep("answer1", "สมมติว่าทีมทำ research มาแล้ว และมี pain point พร้อมหลักฐาน")
+d3 = NarrationStep("q2", "คำถามต่อไปคือ ต้นเหตุอยู่หลังบ้านหรือไม่", [Highlight("cause")])
+d4 = NarrationStep("answer2", "ถ้าเกี่ยวกับหลายแผนกหรือหลายระบบ ก็ต้องไล่เข้าไปหลังบ้าน")
+d5 = NarrationStep("result", "คำตอบคือ service blueprint เอามุมลูกค้าไว้ข้างบน มุมองค์กรไว้ข้างล่าง แล้วแก้ให้มีเจ้าของ", [Highlight("blueprintLeaf")])
