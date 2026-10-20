@@ -39,9 +39,56 @@ export function bulletsBeats(data: BulletsPresentData): Beat[] {
   return (data.items ?? []).map((b, i) => show(`item${i + 1}`, `Bullet ${i + 1}: ${brief(b.text)}`))
 }
 
-/** One beat, `all`: each top-level child fades in (decision 78). */
-export function openuiBeats(): Beat[] {
-  return [show('all', 'The whole section')]
+/** A top-level child of an OpenUI section's root: its statement name when it is a reference, else its component. */
+export interface OpenUIPart {
+  name?: string
+  component?: string
+}
+
+/** Root components whose first argument lists children drawn one after another, in order. */
+const PART_CONTAINERS = new Set(['Card', 'Stack'])
+
+/**
+ * The top-level children of an OpenUI program's root (decision 116): the items of the children list
+ * of a `Card([...])` or `Stack([...])` root, in order. Null for any other root, or when the root's
+ * first argument is not a list.
+ */
+export function openuiParts(source: string): OpenUIPart[] | null {
+  const head = /^[ \t]*root[ \t]*=[ \t]*([A-Z][\w.]*)[ \t]*\(/m.exec(source)
+  if (!head || !PART_CONTAINERS.has(head[1])) return null
+  let i = head.index + head[0].length
+  while (/\s/.test(source[i] ?? '')) i++
+  if (source[i] !== '[') return null
+  const items: string[] = []
+  let depth = 0
+  let from = i + 1
+  for (i = i + 1; i < source.length; i++) {
+    const ch = source[i]
+    if (ch === '"' || ch === "'") {
+      for (i++; i < source.length && source[i] !== ch; i++) if (source[i] === '\\') i++
+      continue
+    }
+    if (ch === '(' || ch === '[' || ch === '{') depth++
+    else if (ch === ')' || ch === '}' || (ch === ']' && depth > 0)) depth--
+    else if (ch === ']' || (ch === ',' && depth === 0)) {
+      items.push(source.slice(from, i).trim())
+      from = i + 1
+      if (ch === ']') break
+    }
+  }
+  return items.filter(Boolean).map((item) =>
+    /^[A-Za-z_$][\w$]*$/.test(item) ? { name: item } : { component: /^([A-Z][\w.]*)\s*\(/.exec(item)?.[1] })
+}
+
+/**
+ * One beat per top-level child of a `Card` or `Stack` root with more than one (`part1`, `part2`, …,
+ * decision 116), so narration can walk through a table, then its takeaway; else one beat, `all`,
+ * each top-level child fading in (decision 78).
+ */
+export function openuiBeats(data: OpenUIPresentData = { source: '' }): Beat[] {
+  const parts = openuiParts(data.source ?? '')
+  if (!parts || parts.length < 2) return [show('all', 'The whole section')]
+  return parts.map((p, i) => show(`part${i + 1}`, `Part ${i + 1}: ${p.name ?? p.component ?? 'element'}`))
 }
 
 /** One beat per layer, settling onto the stack from the bottom; blocks arrive with their layer: `layer1`, … */

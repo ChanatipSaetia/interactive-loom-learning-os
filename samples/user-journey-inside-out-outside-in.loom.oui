@@ -64,9 +64,11 @@ table = Table([Col("ด้าน", ["คำถามตั้งต้น", "จ
 tip = Callout("info", "ไม่ใช่ทางเลือกแบบใดแบบหนึ่ง", "เริ่ม outside-in เพื่อรู้ว่าต้องแก้อะไร แล้วใช้มุม inside-out (ผ่าน service blueprint) เพื่อรู้ว่าต้องแก้ที่ไหนและใครเป็นเจ้าของ")
 
 // === sections/side-by-side.narrate.oui ===
-root = Narration([t, a])
+root = Narration([t, p1, p2, p3])
 t = NarrationStep("title", "มาวางสองมุมไว้ข้างกัน ทีละด้าน")
-a = NarrationStep("all", "สังเกตจุดเริ่มและจุดจบ inside-out เริ่มเมื่อใบสมัครเข้าระบบ แต่ outside-in เริ่มตั้งแต่ลูกค้ารู้ว่าต้องมีบัญชี และจบเมื่อเงินเดือนเข้า", [Highlight("table"), Callout("tip", "outside-in บอกว่าต้องแก้อะไร inside-out บอกว่าต้องแก้ที่ไหน")])
+p1 = NarrationStep("part1", "journey เดียวกัน แต่สองมุมนี้ถามคนละคำถาม", [Highlight("header")])
+p2 = NarrationStep("part2", "สังเกตจุดเริ่มและจุดจบ inside-out เริ่มเมื่อใบสมัครเข้าระบบ แต่ outside-in เริ่มตั้งแต่ลูกค้ารู้ว่าต้องมีบัญชี และจบเมื่อเงินเดือนเข้า", [Highlight("table")])
+p3 = NarrationStep("part3", "สองมุมนี้ไม่ได้แข่งกัน outside-in บอกว่าต้องแก้อะไร inside-out บอกว่าต้องแก้ที่ไหน", [Highlight("tip")])
 
 // === sections/mapping-flow.oui ===
 root = Flowchart("ทำ journey แบบ outside-in", [customer, researcher, productTeam], [researchRepo, journeyMap, blueprintSys, backlog], [shareStory, mapStages, markPain, traceBackstage, prioritize], [fullPass], "จากเรื่องเล่าของลูกค้า ถึง backlog ของทีม", Lead("ห้าขั้นของการทำ journey map แบบ outside-in แล้วโยงกลับเข้าหลังบ้าน", "ถ้าหยุดแค่แผนภาพ journey ก็ไม่มีอะไรเปลี่ยน ต้องโยงไปถึงต้นเหตุและเจ้าของงาน", "ดูมุม swimlanes ว่าใครทำขั้นไหน แล้วลองเปิดมุม data flow ดูว่าข้อมูลเปลี่ยนรูปอย่างไร"), "swimlanes")

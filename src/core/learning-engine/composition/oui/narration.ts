@@ -113,7 +113,7 @@ export const BEAT_IDS: Record<string, string> = {
   flashcards: '`card1`, `card1.back`, `card2`, … per card: its word, then its definition',
   'reflection-sequence': '`c1`, `c1.step1`, `c1.step2`, …, `c1.solved`, `c2`, … per challenge: the prompt, then each item placed in its slot in the right order, one per step, then the order confirmed',
   'reflection-template': '`c1`, `c1.step1`, `c1.step2`, …, `c1.solved`, `c2`, … per challenge: the prompt, then each blank filled with its chip in reading order, one per step, then the sentence confirmed with its explanation',
-  openui: '`all`',
+  openui: '`part1`, `part2`, … one per item of the children list of a `Card([...])` or `Stack([...])` root with more than one, in order (name those items as statements to point at them); any other root plays in one beat, `all`',
 }
 
 /**
