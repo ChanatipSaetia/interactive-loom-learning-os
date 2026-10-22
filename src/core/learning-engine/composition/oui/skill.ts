@@ -18,7 +18,7 @@ description: ${JSON.stringify(LOOM_SKILL_DESCRIPTION)}
 
 # Loom Topic Writer
 
-Interactive Loom turns OpenUI Lang (\`.oui\`) files into interactive lessons. \`${LOOM_SKILL_REFERENCE}\` is the full specification: topic layout, output formats, every component and prop, standard OpenUI sections (tables and charts) and the authoring rules.
+Interactive Loom turns OpenUI Lang (\`.oui\`) files into interactive lessons. \`${LOOM_SKILL_REFERENCE}\` is the full specification: topic layout, output formats, every component and prop, standard OpenUI sections (tables, charts and other layouts) and the authoring rules.
 
 ## Before writing
 
@@ -36,7 +36,7 @@ Always write a **topic folder**, one file per program, using the "Folder of .oui
   sections/
     intro.oui          root = Intro(...)
     <name>.oui         one section per file, no // === marker lines
-    <name>.narrate.oui the narrator's script for that section in Present mode, one step per beat (see "Narration Files" in the reference)
+    <name>.narrate.oui the narrator's script for that section in Present mode, one or more steps per beat (see "Narration Files" in the reference)
 \`\`\`
 
 - **Inside the Interactive Loom repository** (it has \`public/content/\` and \`src/core/learning-engine/\`): create the folder at \`public/content/<topic-id>/\`.
@@ -55,8 +55,8 @@ Always write a **topic folder**, one file per program, using the "Folder of .oui
 - Every flowchart step whose events go to another actor or system sets \`sendsTo\` (the Step / BranchOption argument after \`description\`); the Sequence and System Architecture views draw only declared messages.
 - System \`kind\` says what it is (aggregate, service, database or external); events that move a StateMachine into a new state set \`enters\`; \`data\` names what an event carries when it matters; \`async\` marks fire-and-forget steps.
 - Each quiz question has exactly one correct choice and only tests what an earlier section teaches.
-- Section types are mixed; tables and charts are standard OpenUI sections with literal data.
-- Every section has a narration file \`sections/<name>.narrate.oui\` next to it, not listed in \`topic.oui\`: one \`NarrationStep\` per beat, each naming a beat ID of that section type (the table in "Narration Files"), captions in the topic's language, and every target naming a statement of that section file. Changing a section's items (questions, cards, paragraphs, steps) changes its beats, so update its narration file too. Renaming a section renames its narration file too.
+- Section types are mixed and each section is shaped to its own content, not to the reference's examples; standard OpenUI sections (tables, charts, how-tos, code, cards) use literal data and vary in layout.
+- Every section has a narration file \`sections/<name>.narrate.oui\` next to it, not listed in \`topic.oui\`: at least one \`NarrationStep\` per beat (several on a dense beat, each with its own effect), each naming a beat ID of that section type (the table in "Narration Files"), captions in the topic's language that explain rather than read the screen, and every target naming a statement of that section file (in a standard OpenUI section, one of the root's children). Changing a section's items (questions, cards, paragraphs, steps) changes its beats, so update its narration file too. Renaming a section renames its narration file too.
 
 ## Pointers and comments from Loom Studio and Loom Viewer
 

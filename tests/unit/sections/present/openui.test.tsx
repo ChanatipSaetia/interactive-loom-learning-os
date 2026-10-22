@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import { openuiBeats } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
+import { FACTS_EXAMPLE, HOWTO_EXAMPLE } from '../../../../src/core/learning-engine/composition/oui/authoring-prompt'
+import { openUIProgramOf } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/openui-standard'
 import PresentOpenUI from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui/PresentOpenUI'
 
 window.scrollTo = vi.fn() as unknown as typeof window.scrollTo
@@ -23,4 +25,13 @@ describe('openui renderer (decision 116)', () => {
     expect(parts(container).map((el) => el.hasAttribute('data-shown'))).toEqual([true, true, false])
     expect(container.querySelector('[data-oui-anchor="table"]')?.textContent).toContain('Sencha')
   })
+
+  it.each([['how-to', HOWTO_EXAMPLE, ['header', 'steps', 'recipe', 'warning']], ['facts', FACTS_EXAMPLE, ['header', 'teas', 'faq']]])(
+    'lines up the parts of the authoring prompt\'s %s example with its rendered children',
+    (_, example, names) => {
+      const program = { source: openUIProgramOf(example) }
+      const { container } = render(<PresentOpenUI data={program} beats={openuiBeats(program)} beat={0} sectionIndex={0} active />)
+      expect(parts(container).map((el) => el.dataset.ouiAnchor)).toEqual(names)
+    },
+  )
 })

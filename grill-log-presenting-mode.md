@@ -427,7 +427,11 @@ pure and tested directly.
   sets `data-beat`, `data-motion` and `data-shown` on each rendered child (past single wrappers, as the
   `children` motion steps in) and `data-oui-anchor` for reference children. When the rendered children
   do not line up with the source's, the body plays whole on the first beat.
-- Tests: `progressive-content.test.ts` (parts and beats), `openui.test.tsx` (the marks per beat).
+- Only those children carry Pick anchors in Present, so `validateOUINarration` warns about a target in a
+  standard OpenUI section that is not one of them by name (a statement nested in Tabs, a prop path),
+  and the authoring prompt tells writers to make a narrated section a Card or Stack of named parts.
+- Tests: `progressive-content.test.ts` (parts and beats), `openui.test.tsx` (the marks per beat),
+  `narration-file.test.ts` (targets inside the layout).
 
 ## Open Questions
 

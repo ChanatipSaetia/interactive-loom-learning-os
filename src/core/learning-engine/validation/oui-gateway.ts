@@ -15,6 +15,8 @@ import { compileOUINarration, compileOUISection, indexStatementLines, type OUIIs
 import { getLoomOUIComponent } from '../composition/oui/library'
 import { targetProp, targetStatement, type NarrationData } from '../composition/oui/narration'
 import { bundleToSections } from '../composition/okf/sections'
+import { isOpenUISource, openUIProgramOf } from '../sub-contexts/progressive-content/openui-standard'
+import { openuiParts } from '../sub-contexts/progressive-content/present'
 import { coreBeatsOf } from '../registry/register-core-presenters'
 import type { Beat } from '../sub-contexts/present-kernel'
 import { contextToDiagnostic } from './types'
@@ -110,10 +112,22 @@ export function sectionBeatsOf(sectionSource: string): Beat[] | null {
 }
 
 /**
+ * What narration can point at in a standard OpenUI section: the named children of a `Card` or
+ * `Stack` root with several (the only elements Present mode anchors, decision 116), by name alone.
+ * Null for a Loom section.
+ */
+function openuiPointable(sectionSource: string): string[] | null {
+  if (!isOpenUISource(sectionSource)) return null
+  const parts = openuiParts(openUIProgramOf(sectionSource)) ?? []
+  return parts.length > 1 ? parts.flatMap((p) => (p.name ? [p.name] : [])) : []
+}
+
+/**
  * Validate a narration file `sections/<name>.narrate.oui` (decisions 91–95 and 108 in
  * grill-log-presenting-mode.md) against its section's source. Tier 1–2 come from the compiler;
  * tier 3 checks that every step names a beat of the section and every target names a statement of
- * the section (and a prop of its component).
+ * the section (and a prop of its component); in a standard OpenUI section, a target must name one
+ * of the root's children.
  *
  * @param sectionSource - The section's `.oui` source, or undefined when the topic has no such section
  */
@@ -139,6 +153,7 @@ export function validateOUINarration(
     const statements = statementComponents(sectionSource)
     const names = [...statements.keys()]
     const beats = sectionBeatsOf(sectionSource)?.map((b) => b.id)
+    const pointable = openuiPointable(sectionSource)
     for (const step of narration.steps ?? []) {
       if (beats && !beats.includes(step.beat)) {
         diagnostics.push({
@@ -161,6 +176,19 @@ export function validateOUINarration(
               field: target,
               message: `"${target}" does not name a statement of ${section}.`,
               fixHint: `Point at one of its statements: ${names.slice(0, 12).join(', ')}${names.length > 12 ? ', …' : ''}.`,
+              ...contextToDiagnostic(context),
+            })
+            continue
+          }
+          if (pointable && !pointable.includes(target)) {
+            diagnostics.push({
+              tier: 3,
+              line,
+              field: target,
+              message: `"${target}" is inside the layout of a standard OpenUI section, so Present mode cannot point at it.`,
+              fixHint: pointable.length
+                ? `Point at one of the root's children by name: ${pointable.join(', ')}.`
+                : 'Make the root a Card([...]) or Stack([...]) of several named statements, then point at those.',
               ...contextToDiagnostic(context),
             })
             continue

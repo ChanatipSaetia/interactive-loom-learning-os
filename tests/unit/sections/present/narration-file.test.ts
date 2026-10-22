@@ -44,6 +44,27 @@ b = NarrationStep("card1", null, [Highlight("noCache.description"), Highlight("r
     expect(result.diagnostics).toEqual([])
   })
 
+  it('warns about targets inside a standard OpenUI section that Present mode cannot point at', () => {
+    const openui = `// @openui "Guide"
+root = Stack([intro, tabs])
+intro = TextContent("Pick your platform.")
+tabs = Tabs([TabItem("mac", "macOS", [mac])])
+mac = TextContent("Use Homebrew.")
+`
+    const result = validateOUINarration(`root = Narration([a])
+a = NarrationStep("part2", "Here.", [Highlight("intro"), Highlight("mac"), Highlight("tabs.items")])
+`, openui, { sectionName: 'guide' })
+    expect(result.diagnostics.map((d) => d.message)).toEqual([
+      '"mac" is inside the layout of a standard OpenUI section, so Present mode cannot point at it.',
+      '"tabs.items" is inside the layout of a standard OpenUI section, so Present mode cannot point at it.',
+    ])
+    expect(result.diagnostics[0].fixHint).toBe("Point at one of the root's children by name: intro, tabs.")
+    const single = validateOUINarration(`root = Narration([a])
+a = NarrationStep("all", "Here.", [Highlight("mac")])
+`, `// @openui "Guide"\nroot = Tabs([TabItem("mac", "macOS", [mac])])\nmac = TextContent("Use Homebrew.")\n`, { sectionName: 'guide' })
+    expect(single.diagnostics[0].fixHint).toContain('Card([...]) or Stack([...])')
+  })
+
   it('warns about steps that name no beat of the section (decision 108)', () => {
     const result = validateOUINarration(`root = Narration([a])
 a = NarrationStep("q1", "No quiz here.")
