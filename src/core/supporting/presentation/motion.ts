@@ -14,7 +14,7 @@ const IN = curve(P.ease.in)
 const IN_OUT = curve(P.ease.inOut)
 
 /** Inline styles a beat may leave behind; cleared when it ends. */
-const TOUCHED = ['opacity', 'transform', 'clip-path', 'background-size', 'stroke-dasharray', 'stroke-dashoffset']
+const TOUCHED = ['opacity', 'transform', 'filter', 'clip-path', 'background-size', 'stroke-dasharray', 'stroke-dashoffset']
 
 export interface BeatEntrance {
   timeline: Timeline
@@ -47,6 +47,10 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
   const { reduced, onSound } = options
   const start = options.delay ?? 0
   const tl = createTimeline({ autoplay: false })
+  // A theme may let content materialize out of a blur (`--present-enter-blur`, e.g. Liquid Glass)
+  const blur = reduced ? 0 : parseFloat(getComputedStyle(root).getPropertyValue('--present-enter-blur')) || 0
+  const soften = <T extends object>(props: T, from = blur, to = 0) =>
+    blur ? { ...props, filter: [`blur(${from}px)`, `blur(${to}px)`] } : props
   const targets = new Set<HTMLElement>()
   const hide = (el: HTMLElement) => {
     targets.add(el)
@@ -60,7 +64,7 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
     targets.add(el)
     tl.add(el, reduced
       ? { opacity: [1, 0], duration: P.reduced / 2 }
-      : { opacity: [1, 0], translateY: [0, -8], duration: P.exit, ease: IN }, start)
+      : soften({ opacity: [1, 0], translateY: [0, -8], duration: P.exit, ease: IN }, 0, blur / 2), start)
   })
   const at0 = start + (leaving.length && !reduced ? Math.round(P.exit * 0.64) : 0)
 
@@ -79,19 +83,19 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
     switch (motion) {
       case 'fade':
         hide(el)
-        tl.add(el, { opacity: [0, 1], duration: P.element, ease: OUT }, t)
+        tl.add(el, soften({ opacity: [0, 1], duration: P.element, ease: OUT }), t)
         break
       case 'rise':
         hide(el)
-        tl.add(el, { opacity: [0, 1], translateY: [P.rise, 0], duration: P.element, ease: OUT }, t)
+        tl.add(el, soften({ opacity: [0, 1], translateY: [P.rise, 0], duration: P.element, ease: OUT }), t)
         break
       case 'unfold':
         hide(el)
-        tl.add(el, { opacity: [0, 1], translateX: [-P.rise, 0], translateY: [-10, 0], duration: P.element, ease: OUT }, t)
+        tl.add(el, soften({ opacity: [0, 1], translateX: [-P.rise, 0], translateY: [-10, 0], duration: P.element, ease: OUT }), t)
         break
       case 'stack':
         hide(el)
-        tl.add(el, { opacity: [0, 1], translateY: [-28, 0], duration: P.element + 100, ease: OUT }, t)
+        tl.add(el, soften({ opacity: [0, 1], translateY: [-28, 0], duration: P.element + 100, ease: OUT }), t)
         break
       case 'pop':
         hide(el)
@@ -100,7 +104,7 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
         break
       case 'zoom':
         hide(el)
-        tl.add(el, { opacity: [0, 1], scale: [1.12, 1], duration: P.element + 160, ease: OUT }, t)
+        tl.add(el, soften({ opacity: [0, 1], scale: [1.12, 1], duration: P.element + 160, ease: OUT }), t)
         break
       case 'draw': {
         targets.add(el)
@@ -125,7 +129,7 @@ export function enterBeat(root: HTMLElement, beat: number, options: EnterOptions
         Array.from(parent.children).forEach((child, i) => {
           if (!(child instanceof HTMLElement)) return
           hide(child)
-          tl.add(child, { opacity: [0, 1], translateY: [P.rise / 2, 0], duration: P.element, ease: OUT }, t + i * P.stagger * 2)
+          tl.add(child, soften({ opacity: [0, 1], translateY: [P.rise / 2, 0], duration: P.element, ease: OUT }), t + i * P.stagger * 2)
         })
         break
       }

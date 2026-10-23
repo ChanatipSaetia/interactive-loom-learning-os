@@ -492,3 +492,75 @@
   --pale-blue:     rgba(209, 160, 106, 0.14);
   --pale-pink:     rgba(196, 147, 154, 0.12);
 }
+
+/* ============================================================
+   Theme: Liquid Glass (dark, translucent)
+
+   Catppuccin Frappé accents on a deeper navy, with translucent
+   surfaces over a colour-blob backdrop. The raw --ctp-* surfaces
+   stay opaque (SVG node fills and inline styles rely on them);
+   only the semantic card / border tokens turn translucent, and
+   src/styles/liquid-glass.css restyles the main containers.
+============================================================ */
+[data-theme='liquid-glass'] {
+  /* shadcn semantic tokens — translucent surfaces */
+  --background:             #1a1d2e;
+  --foreground:             #e2e8ff;
+  --card:                   rgba(255, 255, 255, 0.07);
+  --card-foreground:        #e2e8ff;
+  --primary-foreground:     #141625;
+  --secondary-foreground:   #141625;
+  --accent:                 rgba(255, 255, 255, 0.12);
+  --accent-foreground:      #e2e8ff;
+  --border:                 rgba(255, 255, 255, 0.14);
+  --input:                  rgba(255, 255, 255, 0.10);
+  --destructive-foreground: #141625;
+
+  /* Surfaces — deep navy so glass reads against the backdrop */
+  --ctp-crust:     #141625;
+  --ctp-mantle:    #191b2c;
+  --ctp-base:      #1e2133;
+  --ctp-surface0:  #2a2e45;
+  --ctp-surface1:  #3a3f5a;
+  --ctp-surface2:  #4d5372;
+
+  /* Text — a touch brighter for contrast on translucent panels */
+  --ctp-text:      #e2e8ff;
+  --ctp-subtext1:  #c9d1f0;
+  --ctp-subtext0:  #b3bce0;
+  --ctp-overlay2:  #a2abcf;
+
+  /* Type — a clean system sans (SF Pro on Apple, Inter elsewhere) */
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-ui:      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-mono:    'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Softer, rounder corners */
+  --radius:      0.75rem;
+  --radius-sm:   10px;
+  --radius-md:   20px;
+  --radius-lg:   28px;
+  --radius-xl:   34px;
+
+  /* Present: content materializes out of a blur (presentation/motion.ts) */
+  --present-enter-blur: 10px;
+
+  /* Glass material */
+  --glass-tint:        rgba(255, 255, 255, 0.07);
+  --glass-tint-strong: rgba(255, 255, 255, 0.11);
+  --glass-tint-inset:  rgba(255, 255, 255, 0.045);
+  --glass-tint-dark:   rgba(20, 22, 37, 0.55);
+  --glass-edge:        rgba(255, 255, 255, 0.16);
+  --glass-edge-strong: rgba(255, 255, 255, 0.26);
+  --glass-sheen:       linear-gradient(160deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 35%, rgba(255, 255, 255, 0) 60%);
+  --glass-highlight:   inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --glass-shadow:      0 12px 40px -14px rgba(4, 6, 20, 0.6);
+  --glass-filter:      blur(24px) saturate(170%);
+  --glass-backdrop:
+    radial-gradient(42% 38% at 12% 8%, rgba(140, 170, 238, 0.55), transparent 70%),
+    radial-gradient(36% 34% at 88% 18%, rgba(202, 158, 230, 0.45), transparent 70%),
+    radial-gradient(40% 40% at 78% 88%, rgba(129, 200, 190, 0.40), transparent 70%),
+    radial-gradient(34% 30% at 18% 82%, rgba(239, 159, 118, 0.30), transparent 70%),
+    linear-gradient(180deg, #161829 0%, #11131f 100%);
+}

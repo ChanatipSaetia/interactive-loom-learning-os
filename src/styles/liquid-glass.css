@@ -1,0 +1,384 @@
+/* ============================================================
+   Liquid Glass theme — container styles
+
+   Tokens live in variables.css under [data-theme='liquid-glass'].
+   Only floating layers (header, message bar, sticky titles, modals,
+   Present caption and controls) blur what is behind them; in-flow
+   cards and Present regions get tint, sheen and an edge highlight
+   without backdrop-filter, so scrolling and the Present camera stay
+   smooth.
+============================================================ */
+
+/* ---- backdrop ---- */
+
+:root[data-theme='liquid-glass'] body {
+  background: #11131f;
+}
+
+:root[data-theme='liquid-glass'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--glass-backdrop);
+  pointer-events: none;
+}
+
+:root[data-theme='liquid-glass'] .main-content {
+  background: transparent;
+}
+
+:root[data-theme='liquid-glass'] ::selection {
+  background: rgba(140, 170, 238, 0.35);
+}
+
+/* ---- floating glass: blurs what is behind it ---- */
+
+:root[data-theme='liquid-glass'] .topnav {
+  background: var(--glass-tint-dark);
+  border-bottom-color: var(--glass-edge);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 8px 30px -18px rgba(4, 6, 20, 0.7);
+}
+
+:root[data-theme='liquid-glass'] .section-wrapper {
+  --loom-section-bg: rgba(22, 24, 41, 0.5);
+}
+
+:root[data-theme='liquid-glass'] .flowchart-header-container {
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+}
+
+:root[data-theme='liquid-glass'] .pick-bar,
+:root[data-theme='liquid-glass'] .pick-menu,
+:root[data-theme='liquid-glass'] .ai-panel,
+:root[data-theme='liquid-glass'] .viewer-drop,
+:root[data-theme='liquid-glass'] .section-intro-container,
+:root[data-theme='liquid-glass'] .flowchart-controls-dock,
+:root[data-theme='liquid-glass'] .flowchart-zoom-toolbar,
+:root[data-theme='liquid-glass'] .flowchart-canvas-tool-group,
+:root[data-theme='liquid-glass'] .hud-drawer {
+  background: var(--glass-sheen), var(--glass-tint-dark);
+  border-color: var(--glass-edge);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+}
+
+:root[data-theme='liquid-glass'] .viewer-drop {
+  border: 1px solid var(--glass-edge-strong);
+}
+:root[data-theme='liquid-glass'] .viewer-drop.is-dragging {
+  border-color: var(--primary);
+  background: var(--glass-sheen), color-mix(in srgb, var(--primary) 18%, var(--glass-tint-dark));
+}
+
+/* Help modals and dialogs float over the page */
+:root[data-theme='liquid-glass'] .section-help-modal,
+:root[data-theme='liquid-glass'] .intro-help-modal,
+:root[data-theme='liquid-glass'] .flowchart-help-modal,
+:root[data-theme='liquid-glass'] .qz-help-modal,
+:root[data-theme='liquid-glass'] .fc-help-modal,
+:root[data-theme='liquid-glass'] .fm-help-modal,
+:root[data-theme='liquid-glass'] .cm-help-modal,
+:root[data-theme='liquid-glass'] .taxonomy-dialog,
+:root[data-theme='liquid-glass'] .flowchart-grid-modal-content {
+  background: var(--glass-sheen), rgba(26, 29, 46, 0.78);
+  border-color: var(--glass-edge);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-highlight), 0 30px 80px -20px rgba(4, 6, 20, 0.75);
+}
+
+:root[data-theme='liquid-glass'] .qz-help-header,
+:root[data-theme='liquid-glass'] .fc-help-header,
+:root[data-theme='liquid-glass'] .fm-help-header,
+:root[data-theme='liquid-glass'] .cm-help-header,
+:root[data-theme='liquid-glass'] .flowchart-help-header {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ---- in-flow glass cards: tint, sheen, edge (no blur) ---- */
+
+:root[data-theme='liquid-glass'] .topic-intro-block,
+:root[data-theme='liquid-glass'] .topic-intro-roadmap,
+:root[data-theme='liquid-glass'] .quiz-question-card,
+:root[data-theme='liquid-glass'] .quiz-score-bar,
+:root[data-theme='liquid-glass'] .compare-card,
+:root[data-theme='liquid-glass'] .pillar-layer-header,
+:root[data-theme='liquid-glass'] .bullets-card,
+:root[data-theme='liquid-glass'] .taxonomy-browser-card,
+:root[data-theme='liquid-glass'] .dt-intro-card,
+:root[data-theme='liquid-glass'] .dt-decision,
+:root[data-theme='liquid-glass'] .dt-leaf-card,
+:root[data-theme='liquid-glass'] .scenario-intro-card,
+:root[data-theme='liquid-glass'] .scenario-decision,
+:root[data-theme='liquid-glass'] .concept-map-canvas-wrapper,
+:root[data-theme='liquid-glass'] .flowchart-canvas-wrapper,
+:root[data-theme='liquid-glass'] .controls-panel,
+:root[data-theme='liquid-glass'] .sandbox-metrics,
+:root[data-theme='liquid-glass'] .template-sentence-container,
+:root[data-theme='liquid-glass'] .sequence-pool,
+:root[data-theme='liquid-glass'] .loom-openui-scope .openui-card-card {
+  background: var(--glass-sheen), var(--glass-tint);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+}
+
+/* Flashcard faces (Tailwind bg-card) */
+:root[data-theme='liquid-glass'] .backface-hidden.bg-card {
+  background: var(--glass-sheen), rgba(36, 40, 62, 0.72);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+}
+
+/* Canvases behind diagrams let the backdrop through; nodes keep their own fills */
+:root[data-theme='liquid-glass'] .flowchart-svg,
+:root[data-theme='liquid-glass'] .flowchart-grid-container {
+  background-color: transparent;
+}
+
+/* ---- inset glass: elements inside a glass card ---- */
+
+:root[data-theme='liquid-glass'] .quiz-choice,
+:root[data-theme='liquid-glass'] .quiz-choice-label,
+:root[data-theme='liquid-glass'] .roadmap-step-card,
+:root[data-theme='liquid-glass'] .pillar-block,
+:root[data-theme='liquid-glass'] .dt-choice,
+:root[data-theme='liquid-glass'] .dt-leaf-tradeoffs,
+:root[data-theme='liquid-glass'] .dt-breadcrumb,
+:root[data-theme='liquid-glass'] .scenario-choice,
+:root[data-theme='liquid-glass'] .scenario-outcome-block,
+:root[data-theme='liquid-glass'] .quiz-hint-text {
+  background-color: var(--glass-tint-inset);
+  border-color: var(--glass-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme='liquid-glass'] .dt-choice-recommended {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--secondary) 16%, transparent), var(--glass-tint-inset));
+}
+
+:root[data-theme='liquid-glass'] .quiz-choice:hover:not(:disabled),
+:root[data-theme='liquid-glass'] .dt-choice:hover,
+:root[data-theme='liquid-glass'] .scenario-choice:hover {
+  background-color: var(--glass-tint-strong);
+}
+
+/* ---- controls ---- */
+
+:root[data-theme='liquid-glass'] .viewer-pill,
+:root[data-theme='liquid-glass'] .viewer-button:not(.viewer-button--primary),
+:root[data-theme='liquid-glass'] .viewer-mode,
+:root[data-theme='liquid-glass'] .viewer-topic-picker select,
+:root[data-theme='liquid-glass'] .theme-toggle,
+:root[data-theme='liquid-glass'] .present-ctl:not(.present-ctl--main),
+:root[data-theme='liquid-glass'] .present-button:not(.present-button--primary) {
+  background: var(--glass-sheen), var(--glass-tint);
+  border-color: var(--glass-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+:root[data-theme='liquid-glass'] .viewer-pill:hover,
+:root[data-theme='liquid-glass'] .viewer-button:not(.viewer-button--primary):hover,
+:root[data-theme='liquid-glass'] .present-ctl:not(.present-ctl--main):not(:disabled):hover,
+:root[data-theme='liquid-glass'] .present-button:not(.present-button--primary):hover {
+  background: var(--glass-sheen), var(--glass-tint-strong);
+  border-color: var(--glass-edge-strong);
+}
+
+/* Primary actions: a bright, lit pill */
+:root[data-theme='liquid-glass'] .viewer-button--primary,
+:root[data-theme='liquid-glass'] .viewer-mode button[aria-pressed='true'],
+:root[data-theme='liquid-glass'] .present-button--primary {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 55%), var(--primary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 18px -6px color-mix(in srgb, var(--primary) 70%, transparent);
+}
+
+:root[data-theme='liquid-glass'] .present-ctl--main {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(180deg, #fff, rgba(255, 255, 255, 0.82));
+  color: #141625;
+  box-shadow: inset 0 1px 0 #fff, 0 6px 20px -6px rgba(255, 255, 255, 0.35);
+}
+
+:root[data-theme='liquid-glass'] .viewer-paste textarea {
+  background: rgba(10, 12, 22, 0.45);
+  border-color: var(--glass-edge);
+}
+
+/* ---- Present mode ---- */
+
+:root[data-theme='liquid-glass'] .present-stage {
+  background-color: rgba(10, 12, 22, 0.28);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.3px);
+  box-shadow: inset 0 0 0 1px var(--glass-edge), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+:root[data-theme='liquid-glass'] .present-region {
+  background: var(--glass-sheen), rgba(30, 33, 52, 0.55);
+  box-shadow: var(--glass-highlight), 0 0 0 1px var(--glass-edge), 0 40px 80px -40px rgba(4, 6, 20, 0.8);
+}
+
+/* The title card covers the region's content until the section starts */
+:root[data-theme='liquid-glass'] .present-title-card {
+  background: var(--glass-sheen), rgba(26, 29, 46, 0.86);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+:root[data-theme='liquid-glass'] .present-choice {
+  background: var(--glass-tint-inset);
+  border-color: var(--glass-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme='liquid-glass'] .present-choice-letter {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme='liquid-glass'] .present-callout {
+  background: var(--glass-sheen), rgba(26, 29, 46, 0.88);
+  box-shadow: var(--glass-highlight), 0 18px 40px -16px rgba(4, 6, 20, 0.7);
+}
+
+:root[data-theme='liquid-glass'] .present-caption {
+  background: var(--glass-sheen), var(--glass-tint-dark);
+  color: var(--foreground);
+  border: 1px solid var(--glass-edge);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+}
+
+:root[data-theme='liquid-glass'] .present-caption .present-spoken {
+  color: var(--present-accent, var(--primary));
+  text-decoration: none;
+}
+
+:root[data-theme='liquid-glass'] .present-complete-card {
+  background: var(--glass-sheen), rgba(26, 29, 46, 0.72);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-highlight), 0 0 0 1px var(--glass-edge), 0 30px 60px -20px rgba(4, 6, 20, 0.7);
+}
+
+/* ---- type: tight display headings, neutral body ---- */
+
+:root[data-theme='liquid-glass'] body {
+  letter-spacing: 0;
+}
+
+:root[data-theme='liquid-glass'] :is(h1, h2, h3, .topic-page-title, .section-title-bar-title, .flowchart-title, .present-title-name, .present-headline) {
+  letter-spacing: -0.022em;
+}
+
+:root[data-theme='liquid-glass'] .topic-page-title,
+:root[data-theme='liquid-glass'] .present-title-name {
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 2px 28px rgba(140, 170, 238, 0.28);
+}
+
+:root[data-theme='liquid-glass'] .present-region-head h2 {
+  font-weight: 650;
+}
+
+:root[data-theme='liquid-glass'] .present-headline {
+  font-weight: 650;
+}
+
+/* Section kind chips: frosted pills instead of outlined mono tags */
+:root[data-theme='liquid-glass'] .present-kind,
+:root[data-theme='liquid-glass'] .present-title-kind {
+  border: 1px solid var(--glass-edge-strong);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  font-family: var(--font-ui);
+  letter-spacing: 0.06em;
+}
+
+:root[data-theme='liquid-glass'] .present-caption {
+  border-radius: var(--radius-full);
+  padding: 10px 22px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+}
+
+/* ---- layout: floating header, Present control dock ---- */
+
+:root[data-theme='liquid-glass'] .topnav {
+  top: 10px;
+  margin: 10px 12px 0;
+  border: 1px solid var(--glass-edge);
+  border-radius: 18px;
+}
+
+:root[data-theme='liquid-glass'] .section-wrapper,
+:root[data-theme='liquid-glass'] .viewer {
+  --loom-title-sticky-top: 72px;
+}
+
+:root[data-theme='liquid-glass'] .viewer-landing {
+  min-height: calc(100vh - 72px);
+}
+
+:root[data-theme='liquid-glass'] .present-mode {
+  gap: 14px;
+}
+
+:root[data-theme='liquid-glass'] .present-controls {
+  align-self: center;
+  width: min(100%, 1040px);
+  box-sizing: border-box;
+  padding: 8px 14px 4px;
+  border: 1px solid var(--glass-edge);
+  border-radius: 24px;
+  background: var(--glass-sheen), var(--glass-tint-dark);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+}
+
+:root[data-theme='liquid-glass'] .present-ctl {
+  border-radius: var(--radius-full);
+}
+
+:root[data-theme='liquid-glass'] .present-region {
+  padding: 44px 56px;
+}
+
+:root[data-theme='liquid-glass'] .present-stage.is-portrait .present-region {
+  padding: 20px 18px;
+}
+
+@media (max-width: 640px) {
+  :root[data-theme='liquid-glass'] .topnav {
+    margin: 8px 8px 0;
+    top: 8px;
+  }
+  :root[data-theme='liquid-glass'] .present-controls {
+    padding: 6px 10px 2px;
+    border-radius: 20px;
+  }
+}
+
+/* ---- accessibility: solid surfaces when transparency is reduced ---- */
+
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-theme='liquid-glass'] {
+    --card: #262a40;
+    --border: #3a3f5a;
+    --glass-tint: #262a40;
+    --glass-tint-strong: #2e3350;
+    --glass-tint-inset: #22263a;
+    --glass-tint-dark: #1c1f31;
+    --glass-sheen: linear-gradient(transparent, transparent);
+    --glass-filter: none;
+  }
+  :root[data-theme='liquid-glass'] body::before {
+    display: none;
+  }
+}

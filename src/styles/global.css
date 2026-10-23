@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@100..900&family=Noto+Sans+Thai:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@100..900&family=Noto+Sans+Thai:wght@100..900&family=Inter:wght@400..700&display=swap');
 @import './variables.css';
+@import './liquid-glass.css';
 
 html {
   font-size: 16px;
