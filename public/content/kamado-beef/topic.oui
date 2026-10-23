@@ -5,6 +5,7 @@ root = Topic(
   [
     SectionRef("intro"),
     SectionRef("anatomy"),
+    SectionRef("airflow"),
     SectionRef("quiz-airflow"),
     SectionRef("taxonomy"),
     SectionRef("reflection-reverse-sear"),

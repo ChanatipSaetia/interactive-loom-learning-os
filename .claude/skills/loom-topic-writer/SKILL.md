@@ -1,11 +1,11 @@
 ---
 name: loom-topic-writer
-description: "Write, extend or fix Interactive Loom learning topics: OpenUI Lang topic folders (topic.oui plus sections/<name>.oui) with interactive sections such as flowcharts, quizzes, flashcards, trade-off sandboxes, tables and charts. Use when asked to create a Loom topic or lesson, turn notes or docs into a Loom topic, add or change a Loom section, fix errors reported by Loom Viewer or Loom Studio, or act on places and comments copied from their Pick mode."
+description: "Write, extend or fix Interactive Loom learning topics: OpenUI Lang topic folders (topic.oui plus sections/<name>.oui) with interactive sections such as flowcharts, quizzes, flashcards, trade-off sandboxes, tables, charts and SVG drawings. Use when asked to create a Loom topic or lesson, turn notes or docs into a Loom topic, add or change a Loom section, fix errors reported by Loom Viewer or Loom Studio, or act on places and comments copied from their Pick mode."
 ---
 
 # Loom Topic Writer
 
-Interactive Loom turns OpenUI Lang (`.oui`) files into interactive lessons. `references/loom-authoring-prompt.md` is the full specification: topic layout, output formats, every component and prop, standard OpenUI sections (tables, charts and other layouts) and the authoring rules.
+Interactive Loom turns OpenUI Lang (`.oui`) files into interactive lessons. `references/loom-authoring-prompt.md` is the full specification: topic layout, output formats, every component and prop, standard OpenUI sections (tables, charts, SVG drawings and other layouts) and the authoring rules.
 
 ## Before writing
 
@@ -43,7 +43,8 @@ Always write a **topic folder**, one file per program, using the "Folder of .oui
 - System `kind` says what it is (aggregate, service, database or external); events that move a StateMachine into a new state set `enters`; `data` names what an event carries when it matters; `async` marks fire-and-forget steps.
 - Each quiz question has exactly one correct choice and only tests what an earlier section teaches.
 - Section types are mixed and each section is shaped to its own content, not to the reference's examples; standard OpenUI sections (tables, charts, how-tos, code, cards) use literal data and vary in layout.
-- Every section has a narration file `sections/<name>.narrate.oui` next to it, not listed in `topic.oui`: at least one `NarrationStep` per beat (several on a dense beat, each with its own effect), each naming a beat ID of that section type (the table in "Narration Files"), captions in the topic's language that explain rather than read the screen, and every target naming a statement of that section file (in a standard OpenUI section, one of the root's children, or one bar, point, slice or cell of a chart or table among them). Changing a section's items (questions, cards, paragraphs, steps) changes its beats, so update its narration file too. Renaming a section renames its narration file too.
+- Where a picture teaches better than words or a flowchart (the parts of an object, a layout, a shape, a mechanism), the section draws it with `Svg` (see "Drawings" in the reference): single-quoted markup, one `<svg>` with a viewBox, Loom palette color names, labelled parts, and an `id` on every shape the narration points at.
+- Every section has a narration file `sections/<name>.narrate.oui` next to it, not listed in `topic.oui`: at least one `NarrationStep` per beat (several on a dense beat, each with its own effect), each naming a beat ID of that section type (the table in "Narration Files"), captions in the topic's language that explain rather than read the screen, and every target naming a statement of that section file (in a standard OpenUI section, one of the root's children, or one bar, point, slice or cell of a chart or table, or one shape of a drawing by its id, among them). Changing a section's items (questions, cards, paragraphs, steps) changes its beats, so update its narration file too. Renaming a section renames its narration file too.
 
 ## Pointers and comments from Loom Studio and Loom Viewer
 

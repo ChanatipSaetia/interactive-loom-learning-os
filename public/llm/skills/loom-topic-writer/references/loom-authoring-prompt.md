@@ -491,14 +491,14 @@ Before finishing, walk your output and verify:
 When no Loom section fits, a section file can instead be a standard OpenUI program:
 
 - Its first line is `// @openui "<Section title>" "<optional heading>"`.
-- The rest is openui-lang written with the standard OpenUI component library (`@openuidev/react-ui`), not the Loom components above. The components to use are listed with their signatures under Tables and Charts and Layouts for Other Content below.
+- The rest is openui-lang written with the standard OpenUI component library (`@openuidev/react-ui`), not the Loom components above. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: https://openui.com/docs/api-reference/react-ui. Language specification: https://openui.com/docs/openui-lang.
 - Content is static: no Query(), Mutation(), tools, actions, forms or buttons (there is no backend).
-- List it in topic.oui with `SectionRef` like any other section. Prefer a Loom section when one teaches the content (a process, a quiz, a trade-off); use standard OpenUI for content whose natural form is a layout: figures, a how-to, code, reference facts, a set of options side by side.
+- List it in topic.oui with `SectionRef` like any other section. Prefer a Loom section when one teaches the content (a process, a quiz, a trade-off); use standard OpenUI for content whose natural form is a layout: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
 
 Shape each section to its content. Do not reuse one skeleton (a header, Tabs with a chart and a table, a Callout) for every section: pick the root and the components from what this content is (see the list under Layouts for Other Content), and two standard OpenUI sections in one topic should rarely look alike.
 
-How the root shapes Present mode (see Narration Files): a `Card([...])` or `Stack([...])` root with several children plays one child per beat (`part1`, `part2`, …), and its children written as named statements are what narration can point at, down to one bar, point, slice or cell of a chart or table among them. Any other root (Tabs, Accordion, Carousel, a single child) plays as one beat with nothing to point at, and only its first tab or slide shows. So for a section the narrator should walk through, make the root a Card or Stack of named statements, one idea each, and keep what must be presented out of Tabs, Accordion and Carousel (they suit extra detail the reader opens in Read mode).
+How the root shapes Present mode (see Narration Files): a `Card([...])` or `Stack([...])` root with several children plays one child per beat (`part1`, `part2`, …), and its children written as named statements are what narration can point at, down to one bar, point, slice or cell of a chart or table, or one shape of a drawing, among them. Any other root (Tabs, Accordion, Carousel, a single child) plays as one beat with nothing to point at, and only its first tab or slide shows. So for a section the narrator should walk through, make the root a Card or Stack of named statements, one idea each, and keep what must be presented out of Tabs, Accordion and Carousel (they suit extra detail the reader opens in Read mode).
 
 The `sections/steep-guide.oui` file in the example above is a standard OpenUI section.
 
@@ -565,11 +565,12 @@ Pick the components from what the content is:
 - **Headline figures**: OverviewCardBlock with real numbers.
 - **Alternatives the reader picks between** (per platform, per version): Tabs. **Details on demand** (FAQ, edge cases): Accordion.
 - **One key statement**: TextContent with size "large-heavy", then a Callout.
+- **Something easier shown than told** (the parts of an object, a layout, a shape, a mechanism): an Svg drawing (see Drawings).
 
 Signatures (? marks an optional argument):
 
 Stack(children: any[], direction?: "row" | "column", gap?: "none" | "xs" | "s" | "m" | "l" | "xl" | "2xl", align?: "start" | "center" | "end" | "stretch" | "baseline", justify?: "start" | "center" | "end" | "between" | "around" | "evenly", wrap?: boolean) — Lays its children out in a column (default) or a row; a row of Cards puts options or a before/after side by side.
-Card(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | Tabs | Carousel | Stack)[], variant?: "card" | "sunk" | "clear", direction?: "row" | "column", gap?: "none" | "xs" | "s" | "m" | "l" | "xl" | "2xl", align?: "start" | "center" | "end" | "stretch" | "baseline", justify?: "start" | "center" | "end" | "between" | "around" | "evenly", wrap?: boolean) — A framed group of children; the usual root.
+Card(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | Svg | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | Tabs | Carousel | Stack)[], variant?: "card" | "sunk" | "clear", direction?: "row" | "column", gap?: "none" | "xs" | "s" | "m" | "l" | "xl" | "2xl", align?: "start" | "center" | "end" | "stretch" | "baseline", justify?: "start" | "center" | "end" | "between" | "around" | "evenly", wrap?: boolean) — A framed group of children; the usual root.
 CardHeader(title?: string, subtitle?: string) — Title and subtitle at the top of a Card.
 InlineHeader(heading: string, description?: string) — A heading with a one-line description, inside a Stack.
 TextContent(text: string, size?: "small" | "default" | "large" | "small-heavy" | "large-heavy") — A plain paragraph; size "large-heavy" for one key statement.
@@ -588,10 +589,10 @@ Text(variant?: "text" | "number", value: string, subtext?: string, subtextVarian
 MetricIndicatorInline(value: string, subtext?: string, trend?: {direction: "up" | "down", value: number}) — A figure with its trend up or down.
 TagBlock(tags: string[], size?: "sm" | "md" | "lg") — Keywords or labels as tags.
 Tabs(items: TabItem[]) — Alternative views of the same thing (per platform, per version, chart and table); the reader picks one.
-TabItem(value: string, trigger: string, content: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock)[]) — One tab: its value, its label and its content.
+TabItem(value: string, trigger: string, content: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | Svg | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock)[]) — One tab: its value, its label and its content.
 Accordion(items: AccordionItem[]) — Details on demand, such as an FAQ or edge cases; the reader opens the items.
-AccordionItem(value: string, trigger: string, content: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock)[]) — One item: its value, its question or title, and its content.
-Carousel(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock)[][], variant?: "card" | "sunk") — A short series of slides the reader swipes through; each slide is a list of components.
+AccordionItem(value: string, trigger: string, content: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | Svg | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock)[]) — One item: its value, its question or title, and its content.
+Carousel(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | Svg | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock)[][], variant?: "card" | "sunk") — A short series of slides the reader swipes through; each slide is a list of components.
 ImageBlock(src: string, alt?: string) — One image with alt text (a real, reachable URL).
 Separator(orientation?: "horizontal" | "vertical", decorative?: boolean) — A dividing line between groups.
 
@@ -626,6 +627,51 @@ amounts = NarrationStep("part3", "For one litre, that is all you need.", [Highli
 warning = NarrationStep("part4", "One rule you cannot skip.", [Callout("warning", "Hours at room temperature are a food-safety risk, not a flavour choice.")])
 ```
 
+### Drawings
+
+When a picture explains it better than words or boxes and arrows, draw it with `Svg` in a standard OpenUI section: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Prefer a Loom section when one fits: a process with actors is a Flowchart, figures are a chart, categories are a TaxonomyBrowser.
+
+Svg(markup: string, caption?: string) — A drawing: one <svg> element with a viewBox, and a caption under it.
+
+How to draw:
+
+- Write the markup as a single-quoted string, `Svg('<svg …>…</svg>', "caption")`, so its attributes keep their double quotes; it may span several lines. One `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 W H">` root; it scales to the width of the section, keeping its proportions.
+- Use shapes, paths, text, groups, markers and gradients. Scripts, event handlers, links, external images and `foreignObject` are removed. Use a SMIL `<animate>` only for a loop (`repeatCount="indefinite"`) that shows motion.
+- Colors: write a Loom palette name, `fill="green"`, `stroke="overlay1"` (rosewater, flamingo, pink, mauve, red, maroon, peach, yellow, green, teal, sky, sapphire, blue, lavender, text, subtext1, subtext0, overlay2, overlay1, overlay0, surface2, surface1, surface0, base, mantle, crust), so the drawing follows the theme; shapes and text without a fill draw in the text color. Keep it to a few colors with a meaning each.
+- Label the parts with `<text>` (font-size about 12–16 in a viewBox a few hundred units wide) and leader lines, as in a textbook figure. Keep it simple and schematic: the few parts the lesson is about, not a detailed illustration.
+- Give every shape narration will point at an `id` (`<path id="bud" …>`), unique within the drawing; make the Svg a named child of a Card or Stack root (`shoot = Svg(…)`), then point at `"shoot.bud"`. Several steps on the drawing's beat can walk it part by part.
+
+Example section file, and its narration walking the drawing shape by shape:
+
+```
+// @openui "Two Leaves and a Bud" "What a fine pluck takes"
+root = Card([header, shoot, why])
+header = CardHeader("The fine pluck", "Only the tip of each tea shoot is picked")
+shoot = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 250">
+  <path id="stem" d="M180 246 V40" stroke="overlay1" stroke-width="4" fill="none"/>
+  <path id="older" d="M180 200 C140 176 96 184 72 210 C108 228 152 224 180 200 Z" fill="surface2"/>
+  <path id="leaf2" d="M180 150 C224 120 272 128 296 156 C262 178 214 176 180 150 Z" fill="green"/>
+  <path id="leaf1" d="M180 96 C140 68 100 76 80 102 C112 122 152 120 180 96 Z" fill="green"/>
+  <path id="bud" d="M180 44 C168 26 172 12 180 4 C188 12 192 26 180 44 Z" fill="teal"/>
+  <path d="M190 24 H240" stroke="subtext0" stroke-dasharray="3 3"/>
+  <text x="246" y="29" font-size="14">Bud</text>
+  <text x="74" y="107" font-size="14" text-anchor="end">1st leaf</text>
+  <text x="302" y="161" font-size="14">2nd leaf</text>
+  <text x="24" y="244" font-size="12" fill="subtext0">Older leaf: left on the bush</text>
+</svg>', "A tea shoot: the bud, then the first and second leaf")
+why = Callout("info", "Why only the tip?", "The youngest leaves hold the most amino acids and catechins, so they make the sweetest, fullest cup.")
+```
+
+```
+root = Narration([title, head, bud, leaves, older, why])
+title = NarrationStep("title", "Every fine green tea starts with the same pluck.")
+head = NarrationStep("part1", "Pickers take only the very tip of each shoot.", [Highlight("header")])
+bud = NarrationStep("part2", "At the top sits the bud, still rolled up.", [Highlight("shoot.bud")])
+leaves = NarrationStep("part2", "Then the two youngest leaves below it.", [Spotlight(["shoot.leaf1", "shoot.leaf2"])])
+older = NarrationStep("part2", null, [Callout("shoot.older", "Older leaves are tougher and flatter in taste; they stay on the bush.")])
+why = NarrationStep("part3", "So two leaves and a bud is a recipe for flavour.", [Highlight("why")])
+```
+
 ## Narration Files
 
 Loom Viewer can play a topic hands-free (Present mode): each section plays beat by beat, answers its own quiz questions (a wrong try, then the right answer), walks scenarios and decision trees, and lights the main content of each beat. Write a narration file for every section, `sections/<name>.narrate.oui`: it is the script the narrator reads, beat by beat. A beat with no step reads its on-screen text instead.
@@ -633,7 +679,7 @@ Loom Viewer can play a topic hands-free (Present mode): each section plays beat 
 - Its `root` is `Narration([steps])`; each `NarrationStep(beat, caption, [effects])` plays on the beat it names. Give every beat of the section at least one step, in beat order. Several steps on one beat play in turn: use them to walk a dense beat (a table, a diagram, a long card) one point at a time, each step with its own effect.
 - `caption` is what the narrator says: one or two spoken sentences in the topic's language. Explain and connect, do not just repeat the screen: on a quiz's `.wrong` beat say why that answer is tempting and wrong, on its `.right` beat why the right one is right. Pass `null` for a step that only plays an effect (its Callout is still read).
 - Write it as a talk, not a template: vary how captions open, link a beat to the one before or to an earlier section, ask the question the learner is about to answer, and put the why or the example the screen leaves out in a Callout. Mix the effects to what each beat needs; not every step needs one.
-- Effects (optional): `Highlight(target)`, `Callout(target, text)` (a note beside an element, one or two short sentences, read after the caption), `Spotlight([targets])` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline. In a standard OpenUI section, a target names one of the root's children (see Standard OpenUI Sections) or one value of a chart or table among them, by the path of the value in its statement: `"bars.series[0].values[4]"` (one bar or line point), `"bars.labels[4]"` (every bar or point at the fifth label), `"bars.series[1]"` (a whole series), `"pie.values[2]"` (a slice), `"table.columns[2].data[4]"` (a cell), `"table.columns[2]"` (a column) or `"table.columns[2].label"` (its header). To point at a table row, Spotlight its cells. Use these to explain one figure at a time: Highlight a bar while the caption names it, Callout a point with why it is there.
+- Effects (optional): `Highlight(target)`, `Callout(target, text)` (a note beside an element, one or two short sentences, read after the caption), `Spotlight([targets])` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline. In a standard OpenUI section, a target names one of the root's children (see Standard OpenUI Sections) or one value of a chart or table among them, by the path of the value in its statement: `"bars.series[0].values[4]"` (one bar or line point), `"bars.labels[4]"` (every bar or point at the fifth label), `"bars.series[1]"` (a whole series), `"pie.values[2]"` (a slice), `"table.columns[2].data[4]"` (a cell), `"table.columns[2]"` (a column) or `"table.columns[2].label"` (its header). To point at a table row, Spotlight its cells. In a drawing (`Svg`), a target names one shape by its `id` in the markup: `"plant.bud"`. Use these to explain one figure or one part of a picture at a time: Highlight a bar while the caption names it, Callout a point with why it is there, Spotlight the shapes of a drawing the caption is about.
 - In the single .oui file, the narration file follows its section: `// === sections/vocabulary.narrate.oui ===`.
 
 Every section except the intro opens on a `title` beat: a card with the section's title, its `heading` and its `Lead` text. Its step introduces the section: what it is about and why it comes now (without one, the narrator reads the card). The intro's own beats start with its `title`.
@@ -677,7 +723,7 @@ back2 = NarrationStep("card2.back", "Steep time is the dial you control.", [Call
 - Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.
 - Start with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.
 - Mix interactive section types. Never build a topic out of Text sections only.
-- Fit each section to its own content rather than to the example: different section types, and different layouts for standard OpenUI sections (Steps, CodeBlock, cards, EntityList, a chart or a table, …).
+- Fit each section to its own content rather than to the example: different section types, and different layouts for standard OpenUI sections (Steps, CodeBlock, cards, EntityList, a chart or a table, an Svg drawing, …).
 - Write a narration file for every section, at least one NarrationStep per beat of that section type (see Narration Files), in the topic's language.
 - Quizzes and reflection challenges only test what an earlier section of the topic teaches. Each QuizQuestion has exactly one choice with `correct` set to true.
 - IDs (`id` props) are unique within their section. Props that point at an ID (`next`, `root`, `startNode`, `recommended`, `solution`, `continuesAs`, `initialState`, `dependsOn`) must name an ID that exists in the same section.

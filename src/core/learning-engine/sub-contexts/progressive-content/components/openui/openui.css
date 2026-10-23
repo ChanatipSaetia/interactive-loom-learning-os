@@ -55,3 +55,37 @@
 /* Data point markers a narration step can point at in Present mode (decision 117) */
 .loom-data-point { fill: transparent; stroke: none; }
 .loom-data-point.present-narr-hl { fill: var(--present-accent, var(--primary)); r: 7px; }
+
+/* Svg drawings (decision 118): full width, proportions kept, ink in the theme's text color */
+.loom-svg {
+  @apply m-0 flex flex-col items-center gap-2;
+}
+
+.loom-svg-canvas {
+  @apply w-full flex justify-center;
+}
+
+.loom-svg-canvas > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 28rem;
+  overflow: visible;
+  color: var(--ctp-text);
+  font-family: inherit;
+}
+
+.loom-svg figcaption {
+  @apply text-sm text-center;
+  color: var(--ctp-subtext0);
+}
+
+.loom-svg-error {
+  @apply text-xs font-mono;
+  color: var(--destructive);
+}
+
+/* On the Present stage a drawing leaves room for the parts around it */
+.present-openui .loom-svg-canvas > svg {
+  max-height: 20rem;
+}

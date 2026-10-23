@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { AUTHORING_EXAMPLE, FACTS_EXAMPLE, HOWTO_EXAMPLE, HOWTO_NARRATION_EXAMPLE, NARRATION_EXAMPLE, TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, getLoomAuthoringPrompt } from '../../../../../../src/core/learning-engine/composition/oui/authoring-prompt'
+import { AUTHORING_EXAMPLE, DRAWING_EXAMPLE, DRAWING_NARRATION_EXAMPLE, FACTS_EXAMPLE, HOWTO_EXAMPLE, HOWTO_NARRATION_EXAMPLE, NARRATION_EXAMPLE, TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, getLoomAuthoringPrompt } from '../../../../../../src/core/learning-engine/composition/oui/authoring-prompt'
 import { compileOUITopic } from '../../../../../../src/core/learning-engine/composition/oui/compile'
 import { sectionBeatsOf, validateOUINarration, validateOUISection } from '../../../../../../src/core/learning-engine/validation/oui-gateway'
 import { parseTopicSource } from '../../../../../../src/core/supporting/authoring-editor/workspace'
@@ -39,6 +39,14 @@ describe('Loom authoring prompt', () => {
     expect(narration.payload?.steps.filter((s) => s.beat === 'part2')).toHaveLength(2)
   })
 
+  it('has a valid drawing example whose narration points at its shapes (decision 118)', () => {
+    const result = validateOUISection(DRAWING_EXAMPLE, { topicId: 'green-tea', sectionName: 'fine-pluck', file: 'sections/fine-pluck.oui' })
+    expect(result.diagnostics).toEqual([])
+    expect(sectionBeatsOf(DRAWING_EXAMPLE)?.map((b) => b.id)).toEqual(['title', 'part1', 'part2', 'part3'])
+    const narration = validateOUINarration(DRAWING_NARRATION_EXAMPLE, DRAWING_EXAMPLE, { sectionName: 'fine-pluck' })
+    expect(narration.diagnostics).toEqual([])
+  })
+
   it('has a narration example that is valid for the example vocabulary section', () => {
     const [{ files }] = parseTopicSource(AUTHORING_EXAMPLE)
     const result = validateOUINarration(NARRATION_EXAMPLE, files['sections/vocabulary.oui'], { sectionName: 'vocabulary' })
@@ -51,7 +59,7 @@ describe('Loom authoring prompt', () => {
     for (const text of ['## Topic Layout', '## Output Formats', '// @loom-topic <topic-id>', '<topic-id>/sections/<name>.oui',
       '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Standard OpenUI Sections', '// @openui "<Section title>"', 'https://openui.com/docs/api-reference/react-ui',
       '### Tables and Charts', 'Table(columns: Col[])', '### Layouts for Other Content', 'Steps(items: StepsItem[])', HOWTO_EXAMPLE, FACTS_EXAMPLE, HOWTO_NARRATION_EXAMPLE, 'BarChart(labels: string[], series: Series[]', TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, '## Loom Authoring Rules',
-      '## Narration Files', 'sections/<name>.narrate.oui', NARRATION_EXAMPLE, 'Spotlight(targets: string[])']) {
+      '### Drawings', 'Svg(markup: string, caption?: string)', DRAWING_EXAMPLE, DRAWING_NARRATION_EXAMPLE, '## Narration Files', 'sections/<name>.narrate.oui', NARRATION_EXAMPLE, 'Spotlight(targets: string[])']) {
       expect(prompt, text).toContain(text)
     }
     expect(prompt).not.toMatch(/streaming|charts for trends|every program must define `root = Topic|\.loom\.json|JSON bundle/i)

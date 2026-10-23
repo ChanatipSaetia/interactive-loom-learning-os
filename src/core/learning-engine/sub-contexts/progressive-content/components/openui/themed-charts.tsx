@@ -13,6 +13,7 @@ import {
   SingleStackedBar,
 } from '@openuidev/react-ui/Charts'
 import { paletteForSeries, useLoomChartColors } from './chart-palette'
+import { withLoomComponents } from './loom-components'
 
 /**
  * The standard OpenUI library with its charts drawn in the Loom theme colors.
@@ -170,5 +171,5 @@ function withThemedCharts(library: Library): Library {
   return { ...library, components }
 }
 
-/** The library the `openui` section renders with. */
-export const loomOpenUILibrary: Library = withThemedCharts(openuiLibrary)
+/** The library the `openui` section renders with: the standard one, themed, with Loom's own components. */
+export const loomOpenUILibrary: Library = withThemedCharts(withLoomComponents(openuiLibrary))

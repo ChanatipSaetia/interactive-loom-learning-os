@@ -128,8 +128,8 @@ export interface OUICatalogManifest {
 
 /**
  * Find the 1-based line on which each top-level statement starts.
- * Statements may span lines (open brackets), so this tracks bracket depth,
- * strings and `//` comments rather than matching line by line.
+ * Statements may span lines (open brackets, single-quoted strings), so this tracks
+ * bracket depth, strings and `//` comments rather than matching line by line.
  */
 export function indexStatementLines(source: string): Map<string, number> {
   const lines = new Map<string, number>()
@@ -150,9 +150,11 @@ export function indexStatementLines(source: string): Map<string, number> {
       continue
     }
     if (ch === '"' || ch === "'") {
+      // A single-quoted string may span lines (a drawing's SVG markup); a double-quoted one ends with its line
       i++
-      while (i < source.length && source[i] !== ch && source[i] !== '\n') {
+      while (i < source.length && source[i] !== ch && (ch === "'" || source[i] !== '\n')) {
         if (source[i] === '\\') i++
+        if (source[i] === '\n') line++
         i++
       }
       i++

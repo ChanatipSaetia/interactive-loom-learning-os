@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import { openuiBeats } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
-import { FACTS_EXAMPLE, HOWTO_EXAMPLE } from '../../../../src/core/learning-engine/composition/oui/authoring-prompt'
+import { DRAWING_EXAMPLE, FACTS_EXAMPLE, HOWTO_EXAMPLE } from '../../../../src/core/learning-engine/composition/oui/authoring-prompt'
 import { openUIProgramOf } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/openui-standard'
 import { curveVertices } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui/data-anchors'
 import PresentOpenUI from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui/PresentOpenUI'
@@ -38,7 +38,16 @@ describe('openui renderer (decision 116)', () => {
     expect(curveVertices('M30,217H100V50')).toEqual([])
   })
 
-  it.each([['how-to', HOWTO_EXAMPLE, ['header', 'steps', 'recipe', 'warning']], ['facts', FACTS_EXAMPLE, ['header', 'teas', 'faq']]])(
+  it('tags each shape of a drawing with its id (decision 118)', () => {
+    const program = { source: openUIProgramOf(DRAWING_EXAMPLE) }
+    const { container } = render(<PresentOpenUI data={program} beats={openuiBeats(program)} beat={1} sectionIndex={0} active />)
+    const bud = container.querySelector('[data-oui-anchor="shoot.bud"]')
+    expect(bud?.tagName.toLowerCase()).toBe('path')
+    expect(container.querySelector('[data-oui-anchor="shoot.leaf1"]')).not.toBeNull()
+    expect(container.querySelector('figcaption')?.textContent).toContain('A tea shoot')
+  })
+
+  it.each([['how-to', HOWTO_EXAMPLE, ['header', 'steps', 'recipe', 'warning']], ['facts', FACTS_EXAMPLE, ['header', 'teas', 'faq']], ['drawing', DRAWING_EXAMPLE, ['header', 'shoot', 'why']]])(
     'lines up the parts of the authoring prompt\'s %s example with its rendered children',
     (_, example, names) => {
       const program = { source: openUIProgramOf(example) }

@@ -17,6 +17,7 @@ import { targetProp, targetStatement, type NarrationData } from '../composition/
 import { bundleToSections } from '../composition/okf/sections'
 import { isOpenUISource, openUIProgramOf } from '../sub-contexts/progressive-content/openui-standard'
 import { openuiParts } from '../sub-contexts/progressive-content/present'
+import { svgShapeIds } from '../sub-contexts/progressive-content/components/openui/svg-markup'
 import { coreBeatsOf } from '../registry/register-core-presenters'
 import type { Beat } from '../sub-contexts/present-kernel'
 import { contextToDiagnostic } from './types'
@@ -141,12 +142,27 @@ const OPENUI_DATA_PATHS: Record<string, RegExp> = {
   Table: /^\.columns\[\d+\](\.label|\.data\[\d+\])?$/,
 }
 
-/** True when Present mode can point at a target in a standard OpenUI section: a part, or a value of a chart or table part. */
-function openuiTargetPointable(target: string, parts: string[], statements: Map<string, string | undefined>): boolean {
+/** The text of one top-level statement: from its line to the line before the next statement. */
+function statementText(source: string, name: string): string {
+  const lines = indexStatementLines(source)
+  const starts = [...lines.values()].sort((a, b) => a - b)
+  const line = lines.get(name)
+  if (line === undefined) return ''
+  const next = starts.find((l) => l > line)
+  return source.split('\n').slice(line - 1, next === undefined ? undefined : next - 1).join('\n')
+}
+
+/**
+ * True when Present mode can point at a target in a standard OpenUI section: a part, a value of a
+ * chart or table part, or a shape of a drawing part by its `id` (decision 118).
+ */
+function openuiTargetPointable(target: string, parts: string[], statements: Map<string, string | undefined>, source: string): boolean {
   const statement = targetStatement(target)
   if (!parts.includes(statement)) return false
   const rest = target.slice(statement.length)
-  return !rest || !!OPENUI_DATA_PATHS[statements.get(statement) ?? '']?.test(rest)
+  if (!rest) return true
+  if (statements.get(statement) === 'Svg') return rest.startsWith('.') && svgShapeIds(statementText(source, statement)).includes(rest.slice(1))
+  return !!OPENUI_DATA_PATHS[statements.get(statement) ?? '']?.test(rest)
 }
 
 export function validateOUINarration(
@@ -198,14 +214,14 @@ export function validateOUINarration(
             })
             continue
           }
-          if (pointable && !openuiTargetPointable(target, pointable, statements)) {
+          if (pointable && !openuiTargetPointable(target, pointable, statements, sectionSource)) {
             diagnostics.push({
               tier: 3,
               line,
               field: target,
               message: `Present mode cannot point at "${target}" in a standard OpenUI section.`,
               fixHint: pointable.length
-                ? `Point at one of the root's children (${pointable.join(', ')}), or at a value of a chart or table among them: "<chart>.labels[i]", "<chart>.series[s].values[i]", "<pie>.values[i]", "<table>.columns[c].data[r]".`
+                ? `Point at one of the root's children (${pointable.join(', ')}), or at a value of a chart or table among them: "<chart>.labels[i]", "<chart>.series[s].values[i]", "<pie>.values[i]", "<table>.columns[c].data[r]", or at a shape of a drawing by its id: "<svg>.<id>".`
                 : 'Make the root a Card([...]) or Stack([...]) of several named statements, then point at those.',
               ...contextToDiagnostic(context),
             })

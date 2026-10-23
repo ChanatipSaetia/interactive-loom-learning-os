@@ -81,6 +81,7 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 115 | Reflections step by step | **One beat per item placed or blank filled.** A reflection sequence places its items one slot per beat (`cn.step1`, `cn.step2`, … in `solution` order) and a reflection template fills one blank per beat (`cn.stepK`, in reading order), each focused as it lands, so a narration file can explain each step of the answer; `cn.solved` then turns the answer green (with the template's explanation). `cn` and `cn.solved` keep their IDs, so existing narration files still play. Revises decision 103 (the reflection part). |
 | 116 | Standard OpenUI sections in steps | **One beat per child of a `Card` or `Stack` root.** When the root of a standard OpenUI section is `Card([...])` or `Stack([...])` with more than one child, each child gets its own beat (`part1`, `part2`, … in order), so a narration file can walk through a header, a table, then its takeaway. The program still renders whole, as in Read; each child's element is marked with its beat and, when the child is a statement reference, tagged with that statement as its Pick anchor so `Highlight("table")` lights it. Any other root (Tabs, Accordion, a single child) keeps the one `all` beat. Revises decision 78. |
 | 117 | Narration points at one bar, point or cell | **A chart or table part of a standard OpenUI section is pointable down to one value, by the path of the value in its statement.** `bars.series[0].values[4]` is one bar or line point, `bars.labels[4]` every value at that label, `bars.series[1]` a series, `pie.values[2]` a slice, `table.columns[2].data[4]` a cell, `table.columns[2]` a column and `.label` its header; a row is Spotlighted by its cells. The paths are Pick-pointer paths into the statement's props, so nothing new is learned to write them. Only Present mode tags them; validation accepts exactly these paths on BarChart, HorizontalBarChart, LineChart, AreaChart, PieChart and Table parts. |
+| 118 | Drawings | **A standard OpenUI section can draw: `Svg(markup, caption?)`, Loom's one addition to the standard library, pointable shape by shape.** Some ideas are pictures (the parts of an object, where things sit, a shape, a mechanism), and boxes and arrows or prose explain them worse. The markup is inline SVG in a single-quoted, possibly multi-line string; it is sanitized (no scripts, styles, handlers, `foreignObject`, external links or images), its IDs are scoped to the drawing, and Loom palette names as colors (`fill="green"`) become theme tokens. In Present mode every element with an `id` answers to `<statement>.<id>`, so narration walks a drawing with several steps on its beat (`Highlight("kamado.draft-door")`, `Spotlight(["kamado.coals"])`); validation checks the ID is in the markup. Extends decision 117. |
 
 ## Motion Rules
 
@@ -149,7 +150,7 @@ a performed answer (decision 103). The `code` names are the beat IDs a narration
 | `flashcards` | per `Flashcard` n: `cardn` the `word` on the front · `cardn.back` the flip to its `shortDefinition` |
 | `reflection-sequence` | per challenge n: `cn` prompt and items · `cn.step1`, … one per `solution` entry: that item settles into its slot (decision 115) · `cn.solved` *right*: the slots turn green as the right order |
 | `reflection-template` | per challenge n: `cn` prompt and template · `cn.step1`, … one per blank in reading order: its right chip pops in (decision 115) · `cn.solved` *right*: the sentence turns green, then the `explanation` |
-| `openui` | a `Card([...])` or `Stack([...])` root with several children: `part1`, … one per child, in order, each rising in under the ones before (decision 116) · any other root: `all` one beat, each top-level child fades in |
+| `openui` | a `Card([...])` or `Stack([...])` root with several children: `part1`, … one per child, in order, each rising in under the ones before (decision 116); narration points into a chart or table part by value (117) and into an `Svg` part by shape ID (118) · any other root: `all` one beat, each top-level child fades in |
 
 ## Implementation Plan
 
@@ -447,6 +448,26 @@ pure and tested directly.
   draw only once they are measured.
 - `validateOUINarration` accepts the paths per component (`OPENUI_DATA_PATHS`); indexes are not bounds-checked.
 - Tests: `openui.test.tsx` (cells, curve vertices), `narration-file.test.ts` (accepted and refused paths).
+
+### Decision 118 — Implementation Notes
+
+- `progressive-content/components/openui/loom-components.tsx`: `Svg` (`defineComponent`) and
+  `withLoomComponents(library)`, which adds it to the standard library's Content group; `loomOpenUILibrary`
+  renders with it. `standardLibrarySnapshot()` is what `npm run openui:gen` writes: the library with `Svg`, added
+  next to `Image` in every child union of the JSON schema and the signatures (`Card(children: (… | Image | Svg | …)[])`).
+- `svg-markup.ts`: `sanitizeSvgMarkup(markup, scope, label)` parses with `DOMParser` (`image/svg+xml`), keeps an
+  allowlist of drawing elements, drops handlers, unsafe `url()`/`javascript:`/`data:` values and links that are not
+  `#id` within the drawing, prefixes IDs with the instance's `useId` scope (keeping the authored one in
+  `data-svg-id`), turns palette names in color attributes into `var(--ctp-<name>)` styles and gives the root a
+  `viewBox`, `fill="currentColor"` and `role="img"`. `svgShapeIds(markup)` reads IDs without a DOM, for validation.
+- `data-anchors.ts`: a part holding `.loom-svg` tags each `[data-svg-id]` element `<name>.<id>`.
+  `validateOUINarration` accepts `<name>.<id>` on an `Svg` part when the statement's markup has that ID.
+- Single-quoted strings may span lines (the lexer already reads them whole): `indexStatementLines`, the editor's
+  `scan` and the CodeMirror highlighter follow them; double-quoted strings still end with their line.
+- `scripts/validate-hexmaps.ts` no longer counts `<name>.narrate.oui` files as sections.
+- Example: `public/content/kamado-beef/sections/airflow.oui` (a cross-section with animated airflow) and its narration.
+- Tests: `svg-markup.test.ts` (sanitizing, scoping, colors, multi-line statements), `openui.test.tsx` (shape anchors),
+  `narration-file.test.ts` (accepted and refused shape targets), `authoring-prompt.test.ts` (the Drawings example).
 
 ## Open Questions
 
