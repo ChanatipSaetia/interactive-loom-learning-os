@@ -309,7 +309,7 @@
   list-style: none;
 }
 .ai-looked-line {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 5px;
   max-width: 100%;
@@ -320,6 +320,10 @@
   font-size: 12px;
   text-align: left;
   cursor: pointer;
+}
+.ai-looked-line svg { flex-shrink: 0; }
+.ai-looked-line span {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

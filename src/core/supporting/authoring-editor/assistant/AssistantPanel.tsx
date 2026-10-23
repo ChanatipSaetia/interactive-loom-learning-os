@@ -134,10 +134,11 @@ function LookedAt({ message }: { message: ThreadMessage }) {
               className="ai-looked-line"
               disabled={!place}
               onClick={() => place && showPick(place)}
-              title={place ? `${place.file} #${place.anchor}` : undefined}
+              title={`Looked at: ${call.label}`}
               data-testid="ai-looked-line"
             >
-              <Search size={11} aria-hidden /> Looked at: {call.label}
+              <Search size={11} aria-hidden />
+              <span>Looked at: {call.label}</span>
             </button>
           </li>
         )
