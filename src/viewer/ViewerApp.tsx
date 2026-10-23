@@ -27,7 +27,7 @@ import {
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from './compileTopic'
 import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, PickSection, sourceResolver, useNarrow } from '../core/supporting/authoring-editor/pick'
-import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext } from '../core/supporting/authoring-editor/assistant'
+import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext, type AssistantView } from '../core/supporting/authoring-editor/assistant'
 import type { PickSource } from '../core/learning-engine/composition/oui/pick-report'
 import { PresentMode, preloadPresenters, type PresentSection } from '../core/supporting/presentation'
 import '../core/delivery/web-app-shell/layout.css'
@@ -74,6 +74,14 @@ function sectionInView(sections: PresentSection[]): number {
   const top = document.querySelector('.topnav')?.getBoundingClientRect().bottom ?? 0
   const found = sections.findIndex((s) => (readSectionElement(s.name)?.getBoundingClientRect().bottom ?? -1) > top + 40)
   return found < 0 ? 0 : found
+}
+
+/** Where the learner is, for the assistant (decision 119): the mode and the section in view. */
+function viewOf(topic: ViewerTopic | undefined, mode: 'read' | 'present', presentedIndex: number): AssistantView {
+  const sections = topic ? presentSectionsOf(topic) : []
+  const index = mode === 'present' ? presentedIndex : sections[sectionInView(sections)]?.sectionIndex
+  const name = index === undefined ? undefined : topic?.sections[index]?.name
+  return { mode, file: name ? `sections/${name}.oui` : undefined }
 }
 
 /** Where the open topic lives, for the note after copied pointers. */
@@ -257,7 +265,8 @@ export function ViewerApp() {
     fileOrder: pickFileOrder,
     diagnostics: topic ? viewerDiagnostics(topic) : {},
     source: pickSource,
-  }), [topic, pickFileOrder, pickSource])
+    view: viewOf(topic, mode, presentAt.current.sectionIndex),
+  }), [topic, pickFileOrder, pickSource, mode])
   const assistant = useAssistant({ topicId: topic?.topicId ?? '', app: 'viewer', getContext: getAssistantContext })
   const presentSections = useMemo(() => (topic ? presentSectionsOf(topic) : []), [topic])
   const presenting = mode === 'present' && !!topic && presentSections.length > 0

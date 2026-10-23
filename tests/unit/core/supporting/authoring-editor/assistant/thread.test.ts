@@ -29,6 +29,10 @@ describe('assistant thread', () => {
     expect(userMessageContent(user('2', 'Why?', { mode: 'ask', picks: [{ file: 'topic.oui', anchor: 'root', label: 'Topic', note: '' }] }))).toBe(
       'About these places:\n- topic.oui #root\n\nWhy?\n\n(This is a question: answer it, do not propose changes unless asked.)',
     )
+    // Viewer: a learner's picks are questions, never change requests
+    const noted = user('3', 'Hm', { mode: 'comment', picks: [{ file: 'sections/quiz.oui', anchor: 'q1', label: 'Q1', note: 'Why B?' }] })
+    expect(userMessageContent(noted, 'viewer')).toBe('About these places:\n- sections/quiz.oui #q1\n  Why B?\n\nHm')
+    expect(userMessageContent({ ...noted, mode: 'ask' }, 'viewer')).not.toContain('propose changes')
   })
 
   it('keeps the newest turns within the budget, always the last user message, and leaves out failed replies', () => {

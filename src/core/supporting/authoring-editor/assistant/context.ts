@@ -2,7 +2,8 @@
  * The <topic-context> block of an assistant user turn (grill-log-ai-assistant.md,
  * decisions 56, 59 and 63): the topic outline, the current source of the
  * picked statements, the reference entries of the components they call and
- * the current errors.
+ * the current errors; in Viewer also where the person is (mode and the
+ * section in view, whose file is sent whole).
  *
  * It is built from the current sources when a message is sent, so after an
  * edit (or unsaved changes in Studio) the model sees the text as it is now,
@@ -33,6 +34,14 @@ export interface AssistantTopicContext {
   unsaved?: ReadonlySet<string>
   /** Where the topic was opened from (Viewer). */
   source?: PickSource
+  /** Where the person is in the topic (Viewer): the mode and the section file in view, sent whole (decision 119). */
+  view?: AssistantView
+}
+
+export interface AssistantView {
+  mode: 'read' | 'present'
+  /** `sections/<name>.oui` of the section in view, if any. */
+  file?: string
 }
 
 export interface ContextPointer {
@@ -166,6 +175,10 @@ export function buildTopicContext(context: AssistantTopicContext, pointers: read
     wanted.set(pointer.file, set)
   }
 
+  // The section in view goes whole, so "explain this" works without a pick.
+  const viewFile = context.view?.file
+  if (viewFile && context.files[viewFile] !== undefined) wanted.set(viewFile, 'all')
+
   const order = [...context.fileOrder, ...Object.keys(context.files).filter((f) => !context.fileOrder.includes(f)).sort()]
   const contextFiles = order.filter((file) => wanted.has(file))
   const components = new Set<string>()
@@ -187,6 +200,17 @@ export function buildTopicContext(context: AssistantTopicContext, pointers: read
   if (!known.has(outlineKey)) {
     sections.push(outline)
     keys.push(outlineKey)
+  }
+
+  if (context.view) {
+    const mode = context.view.mode === 'present' ? 'Present mode (the topic plays itself, beat by beat, with a narrator)' : 'Read mode'
+    const at = viewFile && context.files[viewFile] !== undefined ? `, at ${describeFile(viewFile, context.files[viewFile], statementsOf(viewFile))}` : ''
+    const view = ['## On Screen', '', `${mode}${at}.`]
+    const viewKey = `view:${textHash(view.join('\n'))}`
+    if (!known.has(viewKey)) {
+      sections.push(view)
+      keys.push(viewKey)
+    }
   }
 
   const sentFiles: string[] = []

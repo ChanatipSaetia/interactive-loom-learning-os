@@ -57,7 +57,7 @@ export {
 } from './profiles'
 export type { AssistantProfile, AssistantSettings, StoredKey } from './profiles'
 export { buildTopicContext, fileStatements, textHash } from './context'
-export type { AssistantTopicContext, ContextPointer, FileStatement, TopicContextBlock, TopicContextOptions } from './context'
+export type { AssistantTopicContext, ContextPointer, FileStatement, TopicContextBlock, TopicContextOptions, AssistantView } from './context'
 export {
   EMPTY_THREAD,
   estimateTokens,

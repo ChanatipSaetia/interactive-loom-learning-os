@@ -84,12 +84,14 @@ test('Viewer: picks go to the model with their current source, and replies strea
 
   const [system, user] = chats[0].messages
   expect(system.role).toBe('system')
-  expect(system.content).toContain('Loom Viewer is read-only')
+  expect(system.content).toContain('tutor inside Loom Viewer')
   // The topic context goes with the user turn, so the system prompt stays cacheable.
   expect(system.content).not.toContain('### sections/quiz.oui')
-  expect(user.content).toContain('### sections/quiz.oui: q1 (line')
+  // The section in view goes whole, with where the learner is.
+  expect(user.content).toContain('## On Screen\n\nRead mode, at sections/quiz.oui (Quiz).')
+  expect(user.content).toContain('### sections/quiz.oui (whole file)')
   expect(user.content).toContain('QuizQuestion(id: string')
-  expect(user.content).toContain('- sections/quiz.oui #q1')
+  expect(user.content).toContain('About these places:\n- sections/quiz.oui #q1')
 
   // A follow-up sends the thread, with the earlier turns exactly as before.
   await page.getByTestId('pick-composer').fill('Thanks')

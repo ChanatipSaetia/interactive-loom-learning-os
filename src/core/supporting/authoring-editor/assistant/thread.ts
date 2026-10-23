@@ -15,6 +15,7 @@
  */
 import type { ChatMessage } from './client'
 import type { ContextPointer } from './context'
+import type { AssistantApp } from '../../../learning-engine/composition/oui/assistant-prompt'
 
 /** A pick sent with a message, shown as a chip. */
 export interface ThreadPick {
@@ -137,8 +138,11 @@ export function saveThread(topicId: string, thread: AssistantThread): void {
 /** Rough token count: characters ÷ 4. */
 export const estimateTokens = (text: string) => Math.ceil(text.length / 4)
 
-/** What a user message says to the model: its topic context, its picks (with comments), then the text. */
-export function userMessageContent(message: ThreadMessage): string {
+/**
+ * What a user message says to the model: its topic context, its picks (with comments), then the text.
+ * In Viewer every pick is something the learner asks about; nothing is a change request (decision 119).
+ */
+export function userMessageContent(message: ThreadMessage, app: AssistantApp = 'studio'): string {
   const parts: string[] = []
   if (message.context) parts.push(message.context)
   const picks = message.picks ?? []
@@ -146,10 +150,11 @@ export function userMessageContent(message: ThreadMessage): string {
     const list = picks
       .map((pick) => `- ${pick.file} #${pick.anchor}${pick.note.trim() ? `\n${pick.note.trim().split('\n').map((l) => `  ${l}`).join('\n')}` : ''}`)
       .join('\n')
-    parts.push(`${message.mode === 'ask' ? 'About these places' : picks.some((p) => p.note.trim()) ? 'Comments on these places' : 'These places'}:\n${list}`)
+    const heading = app === 'viewer' || message.mode === 'ask' ? 'About these places' : picks.some((p) => p.note.trim()) ? 'Comments on these places' : 'These places'
+    parts.push(`${heading}:\n${list}`)
   }
   if (message.text.trim()) parts.push(message.text.trim())
-  if (message.mode === 'ask') parts.push('(This is a question: answer it, do not propose changes unless asked.)')
+  if (app === 'studio' && message.mode === 'ask') parts.push('(This is a question: answer it, do not propose changes unless asked.)')
   return parts.join('\n\n')
 }
 
@@ -178,8 +183,8 @@ export interface HistoryForRequest {
   firstSent: number
 }
 
-function contentOf(message: ThreadMessage): string | null {
-  return message.role === 'user' ? userMessageContent(message) : assistantMessageContent(message)
+function contentOf(message: ThreadMessage, app?: AssistantApp): string | null {
+  return message.role === 'user' ? userMessageContent(message, app) : assistantMessageContent(message)
 }
 
 const costOf = (message: ThreadMessage) => {
@@ -211,10 +216,10 @@ export function historyStart(thread: readonly ThreadMessage[], budget: number, s
 }
 
 /** The thread from `from` on, as chat messages; failed replies are left out. */
-export function historyMessages(thread: readonly ThreadMessage[], from: number): ChatMessage[] {
+export function historyMessages(thread: readonly ThreadMessage[], from: number, app?: AssistantApp): ChatMessage[] {
   const out: ChatMessage[] = []
   for (const message of thread.slice(from)) {
-    const content = contentOf(message)
+    const content = contentOf(message, app)
     if (content !== null) out.push({ role: message.role, content })
   }
   return out

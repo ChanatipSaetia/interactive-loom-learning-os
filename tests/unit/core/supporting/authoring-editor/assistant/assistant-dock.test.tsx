@@ -83,7 +83,7 @@ describe('AssistantDock with the Pick tray', () => {
     expect(body.messages[1].content).toMatch(/^<topic-context topic="demo">/)
     expect(body.messages[1].content).toContain('### sections/quiz.oui: q1 (line 2)')
     expect(body.messages[1].content).toContain('QuizQuestion(id: string')
-    expect(body.messages[1].content).toMatch(/<\/topic-context>\n\nComments on these places:\n- sections\/quiz.oui #q1\n {2}Too easy\?$/)
+    expect(body.messages[1].content).toMatch(/<\/topic-context>\n\nAbout these places:\n- sections\/quiz.oui #q1\n {2}Too easy\?$/)
     expect(JSON.parse(localStorage.getItem('loom-ai-thread:demo')!).messages).toHaveLength(2)
 
     // New chat clears the thread.
@@ -116,7 +116,7 @@ describe('AssistantDock with the Pick tray', () => {
     const [first, second] = fetchImpl.mock.calls
       .filter(([u]) => u.endsWith('/chat/completions'))
       .map(([, init]) => JSON.parse(init!.body as string).messages as Array<{ role: string; content: string }>)
-    expect(first[1].content).toContain('Comments on these places:\n- sections/quiz.oui #q1\n  Too easy?\n\nIs it fair?')
+    expect(first[1].content).toContain('About these places:\n- sections/quiz.oui #q1\n  Too easy?\n\nIs it fair?')
     // Same system prompt, same first turn: the prefix is unchanged.
     expect(second.slice(0, 2)).toEqual(first)
     expect(second.map((m) => m.role)).toEqual(['system', 'user', 'assistant', 'user'])

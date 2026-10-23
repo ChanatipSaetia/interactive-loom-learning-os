@@ -120,3 +120,18 @@ describe('buildTopicContext with earlier blocks in the history', () => {
     expect(next.text).toBe('')
   })
 })
+
+describe('buildTopicContext in Viewer', () => {
+  it('says where the learner is and sends the section in view whole, once', () => {
+    const first = buildTopicContext(context({ view: { mode: 'present', file: 'sections/quiz.oui' } }), [], { reference: true })
+    expect(first.text).toContain('## On Screen\n\nPresent mode')
+    expect(first.text).toContain('at sections/quiz.oui (Quiz).')
+    expect(first.text).toContain('### sections/quiz.oui (whole file)')
+    expect(first.text).toContain('QuizQuestion(id: string')
+    const again = buildTopicContext(context({ view: { mode: 'present', file: 'sections/quiz.oui' } }), [], { reference: true, known: new Set(first.keys) })
+    expect(again.text).toBe('')
+    const moved = buildTopicContext(context({ view: { mode: 'read', file: 'sections/intro.oui' } }), [], { known: new Set(first.keys) })
+    expect(moved.text).toContain('Read mode, at sections/intro.oui (Text).')
+    expect(moved.text).toContain('### sections/intro.oui (whole file)')
+  })
+})

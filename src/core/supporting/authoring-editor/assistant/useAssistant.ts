@@ -205,7 +205,8 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
       const withContext = (from: number): ThreadMessage => {
         const block = buildTopicContext(contextRef.current(), threadPointers(messages), {
           known: knownContext(messages.slice(from, -1)),
-          reference: !profile.fullReference,
+          // Viewer's prompt has no Full reference, so its entries always come with the context.
+          reference: app === 'viewer' || !profile.fullReference,
         })
         return { ...last, context: block.text, sent: block.keys }
       }
@@ -235,7 +236,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
         connectionOf(profile),
         {
           model: profile.model,
-          messages: [{ role: 'system', content: system }, ...historyMessages(messages, start)],
+          messages: [{ role: 'system', content: system }, ...historyMessages(messages, start, app)],
           signal: controller.signal,
           onDelta: (delta) => patchMessage(reply.id, (m) => ({ text: m.text + delta })),
         },
