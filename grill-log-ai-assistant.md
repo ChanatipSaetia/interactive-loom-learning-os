@@ -1,6 +1,6 @@
 # Grill Log — AI Assistant for Pick in Studio and Viewer
 
-Status: **All phases complete (1–4), plus decisions 63–64 and 119–128; decisions 129–142 (Studio tools, web search) agreed, not implemented**
+Status: **All phases complete (1–4), plus decisions 63–64 and 119–128; decisions 129–137 (Studio tools and staged edits) implemented; 138–142 (planning, web search) agreed, not implemented**
 
 ## Goal
 
@@ -226,6 +226,24 @@ revise decisions 54 and 58 for Studio.
 | 140 | Web search | **Tavily, called from the browser when the author gives a key, in Studio and Viewer** (revises decision 62's "no tool calling" scope again; still no backend). Two tools join the content tools: **`web_search({ query, max_results? })`** (title, URL, snippet per result; `POST https://api.tavily.com/search`) and **`web_extract({ urls })`** (the readable text of up to 3 URLs, each capped like `read` at 8,000 characters; `POST /extract`). They are offered only when web search is on and a key is set, and count toward the round limit (124, 136). In Studio they feed research and brainstorming (138, 139); in Viewer they back "Beyond the topic" answers (119). |
 | 141 | Tavily key and settings | **One key for all profiles.** A **Web search** section in the settings dialog: key, on/off, **Test** (a one-result search). The key is stored like profile keys (`loom-ai-tavily-key`, sessionStorage unless **Remember key on this device**) and never appears in the thread, exports or topic files. If the browser blocks the request (Tavily not allowing the page's origin), Test reports it as a CORS failure with that hint and web search stays off. The first search shows a one-time notice that queries go to `api.tavily.com`. |
 | 142 | Web results in answers | **Data, cited.** Results are wrapped as data, not instructions, like topic source (decision 61): text in a fetched page never changes the assistant's rules. Every claim drawn from the web names its source as a link with its full URL (Viewer: under "Beyond the topic"); the activity pill lists searches and pages read like lookups (125), each row opening its URL in a new tab. In Studio, content written from a web source keeps the source in the reply, not in the `.oui` files, unless the author asks for it. |
+
+## Decisions 129–137 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Changeset: `StagedFile` / `StagedChange` (statement `replace` / `add` / `delete`, `create`, topic `field`, `section`), `fileView` (re-based by statement name, conflicts, `only` for ticked statements), `stagedFiles`, `stagedContext`, `stageStatements`, `stageSection`, `stageTopic`, `newErrors`, `decide`, `applyRank`, `changesetNote`, `readChangeset` | `assistant/changeset.ts` |
+| `EDIT_TOOLS` (`edit_section`, `create_section`, `edit_topic`, `describe_components`) and `EditToolRunner`, whose results are the dry run's verdict | `assistant/edit-tools.ts` |
+| `STUDIO_CONTENT_TOOLS` (`read` gives source by default); `ContentToolRunner(context, sourceByDefault)` | `assistant/content-tools.ts` |
+| The loop in Studio: content and edit tools, `MAX_STUDIO_TOOL_ROUNDS` (16), reads over `stagedContext`; `applyStagedFile`, `applyAllStaged`, `rejectStagedFile`, `rejectAllStaged`; the decision note on the next message | `assistant/useAssistant.ts` |
+| `AssistantThread.staged`, `ThreadMessage.stagedNote` (sent after the topic context) | `assistant/thread.ts` |
+| Staged cards (checkbox per change, conflict with both versions, Apply / Reject the ticked ones, Show in code) and the Apply all / Reject all bar, under the conversation; edit rows in the activity pill ("Staged 2 edits") | `assistant/StagedChanges.tsx`, `assistant/AssistantPanel.tsx`, `assistant.css` |
+| Studio prompt with the tools: **Tools**, **Changing the Topic**, **Planning and Brainstorming** (no `oui-edit` rules); without them the old **Proposing Changes** | `composition/oui/assistant-prompt.ts` |
+
+- **Deviation from decision 131:** `create_section` has no `title`; a section's title lives in its source. A new section and its `SectionRef` are applied and rejected together, because Studio's workspace lists a section as soon as its file exists; applying the file writes topic.oui with the `SectionRef` where the model put it.
+- **Addition:** `describe_components(names)` returns the reference entries of components the model is about to write (and those they contain), since with the tools a request no longer carries entries only for picked source.
+- The `<topic-context>` block is still built from the buffers (what the author sees and picks); the tools see the staged view. What the author decided goes with their next message as one note ("applied q1; rejected q2", plus what is still staged), marked reported so it is said once.
+- `oui-edit` blocks a model writes even with the tools on still become edit cards; the single validation retry applies to them as before.
+- Tests: `changeset.test.ts` (staging, re-basing, conflicts, ticked statements, new sections and metadata, the note, the runner's verdicts, Studio reads), `assistant-dock.test.tsx` (the Studio loop across two files, Apply and Reject all, the note on the next message; a new section applied in place after a reload; the `oui-edit` tests now run with the tools off), `tests/e2e/assistant.spec.ts` (an `edit_section` call staged, applied from its card and saved).
 
 ## Open Questions
 

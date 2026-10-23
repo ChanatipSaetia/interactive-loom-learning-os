@@ -163,7 +163,7 @@ const describe = (d: { line?: number; message: string; fixHint?: string }) =>
   `${d.line ? `line ${d.line}: ` : ''}${d.message}${d.fixHint ? ` (fix: ${d.fixHint})` : ''}`
 
 /** Errors (tiers 1–2) of a file as it would be; topic.oui is checked against the files it lists. */
-function fileErrors(topicId: string, file: string, files: Record<string, string>): string[] {
+export function fileErrors(topicId: string, file: string, files: Record<string, string>): string[] {
   const source = files[file]
   if (source === undefined) return []
   if (file === 'topic.oui') {

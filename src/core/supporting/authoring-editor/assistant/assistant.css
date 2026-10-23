@@ -567,3 +567,26 @@
 .ai-proposal-problems strong { display: inline-flex; align-items: center; gap: 6px; }
 .ai-proposal-problems ul, .ai-auto-problems { margin: 4px 0 0; padding-left: 18px; list-style: disc; }
 .ai-message--user.is-auto { background: color-mix(in srgb, var(--ctp-yellow, var(--primary)) 10%, var(--card)); font-size: 12px; }
+
+/* Staged changes (decisions 133–134) */
+.ai-staged {
+  margin: 12px 0 4px;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, var(--border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+}
+.ai-staged-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 2px 8px;
+  font-size: 13px;
+}
+.ai-staged-list { margin: 0; padding: 0; list-style: none; }
+.ai-staged-change { padding: 6px 10px 2px; border-bottom: 1px solid var(--border); }
+.ai-staged-change:last-child { border-bottom: 0; }
+.ai-staged-change .ai-check { align-items: center; font-size: 12px; color: var(--foreground); }
+.ai-staged-change .ai-diff { max-height: 220px; padding: 4px 0; margin: 4px -10px 0; }
+.ai-staged-change.is-conflict { background: color-mix(in srgb, var(--destructive) 5%, transparent); }
+.ai-staged-change > .ai-note { margin: 2px 0 0; }

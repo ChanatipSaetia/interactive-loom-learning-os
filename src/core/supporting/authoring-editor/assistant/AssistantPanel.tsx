@@ -8,7 +8,7 @@
  * starts. `AssistantToggle` opens the panel from the page header.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { AlertTriangle, ArrowUpRight, Bot, Brain, ChevronDown, FileText, ListTree, Loader2, MessageSquarePlus, RotateCcw, Search, Settings2, X } from 'lucide-react'
+import { AlertTriangle, ArrowUpRight, BookOpen, Bot, Brain, ChevronDown, FilePlus2, FileText, ListTree, Loader2, MessageSquarePlus, PencilLine, RotateCcw, Search, Settings2, Tags, X } from 'lucide-react'
 import { Modal } from '../../../ui-system'
 import { findPickElement } from '../pick/PickLayer'
 import { useNarrow } from '../pick/PickMode'
@@ -17,6 +17,8 @@ import { statementOfAnchor } from '../pick/tray'
 import { AssistantMarkdown } from './AssistantMarkdown'
 import { EditCard, ProposalBar, useEditBlocks } from './AssistantEdits'
 import { AssistantSettingsDialog } from './AssistantSettingsDialog'
+import { StagedChanges } from './StagedChanges'
+import { EDIT_TOOL_NAMES } from './edit-tools'
 import { failureHint, type AssistantPresetId } from './presets'
 import type { ThreadMessage, ThreadPick, ToolStepCall } from './thread'
 import type { AssistantFailureKind } from './client'
@@ -119,7 +121,10 @@ const FAILURE_TITLES: Partial<Record<AssistantFailureKind, string>> = {
   'invalid-url': 'Not a valid base URL',
 }
 
-const TOOL_ICONS: Record<string, typeof Search> = { navigate: ListTree, read: FileText }
+const TOOL_ICONS: Record<string, typeof Search> = { navigate: ListTree, read: FileText, edit_section: PencilLine, create_section: FilePlus2, edit_topic: Tags, describe_components: BookOpen }
+
+/** Calls that stage a change (decision 130), counted apart from lookups. */
+const isEdit = (name: string) => EDIT_TOOL_NAMES.has(name) && name !== 'describe_components'
 
 /** "Knowledge Check › A logged-in…" → the section, then the part. */
 function splitLabel(name: string, label: string): { title: string; detail?: string } {
@@ -166,11 +171,16 @@ function Activity({ message }: { message: ThreadMessage }) {
   if (message.thinking) rows.push({ kind: 'thought', key: 'final', text: message.thinking, live: thinkingNow })
   if (!rows.length) return null
 
-  const calls = rows.filter((r) => r.kind === 'call').length
+  const calls = rows.filter((r) => r.kind === 'call' && !isEdit(r.call.name)).length
+  const edits = rows.filter((r) => r.kind === 'call' && isEdit(r.call.name)).length
   const thought = rows.some((r) => r.kind === 'thought')
   const lastCall = [...rows].reverse().find((r): r is Extract<ActivityRow, { kind: 'call' }> => r.kind === 'call')
   const looking = streaming && !message.text && !thinkingNow && !!lastCall
-  const done = [thought ? thoughtLabel(message.thoughtMs) : '', calls ? `Looked at ${calls} ${calls === 1 ? 'place' : 'places'}` : ''].filter(Boolean).join(' · ')
+  const done = [
+    thought ? thoughtLabel(message.thoughtMs) : '',
+    calls ? `Looked at ${calls} ${calls === 1 ? 'place' : 'places'}` : '',
+    edits ? `Staged ${edits} ${edits === 1 ? 'edit' : 'edits'}` : '',
+  ].filter(Boolean).join(' · ')
   const busy = thinkingNow || looking
   const preview = thinkingNow && !open ? lastLine(message.thinking ?? '') : ''
 
@@ -179,7 +189,7 @@ function Activity({ message }: { message: ThreadMessage }) {
       <button type="button" className="ai-activity-toggle" aria-expanded={open} onClick={() => setOpen((o) => !o)} data-testid="ai-activity-toggle">
         {busy ? <Loader2 size={13} className="ai-spin" aria-hidden /> : thought && !calls ? <Brain size={13} aria-hidden /> : <Search size={13} aria-hidden />}
         <span className="ai-activity-summary">
-          {thinkingNow ? 'Thinking…' : looking ? <>Looking at <b>{splitLabel(lastCall!.call.name, lastCall!.call.label).title}</b>…</> : done}
+          {thinkingNow ? 'Thinking…' : looking ? <>{isEdit(lastCall!.call.name) ? 'Editing' : 'Looking at'} <b>{splitLabel(lastCall!.call.name, lastCall!.call.label).title}</b>…</> : done}
         </span>
         <ChevronDown size={13} className="ai-activity-chevron" aria-hidden />
       </button>
@@ -200,7 +210,7 @@ function Activity({ message }: { message: ThreadMessage }) {
             }
             const { call } = row
             const place = call.file ? { file: call.file, anchor: call.anchor ?? 'root' } : null
-            const { title, detail } = splitLabel(call.name, call.label)
+            const { title, detail } = isEdit(call.name) ? { title: call.label, detail: call.file } : splitLabel(call.name, call.label)
             const Icon = TOOL_ICONS[call.name] ?? Search
             return (
               <li key={row.key}>
@@ -414,6 +424,7 @@ export function AssistantDock({ assistant, resolve, fetchImpl }: AssistantDockPr
                 )}
               </div>
             ))}
+            {assistant.canEdit && <StagedChanges assistant={assistant} />}
           </div>
         </aside>
       )}

@@ -20,6 +20,7 @@
 import type { ChatMessage } from './client'
 import type { ContextPointer } from './context'
 import type { AssistantApp } from '../../../learning-engine/composition/oui/assistant-prompt'
+import { readChangeset, type Changeset } from './changeset'
 
 /** A pick sent with a message, shown as a chip. */
 export interface ThreadPick {
@@ -97,6 +98,8 @@ export interface ThreadMessage {
   context?: string
   /** User messages: keys of the parts that block carries (see `buildTopicContext`). */
   sent?: string[]
+  /** User messages in Studio: what the author decided about staged changes since the last turn (decision 135). */
+  stagedNote?: string
   at: number
 }
 
@@ -104,6 +107,8 @@ export interface AssistantThread {
   messages: ThreadMessage[]
   /** Id of the first message still sent; earlier ones were dropped for the token budget. */
   start?: string
+  /** Studio: changes the edit tools staged, kept until applied or rejected (decisions 133–135). */
+  staged?: Changeset
 }
 
 export const EMPTY_THREAD: AssistantThread = { messages: [] }
@@ -149,6 +154,7 @@ function readMessage(value: unknown): ThreadMessage | null {
     out.picks = Array.isArray(message.picks) ? message.picks.map(readPick).filter((p): p is ThreadPick => p !== null) : []
     out.mode = message.mode === 'ask' ? 'ask' : 'comment'
     if (message.auto === true) out.auto = true
+    if (typeof message.stagedNote === 'string' && message.stagedNote) out.stagedNote = message.stagedNote
     if (typeof message.context === 'string') {
       out.context = message.context
       out.sent = Array.isArray(message.sent) ? message.sent.filter((k): k is string => typeof k === 'string') : []
@@ -179,9 +185,12 @@ export function loadThread(topicId: string): AssistantThread {
   try {
     const raw = localStorage.getItem(storageKey(topicId))
     if (!raw) return EMPTY_THREAD
-    const parsed = JSON.parse(raw) as { messages?: unknown; start?: unknown }
+    const parsed = JSON.parse(raw) as { messages?: unknown; start?: unknown; staged?: unknown }
     const messages = Array.isArray(parsed.messages) ? parsed.messages.map(readMessage).filter((m): m is ThreadMessage => m !== null) : []
-    return typeof parsed.start === 'string' && messages.some((m) => m.id === parsed.start) ? { messages, start: parsed.start } : { messages }
+    const thread: AssistantThread = typeof parsed.start === 'string' && messages.some((m) => m.id === parsed.start) ? { messages, start: parsed.start } : { messages }
+    const staged = readChangeset(parsed.staged)
+    if (staged.length) thread.staged = staged
+    return thread
   } catch {
     return EMPTY_THREAD
   }
@@ -189,7 +198,7 @@ export function loadThread(topicId: string): AssistantThread {
 
 export function saveThread(topicId: string, thread: AssistantThread): void {
   try {
-    if (thread.messages.length === 0) localStorage.removeItem(storageKey(topicId))
+    if (thread.messages.length === 0 && !thread.staged?.length) localStorage.removeItem(storageKey(topicId))
     else localStorage.setItem(storageKey(topicId), JSON.stringify(thread))
   } catch {
     // Storage full or blocked: the thread lasts for this page only.
@@ -206,6 +215,7 @@ export const estimateTokens = (text: string) => Math.ceil(text.length / 4)
 export function userMessageContent(message: ThreadMessage, app: AssistantApp = 'studio'): string {
   const parts: string[] = []
   if (message.context) parts.push(message.context)
+  if (message.stagedNote) parts.push(message.stagedNote)
   const picks = message.picks ?? []
   if (picks.length) {
     const list = picks

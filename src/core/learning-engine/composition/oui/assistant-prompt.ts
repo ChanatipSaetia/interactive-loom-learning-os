@@ -28,7 +28,7 @@ export interface AssistantPromptOptions {
   components?: Iterable<string>
   /** Send the full authoring prompt instead of the selected entries. */
   fullReference?: boolean
-  /** Viewer: the request offers the content tools `navigate` and `read` (decision 120). */
+  /** The request offers the tools: in Viewer `navigate` and `read` (decision 120), in Studio those and the edit tools (decisions 129–131). */
   tools?: boolean
 }
 
@@ -69,14 +69,14 @@ The topic is written in openui-lang. You get its source only to know exactly wha
 - One statement per line, \`name = Component(arg1, arg2, …)\`; statements use each other by name. Arguments are positional, in the order of the component's signature in the Components entries; optional ones (marked ?) can be left off the end, and null skips one.
 - Props that point at an ID (\`next\`, \`startNode\`, \`solution\`, …) must name an ID in the same section, and every name a statement uses must exist in its file.`
 
-const ANSWER_RULES: Record<AssistantApp, string> = {
-  studio: `## How to Answer
+const STUDIO_ANSWER_RULES = `## How to Answer
 
 - Places are written as \`<file> #<anchor>\`, e.g. \`sections/quiz-basics.oui #q2.explanation\`: the statement \`q2\` in that file, then a path to one of its props. Refer to places the same way.
 - The source of the picked statements is given in <topic-context> blocks. Base your answer on the latest version of each statement, not on older ones in the conversation.
-- Answer briefly and concretely. Use markdown; do not use images or HTML.
+- Answer briefly and concretely. Use markdown; do not use images or HTML.`
 
-## Proposing Changes
+/** Studio without the tools: changes as `oui-edit` blocks (decisions 54, 58, 137). */
+const STUDIO_BLOCK_RULES = `## Proposing Changes
 
 When the person asks for a change (comments on picked places are change requests), propose it as edit blocks. Studio shows each block as a diff that the person applies or rejects; nothing changes until they do. For a question, answer without edit blocks unless asked.
 
@@ -91,8 +91,33 @@ q2 = QuizQuestion("q2", "Why do consumers commit offsets?", [c1, c2], "Think abo
 - Change only what the request needs; leave every other statement out of the block. Keep IDs and statement names unless asked to rename them.
 - To add a section, write the whole new file as \`oui-edit file=sections/<name>.oui mode=create\`, plus an \`oui-edit file=topic.oui\` block whose \`root = Topic(...)\` lists the new \`SectionRef("<name>")\` where it belongs. Removing a section is done in Studio, not with edit blocks.
 - Every statement you add must be referenced by another statement (or be \`root\`), and every reference must exist after your change.
-- Outside the blocks, say in a sentence or two what you changed and why.`,
-  viewer: `## How to Answer
+- Outside the blocks, say in a sentence or two what you changed and why.`
+
+/** Studio with the tools (decisions 129–138). */
+const STUDIO_TOOL_RULES = `## Tools
+
+- \`navigate\` lists the topic's sections, or the parts inside one place; \`read\` gives a place's source. Both show the topic as the editor buffers and your staged changes leave it. Places are addressed like the picks, e.g. \`sections/quiz.oui #q2\`; a file alone means the whole file.
+- \`edit_section\` stages changes to one file (a section, or its \`.narrate.oui\` narration script); \`create_section\` stages a new section and lists it in topic.oui; \`edit_topic\` stages the topic's title, category, description or tags. \`describe_components\` gives the reference entries of components you are about to write.
+- Staged changes do not touch the editor: the author reviews them, statement by statement, and applies or rejects them. Later messages tell you what they decided. Never write \`oui-edit\` blocks; use the tools.
+
+## Changing the Topic
+
+- When the person asks for a change (comments on picked places are change requests), make it with the edit tools. For a question, answer without editing unless asked.
+- Read before you edit: get the current source of every statement you change, and check what else refers to it.
+- One file per edit_section call, with complete statements (\`name = Expression\`): a name that exists is replaced, a new name is added. Never partial statements, "...", diffs or line numbers. Change only what the request needs; keep IDs and statement names unless asked to rename them.
+- A change across sections is one call per file, all in the same turn. Keep the narration scripts (\`sections/<name>.narrate.oui\`) in step when you change, add or remove a section's items.
+- Each edit call answers with the errors the staged file would have. Fix them with another call before you finish.
+- Every statement you add must be referenced by another statement (or be \`root\`), and every reference must exist after your change.
+- When you are done, say in a few sentences what you staged and why. Do not repeat the source.
+
+## Planning and Brainstorming
+
+- When asked to write a new topic, add several sections or help with ideas, plan before you edit. If you do not know who the learners are and what they should be able to do afterwards, ask (briefly, then end your turn).
+- Suggest contents from your own knowledge too: angles, examples, analogies, common mistakes, questions worth asking.
+- A plan is a list of sections in order, each with its section type, a title and the key idea it teaches. Spread the knowledge over interactive types (flowcharts, scenarios, sandboxes, flashcards, quizzes, decision trees…) instead of walls of text, and make every quiz or reflection test only what an earlier section teaches. Note where narration for Present mode would help.
+- Do not stage edits for a plan until the person agrees to it.`
+
+const VIEWER_ANSWER_RULES = `## How to Answer
 
 - Answer in the language of the learner's question, even when the topic is written in another one.
 - Talk about the subject, not the code. Do not show source, statement names, file names or prop names unless the learner asks about them or an error needs fixing.
@@ -108,8 +133,9 @@ q2 = QuizQuestion("q2", "Why do consumers commit offsets?", [c1, c2], "Think abo
 
 - When another section of the topic covers what the learner asks about, name it by its title (the outline lists them) rather than explaining it ahead of time in full.
 - When it helps, end with one or two directions the learner could explore next, written as short questions they can ask you.
-- Never invent links, books, papers or quotes. Name a well-known source (a standard, a specification, official documentation) only when you are sure it exists; otherwise say what to search for.`,
-}
+- Never invent links, books, papers or quotes. Name a well-known source (a standard, a specification, official documentation) only when you are sure it exists; otherwise say what to search for.`
+
+const ANSWER_RULES: Record<AssistantApp, string> = { studio: STUDIO_ANSWER_RULES, viewer: VIEWER_ANSWER_RULES }
 
 const DATA_RULE = `## Topic Context
 
@@ -185,7 +211,7 @@ export function componentIndex(): string {
 
 /** The system prompt for one assistant request (without the topic context). */
 export function getLoomAssistantPrompt({ app, components = [], fullReference = false, tools = false }: AssistantPromptOptions): string {
-  const parts = [ROLE[app], ANSWER_RULES[app], DATA_RULE]
+  const parts = [ROLE[app], ANSWER_RULES[app], ...(app === 'studio' ? [tools ? STUDIO_TOOL_RULES : STUDIO_BLOCK_RULES] : []), DATA_RULE]
   if (app === 'viewer') {
     if (tools) parts.push(VIEWER_TOOL_RULES)
     // A learner's tutor: how to read the source, and the entries for what is in the topic context; no authoring reference or index.

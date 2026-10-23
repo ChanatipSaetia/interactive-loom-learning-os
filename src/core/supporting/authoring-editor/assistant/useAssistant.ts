@@ -18,15 +18,20 @@
  * model once, automatically. Applying a block writes the buffer only; Save
  * writes the files.
  *
- * In Viewer, with the profile's tools on, the model can call the content
- * tools (decisions 120–124): up to `MAX_TOOL_ROUNDS` rounds of calls run in
- * the page before it must answer, and each round is kept on the reply.
+ * With the profile's tools on, the model can call the content tools
+ * (decisions 120–124, and 129 in Studio): up to `MAX_TOOL_ROUNDS` rounds of
+ * calls (`MAX_STUDIO_TOOL_ROUNDS` in Studio) run in the page before it must
+ * answer, and each round is kept on the reply. In Studio the edit tools
+ * stage their changes in the thread's changeset (decisions 130–135), which
+ * the author applies to the buffers statement by statement.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getLoomAssistantPrompt, type AssistantApp } from '../../../learning-engine/composition/oui/assistant-prompt'
 import { AssistantError, chatCompletion, isLoopbackHost, listModels } from './client'
 import { buildTopicContext, type AssistantTopicContext } from './context'
-import { CONTENT_TOOLS, CONTENT_TOOL_NAMES, ContentToolRunner } from './content-tools'
+import { CONTENT_TOOLS, CONTENT_TOOL_NAMES, ContentToolRunner, STUDIO_CONTENT_TOOLS } from './content-tools'
+import { EDIT_TOOLS, EDIT_TOOL_NAMES, EditToolRunner } from './edit-tools'
+import { applyRank, changesetNote, decide, fileView, stagedContext, type Changeset } from './changeset'
 import { applyEditBlock, applyOrder, checkProposal, parseEditBlocks } from './edits'
 import {
   activeProfile,
@@ -57,6 +62,9 @@ import {
 
 /** Tool rounds per message before the model must answer (decision 124). */
 export const MAX_TOOL_ROUNDS = 6
+
+/** Studio's limit, for reading and editing several sections in one turn (decision 136). */
+export const MAX_STUDIO_TOOL_ROUNDS = 16
 
 const LIMIT_NOTE = '\n\n(Tool limit reached for this message: answer now with what you have.)'
 const UNCHANGED = 'Unchanged since your earlier call with the same arguments: use that result.'
@@ -236,8 +244,13 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     const controller = new AbortController()
     abort.current?.abort()
     abort.current = controller
-    // Viewer's content tools (decision 120); off for the rest of this request once the server refuses them.
-    let tools = app === 'viewer' && profile.tools
+    // The content tools (decisions 120, 129) and Studio's edit tools; off for the rest of this request once the server refuses them.
+    const studio = app === 'studio' && !!editorRef.current
+    let tools = (app === 'viewer' || studio) && profile.tools
+    const toolList = studio ? [...STUDIO_CONTENT_TOOLS, ...EDIT_TOOLS] : CONTENT_TOOLS
+    const toolNames = toolList.map((t) => t.function.name).join(', ')
+    const maxRounds = studio ? MAX_STUDIO_TOOL_ROUNDS : MAX_TOOL_ROUNDS
+    let staged: Changeset = threadRef.current.staged ?? []
     let toolsRefused = false
     let messages = thread
     let start = historyStart(messages, profile.tokenBudget, threadRef.current.start)
@@ -253,14 +266,22 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
       })
       return { ...last, context: block.text, sent: block.keys }
     }
+    // What the author decided about staged changes goes with the next message they write (decision 135).
+    if (studio && last?.role === 'user' && last.context === undefined && last.stagedNote === undefined && !last.auto) {
+      const { note, changeset } = changesetNote(staged)
+      if (note) {
+        staged = changeset
+        messages = [...messages.slice(0, -1), { ...last, stagedNote: note }]
+      }
+    }
     const prepare = () => {
       if (last?.role !== 'user' || last.context !== undefined) return
-      messages = [...messages.slice(0, -1), withContext(start)]
+      messages = [...messages.slice(0, -1), { ...withContext(start), stagedNote: messages[messages.length - 1].stagedNote }]
       // The block itself can push the history over the budget; then cut and build it again.
       const moved = historyStart(messages, profile.tokenBudget, messages[start]?.id)
       if (moved !== start) {
         start = moved
-        messages = [...messages.slice(0, -1), withContext(start)]
+        messages = [...messages.slice(0, -1), { ...withContext(start), stagedNote: messages[messages.length - 1].stagedNote }]
       }
     }
     prepare()
@@ -272,7 +293,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
       via: { host: hostOf(profile.baseUrl), model: profile.model },
       at: Date.now(),
     }
-    setThread({ messages: [...messages, reply], start: messages[start]?.id })
+    setThread({ messages: [...messages, reply], start: messages[start]?.id, staged })
 
     let followUp: ThreadMessage[] | null = null
     let steps: ToolStep[] = []
@@ -296,8 +317,8 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
             {
               model: profile.model,
               messages: [{ role: 'system', content: system }, ...historyMessages(messages, start, { app, tools }), ...toolStepMessages(steps)],
-              tools: tools ? CONTENT_TOOLS : undefined,
-              toolChoice: tools && round >= MAX_TOOL_ROUNDS ? 'none' : undefined,
+              tools: tools ? toolList : undefined,
+              toolChoice: tools && round >= maxRounds ? 'none' : undefined,
               signal: controller.signal,
               onDelta: (delta) => {
                 stopThinking()
@@ -319,32 +340,39 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
             // Built for the tools; without them the section in view goes whole again.
             messages = [...messages.slice(0, -1), { ...messages[messages.length - 1], context: undefined, sent: undefined }]
             prepare()
-            setThread({ messages: [...messages, reply], start: messages[start]?.id })
+            setThread({ messages: [...messages, reply], start: messages[start]?.id, staged })
           }
           round--
           continue
         }
         stopThinking()
-        const calls = tools && round < MAX_TOOL_ROUNDS ? result.toolCalls : undefined
+        const calls = tools && round < maxRounds ? result.toolCalls : undefined
         if (!calls?.length) break
-        const runner = new ContentToolRunner(contextRef.current())
         const earlier = earlierResults([...messages.slice(start), { ...reply, steps }])
         const step: ToolStep = {
           text: result.text,
           ...(result.reasoning ? { thinking: clipThinking(result.reasoning) } : {}),
           calls: calls.map((call): ToolStepCall => {
-            const outcome = CONTENT_TOOL_NAMES.has(call.function.name)
-              ? runner.run(call.function.name, call.function.arguments)
-              : { content: `Error: there is no tool "${call.function.name}". The tools are navigate and read.`, label: call.function.name }
-            const key = callKey(call.function.name, call.function.arguments)
+            const name = call.function.name
+            if (studio && EDIT_TOOL_NAMES.has(name)) {
+              const outcome = new EditToolRunner(contextRef.current(), staged).run(name, call.function.arguments)
+              staged = outcome.changeset
+              return { id: call.id, name, args: call.function.arguments, result: outcome.content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
+            }
+            // Reads see the staged changes (decision 129).
+            const outcome = CONTENT_TOOL_NAMES.has(name)
+              ? new ContentToolRunner(studio ? stagedContext(contextRef.current(), staged) : contextRef.current(), studio).run(name, call.function.arguments)
+              : { content: `Error: there is no tool "${name}". The tools are ${toolNames}.`, label: name }
+            const key = callKey(name, call.function.arguments)
             const content = earlier.get(key) === outcome.content ? UNCHANGED : outcome.content
-            return { id: call.id, name: call.function.name, args: call.function.arguments, result: content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
+            return { id: call.id, name, args: call.function.arguments, result: content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
           }),
         }
-        if (round === MAX_TOOL_ROUNDS - 1) step.calls = step.calls.map((c, i, all) => (i === all.length - 1 ? { ...c, result: c.result + LIMIT_NOTE } : c))
+        if (round === maxRounds - 1) step.calls = step.calls.map((c, i, all) => (i === all.length - 1 ? { ...c, result: c.result + LIMIT_NOTE } : c))
         steps = [...steps, step]
         // The text and thinking written with the calls move into the round; the answer streams in fresh.
         patchMessage(reply.id, { text: '', thinking: undefined, steps })
+        if (studio) setThread((t) => ({ ...t, staged }))
       }
       if (toolsRefused) {
         setSettings((current) => {
@@ -486,6 +514,85 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
 
   const showEdit = useCallback((file: string, statement?: string) => editorRef.current?.reveal(file, statement), [])
 
+  const setStaged = useCallback((update: (staged: Changeset) => Changeset) => {
+    setThread((t) => {
+      const { staged: before, ...rest } = t
+      const staged = update(before ?? [])
+      return staged.length ? { ...rest, staged } : rest
+    })
+  }, [setThread])
+
+  /**
+   * Apply one staged file's pending changes (or those named in `names`) to
+   * its buffer (decision 133). Conflicts stay staged. A new section brings
+   * its SectionRef along, so it lands where the model put it. Returns why it
+   * could not be applied, or null.
+   */
+  const applyStagedFile = useCallback((file: string, names?: ReadonlySet<string>): string | null => {
+    const target = editorRef.current
+    const staged = threadRef.current.staged ?? []
+    const entry = staged.find((s) => s.file === file)
+    if (!target || !entry) return null
+    const files = contextRef.current().files
+    const view = fileView(files[file], entry, names)
+    const pending = entry.changes.filter((c) => c.state === 'pending' && (!names || names.has(c.name)))
+    // SectionRefs go with their new files; on their own they wait.
+    const waiting = file === 'topic.oui'
+      ? new Set(pending.filter((c) => c.kind === 'section' && files[`sections/${c.name}.oui`] === undefined).map((c) => c.name))
+      : new Set<string>()
+    const chosen = new Set(pending.map((c) => c.name).filter((n) => !view.conflicts.has(n) && !waiting.has(n)))
+    if (!chosen.size) return view.conflicts.size ? 'These changes clash with edits in the editor; reject them or ask again.' : null
+    let next = waiting.size ? fileView(files[file], entry, chosen).source : view.source
+    if (next !== undefined && next !== files[file]) {
+      const error = target.write(file, next)
+      if (error) return error
+    }
+    let decided = decide(staged, file, chosen, 'applied')
+    const created = entry.changes.find((c) => c.kind === 'create' && chosen.has(c.name))
+    const section = created ? /^sections\/([^/.]+)\.oui$/.exec(file)?.[1] : undefined
+    const topic = section ? decided.find((s) => s.file === 'topic.oui') : undefined
+    if (section && topic?.changes.some((c) => c.kind === 'section' && c.name === section && c.state === 'pending')) {
+      next = fileView(contextRef.current().files['topic.oui'], topic, new Set([section])).source
+      const error = next !== undefined ? target.write('topic.oui', next) : null
+      if (!error) decided = decide(decided, 'topic.oui', new Set([section]), 'applied')
+    }
+    threadRef.current = { ...threadRef.current, staged: decided }
+    setStaged(() => decided)
+    return null
+  }, [setStaged])
+
+  /** Apply every staged file: new files, then sections, then topic.oui. Returns the errors by file. */
+  const applyAllStaged = useCallback((): Record<string, string> => {
+    const errors: Record<string, string> = {}
+    const order = [...(threadRef.current.staged ?? [])].sort((a, b) => applyRank(a) - applyRank(b))
+    let first: string | null = null
+    for (const entry of order) {
+      if (!entry.changes.some((c) => c.state === 'pending')) continue
+      const error = applyStagedFile(entry.file)
+      if (error) errors[entry.file] = error
+      else first ??= entry.file
+    }
+    if (first) editorRef.current?.reveal(first)
+    return errors
+  }, [applyStagedFile])
+
+  /** Reject a staged file's pending changes (or those named); a new file takes its SectionRef with it. */
+  const rejectStagedFile = useCallback((file: string, names?: ReadonlySet<string>) => {
+    setStaged((staged) => {
+      const entry = staged.find((s) => s.file === file)
+      let next = decide(staged, file, names ?? null, 'rejected')
+      const section = /^sections\/([^/.]+)\.oui$/.exec(file)?.[1]
+      if (section && entry?.changes.some((c) => c.kind === 'create' && c.state === 'pending' && (!names || names.has(c.name)))) {
+        next = decide(next, 'topic.oui', new Set([section]), 'rejected')
+      }
+      return next
+    })
+  }, [setStaged])
+
+  const rejectAllStaged = useCallback(() => {
+    setStaged((staged) => staged.reduce((acc, s) => decide(acc, s.file, null, 'rejected'), staged))
+  }, [setStaged])
+
   const newChat = useCallback(() => {
     abort.current?.abort()
     setThread(EMPTY_THREAD)
@@ -534,6 +641,12 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     currentFiles: () => contextRef.current().files,
     applyEdit,
     applyAllEdits,
+    /** Studio: the changeset the edit tools staged (decision 133). */
+    staged: thread.staged ?? [],
+    applyStagedFile,
+    applyAllStaged,
+    rejectStagedFile,
+    rejectAllStaged,
     rejectEdit,
     showEdit,
     updateSettings,

@@ -58,7 +58,21 @@ export {
 export type { AssistantProfile, AssistantSettings, StoredKey } from './profiles'
 export { buildTopicContext, fileStatements, textHash } from './context'
 export type { AssistantTopicContext, ContextPointer, FileStatement, TopicContextBlock, TopicContextOptions, AssistantView } from './context'
-export { CONTENT_TOOLS, ContentToolRunner, parseAddress } from './content-tools'
+export { CONTENT_TOOLS, ContentToolRunner, STUDIO_CONTENT_TOOLS, parseAddress } from './content-tools'
+export { EDIT_TOOLS, EditToolRunner } from './edit-tools'
+export type { EditToolOutcome } from './edit-tools'
+export { StagedChanges } from './StagedChanges'
+export {
+  changesetNote,
+  fileView,
+  newErrors,
+  stageSection,
+  stageStatements,
+  stageTopic,
+  stagedContext,
+  stagedFiles,
+} from './changeset'
+export type { Changeset, FileView, StagedChange, StagedFile, StagedState } from './changeset'
 export type { ContentAddress, ToolDefinition, ToolOutcome } from './content-tools'
 export {
   EMPTY_THREAD,
@@ -74,5 +88,5 @@ export {
   userMessageContent,
 } from './thread'
 export type { AssistantThread, EditHunkState, HistoryForRequest, HistoryOptions, ThreadMessage, ThreadMessageStatus, ThreadPick, ToolStep, ToolStepCall } from './thread'
-export { MAX_TOOL_ROUNDS, hostOf, retryMessage, useAssistant } from './useAssistant'
+export { MAX_STUDIO_TOOL_ROUNDS, MAX_TOOL_ROUNDS, hostOf, retryMessage, useAssistant } from './useAssistant'
 export type { AssistantDraft, AssistantEditor, AssistantState, RemoteNotice, UseAssistantOptions } from './useAssistant'
