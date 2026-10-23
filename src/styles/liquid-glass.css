@@ -48,11 +48,25 @@
 /* ---- floating glass: blurs what is behind it ---- */
 
 :root[data-theme^='liquid-glass'] .topnav {
-  background: var(--glass-tint-dark);
+  background: none;
   border-bottom-color: var(--glass-edge);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 8px 30px -18px var(--glass-drop);
+}
+
+/* The header's glass sits on a layer behind its content rather than on the header itself: a
+   backdrop-filter on the header would stop its ⋯ menu from seeing (and refracting) the page */
+:root[data-theme^='liquid-glass'] .topnav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--glass-tint-dark);
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 8px 30px -18px var(--glass-drop);
+  pointer-events: none;
 }
 
 :root[data-theme^='liquid-glass'] .section-wrapper {
@@ -62,6 +76,11 @@
 :root[data-theme^='liquid-glass'] .flowchart-header-container {
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
+}
+
+/* Panes that float over content: the rim catches light like the edge of thick glass */
+:root[data-theme^='liquid-glass'] :is(.topnav, .pick-bar, .viewer-menu, .present-caption, .present-controls) {
+  box-shadow: var(--glass-rim), var(--glass-shadow);
 }
 
 :root[data-theme^='liquid-glass'] .pick-bar,
@@ -88,10 +107,12 @@
   background: var(--glass-sheen), color-mix(in srgb, var(--primary) 18%, var(--glass-tint-dark));
 }
 
-/* The header's ⋯ menu: solid, since the header's own blur keeps it from blurring the page */
+/* The header's ⋯ menu: frosted glass over the page */
 :root[data-theme^='liquid-glass'] .viewer-menu {
-  background: var(--glass-sheen), var(--glass-solid);
+  background: var(--glass-sheen), var(--glass-menu);
   border-color: var(--glass-edge);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--glass-highlight), 0 24px 60px -20px var(--glass-drop);
 }
 :root[data-theme^='liquid-glass'] .viewer-menu > .viewer-pill,
@@ -530,6 +551,7 @@
     --glass-tint-dark: var(--glass-solid);
     --glass-pane: var(--glass-solid);
     --glass-region: var(--glass-solid);
+    --glass-menu: var(--glass-solid);
     --glass-sheen: linear-gradient(transparent, transparent);
     --glass-filter: none;
   }
