@@ -107,9 +107,9 @@
   background: var(--glass-sheen), color-mix(in srgb, var(--primary) 18%, var(--glass-tint-dark));
 }
 
-/* Liquid lens (Chromium, src/core/ui-system/theme/glass-lens.ts): bars that float over content bend
+/* Liquid lens (Chromium, src/core/ui-system/theme/glass-lens.ts): bars and dialogs that float over content bend
    what passes under their rim, then soften it. Elsewhere, and on the ⋯ menu, panes keep the blur. */
-:root[data-theme^='liquid-glass'][data-glass-lens] :is(.pick-bar, .present-caption, .present-controls),
+:root[data-theme^='liquid-glass'][data-glass-lens] :is(.pick-bar, .present-caption, .present-controls, .ui-modal),
 :root[data-theme^='liquid-glass'][data-glass-lens] .topnav::before {
   backdrop-filter: url(#liquid-lens) var(--glass-lens-blur) var(--glass-lens-tone);
   -webkit-backdrop-filter: url(#liquid-lens) var(--glass-lens-blur) var(--glass-lens-tone);
@@ -154,10 +154,7 @@
   box-shadow: var(--glass-highlight), 0 30px 80px -20px var(--glass-drop);
 }
 
-/* The shared Modal's sticky title bar: --card is nearly clear in these themes, so match the pane
-   or the form scrolling under it shows through the title */
 :root[data-theme^='liquid-glass'] .ui-modal-header {
-  background: var(--glass-pane);
   border-color: var(--glass-edge);
 }
 
