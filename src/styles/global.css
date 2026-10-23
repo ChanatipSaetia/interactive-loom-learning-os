@@ -12,7 +12,8 @@ html {
 
 html[data-theme='medicare'],
 html[data-theme='recipebook'],
-html[data-theme='eink'] {
+html[data-theme='eink'],
+html[data-theme='liquid-glass-light'] {
   color-scheme: light;
 }
 
@@ -24,7 +25,10 @@ html[data-theme='recipebook'] select,
 html[data-theme='recipebook'] textarea,
 html[data-theme='eink'] input,
 html[data-theme='eink'] select,
-html[data-theme='eink'] textarea {
+html[data-theme='eink'] textarea,
+html[data-theme='liquid-glass-light'] input,
+html[data-theme='liquid-glass-light'] select,
+html[data-theme='liquid-glass-light'] textarea {
   color-scheme: light;
 }
 

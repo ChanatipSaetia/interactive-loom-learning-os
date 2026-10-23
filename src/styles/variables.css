@@ -582,8 +582,118 @@
   --glass-highlight:   inset 0 1px 0 rgba(255, 255, 255, 0.10);
   --glass-shadow:      0 18px 50px -24px rgba(0, 0, 0, 0.55);
   --glass-filter:      blur(24px) saturate(140%);
+  --glass-pane:        rgba(20, 24, 36, 0.84);   /* modals, callouts, Present title card */
+  --glass-face:        rgba(32, 37, 52, 0.72);   /* flashcard faces */
+  --glass-region:      rgba(255, 255, 255, 0.025); /* a Present slide */
+  --glass-sticky:      rgba(18, 21, 32, 0.5);    /* sticky section titles */
+  --glass-well:        rgba(8, 10, 16, 0.45);    /* text inputs */
+  --glass-drop:        rgba(0, 0, 0, 0.6);       /* drop shadows */
+  --glass-selection:   rgba(163, 180, 221, 0.28);
+  --glass-solid:       #1e2230;                  /* surfaces when transparency is reduced */
+  --glass-solid-edge:  #303646;
+  --glass-base:        #0d1018;
   --glass-backdrop:
     radial-gradient(70% 55% at 18% -5%, rgba(122, 142, 196, 0.20), transparent 70%),
     radial-gradient(55% 50% at 90% 105%, rgba(104, 124, 168, 0.13), transparent 70%),
     linear-gradient(180deg, #131722 0%, #0d1018 100%);
+}
+
+/* ============================================================
+   Theme: Liquid Glass Light — Morning Mist (light, translucent, calm)
+
+   The light twin of Midnight Mist: frosted white glass over a pale
+   cool backdrop with two soft periwinkle glows and the same grain.
+   Accents are the Catppuccin hues deepened for contrast on white.
+   Surface roles follow the other light themes (crust = lightest).
+   Shares src/styles/liquid-glass.css with the dark variant.
+============================================================ */
+[data-theme='liquid-glass-light'] {
+  /* shadcn semantic tokens — frosted white surfaces */
+  --background:             #eef1f6;
+  --foreground:             #1e2432;
+  --card:                   rgba(255, 255, 255, 0.55);
+  --card-foreground:        #1e2432;
+  --primary-foreground:     #ffffff;
+  --secondary-foreground:   #ffffff;
+  --muted-foreground:       #5d6578;
+  --accent:                 rgba(255, 255, 255, 0.7);
+  --accent-foreground:      #1e2432;
+  --border:                 rgba(30, 40, 70, 0.10);
+  --input:                  rgba(30, 40, 70, 0.10);
+  --destructive-foreground: #ffffff;
+
+  /* Surfaces — white and pale slate (opaque: SVG fills and nodes use them) */
+  --ctp-crust:     #ffffff;
+  --ctp-mantle:    #f4f6fa;
+  --ctp-base:      #f8f9fc;
+  --ctp-surface0:  #ffffff;
+  --ctp-surface1:  #dfe3eb;
+  --ctp-surface2:  #c6ccd8;
+
+  /* Text — deep slate, never pure black */
+  --ctp-text:      #1e2432;
+  --ctp-subtext1:  #353c4d;
+  --ctp-subtext0:  #4a5265;
+  --ctp-overlay2:  #5d6578;
+  --ctp-overlay1:  #737b8d;
+  --ctp-overlay0:  #9097a7;
+
+  /* Accents — the same hues, deepened for contrast on white */
+  --ctp-blue:      #4a62a6;
+  --ctp-lavender:  #6268ae;
+  --ctp-sapphire:  #3d7293;
+  --ctp-sky:       #3a7c8d;
+  --ctp-teal:      #3b8074;
+  --ctp-green:     #4c8139;
+  --ctp-yellow:    #946f17;
+  --ctp-peach:     #ad5f36;
+  --ctp-maroon:    #a04f57;
+  --ctp-red:       #b04444;
+  --ctp-mauve:     #7658a3;
+  --ctp-pink:      #a35285;
+  --ctp-flamingo:  #a46363;
+  --ctp-rosewater: #9c7068;
+
+  /* Selection / highlight tints */
+  --pale-green:    rgba(76, 129, 57, 0.10);
+  --pale-blue:     rgba(74, 98, 166, 0.10);
+  --pale-pink:     rgba(163, 82, 133, 0.08);
+
+  /* Type and corners: as in the dark variant */
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-ui:      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-mono:    'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
+  --radius:      0.75rem;
+  --radius-sm:   10px;
+  --radius-md:   20px;
+  --radius-lg:   28px;
+  --radius-xl:   34px;
+  --present-enter-blur: 6px;
+
+  /* Glass material — frosted white, a hairline of shade for definition */
+  --glass-tint:        rgba(255, 255, 255, 0.55);
+  --glass-tint-strong: rgba(255, 255, 255, 0.75);
+  --glass-tint-inset:  rgba(255, 255, 255, 0.45);
+  --glass-tint-dark:   rgba(255, 255, 255, 0.62);
+  --glass-edge:        rgba(30, 40, 70, 0.09);
+  --glass-edge-strong: rgba(30, 40, 70, 0.16);
+  --glass-sheen:       linear-gradient(170deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 40%, rgba(255, 255, 255, 0) 65%);
+  --glass-highlight:   inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --glass-shadow:      0 18px 50px -26px rgba(40, 55, 95, 0.28);
+  --glass-filter:      blur(24px) saturate(150%);
+  --glass-pane:        rgba(250, 251, 254, 0.86);
+  --glass-face:        rgba(255, 255, 255, 0.82);
+  --glass-region:      rgba(255, 255, 255, 0.38);
+  --glass-sticky:      rgba(240, 243, 248, 0.6);
+  --glass-well:        rgba(255, 255, 255, 0.7);
+  --glass-drop:        rgba(40, 55, 95, 0.22);
+  --glass-selection:   rgba(74, 98, 166, 0.20);
+  --glass-solid:       #ffffff;
+  --glass-solid-edge:  #dfe3eb;
+  --glass-base:        #e9edf3;
+  --glass-backdrop:
+    radial-gradient(70% 55% at 18% -5%, rgba(150, 168, 222, 0.38), transparent 70%),
+    radial-gradient(55% 50% at 90% 105%, rgba(170, 196, 214, 0.34), transparent 70%),
+    linear-gradient(180deg, #f1f3f8 0%, #e6eaf1 100%);
 }
