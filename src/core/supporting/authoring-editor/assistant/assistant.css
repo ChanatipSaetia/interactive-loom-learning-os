@@ -299,37 +299,102 @@
 }
 .ai-note { color: var(--muted-foreground); font-size: 12px; }
 
-/* "Looked at" lines: the content-tool calls behind a reply (decision 125) */
+/* "Looked at": the content-tool calls behind a reply (decision 125) */
 .ai-looked {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin: 0 0 6px;
-  padding: 0;
-  list-style: none;
+  --looked-surface: color-mix(in srgb, var(--foreground) 6%, transparent);
+  --looked-line: color-mix(in srgb, var(--foreground) 14%, transparent);
+  margin: 0 0 10px;
 }
-.ai-looked-line {
-  display: flex;
+.ai-looked-toggle {
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   max-width: 100%;
-  padding: 1px 0;
-  border: 0;
-  background: none;
+  padding: 4px 8px 4px 10px;
+  border: 1px solid var(--looked-line);
+  border-radius: 999px;
+  background: var(--looked-surface);
   color: var(--muted-foreground);
   font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+.ai-looked-toggle:hover,
+.ai-looked.is-open .ai-looked-toggle {
+  color: var(--foreground);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--looked-line));
+}
+.ai-looked-toggle:focus-visible,
+.ai-looked-line:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ai-looked-toggle svg { flex-shrink: 0; }
+.ai-looked-summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-looked-summary b { font-weight: 600; color: var(--foreground); }
+.ai-looked-chevron { transition: transform 0.2s ease; }
+.ai-looked.is-open .ai-looked-chevron { transform: rotate(180deg); }
+
+.ai-looked-list {
+  position: relative;
+  margin: 6px 0 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid var(--looked-line);
+  border-radius: 12px;
+  background: var(--looked-surface);
+  animation: ai-looked-in 0.18s ease-out;
+}
+@keyframes ai-looked-in { from { opacity: 0; transform: translateY(-3px); } }
+/* The timeline thread behind the icons */
+.ai-looked-list::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  left: 21px;
+  width: 1px;
+  background: var(--looked-line);
+}
+.ai-looked-line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--foreground);
   text-align: left;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
-.ai-looked-line svg { flex-shrink: 0; }
-.ai-looked-line span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ai-looked-line:hover:not(:disabled) { color: var(--foreground); text-decoration: underline; }
+.ai-looked-line:hover:not(:disabled) { background: color-mix(in srgb, var(--foreground) 7%, transparent); }
 .ai-looked-line:disabled { cursor: default; }
+.ai-looked-icon {
+  position: relative;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--looked-line);
+  border-radius: 50%;
+  background: var(--background);
+  color: var(--primary);
+}
+.ai-looked-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ai-looked-title,
+.ai-looked-detail { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-looked-title { font-size: 12.5px; font-weight: 600; line-height: 1.35; }
+.ai-looked-detail { color: var(--muted-foreground); font-size: 11.5px; line-height: 1.35; }
+.ai-looked-go { flex-shrink: 0; color: var(--muted-foreground); opacity: 0; transition: opacity 0.15s ease; }
+.ai-looked-line:hover .ai-looked-go,
+.ai-looked-line:focus-visible .ai-looked-go { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .ai-looked-list { animation: none; }
+  .ai-looked-chevron { transition: none; }
+}
 .ai-thinking { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: var(--muted-foreground); }
 .ai-message-foot {
   display: flex;

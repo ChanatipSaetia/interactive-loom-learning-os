@@ -275,7 +275,11 @@ describe('Content tools in Viewer (decisions 120–125)', () => {
     fireEvent.click(screen.getByTestId('pick-send'))
     await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
     expect(screen.getByTestId('ai-reply')).toHaveTextContent('Yes is right.')
-    expect(screen.getAllByTestId('ai-looked-line').map((l) => l.textContent?.trim())).toEqual(['Looked at: Topic outline', 'Looked at: Check › Why?'])
+    // A pill says how many places; opened, it lists them (section, then the part).
+    expect(screen.getByTestId('ai-looked-toggle')).toHaveTextContent('Looked at 2 places')
+    expect(screen.queryByTestId('ai-looked-line')).toBeNull()
+    fireEvent.click(screen.getByTestId('ai-looked-toggle'))
+    expect(screen.getAllByTestId('ai-looked-line').map((l) => l.textContent)).toEqual(['Topic outlineAll sections', 'CheckWhy?'])
 
     const bodies = chatBodies(fetchImpl)
     expect(bodies).toHaveLength(3)

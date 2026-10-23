@@ -128,7 +128,9 @@ test('Viewer: the model looks up other parts of the topic with the content tools
   const reply = page.getByTestId('ai-reply')
   await expect(reply).toHaveAttribute('data-status', 'done')
   await expect(reply).toContainText('Tool said: sections/quiz.oui #q1')
-  await expect(page.getByTestId('ai-looked-line')).toHaveText(/Looked at: Knowledge Check › A logged-in dashboard/)
+  await expect(page.getByTestId('ai-looked-toggle')).toHaveText('Looked at 1 place')
+  await page.getByTestId('ai-looked-toggle').click()
+  await expect(page.getByTestId('ai-looked-line')).toHaveText(/Knowledge Check\s*A logged-in dashboard/)
 
   expect(chats).toHaveLength(2)
   expect(chats[0]).toHaveProperty('tools')

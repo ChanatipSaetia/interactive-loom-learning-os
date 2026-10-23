@@ -8,7 +8,7 @@
  * starts. `AssistantToggle` opens the panel from the page header.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { AlertTriangle, Bot, Loader2, MessageSquarePlus, RotateCcw, Search, Settings2, X } from 'lucide-react'
+import { AlertTriangle, ArrowUpRight, Bot, ChevronDown, FileText, ListTree, Loader2, MessageSquarePlus, RotateCcw, Search, Settings2, X } from 'lucide-react'
 import { Modal } from '../../../ui-system'
 import { findPickElement } from '../pick/PickLayer'
 import { useNarrow } from '../pick/PickMode'
@@ -119,31 +119,64 @@ const FAILURE_TITLES: Partial<Record<AssistantFailureKind, string>> = {
   'invalid-url': 'Not a valid base URL',
 }
 
-/** One line per content-tool call of a reply (decision 125); a click shows the place on the page. */
+const TOOL_ICONS: Record<string, typeof Search> = { navigate: ListTree, read: FileText }
+
+/** "Knowledge Check › A logged-in…" → the section, then the part. */
+function splitLabel(name: string, label: string): { title: string; detail?: string } {
+  const at = label.indexOf(' › ')
+  if (at >= 0) return { title: label.slice(0, at), detail: label.slice(at + 3) }
+  if (name === 'navigate' && label === 'Topic outline') return { title: 'Topic outline', detail: 'All sections' }
+  return { title: label }
+}
+
+/**
+ * The content-tool calls behind a reply (decision 125): a pill that says how
+ * many places the model looked at (or, while it looks, which one), opening
+ * on a timeline of the places; a click shows one on the page.
+ */
 function LookedAt({ message }: { message: ThreadMessage }) {
+  const [open, setOpen] = useState(false)
   const calls = (message.steps ?? []).flatMap((step) => step.calls)
   if (!calls.length) return null
+  const looking = message.status === 'streaming' && !message.text
+  const latest = splitLabel(calls[calls.length - 1].name, calls[calls.length - 1].label)
+  const count = `${calls.length} ${calls.length === 1 ? 'place' : 'places'}`
   return (
-    <ul className="ai-looked" data-testid="ai-looked">
-      {calls.map((call) => {
-        const place = call.file ? { file: call.file, anchor: call.anchor ?? 'root' } : null
-        return (
-          <li key={call.id}>
-            <button
-              type="button"
-              className="ai-looked-line"
-              disabled={!place}
-              onClick={() => place && showPick(place)}
-              title={`Looked at: ${call.label}`}
-              data-testid="ai-looked-line"
-            >
-              <Search size={11} aria-hidden />
-              <span>Looked at: {call.label}</span>
-            </button>
-          </li>
-        )
-      })}
-    </ul>
+    <div className={`ai-looked${open ? ' is-open' : ''}`} data-testid="ai-looked">
+      <button type="button" className="ai-looked-toggle" aria-expanded={open} onClick={() => setOpen((o) => !o)} data-testid="ai-looked-toggle">
+        {looking ? <Loader2 size={13} className="ai-spin" aria-hidden /> : <Search size={13} aria-hidden />}
+        <span className="ai-looked-summary">{looking ? <>Looking at <b>{latest.title}</b>…</> : <>Looked at {count}</>}</span>
+        <ChevronDown size={13} className="ai-looked-chevron" aria-hidden />
+      </button>
+      {open && (
+        <ol className="ai-looked-list">
+          {calls.map((call) => {
+            const place = call.file ? { file: call.file, anchor: call.anchor ?? 'root' } : null
+            const { title, detail } = splitLabel(call.name, call.label)
+            const Icon = TOOL_ICONS[call.name] ?? Search
+            return (
+              <li key={call.id}>
+                <button
+                  type="button"
+                  className="ai-looked-line"
+                  disabled={!place}
+                  onClick={() => place && showPick(place)}
+                  title={place ? `Show on page: ${call.label}` : call.label}
+                  data-testid="ai-looked-line"
+                >
+                  <span className="ai-looked-icon"><Icon size={12} aria-hidden /></span>
+                  <span className="ai-looked-text">
+                    <span className="ai-looked-title">{title}</span>
+                    {detail && <span className="ai-looked-detail">{detail}</span>}
+                  </span>
+                  {place && <ArrowUpRight size={13} className="ai-looked-go" aria-hidden />}
+                </button>
+              </li>
+            )
+          })}
+        </ol>
+      )}
+    </div>
   )
 }
 
@@ -159,7 +192,7 @@ function Reply({ assistant, message, preset, last, onRetry }: { assistant: Assis
   return (
     <div className="ai-message ai-message--assistant" data-testid="ai-reply" data-status={message.status}>
       <LookedAt message={message} />
-      {message.text ? <AssistantMarkdown text={message.text} renderEdit={renderEdit} /> : streaming ? <p className="ai-thinking"><Loader2 size={14} className="ai-spin" /> Thinking…</p> : null}
+      {message.text ? <AssistantMarkdown text={message.text} renderEdit={renderEdit} /> : streaming && !message.steps?.length ? <p className="ai-thinking"><Loader2 size={14} className="ai-spin" /> Thinking…</p> : null}
       {message.status === 'stopped' && <p className="ai-note">(stopped)</p>}
       {assistant.canEdit && <ProposalBar assistant={assistant} message={message} />}
       {failed && (
