@@ -582,6 +582,8 @@
   --glass-highlight:   inset 0 1px 0 rgba(255, 255, 255, 0.10);
   --glass-shadow:      0 18px 50px -24px rgba(0, 0, 0, 0.55);
   --glass-filter:      blur(14px) saturate(190%) brightness(1.05);
+  --glass-lens-blur:   blur(8px);                /* with the lens (glass-lens.ts) */
+  --glass-lens-tone:   saturate(190%) brightness(1.05);
   --glass-rim:         inset 0 1px 1px rgba(255, 255, 255, 0.28), inset 0 -10px 18px -14px rgba(255, 255, 255, 0.22), inset 10px 0 18px -16px rgba(255, 255, 255, 0.14), inset -10px 0 18px -16px rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   --glass-menu:        rgba(20, 24, 36, 0.78);   /* the header's ⋯ menu: thicker, so its labels stay easy to read */
   --glass-pane:        rgba(20, 24, 36, 0.84);   /* modals, callouts, Present title card */
@@ -691,6 +693,8 @@
   --glass-highlight:   inset 0 1px 0 #ffffff, inset 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(30, 40, 70, 0.05);
   --glass-shadow:      0 22px 50px -24px rgba(40, 55, 95, 0.34), 0 2px 6px -2px rgba(40, 55, 95, 0.10);
   --glass-filter:      blur(14px) saturate(200%) brightness(1.05);
+  --glass-lens-blur:   blur(8px);
+  --glass-lens-tone:   saturate(200%) brightness(1.05);
   --glass-rim:         inset 0 1px 1px #ffffff, inset 0 -10px 18px -14px rgba(255, 255, 255, 0.9), inset 10px 0 18px -16px rgba(255, 255, 255, 0.7), inset -10px 0 18px -16px rgba(255, 255, 255, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   --glass-menu:        rgba(250, 251, 254, 0.80);
   --glass-pane:        rgba(250, 251, 254, 0.86);

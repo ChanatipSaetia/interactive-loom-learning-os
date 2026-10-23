@@ -25,7 +25,7 @@
 .present-intro-scene .pillar-header { margin: 0; }
 .present-intro-points { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .present-intro-points li { display: flex; align-items: baseline; gap: 14px; color: var(--foreground); font: 400 var(--present-fs-card) / 1.5 var(--font-body); }
-.present-intro-tick { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 50%; background: color-mix(in srgb, var(--ctp-green) 18%, var(--card)); color: var(--ctp-green); font: 700 13px / 1 var(--font-mono); translate: 0 -2px; }
+.present-intro-tick { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; background: color-mix(in srgb, var(--ctp-green) 18%, var(--card)); color: var(--ctp-green); font: 700 15px / 1 var(--font-mono); translate: 0 -2px; }
 .present-region .present-intro-takeaway { margin: 0; padding: 20px 24px; }
 .present-region .present-intro-takeaway .impact-text { font: 600 calc(var(--present-fs-body) + 3px) / 1.4 var(--font-display); }
 .present-roadmap { position: relative; padding-left: 4px; }

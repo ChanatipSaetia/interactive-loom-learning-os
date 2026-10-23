@@ -4,10 +4,12 @@ import { registerCoreSections } from '../core/learning-engine/registry/register-
 import { registerCorePresenters } from '../core/learning-engine/registry/register-core-presenters'
 import { ViewerApp } from './ViewerApp'
 import { applyStoredTheme } from '../core/ui-system/theme/useTheme'
+import { installGlassLens } from '../core/ui-system/theme/glass-lens'
 import '../styles/app.css'
 import './viewer.css'
 
 applyStoredTheme()
+installGlassLens()
 
 registerCoreSections()
 registerCorePresenters()
