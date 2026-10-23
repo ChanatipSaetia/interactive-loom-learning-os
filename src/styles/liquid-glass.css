@@ -107,9 +107,9 @@
   background: var(--glass-sheen), color-mix(in srgb, var(--primary) 18%, var(--glass-tint-dark));
 }
 
-/* Liquid lens (Chromium, src/core/ui-system/theme/glass-lens.ts): bars that float over content bend
+/* Liquid lens (Chromium, src/core/ui-system/theme/glass-lens.ts): bars and dialogs that float over content bend
    what passes under their rim, then soften it. Elsewhere, and on the ⋯ menu, panes keep the blur. */
-:root[data-theme^='liquid-glass'][data-glass-lens] :is(.pick-bar, .present-caption, .present-controls),
+:root[data-theme^='liquid-glass'][data-glass-lens] :is(.pick-bar, .present-caption, .present-controls, .ui-modal),
 :root[data-theme^='liquid-glass'][data-glass-lens] .topnav::before {
   backdrop-filter: url(#liquid-lens) var(--glass-lens-blur) var(--glass-lens-tone);
   -webkit-backdrop-filter: url(#liquid-lens) var(--glass-lens-blur) var(--glass-lens-tone);
@@ -145,12 +145,34 @@
 :root[data-theme^='liquid-glass'] .fm-help-modal,
 :root[data-theme^='liquid-glass'] .cm-help-modal,
 :root[data-theme^='liquid-glass'] .taxonomy-dialog,
-:root[data-theme^='liquid-glass'] .flowchart-grid-modal-content {
+:root[data-theme^='liquid-glass'] .flowchart-grid-modal-content,
+:root[data-theme^='liquid-glass'] .ui-modal {
   background: var(--glass-sheen), var(--glass-pane);
   border-color: var(--glass-edge);
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--glass-highlight), 0 30px 80px -20px var(--glass-drop);
+}
+
+/* The shared Modal keeps a clear rim, so the lens shows what it bends there, and puts the thick pane
+   behind the text on a feathered layer of its own */
+:root[data-theme^='liquid-glass'] .ui-modal {
+  isolation: isolate; /* keeps the pane layer above the backdrop */
+  background: var(--glass-sheen), var(--glass-tint-dark);
+}
+:root[data-theme^='liquid-glass'] .ui-modal::before {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  z-index: -1;
+  border-radius: var(--radius-md);
+  background: var(--glass-pane);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+:root[data-theme^='liquid-glass'] .ui-modal-header {
+  border-color: var(--glass-edge);
 }
 
 :root[data-theme^='liquid-glass'] .qz-help-header,

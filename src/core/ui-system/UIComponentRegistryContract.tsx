@@ -296,17 +296,14 @@ export function Modal({ open, onClose, title, children, maxWidth = 'lg' }: Modal
     >
       <div
         className={cn(
-          'relative bg-card border border-border rounded-xl shadow-xl w-full max-h-[85vh] overflow-y-auto p-6 text-foreground',
+          'ui-modal relative bg-card border border-border rounded-xl shadow-xl w-full max-h-[85vh] flex flex-col text-foreground',
           MAX_WIDTH_CLASS[maxWidth],
         )}
         onClick={(e) => e.stopPropagation()}
-        style={{ overscrollBehavior: 'contain' }}
-        data-lenis-prevent
-        data-lenis-prevent-wheel
-        data-lenis-prevent-touch
       >
+        {/* The title stays outside the scrolling body, so it needs no background of its own */}
         {title && (
-          <div className="flex items-center justify-between mb-4 sticky top-0 bg-card pb-2 z-10 border-b border-border">
+          <div className="ui-modal-header flex items-center justify-between mx-6 pt-6 pb-2 border-b border-border shrink-0">
             <h2 className="text-lg font-semibold text-foreground">{title}</h2>
             <button
               onClick={onClose}
@@ -317,7 +314,15 @@ export function Modal({ open, onClose, title, children, maxWidth = 'lg' }: Modal
             </button>
           </div>
         )}
-        {children}
+        <div
+          className={cn('overflow-y-auto p-6 min-h-0', title && 'pt-4')}
+          style={{ overscrollBehavior: 'contain' }}
+          data-lenis-prevent
+          data-lenis-prevent-wheel
+          data-lenis-prevent-touch
+        >
+          {children}
+        </div>
       </div>
     </div>
   )
