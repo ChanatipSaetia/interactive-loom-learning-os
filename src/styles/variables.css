@@ -583,7 +583,7 @@
   --glass-shadow:      0 18px 50px -24px rgba(0, 0, 0, 0.55);
   --glass-filter:      blur(24px) saturate(140%);
   --glass-pane:        rgba(20, 24, 36, 0.84);   /* modals, callouts, Present title card */
-  --glass-face:        rgba(32, 37, 52, 0.72);   /* flashcard faces */
+  --glass-face:        #1f2433;                  /* flashcard faces: solid, so a deck never shows through */
   --glass-region:      rgba(255, 255, 255, 0.025); /* a Present slide */
   --glass-sticky:      rgba(18, 21, 32, 0.5);    /* sticky section titles */
   --glass-well:        rgba(8, 10, 16, 0.45);    /* text inputs */
@@ -683,7 +683,7 @@
   --glass-shadow:      0 18px 50px -26px rgba(40, 55, 95, 0.28);
   --glass-filter:      blur(24px) saturate(150%);
   --glass-pane:        rgba(250, 251, 254, 0.86);
-  --glass-face:        rgba(255, 255, 255, 0.82);
+  --glass-face:        #ffffff;
   --glass-region:      rgba(255, 255, 255, 0.38);
   --glass-sticky:      rgba(240, 243, 248, 0.6);
   --glass-well:        rgba(255, 255, 255, 0.7);

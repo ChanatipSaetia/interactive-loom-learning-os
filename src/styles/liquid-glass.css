@@ -95,13 +95,15 @@
   box-shadow: var(--glass-highlight), 0 24px 60px -20px var(--glass-drop);
 }
 :root[data-theme^='liquid-glass'] .viewer-menu > .viewer-pill,
-:root[data-theme^='liquid-glass'] .viewer-menu > button {
+:root[data-theme^='liquid-glass'] .viewer-menu > button,
+:root[data-theme^='liquid-glass'] .viewer-menu > .theme-toggle {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
 }
 :root[data-theme^='liquid-glass'] .viewer-menu > .viewer-pill:hover,
-:root[data-theme^='liquid-glass'] .viewer-menu > button:hover {
+:root[data-theme^='liquid-glass'] .viewer-menu > button:hover,
+:root[data-theme^='liquid-glass'] .viewer-menu > .theme-toggle:hover {
   background: var(--glass-tint-strong);
 }
 
@@ -192,8 +194,10 @@
   border-color: var(--ctp-green);
 }
 
-/* Flashcard faces (Tailwind bg-card) */
-:root[data-theme^='liquid-glass'] .backface-hidden.bg-card {
+/* Flashcard faces (Tailwind bg-card in Read, .present-card-face in Present) are solid:
+   a deck stacks cards, and a see-through face shows the words underneath */
+:root[data-theme^='liquid-glass'] .backface-hidden.bg-card,
+:root[data-theme^='liquid-glass'] .present-region .present-card-face {
   background: var(--glass-sheen), var(--glass-face);
   border-color: var(--glass-edge);
   box-shadow: var(--glass-highlight), var(--glass-shadow);
@@ -333,8 +337,7 @@
 :root[data-theme^='liquid-glass'] .present-region :is(
   .quiz-question-card, .bullets-card, .compare-card, .topic-intro-block, .topic-intro-roadmap,
   .dt-intro-card, .dt-decision, .dt-leaf-card, .scenario-intro-card, .scenario-decision,
-  .concept-map-canvas-wrapper, .flowchart-canvas-wrapper, .present-taxonomy-detail, .present-card-face,
-  .backface-hidden.bg-card
+  .concept-map-canvas-wrapper, .flowchart-canvas-wrapper, .present-taxonomy-detail
 ) {
   background: var(--glass-tint-inset);
   border-color: var(--glass-edge);

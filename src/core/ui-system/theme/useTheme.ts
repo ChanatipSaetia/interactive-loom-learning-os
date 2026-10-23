@@ -21,6 +21,18 @@ function applyTheme(id: string): void {
 }
 
 /**
+ * Applies the saved theme before the first render. Each page calls it at startup, so the theme
+ * holds even while no ThemeToggle is mounted (e.g. it sits in a closed ⋯ menu on narrow screens).
+ */
+export function applyStoredTheme(): void {
+  try {
+    applyTheme(readStoredTheme())
+  } catch {
+    /* storage unavailable — the default theme stays */
+  }
+}
+
+/**
  * Manages the active theme: applies it to <html data-theme>, and
  * persists the choice in localStorage.
  */
