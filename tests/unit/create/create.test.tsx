@@ -1,146 +1,66 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { CreateApp } from '../../../src/create/CreateApp'
-import { LOOM_PROMPT_PATH, MODEL_SERVERS, assistantInstructions, skillInstallCommand, skillInstallPrompt } from '../../../src/core/learning-engine/composition/oui/llm-guide'
-import { presetOf } from '../../../src/core/supporting/authoring-editor/assistant/presets'
-
-const PROMPT = '# Loom prompt\nYou write learning topics…\n'
+import { LOOM_SKILL_ZIP_PATH, SKILL_ADD_COMMAND, SKILL_UPDATE_COMMAND } from '../../../src/core/learning-engine/composition/oui/llm-guide'
 
 describe('Create with AI page', () => {
   const writeText = vi.fn(async () => {})
 
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(PROMPT)))
     Object.assign(navigator, { clipboard: { writeText } })
     writeText.mockClear()
   })
 
   afterEach(() => {
-    vi.unstubAllGlobals()
     localStorage.clear()
     window.history.replaceState(null, '', '/')
   })
 
-  it('loads the published prompt and copies it', async () => {
+  it('has only the two skill tabs', () => {
     render(<CreateApp />)
-    expect(fetch).toHaveBeenCalledWith(expect.stringMatching(new RegExp(`${LOOM_PROMPT_PATH}$`)))
-    const copy = screen.getByTestId('create-copy-prompt')
-    await waitFor(() => expect(copy).toBeEnabled())
-    fireEvent.click(copy)
-    await waitFor(() => expect(copy.textContent).toBe('Copied'))
-    expect(writeText).toHaveBeenCalledWith(PROMPT)
+    expect(screen.getAllByRole('radio').map((tab) => tab.textContent)).toEqual(['Claude app', 'Coding agents'])
   })
 
-  it('downloads the prompt as a markdown file', async () => {
-    const createObjectURL = vi.fn((blob: Blob) => {
-      expect(blob.type).toBe('text/markdown')
-      return 'blob:prompt'
-    })
-    Object.assign(URL, { createObjectURL, revokeObjectURL: vi.fn() })
-    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
-      expect(this.download).toBe('loom-authoring-prompt.md')
-    })
+  it('offers the skill zip for the Claude app, then example requests and Viewer', async () => {
     render(<CreateApp />)
-    const download = screen.getByTestId('create-download-prompt')
-    await waitFor(() => expect(download).toBeEnabled())
-    fireEvent.click(download)
-    expect(createObjectURL).toHaveBeenCalledTimes(1)
-    expect(click).toHaveBeenCalledTimes(1)
-    click.mockRestore()
-  })
-
-  it('copies the Claude Project instructions and example requests', async () => {
-    render(<CreateApp />)
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Create a Loom topic with Claude')
-    fireEvent.click(screen.getByTestId('create-copy-instructions'))
-    await waitFor(() => expect(writeText).toHaveBeenCalledWith(assistantInstructions('claude')))
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Create a Loom topic with the Claude app')
+    const download = screen.getByTestId('create-download-skill')
+    expect(download.getAttribute('href')).toBe(`/${LOOM_SKILL_ZIP_PATH}`)
+    expect(download).toHaveAttribute('download')
+    expect(screen.queryByTestId('create-skill-add')).toBeNull()
     fireEvent.click(screen.getByTestId('create-copy-example-0'))
     await waitFor(() => expect(writeText).toHaveBeenLastCalledWith(expect.stringContaining('Loom topic')))
     expect(screen.getByTestId('create-open-viewer').getAttribute('href')).toMatch(/viewer\.html$/)
   })
 
-  it('switches the guide to Gemini and remembers the choice', async () => {
+  it('installs the skill for coding agents with npx skills add and remembers the tab', async () => {
     const { unmount } = render(<CreateApp />)
-    fireEvent.click(screen.getByTestId('create-assistant-gemini'))
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Create a Loom topic with Gemini')
-    expect(screen.getByRole('heading', { name: /Set up a Gemini Gem/ })).toBeInTheDocument()
-    expect(screen.getByTestId('create-instructions').textContent).toContain('Put the whole topic in ONE Canvas')
-    expect(window.location.search).toBe('?ai=gemini')
-    fireEvent.click(screen.getByTestId('create-copy-instructions'))
-    await waitFor(() => expect(writeText).toHaveBeenCalledWith(assistantInstructions('gemini')))
+    fireEvent.click(screen.getByTestId('create-assistant-agent'))
+    expect(window.location.search).toBe('?ai=agent')
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Create a Loom topic with a coding agent')
+    expect(screen.getByTestId('create-skill-add').textContent).toBe(SKILL_ADD_COMMAND)
+    expect(SKILL_ADD_COMMAND).toBe('npx skills add ChanatipSaetia/interactive-loom-learning-os --skill loom-topic-writer -g')
+    expect(screen.getByTestId('create-skill-update').textContent).toBe(SKILL_UPDATE_COMMAND)
+    expect(screen.queryByTestId('create-download-skill')).toBeNull()
+    fireEvent.click(screen.getByTestId('create-skill-add-copy'))
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith(SKILL_ADD_COMMAND))
     unmount()
 
     window.history.replaceState(null, '', '/')
     render(<CreateApp />)
-    expect(screen.getByTestId('create-assistant-gemini').getAttribute('aria-checked')).toBe('true')
+    expect(screen.getByTestId('create-assistant-agent').getAttribute('aria-checked')).toBe('true')
   })
 
-  it('guides a Microsoft 365 Copilot agent with a .txt prompt and full rewrites', async () => {
-    render(<CreateApp />)
-    fireEvent.click(screen.getByTestId('create-assistant-copilot'))
-    expect(screen.getByRole('heading', { name: /Set up a Copilot agent/ })).toBeInTheDocument()
-    expect(screen.getByTestId('create-assistant-note').textContent).toMatch(/work or school account/)
-    expect(screen.getByTestId('create-download-prompt').textContent).toContain('Download .txt')
-    const instructions = screen.getByTestId('create-instructions').textContent
-    expect(instructions).toContain('The file loom-authoring-prompt.txt in this agent\'s knowledge')
-    expect(instructions).toContain('answer with the complete, updated topic in one new code block')
-    expect(instructions).not.toContain('inline code')
-    expect(window.location.search).toBe('?ai=copilot')
-    fireEvent.click(screen.getByTestId('create-copy-instructions'))
-    await waitFor(() => expect(writeText).toHaveBeenCalledWith(assistantInstructions('copilot')))
-  })
-
-  it('has a Claude Code / opencode tab with skill install steps instead of the chat setup', async () => {
-    render(<CreateApp />)
-    expect(screen.queryByTestId('create-copy-skill-steps')).toBeNull()
-    fireEvent.click(screen.getByTestId('create-assistant-agent'))
-    expect(window.location.search).toBe('?ai=agent')
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Create a Loom topic with Claude Code or opencode')
-    expect(screen.getByRole('heading', { name: /Install the Loom skill/ })).toBeInTheDocument()
-    expect(screen.queryByTestId('create-copy-prompt')).toBeNull()
-    expect(screen.queryByTestId('create-copy-instructions')).toBeNull()
-    const claudeCode = screen.getByTestId('create-skill-command-claude-code').textContent
-    expect(claudeCode).toBe(skillInstallCommand('~/.claude/skills/loom-topic-writer'))
-    expect(claudeCode).toContain('https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-topic-writer/SKILL.md')
-    expect(screen.getByTestId('create-skill-command-opencode').textContent).toContain('~/.config/opencode/skills/loom-topic-writer/references')
-    fireEvent.click(screen.getByTestId('create-copy-skill-steps'))
-    await waitFor(() => expect(writeText).toHaveBeenCalledWith(skillInstallPrompt()))
-    expect(screen.getByTestId('create-skill-steps').textContent).toContain('# Install the Loom topic writer skill')
-    fireEvent.click(screen.getByTestId('create-copy-skill-opencode'))
-    await waitFor(() => expect(writeText).toHaveBeenCalledWith(skillInstallCommand('~/.config/opencode/skills/loom-topic-writer')))
-  })
-
-  it('preselects the assistant from ?ai=', () => {
-    localStorage.setItem('loom-create-assistant', 'gemini')
+  it('preselects the tab from ?ai= and falls back to the Claude app for old links', () => {
+    localStorage.setItem('loom-create-assistant', 'agent')
     window.history.replaceState(null, '', '/?ai=claude')
+    const { unmount } = render(<CreateApp />)
+    expect(screen.getByTestId('create-assistant-claude').getAttribute('aria-checked')).toBe('true')
+    unmount()
+
+    localStorage.clear()
+    window.history.replaceState(null, '', '/?ai=gemini')
     render(<CreateApp />)
     expect(screen.getByTestId('create-assistant-claude').getAttribute('aria-checked')).toBe('true')
-  })
-
-  it('points to the prompt file when it cannot be loaded', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => new Response('missing', { status: 404 })))
-    render(<CreateApp />)
-    expect((await screen.findByRole('alert')).textContent).toMatch(/Could not load the prompt/)
-    expect(screen.getByTestId('create-copy-prompt')).toBeDisabled()
-  })
-
-  it('guides your own model through the AI assistant in Viewer and Studio', () => {
-    window.history.replaceState(null, '', '/?ai=model')
-    render(<CreateApp />)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Improve a Loom topic with your own model')
-    expect(screen.getByTestId('create-server-command')).toHaveTextContent(`OLLAMA_ORIGINS=${window.location.origin} ollama serve`)
-    expect(screen.getByTestId('create-model-studio')).toHaveAttribute('href', expect.stringMatching(/studio\.html$/))
-
-    fireEvent.click(screen.getByTestId('create-server-lmstudio'))
-    expect(screen.getByTestId('create-server-steps')).toHaveTextContent('Enable CORS')
-    expect(screen.queryByTestId('create-server-command')).toBeNull()
-    expect(localStorage.getItem('loom-create-model-server')).toBe('lmstudio')
-  })
-
-  it('lists the same base URLs as the assistant presets', () => {
-    for (const server of MODEL_SERVERS) {
-      expect(presetOf(server.id).baseUrl).toBe(server.baseUrl)
-      expect(presetOf(server.id).needsKey).toBe(server.needsKey)
-    }
   })
 })

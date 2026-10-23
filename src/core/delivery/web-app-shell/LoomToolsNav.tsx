@@ -27,7 +27,7 @@ export const LOOM_TOOLS: LoomTool[] = [
     label: 'Create with AI',
     short: 'Create',
     file: 'create.html',
-    description: 'Set up Claude, Gemini, Copilot, Claude Code or opencode to write a topic for you, step by step.',
+    description: 'Add the Loom skill to the Claude app or your coding agent, then ask it to write a topic for you.',
     icon: Sparkles,
   },
   {

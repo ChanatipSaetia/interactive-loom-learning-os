@@ -7,8 +7,9 @@
  *   public/llm/loom-authoring-prompt.md  system prompt for writing a topic (.loom.oui file or folder)
  *   public/llm/loom-oui.schema.json      JSON Schema of every component's props
  *   public/llms.txt                      llms.txt index linking the two
- *   public/llm/skills/loom-topic-writer/ agent skill (SKILL.md + the prompt as a reference) for
- *                                        Claude Code / opencode, also kept in .claude/skills/
+ *   public/llm/skills/loom-topic-writer/ agent skill (SKILL.md + the prompt as a reference), also
+ *                                        kept in .claude/skills/ (where `npx skills add` finds it)
+ *   public/llm/skills/loom-topic-writer.zip  the skill folder zipped, for uploading to the Claude app
  *
  *   npx tsx scripts/gen-oui-schema.ts           # write the files
  *   npx tsx scripts/gen-oui-schema.ts --check   # fail if any is stale
@@ -21,7 +22,9 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { ouiSchemaFiles } from '../src/core/learning-engine/composition/oui/schema-files'
+import { strToU8, unzipSync, zipSync } from 'fflate'
+import { LOOM_SKILL_ZIP_PATH } from '../src/core/learning-engine/composition/oui/llm-guide'
+import { ouiSchemaFiles, skillZipFiles } from '../src/core/learning-engine/composition/oui/schema-files'
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -39,6 +42,26 @@ for (const [relative, text] of Object.entries(ouiSchemaFiles())) {
     fs.writeFileSync(file, text)
     console.log(`wrote ${relative}`)
   }
+}
+
+// The zip is compared by its contents, so a different fflate build does not make it stale.
+const zipFile = path.join(ROOT, 'public', LOOM_SKILL_ZIP_PATH)
+const zipEntries = skillZipFiles()
+if (check) {
+  const committed = fs.existsSync(zipFile) ? unzipSync(fs.readFileSync(zipFile)) : {}
+  const decoder = new TextDecoder()
+  const same =
+    Object.keys(committed).sort().join('\n') === Object.keys(zipEntries).sort().join('\n') &&
+    Object.entries(zipEntries).every(([name, text]) => decoder.decode(committed[name]) === text)
+  if (!same) {
+    console.error(`stale: public/${LOOM_SKILL_ZIP_PATH}`)
+    stale = true
+  }
+} else {
+  // A fixed date keeps the zip byte-identical between runs.
+  const entries = Object.fromEntries(Object.entries(zipEntries).map(([name, text]) => [name, strToU8(text)]))
+  fs.writeFileSync(zipFile, zipSync(entries, { level: 9, mtime: new Date('2025-01-01T00:00:00Z') }))
+  console.log(`wrote public/${LOOM_SKILL_ZIP_PATH}`)
 }
 if (stale) {
   console.error('Run `npm run oui:schema` to refresh the Loom LLM files.')
