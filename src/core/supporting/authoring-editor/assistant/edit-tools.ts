@@ -92,6 +92,83 @@ export const EDIT_TOOLS: ToolDefinition[] = [
   },
 ]
 
+/** A plan the author ticks and builds (decision 139). */
+export const PLAN_TOOL: ToolDefinition = {
+  type: 'function',
+  function: {
+    name: 'propose_plan',
+    description:
+      'Show the author a plan as a card: sections to create or change, each with a checkbox, and a "Build these" button. Use it once you know the audience and goal, before staging edits for a new topic or a large change. The author answers with the items to build.',
+    parameters: {
+      type: 'object',
+      properties: {
+        goal: { type: 'string', description: 'What the learner should be able to do afterwards, in one sentence.' },
+        items: {
+          type: 'array',
+          description: 'The sections in reading order.',
+          items: {
+            type: 'object',
+            properties: {
+              action: { type: 'string', enum: ['create', 'edit'] },
+              name: { type: 'string', description: 'Section name (sections/<name>.oui), new or existing.' },
+              type: { type: 'string', description: 'Section component, e.g. "Quiz", "Flowchart", "Flashcards".' },
+              title: { type: 'string' },
+              idea: { type: 'string', description: 'The key idea it teaches, or what changes, in one or two sentences.' },
+            },
+            required: ['action', 'name', 'type', 'title', 'idea'],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ['goal', 'items'],
+      additionalProperties: false,
+    },
+  },
+}
+
+export interface PlanItem {
+  action: 'create' | 'edit'
+  name: string
+  type: string
+  title: string
+  idea: string
+}
+
+export interface Plan {
+  goal: string
+  items: PlanItem[]
+}
+
+/** The plan in a `propose_plan` call's arguments, or null when it is not one. */
+export function readPlan(args: string): Plan | null {
+  try {
+    const parsed = JSON.parse(args) as { goal?: unknown; items?: unknown }
+    if (!Array.isArray(parsed.items)) return null
+    const items = parsed.items.flatMap((raw): PlanItem[] => {
+      const item = raw as Record<string, unknown>
+      if (!item || typeof item !== 'object') return []
+      const text = (key: string) => (typeof item[key] === 'string' ? (item[key] as string).trim() : '')
+      const name = text('name').replace(/^sections\//, '').replace(/\.oui$/, '')
+      if (!name && !text('title')) return []
+      return [{ action: item.action === 'edit' ? 'edit' : 'create', name, type: text('type'), title: text('title') || name, idea: text('idea') }]
+    })
+    return items.length ? { goal: typeof parsed.goal === 'string' ? parsed.goal.trim() : '', items } : null
+  } catch {
+    return null
+  }
+}
+
+/** The message "Build these" sends with the ticked items. */
+export function buildMessage(plan: Plan, ticked: readonly number[]): string {
+  const items = ticked.map((i) => plan.items[i]).filter(Boolean)
+  return [
+    `Build ${items.length === 1 ? 'this section' : 'these sections'} from the plan${plan.goal ? ` (goal: ${plan.goal})` : ''}:`,
+    ...items.map((item, i) => `${i + 1}. ${item.action === 'edit' ? 'Change' : 'Create'} ${item.name ? `sections/${item.name}.oui` : 'a section'} (${item.type || 'section'}) "${item.title}": ${item.idea}`),
+    '',
+    'Stage them all with the edit tools in this turn, then sum up what you staged.',
+  ].join('\n')
+}
+
 export const EDIT_TOOL_NAMES = new Set(EDIT_TOOLS.map((t) => t.function.name))
 
 export interface EditToolOutcome extends ToolOutcome {
@@ -118,6 +195,15 @@ export class EditToolRunner {
     }
     const summary = str(parsed.summary)?.trim() || name
     if (name === 'describe_components') return this.describe(strings(parsed.names) ?? [])
+    if (name === 'propose_plan') {
+      const plan = readPlan(args)
+      if (!plan) return { content: 'Error: the plan needs items, each with action, name, type, title and idea.', label: 'Plan (not shown)', changeset: this.changeset }
+      return {
+        content: `Shown to the author as a plan card with ${plan.items.length} items. Do not stage anything yet: say in a sentence that they can tick the items to build and press Build these, or ask for changes to the plan.`,
+        label: `Plan: ${plan.items.length} ${plan.items.length === 1 ? 'section' : 'sections'}`,
+        changeset: this.changeset,
+      }
+    }
     if (name === 'edit_section') {
       const raw = str(parsed.file) ?? ''
       const file = parseAddress(raw, { ...this.context.files, ...this.narrationSlots() })?.file ?? raw.trim()

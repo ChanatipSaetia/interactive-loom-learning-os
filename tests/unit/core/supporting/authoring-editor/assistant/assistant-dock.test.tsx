@@ -428,7 +428,7 @@ describe('Tools and staged edits in Studio (decisions 129–136)', () => {
     fireEvent.click(screen.getByTestId('pick-send'))
     await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
     const bodies = chatBodies(fetchImpl)
-    expect(bodies[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read', 'edit_section', 'create_section', 'edit_topic', 'describe_components'])
+    expect(bodies[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read', 'edit_section', 'create_section', 'edit_topic', 'describe_components', 'propose_plan'])
     expect(bodies[0].messages[0].content).toContain('## Changing the Topic')
     expect(bodies[0].messages[0].content).not.toContain('```oui-edit file=')
     expect(bodies[1].messages.at(-1).content).toContain('QuizQuestion("q1", "Why?"')
@@ -473,5 +473,59 @@ describe('Tools and staged edits in Studio (decisions 129–136)', () => {
     fireEvent.click(screen.getByTestId('ai-staged-apply-all'))
     expect(buffers['sections/words.oui']).toContain('Flashcards("Words"')
     expect(buffers['topic.oui']).toMatch(/SectionRef\("quiz"\),\s*SectionRef\("words"\),\s*SectionRef\("end"\)/)
+  })
+})
+
+describe('Plan card in Studio (decisions 138–139)', () => {
+  const json = (data: unknown) => new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } })
+  const toolCall = (id: string, name: string, args: unknown) => json({
+    choices: [{ message: { content: '', tool_calls: [{ id, type: 'function', function: { name, arguments: JSON.stringify(args) } }] }, finish_reason: 'tool_calls' }],
+  })
+  const plan = {
+    goal: 'Choose a cache policy for each kind of response.',
+    items: [
+      { action: 'create', name: 'words', type: 'Flashcards', title: 'Key terms', idea: 'max-age, no-store, private.' },
+      { action: 'edit', name: 'quiz', type: 'Quiz', title: 'Knowledge Check', idea: 'Add a question on private.' },
+    ],
+  }
+
+  it('shows the plan, lets the model say a word, and Build these sends the ticked items', async () => {
+    seed('http://localhost:11434/v1')
+    const buffers: Record<string, string> = { ...files }
+    const answers = [toolCall('p1', 'propose_plan', plan), streamOf('Tick what to build.'), streamOf('Building.')]
+    const fetchImpl = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
+    function Studio() {
+      const assistant = useAssistant({
+        topicId: 'demo',
+        app: 'studio',
+        getContext: () => ({ topicId: 'demo', files: { ...buffers }, fileOrder: Object.keys(buffers), diagnostics: {} }),
+        editor: { write: () => null, reveal: () => {} },
+        fetchImpl: fetchImpl as unknown as typeof fetch,
+      })
+      return (
+        <>
+          <PickMode topicId="demo" active={false} onActiveChange={() => {}} resolve={sourceResolver(buffers)} assistant={pickBridgeOf(assistant)} />
+          <AssistantDock assistant={assistant} resolve={sourceResolver(buffers)} fetchImpl={fetchImpl as unknown as typeof fetch} />
+        </>
+      )
+    }
+    render(<Studio />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    const bodies = fetchImpl.mock.calls.filter(([u]) => String(u).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
+    expect(bodies[1].tool_choice).toBe('none')
+    expect(screen.getByTestId('ai-activity')).toHaveTextContent('Proposed a plan')
+    expect(screen.getAllByTestId('ai-plan-item')).toHaveLength(2)
+
+    fireEvent.click(screen.getAllByTestId('ai-plan-tick')[1])
+    fireEvent.click(screen.getByTestId('ai-plan-build'))
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')).toHaveLength(2))
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')[1]).toHaveAttribute('data-status', 'done'))
+    const sent = fetchImpl.mock.calls.filter(([u]) => String(u).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
+    const message = sent[sent.length - 1].messages.at(-1).content as string
+    expect(message).toContain('Build this section from the plan (goal: Choose a cache policy')
+    expect(message).toContain('1. Create sections/words.oui (Flashcards) "Key terms"')
+    expect(message).not.toContain('Knowledge Check')
+    expect(screen.getByTestId('ai-plan')).toHaveAttribute('data-state', 'built')
   })
 })

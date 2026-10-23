@@ -115,7 +115,8 @@ const STUDIO_TOOL_RULES = `## Tools
 - When asked to write a new topic, add several sections or help with ideas, plan before you edit. If you do not know who the learners are and what they should be able to do afterwards, ask (briefly, then end your turn).
 - Suggest contents from your own knowledge too: angles, examples, analogies, common mistakes, questions worth asking.
 - A plan is a list of sections in order, each with its section type, a title and the key idea it teaches. Spread the knowledge over interactive types (flowcharts, scenarios, sandboxes, flashcards, quizzes, decision trees…) instead of walls of text, and make every quiz or reflection test only what an earlier section teaches. Note where narration for Present mode would help.
-- Do not stage edits for a plan until the person agrees to it.`
+- Show the plan with \`propose_plan\`: the author ticks the items they want and presses Build these. Do not stage edits for a plan until they do; when they ask for changes instead, propose a new plan.
+- Build these sends you the ticked items: build them all in that turn (create_section and edit_section, narration where it helps), check each call's errors, then sum up what you staged.`
 
 const VIEWER_ANSWER_RULES = `## How to Answer
 

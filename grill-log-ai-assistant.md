@@ -1,6 +1,6 @@
 # Grill Log — AI Assistant for Pick in Studio and Viewer
 
-Status: **All phases complete (1–4), plus decisions 63–64 and 119–128; decisions 129–137 (Studio tools and staged edits) implemented; 138–142 (planning, web search) agreed, not implemented**
+Status: **All phases complete (1–4), plus decisions 63–64 and 119–128; decisions 129–139 (Studio tools, staged edits, planning) implemented; 140–142 (web search) agreed, not implemented**
 
 ## Goal
 
@@ -244,6 +244,17 @@ revise decisions 54 and 58 for Studio.
 - The `<topic-context>` block is still built from the buffers (what the author sees and picks); the tools see the staged view. What the author decided goes with their next message as one note ("applied q1; rejected q2", plus what is still staged), marked reported so it is said once.
 - `oui-edit` blocks a model writes even with the tools on still become edit cards; the single validation retry applies to them as before.
 - Tests: `changeset.test.ts` (staging, re-basing, conflicts, ticked statements, new sections and metadata, the note, the runner's verdicts, Studio reads), `assistant-dock.test.tsx` (the Studio loop across two files, Apply and Reject all, the note on the next message; a new section applied in place after a reload; the `oui-edit` tests now run with the tools off), `tests/e2e/assistant.spec.ts` (an `edit_section` call staged, applied from its card and saved).
+
+## Decisions 138–139 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| **Planning and Brainstorming** rules in the Studio prompt with the tools (ask about learners and goal, suggest contents, spread over interactive types, grounded assessments, `propose_plan`, build on Build these) | `composition/oui/assistant-prompt.ts` |
+| `PLAN_TOOL` (`propose_plan`), `readPlan`, `buildMessage` | `assistant/edit-tools.ts` |
+| After a plan the next request sets `tool_choice: "none"`, so the model says a word and the turn ends; `buildPlan` sends the ticked items as one message and marks the card built (`ThreadMessage.planBuilt`) | `assistant/useAssistant.ts`, `assistant/thread.ts` |
+| The card (checkbox per item, Build these / Build 1 of 2; Built or "Replaced by a newer plan"); "Proposed a plan" in the activity pill | `assistant/PlanCard.tsx`, `assistant/AssistantPanel.tsx`, `assistant.css` |
+
+- Tests: `assistant-dock.test.tsx` (the plan card, `tool_choice: "none"` after it, Build with one item unticked, the card built).
 
 ## Open Questions
 

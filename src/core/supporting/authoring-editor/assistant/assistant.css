@@ -590,3 +590,10 @@
 .ai-staged-change .ai-diff { max-height: 220px; padding: 4px 0; margin: 4px -10px 0; }
 .ai-staged-change.is-conflict { background: color-mix(in srgb, var(--destructive) 5%, transparent); }
 .ai-staged-change > .ai-note { margin: 2px 0 0; }
+
+/* Plan card (decision 139) */
+.ai-plan-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ai-plan-title { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ai-plan-title code { font: 11px/1.4 var(--font-mono, monospace); color: var(--muted-foreground); }
+.ai-plan-item { padding-bottom: 6px; }
+.ai-plan-item .ai-check { align-items: flex-start; }

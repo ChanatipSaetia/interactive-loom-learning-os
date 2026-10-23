@@ -90,6 +90,8 @@ export interface ThreadMessage {
   thinking?: string
   /** Assistant messages: how long the model spent thinking, in all rounds. */
   thoughtMs?: number
+  /** Assistant messages with a plan card: the `propose_plan` call that was built (decision 139). */
+  planBuilt?: string
   /** Assistant messages with edits: what the dry run found wrong (empty when they check out). */
   problems?: string[]
   /** User messages Studio sent itself: the validation retry. */
@@ -176,6 +178,7 @@ function readMessage(value: unknown): ThreadMessage | null {
       const steps = message.steps.map(readStep).filter((s): s is ToolStep => s !== null)
       if (steps.length) out.steps = steps
     }
+    if (typeof message.planBuilt === 'string') out.planBuilt = message.planBuilt
     if (Array.isArray(message.problems)) out.problems = message.problems.filter((p): p is string => typeof p === 'string')
   }
   return out

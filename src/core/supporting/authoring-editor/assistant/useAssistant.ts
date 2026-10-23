@@ -30,7 +30,7 @@ import { getLoomAssistantPrompt, type AssistantApp } from '../../../learning-eng
 import { AssistantError, chatCompletion, isLoopbackHost, listModels } from './client'
 import { buildTopicContext, type AssistantTopicContext } from './context'
 import { CONTENT_TOOLS, CONTENT_TOOL_NAMES, ContentToolRunner, STUDIO_CONTENT_TOOLS } from './content-tools'
-import { EDIT_TOOLS, EDIT_TOOL_NAMES, EditToolRunner } from './edit-tools'
+import { EDIT_TOOLS, EDIT_TOOL_NAMES, EditToolRunner, PLAN_TOOL, buildMessage, readPlan } from './edit-tools'
 import { applyRank, changesetNote, decide, fileView, stagedContext, type Changeset } from './changeset'
 import { applyEditBlock, applyOrder, checkProposal, parseEditBlocks } from './edits'
 import {
@@ -247,10 +247,12 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     // The content tools (decisions 120, 129) and Studio's edit tools; off for the rest of this request once the server refuses them.
     const studio = app === 'studio' && !!editorRef.current
     let tools = (app === 'viewer' || studio) && profile.tools
-    const toolList = studio ? [...STUDIO_CONTENT_TOOLS, ...EDIT_TOOLS] : CONTENT_TOOLS
+    const toolList = studio ? [...STUDIO_CONTENT_TOOLS, ...EDIT_TOOLS, PLAN_TOOL] : CONTENT_TOOLS
     const toolNames = toolList.map((t) => t.function.name).join(', ')
     const maxRounds = studio ? MAX_STUDIO_TOOL_ROUNDS : MAX_TOOL_ROUNDS
     let staged: Changeset = threadRef.current.staged ?? []
+    // After a plan card the model only says a word about it; it builds once the author picks (decision 139).
+    let planShown = false
     let toolsRefused = false
     let messages = thread
     let start = historyStart(messages, profile.tokenBudget, threadRef.current.start)
@@ -318,7 +320,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
               model: profile.model,
               messages: [{ role: 'system', content: system }, ...historyMessages(messages, start, { app, tools }), ...toolStepMessages(steps)],
               tools: tools ? toolList : undefined,
-              toolChoice: tools && round >= maxRounds ? 'none' : undefined,
+              toolChoice: tools && (round >= maxRounds || planShown) ? 'none' : undefined,
               signal: controller.signal,
               onDelta: (delta) => {
                 stopThinking()
@@ -346,7 +348,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
           continue
         }
         stopThinking()
-        const calls = tools && round < maxRounds ? result.toolCalls : undefined
+        const calls = tools && round < maxRounds && !planShown ? result.toolCalls : undefined
         if (!calls?.length) break
         const earlier = earlierResults([...messages.slice(start), { ...reply, steps }])
         const step: ToolStep = {
@@ -354,9 +356,10 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
           ...(result.reasoning ? { thinking: clipThinking(result.reasoning) } : {}),
           calls: calls.map((call): ToolStepCall => {
             const name = call.function.name
-            if (studio && EDIT_TOOL_NAMES.has(name)) {
+            if (studio && (EDIT_TOOL_NAMES.has(name) || name === PLAN_TOOL.function.name)) {
               const outcome = new EditToolRunner(contextRef.current(), staged).run(name, call.function.arguments)
               staged = outcome.changeset
+              if (name === PLAN_TOOL.function.name && readPlan(call.function.arguments)) planShown = true
               return { id: call.id, name, args: call.function.arguments, result: outcome.content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
             }
             // Reads see the staged changes (decision 129).
@@ -593,6 +596,17 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     setStaged((staged) => staged.reduce((acc, s) => decide(acc, s.file, null, 'rejected'), staged))
   }, [setStaged])
 
+  /** "Build these" on a plan card: one message with the ticked items (decision 139). */
+  const buildPlan = useCallback(async (messageId: string, callId: string, ticked: readonly number[]): Promise<boolean> => {
+    const message = threadRef.current.messages.find((m) => m.id === messageId)
+    const call = message?.steps?.flatMap((s) => s.calls).find((c) => c.id === callId)
+    const plan = call ? readPlan(call.args) : null
+    if (!plan || !ticked.length) return false
+    const sent = await send({ mode: 'comment', message: buildMessage(plan, ticked), picks: [] })
+    if (sent) patchMessage(messageId, { planBuilt: callId })
+    return sent
+  }, [patchMessage, send])
+
   const newChat = useCallback(() => {
     abort.current?.abort()
     setThread(EMPTY_THREAD)
@@ -647,6 +661,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     applyAllStaged,
     rejectStagedFile,
     rejectAllStaged,
+    buildPlan,
     rejectEdit,
     showEdit,
     updateSettings,
