@@ -221,7 +221,8 @@ test('Studio: a proposed edit is applied to the buffer, and Save writes it', asy
   await expect(page.getByTestId('ai-proposal')).toContainText('The edits apply and validate.')
   await expect(page.getByTestId('ai-edit-diff')).toContainText(hint)
   expect(chats).toHaveLength(1)
-  expect(chats[0].messages[0].content).toContain('## Proposing Changes')
+  // With the tools on (the default) the prompt asks for tool calls, but oui-edit blocks a model writes anyway still become cards.
+  expect(chats[0].messages[0].content).toContain('## Changing the Topic')
 
   await page.getByTestId('ai-edit-apply').click()
   await expect(card).toHaveAttribute('data-state', 'applied')
@@ -285,4 +286,53 @@ test('Studio: Apply all adds a new section and lists it in topic.oui, written on
   })
   expect(saved.topic).toContain('SectionRef("summary")')
   expect(saved.summary).toContain('That is all.')
+})
+
+test('Studio: an edit tool stages a change, which is applied from its card and written on Save', async ({ page }) => {
+  const chats = captureChats(page)
+  await page.goto('/studio.html')
+  await page.evaluate(async (files) => {
+    const root = await navigator.storage.getDirectory()
+    await root.removeEntry('assistant-staged', { recursive: true }).catch(() => {})
+    const dir = await root.getDirectoryHandle('assistant-staged', { create: true })
+    for (const [rel, text] of Object.entries(files)) {
+      const parts = rel.split('/')
+      let d = dir
+      for (const p of parts.slice(0, -1)) d = await d.getDirectoryHandle(p, { create: true })
+      const w = await (await d.getFileHandle(parts[parts.length - 1], { create: true })).createWritable()
+      await w.write(text)
+      await w.close()
+    }
+    await (window as unknown as { __loomStudio: { openFolder(d: FileSystemDirectoryHandle): Promise<void> } }).__loomStudio.openFolder(dir)
+  }, topicFiles())
+  await expect(page.getByTestId('studio-workspace')).toBeVisible()
+  await connect(page)
+
+  const hint = 'Shared caches are CDNs and proxies.'
+  const statement = `q1 = QuizQuestion("q1", "Which directive keeps a response out of a CDN but lets the browser cache it?", [QuizChoice("a", "private", true, "Correct."), QuizChoice("b", "no-store", false, "That stops the browser too.")], "${hint}")`
+  const args = JSON.stringify({ file: 'sections/quiz.oui', statements: statement, summary: 'Concrete hint' })
+  await page.getByTestId('pick-composer').fill(`Make the hint concrete. TOOL<<edit_section ${args}>>`)
+  await page.getByTestId('pick-composer').press('Enter')
+
+  await expect(page.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done')
+  await expect(page.getByTestId('ai-reply')).toContainText('Tool said: Staged replace q1 in sections/quiz.oui.')
+  await expect(page.getByTestId('ai-activity-toggle')).toHaveText('Staged 1 edit')
+  expect(chats[0]).toHaveProperty('tools')
+
+  const card = page.getByTestId('ai-staged-file')
+  await expect(card).toHaveAttribute('data-file', 'sections/quiz.oui')
+  await expect(card.getByTestId('ai-edit-diff')).toContainText(hint)
+  // Staged, not in the editor yet.
+  await expect(page.getByTestId('studio-save')).not.toContainText('Save (1)')
+
+  await card.getByTestId('ai-staged-apply').click()
+  await expect(page.getByTestId('ai-staged')).toHaveCount(0)
+  await expect(page.getByTestId('studio-save')).toContainText('Save (1)')
+  await page.getByTestId('studio-save').click()
+  await expect(page.getByTestId('studio-save')).toContainText('Saved')
+  const saved = await page.evaluate(async () => {
+    const dir = await (await (await navigator.storage.getDirectory()).getDirectoryHandle('assistant-staged')).getDirectoryHandle('sections')
+    return (await (await dir.getFileHandle('quiz.oui')).getFile()).text()
+  })
+  expect(saved).toContain(hint)
 })

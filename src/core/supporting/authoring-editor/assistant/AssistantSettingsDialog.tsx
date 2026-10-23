@@ -2,10 +2,11 @@
  * Connection settings for the AI assistant (grill-log-ai-assistant.md,
  * decisions 55 and 57): named profiles, the API key with "Remember key on
  * this device", and Test connection, which fills the model list or says why
- * the server could not be reached and what to do about it.
+ * the server could not be reached and what to do about it. Web search
+ * (decisions 140–141) has its own key, shared by every profile.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, CheckCircle2, Loader2, Plus, Trash2 } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Globe, Loader2, Plus, Trash2 } from 'lucide-react'
 import { Modal } from '../../../ui-system'
 import { normalizeBaseUrl, testConnection, type AssistantFailureKind, type ConnectionReport } from './client'
 import { ASSISTANT_PRESETS, failureHint, presetOf, type AssistantPresetId } from './presets'
@@ -21,6 +22,7 @@ import {
   type AssistantProfile,
   type AssistantSettings,
 } from './profiles'
+import { TAVILY_HOST, loadWebSearch, saveWebSearch, testWebSearch, webFailureHint, type WebFailureKind, type WebSearchSettings } from './web-search'
 import './assistant.css'
 
 interface Draft {
@@ -66,6 +68,7 @@ export function AssistantSettingsDialog({ open, onClose, onChange, fetchImpl }: 
   const [draft, setDraft] = useState<Draft | null>(null)
   const [test, setTest] = useState<TestState>({ kind: 'idle' })
   const [models, setModels] = useState<string[]>([])
+  const [web, setWeb] = useState<WebSearchSettings>(loadWebSearch)
   const abort = useRef<AbortController | null>(null)
 
   // Opening starts from what is stored: the active profile, or a new one.
@@ -77,6 +80,7 @@ export function AssistantSettingsDialog({ open, onClose, onChange, fetchImpl }: 
     setDraft(current ? draftOf(current) : draftOf(createProfile('ollama'), false))
     setTest({ kind: 'idle' })
     setModels([])
+    setWeb(loadWebSearch())
     return () => abort.current?.abort()
   }, [open])
 
@@ -156,6 +160,7 @@ export function AssistantSettingsDialog({ open, onClose, onChange, fetchImpl }: 
     const next = { profiles, activeId: profile.id }
     saveAssistantSettings(next)
     saveProfileKey(profile.id, draft.key, draft.remember)
+    saveWebSearch(web)
     setSettings(next)
     onChange?.(next)
     onClose()
@@ -297,6 +302,8 @@ export function AssistantSettingsDialog({ open, onClose, onChange, fetchImpl }: 
           </label>
         </div>
 
+        <WebSearchSection web={web} onChange={setWeb} fetchImpl={fetchImpl} />
+
         <details className="ai-settings-more">
           <summary>More settings</summary>
           <div className="ai-settings-grid">
@@ -326,7 +333,7 @@ export function AssistantSettingsDialog({ open, onClose, onChange, fetchImpl }: 
             </label>
             <label className="ai-check ai-field--wide">
               <input type="checkbox" checked={draft.profile.tools} onChange={(e) => update({ tools: e.target.checked })} data-testid="ai-tools" />
-              <span>Look up topic content (Viewer): the model can list and read any part of the topic. Needs a server and model with tool calling; turns itself off if the server refuses.</span>
+              <span>Tools: in Viewer the model can list and read any part of the topic; in Studio it can also stage edits for you to review and propose plans. Needs a server and model with tool calling; turns itself off if the server refuses.</span>
             </label>
           </div>
         </details>
@@ -370,5 +377,64 @@ function TestResult({ test, host }: { test: TestState; host: string }) {
       <span>{report.error.message}</span>
       <span>{hint}</span>
     </div>
+  )
+}
+
+type WebTest = { kind: 'idle' } | { kind: 'running' } | { kind: 'ok' } | { kind: 'failed'; failure: WebFailureKind; message: string }
+
+/** Web search through Tavily: on/off, the key, Test (decision 141). */
+function WebSearchSection({ web, onChange, fetchImpl }: { web: WebSearchSettings; onChange: (web: WebSearchSettings) => void; fetchImpl?: typeof fetch }) {
+  const [test, setTest] = useState<WebTest>({ kind: 'idle' })
+  const run = async () => {
+    setTest({ kind: 'running' })
+    const result = await testWebSearch(web.key, { fetch: fetchImpl })
+    setTest(result.ok ? { kind: 'ok' } : { kind: 'failed', failure: result.kind, message: result.message })
+  }
+  return (
+    <fieldset className="ai-settings-web" data-testid="ai-web">
+      <legend><Globe size={14} aria-hidden /> Web search (Tavily)</legend>
+      <label className="ai-check">
+        <input type="checkbox" checked={web.enabled} onChange={(e) => onChange({ ...web, enabled: e.target.checked })} data-testid="ai-web-enabled" />
+        <span>
+          Let the assistant search the web and read pages, with any profile that has tools on. The queries and page addresses it chooses go to{' '}
+          <strong>{TAVILY_HOST}</strong> with your key; answers cite the pages they use.
+        </span>
+      </label>
+      {web.enabled && (
+        <div className="ai-settings-grid">
+          <label className="ai-field ai-field--wide">
+            <span>Tavily API key</span>
+            <input
+              type="password"
+              value={web.key}
+              placeholder="tvly-…"
+              autoComplete="off"
+              onChange={(e) => {
+                onChange({ ...web, key: e.target.value })
+                setTest({ kind: 'idle' })
+              }}
+              data-testid="ai-web-key"
+            />
+          </label>
+          <label className="ai-check ai-field--wide">
+            <input type="checkbox" checked={web.remember} onChange={(e) => onChange({ ...web, remember: e.target.checked })} data-testid="ai-web-remember" />
+            <span>Remember key on this device. Otherwise it is forgotten when this tab closes. It is only ever sent to {TAVILY_HOST}.</span>
+          </label>
+          <div className="ai-settings-test ai-field--wide">
+            <button type="button" className="ai-button" onClick={run} disabled={!web.key.trim() || test.kind === 'running'} data-testid="ai-web-test">
+              {test.kind === 'running' ? <Loader2 size={14} className="ai-spin" /> : null} Test
+            </button>
+            {test.kind === 'ok' && <span className="ai-test-ok" role="status" data-testid="ai-web-result"><CheckCircle2 size={14} /> Web search works</span>}
+            {test.kind === 'failed' && (
+              <div className="ai-test-fail" role="alert" data-testid="ai-web-result" data-kind={test.failure}>
+                <strong><AlertTriangle size={14} /> {test.failure === 'network' ? 'Blocked or unreachable' : test.failure === 'auth' ? 'API key refused' : 'Search failed'}</strong>
+                <span>{test.message}</span>
+                <span>{webFailureHint(test.failure)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </fieldset>
   )
 }

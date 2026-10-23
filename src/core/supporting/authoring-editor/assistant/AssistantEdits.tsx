@@ -20,7 +20,7 @@ const KIND_LABEL: Record<StatementChange['kind'], string> = {
   create: 'new file',
 }
 
-function Diff({ changes }: { changes: StatementChange[] }) {
+export function Diff({ changes }: { changes: StatementChange[] }) {
   const lines = changes.flatMap((change, i) => [
     ...(i > 0 ? [{ kind: 'gap' as const, text: '' }] : []),
     ...diffLines(change.before ?? '', change.after ?? ''),

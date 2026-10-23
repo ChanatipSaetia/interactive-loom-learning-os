@@ -8,7 +8,7 @@
  * starts. `AssistantToggle` opens the panel from the page header.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { AlertTriangle, ArrowUpRight, Bot, Brain, ChevronDown, FileText, ListTree, Loader2, MessageSquarePlus, RotateCcw, Search, Settings2, X } from 'lucide-react'
+import { AlertTriangle, ArrowUpRight, BookOpen, ExternalLink, Globe, Link2, ListChecks, Bot, Brain, ChevronDown, FilePlus2, FileText, ListTree, Loader2, MessageSquarePlus, PencilLine, RotateCcw, Search, Settings2, Tags, X } from 'lucide-react'
 import { Modal } from '../../../ui-system'
 import { findPickElement } from '../pick/PickLayer'
 import { useNarrow } from '../pick/PickMode'
@@ -17,6 +17,9 @@ import { statementOfAnchor } from '../pick/tray'
 import { AssistantMarkdown } from './AssistantMarkdown'
 import { EditCard, ProposalBar, useEditBlocks } from './AssistantEdits'
 import { AssistantSettingsDialog } from './AssistantSettingsDialog'
+import { StagedChanges } from './StagedChanges'
+import { PlanCard } from './PlanCard'
+import { EDIT_TOOL_NAMES } from './edit-tools'
 import { failureHint, type AssistantPresetId } from './presets'
 import type { ThreadMessage, ThreadPick, ToolStepCall } from './thread'
 import type { AssistantFailureKind } from './client'
@@ -119,7 +122,14 @@ const FAILURE_TITLES: Partial<Record<AssistantFailureKind, string>> = {
   'invalid-url': 'Not a valid base URL',
 }
 
-const TOOL_ICONS: Record<string, typeof Search> = { navigate: ListTree, read: FileText }
+const TOOL_ICONS: Record<string, typeof Search> = { navigate: ListTree, read: FileText, edit_section: PencilLine, create_section: FilePlus2, edit_topic: Tags, describe_components: BookOpen, propose_plan: ListChecks, web_search: Globe, web_extract: Link2 }
+
+/** Calls that stage a change (decision 130), counted apart from lookups. */
+const isEdit = (name: string) => EDIT_TOOL_NAMES.has(name) && name !== 'describe_components'
+
+const PLAN = 'propose_plan'
+
+const isWeb = (name: string) => name === 'web_search' || name === 'web_extract'
 
 /** "Knowledge Check › A logged-in…" → the section, then the part. */
 function splitLabel(name: string, label: string): { title: string; detail?: string } {
@@ -166,11 +176,20 @@ function Activity({ message }: { message: ThreadMessage }) {
   if (message.thinking) rows.push({ kind: 'thought', key: 'final', text: message.thinking, live: thinkingNow })
   if (!rows.length) return null
 
-  const calls = rows.filter((r) => r.kind === 'call').length
+  const calls = rows.filter((r) => r.kind === 'call' && !isEdit(r.call.name) && r.call.name !== PLAN && !isWeb(r.call.name)).length
+  const searches = rows.filter((r) => r.kind === 'call' && isWeb(r.call.name)).length
+  const plans = rows.filter((r) => r.kind === 'call' && r.call.name === PLAN).length
+  const edits = rows.filter((r) => r.kind === 'call' && isEdit(r.call.name)).length
   const thought = rows.some((r) => r.kind === 'thought')
   const lastCall = [...rows].reverse().find((r): r is Extract<ActivityRow, { kind: 'call' }> => r.kind === 'call')
   const looking = streaming && !message.text && !thinkingNow && !!lastCall
-  const done = [thought ? thoughtLabel(message.thoughtMs) : '', calls ? `Looked at ${calls} ${calls === 1 ? 'place' : 'places'}` : ''].filter(Boolean).join(' · ')
+  const done = [
+    thought ? thoughtLabel(message.thoughtMs) : '',
+    calls ? `Looked at ${calls} ${calls === 1 ? 'place' : 'places'}` : '',
+    searches ? `Searched the web${searches > 1 ? ` (${searches})` : ''}` : '',
+    edits ? `Staged ${edits} ${edits === 1 ? 'edit' : 'edits'}` : '',
+    plans ? 'Proposed a plan' : '',
+  ].filter(Boolean).join(' · ')
   const busy = thinkingNow || looking
   const preview = thinkingNow && !open ? lastLine(message.thinking ?? '') : ''
 
@@ -179,7 +198,7 @@ function Activity({ message }: { message: ThreadMessage }) {
       <button type="button" className="ai-activity-toggle" aria-expanded={open} onClick={() => setOpen((o) => !o)} data-testid="ai-activity-toggle">
         {busy ? <Loader2 size={13} className="ai-spin" aria-hidden /> : thought && !calls ? <Brain size={13} aria-hidden /> : <Search size={13} aria-hidden />}
         <span className="ai-activity-summary">
-          {thinkingNow ? 'Thinking…' : looking ? <>Looking at <b>{splitLabel(lastCall!.call.name, lastCall!.call.label).title}</b>…</> : done}
+          {thinkingNow ? 'Thinking…' : looking ? <>{isEdit(lastCall!.call.name) ? 'Editing' : isWeb(lastCall!.call.name) ? 'Searched' : 'Looking at'} <b>{splitLabel(lastCall!.call.name, lastCall!.call.label).title}</b>…</> : done}
         </span>
         <ChevronDown size={13} className="ai-activity-chevron" aria-hidden />
       </button>
@@ -199,8 +218,23 @@ function Activity({ message }: { message: ThreadMessage }) {
               )
             }
             const { call } = row
+            if (call.url) {
+              const Icon = TOOL_ICONS[call.name] ?? Globe
+              return (
+                <li key={row.key}>
+                  <a className="ai-activity-row ai-activity-row--place" href={call.url} target="_blank" rel="noopener noreferrer" title={call.url} data-testid="ai-looked-line">
+                    <span className="ai-activity-icon"><Icon size={12} aria-hidden /></span>
+                    <span className="ai-activity-text">
+                      <span className="ai-activity-title">{call.label}</span>
+                      <span className="ai-activity-detail">{call.url}</span>
+                    </span>
+                    <ExternalLink size={13} className="ai-activity-go" aria-hidden />
+                  </a>
+                </li>
+              )
+            }
             const place = call.file ? { file: call.file, anchor: call.anchor ?? 'root' } : null
-            const { title, detail } = splitLabel(call.name, call.label)
+            const { title, detail } = isEdit(call.name) ? { title: call.label, detail: call.file } : splitLabel(call.name, call.label)
             const Icon = TOOL_ICONS[call.name] ?? Search
             return (
               <li key={row.key}>
@@ -228,7 +262,16 @@ function Activity({ message }: { message: ThreadMessage }) {
   )
 }
 
-function Reply({ assistant, message, preset, last, onRetry }: { assistant: AssistantState; message: ThreadMessage; preset: AssistantPresetId; last: boolean; onRetry: () => void }) {
+/** The id of the newest `propose_plan` call in the thread; older plans are stale. */
+function latestPlan(messages: readonly ThreadMessage[]): string | undefined {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const call = [...(messages[i].steps ?? [])].reverse().flatMap((s) => [...s.calls].reverse()).find((c) => c.name === PLAN && !c.result.startsWith('Error'))
+    if (call) return call.id
+  }
+  return undefined
+}
+
+function Reply({ assistant, message, preset, last, onRetry, latestPlanId }: { assistant: AssistantState; message: ThreadMessage; preset: AssistantPresetId; last: boolean; onRetry: () => void; latestPlanId?: string }) {
   const streaming = message.status === 'streaming'
   const blocks = useEditBlocks(message)
   // Studio turns oui-edit blocks into edit cards; elsewhere they stay code.
@@ -242,6 +285,9 @@ function Reply({ assistant, message, preset, last, onRetry }: { assistant: Assis
       <Activity message={message} />
       {message.text ? <AssistantMarkdown text={message.text} renderEdit={renderEdit} /> : streaming && !message.steps?.length && !message.thinking ? <p className="ai-thinking"><Loader2 size={14} className="ai-spin" /> Thinking…</p> : null}
       {message.status === 'stopped' && <p className="ai-note">(stopped)</p>}
+      {(message.steps ?? []).flatMap((s) => s.calls).filter((c) => c.name === PLAN && !c.result.startsWith('Error')).map((call) => (
+        <PlanCard key={call.id} assistant={assistant} messageId={message.id} call={call} built={message.planBuilt === call.id} stale={call.id !== latestPlanId} />
+      ))}
       {assistant.canEdit && <ProposalBar assistant={assistant} message={message} />}
       {failed && (
         <div className="ai-test-fail" role="alert">
@@ -326,6 +372,7 @@ export function AssistantDock({ assistant, resolve, fetchImpl }: AssistantDockPr
   }, [])
 
   const lastIndex = messages.length - 1
+  const latestPlanId = latestPlan(messages)
 
   return (
     <>
@@ -410,10 +457,11 @@ export function AssistantDock({ assistant, resolve, fetchImpl }: AssistantDockPr
                     {message.mode === 'ask' && <span className="ai-note">Question</span>}
                   </div>
                 ) : (
-                  <Reply assistant={assistant} message={message} preset={profile?.preset ?? 'custom'} last={index === lastIndex} onRetry={assistant.retry} />
+                  <Reply assistant={assistant} message={message} preset={profile?.preset ?? 'custom'} last={index === lastIndex} onRetry={assistant.retry} latestPlanId={latestPlanId} />
                 )}
               </div>
             ))}
+            {assistant.canEdit && <StagedChanges assistant={assistant} />}
           </div>
         </aside>
       )}

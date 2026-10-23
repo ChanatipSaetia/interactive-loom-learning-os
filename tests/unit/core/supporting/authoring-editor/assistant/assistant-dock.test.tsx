@@ -8,6 +8,7 @@ import {
   pickBridgeOf,
   saveAssistantSettings,
   useAssistant,
+  type AssistantProfile,
   type AssistantTopicContext,
   type AssistantView,
 } from '../../../../../../src/core/supporting/authoring-editor/assistant'
@@ -49,8 +50,8 @@ function mockFetch() {
   })
 }
 
-function seed(baseUrl: string) {
-  const profile = { ...createProfile('custom'), name: 'Mine', baseUrl, model: 'm1' }
+function seed(baseUrl: string, patch: Partial<AssistantProfile> = {}) {
+  const profile = { ...createProfile('custom'), name: 'Mine', baseUrl, model: 'm1', ...patch }
   saveAssistantSettings({ profiles: [profile], activeId: profile.id })
   localStorage.setItem('loom-pick-tray:demo', JSON.stringify({
     mode: 'comment',
@@ -177,7 +178,7 @@ describe('AssistantDock with the Pick tray', () => {
   })
 })
 
-describe('Studio edits', () => {
+describe('Studio edits without the tools (oui-edit blocks)', () => {
   const edit = (body: string, info = 'file=sections/quiz.oui') => `Changed it.\n\n\`\`\`oui-edit ${info}\n${body}\n\`\`\``
 
   function StudioHarness({ fetchImpl, buffers, revealed }: { fetchImpl: typeof fetch; buffers: Record<string, string>; revealed: string[] }) {
@@ -211,7 +212,7 @@ describe('Studio edits', () => {
   }
 
   it('shows a proposed edit as a diff and applies it to the buffer', async () => {
-    seed('http://localhost:11434/v1')
+    seed('http://localhost:11434/v1', { tools: false })
     const buffers = { ...files }
     const revealed: string[] = []
     const fetchImpl = replies(edit('q1 = QuizQuestion("q1", "Why, exactly?", [QuizChoice("a", "Yes", true, "Right.")])'))
@@ -232,7 +233,7 @@ describe('Studio edits', () => {
   })
 
   it('rejects an edit without touching the buffer', async () => {
-    seed('http://localhost:11434/v1')
+    seed('http://localhost:11434/v1', { tools: false })
     const buffers = { ...files }
     render(<StudioHarness fetchImpl={replies(edit('q1 = QuizQuestion("q1", "Other?", [QuizChoice("a", "Yes", true, "Right.")])')) as unknown as typeof fetch} buffers={buffers} revealed={[]} />)
     fireEvent.click(screen.getByTestId('pick-send'))
@@ -243,7 +244,7 @@ describe('Studio edits', () => {
   })
 
   it('sends the problems back once when a proposal does not validate', async () => {
-    seed('http://localhost:11434/v1')
+    seed('http://localhost:11434/v1', { tools: false })
     const fetchImpl = replies(edit('q1 = DELETE'), edit('q1 = QuizQuestion("q1", "Fixed?", [QuizChoice("a", "Yes", true, "Right.")])'))
     render(<StudioHarness fetchImpl={fetchImpl as unknown as typeof fetch} buffers={{ ...files }} revealed={[]} />)
     fireEvent.click(screen.getByTestId('pick-send'))
@@ -373,5 +374,202 @@ describe('Thinking (decision 128)', () => {
     const chats = fetchImpl.mock.calls.filter(([u]) => String(u).endsWith('/chat/completions'))
     expect(chats).toHaveLength(2)
     expect(String((chats[1][1] as RequestInit).body)).not.toContain('The learner asks')
+  })
+})
+
+describe('Tools and staged edits in Studio (decisions 129–136)', () => {
+  const json = (data: unknown) => new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } })
+  const toolCalls = (...calls: Array<[string, string, unknown]>) => json({
+    choices: [{ message: { content: '', tool_calls: calls.map(([id, name, args]) => ({ id, type: 'function', function: { name, arguments: JSON.stringify(args) } })) }, finish_reason: 'tool_calls' }],
+  })
+  const chatBodies = (fetchImpl: ReturnType<typeof vi.fn>) =>
+    fetchImpl.mock.calls.filter(([url]) => String(url).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
+  const q1 = 'q1 = QuizQuestion("q1", "Why, exactly?", [QuizChoice("a", "Yes", true, "Right.")])'
+  const words = 'root = Flashcards("Words", [f1])\nf1 = Flashcard("Term", ["Meaning"])'
+
+  function StudioHarness({ fetchImpl, buffers }: { fetchImpl: typeof fetch; buffers: Record<string, string> }) {
+    const assistant = useAssistant({
+      topicId: 'demo',
+      app: 'studio',
+      getContext: () => ({ topicId: 'demo', files: { ...buffers }, fileOrder: Object.keys(buffers), diagnostics: {} }),
+      editor: {
+        write: (file, source) => {
+          buffers[file] = source
+          return null
+        },
+        reveal: () => {},
+      },
+      fetchImpl,
+    })
+    return (
+      <>
+        <AssistantToggle assistant={assistant} className="pill" />
+        <PickMode topicId="demo" active={false} onActiveChange={() => {}} resolve={sourceResolver(buffers)} assistant={pickBridgeOf(assistant)} />
+        <AssistantDock assistant={assistant} resolve={sourceResolver(buffers)} fetchImpl={fetchImpl} />
+      </>
+    )
+  }
+
+  it('stages edits across sections, applies them statement by statement and tells the model what was decided', async () => {
+    seed('http://localhost:11434/v1')
+    const buffers: Record<string, string> = { ...files }
+    const answers = [
+      toolCalls(['c1', 'read', { address: 'sections/quiz.oui' }]),
+      toolCalls(
+        ['c2', 'edit_section', { file: 'sections/quiz.oui', statements: q1, summary: 'Sharper question' }],
+        ['c3', 'create_section', { name: 'words', source: words, summary: 'Vocabulary' }],
+      ),
+      streamOf('Staged two changes.'),
+      streamOf('Thanks.'),
+    ]
+    const fetchImpl = vi.fn(async (url: string) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
+    render(<StudioHarness fetchImpl={fetchImpl as unknown as typeof fetch} buffers={buffers} />)
+
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    const bodies = chatBodies(fetchImpl)
+    expect(bodies[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read', 'edit_section', 'create_section', 'edit_topic', 'describe_components', 'propose_plan'])
+    expect(bodies[0].messages[0].content).toContain('## Changing the Topic')
+    expect(bodies[0].messages[0].content).not.toContain('```oui-edit file=')
+    expect(bodies[1].messages.at(-1).content).toContain('QuizQuestion("q1", "Why?"')
+    expect(bodies[2].messages.at(-2).content).toMatch(/^Staged replace q1 in sections\/quiz.oui\. No new errors/)
+    expect(screen.getByTestId('ai-activity')).toHaveTextContent('Looked at 1 place · Staged 2 edits')
+
+    // Nothing reached the buffers yet.
+    expect(buffers['sections/quiz.oui']).toBe(files['sections/quiz.oui'])
+    const cards = screen.getAllByTestId('ai-staged-file')
+    expect(cards.map((c) => c.getAttribute('data-file'))).toEqual(['sections/quiz.oui', 'sections/words.oui', 'topic.oui'])
+
+    fireEvent.click(cards[0].querySelector('[data-testid="ai-staged-apply"]')!)
+    expect(buffers['sections/quiz.oui']).toContain('Why, exactly?')
+    fireEvent.click(screen.getByTestId('ai-staged-reject-all'))
+    expect(buffers['sections/words.oui']).toBeUndefined()
+    expect(screen.queryByTestId('ai-staged')).not.toBeInTheDocument()
+
+    const input = screen.getByTestId('pick-composer')
+    fireEvent.change(input, { target: { value: 'Thanks' } })
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')[1]).toHaveAttribute('data-status', 'done'))
+    const sent = chatBodies(fetchImpl)
+    const last = sent[sent.length - 1].messages.at(-1).content
+    expect(last).toContain('- sections/quiz.oui: applied q1')
+    expect(last).toContain('- sections/words.oui: rejected sections/words.oui')
+    expect(last).toContain('- topic.oui: rejected words')
+  })
+
+  it('applies a new section with its SectionRef where the model put it, and keeps the changeset after a reload', async () => {
+    seed('http://localhost:11434/v1')
+    const buffers: Record<string, string> = { ...files, 'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz"), SectionRef("end")])\n', 'sections/end.oui': 'root = Text("End", ["Bye."])\n' }
+    const answers = [toolCalls(['c1', 'create_section', { name: 'words', source: words, after: 'quiz', summary: 'Vocabulary' }]), streamOf('Done.')]
+    const fetchImpl = vi.fn(async (url: string) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
+    const { unmount } = render(<StudioHarness fetchImpl={fetchImpl as unknown as typeof fetch} buffers={buffers} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    unmount()
+
+    render(<StudioHarness fetchImpl={fetchImpl as unknown as typeof fetch} buffers={buffers} />)
+    fireEvent.click(screen.getByTestId('ai-toggle'))
+    await waitFor(() => expect(screen.getByTestId('ai-staged')).toBeInTheDocument())
+    fireEvent.click(screen.getByTestId('ai-staged-apply-all'))
+    expect(buffers['sections/words.oui']).toContain('Flashcards("Words"')
+    expect(buffers['topic.oui']).toMatch(/SectionRef\("quiz"\),\s*SectionRef\("words"\),\s*SectionRef\("end"\)/)
+  })
+})
+
+describe('Plan card in Studio (decisions 138–139)', () => {
+  const json = (data: unknown) => new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } })
+  const toolCall = (id: string, name: string, args: unknown) => json({
+    choices: [{ message: { content: '', tool_calls: [{ id, type: 'function', function: { name, arguments: JSON.stringify(args) } }] }, finish_reason: 'tool_calls' }],
+  })
+  const plan = {
+    goal: 'Choose a cache policy for each kind of response.',
+    items: [
+      { action: 'create', name: 'words', type: 'Flashcards', title: 'Key terms', idea: 'max-age, no-store, private.' },
+      { action: 'edit', name: 'quiz', type: 'Quiz', title: 'Knowledge Check', idea: 'Add a question on private.' },
+    ],
+  }
+
+  it('shows the plan, lets the model say a word, and Build these sends the ticked items', async () => {
+    seed('http://localhost:11434/v1')
+    const buffers: Record<string, string> = { ...files }
+    const answers = [toolCall('p1', 'propose_plan', plan), streamOf('Tick what to build.'), streamOf('Building.')]
+    const fetchImpl = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
+    function Studio() {
+      const assistant = useAssistant({
+        topicId: 'demo',
+        app: 'studio',
+        getContext: () => ({ topicId: 'demo', files: { ...buffers }, fileOrder: Object.keys(buffers), diagnostics: {} }),
+        editor: { write: () => null, reveal: () => {} },
+        fetchImpl: fetchImpl as unknown as typeof fetch,
+      })
+      return (
+        <>
+          <PickMode topicId="demo" active={false} onActiveChange={() => {}} resolve={sourceResolver(buffers)} assistant={pickBridgeOf(assistant)} />
+          <AssistantDock assistant={assistant} resolve={sourceResolver(buffers)} fetchImpl={fetchImpl as unknown as typeof fetch} />
+        </>
+      )
+    }
+    render(<Studio />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    const bodies = fetchImpl.mock.calls.filter(([u]) => String(u).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
+    expect(bodies[1].tool_choice).toBe('none')
+    expect(screen.getByTestId('ai-activity')).toHaveTextContent('Proposed a plan')
+    expect(screen.getAllByTestId('ai-plan-item')).toHaveLength(2)
+
+    fireEvent.click(screen.getAllByTestId('ai-plan-tick')[1])
+    fireEvent.click(screen.getByTestId('ai-plan-build'))
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')).toHaveLength(2))
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')[1]).toHaveAttribute('data-status', 'done'))
+    const sent = fetchImpl.mock.calls.filter(([u]) => String(u).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
+    const message = sent[sent.length - 1].messages.at(-1).content as string
+    expect(message).toContain('Build this section from the plan (goal: Choose a cache policy')
+    expect(message).toContain('1. Create sections/words.oui (Flashcards) "Key terms"')
+    expect(message).not.toContain('Knowledge Check')
+    expect(screen.getByTestId('ai-plan')).toHaveAttribute('data-state', 'built')
+  })
+})
+
+describe('Web search (decisions 140–142)', () => {
+  const json = (data: unknown) => new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } })
+
+  it('offers the web tools with a key, runs them against Tavily and links the page it read', async () => {
+    seed('http://localhost:11434/v1')
+    localStorage.setItem('loom-ai-web', JSON.stringify({ enabled: true }))
+    sessionStorage.setItem('loom-ai-tavily-key', 'tvly-1')
+    const answers = [
+      json({ choices: [{ message: { content: '', tool_calls: [{ id: 'w1', type: 'function', function: { name: 'web_extract', arguments: '{"urls":["https://developer.mozilla.org/cc"]}' } }] }, finish_reason: 'tool_calls' }] }),
+      streamOf('Beyond the topic: see MDN.'),
+    ]
+    const fetchImpl = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) => {
+      if (url.endsWith('/models')) return json({ data: [{ id: 'm1' }] })
+      if (url === 'https://api.tavily.com/extract') return json({ results: [{ url: 'https://developer.mozilla.org/cc', raw_content: 'Cache-Control directives.' }] })
+      return answers.shift()!
+    })
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+
+    const chats = fetchImpl.mock.calls.filter(([u]) => u.endsWith('/chat/completions')).map(([, init]) => JSON.parse(init!.body as string))
+    expect(chats[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read', 'web_search', 'web_extract'])
+    expect(chats[0].messages[0].content).toContain('## Web Search')
+    expect(chats[1].messages.at(-1)).toMatchObject({ role: 'tool', tool_call_id: 'w1' })
+    expect(chats[1].messages.at(-1).content).toContain('Cache-Control directives.')
+    expect(screen.getByTestId('ai-activity')).toHaveTextContent('Searched the web')
+    fireEvent.click(screen.getByTestId('ai-activity-toggle'))
+    expect(screen.getByTestId('ai-looked-line')).toHaveAttribute('href', 'https://developer.mozilla.org/cc')
+    expect(screen.getByTestId('ai-looked-line')).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
+  it('leaves the web tools out without a key', async () => {
+    seed('http://localhost:11434/v1')
+    localStorage.setItem('loom-ai-web', JSON.stringify({ enabled: true }))
+    const fetchImpl = mockFetch()
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    const body = JSON.parse(fetchImpl.mock.calls.find(([u]) => u.endsWith('/chat/completions'))![1]!.body as string)
+    expect(body.tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read'])
+    expect(body.messages[0].content).not.toContain('## Web Search')
   })
 })

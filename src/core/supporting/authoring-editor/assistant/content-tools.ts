@@ -1,6 +1,6 @@
 /**
- * The assistant's content tools in Loom Viewer (grill-log-ai-assistant.md,
- * decisions 120–126): `navigate` walks the open topic one level at a time,
+ * The assistant's content tools in Loom Viewer and Studio (grill-log-ai-assistant.md,
+ * decisions 120–126 and 129): `navigate` walks the open topic one level at a time,
  * `read` gives a place's content as readable text. Both run in the page, on
  * the same sources and errors the topic context is built from, and address
  * places by Pick pointer (`sections/quiz.oui #q2`).
@@ -62,6 +62,31 @@ export const CONTENT_TOOLS: ToolDefinition[] = [
   },
 ]
 
+/**
+ * Studio's versions (decision 129): over the buffers and the staged changes,
+ * and `read` gives the source unless asked for readable text.
+ */
+export const STUDIO_CONTENT_TOOLS: ToolDefinition[] = [
+  CONTENT_TOOLS[0],
+  {
+    type: 'function',
+    function: {
+      name: 'read',
+      description:
+        'Get the openui-lang source of one place in the topic, as the editor buffers and your staged changes leave it: a whole file for a section address, or one statement for a part.',
+      parameters: {
+        type: 'object',
+        properties: {
+          address: { type: 'string', description: ADDRESS_HELP },
+          source: { type: 'boolean', description: 'false gives the content as readable text instead of source.' },
+        },
+        required: ['address'],
+        additionalProperties: false,
+      },
+    },
+  },
+]
+
 export const CONTENT_TOOL_NAMES = new Set(CONTENT_TOOLS.map((t) => t.function.name))
 
 export interface ToolOutcome {
@@ -108,7 +133,11 @@ const narrationFileOf = (file: string) => file.replace(/\.oui$/, '.narrate.oui')
 export class ContentToolRunner {
   private trees = new Map<string, ElementIndex | null>()
 
-  constructor(private readonly context: AssistantTopicContext) {}
+  constructor(
+    private readonly context: AssistantTopicContext,
+    /** Studio: `read` gives source unless `source: false` (decision 129). */
+    private readonly sourceByDefault = false,
+  ) {}
 
   private tree(file: string): ElementIndex | null {
     if (!this.trees.has(file)) {
@@ -142,7 +171,7 @@ export class ContentToolRunner {
     if (name === 'navigate') return address ? this.navigateIn(address) : this.outline()
     if (name === 'read') {
       if (!address) return { content: 'Error: read needs an address. Call navigate() for the list of sections.', label: 'read (no address)' }
-      return this.read(address, parsed.source === true)
+      return this.read(address, this.sourceByDefault ? parsed.source !== false : parsed.source === true)
     }
     return { content: `Error: there is no tool "${name}". The tools are navigate and read.`, label: name }
   }
