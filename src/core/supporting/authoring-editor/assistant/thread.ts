@@ -53,6 +53,8 @@ export interface ToolStepCall {
   /** The place looked at, for Show on page. */
   file?: string
   anchor?: string
+  /** A web page read (decision 142), opened from the activity pill. */
+  url?: string
 }
 
 /** One tool round: the text the model wrote with its calls, then the calls. */
@@ -140,6 +142,7 @@ function readStep(value: unknown): ToolStep | null {
     const out: ToolStepCall = { id: call.id, name: call.name, args: typeof call.args === 'string' ? call.args : '{}', result: call.result, label: typeof call.label === 'string' ? call.label : call.name }
     if (typeof call.file === 'string') out.file = call.file
     if (typeof call.anchor === 'string') out.anchor = call.anchor
+    if (typeof call.url === 'string' && /^https?:\/\//.test(call.url)) out.url = call.url
     return [out]
   })
   if (!calls.length) return null

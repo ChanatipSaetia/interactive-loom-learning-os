@@ -31,6 +31,7 @@ import { AssistantError, chatCompletion, isLoopbackHost, listModels } from './cl
 import { buildTopicContext, type AssistantTopicContext } from './context'
 import { CONTENT_TOOLS, CONTENT_TOOL_NAMES, ContentToolRunner, STUDIO_CONTENT_TOOLS } from './content-tools'
 import { EDIT_TOOLS, EDIT_TOOL_NAMES, EditToolRunner, PLAN_TOOL, buildMessage, readPlan } from './edit-tools'
+import { WEB_TOOLS, WEB_TOOL_NAMES, loadWebSearch, runWebTool, webSearchReady } from './web-search'
 import { applyRank, changesetNote, decide, fileView, stagedContext, type Changeset } from './changeset'
 import { applyEditBlock, applyOrder, checkProposal, parseEditBlocks } from './edits'
 import {
@@ -247,7 +248,10 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     // The content tools (decisions 120, 129) and Studio's edit tools; off for the rest of this request once the server refuses them.
     const studio = app === 'studio' && !!editorRef.current
     let tools = (app === 'viewer' || studio) && profile.tools
-    const toolList = studio ? [...STUDIO_CONTENT_TOOLS, ...EDIT_TOOLS, PLAN_TOOL] : CONTENT_TOOLS
+    // Web search through Tavily when it is on and has a key (decision 140).
+    const web = loadWebSearch()
+    const withWeb = webSearchReady(web)
+    const toolList = [...(studio ? [...STUDIO_CONTENT_TOOLS, ...EDIT_TOOLS, PLAN_TOOL] : CONTENT_TOOLS), ...(withWeb ? WEB_TOOLS : [])]
     const toolNames = toolList.map((t) => t.function.name).join(', ')
     const maxRounds = studio ? MAX_STUDIO_TOOL_ROUNDS : MAX_TOOL_ROUNDS
     let staged: Changeset = threadRef.current.staged ?? []
@@ -312,7 +316,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
       let result: Awaited<ReturnType<typeof chatCompletion>>
       for (let round = 0; ; round++) {
         // The same for every request of the conversation, so it stays cached.
-        const system = getLoomAssistantPrompt({ app, fullReference: profile.fullReference, tools })
+        const system = getLoomAssistantPrompt({ app, fullReference: profile.fullReference, tools, web: tools && withWeb })
         try {
           result = await chatCompletion(
             connectionOf(profile),
@@ -351,25 +355,33 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
         const calls = tools && round < maxRounds && !planShown ? result.toolCalls : undefined
         if (!calls?.length) break
         const earlier = earlierResults([...messages.slice(start), { ...reply, steps }])
+        const runCall = async (call: (typeof calls)[number]): Promise<ToolStepCall> => {
+          const name = call.function.name
+          if (withWeb && WEB_TOOL_NAMES.has(name)) {
+            const outcome = await runWebTool(name, call.function.arguments, web.key, { fetch: fetchImpl, signal: controller.signal })
+            return { id: call.id, name, args: call.function.arguments, result: outcome.content, label: outcome.label, ...(outcome.url ? { url: outcome.url } : {}) }
+          }
+          if (studio && (EDIT_TOOL_NAMES.has(name) || name === PLAN_TOOL.function.name)) {
+            const outcome = new EditToolRunner(contextRef.current(), staged).run(name, call.function.arguments)
+            staged = outcome.changeset
+            if (name === PLAN_TOOL.function.name && readPlan(call.function.arguments)) planShown = true
+            return { id: call.id, name, args: call.function.arguments, result: outcome.content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
+          }
+          // Reads see the staged changes (decision 129).
+          const outcome = CONTENT_TOOL_NAMES.has(name)
+            ? new ContentToolRunner(studio ? stagedContext(contextRef.current(), staged) : contextRef.current(), studio).run(name, call.function.arguments)
+            : { content: `Error: there is no tool "${name}". The tools are ${toolNames}.`, label: name }
+          const key = callKey(name, call.function.arguments)
+          const content = earlier.get(key) === outcome.content ? UNCHANGED : outcome.content
+          return { id: call.id, name, args: call.function.arguments, result: content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
+        }
+        // One after another: edit calls build on each other's staged changes.
+        const ran: ToolStepCall[] = []
+        for (const call of calls) ran.push(await runCall(call))
         const step: ToolStep = {
           text: result.text,
           ...(result.reasoning ? { thinking: clipThinking(result.reasoning) } : {}),
-          calls: calls.map((call): ToolStepCall => {
-            const name = call.function.name
-            if (studio && (EDIT_TOOL_NAMES.has(name) || name === PLAN_TOOL.function.name)) {
-              const outcome = new EditToolRunner(contextRef.current(), staged).run(name, call.function.arguments)
-              staged = outcome.changeset
-              if (name === PLAN_TOOL.function.name && readPlan(call.function.arguments)) planShown = true
-              return { id: call.id, name, args: call.function.arguments, result: outcome.content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
-            }
-            // Reads see the staged changes (decision 129).
-            const outcome = CONTENT_TOOL_NAMES.has(name)
-              ? new ContentToolRunner(studio ? stagedContext(contextRef.current(), staged) : contextRef.current(), studio).run(name, call.function.arguments)
-              : { content: `Error: there is no tool "${name}". The tools are ${toolNames}.`, label: name }
-            const key = callKey(name, call.function.arguments)
-            const content = earlier.get(key) === outcome.content ? UNCHANGED : outcome.content
-            return { id: call.id, name, args: call.function.arguments, result: content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
-          }),
+          calls: ran,
         }
         if (round === maxRounds - 1) step.calls = step.calls.map((c, i, all) => (i === all.length - 1 ? { ...c, result: c.result + LIMIT_NOTE } : c))
         steps = [...steps, step]

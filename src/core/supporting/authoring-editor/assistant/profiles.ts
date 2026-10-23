@@ -134,19 +134,19 @@ export interface StoredKey {
   remember: boolean
 }
 
-export function loadProfileKey(profileId: string): StoredKey {
+/** A key kept in sessionStorage, or in localStorage when remembered. */
+export function loadStoredKey(name: string): StoredKey {
   try {
-    const remembered = storage('local')?.getItem(keyStorageKey(profileId))
+    const remembered = storage('local')?.getItem(name)
     if (remembered) return { key: remembered, remember: true }
-    return { key: storage('session')?.getItem(keyStorageKey(profileId)) ?? '', remember: false }
+    return { key: storage('session')?.getItem(name) ?? '', remember: false }
   } catch {
     return { key: '', remember: false }
   }
 }
 
 /** Stores the key in exactly one place; an empty key removes it from both. */
-export function saveProfileKey(profileId: string, key: string, remember: boolean): void {
-  const name = keyStorageKey(profileId)
+export function saveStoredKey(name: string, key: string, remember: boolean): void {
   try {
     storage('local')?.removeItem(name)
     storage('session')?.removeItem(name)
@@ -156,6 +156,10 @@ export function saveProfileKey(profileId: string, key: string, remember: boolean
     // Blocked storage: the key is not kept.
   }
 }
+
+export const loadProfileKey = (profileId: string): StoredKey => loadStoredKey(keyStorageKey(profileId))
+
+export const saveProfileKey = (profileId: string, key: string, remember: boolean): void => saveStoredKey(keyStorageKey(profileId), key, remember)
 
 export const deleteProfileKey = (profileId: string) => saveProfileKey(profileId, '', false)
 

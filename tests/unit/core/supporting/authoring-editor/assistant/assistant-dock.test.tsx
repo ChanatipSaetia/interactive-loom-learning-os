@@ -529,3 +529,47 @@ describe('Plan card in Studio (decisions 138–139)', () => {
     expect(screen.getByTestId('ai-plan')).toHaveAttribute('data-state', 'built')
   })
 })
+
+describe('Web search (decisions 140–142)', () => {
+  const json = (data: unknown) => new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } })
+
+  it('offers the web tools with a key, runs them against Tavily and links the page it read', async () => {
+    seed('http://localhost:11434/v1')
+    localStorage.setItem('loom-ai-web', JSON.stringify({ enabled: true }))
+    sessionStorage.setItem('loom-ai-tavily-key', 'tvly-1')
+    const answers = [
+      json({ choices: [{ message: { content: '', tool_calls: [{ id: 'w1', type: 'function', function: { name: 'web_extract', arguments: '{"urls":["https://developer.mozilla.org/cc"]}' } }] }, finish_reason: 'tool_calls' }] }),
+      streamOf('Beyond the topic: see MDN.'),
+    ]
+    const fetchImpl = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) => {
+      if (url.endsWith('/models')) return json({ data: [{ id: 'm1' }] })
+      if (url === 'https://api.tavily.com/extract') return json({ results: [{ url: 'https://developer.mozilla.org/cc', raw_content: 'Cache-Control directives.' }] })
+      return answers.shift()!
+    })
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+
+    const chats = fetchImpl.mock.calls.filter(([u]) => u.endsWith('/chat/completions')).map(([, init]) => JSON.parse(init!.body as string))
+    expect(chats[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read', 'web_search', 'web_extract'])
+    expect(chats[0].messages[0].content).toContain('## Web Search')
+    expect(chats[1].messages.at(-1)).toMatchObject({ role: 'tool', tool_call_id: 'w1' })
+    expect(chats[1].messages.at(-1).content).toContain('Cache-Control directives.')
+    expect(screen.getByTestId('ai-activity')).toHaveTextContent('Searched the web')
+    fireEvent.click(screen.getByTestId('ai-activity-toggle'))
+    expect(screen.getByTestId('ai-looked-line')).toHaveAttribute('href', 'https://developer.mozilla.org/cc')
+    expect(screen.getByTestId('ai-looked-line')).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
+  it('leaves the web tools out without a key', async () => {
+    seed('http://localhost:11434/v1')
+    localStorage.setItem('loom-ai-web', JSON.stringify({ enabled: true }))
+    const fetchImpl = mockFetch()
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    const body = JSON.parse(fetchImpl.mock.calls.find(([u]) => u.endsWith('/chat/completions'))![1]!.body as string)
+    expect(body.tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read'])
+    expect(body.messages[0].content).not.toContain('## Web Search')
+  })
+})

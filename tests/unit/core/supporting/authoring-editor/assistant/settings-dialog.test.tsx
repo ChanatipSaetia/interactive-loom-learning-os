@@ -87,3 +87,33 @@ describe('AssistantSettingsDialog', () => {
     expect(loadProfileKey(profile.id)).toEqual({ key: '', remember: false })
   })
 })
+
+describe('Web search settings (decision 141)', () => {
+  it('turns web search on with a Tavily key, tests it and saves it with the profile', async () => {
+    const fetchImpl = vi.fn(async (url: string) =>
+      url === 'https://api.tavily.com/search' ? new Response('{"results":[]}', { headers: { 'content-type': 'application/json' } }) : models(['m1']))
+    render(<AssistantSettingsDialog open onClose={() => {}} fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    expect(screen.queryByTestId('ai-web-key')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('ai-web-enabled'))
+    expect(screen.getByTestId('ai-web')).toHaveTextContent('api.tavily.com')
+    fireEvent.change(screen.getByTestId('ai-web-key'), { target: { value: 'tvly-1' } })
+    fireEvent.click(screen.getByTestId('ai-web-test'))
+    expect(await screen.findByTestId('ai-web-result')).toHaveTextContent('Web search works')
+    fireEvent.change(screen.getByTestId('ai-model'), { target: { value: 'm1' } })
+    fireEvent.click(screen.getByTestId('ai-save'))
+    expect(JSON.parse(localStorage.getItem('loom-ai-web')!)).toEqual({ enabled: true })
+    expect(sessionStorage.getItem('loom-ai-tavily-key')).toBe('tvly-1')
+  })
+
+  it('says when the browser cannot reach Tavily', async () => {
+    const fetchImpl = vi.fn(async () => {
+      throw new TypeError('Failed to fetch')
+    })
+    render(<AssistantSettingsDialog open onClose={() => {}} fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('ai-web-enabled'))
+    fireEvent.change(screen.getByTestId('ai-web-key'), { target: { value: 'tvly-1' } })
+    fireEvent.click(screen.getByTestId('ai-web-test'))
+    await waitFor(() => expect(screen.getByTestId('ai-web-result')).toHaveAttribute('data-kind', 'network'))
+    expect(screen.getByTestId('ai-web-result')).toHaveTextContent('CORS')
+  })
+})

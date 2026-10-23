@@ -1,6 +1,6 @@
 # Grill Log — AI Assistant for Pick in Studio and Viewer
 
-Status: **All phases complete (1–4), plus decisions 63–64 and 119–128; decisions 129–139 (Studio tools, staged edits, planning) implemented; 140–142 (web search) agreed, not implemented**
+Status: **All phases complete (1–4), plus decisions 63–64 and 119–128; decisions 129–142 (Studio tools, staged edits, planning, web search) implemented**
 
 ## Goal
 
@@ -256,6 +256,21 @@ revise decisions 54 and 58 for Studio.
 
 - Tests: `assistant-dock.test.tsx` (the plan card, `tool_choice: "none"` after it, Build with one item unticked, the card built).
 
+## Decisions 140–142 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| Tavily client (`tavilySearch`, `tavilyExtract`, `testWebSearch`; key as `Authorization: Bearer`), failure kinds (`network`, `auth`, `rate-limit`, `http`, `bad-response`) and hints, `WEB_TOOLS`, `runWebTool` (results wrapped in `<web-results>` with the data rule, pages capped at 8,000 characters, at most 3 URLs and 8 results), settings `loom-ai-web` and key `loom-ai-tavily-key` | `assistant/web-search.ts` |
+| `loadStoredKey` / `saveStoredKey`, shared with the profile keys | `assistant/profiles.ts` |
+| The web tools join the request when the profile's tools are on and web search has a key; tool calls now run one after another (`await`), so a web call can wait for Tavily | `assistant/useAssistant.ts` |
+| **Web Search** rules per app (research, cite full URLs, never invent them; Viewer puts it under "Beyond the topic"; Studio keeps sources out of the files unless asked) | `composition/oui/assistant-prompt.ts` |
+| Web search section in the settings (switch, key, Remember, Test with a CORS hint) | `assistant/AssistantSettingsDialog.tsx` |
+| "Searched the web" in the activity pill; a page row is a link that opens in a new tab (`ToolStepCall.url`, `rel="noopener noreferrer"`) | `assistant/AssistantPanel.tsx`, `assistant/thread.ts` |
+
+- **Deviation from decision 141:** the notice that queries go to `api.tavily.com` is in the settings, next to the switch that turns web search on, instead of a one-time dialog at the first search: a dialog in the middle of a tool round would hold the model's request open.
+- Whether `api.tavily.com` accepts requests from the page's origin (CORS) is still unchecked from a browser; when it does not, Test says so and the tool results tell the model to answer without the web.
+- Tests: `web-search.test.ts` (storage, the request, wrapping, extract caps and failed URLs, failures as text, Test), `settings-dialog.test.tsx` (switch, key, Test, saved; blocked request), `assistant-dock.test.tsx` (web tools offered with a key, a `web_extract` round, the link in the pill; left out without a key).
+
 ## Open Questions
 
-- Whether `api.tavily.com` answers CORS preflights from GitHub Pages and localhost; to check in a browser before implementing 140–141 (it could not be reached from the session that wrote these decisions).
+- Whether `api.tavily.com` answers CORS preflights from GitHub Pages and localhost (see the notes on decisions 140–142).
