@@ -130,11 +130,15 @@ function SectionTitleCard({ section, beat }: { section: PresentSection; beat: nu
   // The section's Lead(...), compiled into `intro`
   const lead = props.intro as { what?: string } | undefined
   return (
-    <div className="present-title-card" {...mark(-1, { motion: 'zoom', until: -1 })} data-testid="present-title-card">
-      <span className="present-title-kind">{kindLabel(section.config.type)}</span>
-      <h2 className="present-title-name">{title}</h2>
-      {heading && <p className="present-title-heading">{heading}</p>}
-      {lead?.what && <p className="present-title-lead">{lead.what}</p>}
+    // The opaque card is marked a beat early, so it is already up when the title beat enters and the
+    // section behind never shows through; only its words zoom in, and the card leaves after the beat
+    <div className="present-title-card" {...mark(-2, { until: -1 })} data-testid="present-title-card">
+      <div className="present-title-content" {...mark(-1, { motion: 'zoom' })}>
+        <span className="present-title-kind">{kindLabel(section.config.type)}</span>
+        <h2 className="present-title-name">{title}</h2>
+        {heading && <p className="present-title-heading">{heading}</p>}
+        {lead?.what && <p className="present-title-lead">{lead.what}</p>}
+      </div>
     </div>
   )
 }
