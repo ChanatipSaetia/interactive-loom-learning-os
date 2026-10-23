@@ -1,6 +1,6 @@
 /**
  * Finding what a narration target points at in a rendered section (decision 92): elements whose
- * Pick anchor is the target, else the outermost ones inside it (`noCache.…`, `noCache[…`).
+ * Pick anchor (or one of its aliases) is the target, else the outermost ones inside it (`noCache.…`, `noCache[…`).
  */
 import type { Size } from './camera'
 
@@ -11,9 +11,12 @@ export interface Box {
   h: number
 }
 
+/** An element's Pick anchor and the other pointers it answers to (`data-oui-alias`, decision 117). */
+const namesOf = (el: Element) => [el.getAttribute('data-oui-anchor') ?? '', ...(el.getAttribute('data-oui-alias')?.split(' ') ?? [])]
+
 export function targetElements(root: Element, target: string): Element[] {
   const tagged = Array.from(root.querySelectorAll('[data-oui-anchor]'))
-  const exact = tagged.filter((el) => el.getAttribute('data-oui-anchor') === target)
+  const exact = tagged.filter((el) => namesOf(el).includes(target))
   const hits = exact.length
     ? exact
     : tagged.filter((el) => {

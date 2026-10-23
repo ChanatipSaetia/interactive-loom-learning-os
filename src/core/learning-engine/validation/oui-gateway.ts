@@ -15,6 +15,8 @@ import { compileOUINarration, compileOUISection, indexStatementLines, type OUIIs
 import { getLoomOUIComponent } from '../composition/oui/library'
 import { targetProp, targetStatement, type NarrationData } from '../composition/oui/narration'
 import { bundleToSections } from '../composition/okf/sections'
+import { isOpenUISource, openUIProgramOf } from '../sub-contexts/progressive-content/openui-standard'
+import { openuiParts } from '../sub-contexts/progressive-content/present'
 import { coreBeatsOf } from '../registry/register-core-presenters'
 import type { Beat } from '../sub-contexts/present-kernel'
 import { contextToDiagnostic } from './types'
@@ -110,13 +112,43 @@ export function sectionBeatsOf(sectionSource: string): Beat[] | null {
 }
 
 /**
+ * What narration can point at in a standard OpenUI section: the named children of a `Card` or
+ * `Stack` root with several (the only elements Present mode anchors, decision 116), by name alone.
+ * Null for a Loom section.
+ */
+function openuiPointable(sectionSource: string): string[] | null {
+  if (!isOpenUISource(sectionSource)) return null
+  const parts = openuiParts(openUIProgramOf(sectionSource)) ?? []
+  return parts.length > 1 ? parts.flatMap((p) => (p.name ? [p.name] : [])) : []
+}
+
+/**
  * Validate a narration file `sections/<name>.narrate.oui` (decisions 91–95 and 108 in
  * grill-log-presenting-mode.md) against its section's source. Tier 1–2 come from the compiler;
  * tier 3 checks that every step names a beat of the section and every target names a statement of
- * the section (and a prop of its component).
+ * the section (and a prop of its component); in a standard OpenUI section, a target must name one
+ * of the root's children, or a value of a chart or table among them.
  *
  * @param sectionSource - The section's `.oui` source, or undefined when the topic has no such section
  */
+/** Paths into the data of a chart or table part that Present mode anchors (decision 117). */
+const OPENUI_DATA_PATHS: Record<string, RegExp> = {
+  BarChart: /^\.(labels\[\d+\]|series\[\d+\](\.values\[\d+\])?)$/,
+  HorizontalBarChart: /^\.(labels\[\d+\]|series\[\d+\](\.values\[\d+\])?)$/,
+  LineChart: /^\.(labels\[\d+\]|series\[\d+\](\.values\[\d+\])?)$/,
+  AreaChart: /^\.(labels\[\d+\]|series\[\d+\](\.values\[\d+\])?)$/,
+  PieChart: /^\.(labels|values)\[\d+\]$/,
+  Table: /^\.columns\[\d+\](\.label|\.data\[\d+\])?$/,
+}
+
+/** True when Present mode can point at a target in a standard OpenUI section: a part, or a value of a chart or table part. */
+function openuiTargetPointable(target: string, parts: string[], statements: Map<string, string | undefined>): boolean {
+  const statement = targetStatement(target)
+  if (!parts.includes(statement)) return false
+  const rest = target.slice(statement.length)
+  return !rest || !!OPENUI_DATA_PATHS[statements.get(statement) ?? '']?.test(rest)
+}
+
 export function validateOUINarration(
   source: string,
   sectionSource: string | undefined,
@@ -139,6 +171,7 @@ export function validateOUINarration(
     const statements = statementComponents(sectionSource)
     const names = [...statements.keys()]
     const beats = sectionBeatsOf(sectionSource)?.map((b) => b.id)
+    const pointable = openuiPointable(sectionSource)
     for (const step of narration.steps ?? []) {
       if (beats && !beats.includes(step.beat)) {
         diagnostics.push({
@@ -161,6 +194,19 @@ export function validateOUINarration(
               field: target,
               message: `"${target}" does not name a statement of ${section}.`,
               fixHint: `Point at one of its statements: ${names.slice(0, 12).join(', ')}${names.length > 12 ? ', …' : ''}.`,
+              ...contextToDiagnostic(context),
+            })
+            continue
+          }
+          if (pointable && !openuiTargetPointable(target, pointable, statements)) {
+            diagnostics.push({
+              tier: 3,
+              line,
+              field: target,
+              message: `Present mode cannot point at "${target}" in a standard OpenUI section.`,
+              fixHint: pointable.length
+                ? `Point at one of the root's children (${pointable.join(', ')}), or at a value of a chart or table among them: "<chart>.labels[i]", "<chart>.series[s].values[i]", "<pie>.values[i]", "<table>.columns[c].data[r]".`
+                : 'Make the root a Card([...]) or Stack([...]) of several named statements, then point at those.',
               ...contextToDiagnostic(context),
             })
             continue

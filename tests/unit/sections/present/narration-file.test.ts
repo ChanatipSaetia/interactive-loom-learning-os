@@ -44,6 +44,45 @@ b = NarrationStep("card1", null, [Highlight("noCache.description"), Highlight("r
     expect(result.diagnostics).toEqual([])
   })
 
+  it('warns about targets inside a standard OpenUI section that Present mode cannot point at', () => {
+    const openui = `// @openui "Guide"
+root = Stack([intro, tabs])
+intro = TextContent("Pick your platform.")
+tabs = Tabs([TabItem("mac", "macOS", [mac])])
+mac = TextContent("Use Homebrew.")
+`
+    const result = validateOUINarration(`root = Narration([a])
+a = NarrationStep("part2", "Here.", [Highlight("intro"), Highlight("mac"), Highlight("tabs.items")])
+`, openui, { sectionName: 'guide' })
+    expect(result.diagnostics.map((d) => d.message)).toEqual([
+      'Present mode cannot point at "mac" in a standard OpenUI section.',
+      'Present mode cannot point at "tabs.items" in a standard OpenUI section.',
+    ])
+    expect(result.diagnostics[0].fixHint).toContain("Point at one of the root's children (intro, tabs)")
+    const single = validateOUINarration(`root = Narration([a])
+a = NarrationStep("all", "Here.", [Highlight("mac")])
+`, `// @openui "Guide"\nroot = Tabs([TabItem("mac", "macOS", [mac])])\nmac = TextContent("Use Homebrew.")\n`, { sectionName: 'guide' })
+    expect(single.diagnostics[0].fixHint).toContain('Card([...]) or Stack([...])')
+  })
+
+  it('accepts a bar, a point, a slice or a cell of a chart or table part (decision 117)', () => {
+    const openui = `// @openui "Data"
+root = Stack([bars, line, pie, table])
+bars = BarChart(["A", "B"], [Series("One", [1, 2])])
+line = LineChart(["A", "B"], [Series("One", [1, 2])])
+pie = PieChart(["A", "B"], [1, 2])
+table = Table([Col("Name", ["a", "b"]), Col("N", [1, 2], "number")])
+`
+    const ok = validateOUINarration(`root = Narration([a])
+a = NarrationStep("part1", "Here.", [Highlight("bars.labels[1]"), Highlight("bars.series[0]"), Callout("line.series[0].values[1]", "Up."), Spotlight(["pie.values[0]", "table.columns[1].data[0]", "table.columns[0].label", "table.columns[1]"])])
+`, openui, { sectionName: 'data' })
+    expect(ok.diagnostics).toEqual([])
+    const bad = validateOUINarration(`root = Narration([a])
+a = NarrationStep("part1", "Here.", [Highlight("pie.series[0]"), Highlight("table.rows[1]"), Highlight("bars.labels")])
+`, openui, { sectionName: 'data' })
+    expect(bad.diagnostics.map((d) => d.field)).toEqual(['pie.series[0]', 'table.rows[1]', 'bars.labels'])
+  })
+
   it('warns about steps that name no beat of the section (decision 108)', () => {
     const result = validateOUINarration(`root = Narration([a])
 a = NarrationStep("q1", "No quiz here.")
