@@ -145,12 +145,20 @@
 :root[data-theme^='liquid-glass'] .fm-help-modal,
 :root[data-theme^='liquid-glass'] .cm-help-modal,
 :root[data-theme^='liquid-glass'] .taxonomy-dialog,
-:root[data-theme^='liquid-glass'] .flowchart-grid-modal-content {
+:root[data-theme^='liquid-glass'] .flowchart-grid-modal-content,
+:root[data-theme^='liquid-glass'] .ui-modal {
   background: var(--glass-sheen), var(--glass-pane);
   border-color: var(--glass-edge);
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--glass-highlight), 0 30px 80px -20px var(--glass-drop);
+}
+
+/* The shared Modal's sticky title bar: --card is nearly clear in these themes, so match the pane
+   or the form scrolling under it shows through the title */
+:root[data-theme^='liquid-glass'] .ui-modal-header {
+  background: var(--glass-pane);
+  border-color: var(--glass-edge);
 }
 
 :root[data-theme^='liquid-glass'] .qz-help-header,

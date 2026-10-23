@@ -296,7 +296,7 @@ export function Modal({ open, onClose, title, children, maxWidth = 'lg' }: Modal
     >
       <div
         className={cn(
-          'relative bg-card border border-border rounded-xl shadow-xl w-full max-h-[85vh] overflow-y-auto p-6 text-foreground',
+          'ui-modal relative bg-card border border-border rounded-xl shadow-xl w-full max-h-[85vh] overflow-y-auto p-6 text-foreground',
           MAX_WIDTH_CLASS[maxWidth],
         )}
         onClick={(e) => e.stopPropagation()}
@@ -306,7 +306,7 @@ export function Modal({ open, onClose, title, children, maxWidth = 'lg' }: Modal
         data-lenis-prevent-touch
       >
         {title && (
-          <div className="flex items-center justify-between mb-4 sticky top-0 bg-card pb-2 z-10 border-b border-border">
+          <div className="ui-modal-header flex items-center justify-between mb-4 sticky top-0 bg-card pb-2 z-10 border-b border-border">
             <h2 className="text-lg font-semibold text-foreground">{title}</h2>
             <button
               onClick={onClose}
