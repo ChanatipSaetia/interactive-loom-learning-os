@@ -27,12 +27,22 @@ nodes:
         icon: "🛡️"
         description: "ผนึกโบราณแห่งการกักเก็บความร้อนเซรามิก ช่วยป้องกันความร้อนแห้งกระด้างในการเผชิญหน้ากับบอส"
 
+  - id: "sanctuary-airflow"
+    title: "หอคอยแห่งสายลม (Spire of the Flowing Draft)"
+    type: "reading_sanctuary"
+    status: "locked"
+    unlockedBy:
+      - "sanctuary-anatomy"
+    sectionRef: "airflow"
+    healingAmount: 30
+    description: "มองทะลุผนังเตาด้วยภาพตัดขวาง ตามรอยอากาศตั้งแต่ประตูลมล่าง ผ่านกองถ่านและแผ่น Deflector จนออกทางวาล์วบน"
+
   - id: "quiz-airflow"
     title: "ด่านทดสอบภูตเถ้าถ่าน (Ash Gremlin Outpost)"
     type: "quiz_encounter"
     status: "locked"
     unlockedBy:
-      - "sanctuary-anatomy"
+      - "sanctuary-airflow"
     sectionRef: "quiz-airflow"
     description: "ภูตเถ้าถ่านพยายามอุดตันช่องลมเตา! ตอบคำถามเรื่องกายวิภาคและการคุมลมเตา Kamado ให้ถูกต้องเพื่อเอาชนะมัน"
     monster:

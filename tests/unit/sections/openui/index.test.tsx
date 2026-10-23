@@ -145,11 +145,11 @@ describe('standard OpenUI snapshot', () => {
     const { standardOpenUISchema, standardOpenUISpec } = await import(
       '../../../../src/core/learning-engine/sub-contexts/progressive-content/openui-standard'
     )
-    expect(standardOpenUISchema).toEqual(JSON.parse(JSON.stringify(openuiLibrary.toJSONSchema())))
-    expect(standardOpenUISpec).toEqual(JSON.parse(JSON.stringify({
-      root: openuiLibrary.root,
-      components: openuiLibrary.toSpec().components,
-      componentGroups: openuiLibrary.componentGroups ?? [],
-    })))
+    const { standardLibrarySnapshot } = await import(
+      '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui/loom-components'
+    )
+    const { schema, spec } = standardLibrarySnapshot(openuiLibrary)
+    expect(standardOpenUISchema).toEqual(JSON.parse(JSON.stringify(schema)))
+    expect(standardOpenUISpec).toEqual(JSON.parse(JSON.stringify(spec)))
   })
 })

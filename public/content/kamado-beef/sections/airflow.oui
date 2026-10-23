@@ -1,0 +1,55 @@
+// @openui "เส้นทางลมในเตา Kamado (Airflow)" "ภาพตัดขวาง: อากาศเข้า ไฟลุก ความร้อนไหลเวียน"
+root = Card([header, kamado, rule])
+header = CardHeader("ลมเดินอย่างไรในเตา Kamado", "อากาศเข้าทางล่าง ผ่านกองถ่าน อ้อมแผ่น Deflector แล้วออกทางวาล์วบน")
+kamado = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 340">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="blue"/>
+    </marker>
+  </defs>
+  <path id="dome" d="M190 40 C280 40 320 140 315 210 C310 280 270 320 190 320 C110 320 70 280 65 210 C60 140 100 40 190 40 Z" fill="surface0" stroke="overlay1" stroke-width="10"/>
+  <path d="M70 170 H310" stroke="overlay1" stroke-width="3"/>
+  <rect id="top-vent" x="170" y="24" width="40" height="18" rx="4" fill="mauve"/>
+  <rect id="draft-door" x="56" y="258" width="22" height="32" rx="3" fill="maroon"/>
+  <path id="firebox" d="M120 230 V292 H260 V230" stroke="overlay0" stroke-width="4" fill="none"/>
+  <g id="coals">
+    <circle cx="150" cy="276" r="9" fill="red"/>
+    <circle cx="170" cy="276" r="9" fill="red"/>
+    <circle cx="190" cy="276" r="9" fill="red"/>
+    <circle cx="210" cy="276" r="9" fill="red"/>
+    <circle cx="230" cy="276" r="9" fill="red"/>
+    <circle cx="160" cy="261" r="8" fill="yellow"/>
+    <circle cx="180" cy="261" r="8" fill="yellow"/>
+    <circle cx="200" cy="261" r="8" fill="yellow"/>
+    <circle cx="220" cy="261" r="8" fill="yellow"/>
+  </g>
+  <rect id="deflector" x="120" y="212" width="140" height="9" rx="2" fill="teal"/>
+  <line id="grate" x1="90" y1="188" x2="290" y2="188" stroke="subtext0" stroke-width="3" stroke-dasharray="6 4"/>
+  <rect id="steak" x="160" y="174" width="60" height="13" rx="5" fill="flamingo"/>
+  <g id="airflow" stroke="blue" stroke-width="3" fill="none" stroke-dasharray="8 6" marker-end="url(#arrow)">
+    <path d="M8 274 H96 C124 274 128 252 140 244 C104 228 100 206 108 184 C118 134 156 86 182 62 L188 14">
+      <animate attributeName="stroke-dashoffset" values="28;0" dur="1.2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M240 244 C276 226 282 204 272 184 C258 134 222 88 198 62 L192 14">
+      <animate attributeName="stroke-dashoffset" values="28;0" dur="1.2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  <g stroke="subtext0" stroke-dasharray="2 3">
+    <path d="M212 33 H344"/>
+    <path d="M298 110 H344"/>
+    <path d="M292 188 H344"/>
+    <path d="M262 216 H344"/>
+    <path d="M240 276 H344"/>
+  </g>
+  <g font-size="14">
+    <text x="350" y="38">วาล์วบน</text>
+    <text x="350" y="115">โดมเซรามิก</text>
+    <text x="350" y="193">ตะแกรง + เนื้อ</text>
+    <text x="350" y="221">แผ่น Deflector</text>
+    <text x="350" y="281">กองถ่าน</text>
+    <text x="24" y="316">ประตูลมล่าง</text>
+    <text x="8" y="248" fill="blue">อากาศเข้า</text>
+    <text x="222" y="14" fill="blue">ไอร้อนออก</text>
+  </g>
+</svg>', "ภาพตัดขวางเตา Kamado: เส้นประสีน้ำเงินคือเส้นทางของอากาศ")
+rule = Callout("info", "สองวาล์ว หนึ่งกระแสลม", "ประตูลมล่างคุมปริมาณออกซิเจนที่ป้อนให้ไฟ (ปรับหยาบ) ส่วนวาล์วบนคุมความเร็วที่ไอร้อนไหลออก (ปรับละเอียด) เปิดกว้างทั้งคู่ไฟจะแรง หรี่ทั้งคู่ไฟจะอ่อน")

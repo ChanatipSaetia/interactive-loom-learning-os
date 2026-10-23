@@ -49,9 +49,26 @@ import {
 
 interface TokenState {
   depth: number
+  /** Inside a single-quoted string that continues on the next line (a drawing's SVG markup). */
+  inString?: boolean
+}
+
+/** The rest of a string up to its closing quote; true when it closed on this line. */
+function readString(stream: StringStream, quote: string): boolean {
+  let escaped = false
+  let ch: string | void
+  while ((ch = stream.next()) != null) {
+    if (ch === quote && !escaped) return true
+    escaped = !escaped && ch === '\\'
+  }
+  return false
 }
 
 function token(stream: StringStream, state: TokenState): string | null {
+  if (state.inString) {
+    state.inString = !readString(stream, "'")
+    return 'string'
+  }
   if (stream.eatSpace()) return null
   if (stream.match('//')) {
     stream.skipToEnd()
@@ -65,12 +82,8 @@ function token(stream: StringStream, state: TokenState): string | null {
   const quote = stream.peek()
   if (quote === '"' || quote === "'") {
     stream.next()
-    let escaped = false
-    let ch: string | void
-    while ((ch = stream.next()) != null) {
-      if (ch === quote && !escaped) break
-      escaped = !escaped && ch === '\\'
-    }
+    // A single-quoted string may span lines; a double-quoted one ends with its line
+    if (!readString(stream, quote) && quote === "'") state.inString = true
     return 'string'
   }
   if (stream.match(/^-?\d+(\.\d+)?/)) return 'number'

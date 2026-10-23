@@ -247,6 +247,9 @@
     },
     "Modal": {
       "$ref": "#/$defs/Modal"
+    },
+    "Svg": {
+      "$ref": "#/$defs/Svg"
     }
   },
   "required": [
@@ -331,7 +334,8 @@
     "CompositeCardBlock",
     "VisualCardItem",
     "VisualCardBlock",
-    "Modal"
+    "Modal",
+    "Svg"
   ],
   "additionalProperties": false,
   "$defs": {
@@ -449,6 +453,9 @@
               },
               {
                 "$ref": "#/$defs/Stack"
+              },
+              {
+                "$ref": "#/$defs/Svg"
               }
             ]
           }
@@ -2017,6 +2024,9 @@
             },
             {
               "$ref": "#/$defs/Image"
+            },
+            {
+              "$ref": "#/$defs/Svg"
             }
           ]
         },
@@ -3151,6 +3161,9 @@
             },
             {
               "$ref": "#/$defs/Image"
+            },
+            {
+              "$ref": "#/$defs/Svg"
             }
           ]
         },
@@ -3191,6 +3204,9 @@
               },
               {
                 "$ref": "#/$defs/EntityList"
+              },
+              {
+                "$ref": "#/$defs/Svg"
               }
             ]
           }
@@ -3658,6 +3674,9 @@
               },
               {
                 "$ref": "#/$defs/VisualCardBlock"
+              },
+              {
+                "$ref": "#/$defs/Svg"
               }
             ]
           }
@@ -3778,6 +3797,9 @@
                 },
                 {
                   "$ref": "#/$defs/VisualCardBlock"
+                },
+                {
+                  "$ref": "#/$defs/Svg"
                 }
               ]
             }
@@ -4070,6 +4092,9 @@
               },
               {
                 "$ref": "#/$defs/VisualCardBlock"
+              },
+              {
+                "$ref": "#/$defs/Svg"
               }
             ]
           }
@@ -4194,6 +4219,9 @@
               },
               {
                 "$ref": "#/$defs/VisualCardBlock"
+              },
+              {
+                "$ref": "#/$defs/Svg"
               }
             ]
           }
@@ -4213,6 +4241,22 @@
       ],
       "additionalProperties": false,
       "description": "Modal dialog. open is a reactive $boolean binding — set to true to open, X/Escape/backdrop auto-closes. Put Form with buttons inside children."
+    },
+    "Svg": {
+      "type": "object",
+      "properties": {
+        "markup": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "markup"
+      ],
+      "additionalProperties": false,
+      "description": "A drawing written as inline SVG markup (one <svg viewBox=\"…\"> element), with an optional caption under it. Color names of the Loom palette (blue, peach, green, mauve, red, yellow, teal, text, subtext0, overlay1, surface0, …) follow the theme; shapes without a fill take the text color. Give the shapes narration will point at an id. No scripts, links, images or foreignObject."
     }
   }
 }

@@ -12,25 +12,23 @@
  * Only the lazily loaded `openui` section renderer imports react-ui itself
  * (its genui-lib bundle). `dark-theme.json` holds react-ui's dark theme tokens,
  * which the renderer overlays with the Loom palette.
- * Re-run after upgrading @openuidev/react-ui.
+ * The snapshot includes the components Loom adds to the library (`loom-components.tsx`).
+ * Re-run after upgrading @openuidev/react-ui or changing those components.
  */
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { defaultDarkTheme } from '@openuidev/react-ui'
 import { openuiLibrary } from '@openuidev/react-ui/genui-lib'
+import { standardLibrarySnapshot } from '../src/core/learning-engine/sub-contexts/progressive-content/components/openui/loom-components'
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 const OUT_DIR = path.join(ROOT, 'src/core/learning-engine/sub-contexts/progressive-content/openui-standard')
 
-const spec = openuiLibrary.toSpec()
+const { schema, spec } = standardLibrarySnapshot(openuiLibrary)
 const files: Record<string, unknown> = {
-  'schema.json': openuiLibrary.toJSONSchema(),
-  'spec.json': {
-    root: openuiLibrary.root,
-    components: spec.components,
-    componentGroups: openuiLibrary.componentGroups ?? [],
-  },
+  'schema.json': schema,
+  'spec.json': spec,
   'dark-theme.json': Object.fromEntries(Object.entries(defaultDarkTheme).filter(([, v]) => typeof v === 'string')),
 }
 

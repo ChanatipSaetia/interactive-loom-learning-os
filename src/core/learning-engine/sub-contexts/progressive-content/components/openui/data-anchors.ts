@@ -4,6 +4,8 @@
  * statement, as Pick pointers do: `bars.series[0].values[4]`, `pie.values[2]`,
  * `table.columns[2].data[4]`. Every value at one label also answers to `<name>.labels[i]`.
  *
+ * A drawing (`Svg`) answers by the IDs in its markup: `figure.piston` is the shape with `id="piston"`.
+ *
  * Read from the rendered DOM: recharts draws each chart twice (its y axis alone, then the plot), so
  * the widest surface is the plot. Line and area charts draw no element per point, so a small marker
  * is added on each vertex of the curve.
@@ -72,8 +74,13 @@ function tagTable(part: Element, name: string) {
   })
 }
 
-/** Tag the bars, points, slices or cells of one part of a standard OpenUI section, named `name`. */
+function tagDrawing(part: Element, name: string) {
+  part.querySelectorAll('.loom-svg [data-svg-id]').forEach((shape) => tag(shape, `${name}.${shape.getAttribute('data-svg-id')}`))
+}
+
+/** Tag the bars, points, slices, cells or shapes of one part of a standard OpenUI section, named `name`. */
 export function tagDataAnchors(part: Element, name: string) {
+  if (part.matches('.loom-svg') || part.querySelector('.loom-svg')) tagDrawing(part, name)
   if (part.querySelector('.openui-table-body')) return tagTable(part, name)
   const surface = plotSurface(part)
   if (!surface) return

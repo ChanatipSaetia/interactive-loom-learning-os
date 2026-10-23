@@ -24,7 +24,7 @@ const { validateHexCampaign } = await import('../src/core/learning-engine/valida
 function sectionNames(topicId: string): string[] {
   const dir = path.join(CONTENT_DIR, topicId, 'sections')
   if (!fs.existsSync(dir)) return []
-  return fs.readdirSync(dir).filter((f) => f.endsWith('.oui')).map((f) => f.slice(0, -'.oui'.length))
+  return fs.readdirSync(dir).filter((f) => f.endsWith('.oui') && !f.endsWith('.narrate.oui')).map((f) => f.slice(0, -'.oui'.length))
 }
 
 const requested = process.argv.slice(2).filter((a) => !a.startsWith('--'))

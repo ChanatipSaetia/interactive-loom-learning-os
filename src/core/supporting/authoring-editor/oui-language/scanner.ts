@@ -47,7 +47,8 @@ export function scan(source: string): OUIToken[] {
     } else if (ch === '"' || ch === "'") {
       i++
       let terminated = false
-      while (i < source.length && source[i] !== '\n') {
+      // A single-quoted string may span lines (a drawing's SVG markup); a double-quoted one ends with its line
+      while (i < source.length && (ch === "'" || source[i] !== '\n')) {
         if (source[i] === '\\') {
           i += 2
           continue

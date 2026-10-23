@@ -83,6 +83,26 @@ a = NarrationStep("part1", "Here.", [Highlight("pie.series[0]"), Highlight("tabl
     expect(bad.diagnostics.map((d) => d.field)).toEqual(['pie.series[0]', 'table.rows[1]', 'bars.labels'])
   })
 
+  it('accepts a shape of a drawing part by its id (decision 118)', () => {
+    const openui = `// @openui "Engine"
+root = Card([header, engine])
+header = CardHeader("One stroke")
+engine = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect id="cylinder" x="20" y="10" width="60" height="80" fill="surface1"/>
+  <rect id="piston" x="24" y="50" width="52" height="20" fill="blue"/>
+</svg>', "A cylinder")
+`
+    const ok = validateOUINarration(`root = Narration([a])
+a = NarrationStep("part2", "Here.", [Highlight("engine"), Highlight("engine.piston"), Spotlight(["engine.cylinder"])])
+`, openui, { sectionName: 'engine' })
+    expect(ok.diagnostics).toEqual([])
+    const bad = validateOUINarration(`root = Narration([a])
+a = NarrationStep("part2", "Here.", [Highlight("engine.valve"), Highlight("header.piston")])
+`, openui, { sectionName: 'engine' })
+    expect(bad.diagnostics.map((d) => d.field)).toEqual(['engine.valve', 'header.piston'])
+    expect(bad.diagnostics[0].fixHint).toContain('"<svg>.<id>"')
+  })
+
   it('warns about steps that name no beat of the section (decision 108)', () => {
     const result = validateOUINarration(`root = Narration([a])
 a = NarrationStep("q1", "No quiz here.")
