@@ -209,6 +209,42 @@
   background-color: transparent;
 }
 
+/* ---- flowchart: glass nodes ----
+   SVG cannot blur what is behind it, so a node is glass by being see-through (its type tint
+   at --glass-node-opacity) with a glare and a bright top edge on its HTML card. Fills and
+   strokes stay the component's own, so highlight, dim and fork states keep working. */
+
+:root[data-theme^='liquid-glass'] .flowchart-node-rect {
+  fill-opacity: var(--glass-node-opacity);
+  stroke-opacity: 0.75;
+}
+
+/* A glowing node (highlighted, hovered, lit in Present) is solid: a drop-shadow paints behind
+   its shape, so a see-through fill would fill the node with its own glow */
+:root[data-theme^='liquid-glass'] :is(
+  .flowchart-node-rect.flowchart-node-highlighted,
+  .flowchart-node-group.has-links:hover .flowchart-node-rect,
+  .present-focus .flowchart-node-rect,
+  .present-narr-hl .flowchart-node-rect
+) {
+  fill-opacity: 1;
+}
+
+:root[data-theme^='liquid-glass'] .flowchart-node-card {
+  border-radius: 8px;
+  background: var(--glass-node-glare);
+  box-shadow: var(--glass-highlight);
+}
+
+:root[data-theme^='liquid-glass'] .flowchart-edge-label-pill {
+  fill-opacity: var(--glass-node-opacity);
+}
+
+:root[data-theme^='liquid-glass'] .flowchart-step-caption {
+  background: var(--glass-sheen), var(--glass-pane);
+  box-shadow: var(--glass-highlight), 0 18px 40px -16px var(--glass-drop);
+}
+
 /* ---- inset glass: elements inside a glass card ---- */
 
 :root[data-theme^='liquid-glass'] .quiz-choice,
