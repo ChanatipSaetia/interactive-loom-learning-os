@@ -1,5 +1,5 @@
 /* ============================================================
-   Liquid Glass theme — container styles
+   Liquid Glass theme (Midnight Mist) — container styles
 
    Tokens live in variables.css under [data-theme='liquid-glass'].
    Only floating layers (header, message bar, sticky titles, modals,
@@ -12,7 +12,7 @@
 /* ---- backdrop ---- */
 
 :root[data-theme='liquid-glass'] body {
-  background: #11131f;
+  background: #0d1018;
 }
 
 :root[data-theme='liquid-glass'] body::before {
@@ -24,12 +24,23 @@
   pointer-events: none;
 }
 
+:root[data-theme='liquid-glass'] body::after {
+  /* Fine grain over the backdrop: keeps the dark gradients from banding */
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
 :root[data-theme='liquid-glass'] .main-content {
   background: transparent;
 }
 
 :root[data-theme='liquid-glass'] ::selection {
-  background: rgba(140, 170, 238, 0.35);
+  background: rgba(163, 180, 221, 0.28);
 }
 
 /* ---- floating glass: blurs what is behind it ---- */
@@ -39,11 +50,11 @@
   border-bottom-color: var(--glass-edge);
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 8px 30px -18px rgba(4, 6, 20, 0.7);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 8px 30px -18px rgba(0, 0, 0, 0.7);
 }
 
 :root[data-theme='liquid-glass'] .section-wrapper {
-  --loom-section-bg: rgba(22, 24, 41, 0.5);
+  --loom-section-bg: rgba(18, 21, 32, 0.5);
 }
 
 :root[data-theme='liquid-glass'] .flowchart-header-container {
@@ -85,11 +96,11 @@
 :root[data-theme='liquid-glass'] .cm-help-modal,
 :root[data-theme='liquid-glass'] .taxonomy-dialog,
 :root[data-theme='liquid-glass'] .flowchart-grid-modal-content {
-  background: var(--glass-sheen), rgba(26, 29, 46, 0.78);
+  background: var(--glass-sheen), rgba(20, 24, 36, 0.78);
   border-color: var(--glass-edge);
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
-  box-shadow: var(--glass-highlight), 0 30px 80px -20px rgba(4, 6, 20, 0.75);
+  box-shadow: var(--glass-highlight), 0 30px 80px -20px rgba(0, 0, 0, 0.75);
 }
 
 :root[data-theme='liquid-glass'] .qz-help-header,
@@ -164,7 +175,7 @@
 
 /* Flashcard faces (Tailwind bg-card) */
 :root[data-theme='liquid-glass'] .backface-hidden.bg-card {
-  background: var(--glass-sheen), rgba(36, 40, 62, 0.72);
+  background: var(--glass-sheen), rgba(32, 37, 52, 0.72);
   border-color: var(--glass-edge);
   box-shadow: var(--glass-highlight), var(--glass-shadow);
 }
@@ -223,23 +234,31 @@
   border-color: var(--glass-edge-strong);
 }
 
-/* Primary actions: a bright, lit pill */
+/* Primary actions: tinted with the accent rather than filled with it */
 :root[data-theme='liquid-glass'] .viewer-button--primary,
 :root[data-theme='liquid-glass'] .viewer-mode button[aria-pressed='true'],
 :root[data-theme='liquid-glass'] .present-button--primary {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 55%), var(--primary);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 18px -6px color-mix(in srgb, var(--primary) 70%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
+  color: var(--foreground);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+:root[data-theme='liquid-glass'] .viewer-button--primary:hover {
+  background: color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 :root[data-theme='liquid-glass'] .present-ctl--main {
-  border-color: rgba(255, 255, 255, 0.6);
-  background: linear-gradient(180deg, #fff, rgba(255, 255, 255, 0.82));
-  color: #141625;
-  box-shadow: inset 0 1px 0 #fff, 0 6px 20px -6px rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--foreground);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+:root[data-theme='liquid-glass'] .present-ctl--main[aria-pressed='true'] {
+  color: var(--foreground);
 }
 
 :root[data-theme='liquid-glass'] .viewer-paste textarea {
-  background: rgba(10, 12, 22, 0.45);
+  background: rgba(8, 10, 16, 0.45);
   border-color: var(--glass-edge);
 }
 
@@ -250,7 +269,7 @@
 :root[data-theme='liquid-glass'] .present-stage {
   border-radius: var(--radius-lg);
   background: none;
-  box-shadow: 0 50px 100px -40px rgba(4, 6, 20, 0.85), 0 18px 40px -24px rgba(4, 6, 20, 0.6);
+  box-shadow: 0 50px 100px -40px rgba(0, 0, 0, 0.7), 0 18px 40px -24px rgba(0, 0, 0, 0.5);
 }
 
 :root[data-theme='liquid-glass'] .present-stage::after {
@@ -260,7 +279,7 @@
   z-index: 10;
   padding: 1.5px;
   border-radius: inherit;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 22%, rgba(255, 255, 255, 0.04) 55%, rgba(255, 255, 255, 0.10) 80%, rgba(255, 255, 255, 0.28) 100%);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.07) 25%, rgba(255, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.12) 100%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
@@ -270,17 +289,16 @@
 /* Each slide is a clear pane: light falls from the top left, a faint edge marks it in Overview */
 :root[data-theme='liquid-glass'] .present-region {
   background:
-    radial-gradient(120% 80% at 0% 0%, rgba(255, 255, 255, 0.10), transparent 55%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
-    rgba(24, 27, 44, 0.42);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    radial-gradient(120% 80% at 0% 0%, rgba(255, 255, 255, 0.06), transparent 55%),
+    rgba(255, 255, 255, 0.025);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 /* A lit beat glows softly instead of a hard ring and band */
 :root[data-theme='liquid-glass'] .present-region .present-focus {
-  outline: 1.5px solid color-mix(in srgb, var(--present-accent) 85%, #fff);
+  outline: 1px solid color-mix(in srgb, var(--present-accent) 60%, transparent);
   outline-offset: 5px;
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--present-accent) 14%, transparent), 0 0 32px color-mix(in srgb, var(--present-accent) 30%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--present-accent) 10%, transparent), 0 0 28px color-mix(in srgb, var(--present-accent) 16%, transparent);
 }
 :root[data-theme='liquid-glass'] .present-region .present-focus:not([class*='card']):not([class*='block']):not([class*='choice']) {
   border-radius: 10px;
@@ -299,14 +317,14 @@
   .concept-map-canvas-wrapper, .flowchart-canvas-wrapper, .present-taxonomy-detail, .present-card-face,
   .backface-hidden.bg-card
 ) {
-  background: rgba(255, 255, 255, 0.045);
-  border-color: rgba(255, 255, 255, 0.10);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* The title card covers the region's content until the section starts */
 :root[data-theme='liquid-glass'] .present-title-card {
-  background: var(--glass-sheen), rgba(26, 29, 46, 0.86);
+  background: var(--glass-sheen), rgba(20, 24, 36, 0.86);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
@@ -322,8 +340,8 @@
 }
 
 :root[data-theme='liquid-glass'] .present-callout {
-  background: var(--glass-sheen), rgba(26, 29, 46, 0.88);
-  box-shadow: var(--glass-highlight), 0 18px 40px -16px rgba(4, 6, 20, 0.7);
+  background: var(--glass-sheen), rgba(20, 24, 36, 0.88);
+  box-shadow: var(--glass-highlight), 0 18px 40px -16px rgba(0, 0, 0, 0.7);
 }
 
 :root[data-theme='liquid-glass'] .present-caption {
@@ -341,10 +359,10 @@
 }
 
 :root[data-theme='liquid-glass'] .present-complete-card {
-  background: var(--glass-sheen), rgba(26, 29, 46, 0.72);
+  background: var(--glass-sheen), rgba(20, 24, 36, 0.72);
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
-  box-shadow: var(--glass-highlight), 0 0 0 1px var(--glass-edge), 0 30px 60px -20px rgba(4, 6, 20, 0.7);
+  box-shadow: var(--glass-highlight), 0 0 0 1px var(--glass-edge), 0 30px 60px -20px rgba(0, 0, 0, 0.7);
 }
 
 /* ---- type: tight display headings, neutral body ---- */
@@ -359,25 +377,20 @@
 
 :root[data-theme='liquid-glass'] .topic-page-title,
 :root[data-theme='liquid-glass'] .present-title-name {
-  color: #fff;
-  font-weight: 700;
-  text-shadow: 0 2px 28px rgba(140, 170, 238, 0.28);
+  color: var(--foreground);
+  font-weight: 600;
 }
 
-:root[data-theme='liquid-glass'] .present-region-head h2 {
-  font-weight: 650;
-}
-
+:root[data-theme='liquid-glass'] .present-region-head h2,
 :root[data-theme='liquid-glass'] .present-headline {
-  font-weight: 650;
+  font-weight: 600;
 }
 
 /* Section kind chips: frosted pills instead of outlined mono tags */
 :root[data-theme='liquid-glass'] .present-kind,
 :root[data-theme='liquid-glass'] .present-title-kind {
   border: 1px solid var(--glass-edge-strong);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
   font-family: var(--font-ui);
   letter-spacing: 0.06em;
 }
@@ -451,16 +464,17 @@
 
 @media (prefers-reduced-transparency: reduce) {
   :root[data-theme='liquid-glass'] {
-    --card: #262a40;
-    --border: #3a3f5a;
-    --glass-tint: #262a40;
-    --glass-tint-strong: #2e3350;
-    --glass-tint-inset: #22263a;
-    --glass-tint-dark: #1c1f31;
+    --card: #1e2230;
+    --border: #303646;
+    --glass-tint: #1e2230;
+    --glass-tint-strong: #262b3b;
+    --glass-tint-inset: #1a1e2a;
+    --glass-tint-dark: #161a25;
     --glass-sheen: linear-gradient(transparent, transparent);
     --glass-filter: none;
   }
-  :root[data-theme='liquid-glass'] body::before {
+  :root[data-theme='liquid-glass'] body::before,
+  :root[data-theme='liquid-glass'] body::after {
     display: none;
   }
 }

@@ -494,41 +494,66 @@
 }
 
 /* ============================================================
-   Theme: Liquid Glass (dark, translucent)
+   Theme: Liquid Glass — Midnight Mist (dark, translucent, calm)
 
-   Catppuccin Frappé accents on a deeper navy, with translucent
-   surfaces over a colour-blob backdrop. The raw --ctp-* surfaces
-   stay opaque (SVG node fills and inline styles rely on them);
-   only the semantic card / border tokens turn translucent, and
-   src/styles/liquid-glass.css restyles the main containers.
+   A hushed blue-slate: Catppuccin roles with muted accents (hues
+   kept, so diagram node types stay distinct) on a deep slate, with
+   translucent surfaces over two soft glows and fine grain. The raw
+   --ctp-* surfaces stay opaque (SVG node fills and inline styles
+   rely on them); only the semantic card / border tokens turn
+   translucent, and src/styles/liquid-glass.css restyles the main
+   containers.
 ============================================================ */
 [data-theme='liquid-glass'] {
   /* shadcn semantic tokens — translucent surfaces */
-  --background:             #1a1d2e;
-  --foreground:             #e2e8ff;
-  --card:                   rgba(255, 255, 255, 0.07);
-  --card-foreground:        #e2e8ff;
-  --primary-foreground:     #141625;
-  --secondary-foreground:   #141625;
-  --accent:                 rgba(255, 255, 255, 0.12);
-  --accent-foreground:      #e2e8ff;
-  --border:                 rgba(255, 255, 255, 0.14);
-  --input:                  rgba(255, 255, 255, 0.10);
-  --destructive-foreground: #141625;
+  --background:             #141824;
+  --foreground:             #e2e6ef;
+  --card:                   rgba(255, 255, 255, 0.05);
+  --card-foreground:        #e2e6ef;
+  --primary-foreground:     #141824;
+  --secondary-foreground:   #141824;
+  --accent:                 rgba(255, 255, 255, 0.08);
+  --accent-foreground:      #e2e6ef;
+  --border:                 rgba(255, 255, 255, 0.09);
+  --input:                  rgba(255, 255, 255, 0.08);
+  --destructive-foreground: #141824;
 
-  /* Surfaces — deep navy so glass reads against the backdrop */
-  --ctp-crust:     #141625;
-  --ctp-mantle:    #191b2c;
-  --ctp-base:      #1e2133;
-  --ctp-surface0:  #2a2e45;
-  --ctp-surface1:  #3a3f5a;
-  --ctp-surface2:  #4d5372;
+  /* Surfaces — deep slate so glass reads against the backdrop */
+  --ctp-crust:     #0f121b;
+  --ctp-mantle:    #13161f;
+  --ctp-base:      #171b27;
+  --ctp-surface0:  #222736;
+  --ctp-surface1:  #303646;
+  --ctp-surface2:  #414859;
 
-  /* Text — a touch brighter for contrast on translucent panels */
-  --ctp-text:      #e2e8ff;
-  --ctp-subtext1:  #c9d1f0;
-  --ctp-subtext0:  #b3bce0;
-  --ctp-overlay2:  #a2abcf;
+  /* Text — soft white, never pure */
+  --ctp-text:      #e2e6ef;
+  --ctp-subtext1:  #c2c8d6;
+  --ctp-subtext0:  #a8afc0;
+  --ctp-overlay2:  #9198a9;
+  --ctp-overlay1:  #7f8698;
+  --ctp-overlay0:  #6c7385;
+
+  /* Accents — the Catppuccin hues, muted toward slate */
+  --ctp-blue:      #a3b4dd;
+  --ctp-lavender:  #b7bce2;
+  --ctp-sapphire:  #9cb9cf;
+  --ctp-sky:       #a5c4cf;
+  --ctp-teal:      #9bc0b8;
+  --ctp-green:     #abc59c;
+  --ctp-yellow:    #d8c89f;
+  --ctp-peach:     #d9ae92;
+  --ctp-maroon:    #d1a4a7;
+  --ctp-red:       #d49898;
+  --ctp-mauve:     #bca8d2;
+  --ctp-pink:      #d3b3c8;
+  --ctp-flamingo:  #d8bfbf;
+  --ctp-rosewater: #e2d1cd;
+
+  /* Selection / highlight tints */
+  --pale-green:    rgba(171, 197, 156, 0.10);
+  --pale-blue:     rgba(163, 180, 221, 0.12);
+  --pale-pink:     rgba(211, 179, 200, 0.10);
 
   /* Type — a clean system sans (SF Pro on Apple, Inter elsewhere) */
   --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
@@ -543,24 +568,22 @@
   --radius-lg:   28px;
   --radius-xl:   34px;
 
-  /* Present: content materializes out of a blur (presentation/motion.ts) */
-  --present-enter-blur: 10px;
+  /* Present: content materializes out of a light blur (presentation/motion.ts) */
+  --present-enter-blur: 6px;
 
-  /* Glass material */
-  --glass-tint:        rgba(255, 255, 255, 0.07);
-  --glass-tint-strong: rgba(255, 255, 255, 0.11);
-  --glass-tint-inset:  rgba(255, 255, 255, 0.045);
-  --glass-tint-dark:   rgba(20, 22, 37, 0.55);
-  --glass-edge:        rgba(255, 255, 255, 0.16);
-  --glass-edge-strong: rgba(255, 255, 255, 0.26);
-  --glass-sheen:       linear-gradient(160deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 35%, rgba(255, 255, 255, 0) 60%);
-  --glass-highlight:   inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-  --glass-shadow:      0 12px 40px -14px rgba(4, 6, 20, 0.6);
-  --glass-filter:      blur(24px) saturate(170%);
+  /* Glass material — low contrast edges, a faint sheen */
+  --glass-tint:        rgba(255, 255, 255, 0.05);
+  --glass-tint-strong: rgba(255, 255, 255, 0.08);
+  --glass-tint-inset:  rgba(255, 255, 255, 0.03);
+  --glass-tint-dark:   rgba(16, 19, 29, 0.55);
+  --glass-edge:        rgba(255, 255, 255, 0.09);
+  --glass-edge-strong: rgba(255, 255, 255, 0.16);
+  --glass-sheen:       linear-gradient(170deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 40%, rgba(255, 255, 255, 0) 65%);
+  --glass-highlight:   inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --glass-shadow:      0 18px 50px -24px rgba(0, 0, 0, 0.55);
+  --glass-filter:      blur(24px) saturate(140%);
   --glass-backdrop:
-    radial-gradient(42% 38% at 12% 8%, rgba(140, 170, 238, 0.55), transparent 70%),
-    radial-gradient(36% 34% at 88% 18%, rgba(202, 158, 230, 0.45), transparent 70%),
-    radial-gradient(40% 40% at 78% 88%, rgba(129, 200, 190, 0.40), transparent 70%),
-    radial-gradient(34% 30% at 18% 82%, rgba(239, 159, 118, 0.30), transparent 70%),
-    linear-gradient(180deg, #161829 0%, #11131f 100%);
+    radial-gradient(70% 55% at 18% -5%, rgba(122, 142, 196, 0.20), transparent 70%),
+    radial-gradient(55% 50% at 90% 105%, rgba(104, 124, 168, 0.13), transparent 70%),
+    linear-gradient(180deg, #131722 0%, #0d1018 100%);
 }
