@@ -298,6 +298,130 @@
   white-space: pre-wrap;
 }
 .ai-note { color: var(--muted-foreground); font-size: 12px; }
+
+/* Activity: the model's thinking and lookups before its answer (decisions 125, 128) */
+.ai-activity {
+  --activity-surface: color-mix(in srgb, var(--foreground) 6%, transparent);
+  --activity-line: color-mix(in srgb, var(--foreground) 14%, transparent);
+  margin: 0 0 10px;
+}
+.ai-activity-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 4px 8px 4px 10px;
+  border: 1px solid var(--activity-line);
+  border-radius: 999px;
+  background: var(--activity-surface);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+.ai-activity-toggle:hover,
+.ai-activity.is-open .ai-activity-toggle {
+  color: var(--foreground);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--activity-line));
+}
+.ai-activity-toggle:focus-visible,
+.ai-activity-row--place:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ai-activity-toggle svg { flex-shrink: 0; }
+.ai-activity-summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-activity-summary b { font-weight: 600; color: var(--foreground); }
+.ai-activity-chevron { transition: transform 0.2s ease; }
+.ai-activity.is-open .ai-activity-chevron { transform: rotate(180deg); }
+/* The newest thought, one line under the pill while the model thinks */
+.ai-activity-preview {
+  margin: 5px 0 0 12px;
+  padding-left: 10px;
+  border-left: 2px solid var(--activity-line);
+  overflow: hidden;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-style: italic;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  animation: ai-activity-in 0.18s ease-out;
+}
+
+.ai-activity-list {
+  position: relative;
+  margin: 6px 0 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid var(--activity-line);
+  border-radius: 12px;
+  background: var(--activity-surface);
+  animation: ai-activity-in 0.18s ease-out;
+}
+@keyframes ai-activity-in { from { opacity: 0; transform: translateY(-3px); } }
+/* The timeline thread behind the icons */
+.ai-activity-list::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  bottom: 18px;
+  left: 21px;
+  width: 1px;
+  background: var(--activity-line);
+}
+.ai-activity-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--foreground);
+  text-align: left;
+}
+.ai-activity-row--thought { align-items: flex-start; }
+.ai-activity-row--place { cursor: pointer; transition: background-color 0.15s ease; }
+.ai-activity-row--place:hover:not(:disabled) { background: color-mix(in srgb, var(--foreground) 7%, transparent); }
+.ai-activity-row--place:disabled { cursor: default; }
+.ai-activity-icon {
+  position: relative;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--activity-line);
+  border-radius: 50%;
+  background: var(--background);
+  color: var(--primary);
+}
+.ai-activity-row--thought .ai-activity-icon { color: var(--muted-foreground); }
+.ai-activity-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ai-activity-title,
+.ai-activity-detail { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-activity-title { font-size: 12.5px; font-weight: 600; line-height: 1.35; }
+.ai-activity-row--thought .ai-activity-title { line-height: 26px; color: var(--muted-foreground); font-weight: 500; }
+.ai-activity-detail { color: var(--muted-foreground); font-size: 11.5px; line-height: 1.35; }
+.ai-activity-thought {
+  max-height: 180px;
+  margin-top: 2px;
+  overflow-y: auto;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overscroll-behavior: contain;
+}
+.ai-activity-go { flex-shrink: 0; color: var(--muted-foreground); opacity: 0; transition: opacity 0.15s ease; }
+.ai-activity-row--place:hover .ai-activity-go,
+.ai-activity-row--place:focus-visible .ai-activity-go { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .ai-activity-list,
+  .ai-activity-preview { animation: none; }
+  .ai-activity-chevron { transition: none; }
+}
 .ai-thinking { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: var(--muted-foreground); }
 .ai-message-foot {
   display: flex;

@@ -12,9 +12,14 @@
  * are dropped in one step, down to half the budget, and the thread keeps
  * where it starts (`start`): the prefix then stays the same for the
  * following requests instead of shifting by one turn each time.
+ *
+ * A reply that used the content tools (decisions 120–124) keeps its tool
+ * rounds (`steps`): the calls, their results and any text written with
+ * them, sent again unchanged with later requests.
  */
 import type { ChatMessage } from './client'
 import type { ContextPointer } from './context'
+import type { AssistantApp } from '../../../learning-engine/composition/oui/assistant-prompt'
 
 /** A pick sent with a message, shown as a chip. */
 export interface ThreadPick {
@@ -34,6 +39,34 @@ export interface EditHunkState {
   error?: string
 }
 
+/** One content-tool call of a reply and what it returned (decision 124). */
+export interface ToolStepCall {
+  id: string
+  name: string
+  /** The model's JSON arguments, as sent. */
+  args: string
+  /** What went back to the model. */
+  result: string
+  /** What the learner sees: "Looked at <label>". */
+  label: string
+  /** The place looked at, for Show on page. */
+  file?: string
+  anchor?: string
+}
+
+/** One tool round: the text the model wrote with its calls, then the calls. */
+export interface ToolStep {
+  text: string
+  /** What the model thought before these calls; shown only, never sent back (decision 128). */
+  thinking?: string
+  calls: ToolStepCall[]
+}
+
+/** Thinking kept per round or reply; longer reasoning is cut, so the thread fits in localStorage. */
+export const MAX_THINKING = 20000
+
+export const clipThinking = (text: string) => (text.length > MAX_THINKING ? `${text.slice(0, MAX_THINKING)}…` : text)
+
 export interface ThreadMessage {
   id: string
   role: 'user' | 'assistant'
@@ -50,6 +83,12 @@ export interface ThreadMessage {
   via?: { host: string; model: string }
   /** Assistant messages in Studio: one state per `oui-edit` block, in reply order. */
   edits?: EditHunkState[]
+  /** Assistant messages: the content-tool rounds before the answer (Viewer). */
+  steps?: ToolStep[]
+  /** Assistant messages: what the model thought before its answer; shown only, never sent back (decision 128). */
+  thinking?: string
+  /** Assistant messages: how long the model spent thinking, in all rounds. */
+  thoughtMs?: number
   /** Assistant messages with edits: what the dry run found wrong (empty when they check out). */
   problems?: string[]
   /** User messages Studio sent itself: the validation retry. */
@@ -85,6 +124,23 @@ function readPick(value: unknown): ThreadPick | null {
   return { file: pick.file, anchor: pick.anchor, label: typeof pick.label === 'string' ? pick.label : pick.anchor, note: typeof pick.note === 'string' ? pick.note : '' }
 }
 
+function readStep(value: unknown): ToolStep | null {
+  const step = value as Partial<ToolStep>
+  if (!step || !Array.isArray(step.calls)) return null
+  const calls = step.calls.flatMap((raw): ToolStepCall[] => {
+    const call = raw as Partial<ToolStepCall>
+    if (!call || typeof call.id !== 'string' || typeof call.name !== 'string' || typeof call.result !== 'string') return []
+    const out: ToolStepCall = { id: call.id, name: call.name, args: typeof call.args === 'string' ? call.args : '{}', result: call.result, label: typeof call.label === 'string' ? call.label : call.name }
+    if (typeof call.file === 'string') out.file = call.file
+    if (typeof call.anchor === 'string') out.anchor = call.anchor
+    return [out]
+  })
+  if (!calls.length) return null
+  const out: ToolStep = { text: typeof step.text === 'string' ? step.text : '', calls }
+  if (typeof step.thinking === 'string' && step.thinking) out.thinking = clipThinking(step.thinking)
+  return out
+}
+
 function readMessage(value: unknown): ThreadMessage | null {
   const message = value as Partial<ThreadMessage>
   if (!message || typeof message.id !== 'string' || (message.role !== 'user' && message.role !== 'assistant')) return null
@@ -107,6 +163,12 @@ function readMessage(value: unknown): ThreadMessage | null {
         state: e && ['pending', 'applied', 'rejected', 'failed'].includes(e.state) ? e.state : 'pending',
         ...(e && typeof e.error === 'string' ? { error: e.error } : {}),
       }))
+    }
+    if (typeof message.thinking === 'string' && message.thinking) out.thinking = clipThinking(message.thinking)
+    if (typeof message.thoughtMs === 'number' && message.thoughtMs > 0) out.thoughtMs = message.thoughtMs
+    if (Array.isArray(message.steps)) {
+      const steps = message.steps.map(readStep).filter((s): s is ToolStep => s !== null)
+      if (steps.length) out.steps = steps
     }
     if (Array.isArray(message.problems)) out.problems = message.problems.filter((p): p is string => typeof p === 'string')
   }
@@ -137,8 +199,11 @@ export function saveThread(topicId: string, thread: AssistantThread): void {
 /** Rough token count: characters ÷ 4. */
 export const estimateTokens = (text: string) => Math.ceil(text.length / 4)
 
-/** What a user message says to the model: its topic context, its picks (with comments), then the text. */
-export function userMessageContent(message: ThreadMessage): string {
+/**
+ * What a user message says to the model: its topic context, its picks (with comments), then the text.
+ * In Viewer every pick is something the learner asks about; nothing is a change request (decision 119).
+ */
+export function userMessageContent(message: ThreadMessage, app: AssistantApp = 'studio'): string {
   const parts: string[] = []
   if (message.context) parts.push(message.context)
   const picks = message.picks ?? []
@@ -146,10 +211,11 @@ export function userMessageContent(message: ThreadMessage): string {
     const list = picks
       .map((pick) => `- ${pick.file} #${pick.anchor}${pick.note.trim() ? `\n${pick.note.trim().split('\n').map((l) => `  ${l}`).join('\n')}` : ''}`)
       .join('\n')
-    parts.push(`${message.mode === 'ask' ? 'About these places' : picks.some((p) => p.note.trim()) ? 'Comments on these places' : 'These places'}:\n${list}`)
+    const heading = app === 'viewer' || message.mode === 'ask' ? 'About these places' : picks.some((p) => p.note.trim()) ? 'Comments on these places' : 'These places'
+    parts.push(`${heading}:\n${list}`)
   }
   if (message.text.trim()) parts.push(message.text.trim())
-  if (message.mode === 'ask') parts.push('(This is a question: answer it, do not propose changes unless asked.)')
+  if (app === 'studio' && message.mode === 'ask') parts.push('(This is a question: answer it, do not propose changes unless asked.)')
   return parts.join('\n\n')
 }
 
@@ -178,14 +244,42 @@ export interface HistoryForRequest {
   firstSent: number
 }
 
-function contentOf(message: ThreadMessage): string | null {
-  return message.role === 'user' ? userMessageContent(message) : assistantMessageContent(message)
+export interface HistoryOptions {
+  app?: AssistantApp
+  /** The request offers the content tools: tool rounds go as tool messages, else as "[Looked at …]" lines. */
+  tools?: boolean
 }
 
-const costOf = (message: ThreadMessage) => {
-  const content = contentOf(message)
-  return content === null ? 0 : estimateTokens(content) + 4
+const lookedAt = (steps: readonly ToolStep[]) =>
+  steps.flatMap((step) => step.calls.map((call) => `[Looked at ${call.name}(${call.args === '{}' ? '' : call.args}): ${call.label}]`)).join('\n')
+
+/** One thread message as chat messages: a reply with tool rounds becomes several. */
+function chatMessagesOf(message: ThreadMessage, options: HistoryOptions = {}): ChatMessage[] {
+  if (message.role === 'user') return [{ role: 'user', content: userMessageContent(message, options.app) }]
+  const text = assistantMessageContent(message)
+  if (text === null) return []
+  const steps = message.steps ?? []
+  if (!steps.length) return [{ role: 'assistant', content: text }]
+  if (!options.tools) return [{ role: 'assistant', content: `${lookedAt(steps)}\n\n${text}` }]
+  return [...toolStepMessages(steps), { role: 'assistant', content: text }]
 }
+
+/** Tool rounds as chat messages: the assistant's calls, then one tool message per result. */
+export function toolStepMessages(steps: readonly ToolStep[]): ChatMessage[] {
+  const out: ChatMessage[] = []
+  for (const step of steps) {
+    out.push({
+      role: 'assistant',
+      content: step.text,
+      tool_calls: step.calls.map((call) => ({ id: call.id, type: 'function', function: { name: call.name, arguments: call.args } })),
+    })
+    for (const call of step.calls) out.push({ role: 'tool', tool_call_id: call.id, content: call.result })
+  }
+  return out
+}
+
+const costOf = (message: ThreadMessage) =>
+  chatMessagesOf(message, { tools: true }).reduce((sum, m) => sum + estimateTokens(m.content + (m.tool_calls ? JSON.stringify(m.tool_calls) : '')) + 4, 0)
 
 /**
  * Where the history sent with the next request starts: at `start` (the
@@ -211,13 +305,8 @@ export function historyStart(thread: readonly ThreadMessage[], budget: number, s
 }
 
 /** The thread from `from` on, as chat messages; failed replies are left out. */
-export function historyMessages(thread: readonly ThreadMessage[], from: number): ChatMessage[] {
-  const out: ChatMessage[] = []
-  for (const message of thread.slice(from)) {
-    const content = contentOf(message)
-    if (content !== null) out.push({ role: message.role, content })
-  }
-  return out
+export function historyMessages(thread: readonly ThreadMessage[], from: number, options: HistoryOptions = {}): ChatMessage[] {
+  return thread.slice(from).flatMap((message) => chatMessagesOf(message, options))
 }
 
 /** The history for the next request with the thread starting at `start`. */

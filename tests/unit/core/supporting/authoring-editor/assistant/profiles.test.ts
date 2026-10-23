@@ -44,7 +44,7 @@ describe('assistant profiles', () => {
     const loaded = loadAssistantSettings()
     expect(loaded.activeId).toBeNull()
     expect(loaded.profiles).toEqual([
-      { id: 'a', name: 'Profile', preset: 'custom', baseUrl: '', model: '', headers: {}, tokenBudget: 24000, fullReference: false },
+      { id: 'a', name: 'Profile', preset: 'custom', baseUrl: '', model: '', headers: {}, tokenBudget: 24000, fullReference: false, tools: true },
     ])
     localStorage.setItem('loom-ai-profiles', '{not json')
     expect(loadAssistantSettings()).toEqual({ profiles: [], activeId: null })

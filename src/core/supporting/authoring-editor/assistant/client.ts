@@ -25,8 +25,19 @@ export interface AssistantConnection {
 }
 
 export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant'
+  role: 'system' | 'user' | 'assistant' | 'tool'
   content: string
+  /** Assistant turns that called tools (decision 120). */
+  tool_calls?: ToolCall[]
+  /** Tool turns: the call they answer. */
+  tool_call_id?: string
+}
+
+/** A function call the model asked for, in the wire format. */
+export interface ToolCall {
+  id: string
+  type: 'function'
+  function: { name: string; arguments: string }
 }
 
 export type AssistantFailureKind =
@@ -287,25 +298,165 @@ export class SSEDecoder {
   }
 }
 
+interface ToolCallDelta {
+  index?: unknown
+  id?: unknown
+  function?: { name?: unknown; arguments?: unknown }
+}
+
 interface ChunkChoice {
-  delta?: { content?: unknown }
-  message?: { content?: unknown }
+  delta?: { content?: unknown; tool_calls?: unknown; reasoning_content?: unknown; reasoning?: unknown }
+  message?: { content?: unknown; tool_calls?: unknown; reasoning_content?: unknown; reasoning?: unknown }
   text?: unknown
   finish_reason?: unknown
 }
 
-/** Text and finish reason in one streamed chunk or a whole (non-streamed) answer. */
-function readChoice(payload: unknown): { text: string; finishReason?: string } {
+/**
+ * Collects tool calls from streamed deltas (a call's name and arguments come
+ * in pieces, matched by `index`) or from a whole message. Servers that leave
+ * out `index` or `id`, or send arguments as an object, are handled too.
+ */
+class ToolCallCollector {
+  private calls: Array<{ id?: string; name: string; args: string }> = []
+
+  add(deltas: unknown) {
+    if (!Array.isArray(deltas)) return
+    deltas.forEach((raw: ToolCallDelta, position) => {
+      const index = typeof raw?.index === 'number' ? raw.index : this.calls.length > position && !raw?.id ? position : this.calls.length
+      const call = (this.calls[index] ??= { name: '', args: '' })
+      if (typeof raw?.id === 'string' && raw.id) call.id = raw.id
+      const fn = raw?.function
+      if (typeof fn?.name === 'string') call.name += fn.name
+      if (typeof fn?.arguments === 'string') call.args += fn.arguments
+      else if (fn?.arguments && typeof fn.arguments === 'object') call.args = JSON.stringify(fn.arguments)
+    })
+  }
+
+  result(): ToolCall[] | undefined {
+    const calls = this.calls.filter((c) => c?.name)
+    if (!calls.length) return undefined
+    return calls.map((c, i) => ({ id: c.id ?? `call_${i}`, type: 'function', function: { name: c.name, arguments: c.args || '{}' } }))
+  }
+}
+
+/** Text, reasoning, tool-call deltas and finish reason in one streamed chunk or a whole (non-streamed) answer. */
+function readChoice(payload: unknown): { text: string; reasoning: string; toolCalls?: unknown; finishReason?: string } {
   const data = payload as { choices?: ChunkChoice[]; error?: unknown }
   if (data?.error !== undefined) {
     throw new AssistantError('http', errorMessageOf(JSON.stringify(data)) ?? 'The server reported an error.')
   }
   const choice = data?.choices?.[0]
-  if (!choice) return { text: '' }
+  if (!choice) return { text: '', reasoning: '' }
   const content = choice.delta?.content ?? choice.message?.content ?? choice.text
+  // llama.cpp, LM Studio, DeepSeek and vLLM send `reasoning_content`; Ollama and OpenRouter `reasoning` (decision 128).
+  const part = choice.delta ?? choice.message
+  const reasoning = part?.reasoning_content ?? part?.reasoning
   return {
     text: typeof content === 'string' ? content : '',
+    reasoning: typeof reasoning === 'string' ? reasoning : '',
+    toolCalls: choice.delta?.tool_calls ?? choice.message?.tool_calls,
     finishReason: typeof choice.finish_reason === 'string' ? choice.finish_reason : undefined,
+  }
+}
+
+const THINK_OPEN = '<think>'
+const THINK_CLOSE = '</think>'
+
+/** How many characters at the end of `text` could start `tag`. */
+function partialTag(text: string, tag: string): number {
+  for (let k = Math.min(tag.length - 1, text.length); k > 0; k--) if (text.endsWith(tag.slice(0, k))) return k
+  return 0
+}
+
+/**
+ * Splits a `<think>…</think>` block at the start of the answer off as
+ * reasoning, for servers that leave a reasoning model's thoughts in the
+ * text. A tag split across chunks is held back until it is whole.
+ */
+export class ThinkSplitter {
+  private state: 'start' | 'think' | 'text' = 'start'
+  private pending = ''
+
+  push(piece: string): { text: string; reasoning: string } {
+    let text = ''
+    let reasoning = ''
+    this.pending += piece
+    while (this.pending) {
+      if (this.state === 'start') {
+        const trimmed = this.pending.trimStart()
+        if (!trimmed || (trimmed.length < THINK_OPEN.length && THINK_OPEN.startsWith(trimmed))) break
+        if (trimmed.startsWith(THINK_OPEN)) {
+          this.pending = trimmed.slice(THINK_OPEN.length)
+          this.state = 'think'
+        } else {
+          this.state = 'text'
+        }
+      } else if (this.state === 'think') {
+        const end = this.pending.indexOf(THINK_CLOSE)
+        if (end >= 0) {
+          reasoning += this.pending.slice(0, end)
+          this.pending = this.pending.slice(end + THINK_CLOSE.length).replace(/^\s+/, '')
+          this.state = 'text'
+          if (!this.pending) this.state = 'start'
+          continue
+        }
+        const keep = partialTag(this.pending, THINK_CLOSE)
+        reasoning += this.pending.slice(0, this.pending.length - keep)
+        this.pending = this.pending.slice(this.pending.length - keep)
+        break
+      } else {
+        text += this.pending
+        this.pending = ''
+      }
+    }
+    return { text, reasoning }
+  }
+
+  /** What is still held back when the answer ends. */
+  flush(): { text: string; reasoning: string } {
+    const rest = this.pending
+    this.pending = ''
+    return this.state === 'think' ? { text: '', reasoning: rest } : { text: rest, reasoning: '' }
+  }
+}
+
+/** Collects one answer's text, reasoning and tool calls, passing each piece on as it arrives. */
+class AnswerCollector {
+  text = ''
+  reasoning = ''
+  finishReason: string | undefined
+  readonly calls = new ToolCallCollector()
+  private readonly think = new ThinkSplitter()
+
+  constructor(private readonly request: ChatRequest) {}
+
+  take(chunk: ReturnType<typeof readChoice>) {
+    if (chunk.finishReason) this.finishReason = chunk.finishReason
+    this.calls.add(chunk.toolCalls)
+    this.addReasoning(chunk.reasoning)
+    if (chunk.text) this.split(this.think.push(chunk.text))
+  }
+
+  end() {
+    this.split(this.think.flush())
+  }
+
+  private split(part: { text: string; reasoning: string }) {
+    this.addReasoning(part.reasoning)
+    if (part.text) {
+      this.text += part.text
+      this.request.onDelta?.(part.text)
+    }
+  }
+
+  private addReasoning(reasoning: string) {
+    if (!reasoning) return
+    this.reasoning += reasoning
+    this.request.onReasoning?.(reasoning)
+  }
+
+  result(streamed: boolean): ChatResult {
+    return { text: this.text, ...(this.reasoning ? { reasoning: this.reasoning } : {}), toolCalls: this.calls.result(), finishReason: this.finishReason, streamed }
   }
 }
 
@@ -315,12 +466,22 @@ export interface ChatRequest {
   signal?: AbortSignal
   /** Called with each piece of text as it streams in. */
   onDelta?: (text: string) => void
+  /** Called with each piece of the model's reasoning as it streams in (decision 128). */
+  onReasoning?: (text: string) => void
   /** Extra body fields, e.g. `temperature`. */
   extra?: Record<string, unknown>
+  /** Function tools the model may call (decision 120). */
+  tools?: unknown[]
+  /** `none` makes the model answer without calling them. */
+  toolChoice?: 'auto' | 'none'
 }
 
 export interface ChatResult {
   text: string
+  /** The model's reasoning, from a reasoning field or a leading `<think>` block. */
+  reasoning?: string
+  /** The tools the model asked to call, if any. */
+  toolCalls?: ToolCall[]
   finishReason?: string
   /** False when the answer came in one piece (the server ignored `stream`, or the retry). */
   streamed: boolean
@@ -363,7 +524,13 @@ async function chatOnce(
     {
       method: 'POST',
       headers: requestHeaders(connection, true),
-      body: JSON.stringify({ ...request.extra, model: request.model, messages: request.messages, stream }),
+      body: JSON.stringify({
+        ...request.extra,
+        model: request.model,
+        messages: request.messages,
+        ...(request.tools?.length ? { tools: request.tools, ...(request.toolChoice ? { tool_choice: request.toolChoice } : {}) } : {}),
+        stream,
+      }),
       signal: request.signal,
     },
     env,
@@ -384,17 +551,18 @@ async function chatOnce(
       if (/^\s*(data:|\{)/.test(body)) return readStreamText(body, request)
       throw new AssistantError('bad-response', 'The answer is not JSON.')
     }
-    const { text, finishReason } = readChoice(parsed)
-    if (!text && !(parsed as { choices?: unknown })?.choices) throw new AssistantError('bad-response', 'The answer has no choices.')
-    if (text) request.onDelta?.(text)
-    return { text, finishReason, streamed: false }
+    const chunk = readChoice(parsed)
+    if (!chunk.text && !(parsed as { choices?: unknown })?.choices) throw new AssistantError('bad-response', 'The answer has no choices.')
+    const answer = new AnswerCollector(request)
+    answer.take(chunk)
+    answer.end()
+    return answer.result(false)
   }
 
   const reader = response.body.getReader()
   const utf8 = new TextDecoder()
   const decoder = new SSEDecoder()
-  let text = ''
-  let finishReason: string | undefined
+  const answer = new AnswerCollector(request)
   let done = false
   const take = (payloads: string[]) => {
     for (const payload of payloads) {
@@ -408,12 +576,7 @@ async function chatOnce(
       } catch {
         continue // keep-alives and other non-JSON lines
       }
-      const chunk = readChoice(parsed)
-      if (chunk.finishReason) finishReason = chunk.finishReason
-      if (chunk.text) {
-        text += chunk.text
-        request.onDelta?.(chunk.text)
-      }
+      answer.take(readChoice(parsed))
     }
   }
 
@@ -424,30 +587,31 @@ async function chatOnce(
       take(decoder.push(utf8.decode(value, { stream: true })))
     }
     if (!done) take(decoder.flush())
+    answer.end()
   } catch (error) {
-    if (request.signal?.aborted || isAbort(error)) throw new AssistantError('aborted', 'The request was stopped.', { partial: text || undefined })
-    if (error instanceof AssistantError) throw new AssistantError(error.kind, error.message, { status: error.status, partial: text || undefined })
-    throw new AssistantError('bad-response', 'The stream broke off.', { partial: text || undefined })
+    const partial = answer.text || undefined
+    if (request.signal?.aborted || isAbort(error)) throw new AssistantError('aborted', 'The request was stopped.', { partial })
+    if (error instanceof AssistantError) throw new AssistantError(error.kind, error.message, { status: error.status, partial })
+    throw new AssistantError('bad-response', 'The stream broke off.', { partial })
   } finally {
     if (done) reader.cancel().catch(() => {})
   }
-  return { text, finishReason, streamed: true }
+  return answer.result(true)
 }
 
 function readStreamText(body: string, request: ChatRequest): ChatResult {
   const decoder = new SSEDecoder()
-  let text = ''
-  let finishReason: string | undefined
+  const chunks: Array<ReturnType<typeof readChoice>> = []
   for (const payload of [...decoder.push(body), ...decoder.flush()]) {
     if (payload.trim() === '[DONE]') break
     try {
-      const chunk = readChoice(JSON.parse(payload))
-      text += chunk.text
-      if (chunk.finishReason) finishReason = chunk.finishReason
+      chunks.push(readChoice(JSON.parse(payload)))
     } catch (error) {
       if (error instanceof AssistantError) throw error
     }
   }
-  if (text) request.onDelta?.(text)
-  return { text, finishReason, streamed: false }
+  const answer = new AnswerCollector(request)
+  chunks.forEach((chunk) => answer.take(chunk))
+  answer.end()
+  return answer.result(false)
 }

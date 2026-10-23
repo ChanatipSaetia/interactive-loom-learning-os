@@ -4,6 +4,10 @@
  * streaming `POST /v1/chat/completions` that echoes the last user message
  * (or, for `REPLY<<text>>` in it, answers with exactly that text).
  *
+ * `TOOL<<name {json args}>>` in the last user message makes it call that
+ * tool once (streamed in pieces, as servers do) when the request offers
+ * tools; once the result is back it answers `Tool said: <first line>`.
+ *
  *   node tests/e2e/fixtures/mock-openai-server.mjs [port] [--no-cors]
  *
  * `--no-cors` leaves out the CORS headers, the way Ollama answers pages that
@@ -38,7 +42,23 @@ export function startMockOpenAI({ port = 0, cors = true, models = ['mock-small',
         // `REPLY<<…>>` in the last user message is answered with exactly that text.
         const scripted = /REPLY<<([\s\S]*?)>>/.exec(last?.content ?? '')
         // The echo leaves out the <topic-context> block a user turn can start with.
-        const reply = scripted ? scripted[1] : `Echo: ${(last?.content ?? '').replace(/^<topic-context[\s\S]*?<\/topic-context>\n\n/, '')}`
+        let reply = scripted ? scripted[1] : `Echo: ${(last?.content ?? '').replace(/^<topic-context[\s\S]*?<\/topic-context>\n\n/, '')}`
+        const tool = /TOOL<<(\w+) ([\s\S]*?)>>/.exec(last?.content ?? '')
+        const lastIndex = (request.messages ?? []).lastIndexOf(last)
+        const results = (request.messages ?? []).slice(lastIndex + 1).filter((message) => message.role === 'tool')
+        if (tool && request.tools?.length && !results.length) {
+          res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache' })
+          const args = tool[2]
+          const half = Math.floor(args.length / 2)
+          const pieces = [
+            { index: 0, id: 'call_mock', type: 'function', function: { name: tool[1], arguments: args.slice(0, half) } },
+            { index: 0, function: { arguments: args.slice(half) } },
+          ]
+          for (const piece of pieces) res.write(`data: ${JSON.stringify({ choices: [{ index: 0, delta: { tool_calls: [piece] }, finish_reason: null }] })}\n\n`)
+          res.write(`data: ${JSON.stringify({ choices: [{ index: 0, delta: {}, finish_reason: 'tool_calls' }] })}\n\n`)
+          return res.end('data: [DONE]\n\n')
+        }
+        if (tool && results.length) reply = `Tool said: ${results[results.length - 1].content.split('\n')[0]}`
         if (!request.stream) {
           return res
             .writeHead(200, { 'content-type': 'application/json' })

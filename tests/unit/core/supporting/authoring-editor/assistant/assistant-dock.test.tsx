@@ -9,6 +9,7 @@ import {
   saveAssistantSettings,
   useAssistant,
   type AssistantTopicContext,
+  type AssistantView,
 } from '../../../../../../src/core/supporting/authoring-editor/assistant'
 
 const files = {
@@ -18,8 +19,8 @@ const files = {
 const resolve = sourceResolver(files)
 const context = (): AssistantTopicContext => ({ topicId: 'demo', files, fileOrder: ['topic.oui', 'sections/quiz.oui'], diagnostics: {} })
 
-function Harness({ fetchImpl }: { fetchImpl: typeof fetch }) {
-  const assistant = useAssistant({ topicId: 'demo', app: 'viewer', getContext: context, fetchImpl })
+function Harness({ fetchImpl, view }: { fetchImpl: typeof fetch; view?: AssistantView }) {
+  const assistant = useAssistant({ topicId: 'demo', app: 'viewer', getContext: () => ({ ...context(), view }), fetchImpl })
   return (
     <>
       <AssistantToggle assistant={assistant} className="pill" />
@@ -83,7 +84,7 @@ describe('AssistantDock with the Pick tray', () => {
     expect(body.messages[1].content).toMatch(/^<topic-context topic="demo">/)
     expect(body.messages[1].content).toContain('### sections/quiz.oui: q1 (line 2)')
     expect(body.messages[1].content).toContain('QuizQuestion(id: string')
-    expect(body.messages[1].content).toMatch(/<\/topic-context>\n\nComments on these places:\n- sections\/quiz.oui #q1\n {2}Too easy\?$/)
+    expect(body.messages[1].content).toMatch(/<\/topic-context>\n\nAbout these places:\n- sections\/quiz.oui #q1\n {2}Too easy\?$/)
     expect(JSON.parse(localStorage.getItem('loom-ai-thread:demo')!).messages).toHaveLength(2)
 
     // New chat clears the thread.
@@ -116,7 +117,7 @@ describe('AssistantDock with the Pick tray', () => {
     const [first, second] = fetchImpl.mock.calls
       .filter(([u]) => u.endsWith('/chat/completions'))
       .map(([, init]) => JSON.parse(init!.body as string).messages as Array<{ role: string; content: string }>)
-    expect(first[1].content).toContain('Comments on these places:\n- sections/quiz.oui #q1\n  Too easy?\n\nIs it fair?')
+    expect(first[1].content).toContain('About these places:\n- sections/quiz.oui #q1\n  Too easy?\n\nIs it fair?')
     // Same system prompt, same first turn: the prefix is unchanged.
     expect(second.slice(0, 2)).toEqual(first)
     expect(second.map((m) => m.role)).toEqual(['system', 'user', 'assistant', 'user'])
@@ -256,5 +257,121 @@ describe('Studio edits', () => {
     expect(second.at(-2).content).toBe('Changed it.\n\n[Proposed edit to sections/quiz.oui: pending]')
     expect(screen.getAllByTestId('ai-user-message')[1]).toHaveTextContent('Sent by Studio')
     expect(screen.getAllByTestId('ai-proposal')[1]).toHaveTextContent('The edits apply and validate.')
+  })
+})
+
+describe('Content tools in Viewer (decisions 120–125)', () => {
+  const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } })
+  const toolCall = (id: string, name: string, args: unknown) => json({ choices: [{ message: { content: '', tool_calls: [{ id, type: 'function', function: { name, arguments: JSON.stringify(args) } }] }, finish_reason: 'tool_calls' }] })
+  const chatBodies = (fetchImpl: ReturnType<typeof vi.fn>) =>
+    fetchImpl.mock.calls.filter(([url]) => String(url).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
+
+  it('runs the tool calls in the page, sends their results back and shows what it looked at', async () => {
+    seed('http://localhost:11434/v1')
+    const answers = [toolCall('c1', 'navigate', {}), toolCall('c2', 'read', { address: 'sections/quiz.oui #q1' }), streamOf('Yes is right.')]
+    const fetchImpl = vi.fn(async (url: string) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
+    render(<Harness view={{ mode: 'read', file: 'sections/quiz.oui' }} fetchImpl={fetchImpl as unknown as typeof fetch} />)
+
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    expect(screen.getByTestId('ai-reply')).toHaveTextContent('Yes is right.')
+    // A pill says how many places; opened, it lists them (section, then the part).
+    expect(screen.getByTestId('ai-activity-toggle')).toHaveTextContent('Looked at 2 places')
+    expect(screen.queryByTestId('ai-looked-line')).toBeNull()
+    fireEvent.click(screen.getByTestId('ai-activity-toggle'))
+    expect(screen.getAllByTestId('ai-looked-line').map((l) => l.textContent)).toEqual(['Topic outlineAll sections', 'CheckWhy?'])
+
+    const bodies = chatBodies(fetchImpl)
+    expect(bodies).toHaveLength(3)
+    expect(bodies[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read'])
+    expect(bodies[0].messages[0].content).toContain('## Looking Things Up')
+    // The section in view is not sent whole: the model reads it.
+    expect(bodies[0].messages[1].content).toContain('at sections/quiz.oui (Quiz "Check") (not included: read it when you need it).')
+    expect(bodies[0].messages[1].content).not.toContain('(whole file)')
+    const last = bodies[2].messages
+    expect(last.slice(-4).map((m: { role: string }) => m.role)).toEqual(['assistant', 'tool', 'assistant', 'tool'])
+    expect(last[last.length - 1]).toMatchObject({ role: 'tool', tool_call_id: 'c2' })
+    expect(last[last.length - 1].content).toContain('question: Why?')
+    // The rounds are part of the thread: a follow-up sends them again, unchanged.
+    const stored = JSON.parse(localStorage.getItem('loom-ai-thread:demo')!)
+    expect(stored.messages[1].steps).toHaveLength(2)
+  })
+
+  it('stops calling tools after the round limit and asks for an answer', async () => {
+    seed('http://localhost:11434/v1')
+    let n = 0
+    const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/models')) return json({ data: [{ id: 'm1' }] })
+      const body = JSON.parse(init!.body as string)
+      return body.tool_choice === 'none' ? streamOf('Done looking.') : toolCall(`c${n++}`, 'navigate', {})
+    })
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    const bodies = chatBodies(fetchImpl)
+    expect(bodies).toHaveLength(7)
+    expect(bodies[6].tool_choice).toBe('none')
+    const results = bodies[6].messages.filter((m: { role: string }) => m.role === 'tool')
+    // Repeated calls with the same result are answered briefly.
+    expect(results[0].content).toContain('Topic "Demo"')
+    expect(results.slice(1).every((r: { content: string }) => r.content.startsWith('Unchanged since your earlier call'))).toBe(true)
+    expect(results[results.length - 1].content).toContain('Tool limit reached')
+    expect(screen.getByTestId('ai-reply')).toHaveTextContent('Done looking.')
+  })
+
+  it('asks again without tools when the server refuses them, then turns the switch off', async () => {
+    seed('http://localhost:11434/v1')
+    const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/models')) return json({ data: [{ id: 'm1' }] })
+      const body = JSON.parse(init!.body as string)
+      return body.tools ? json({ error: 'tools are not supported by this model' }, 400) : streamOf('Plain answer.')
+    })
+    render(<Harness view={{ mode: 'read', file: 'sections/quiz.oui' }} fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    expect(screen.getByTestId('ai-reply')).toHaveTextContent('Plain answer.')
+    const last = chatBodies(fetchImpl).pop()
+    expect(last.messages[0].content).not.toContain('## Looking Things Up')
+    // Without tools, the section in view goes whole again.
+    expect(last.messages[1].content).toContain('(whole file)')
+    expect(JSON.parse(localStorage.getItem('loom-ai-profiles')!).profiles[0].tools).toBe(false)
+  })
+})
+
+describe('Thinking (decision 128)', () => {
+  it('shows the reasoning in the activity pill, apart from the answer, and does not send it back', async () => {
+    seed('http://localhost:11434/v1')
+    const reasoning = (text: string) => `data: ${JSON.stringify({ choices: [{ delta: { reasoning_content: text } }] })}\n\n`
+    const answer = (text: string) => `data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        for (const piece of [reasoning('The learner asks '), reasoning('about q1.'), answer('Yes is right.'), 'data: [DONE]\n\n']) controller.enqueue(enc.encode(piece))
+        controller.close()
+      },
+    })
+    let chatsSent = 0
+    const fetchImpl = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) =>
+      url.endsWith('/models')
+        ? new Response(JSON.stringify({ data: [{ id: 'm1' }] }), { headers: { 'content-type': 'application/json' } })
+        : chatsSent++ === 0
+          ? new Response(body, { headers: { 'content-type': 'text/event-stream' } })
+          : streamOf('Sure.'),
+    )
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    expect(screen.getByTestId('ai-reply')).toHaveTextContent('Yes is right.')
+    expect(screen.getByTestId('ai-reply')).not.toHaveTextContent('The learner asks')
+    expect(screen.getByTestId('ai-activity-toggle')).toHaveTextContent(/^Thought/)
+    fireEvent.click(screen.getByTestId('ai-activity-toggle'))
+    expect(screen.getByTestId('ai-thought')).toHaveTextContent('The learner asks about q1.')
+
+    // A follow-up does not carry the thinking.
+    fireEvent.change(screen.getByTestId('pick-composer'), { target: { value: 'Thanks' } })
+    fireEvent.keyDown(screen.getByTestId('pick-composer'), { key: 'Enter' })
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')).toHaveLength(2))
+    const chats = fetchImpl.mock.calls.filter(([u]) => String(u).endsWith('/chat/completions'))
+    expect(chats).toHaveLength(2)
+    expect(String((chats[1][1] as RequestInit).body)).not.toContain('The learner asks')
   })
 })

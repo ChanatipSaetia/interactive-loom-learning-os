@@ -258,3 +258,77 @@ describe('chatCompletion', () => {
     await expect(chatCompletion(local, { model: 'm', messages, signal: controller.signal }, { fetch: fetch as unknown as typeof globalThis.fetch, ...page })).rejects.toMatchObject({ kind: 'aborted' })
   })
 })
+
+describe('chatCompletion with tools (decision 120)', () => {
+  const messages = [{ role: 'user' as const, content: 'Hi' }]
+  const tools = [{ type: 'function', function: { name: 'read', description: 'Read.', parameters: { type: 'object' } } }]
+  const toolChunk = (calls: unknown[], finish?: string) => JSON.stringify({ choices: [{ delta: { tool_calls: calls }, finish_reason: finish ?? null }] })
+
+  it('sends the tools and tool_choice, and assembles streamed tool calls by index', async () => {
+    const fetch = vi.fn(async () =>
+      sse([
+        `data: ${toolChunk([{ index: 0, id: 'call_a', type: 'function', function: { name: 'read', arguments: '' } }])}\n\n`,
+        `data: ${toolChunk([{ index: 0, function: { arguments: '{"address":' } }])}\n\n`,
+        `data: ${toolChunk([{ index: 0, function: { arguments: '"quiz"}' } }, { index: 1, id: 'call_b', function: { name: 'navigate', arguments: '{}' } }])}\n\n`,
+        `data: ${toolChunk([], 'tool_calls')}\n\ndata: [DONE]\n\n`,
+      ]),
+    )
+    const result = await chatCompletion(local, { model: 'm', messages, tools, toolChoice: 'none' }, { fetch, ...page })
+    expect(result.toolCalls).toEqual([
+      { id: 'call_a', type: 'function', function: { name: 'read', arguments: '{"address":"quiz"}' } },
+      { id: 'call_b', type: 'function', function: { name: 'navigate', arguments: '{}' } },
+    ])
+    expect(result.finishReason).toBe('tool_calls')
+    const body = JSON.parse((fetch.mock.calls[0] as unknown as [string, RequestInit])[1].body as string)
+    expect(body.tools).toEqual(tools)
+    expect(body.tool_choice).toBe('none')
+  })
+
+  it('reads tool calls from a whole answer, with object arguments and no id', async () => {
+    const fetch = async () => json({ choices: [{ message: { content: null, tool_calls: [{ function: { name: 'read', arguments: { address: 'quiz' } } }] }, finish_reason: 'tool_calls' }] })
+    const result = await chatCompletion(local, { model: 'm', messages, tools }, { fetch, ...page })
+    expect(result.toolCalls).toEqual([{ id: 'call_0', type: 'function', function: { name: 'read', arguments: '{"address":"quiz"}' } }])
+    expect(result.text).toBe('')
+  })
+
+  it('leaves tools out of the body when there are none', async () => {
+    const fetch = vi.fn(async () => json({ choices: [{ message: { content: 'x' } }] }))
+    const result = await chatCompletion(local, { model: 'm', messages, tools: [] }, { fetch, ...page })
+    expect(result.toolCalls).toBeUndefined()
+    expect(JSON.parse((fetch.mock.calls[0] as unknown as [string, RequestInit])[1].body as string)).not.toHaveProperty('tools')
+  })
+})
+
+describe('chatCompletion with reasoning (decision 128)', () => {
+  const messages = [{ role: 'user' as const, content: 'Hi' }]
+  const delta = (d: Record<string, unknown>) => `data: ${JSON.stringify({ choices: [{ delta: d }] })}\n\n`
+
+  it('streams reasoning_content and reasoning fields apart from the text', async () => {
+    const fetch = async () => sse([delta({ reasoning_content: 'Hmm, ' }), delta({ reasoning: 'caches.' }), delta({ content: 'Answer.' }), 'data: [DONE]\n\n'])
+    const thoughts: string[] = []
+    const texts: string[] = []
+    const result = await chatCompletion(local, { model: 'm', messages, onReasoning: (r) => thoughts.push(r), onDelta: (t) => texts.push(t) }, { fetch, ...page })
+    expect(result.text).toBe('Answer.')
+    expect(result.reasoning).toBe('Hmm, caches.')
+    expect(thoughts).toEqual(['Hmm, ', 'caches.'])
+    expect(texts).toEqual(['Answer.'])
+  })
+
+  it('splits a leading <think> block off the text, with tags cut across chunks', async () => {
+    const fetch = async () => sse([delta({ content: '\n<thi' }), delta({ content: 'nk>Let me see' }), delta({ content: '.</th' }), delta({ content: 'ink>\n\nIt is ' }), delta({ content: 'private.' }), 'data: [DONE]\n\n'])
+    const texts: string[] = []
+    const result = await chatCompletion(local, { model: 'm', messages, onDelta: (t) => texts.push(t) }, { fetch, ...page })
+    expect(result.reasoning).toBe('Let me see.')
+    expect(result.text).toBe('It is private.')
+    expect(texts.join('')).toBe('It is private.')
+  })
+
+  it('reads reasoning from a whole answer, and leaves text without <think> alone', async () => {
+    const whole = async () => json({ choices: [{ message: { content: '<think>Short.</think>Done.', reasoning_content: 'Also.' } }] })
+    const result = await chatCompletion(local, { model: 'm', messages }, { fetch: whole, ...page })
+    expect(result).toMatchObject({ text: 'Done.', reasoning: 'Also.Short.' })
+    const plain = await chatCompletion(local, { model: 'm', messages }, { fetch: async () => json({ choices: [{ message: { content: 'Use <think> tags.' } }] }), ...page })
+    expect(plain.text).toBe('Use <think> tags.')
+    expect(plain.reasoning).toBeUndefined()
+  })
+})

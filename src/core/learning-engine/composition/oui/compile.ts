@@ -515,6 +515,19 @@ function compileOUISectionProgram(source: string): OUICompileResult<OUISectionPa
   }
 }
 
+/**
+ * The (props-evaluated) element tree of any `.oui` file, Loom or standard
+ * OpenUI, without compiling it: for reading its content by prop name
+ * (the assistant's content tools, grill-log-ai-assistant.md decision 122).
+ * Null when the file has no root.
+ */
+export function parseOUIElements(source: string): ElementNode | null {
+  if (readOpenUIDirective(source)) return parseProgram(source, getStandardParser()).result?.root ?? null
+  const { result, issues, lines } = parseProgram(source)
+  if (!result?.root) return null
+  return evaluateDynamicProps(result.root, (result.stateDeclarations ?? {}) as Record<string, unknown>, lines, issues)
+}
+
 /** Compile a `topic.oui` manifest (root must be `Topic`). */
 export function compileOUITopic(source: string): OUICompileResult<OUITopicManifest> {
   const program = compileProgram(source)

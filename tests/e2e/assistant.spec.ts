@@ -84,12 +84,14 @@ test('Viewer: picks go to the model with their current source, and replies strea
 
   const [system, user] = chats[0].messages
   expect(system.role).toBe('system')
-  expect(system.content).toContain('Loom Viewer is read-only')
+  expect(system.content).toContain('tutor inside Loom Viewer')
   // The topic context goes with the user turn, so the system prompt stays cacheable.
   expect(system.content).not.toContain('### sections/quiz.oui')
+  // Where the learner is; with the content tools the model reads that section itself, so only the pick goes.
+  expect(user.content).toContain('## On Screen\n\nRead mode, at sections/quiz.oui (Quiz "Knowledge Check") (not included: read it when you need it).')
   expect(user.content).toContain('### sections/quiz.oui: q1 (line')
   expect(user.content).toContain('QuizQuestion(id: string')
-  expect(user.content).toContain('- sections/quiz.oui #q1')
+  expect(user.content).toContain('About these places:\n- sections/quiz.oui #q1')
 
   // A follow-up sends the thread, with the earlier turns exactly as before.
   await page.getByTestId('pick-composer').fill('Thanks')
@@ -109,6 +111,38 @@ test('Viewer: picks go to the model with their current source, and replies strea
   }, topicText())
   await page.getByTestId('ai-toggle').click()
   await expect(page.getByTestId('ai-reply')).toHaveCount(2)
+})
+
+test('Viewer: the model looks up other parts of the topic with the content tools', async ({ page }) => {
+  const chats = captureChats(page)
+  await page.goto('/viewer.html')
+  await page.evaluate((text) => {
+    const data = new DataTransfer()
+    data.setData('text/plain', text)
+    document.body.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true }))
+  }, topicText())
+  await connect(page)
+
+  await page.getByTestId('pick-composer').fill('Which question is about CDNs? TOOL<<read {"address":"sections/quiz.oui #q1"}>>')
+  await page.getByTestId('pick-composer').press('Enter')
+  const reply = page.getByTestId('ai-reply')
+  await expect(reply).toHaveAttribute('data-status', 'done')
+  await expect(reply).toContainText('Tool said: sections/quiz.oui #q1')
+  await expect(page.getByTestId('ai-activity-toggle')).toHaveText('Looked at 1 place')
+  await page.getByTestId('ai-activity-toggle').click()
+  await expect(page.getByTestId('ai-looked-line')).toHaveText(/Knowledge Check\s*A logged-in dashboard/)
+
+  expect(chats).toHaveLength(2)
+  expect(chats[0]).toHaveProperty('tools')
+  const second = chats[1].messages as Array<{ role: string; content: string; tool_call_id?: string }>
+  const result = second[second.length - 1]
+  expect(result).toMatchObject({ role: 'tool', tool_call_id: 'call_mock' })
+  expect(result.content).toContain('question: A logged-in dashboard is different for every user.')
+  expect(result.content).toContain('correct: true')
+
+  // The line shows the place on the page.
+  await page.getByTestId('ai-looked-line').click()
+  await expect(page.locator('[data-oui-file="sections/quiz.oui"][data-oui-anchor="q1"].pick-linked').first()).toBeVisible()
 })
 
 test('Studio: the request carries unsaved edits', async ({ page }) => {
