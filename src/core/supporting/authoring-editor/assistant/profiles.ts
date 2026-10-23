@@ -23,6 +23,8 @@ export interface AssistantProfile {
   tokenBudget: number
   /** Send the full authoring prompt instead of the selected entries (decision 59). */
   fullReference: boolean
+  /** Viewer: offer the content tools (decision 120); turned off when the server rejects them. */
+  tools: boolean
 }
 
 export interface AssistantSettings {
@@ -69,6 +71,7 @@ export function createProfile(preset: AssistantPresetId, existing: readonly Assi
     headers: { ...base.headers },
     tokenBudget: base.tokenBudget,
     fullReference: false,
+    tools: true,
   }
 }
 
@@ -92,6 +95,7 @@ function readProfile(raw: unknown): AssistantProfile | null {
         ? Math.round(value.tokenBudget)
         : DEFAULT_TOKEN_BUDGET,
     fullReference: value.fullReference === true,
+    tools: value.tools !== false,
   }
 }
 

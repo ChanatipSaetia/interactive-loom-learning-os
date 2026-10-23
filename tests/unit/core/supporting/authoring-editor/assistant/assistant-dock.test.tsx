@@ -9,6 +9,7 @@ import {
   saveAssistantSettings,
   useAssistant,
   type AssistantTopicContext,
+  type AssistantView,
 } from '../../../../../../src/core/supporting/authoring-editor/assistant'
 
 const files = {
@@ -18,8 +19,8 @@ const files = {
 const resolve = sourceResolver(files)
 const context = (): AssistantTopicContext => ({ topicId: 'demo', files, fileOrder: ['topic.oui', 'sections/quiz.oui'], diagnostics: {} })
 
-function Harness({ fetchImpl }: { fetchImpl: typeof fetch }) {
-  const assistant = useAssistant({ topicId: 'demo', app: 'viewer', getContext: context, fetchImpl })
+function Harness({ fetchImpl, view }: { fetchImpl: typeof fetch; view?: AssistantView }) {
+  const assistant = useAssistant({ topicId: 'demo', app: 'viewer', getContext: () => ({ ...context(), view }), fetchImpl })
   return (
     <>
       <AssistantToggle assistant={assistant} className="pill" />
@@ -256,5 +257,79 @@ describe('Studio edits', () => {
     expect(second.at(-2).content).toBe('Changed it.\n\n[Proposed edit to sections/quiz.oui: pending]')
     expect(screen.getAllByTestId('ai-user-message')[1]).toHaveTextContent('Sent by Studio')
     expect(screen.getAllByTestId('ai-proposal')[1]).toHaveTextContent('The edits apply and validate.')
+  })
+})
+
+describe('Content tools in Viewer (decisions 120–125)', () => {
+  const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } })
+  const toolCall = (id: string, name: string, args: unknown) => json({ choices: [{ message: { content: '', tool_calls: [{ id, type: 'function', function: { name, arguments: JSON.stringify(args) } }] }, finish_reason: 'tool_calls' }] })
+  const chatBodies = (fetchImpl: ReturnType<typeof vi.fn>) =>
+    fetchImpl.mock.calls.filter(([url]) => String(url).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
+
+  it('runs the tool calls in the page, sends their results back and shows what it looked at', async () => {
+    seed('http://localhost:11434/v1')
+    const answers = [toolCall('c1', 'navigate', {}), toolCall('c2', 'read', { address: 'sections/quiz.oui #q1' }), streamOf('Yes is right.')]
+    const fetchImpl = vi.fn(async (url: string) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
+    render(<Harness view={{ mode: 'read', file: 'sections/quiz.oui' }} fetchImpl={fetchImpl as unknown as typeof fetch} />)
+
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    expect(screen.getByTestId('ai-reply')).toHaveTextContent('Yes is right.')
+    expect(screen.getAllByTestId('ai-looked-line').map((l) => l.textContent?.trim())).toEqual(['Looked at: Topic outline', 'Looked at: Check › Why?'])
+
+    const bodies = chatBodies(fetchImpl)
+    expect(bodies).toHaveLength(3)
+    expect(bodies[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read'])
+    expect(bodies[0].messages[0].content).toContain('## Looking Things Up')
+    // The section in view is not sent whole: the model reads it.
+    expect(bodies[0].messages[1].content).toContain('at sections/quiz.oui (Quiz "Check") (not included: read it when you need it).')
+    expect(bodies[0].messages[1].content).not.toContain('(whole file)')
+    const last = bodies[2].messages
+    expect(last.slice(-4).map((m: { role: string }) => m.role)).toEqual(['assistant', 'tool', 'assistant', 'tool'])
+    expect(last[last.length - 1]).toMatchObject({ role: 'tool', tool_call_id: 'c2' })
+    expect(last[last.length - 1].content).toContain('question: Why?')
+    // The rounds are part of the thread: a follow-up sends them again, unchanged.
+    const stored = JSON.parse(localStorage.getItem('loom-ai-thread:demo')!)
+    expect(stored.messages[1].steps).toHaveLength(2)
+  })
+
+  it('stops calling tools after the round limit and asks for an answer', async () => {
+    seed('http://localhost:11434/v1')
+    let n = 0
+    const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/models')) return json({ data: [{ id: 'm1' }] })
+      const body = JSON.parse(init!.body as string)
+      return body.tool_choice === 'none' ? streamOf('Done looking.') : toolCall(`c${n++}`, 'navigate', {})
+    })
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    const bodies = chatBodies(fetchImpl)
+    expect(bodies).toHaveLength(7)
+    expect(bodies[6].tool_choice).toBe('none')
+    const results = bodies[6].messages.filter((m: { role: string }) => m.role === 'tool')
+    // Repeated calls with the same result are answered briefly.
+    expect(results[0].content).toContain('Topic "Demo"')
+    expect(results.slice(1).every((r: { content: string }) => r.content.startsWith('Unchanged since your earlier call'))).toBe(true)
+    expect(results[results.length - 1].content).toContain('Tool limit reached')
+    expect(screen.getByTestId('ai-reply')).toHaveTextContent('Done looking.')
+  })
+
+  it('asks again without tools when the server refuses them, then turns the switch off', async () => {
+    seed('http://localhost:11434/v1')
+    const fetchImpl = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith('/models')) return json({ data: [{ id: 'm1' }] })
+      const body = JSON.parse(init!.body as string)
+      return body.tools ? json({ error: 'tools are not supported by this model' }, 400) : streamOf('Plain answer.')
+    })
+    render(<Harness view={{ mode: 'read', file: 'sections/quiz.oui' }} fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    expect(screen.getByTestId('ai-reply')).toHaveTextContent('Plain answer.')
+    const last = chatBodies(fetchImpl).pop()
+    expect(last.messages[0].content).not.toContain('## Looking Things Up')
+    // Without tools, the section in view goes whole again.
+    expect(last.messages[1].content).toContain('(whole file)')
+    expect(JSON.parse(localStorage.getItem('loom-ai-profiles')!).profiles[0].tools).toBe(false)
   })
 })

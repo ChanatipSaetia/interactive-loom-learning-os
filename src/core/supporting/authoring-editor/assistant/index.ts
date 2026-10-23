@@ -58,6 +58,8 @@ export {
 export type { AssistantProfile, AssistantSettings, StoredKey } from './profiles'
 export { buildTopicContext, fileStatements, textHash } from './context'
 export type { AssistantTopicContext, ContextPointer, FileStatement, TopicContextBlock, TopicContextOptions, AssistantView } from './context'
+export { CONTENT_TOOLS, ContentToolRunner, parseAddress } from './content-tools'
+export type { ContentAddress, ToolDefinition, ToolOutcome } from './content-tools'
 export {
   EMPTY_THREAD,
   estimateTokens,
@@ -68,8 +70,9 @@ export {
   loadThread,
   saveThread,
   threadPointers,
+  toolStepMessages,
   userMessageContent,
 } from './thread'
-export type { AssistantThread, EditHunkState, HistoryForRequest, ThreadMessage, ThreadMessageStatus, ThreadPick } from './thread'
-export { hostOf, retryMessage, useAssistant } from './useAssistant'
+export type { AssistantThread, EditHunkState, HistoryForRequest, HistoryOptions, ThreadMessage, ThreadMessageStatus, ThreadPick, ToolStep, ToolStepCall } from './thread'
+export { MAX_TOOL_ROUNDS, hostOf, retryMessage, useAssistant } from './useAssistant'
 export type { AssistantDraft, AssistantEditor, AssistantState, RemoteNotice, UseAssistantOptions } from './useAssistant'

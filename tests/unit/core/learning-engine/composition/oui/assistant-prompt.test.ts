@@ -46,6 +46,18 @@ describe('assistant prompt', () => {
     expect(getLoomAssistantPrompt({ app: 'viewer', fullReference: true })).not.toContain(getLoomAuthoringPrompt())
   })
 
+  it('tells Viewer how to go further, and about the content tools only when they are offered', () => {
+    const plain = getLoomAssistantPrompt({ app: 'viewer' })
+    expect(plain).toContain('## Going Further')
+    expect(plain).toContain('Never invent links')
+    expect(plain).toContain('When the learner asks for more')
+    expect(plain).not.toContain('## Looking Things Up')
+    const tools = getLoomAssistantPrompt({ app: 'viewer', tools: true })
+    expect(tools).toContain('## Looking Things Up')
+    expect(tools).toContain('`navigate`')
+    expect(getLoomAssistantPrompt({ app: 'studio', tools: true })).not.toContain('## Looking Things Up')
+  })
+
   it('reads a first sentence past "e.g."', () => {
     expect(firstSentence('A domain event (past tense, e.g. "Paid"). More.')).toBe('A domain event (past tense, e.g. "Paid").')
     expect(firstSentence('One. Two.')).toBe('One.')

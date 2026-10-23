@@ -154,6 +154,41 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 
 - Tests: `assistant-prompt.test.ts` (Viewer prompt, `firstSentence`), `context.test.ts` (On Screen sent once, resent when the view moves), `thread.test.ts` (Viewer picks), `assistant-dock.test.tsx`, `tests/e2e/assistant.spec.ts` (Viewer request).
 
+## Content Tools in Viewer — Decisions
+
+The tutor (decision 119) only saw what was picked and the section on screen, so it could not
+say where else the topic covers something, or answer "how does this relate to what I read
+before?". These decisions give it two tools to look through the topic itself. They revise
+decision 54 ("no tool calling") for Viewer.
+
+| # | Question | Decision |
+|---|---|---|
+| 120 | How tools are called | **Native OpenAI tool calling, switch per profile** (revises 54 for Viewer). Requests carry `tools`; replies' `tool_calls` (streamed deltas or a whole message) are run in the page and answered with `role: "tool"` messages. The profile's **Look up topic content** switch is on by default. If the server rejects a request with tools (400 or 422 before any text), it is sent again without them and the switch turns off for that profile. With the switch off, the assistant works as before (decision 119). |
+| 121 | `navigate` | **A tree, one level at a time.** `navigate()` lists the topic's sections in order: address, type, title and a short summary. `navigate(address)` lists the parts inside that place (questions, steps, cards, choices…), each with its address, type and a one-line summary, plus the section's narration script when it has one. |
+| 122 | `read` | **Readable content, not source.** `read(address)` returns the place as labelled plain text built from its props (labels are the prop names), so the model needs no syntax knowledge. Small children are written out inline; larger ones (anything that contains parts of its own) are listed as parts with their addresses, so `read(section)` is a summary and `read(part)` gives the details. Each result is capped at about 2k tokens (8,000 characters) and ends with "truncated; read the parts" when cut. `source: true` returns the statement (or the whole file for a section) as written, for fixing errors. A section that does not compile returns its errors and its source. Correct answers and explanations are included; the prompt's hint-first rule decides what the learner sees. |
+| 123 | Addresses | **Pick pointers**: `sections/quiz.oui #q2`, `sections/quiz.oui #q2.choices[1]`; a file alone means its root. Picks, the topic context, tool results and "Show on page" all use the same address. The model keeps them out of its answers (decision 119). Tools accept small slips (no `sections/`, no `.oui`). |
+| 124 | Loop and history | **At most 6 tool rounds per learner message**; after the 6th the results say the limit is reached and the next request sets `tool_choice: "none"`. Each round (the calls, their results and any text the model wrote with them) is stored on the reply in the thread and sent unchanged later, so the prompt cache keeps working; the token budget trims old turns as before. Reading the same address again with an unchanged result returns "unchanged since your earlier read". With the switch off, stored rounds go to the model only as "[Looked at …]" lines in the reply. |
+| 125 | What the learner sees | **"Looked at" lines** above the reply, one per call, labelled with what the place shows (`Looked at: Check: offsets › Question 2`); clicking one scrolls to it in Read mode, like a pick chip. |
+| 126 | Scope | **The open topic's sections and their narration scripts** (`sections/<name>.narrate.oui`). Not other topics in the same archive, and not Studio yet (the tools live in the shared `assistant/` module so Studio can switch them on in a later decision). |
+| 127 | What each message sends up front | **With the tools on: the picks and where the learner is, the rest on demand.** The picked statements are still sent, and the On Screen line names the section in view by address and title, but its whole file is no longer sent; the model reads it when it needs it. With the tools off, the section in view goes whole as in decision 119. The outline now gives each section's title, so even without tools the model can name where the topic covers something. The Viewer prompt also gains a length rule (brief by default, deeper with examples or analogies when asked) and a **Going further** rule: point at the topic's own sections by title, offer one or two directions to explore next, and never invent links or sources. |
+
+## Decisions 120–127 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| `parseOUIElements`: the evaluated element tree of any `.oui` file (Loom or standard OpenUI) | `composition/oui/compile.ts` |
+| `indexElements` (anchors as the source map gives them, `#root` always), `partsOf`, `summaryOf`, `renderElement` (leaf parts inline, larger parts as `→ <address>`), drawings described by their labels and shape IDs, `capResult` (8,000 characters), `sectionTitle` | `composition/oui/content-tree.ts` |
+| `CONTENT_TOOLS` (`navigate`, `read`), `parseAddress` (takes slips), `ContentToolRunner` (outline, parts, readable content, `source: true`, files that do not compile, narration scripts) | `assistant/content-tools.ts` |
+| `tools` / `tool_choice` in the request; `ToolCallCollector` assembles streamed or whole tool calls (missing `index`, `id`, object arguments) | `assistant/client.ts` |
+| `ToolStep` / `ToolStepCall` on replies (`steps`), saved and loaded; `historyMessages(…, { app, tools })` sends them as tool messages, or as "[Looked at …]" lines without tools; `toolStepMessages` | `assistant/thread.ts` |
+| The loop: up to `MAX_TOOL_ROUNDS` (6), then `tool_choice: "none"`; repeated calls with an unchanged result answered briefly; a 400/422 with tools is sent again without them, and the profile's switch turns off once that works | `assistant/useAssistant.ts` |
+| Profile switch `tools` (on by default), **Look up topic content** in the settings | `assistant/profiles.ts`, `assistant/AssistantSettingsDialog.tsx` |
+| "Looked at" lines above a reply, click to show on page | `assistant/AssistantPanel.tsx`, `assistant.css` |
+| Viewer prompt: **Looking Things Up** (with the tools), **Going Further**, the length rule; outline titles; `wholeView` in the topic context | `composition/oui/assistant-prompt.ts`, `assistant/context.ts` |
+
+- The mock server in `tests/e2e/fixtures/` calls a tool for `TOOL<<name {args}>>` in the last user message (streamed in two pieces) and answers with the result's first line.
+- Tests: `content-tree.test.ts`, `content-tools.test.ts`, `client.test.ts` (tool calls streamed and whole, body), `thread.test.ts` (rounds in history, saved), `assistant-dock.test.tsx` (the loop, the round limit, the fallback), `assistant-prompt.test.ts`, `tests/e2e/assistant.spec.ts` (Viewer tool round, "Looked at" line shows the place).
+
 ## Open Questions
 
 _None._

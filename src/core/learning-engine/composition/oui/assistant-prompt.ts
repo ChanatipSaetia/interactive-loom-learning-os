@@ -28,6 +28,8 @@ export interface AssistantPromptOptions {
   components?: Iterable<string>
   /** Send the full authoring prompt instead of the selected entries. */
   fullReference?: boolean
+  /** Viewer: the request offers the content tools `navigate` and `read` (decision 120). */
+  tools?: boolean
 }
 
 const ROLE: Record<AssistantApp, string> = {
@@ -50,6 +52,15 @@ const TOPIC_RULES = `## Loom Topics
 - Props that point at an ID (\`next\`, \`root\`, \`startNode\`, \`recommended\`, \`solution\`, \`continuesAs\`, …) must name an ID that exists in the same section.`
 
 /** Viewer: enough of the format to read the source and fix an error, nothing about writing new content (decision 119). */
+/** Viewer with the content tools (decisions 120–127). */
+const VIEWER_TOOL_RULES = `## Looking Things Up
+
+You have two tools for the open topic: \`navigate\` lists its sections, or the parts inside one place; \`read\` gives a place's content as readable text. Places are addressed like the picks, e.g. \`sections/quiz.oui #q2\`; a file alone means the whole section.
+
+- Look things up instead of guessing: before you say the topic does or does not cover something, check with navigate and read.
+- Start from what you have (the picks, the section on screen, the outline) and read only what the question needs; a few calls are usually enough.
+- Addresses are for the tools. Do not show them to the learner; name places by their title or text.`
+
 const VIEWER_SOURCE_RULES = `## Reading the Topic Source
 
 The topic is written in openui-lang. You get its source only to know exactly what the learner sees; it is not what they want to talk about.
@@ -90,7 +101,14 @@ q2 = QuizQuestion("q2", "Why do consumers commit offsets?", [c1, c2], "Think abo
 - For anything with an answer to find (a quiz question, a reflection, a scenario or a decision tree), give a hint first and offer the answer, unless the learner asks for the answer or says they already tried.
 - "On Screen" in the topic context tells you where the learner is (Read or Present mode, and the section in view). When they say "this" or "here" without picking anything, they mean that section.
 - When the topic has errors, a section may be missing or broken. Explain in plain words what is wrong, then how to fix it: the file and statement, and the corrected statement in an \`oui\` code block.
-- Answer briefly and concretely. Use markdown; do not use images or HTML.`,
+- Answer briefly by default. When the learner asks for more (to go deeper, an example, a comparison), go deeper: worked examples, analogies, step by step.
+- Use markdown; do not use images or HTML.
+
+## Going Further
+
+- When another section of the topic covers what the learner asks about, name it by its title (the outline lists them) rather than explaining it ahead of time in full.
+- When it helps, end with one or two directions the learner could explore next, written as short questions they can ask you.
+- Never invent links, books, papers or quotes. Name a well-known source (a standard, a specification, official documentation) only when you are sure it exists; otherwise say what to search for.`,
 }
 
 const DATA_RULE = `## Topic Context
@@ -166,9 +184,10 @@ export function componentIndex(): string {
 }
 
 /** The system prompt for one assistant request (without the topic context). */
-export function getLoomAssistantPrompt({ app, components = [], fullReference = false }: AssistantPromptOptions): string {
+export function getLoomAssistantPrompt({ app, components = [], fullReference = false, tools = false }: AssistantPromptOptions): string {
   const parts = [ROLE[app], ANSWER_RULES[app], DATA_RULE]
   if (app === 'viewer') {
+    if (tools) parts.push(VIEWER_TOOL_RULES)
     // A learner's tutor: how to read the source, and the entries for what is in the topic context; no authoring reference or index.
     parts.push(VIEWER_SOURCE_RULES)
     const reference = componentReference(components)

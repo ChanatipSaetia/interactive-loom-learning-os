@@ -17,11 +17,16 @@
  * buffers, and when the result does not validate the problems go back to the
  * model once, automatically. Applying a block writes the buffer only; Save
  * writes the files.
+ *
+ * In Viewer, with the profile's tools on, the model can call the content
+ * tools (decisions 120–124): up to `MAX_TOOL_ROUNDS` rounds of calls run in
+ * the page before it must answer, and each round is kept on the reply.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getLoomAssistantPrompt, type AssistantApp } from '../../../learning-engine/composition/oui/assistant-prompt'
 import { AssistantError, chatCompletion, isLoopbackHost, listModels } from './client'
 import { buildTopicContext, type AssistantTopicContext } from './context'
+import { CONTENT_TOOLS, CONTENT_TOOL_NAMES, ContentToolRunner } from './content-tools'
 import { applyEditBlock, applyOrder, checkProposal, parseEditBlocks } from './edits'
 import {
   activeProfile,
@@ -40,11 +45,44 @@ import {
   newMessageId,
   saveThread,
   threadPointers,
+  toolStepMessages,
   type AssistantThread,
   type EditHunkState,
   type ThreadMessage,
   type ThreadPick,
+  type ToolStep,
+  type ToolStepCall,
 } from './thread'
+
+/** Tool rounds per message before the model must answer (decision 124). */
+export const MAX_TOOL_ROUNDS = 6
+
+const LIMIT_NOTE = '\n\n(Tool limit reached for this message: answer now with what you have.)'
+const UNCHANGED = 'Unchanged since your earlier call with the same arguments: use that result.'
+
+/** The server refused a request because of its tools (it does not support tool calling). */
+const rejectsTools = (error: unknown) =>
+  error instanceof AssistantError && !error.partial && error.kind === 'http' && (error.status === 400 || error.status === 422)
+
+/** Results of earlier calls by tool and arguments, to answer a repeated read with "unchanged". */
+function earlierResults(messages: readonly ThreadMessage[]): Map<string, string> {
+  const out = new Map<string, string>()
+  for (const message of messages) {
+    for (const step of message.steps ?? []) {
+      for (const call of step.calls) if (!call.result.startsWith(UNCHANGED)) out.set(callKey(call.name, call.args), call.result.replace(LIMIT_NOTE, ''))
+    }
+  }
+  return out
+}
+
+function callKey(name: string, args: string): string {
+  try {
+    const parsed = JSON.parse(args || '{}') as Record<string, unknown>
+    return `${name}:${JSON.stringify(Object.keys(parsed).sort().map((k) => [k, parsed[k]]))}`
+  } catch {
+    return `${name}:${args}`
+  }
+}
 
 export interface AssistantDraft {
   mode: 'comment' | 'ask'
@@ -197,19 +235,25 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     const controller = new AbortController()
     abort.current?.abort()
     abort.current = controller
+    // Viewer's content tools (decision 120); off for the rest of this request once the server refuses them.
+    let tools = app === 'viewer' && profile.tools
+    let toolsRefused = false
     let messages = thread
     let start = historyStart(messages, profile.tokenBudget, threadRef.current.start)
     const last = messages[messages.length - 1]
-    if (last?.role === 'user' && last.context === undefined) {
-      // The new message's topic context: what the history from `start` does not hold yet.
-      const withContext = (from: number): ThreadMessage => {
-        const block = buildTopicContext(contextRef.current(), threadPointers(messages), {
-          known: knownContext(messages.slice(from, -1)),
-          // Viewer's prompt has no Full reference, so its entries always come with the context.
-          reference: app === 'viewer' || !profile.fullReference,
-        })
-        return { ...last, context: block.text, sent: block.keys }
-      }
+    // The new message's topic context: what the history from `start` does not hold yet.
+    const withContext = (from: number): ThreadMessage => {
+      const block = buildTopicContext(contextRef.current(), threadPointers(messages), {
+        known: knownContext(messages.slice(from, -1)),
+        // Viewer's prompt has no Full reference, so its entries always come with the context.
+        reference: app === 'viewer' || !profile.fullReference,
+        // With the tools, the model reads the section in view when it needs it (decision 127).
+        wholeView: !tools,
+      })
+      return { ...last, context: block.text, sent: block.keys }
+    }
+    const prepare = () => {
+      if (last?.role !== 'user' || last.context !== undefined) return
       messages = [...messages.slice(0, -1), withContext(start)]
       // The block itself can push the history over the budget; then cut and build it again.
       const moved = historyStart(messages, profile.tokenBudget, messages[start]?.id)
@@ -218,6 +262,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
         messages = [...messages.slice(0, -1), withContext(start)]
       }
     }
+    prepare()
     const reply: ThreadMessage = {
       id: newMessageId(),
       role: 'assistant',
@@ -228,20 +273,67 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
     }
     setThread({ messages: [...messages, reply], start: messages[start]?.id })
 
-    // The same for every request of the conversation, so it stays cached.
-    const system = getLoomAssistantPrompt({ app, fullReference: profile.fullReference })
     let followUp: ThreadMessage[] | null = null
+    let steps: ToolStep[] = []
     try {
-      const result = await chatCompletion(
-        connectionOf(profile),
-        {
-          model: profile.model,
-          messages: [{ role: 'system', content: system }, ...historyMessages(messages, start, app)],
-          signal: controller.signal,
-          onDelta: (delta) => patchMessage(reply.id, (m) => ({ text: m.text + delta })),
-        },
-        { fetch: fetchImpl },
-      )
+      let result: Awaited<ReturnType<typeof chatCompletion>>
+      for (let round = 0; ; round++) {
+        // The same for every request of the conversation, so it stays cached.
+        const system = getLoomAssistantPrompt({ app, fullReference: profile.fullReference, tools })
+        try {
+          result = await chatCompletion(
+            connectionOf(profile),
+            {
+              model: profile.model,
+              messages: [{ role: 'system', content: system }, ...historyMessages(messages, start, { app, tools }), ...toolStepMessages(steps)],
+              tools: tools ? CONTENT_TOOLS : undefined,
+              toolChoice: tools && round >= MAX_TOOL_ROUNDS ? 'none' : undefined,
+              signal: controller.signal,
+              onDelta: (delta) => patchMessage(reply.id, (m) => ({ text: m.text + delta })),
+            },
+            { fetch: fetchImpl },
+          )
+        } catch (error) {
+          if (!tools || round > 0 || !rejectsTools(error)) throw error
+          // Sent again without tools; the switch turns off once that works (decision 120).
+          tools = false
+          toolsRefused = true
+          if (last?.role === 'user' && last.context === undefined) {
+            // Built for the tools; without them the section in view goes whole again.
+            messages = [...messages.slice(0, -1), { ...messages[messages.length - 1], context: undefined, sent: undefined }]
+            prepare()
+            setThread({ messages: [...messages, reply], start: messages[start]?.id })
+          }
+          round--
+          continue
+        }
+        const calls = tools && round < MAX_TOOL_ROUNDS ? result.toolCalls : undefined
+        if (!calls?.length) break
+        const runner = new ContentToolRunner(contextRef.current())
+        const earlier = earlierResults([...messages.slice(start), { ...reply, steps }])
+        const step: ToolStep = {
+          text: result.text,
+          calls: calls.map((call): ToolStepCall => {
+            const outcome = CONTENT_TOOL_NAMES.has(call.function.name)
+              ? runner.run(call.function.name, call.function.arguments)
+              : { content: `Error: there is no tool "${call.function.name}". The tools are navigate and read.`, label: call.function.name }
+            const key = callKey(call.function.name, call.function.arguments)
+            const content = earlier.get(key) === outcome.content ? UNCHANGED : outcome.content
+            return { id: call.id, name: call.function.name, args: call.function.arguments, result: content, label: outcome.label, file: outcome.file, anchor: outcome.anchor }
+          }),
+        }
+        if (round === MAX_TOOL_ROUNDS - 1) step.calls = step.calls.map((c, i, all) => (i === all.length - 1 ? { ...c, result: c.result + LIMIT_NOTE } : c))
+        steps = [...steps, step]
+        // The text written with the calls moves into the round; the answer streams in fresh.
+        patchMessage(reply.id, { text: '', steps })
+      }
+      if (toolsRefused) {
+        setSettings((current) => {
+          const next = { ...current, profiles: current.profiles.map((p) => (p.id === profile.id ? { ...p, tools: false } : p)) }
+          saveAssistantSettings(next)
+          return next
+        })
+      }
       const done: ThreadMessage = { ...reply, text: result.text, status: 'done' }
       const blocks = editorRef.current ? parseEditBlocks(result.text) : []
       if (blocks.length) {
@@ -253,7 +345,7 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
           followUp = [...messages, done, auto]
         }
       }
-      patchMessage(reply.id, { text: done.text, status: 'done', edits: done.edits, problems: done.problems })
+      patchMessage(reply.id, { text: done.text, status: 'done', edits: done.edits, problems: done.problems, ...(steps.length ? { steps } : {}) })
     } catch (error) {
       const failure = error instanceof AssistantError ? error : new AssistantError('bad-response', String(error))
       if (failure.kind === 'aborted') {

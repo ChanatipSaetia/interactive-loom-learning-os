@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   historyForRequest,
+  historyMessages,
   historyStart,
   knownContext,
   loadThread,
@@ -8,6 +9,7 @@ import {
   threadPointers,
   userMessageContent,
   type ThreadMessage,
+  type ToolStep,
 } from '../../../../../../src/core/supporting/authoring-editor/assistant'
 
 const user = (id: string, text: string, extra: Partial<ThreadMessage> = {}): ThreadMessage => ({ id, role: 'user', text, picks: [], mode: 'comment', at: 0, ...extra })
@@ -109,5 +111,29 @@ describe('assistant thread', () => {
     expect(loadThread('other')).toEqual({ messages: [] })
     saveThread('demo', { messages: [] })
     expect(localStorage.getItem('loom-ai-thread:demo')).toBeNull()
+  })
+})
+
+describe('tool rounds in the thread (decision 124)', () => {
+  const steps: ToolStep[] = [{ text: 'Let me look.', calls: [{ id: 'c1', name: 'read', args: '{"address":"quiz"}', result: 'title: Check', label: 'Check', file: 'sections/quiz.oui', anchor: 'root' }] }]
+  const thread = [user('1', 'What is covered?'), reply('2', 'Caching.', { steps })]
+
+  it('sends the rounds as tool messages when the request has the tools', () => {
+    expect(historyMessages(thread, 0, { app: 'viewer', tools: true })).toEqual([
+      { role: 'user', content: 'What is covered?' },
+      { role: 'assistant', content: 'Let me look.', tool_calls: [{ id: 'c1', type: 'function', function: { name: 'read', arguments: '{"address":"quiz"}' } }] },
+      { role: 'tool', tool_call_id: 'c1', content: 'title: Check' },
+      { role: 'assistant', content: 'Caching.' },
+    ])
+  })
+
+  it('sends them as "Looked at" lines without the tools, and drops them with a failed reply', () => {
+    expect(historyMessages(thread, 0, { app: 'viewer' })[1]).toEqual({ role: 'assistant', content: '[Looked at read({"address":"quiz"}): Check]\n\nCaching.' })
+    expect(historyMessages([thread[0], { ...thread[1], status: 'error' }], 0, { tools: true })).toHaveLength(1)
+  })
+
+  it('keeps the rounds when the thread is saved and loaded', () => {
+    saveThread('t', { messages: thread })
+    expect(loadThread('t').messages[1].steps).toEqual(steps)
   })
 })

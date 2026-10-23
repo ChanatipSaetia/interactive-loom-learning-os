@@ -8,7 +8,7 @@
  * starts. `AssistantToggle` opens the panel from the page header.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { AlertTriangle, Bot, Loader2, MessageSquarePlus, RotateCcw, Settings2, X } from 'lucide-react'
+import { AlertTriangle, Bot, Loader2, MessageSquarePlus, RotateCcw, Search, Settings2, X } from 'lucide-react'
 import { Modal } from '../../../ui-system'
 import { findPickElement } from '../pick/PickLayer'
 import { useNarrow } from '../pick/PickMode'
@@ -75,7 +75,7 @@ function useHeaderBottom(active: boolean): number {
 }
 
 /** Scroll a picked place into view and flash it. */
-function showPick(pick: ThreadPick) {
+function showPick(pick: Pick<ThreadPick, 'file' | 'anchor'>) {
   const element = findPickElement(pick.file, pick.anchor)
   if (!element) return
   element.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
@@ -119,6 +119,33 @@ const FAILURE_TITLES: Partial<Record<AssistantFailureKind, string>> = {
   'invalid-url': 'Not a valid base URL',
 }
 
+/** One line per content-tool call of a reply (decision 125); a click shows the place on the page. */
+function LookedAt({ message }: { message: ThreadMessage }) {
+  const calls = (message.steps ?? []).flatMap((step) => step.calls)
+  if (!calls.length) return null
+  return (
+    <ul className="ai-looked" data-testid="ai-looked">
+      {calls.map((call) => {
+        const place = call.file ? { file: call.file, anchor: call.anchor ?? 'root' } : null
+        return (
+          <li key={call.id}>
+            <button
+              type="button"
+              className="ai-looked-line"
+              disabled={!place}
+              onClick={() => place && showPick(place)}
+              title={place ? `${place.file} #${place.anchor}` : undefined}
+              data-testid="ai-looked-line"
+            >
+              <Search size={11} aria-hidden /> Looked at: {call.label}
+            </button>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 function Reply({ assistant, message, preset, last, onRetry }: { assistant: AssistantState; message: ThreadMessage; preset: AssistantPresetId; last: boolean; onRetry: () => void }) {
   const streaming = message.status === 'streaming'
   const blocks = useEditBlocks(message)
@@ -130,6 +157,7 @@ function Reply({ assistant, message, preset, last, onRetry }: { assistant: Assis
   const page = typeof location !== 'undefined' ? location : undefined
   return (
     <div className="ai-message ai-message--assistant" data-testid="ai-reply" data-status={message.status}>
+      <LookedAt message={message} />
       {message.text ? <AssistantMarkdown text={message.text} renderEdit={renderEdit} /> : streaming ? <p className="ai-thinking"><Loader2 size={14} className="ai-spin" /> Thinking…</p> : null}
       {message.status === 'stopped' && <p className="ai-note">(stopped)</p>}
       {assistant.canEdit && <ProposalBar assistant={assistant} message={message} />}

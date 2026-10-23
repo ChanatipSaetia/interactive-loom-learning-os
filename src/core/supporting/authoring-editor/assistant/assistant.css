@@ -298,6 +298,34 @@
   white-space: pre-wrap;
 }
 .ai-note { color: var(--muted-foreground); font-size: 12px; }
+
+/* "Looked at" lines: the content-tool calls behind a reply (decision 125) */
+.ai-looked {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+.ai-looked-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 1px 0;
+  border: 0;
+  background: none;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-looked-line:hover:not(:disabled) { color: var(--foreground); text-decoration: underline; }
+.ai-looked-line:disabled { cursor: default; }
 .ai-thinking { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: var(--muted-foreground); }
 .ai-message-foot {
   display: flex;

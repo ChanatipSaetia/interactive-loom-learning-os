@@ -324,6 +324,10 @@ export function AssistantSettingsDialog({ open, onClose, onChange, fetchImpl }: 
               <input type="checkbox" checked={draft.profile.fullReference} onChange={(e) => update({ fullReference: e.target.checked })} />
               <span>Full reference: send the whole authoring prompt (about 12k tokens) for models with a large context.</span>
             </label>
+            <label className="ai-check ai-field--wide">
+              <input type="checkbox" checked={draft.profile.tools} onChange={(e) => update({ tools: e.target.checked })} data-testid="ai-tools" />
+              <span>Look up topic content (Viewer): the model can list and read any part of the topic. Needs a server and model with tool calling; turns itself off if the server refuses.</span>
+            </label>
           </div>
         </details>
 

@@ -12,6 +12,10 @@
  * are dropped in one step, down to half the budget, and the thread keeps
  * where it starts (`start`): the prefix then stays the same for the
  * following requests instead of shifting by one turn each time.
+ *
+ * A reply that used the content tools (decisions 120–124) keeps its tool
+ * rounds (`steps`): the calls, their results and any text written with
+ * them, sent again unchanged with later requests.
  */
 import type { ChatMessage } from './client'
 import type { ContextPointer } from './context'
@@ -35,6 +39,27 @@ export interface EditHunkState {
   error?: string
 }
 
+/** One content-tool call of a reply and what it returned (decision 124). */
+export interface ToolStepCall {
+  id: string
+  name: string
+  /** The model's JSON arguments, as sent. */
+  args: string
+  /** What went back to the model. */
+  result: string
+  /** What the learner sees: "Looked at <label>". */
+  label: string
+  /** The place looked at, for Show on page. */
+  file?: string
+  anchor?: string
+}
+
+/** One tool round: the text the model wrote with its calls, then the calls. */
+export interface ToolStep {
+  text: string
+  calls: ToolStepCall[]
+}
+
 export interface ThreadMessage {
   id: string
   role: 'user' | 'assistant'
@@ -51,6 +76,8 @@ export interface ThreadMessage {
   via?: { host: string; model: string }
   /** Assistant messages in Studio: one state per `oui-edit` block, in reply order. */
   edits?: EditHunkState[]
+  /** Assistant messages: the content-tool rounds before the answer (Viewer). */
+  steps?: ToolStep[]
   /** Assistant messages with edits: what the dry run found wrong (empty when they check out). */
   problems?: string[]
   /** User messages Studio sent itself: the validation retry. */
@@ -86,6 +113,20 @@ function readPick(value: unknown): ThreadPick | null {
   return { file: pick.file, anchor: pick.anchor, label: typeof pick.label === 'string' ? pick.label : pick.anchor, note: typeof pick.note === 'string' ? pick.note : '' }
 }
 
+function readStep(value: unknown): ToolStep | null {
+  const step = value as Partial<ToolStep>
+  if (!step || !Array.isArray(step.calls)) return null
+  const calls = step.calls.flatMap((raw): ToolStepCall[] => {
+    const call = raw as Partial<ToolStepCall>
+    if (!call || typeof call.id !== 'string' || typeof call.name !== 'string' || typeof call.result !== 'string') return []
+    const out: ToolStepCall = { id: call.id, name: call.name, args: typeof call.args === 'string' ? call.args : '{}', result: call.result, label: typeof call.label === 'string' ? call.label : call.name }
+    if (typeof call.file === 'string') out.file = call.file
+    if (typeof call.anchor === 'string') out.anchor = call.anchor
+    return [out]
+  })
+  return calls.length ? { text: typeof step.text === 'string' ? step.text : '', calls } : null
+}
+
 function readMessage(value: unknown): ThreadMessage | null {
   const message = value as Partial<ThreadMessage>
   if (!message || typeof message.id !== 'string' || (message.role !== 'user' && message.role !== 'assistant')) return null
@@ -108,6 +149,10 @@ function readMessage(value: unknown): ThreadMessage | null {
         state: e && ['pending', 'applied', 'rejected', 'failed'].includes(e.state) ? e.state : 'pending',
         ...(e && typeof e.error === 'string' ? { error: e.error } : {}),
       }))
+    }
+    if (Array.isArray(message.steps)) {
+      const steps = message.steps.map(readStep).filter((s): s is ToolStep => s !== null)
+      if (steps.length) out.steps = steps
     }
     if (Array.isArray(message.problems)) out.problems = message.problems.filter((p): p is string => typeof p === 'string')
   }
@@ -183,14 +228,42 @@ export interface HistoryForRequest {
   firstSent: number
 }
 
-function contentOf(message: ThreadMessage, app?: AssistantApp): string | null {
-  return message.role === 'user' ? userMessageContent(message, app) : assistantMessageContent(message)
+export interface HistoryOptions {
+  app?: AssistantApp
+  /** The request offers the content tools: tool rounds go as tool messages, else as "[Looked at …]" lines. */
+  tools?: boolean
 }
 
-const costOf = (message: ThreadMessage) => {
-  const content = contentOf(message)
-  return content === null ? 0 : estimateTokens(content) + 4
+const lookedAt = (steps: readonly ToolStep[]) =>
+  steps.flatMap((step) => step.calls.map((call) => `[Looked at ${call.name}(${call.args === '{}' ? '' : call.args}): ${call.label}]`)).join('\n')
+
+/** One thread message as chat messages: a reply with tool rounds becomes several. */
+function chatMessagesOf(message: ThreadMessage, options: HistoryOptions = {}): ChatMessage[] {
+  if (message.role === 'user') return [{ role: 'user', content: userMessageContent(message, options.app) }]
+  const text = assistantMessageContent(message)
+  if (text === null) return []
+  const steps = message.steps ?? []
+  if (!steps.length) return [{ role: 'assistant', content: text }]
+  if (!options.tools) return [{ role: 'assistant', content: `${lookedAt(steps)}\n\n${text}` }]
+  return [...toolStepMessages(steps), { role: 'assistant', content: text }]
 }
+
+/** Tool rounds as chat messages: the assistant's calls, then one tool message per result. */
+export function toolStepMessages(steps: readonly ToolStep[]): ChatMessage[] {
+  const out: ChatMessage[] = []
+  for (const step of steps) {
+    out.push({
+      role: 'assistant',
+      content: step.text,
+      tool_calls: step.calls.map((call) => ({ id: call.id, type: 'function', function: { name: call.name, arguments: call.args } })),
+    })
+    for (const call of step.calls) out.push({ role: 'tool', tool_call_id: call.id, content: call.result })
+  }
+  return out
+}
+
+const costOf = (message: ThreadMessage) =>
+  chatMessagesOf(message, { tools: true }).reduce((sum, m) => sum + estimateTokens(m.content + (m.tool_calls ? JSON.stringify(m.tool_calls) : '')) + 4, 0)
 
 /**
  * Where the history sent with the next request starts: at `start` (the
@@ -216,13 +289,8 @@ export function historyStart(thread: readonly ThreadMessage[], budget: number, s
 }
 
 /** The thread from `from` on, as chat messages; failed replies are left out. */
-export function historyMessages(thread: readonly ThreadMessage[], from: number, app?: AssistantApp): ChatMessage[] {
-  const out: ChatMessage[] = []
-  for (const message of thread.slice(from)) {
-    const content = contentOf(message, app)
-    if (content !== null) out.push({ role: message.role, content })
-  }
-  return out
+export function historyMessages(thread: readonly ThreadMessage[], from: number, options: HistoryOptions = {}): ChatMessage[] {
+  return thread.slice(from).flatMap((message) => chatMessagesOf(message, options))
 }
 
 /** The history for the next request with the thread starting at `start`. */
