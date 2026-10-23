@@ -515,6 +515,7 @@ How to write them:
 - Data is written as literal arrays, e.g. `Col("Tea", ["Sencha", "Matcha"])`. There is no `data.rows`, Query or `@` function call over fetched data.
 - Every Col of a Table, and every Series of a chart, has one value per row or label, in the same order.
 - Use real, specific figures; never invent numbers to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
+- Value axes start at 0, so values only a few percent apart look the same height. When the lesson is the difference, chart the difference (e.g. "°C below boiling", "ms over the baseline") and keep the absolute values in a Table.
 - Wrap a chart in a Card with a CardHeader for its title. Use Tabs to show the same data as a chart and a table, and a Callout for the takeaway.
 
 Signatures (? marks an optional argument):
