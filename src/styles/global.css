@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@100..900&family=Noto+Sans+Thai:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@100..900&family=Noto+Sans+Thai:wght@100..900&family=Inter:wght@400..700&display=swap');
 @import './variables.css';
+@import './liquid-glass.css';
 
 html {
   font-size: 16px;
@@ -11,7 +12,8 @@ html {
 
 html[data-theme='medicare'],
 html[data-theme='recipebook'],
-html[data-theme='eink'] {
+html[data-theme='eink'],
+html[data-theme='liquid-glass-light'] {
   color-scheme: light;
 }
 
@@ -23,7 +25,10 @@ html[data-theme='recipebook'] select,
 html[data-theme='recipebook'] textarea,
 html[data-theme='eink'] input,
 html[data-theme='eink'] select,
-html[data-theme='eink'] textarea {
+html[data-theme='eink'] textarea,
+html[data-theme='liquid-glass-light'] input,
+html[data-theme='liquid-glass-light'] select,
+html[data-theme='liquid-glass-light'] textarea {
   color-scheme: light;
 }
 

@@ -55,16 +55,17 @@ function usePickTray(topicId: string) {
 
 const NARROW = '(max-width: 640px)'
 
-/** Phone-sized screens get the bar-and-sheet tray. */
-export function useNarrow(): boolean {
-  const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.(NARROW).matches)
+/** Phone-sized screens get the bar-and-sheet tray. Pass another media query for a different width. */
+export function useNarrow(media = NARROW): boolean {
+  const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.(media).matches)
   useEffect(() => {
-    const query = window.matchMedia?.(NARROW)
+    const query = window.matchMedia?.(media)
     if (!query) return
     const onChange = () => setNarrow(query.matches)
+    onChange()
     query.addEventListener?.('change', onChange)
     return () => query.removeEventListener?.('change', onChange)
-  }, [])
+  }, [media])
   return narrow
 }
 

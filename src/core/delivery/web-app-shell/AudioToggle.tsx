@@ -33,7 +33,7 @@ export function AudioToggle({ className }: { className?: string }) {
       <div className="relative flex h-4 w-4 items-center justify-center">
         {isMuted ? <VolumeX className="h-4 w-4 text-muted-foreground" /> : <Volume2 className="h-4 w-4 text-emerald-400" />}
       </div>
-      <span className="hidden sm:inline">{isMuted ? 'Muted' : 'Sound On'}</span>
+      <span className="audio-toggle-label hidden sm:inline">{isMuted ? 'Muted' : 'Sound On'}</span>
     </motion.button>
   )
 }
