@@ -1,6 +1,6 @@
 # Grill Log — AI Assistant for Pick in Studio and Viewer
 
-Status: **All phases complete (1–4), plus decisions 63–64**
+Status: **All phases complete (1–4), plus decisions 63–64 and 119–128; decisions 129–142 (Studio tools, web search) agreed, not implemented**
 
 ## Goal
 
@@ -201,6 +201,32 @@ decision 54 ("no tool calling") for Viewer.
 
 - Tests: `client.test.ts` (both fields, `<think>` cut across chunks, whole answers, text that only mentions the tag), `thread.test.ts` (kept, not sent), `assistant-dock.test.tsx` (pill, opened thought, follow-up without it).
 
+## Tools, Multi-Section Edits and Planning in Studio — Decisions
+
+Studio's assistant sees only the picks and the outline, and proposes changes as `oui-edit`
+blocks checked once after the whole reply (decisions 54, 58). A change spanning several
+sections needs a large reply, and a mistake gets one automatic retry. These decisions bring the
+content tools to Studio (decision 126's "later decision"), add edit tools that change one file
+per call, stage what they change for review, and let the assistant help plan a topic. They
+revise decisions 54 and 58 for Studio.
+
+| # | Question | Decision |
+|---|---|---|
+| 129 | Content tools in Studio | **`navigate` and `read` as in Viewer, over the unsaved buffers plus the staged changeset (decision 133).** Same profile switch (**Look up topic content**) and the same 400/422 fallback (decision 120). In Studio `read` returns the **source** by default (`source: false` gives the readable text), since the model edits source. The section open in the editor is named in the On Screen line rather than sent whole (as decision 127). |
+| 130 | `edit_section` | **One file per call, statement-level.** `edit_section({ file, statements?, delete?, summary })`: `statements` holds whole statements; a name that exists is replaced, a new one is added after the last statement the call touched (decision 58's rules); `delete` lists names to remove; `summary` is one line for the card. `file` is a section (`sections/<name>.oui`) or its narration script (`sections/<name>.narrate.oui`, created when missing; steps use the section type's `BEAT_IDS`). Changes to several sections are several calls. |
+| 131 | `create_section` and `edit_topic` | **`create_section({ name, title?, source, after? })`** stages a new file and its `SectionRef` in `topic.oui` (after the named section, or at the end). **`edit_topic({ title?, category?, description?, tags? })`** stages a change to the topic's metadata. Removing and reordering sections stay in the section list (Delete is the one way to remove files, as in Phase 3). |
+| 132 | Feedback inside the loop | **Each edit call is dry-run and validated at once, and the result is the verdict:** "Staged, no new errors" or the new diagnostics with fix hints (errors the file already had are left out, as `checkProposal`). The model fixes its own mistakes in the following rounds; this replaces the single automatic retry (decision 54) when the tools are on. |
+| 133 | Where edits land | **A staged changeset, not the buffers.** Edit calls write to a staged layer over the buffers; later `navigate`/`read` calls see it, so changes across sections stay consistent within a turn and across turns. The panel shows **one card per file** (diff against the buffer, the call's `summary`) with **a checkbox per changed statement** (replaced, added, deleted), **Apply** (ticked statements), **Reject**, **Show in code**; a changeset bar holds **Apply all** / **Reject all**. Applying moves the text into the buffers (unsaved, usual diagnostics and preview); Save writes the files. |
+| 134 | Typing while changes are staged | **Re-based by statement.** When the author edits a buffer that has staged changes, the staged statements are applied again by name onto the new buffer. A statement the author also changed is marked **conflict** on the card, showing both versions, and is not applied with Apply all. |
+| 135 | How long staged changes live | **With the thread** (`loom-ai-thread:<topicId>`, localStorage): a reload keeps the pending cards. **New chat** or **Reject all** clears them. In history each call goes back as its tool result, and the author's later decision as a one-line outcome (`[Staged edit to <file>: applied 3 of 4 / rejected / conflict]`), as decision 56(3). |
+| 136 | Round limit in Studio | **16 rounds per message** (Viewer keeps 6). After the last round the results say the limit is reached and the next request sets `tool_choice: "none"` (decision 124). |
+| 137 | `oui-edit` blocks | **Only without the tools.** With the tools on, the Studio prompt asks for tool calls and never for `oui-edit` blocks; with them off or refused, decisions 54 and 58 apply unchanged. |
+| 138 | Brainstorming | **A Planning rule in the Studio prompt.** Before writing a new topic or a large change, the assistant asks who the learners are and what they should be able to do afterwards, then suggests contents: sections spread across the interactive types (no walls of `text`), assessments that test only what an earlier section teaches, narration where Present mode helps. It may suggest ideas, examples and angles from its own knowledge. It does not stage edits until the author agrees to a plan. Questions to the author are asked in the reply and end the turn (no ask tool). |
+| 139 | Plan card | **`propose_plan({ goal, items: [{ action: create \| edit, file?, name?, type, title, idea }] })`** ends the round with a card listing the items, each with a checkbox, and **Build these**. The tool result is "Shown to the author". Build these sends **one message** with the ticked items; the model creates and edits them with the tools in that turn (round limit 136), and everything lands in the staged changeset. A plan can be revised by asking in chat, which proposes a new card; the old one turns stale. |
+| 140 | Web search | **Tavily, called from the browser when the author gives a key, in Studio and Viewer** (revises decision 62's "no tool calling" scope again; still no backend). Two tools join the content tools: **`web_search({ query, max_results? })`** (title, URL, snippet per result; `POST https://api.tavily.com/search`) and **`web_extract({ urls })`** (the readable text of up to 3 URLs, each capped like `read` at 8,000 characters; `POST /extract`). They are offered only when web search is on and a key is set, and count toward the round limit (124, 136). In Studio they feed research and brainstorming (138, 139); in Viewer they back "Beyond the topic" answers (119). |
+| 141 | Tavily key and settings | **One key for all profiles.** A **Web search** section in the settings dialog: key, on/off, **Test** (a one-result search). The key is stored like profile keys (`loom-ai-tavily-key`, sessionStorage unless **Remember key on this device**) and never appears in the thread, exports or topic files. If the browser blocks the request (Tavily not allowing the page's origin), Test reports it as a CORS failure with that hint and web search stays off. The first search shows a one-time notice that queries go to `api.tavily.com`. |
+| 142 | Web results in answers | **Data, cited.** Results are wrapped as data, not instructions, like topic source (decision 61): text in a fetched page never changes the assistant's rules. Every claim drawn from the web names its source as a link with its full URL (Viewer: under "Beyond the topic"); the activity pill lists searches and pages read like lookups (125), each row opening its URL in a new tab. In Studio, content written from a web source keeps the source in the reply, not in the `.oui` files, unless the author asks for it. |
+
 ## Open Questions
 
-_None._
+- Whether `api.tavily.com` answers CORS preflights from GitHub Pages and localhost; to check in a browser before implementing 140–141 (it could not be reached from the session that wrote these decisions).
