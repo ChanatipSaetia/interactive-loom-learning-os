@@ -127,6 +127,41 @@
   box-shadow: var(--glass-highlight), var(--glass-shadow);
 }
 
+/* The trade-off question frame is the card; its option cards sit inside it */
+:root[data-theme='liquid-glass'] .compare-step:not(.present-tradeoff .compare-step) {
+  border-radius: var(--radius-md);
+  background: var(--glass-sheen), var(--glass-tint);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-highlight), var(--glass-shadow);
+}
+:root[data-theme='liquid-glass'] .compare-step .compare-card {
+  background: var(--glass-tint-inset);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme='liquid-glass'] .template-chips-bank {
+  background: var(--glass-tint-inset);
+  border-color: var(--glass-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Card states the glass rules above would otherwise hide */
+:root[data-theme='liquid-glass'] :is(.bullets-card, .taxonomy-browser-card, .compare-card.cursor-pointer):hover,
+:root[data-theme='liquid-glass'] .roadmap-step-card:hover {
+  background: var(--glass-sheen), var(--glass-tint-strong);
+  border-color: var(--glass-edge-strong);
+}
+:root[data-theme='liquid-glass'] .compare-scenarios .compare-card-tappable:hover {
+  border-color: var(--secondary);
+}
+:root[data-theme='liquid-glass'] .compare-card.compare-card-focused {
+  box-shadow: 0 0 0 2px var(--secondary), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+:root[data-theme='liquid-glass'] .compare-card.compare-card-chosen {
+  background: var(--glass-sheen), var(--pale-green);
+  border-color: var(--ctp-green);
+}
+
 /* Flashcard faces (Tailwind bg-card) */
 :root[data-theme='liquid-glass'] .backface-hidden.bg-card {
   background: var(--glass-sheen), rgba(36, 40, 62, 0.72);
@@ -143,7 +178,6 @@
 /* ---- inset glass: elements inside a glass card ---- */
 
 :root[data-theme='liquid-glass'] .quiz-choice,
-:root[data-theme='liquid-glass'] .quiz-choice-label,
 :root[data-theme='liquid-glass'] .roadmap-step-card,
 :root[data-theme='liquid-glass'] .pillar-block,
 :root[data-theme='liquid-glass'] .dt-choice,
