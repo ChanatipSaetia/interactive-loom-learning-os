@@ -50,7 +50,8 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 3. **Studio edits:** `oui-edit` parser and statement-level apply on `indexStatementLines` (58),
    edit cards, diff in the editor buffer, Apply / Reject, the single validation retry (54).
 4. **Docs:** `AGENTS.md`, the Create page (`composition/oui/llm-guide.ts`, local-server setup
-   hints), and `npm run oui:schema` if `authoring-prompt.ts` changes.
+   hints; the page's **Your own model** tab was later removed, decision 40 in
+   grill-log-openui-input.md), and `npm run oui:schema` if `authoring-prompt.ts` changes.
 
 ## Phase 1 — Implementation Notes
 
@@ -102,6 +103,8 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 - Tests: `assistant/edits.test.ts`; Studio cases in `assistant-dock.test.tsx` (apply, reject, the automatic retry and what it sends); `thread.test.ts` (edit outcomes in the history); `workspace.test.ts` (buffered insert and reorder); `tests/e2e/assistant.spec.ts` (an applied edit is saved; Apply all adds a section and its SectionRef, written on Save).
 
 ## Phase 4 — Implementation Notes
+
+> Superseded: the Create page now covers only the Loom skill (decision 40 in [grill-log-openui-input.md](grill-log-openui-input.md)); the **Your own model** tab, `MODEL_SERVERS`, `LOCAL_MODEL_NOTE` and their tests were removed.
 
 | Piece | Location |
 |---|---|

@@ -532,7 +532,7 @@ function Landing({ onFile, onFileHandle, onDirectory, onFolder, onText, error }:
           exported from Loom Studio, or pick a topic folder. You can also drop a file or folder here.
         </p>
         <p className="viewer-hint">
-          Writing a topic with Claude, Gemini, Copilot or another AI chat? <a href="create.html" data-testid="viewer-llm-prompt">Get the Loom prompt and a step-by-step guide</a>,
+          Writing a topic with Claude or a coding agent? <a href="create.html" data-testid="viewer-llm-prompt">Add the Loom skill, step by step</a>,
           then open its answer here.
         </p>
         <div className="viewer-actions">

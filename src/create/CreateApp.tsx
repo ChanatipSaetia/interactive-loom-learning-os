@@ -1,60 +1,46 @@
 /**
  * "Create with AI" — a phone-friendly guide page (create.html) for writing
- * Loom topics with Claude, Gemini or Microsoft 365 Copilot (copy, download
- * or share the published authoring prompt, set up a Claude Project, Gemini
- * Gem or Copilot agent, ask, then open the answer in Loom Viewer), or with a
- * coding agent such as Claude Code or opencode (install the Loom skill, ask,
- * open the topic folder it writes), or with any model through the AI
- * assistant built into Loom Viewer and Loom Studio (Ollama, LM Studio,
- * llama.cpp, OpenRouter: connect, pick, send). `?ai=gemini` / `?ai=copilot` /
- * `?ai=agent` / `?ai=model` preselects the tab.
+ * Loom topics with the `loom-topic-writer` agent skill: download it as a
+ * zip and upload it to the Claude app, or install it for coding agents
+ * (Claude Code, opencode, …) with `npx skills add`; then ask for a topic and
+ * open it in Loom Viewer. `?ai=agent` preselects the coding-agent tab.
  */
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Copy, Download, ExternalLink, Eye, PenLine, Share2, Sparkles } from 'lucide-react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Check, Copy, Download, ExternalLink, Eye, Sparkles } from 'lucide-react'
 import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { copyText } from '../core/ui-system/clipboard'
 import {
-  ASSISTANTS,
   EXAMPLE_REQUESTS,
-  LOOM_ASSISTANT_NAME,
-  LOOM_PROMPT_FILE_NAME,
-  LOOM_PROMPT_PATH,
+  LOOM_REPO,
   LOOM_SKILL_NAME,
   LOOM_SKILL_PATH,
-  LOCAL_MODEL_NOTE,
-  MODEL_SERVERS,
-  SKILL_TOOLS,
-  skillInstallCommand,
-  skillInstallPrompt,
-  assistantInstructions,
-  type AssistantGuide,
-  type AssistantId,
-  type ModelServerGuide,
+  LOOM_SKILL_ZIP_PATH,
+  SKILL_ADD_COMMAND,
+  SKILL_UPDATE_COMMAND,
 } from '../core/learning-engine/composition/oui/llm-guide'
 import '../core/delivery/web-app-shell/layout.css'
 
 const BASE = import.meta.env.BASE_URL ?? '/'
-const PROMPT_URL = `${BASE}${LOOM_PROMPT_PATH}`
 const VIEWER_URL = `${BASE}viewer.html`
-const STUDIO_URL = `${BASE}studio.html`
+const SKILL_URL = `${BASE}${LOOM_SKILL_PATH}/SKILL.md`
+const ZIP_URL = `${BASE}${LOOM_SKILL_ZIP_PATH}`
 const ASSISTANT_KEY = 'loom-create-assistant'
 
-/** A guide tab: one of the chat assistants, coding agents with the Loom skill, or your own model in Viewer and Studio. */
-type GuideId = AssistantId | 'agent' | 'model'
+/** A guide tab: the Claude app (upload the zip) or coding agents (install from the command line). */
+type GuideId = 'claude' | 'agent'
 
 const TABS: Array<{ id: GuideId; label: string }> = [
-  ...Object.values(ASSISTANTS).map(({ id, label }) => ({ id, label })),
-  { id: 'agent', label: 'Claude Code / opencode' },
-  { id: 'model', label: 'Your own model' },
+  { id: 'claude', label: 'Claude app' },
+  { id: 'agent', label: 'Coding agents' },
 ]
 
 function isGuide(value: unknown): value is GuideId {
-  return value === 'agent' || value === 'model' || (typeof value === 'string' && Object.prototype.hasOwnProperty.call(ASSISTANTS, value))
+  return value === 'claude' || value === 'agent'
 }
 
-/** The chosen tab: `?ai=` wins, then the last choice on this device, else Claude. */
+/** The chosen tab: `?ai=` wins, then the last choice on this device, else the Claude app. */
 function initialGuide(): GuideId {
   const fromUrl = new URLSearchParams(window.location.search).get('ai')
   if (isGuide(fromUrl)) return fromUrl
@@ -65,49 +51,6 @@ function initialGuide(): GuideId {
     // Storage unavailable (private mode): fall through to the default.
   }
   return 'claude'
-}
-
-function downloadText(text: string, fileName: string) {
-  const type = fileName.endsWith('.md') ? 'text/markdown' : 'text/plain'
-  const url = URL.createObjectURL(new Blob([text], { type }))
-  const link = document.createElement('a')
-  link.href = url
-  link.download = fileName
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
-}
-
-function promptFile(text: string, fileName = LOOM_PROMPT_FILE_NAME): File {
-  return new File([text], fileName, { type: 'text/plain' })
-}
-
-/** True where the browser can share a file (phones: "Save to Files", AirDrop, other apps). */
-function canShareFiles(): boolean {
-  try {
-    return typeof navigator.share === 'function' && !!navigator.canShare?.({ files: [promptFile('')] })
-  } catch {
-    return false
-  }
-}
-
-type PromptState = { status: 'loading' } | { status: 'ready'; text: string } | { status: 'error' }
-
-/** The published prompt, fetched up front so Copy runs inside the tap (iOS requires that). */
-function usePrompt(): PromptState {
-  const [state, setState] = useState<PromptState>({ status: 'loading' })
-  useEffect(() => {
-    let cancelled = false
-    fetch(PROMPT_URL)
-      .then((res) => (res.ok ? res.text() : Promise.reject(new Error(String(res.status)))))
-      .then((text) => !cancelled && setState({ status: 'ready', text }))
-      .catch(() => !cancelled && setState({ status: 'error' }))
-    return () => {
-      cancelled = true
-    }
-  }, [])
-  return state
 }
 
 /** Button that copies `text` and confirms for two seconds. */
@@ -139,14 +82,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
 }
 
 export function CreateApp() {
-  const prompt = usePrompt()
-  const text = prompt.status === 'ready' ? prompt.text : null
-  const [shareable] = useState(canShareFiles)
-  const [notice, setNotice] = useState('')
   const [guideId, setGuideId] = useState<GuideId>(initialGuide)
-  /** The chat assistant, or null on the coding-agent and own-model tabs. */
-  const ai = guideId === 'agent' || guideId === 'model' ? null : ASSISTANTS[guideId]
-  const promptFileName = ai?.promptFileName ?? LOOM_PROMPT_FILE_NAME
 
   const chooseGuide = (id: GuideId) => {
     setGuideId(id)
@@ -159,17 +95,6 @@ export function CreateApp() {
     url.searchParams.set('ai', id)
     window.history.replaceState(null, '', url)
   }
-
-  const share = useCallback(async () => {
-    if (text === null) return
-    try {
-      await navigator.share({ files: [promptFile(text, promptFileName)], title: promptFileName })
-    } catch (e) {
-      if ((e as Error).name !== 'AbortError') setNotice('Sharing did not work here. Use Download instead.')
-    }
-  }, [text, promptFileName])
-
-  const sizeKb = text === null ? null : Math.round(new Blob([text]).size / 1024)
 
   return (
     <UISystemProvider>
@@ -186,17 +111,12 @@ export function CreateApp() {
 
         <main className="create-main">
           <div className="create-hero">
-            <h1>
-              {guideId === 'model' ? 'Improve a Loom topic with your own model' : `Create a Loom topic with ${ai ? ai.label : 'Claude Code or opencode'}`}
-            </h1>
+            <h1>{guideId === 'claude' ? 'Create a Loom topic with the Claude app' : 'Create a Loom topic with a coding agent'}</h1>
             <p>
-              {ai
-                ? `Give ${ai.label} the Loom prompt once, ask for any topic, and open the answer in Loom Viewer as an interactive lesson.`
-                : guideId === 'model'
-                  ? 'Connect Loom Viewer or Loom Studio to a model on your computer or to OpenRouter, pick parts of a topic and ask about them. In Studio the model proposes edits you apply with one click.'
-                  : 'Install the Loom skill once, ask your coding agent for any topic, and open the topic folder it writes in Loom Viewer as an interactive lesson.'}
+              Add the <code>{LOOM_SKILL_NAME}</code> skill once: it teaches the AI the Loom format, every section type and the rules. Then ask for
+              any topic and open it in Loom Viewer as an interactive lesson.
             </p>
-            <div className="create-switch" role="radiogroup" aria-label="AI assistant">
+            <div className="create-switch" role="radiogroup" aria-label="Where to add the skill">
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
@@ -213,17 +133,7 @@ export function CreateApp() {
             </div>
           </div>
 
-          {ai ? (
-            <ChatGuide
-              ai={ai}
-              prompt={prompt}
-              text={text}
-              sizeKb={sizeKb}
-              shareable={shareable}
-              share={share}
-              notice={notice}
-            />
-          ) : guideId === 'model' ? <ModelGuide /> : <AgentGuide />}
+          {guideId === 'claude' ? <ClaudeAppGuide /> : <AgentGuide />}
         </main>
       </div>
     </UISystemProvider>
@@ -243,143 +153,101 @@ function ExampleRequests() {
   )
 }
 
-/** Steps for a chat assistant: prompt, Project/Gem/agent, ask, open, fix. */
-function ChatGuide({ ai, prompt, text, sizeKb, shareable, share, notice }: {
-  ai: AssistantGuide
-  prompt: PromptState
-  text: string | null
-  sizeKb: number | null
-  shareable: boolean
-  share: () => void
-  notice: string
-}) {
-  const instructions = assistantInstructions(ai.id)
+/** A terminal command with its Copy button. */
+function Command({ command, testId }: { command: string; testId: string }) {
+  return (
+    <div className="create-command">
+      <pre data-testid={testId}>{command}</pre>
+      <CopyButton text={command} label="Copy" testId={`${testId}-copy`} />
+    </div>
+  )
+}
+
+function ViewSkillLink() {
+  return (
+    <p className="create-small">
+      <a href={SKILL_URL} target="_blank" rel="noreferrer">View the skill <ExternalLink size={12} /></a>
+    </p>
+  )
+}
+
+/** Steps for the Claude app (claude.ai, desktop, Cowork): upload the zip, ask, open, fix. */
+function ClaudeAppGuide() {
   return (
     <>
-      <Step n={1} title="Get the Loom prompt">
-        <p>
-          One file that teaches {ai.label} the Loom format: every section type, the rules and a full example.
-          {sizeKb !== null && <span className="create-muted"> ({sizeKb} KB)</span>}
-        </p>
-        <div className="create-actions" data-testid="create-prompt-actions">
-          <CopyButton text={text} label="Copy prompt" primary testId="create-copy-prompt" />
-          <button type="button" className="create-button" onClick={() => text !== null && downloadText(text, ai.promptFileName)} disabled={text === null} data-testid="create-download-prompt">
-            <Download size={16} /> Download .{ai.promptFileName.split('.').pop()}
-          </button>
-          {shareable && (
-            <button type="button" className="create-button" onClick={share} disabled={text === null} data-testid="create-share-prompt">
-              <Share2 size={16} /> Share / Save to Files
-            </button>
-          )}
-        </div>
-        {prompt.status === 'loading' && <p className="create-muted">Loading the prompt…</p>}
-        {prompt.status === 'error' && (
-          <p className="create-error" role="alert">
-            Could not load the prompt. Open it directly: <a href={PROMPT_URL}>{LOOM_PROMPT_FILE_NAME}</a>
-          </p>
-        )}
-        {notice && <p className="create-error" role="alert">{notice}</p>}
-        <p className="create-small"><a href={PROMPT_URL} target="_blank" rel="noreferrer">View the prompt <ExternalLink size={12} /></a></p>
-      </Step>
-
-      <Step n={2} title={`Set up a ${ai.label} ${ai.workspace} (once)`}>
-        {ai.note && <p className="create-tip" data-testid="create-assistant-note">{ai.note}</p>}
+      <Step n={1} title="Add the Loom skill (once)">
         <ol className="create-list">
           <li>
-            {ai.createStep.split(LOOM_ASSISTANT_NAME)[0]}<strong>{LOOM_ASSISTANT_NAME}</strong>{ai.createStep.split(LOOM_ASSISTANT_NAME)[1]}{' '}
-            <a href={ai.url} target="_blank" rel="noreferrer">Open {ai.label} <ExternalLink size={12} /></a>
-          </li>
-          <li>
-            Add the prompt to the <strong>{ai.knowledge}</strong>: upload the downloaded <code>{ai.promptFileName}</code>.
-            If you can't upload files on your phone, do this step once from a computer, or use the one-off chat below.
-          </li>
-          <li>
-            Paste these into the {ai.workspace}'s <strong>instructions</strong>:
+            Download the skill. Keep the file zipped.
             <div className="create-actions">
-              <CopyButton text={instructions} label="Copy instructions" testId="create-copy-instructions" />
+              <a className="create-button create-button--primary" href={ZIP_URL} download data-testid="create-download-skill">
+                <Download size={16} /> Download {LOOM_SKILL_NAME}.zip
+              </a>
             </div>
-            <details className="create-details">
-              <summary>Show instructions</summary>
-              <pre data-testid="create-instructions">{instructions}</pre>
-            </details>
           </li>
+          <li>
+            In Claude (claude.ai or the desktop app), find <strong>Skills</strong>: under <strong>Customize</strong>, or{' '}
+            <strong>Settings → Capabilities</strong> in older versions. Code execution (file creation) must be on for skills to run.{' '}
+            <a href="https://claude.ai" target="_blank" rel="noreferrer">Open Claude <ExternalLink size={12} /></a>
+          </li>
+          <li>Choose <strong>Upload skill</strong> (or <strong>+ → Upload a skill</strong>) and pick the zip. Leave it switched on.</li>
         </ol>
+        <ViewSkillLink />
         <p className="create-tip">
-          <strong>Just trying it once?</strong> Skip the {ai.workspace}: start a {ai.label} chat, attach the file (or paste the prompt), then ask for your topic.
+          On a phone you can download the zip, but upload it from a computer. Once added, the skill works in the Claude app on every device.
         </p>
       </Step>
 
-      <Step n={3} title="Ask for a topic">
-        <p>Start a new chat with the {ai.workspace} and say what you want to learn or teach. For example:</p>
+      <Step n={2} title="Ask for a topic">
+        <p>Start a new chat and say what you want to learn or teach. Claude picks up the skill by itself. For example:</p>
         <ExampleRequests />
       </Step>
 
-      <Step n={4} title="Open it in Loom Viewer">
+      <Step n={3} title="Open it in Loom Viewer">
         <p>
-          {ai.label} writes the whole topic into one {ai.document}. Copy it, open Loom Viewer, tap <strong>Paste text</strong>, paste and
-          press <strong>Open</strong>. On a computer you can just press Ctrl/Cmd+V on Viewer's start screen. Prefer a file? Save it as{' '}
-          <code>&lt;topic-id&gt;.loom.oui</code> and use <strong>Open file</strong>.
+          Claude gives you the topic as one <code>&lt;topic-id&gt;.loom.oui</code> file. Download it, open Loom Viewer and use{' '}
+          <strong>Open file</strong>, or copy its text and use <strong>Paste text</strong>.
         </p>
         <div className="create-actions">
           <a className="create-button create-button--primary" href={VIEWER_URL} data-testid="create-open-viewer"><Eye size={16} /> Open Loom Viewer</a>
         </div>
       </Step>
 
-      <Step n={5} title="Fix and improve">
+      <Step n={4} title="Fix and improve">
         <p>
-          If Viewer shows an error for a section, copy the error into the same chat and say <em>"Fix these"</em>. Ask for changes the same
-          way (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). {ai.editsInPlace ? `${ai.label} updates the ${ai.document}` : `${ai.label} writes the whole topic again in a new ${ai.document}`}; copy and paste it into Viewer again.
+          If Viewer shows errors, press <strong>Copy errors for your AI chat</strong> and paste them into the same chat. Ask for changes the
+          same way (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>), then open the new file in Viewer.
         </p>
-        <p className="create-tip">
-          When the Loom prompt is updated, download it again and replace the file in your {ai.workspace}.
-        </p>
+        <p className="create-tip">When the Loom skill is updated, download the zip again and upload it in place of the old one.</p>
       </Step>
     </>
   )
 }
 
-/** Steps for a coding agent (Claude Code, opencode): install the skill, ask, open, fix. */
+/** Steps for coding agents (Claude Code, opencode, Codex, Cursor, …): `npx skills add`, ask, open, fix. */
 function AgentGuide() {
-  const skillPrompt = skillInstallPrompt()
   return (
     <>
       <Step n={1} title="Install the Loom skill (once)">
         <p>
-          The <code>{LOOM_SKILL_NAME}</code> skill teaches the agent the Loom format. Copy the install steps and paste them into Claude Code
-          or opencode: the agent downloads the skill for you.
+          Run this in a terminal (it needs Node.js 22 or later). It asks which of your agents should get the skill, such as Claude Code or
+          opencode, and installs it for your user, so it works in every folder.
         </p>
-        <div className="create-actions">
-          <CopyButton text={skillPrompt} label="Copy install steps" primary testId="create-copy-skill-steps" />
-        </div>
-        <details className="create-details">
-          <summary>Show install steps</summary>
-          <pre data-testid="create-skill-steps">{skillPrompt}</pre>
-        </details>
-        <details className="create-details">
-          <summary>Or run it yourself in a terminal (macOS, Linux or WSL)</summary>
-          <ul className="create-examples">
-            {SKILL_TOOLS.map((tool) => {
-              const command = skillInstallCommand(tool.dir)
-              return (
-                <li key={tool.id} className="create-command">
-                  <span className="create-example-text"><strong>{tool.label}</strong> <span className="create-muted">({tool.note})</span></span>
-                  <pre data-testid={`create-skill-command-${tool.id}`}>{command}</pre>
-                  <CopyButton text={command} label="Copy" testId={`create-copy-skill-${tool.id}`} />
-                </li>
-              )
-            })}
-          </ul>
-        </details>
+        <Command command={SKILL_ADD_COMMAND} testId="create-skill-add" />
+        <p>To update it later:</p>
+        <Command command={SKILL_UPDATE_COMMAND} testId="create-skill-update" />
         <p className="create-small">
-          <a href={`${BASE}${LOOM_SKILL_PATH}/SKILL.md`} target="_blank" rel="noreferrer">View the skill <ExternalLink size={12} /></a>
+          The skill comes from <a href={`https://github.com/${LOOM_REPO}`} target="_blank" rel="noreferrer">{LOOM_REPO} <ExternalLink size={12} /></a>{' '}
+          via the <a href="https://skills.sh" target="_blank" rel="noreferrer">skills CLI <ExternalLink size={12} /></a>.
         </p>
+        <ViewSkillLink />
         <p className="create-tip">
           <strong>Working in the Interactive Loom repository?</strong> The skill is already in <code>.claude/skills/</code>; skip this step.
         </p>
       </Step>
 
       <Step n={2} title="Ask for a topic">
-        <p>Start a new Claude Code or opencode session in any folder (new, so it loads the skill) and say what you want to learn or teach. For example:</p>
+        <p>Start a new agent session in any folder (new, so it loads the skill) and say what you want to learn or teach. For example:</p>
         <ExampleRequests />
       </Step>
 
@@ -398,105 +266,7 @@ function AgentGuide() {
       <Step n={4} title="Fix and improve">
         <p>
           If Viewer shows errors, press <strong>Copy errors for your AI chat</strong> and paste them into the agent. Ask for changes the same way
-          (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). The agent edits the files; open the folder in Viewer again.
-        </p>
-        <p className="create-tip">When the Loom prompt is updated, run the install steps again to update the skill.</p>
-      </Step>
-    </>
-  )
-}
-
-const SERVER_KEY = 'loom-create-model-server'
-
-function initialServer(): ModelServerGuide {
-  try {
-    const saved = localStorage.getItem(SERVER_KEY)
-    const found = MODEL_SERVERS.find((server) => server.id === saved)
-    if (found) return found
-  } catch {
-    // Storage unavailable: the first server.
-  }
-  return MODEL_SERVERS[0]
-}
-
-/** The AI assistant built into Viewer and Studio, with a model you run or choose (grill-log-ai-assistant.md). */
-function ModelGuide() {
-  const [server, setServer] = useState(initialServer)
-  const origin = window.location.origin
-  const choose = (next: ModelServerGuide) => {
-    setServer(next)
-    try {
-      localStorage.setItem(SERVER_KEY, next.id)
-    } catch {
-      // Not remembered.
-    }
-  }
-  const command = server.command?.(origin)
-  return (
-    <>
-      <Step n={1} title="Start a model">
-        <p>Any server with an OpenAI-compatible API works. Pick yours:</p>
-        <div className="create-switch create-switch--small" role="radiogroup" aria-label="Model server">
-          {MODEL_SERVERS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              role="radio"
-              aria-checked={option.id === server.id}
-              className={option.id === server.id ? 'is-active' : ''}
-              onClick={() => choose(option)}
-              data-testid={`create-server-${option.id}`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-        <ol className="create-list" data-testid="create-server-steps">
-          {server.steps(origin).map((step) => <li key={step}>{step}</li>)}
-        </ol>
-        {command && (
-          <div className="create-command">
-            <pre data-testid="create-server-command">{command}</pre>
-            <CopyButton text={command} label="Copy" testId="create-copy-server-command" />
-          </div>
-        )}
-        {server.local && <p className="create-tip">{LOCAL_MODEL_NOTE}</p>}
-      </Step>
-
-      <Step n={2} title="Connect Viewer or Studio">
-        <p>
-          Open a topic in Loom Viewer (or a topic folder in Loom Studio) and press <strong>AI</strong> in the header. Choose{' '}
-          <strong>{server.label}</strong>; the base URL is filled in (<code>{server.baseUrl}</code>)
-          {server.needsKey ? ', paste your API key' : ''}. Press <strong>Test connection</strong>, pick a model, then{' '}
-          <strong>Save and use</strong>.
-        </p>
-        <p className="create-tip">
-          The page calls the model directly; there is no Loom server in between. Settings stay in this browser. If the test fails, it says
-          why and what to change.
-        </p>
-        <div className="create-actions">
-          <a className="create-button create-button--primary" href={VIEWER_URL} data-testid="create-model-viewer"><Eye size={16} /> Open Loom Viewer</a>
-          <a className="create-button" href={STUDIO_URL} data-testid="create-model-studio"><PenLine size={16} /> Open Loom Studio</a>
-        </div>
-      </Step>
-
-      <Step n={3} title="Pick and ask">
-        <p>
-          Press <strong>⌖</strong> in the message bar at the bottom and click the parts you mean (a quiz question, a flowchart step, a whole
-          section); each becomes a chip you can tap to comment on. Type your message and press Enter. The model sees the source of what you
-          picked and the topic&apos;s errors; keep typing in the bar to ask follow-ups in the same conversation.
-        </p>
-      </Step>
-
-      <Step n={4} title="Apply edits in Studio">
-        <p>
-          In Studio, ask for changes (<em>"make this explanation one sentence"</em>, <em>"add a quiz section about this"</em>). Each proposed
-          change shows as a diff with <strong>Apply</strong> and <strong>Reject</strong>; Studio checks the edits first and asks the model
-          again once if they would break the topic. Applied edits change the editor only: press <strong>Save</strong> to write the files.
-        </p>
-        <p className="create-tip">
-          Small local models do best with a few picks at a time. For large-context models (e.g. through OpenRouter), turn on{' '}
-          <strong>Full reference</strong> in the connection settings so they get the whole Loom authoring prompt.
+          (<em>"make the quiz harder"</em>, <em>"add a flowchart"</em>). The agent edits the files; press <strong>Refresh</strong> in Viewer.
         </p>
       </Step>
     </>
