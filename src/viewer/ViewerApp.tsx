@@ -6,7 +6,7 @@
  * again, so changes made by an AI show up without reopening anything.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, FileUp, FolderOpen, Play, RefreshCw, Sparkles } from 'lucide-react'
+import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, FileUp, FolderOpen, MoreHorizontal, Play, RefreshCw, Sparkles } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
@@ -26,7 +26,7 @@ import {
 } from '../core/supporting/authoring-editor/workspace'
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from './compileTopic'
 import { copyText } from '../core/ui-system/clipboard'
-import { PickMode, PickSection, sourceResolver } from '../core/supporting/authoring-editor/pick'
+import { PickMode, PickSection, sourceResolver, useNarrow } from '../core/supporting/authoring-editor/pick'
 import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext } from '../core/supporting/authoring-editor/assistant'
 import type { PickSource } from '../core/learning-engine/composition/oui/pick-report'
 import { PresentMode, preloadPresenters, type PresentSection } from '../core/supporting/presentation'
@@ -118,6 +118,9 @@ async function readClipboard(): Promise<TopicFiles[]> {
   return readTopicText(text)
 }
 
+/** Below this width the header's secondary controls move into a ⋯ menu, so the bar never overflows. */
+const COMPACT_HEADER = '(max-width: 1199px)'
+
 export function ViewerApp() {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [selected, setSelected] = useState(0)
@@ -131,6 +134,9 @@ export function ViewerApp() {
   const presentAt = useRef({ sectionIndex: 0, beat: 0 })
   const [presentBeat, setPresentBeat] = useState(0)
   const current = useRef({ loaded, selected })
+  const compact = useNarrow(COMPACT_HEADER)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
   current.current = { loaded, selected }
 
   const load = useCallback(async (source: string, read: ReadTopics, options: { refresh?: ReadTopics; refreshHint: string; pasted?: boolean }) => {
@@ -258,6 +264,22 @@ export function ViewerApp() {
   // Present renderers load while the learner reads, so the switch is instant
   useEffect(() => preloadPresenters(presentSections), [presentSections])
 
+  // The ⋯ menu closes on a click elsewhere, on Escape, and when the header widens
+  useEffect(() => {
+    if (!menuOpen) return
+    const onDown = (e: PointerEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false)
+    window.addEventListener('pointerdown', onDown)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('pointerdown', onDown)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
+  useEffect(() => { if (!compact) setMenuOpen(false) }, [compact])
+
   const startPresent = useCallback(() => {
     setPresentStart(sectionInView(presentSections))
     setPresentBeat(0)
@@ -279,12 +301,40 @@ export function ViewerApp() {
   }, [topic])
   const pickAssistant = pickBridgeOf(assistant)
 
+  // In the bar on wide screens, in the ⋯ menu on narrower ones
+  const secondary = (
+    <>
+      {compact && <LoomToolsNav current="viewer" />}
+      {loaded && (
+        <button
+          type="button"
+          className="viewer-pill"
+          onClick={refresh}
+          data-closes-menu
+          disabled={refreshing}
+          title={loaded.refreshHint}
+          aria-label={loaded.refreshHint}
+          data-testid="viewer-refresh"
+        >
+          <RefreshCw size={14} className={refreshing ? 'viewer-spin' : undefined} /> <span className="viewer-pill-label">Refresh</span>
+        </button>
+      )}
+      {loaded && (
+        <button type="button" className="viewer-pill" onClick={() => setLoaded(null)} aria-label="Open another topic" data-closes-menu data-testid="viewer-open-another">
+          <FileUp size={14} /> <span className="viewer-pill-label">Open…</span>
+        </button>
+      )}
+      <AudioToggle />
+      <ThemeToggle />
+    </>
+  )
+
   return (
     <UISystemProvider>
       <div className="app-layout viewer">
         <header className="topnav">
           <button type="button" className="topnav-title viewer-brand" onClick={() => setLoaded(null)} title="Open another topic">
-            <Sparkles size={16} /> Loom&nbsp;Viewer
+            <Sparkles size={16} /> <span className="viewer-brand-label">Loom&nbsp;Viewer</span>
           </button>
           {loaded && (
             <div className="viewer-topic-picker">
@@ -313,7 +363,7 @@ export function ViewerApp() {
                 {status.text}
               </span>
             )}
-            <LoomToolsNav current="viewer" />
+            {!compact && <LoomToolsNav current="viewer" />}
             {topic && presentSections.length > 0 && (
               <div className="viewer-mode" role="group" aria-label="Viewer mode" data-testid="viewer-mode">
                 <button type="button" aria-pressed={!presenting} onClick={() => presenting && exitPresent(presentAt.current.sectionIndex)} data-testid="viewer-mode-read">
@@ -325,26 +375,19 @@ export function ViewerApp() {
               </div>
             )}
             {topic && !presenting && <AssistantToggle assistant={assistant} className="viewer-pill" />}
-            {loaded && (
-              <button
-                type="button"
-                className="viewer-pill"
-                onClick={refresh}
-                disabled={refreshing}
-                title={loaded.refreshHint}
-                aria-label={loaded.refreshHint}
-                data-testid="viewer-refresh"
-              >
-                <RefreshCw size={14} className={refreshing ? 'viewer-spin' : undefined} /> <span className="viewer-pill-label">Refresh</span>
-              </button>
-            )}
-            {loaded && (
-              <button type="button" className="viewer-pill" onClick={() => setLoaded(null)} aria-label="Open another topic" data-testid="viewer-open-another">
-                <FileUp size={14} /> <span className="viewer-pill-label">Open…</span>
-              </button>
-            )}
-            <AudioToggle />
-            <ThemeToggle />
+            {compact ? (
+              <div className="viewer-menu-wrap" ref={menuRef}>
+                <button type="button" className="viewer-pill viewer-pill--icon" onClick={() => setMenuOpen((o) => !o)} aria-haspopup="menu" aria-expanded={menuOpen} aria-label="More" data-testid="viewer-more">
+                  <MoreHorizontal size={16} />
+                </button>
+                {menuOpen && (
+                  // Refresh and Open close the menu; Sound and Theme stay open so they can be toggled again
+                  <div className="viewer-menu" role="menu" onClick={(e) => (e.target as HTMLElement).closest('[data-closes-menu]') && setMenuOpen(false)}>
+                    {secondary}
+                  </div>
+                )}
+              </div>
+            ) : secondary}
           </div>
         </header>
         <main className="main-content">

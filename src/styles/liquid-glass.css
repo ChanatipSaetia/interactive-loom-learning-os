@@ -88,6 +88,23 @@
   background: var(--glass-sheen), color-mix(in srgb, var(--primary) 18%, var(--glass-tint-dark));
 }
 
+/* The header's ⋯ menu: solid, since the header's own blur keeps it from blurring the page */
+:root[data-theme^='liquid-glass'] .viewer-menu {
+  background: var(--glass-sheen), var(--glass-solid);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-highlight), 0 24px 60px -20px var(--glass-drop);
+}
+:root[data-theme^='liquid-glass'] .viewer-menu > .viewer-pill,
+:root[data-theme^='liquid-glass'] .viewer-menu > button {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+:root[data-theme^='liquid-glass'] .viewer-menu > .viewer-pill:hover,
+:root[data-theme^='liquid-glass'] .viewer-menu > button:hover {
+  background: var(--glass-tint-strong);
+}
+
 /* Help modals and dialogs float over the page */
 :root[data-theme^='liquid-glass'] .section-help-modal,
 :root[data-theme^='liquid-glass'] .intro-help-modal,

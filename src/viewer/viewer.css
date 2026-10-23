@@ -191,6 +191,43 @@ body {
   font-size: 12px;
 }
 
+/* The ⋯ menu that holds the secondary controls on narrower screens (ViewerApp COMPACT_HEADER) */
+.viewer-menu-wrap { position: relative; }
+.viewer-pill--icon { padding: 6px 9px; }
+.viewer-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 220px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--ctp-mantle);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--ctp-crust) 45%, transparent);
+}
+.viewer-menu > .viewer-pill,
+.viewer-menu > button {
+  justify-content: flex-start;
+  width: 100%;
+  padding: 9px 12px;
+  border-color: transparent;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 14px;
+}
+.viewer-menu > .viewer-pill:hover,
+.viewer-menu > button:hover { background: var(--accent); }
+.viewer-menu > .loom-tools { align-self: stretch; justify-content: space-between; margin-bottom: 4px; }
+.viewer-menu .viewer-pill-label,
+.viewer-menu .audio-toggle-label,
+.viewer-menu .loom-tools-label,
+.viewer .viewer-menu .theme-toggle-label { display: inline; }
+
 @media (max-width: 640px) {
   .viewer .topnav { gap: 10px; padding: 0 12px; }
   .viewer-source { display: none; }
@@ -203,4 +240,9 @@ body {
   .viewer-actions .viewer-button,
   .viewer-paste .viewer-button,
   .viewer-copy-errors { width: 100%; justify-content: center; min-height: 44px; }
+}
+
+/* Small phones: the brand keeps only its icon so the actions fit */
+@media (max-width: 400px) {
+  .viewer-brand-label { display: none; }
 }
