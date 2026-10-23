@@ -211,15 +211,63 @@
 
 /* ---- Present mode ---- */
 
+/* The stage is the pane's frame: no fill of its own, a drop shadow, and a light-catching rim
+   drawn above the content so the edge stays crisp while the camera zooms or pans */
 :root[data-theme='liquid-glass'] .present-stage {
-  background-color: rgba(10, 12, 22, 0.28);
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.3px);
-  box-shadow: inset 0 0 0 1px var(--glass-edge), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  background: none;
+  box-shadow: 0 50px 100px -40px rgba(4, 6, 20, 0.85), 0 18px 40px -24px rgba(4, 6, 20, 0.6);
 }
 
+:root[data-theme='liquid-glass'] .present-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 22%, rgba(255, 255, 255, 0.04) 55%, rgba(255, 255, 255, 0.10) 80%, rgba(255, 255, 255, 0.28) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+
+/* Each slide is a clear pane: light falls from the top left, a faint edge marks it in Overview */
 :root[data-theme='liquid-glass'] .present-region {
-  background: var(--glass-sheen), rgba(30, 33, 52, 0.55);
-  box-shadow: var(--glass-highlight), 0 0 0 1px var(--glass-edge), 0 40px 80px -40px rgba(4, 6, 20, 0.8);
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(255, 255, 255, 0.10), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
+    rgba(24, 27, 44, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* A lit beat glows softly instead of a hard ring and band */
+:root[data-theme='liquid-glass'] .present-region .present-focus {
+  outline: 1.5px solid color-mix(in srgb, var(--present-accent) 85%, #fff);
+  outline-offset: 5px;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--present-accent) 14%, transparent), 0 0 32px color-mix(in srgb, var(--present-accent) 30%, transparent);
+}
+:root[data-theme='liquid-glass'] .present-region .present-focus:not([class*='card']):not([class*='block']):not([class*='choice']) {
+  border-radius: 10px;
+}
+:root[data-theme='liquid-glass'] .present-region svg .present-focus,
+:root[data-theme='liquid-glass'] .present-region g.present-focus {
+  outline: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Cards inside a slide sit in the pane rather than float on it: no glass on glass */
+:root[data-theme='liquid-glass'] .present-region :is(
+  .quiz-question-card, .bullets-card, .compare-card, .topic-intro-block, .topic-intro-roadmap,
+  .dt-intro-card, .dt-decision, .dt-leaf-card, .scenario-intro-card, .scenario-decision,
+  .concept-map-canvas-wrapper, .flowchart-canvas-wrapper, .present-taxonomy-detail, .present-card-face,
+  .backface-hidden.bg-card
+) {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* The title card covers the region's content until the section starts */
