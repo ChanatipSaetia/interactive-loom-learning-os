@@ -1,9 +1,10 @@
-import { useInsertionEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import { useEffect, useInsertionEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { Renderer, type ActionEvent } from '@openuidev/react-lang'
 import '@openuidev/react-ui/components.css'
 import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import { openuiParts, type OpenUIPresentData } from '../../present'
 import { ensureLoomOpenUITheme } from './theme'
+import { tagDataAnchors } from './data-anchors'
 import { loomOpenUILibrary } from './themed-charts'
 import './openui.css'
 import '../present.css'
@@ -25,7 +26,8 @@ function partElements(scope: HTMLElement): HTMLElement[] {
  * Standard OpenUI section in Present mode. A `Card` or `Stack` root with several children plays
  * them one per beat (`partN`, decision 116): the program renders whole, as in Read, and each child's
  * element gets its beat mark and, when it is a statement, its Pick anchor, so narration can point at
- * it. Any other root plays in one beat, each top-level child fading in (decision 78).
+ * it, down to one bar, point, slice or table cell (decision 117). Any other root plays in one beat,
+ * each top-level child fading in (decision 78).
  */
 export default function PresentOpenUI({ data, beats, beat }: PresentRendererProps<OpenUIPresentData>) {
   const mark = beatMarks(beat)
@@ -49,6 +51,25 @@ export default function PresentOpenUI({ data, beats, beat }: PresentRendererProp
     const file = owner && { 'data-oui-file': owner.getAttribute('data-oui-file') ?? undefined, 'data-oui-section': owner.getAttribute('data-oui-section') ?? undefined }
     els.forEach((el, i) => set(el, { ...mark(i, { motion: 'rise' }), ...(parts[i].name && { ...file, 'data-oui-anchor': parts[i].name }) }))
   })
+
+  // Charts draw once they are measured, so their bars, points and cells are tagged as they appear (decision 117)
+  useEffect(() => {
+    const root = scope.current
+    if (!parts || !root) return
+    let frame = 0
+    const tagAll = () => {
+      frame = 0
+      const els = partElements(root)
+      if (els.length === parts.length) els.forEach((el, i) => parts[i].name && tagDataAnchors(el, parts[i].name))
+    }
+    tagAll()
+    const observer = new MutationObserver(() => { frame ||= requestAnimationFrame(tagAll) })
+    observer.observe(root, { childList: true, subtree: true })
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frame)
+    }
+  }, [parts])
 
   const whole = !parts
   return (

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { AUTHORING_EXAMPLE, FACTS_EXAMPLE, HOWTO_EXAMPLE, HOWTO_NARRATION_EXAMPLE, NARRATION_EXAMPLE, TABLE_CHART_EXAMPLE, getLoomAuthoringPrompt } from '../../../../../../src/core/learning-engine/composition/oui/authoring-prompt'
+import { AUTHORING_EXAMPLE, FACTS_EXAMPLE, HOWTO_EXAMPLE, HOWTO_NARRATION_EXAMPLE, NARRATION_EXAMPLE, TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, getLoomAuthoringPrompt } from '../../../../../../src/core/learning-engine/composition/oui/authoring-prompt'
 import { compileOUITopic } from '../../../../../../src/core/learning-engine/composition/oui/compile'
 import { sectionBeatsOf, validateOUINarration, validateOUISection } from '../../../../../../src/core/learning-engine/validation/oui-gateway'
 import { parseTopicSource } from '../../../../../../src/core/supporting/authoring-editor/workspace'
@@ -23,6 +23,8 @@ describe('Loom authoring prompt', () => {
     const result = validateOUISection(TABLE_CHART_EXAMPLE, { topicId: 'green-tea', sectionName: 'water-temperature', file: 'sections/water-temperature.oui' })
     expect(result.diagnostics).toEqual([])
     expect(result.payload?.data.type).toBe('openui')
+    const narration = validateOUINarration(TABLE_CHART_NARRATION_EXAMPLE, TABLE_CHART_EXAMPLE, { sectionName: 'water-temperature' })
+    expect(narration.diagnostics).toEqual([])
   })
 
   it('has valid layout examples, the how-to played one beat per child', () => {
@@ -48,7 +50,7 @@ describe('Loom authoring prompt', () => {
     const prompt = getLoomAuthoringPrompt()
     for (const text of ['## Topic Layout', '## Output Formats', '// @loom-topic <topic-id>', '<topic-id>/sections/<name>.oui',
       '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Standard OpenUI Sections', '// @openui "<Section title>"', 'https://openui.com/docs/api-reference/react-ui',
-      '### Tables and Charts', 'Table(columns: Col[])', '### Layouts for Other Content', 'Steps(items: StepsItem[])', HOWTO_EXAMPLE, FACTS_EXAMPLE, HOWTO_NARRATION_EXAMPLE, 'BarChart(labels: string[], series: Series[]', TABLE_CHART_EXAMPLE, '## Loom Authoring Rules',
+      '### Tables and Charts', 'Table(columns: Col[])', '### Layouts for Other Content', 'Steps(items: StepsItem[])', HOWTO_EXAMPLE, FACTS_EXAMPLE, HOWTO_NARRATION_EXAMPLE, 'BarChart(labels: string[], series: Series[]', TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, '## Loom Authoring Rules',
       '## Narration Files', 'sections/<name>.narrate.oui', NARRATION_EXAMPLE, 'Spotlight(targets: string[])']) {
       expect(prompt, text).toContain(text)
     }

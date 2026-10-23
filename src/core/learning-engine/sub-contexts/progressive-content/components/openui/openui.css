@@ -51,3 +51,7 @@
   @apply p-0 m-0 border-0 shadow-none;
   background: transparent;
 }
+
+/* Data point markers a narration step can point at in Present mode (decision 117) */
+.loom-data-point { fill: transparent; stroke: none; }
+.loom-data-point.present-narr-hl { fill: var(--present-accent, var(--primary)); r: 7px; }

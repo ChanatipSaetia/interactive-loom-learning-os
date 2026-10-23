@@ -80,6 +80,7 @@ Numbering continues from [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
 | 114 | How a section opens | **On its own `title` beat, which a narration step can script.** Every section but the intro starts with a `title` beat: a card over the section with its kind, title, `heading` and `Lead` text (`lead.what`), which then steps aside for the section's own beats. A `NarrationStep("title", …)` says the section's intro in the author's words; without one the voice reads the card ("Quiz. Knowledge Check."). The intro's first beat is already its title, so it gets none. Renderers can also mark a stage line `FRAME`: the voice reads it on its beat even where an authored step plays, unless the step's caption already says it. The decision tree shows two: "An example: one path through this tree" from `start`, and "The result of these decisions" over the recommendation on `result`. Kind names and frame lines are stage labels like "Question 1 of 3", in English. Refines decisions 97, 108 and 110. |
 | 115 | Reflections step by step | **One beat per item placed or blank filled.** A reflection sequence places its items one slot per beat (`cn.step1`, `cn.step2`, … in `solution` order) and a reflection template fills one blank per beat (`cn.stepK`, in reading order), each focused as it lands, so a narration file can explain each step of the answer; `cn.solved` then turns the answer green (with the template's explanation). `cn` and `cn.solved` keep their IDs, so existing narration files still play. Revises decision 103 (the reflection part). |
 | 116 | Standard OpenUI sections in steps | **One beat per child of a `Card` or `Stack` root.** When the root of a standard OpenUI section is `Card([...])` or `Stack([...])` with more than one child, each child gets its own beat (`part1`, `part2`, … in order), so a narration file can walk through a header, a table, then its takeaway. The program still renders whole, as in Read; each child's element is marked with its beat and, when the child is a statement reference, tagged with that statement as its Pick anchor so `Highlight("table")` lights it. Any other root (Tabs, Accordion, a single child) keeps the one `all` beat. Revises decision 78. |
+| 117 | Narration points at one bar, point or cell | **A chart or table part of a standard OpenUI section is pointable down to one value, by the path of the value in its statement.** `bars.series[0].values[4]` is one bar or line point, `bars.labels[4]` every value at that label, `bars.series[1]` a series, `pie.values[2]` a slice, `table.columns[2].data[4]` a cell, `table.columns[2]` a column and `.label` its header; a row is Spotlighted by its cells. The paths are Pick-pointer paths into the statement's props, so nothing new is learned to write them. Only Present mode tags them; validation accepts exactly these paths on BarChart, HorizontalBarChart, LineChart, AreaChart, PieChart and Table parts. |
 
 ## Motion Rules
 
@@ -432,6 +433,20 @@ pure and tested directly.
   and the authoring prompt tells writers to make a narrated section a Card or Stack of named parts.
 - Tests: `progressive-content.test.ts` (parts and beats), `openui.test.tsx` (the marks per beat),
   `narration-file.test.ts` (targets inside the layout).
+
+### Decision 117 — Implementation Notes
+
+- `progressive-content/components/openui/data-anchors.ts`: `tagDataAnchors(part, name)` reads the rendered
+  part. recharts draws each chart twice (the y axis alone, then the plot), so the widest surface is the plot
+  and tags left on another surface come off. Bars and pie sectors get `data-oui-anchor`; line and area charts
+  draw no element per value, so a `g.loom-data-points` of transparent circles goes on the vertices of each
+  curve (`curveVertices`, the end of each M/L/C segment; step curves get none). Table head and body cells are
+  tagged by column and row. Every value also answers to `<name>.labels[i]` through `data-oui-alias`, which
+  `targetElements` matches like the anchor.
+- `PresentOpenUI` tags after render and again on DOM changes (a MutationObserver, once per frame), since charts
+  draw only once they are measured.
+- `validateOUINarration` accepts the paths per component (`OPENUI_DATA_PATHS`); indexes are not bounds-checked.
+- Tests: `openui.test.tsx` (cells, curve vertices), `narration-file.test.ts` (accepted and refused paths).
 
 ## Open Questions
 

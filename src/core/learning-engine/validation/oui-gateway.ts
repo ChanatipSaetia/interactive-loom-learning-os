@@ -127,10 +127,28 @@ function openuiPointable(sectionSource: string): string[] | null {
  * grill-log-presenting-mode.md) against its section's source. Tier 1–2 come from the compiler;
  * tier 3 checks that every step names a beat of the section and every target names a statement of
  * the section (and a prop of its component); in a standard OpenUI section, a target must name one
- * of the root's children.
+ * of the root's children, or a value of a chart or table among them.
  *
  * @param sectionSource - The section's `.oui` source, or undefined when the topic has no such section
  */
+/** Paths into the data of a chart or table part that Present mode anchors (decision 117). */
+const OPENUI_DATA_PATHS: Record<string, RegExp> = {
+  BarChart: /^\.(labels\[\d+\]|series\[\d+\](\.values\[\d+\])?)$/,
+  HorizontalBarChart: /^\.(labels\[\d+\]|series\[\d+\](\.values\[\d+\])?)$/,
+  LineChart: /^\.(labels\[\d+\]|series\[\d+\](\.values\[\d+\])?)$/,
+  AreaChart: /^\.(labels\[\d+\]|series\[\d+\](\.values\[\d+\])?)$/,
+  PieChart: /^\.(labels|values)\[\d+\]$/,
+  Table: /^\.columns\[\d+\](\.label|\.data\[\d+\])?$/,
+}
+
+/** True when Present mode can point at a target in a standard OpenUI section: a part, or a value of a chart or table part. */
+function openuiTargetPointable(target: string, parts: string[], statements: Map<string, string | undefined>): boolean {
+  const statement = targetStatement(target)
+  if (!parts.includes(statement)) return false
+  const rest = target.slice(statement.length)
+  return !rest || !!OPENUI_DATA_PATHS[statements.get(statement) ?? '']?.test(rest)
+}
+
 export function validateOUINarration(
   source: string,
   sectionSource: string | undefined,
@@ -180,14 +198,14 @@ export function validateOUINarration(
             })
             continue
           }
-          if (pointable && !pointable.includes(target)) {
+          if (pointable && !openuiTargetPointable(target, pointable, statements)) {
             diagnostics.push({
               tier: 3,
               line,
               field: target,
-              message: `"${target}" is inside the layout of a standard OpenUI section, so Present mode cannot point at it.`,
+              message: `Present mode cannot point at "${target}" in a standard OpenUI section.`,
               fixHint: pointable.length
-                ? `Point at one of the root's children by name: ${pointable.join(', ')}.`
+                ? `Point at one of the root's children (${pointable.join(', ')}), or at a value of a chart or table among them: "<chart>.labels[i]", "<chart>.series[s].values[i]", "<pie>.values[i]", "<table>.columns[c].data[r]".`
                 : 'Make the root a Card([...]) or Stack([...]) of several named statements, then point at those.',
               ...contextToDiagnostic(context),
             })

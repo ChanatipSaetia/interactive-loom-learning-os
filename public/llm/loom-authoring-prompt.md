@@ -498,7 +498,7 @@ When no Loom section fits, a section file can instead be a standard OpenUI progr
 
 Shape each section to its content. Do not reuse one skeleton (a header, Tabs with a chart and a table, a Callout) for every section: pick the root and the components from what this content is (see the list under Layouts for Other Content), and two standard OpenUI sections in one topic should rarely look alike.
 
-How the root shapes Present mode (see Narration Files): a `Card([...])` or `Stack([...])` root with several children plays one child per beat (`part1`, `part2`, …), and its children written as named statements are what narration can point at. Any other root (Tabs, Accordion, Carousel, a single child) plays as one beat with nothing to point at, and only its first tab or slide shows. So for a section the narrator should walk through, make the root a Card or Stack of named statements, one idea each, and keep what must be presented out of Tabs, Accordion and Carousel (they suit extra detail the reader opens in Read mode).
+How the root shapes Present mode (see Narration Files): a `Card([...])` or `Stack([...])` root with several children plays one child per beat (`part1`, `part2`, …), and its children written as named statements are what narration can point at, down to one bar, point, slice or cell of a chart or table among them. Any other root (Tabs, Accordion, Carousel, a single child) plays as one beat with nothing to point at, and only its first tab or slide shows. So for a section the narrator should walk through, make the root a Card or Stack of named statements, one idea each, and keep what must be presented out of Tabs, Accordion and Carousel (they suit extra detail the reader opens in Read mode).
 
 The `sections/steep-guide.oui` file in the example above is a standard OpenUI section.
 
@@ -516,7 +516,7 @@ How to write them:
 - Every Col of a Table, and every Series of a chart, has one value per row or label, in the same order.
 - Use real, specific figures; never invent numbers to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
 - Value axes start at 0, so values only a few percent apart look the same height. When the lesson is the difference, chart the difference (e.g. "°C below boiling", "ms over the baseline") and keep the absolute values in a Table.
-- Wrap a chart in a Card with a CardHeader for its title. Use Tabs to show the same data as a chart and a table, and a Callout for the takeaway.
+- Wrap a chart in a Card with a CardHeader for its title, and add a Callout for the takeaway. Put a chart and a table of the same data in Tabs only when the narrator does not need both: Present shows the first tab only.
 
 Signatures (? marks an optional argument):
 
@@ -533,16 +533,25 @@ Series(category: string, values: number[]) — One named series of numbers, one 
 ScatterSeries(name: string, points: Point[]) — One named set of points of a ScatterChart.
 Point(x: number, y: number, z?: number) — One x/y point of a ScatterSeries.
 
-Example section file:
+Example section file, and its narration pointing at single bars and cells:
 
 ```
 // @openui "Water Temperature" "How hot to brew each tea"
-root = Card([header, views, tip])
+root = Card([header, chart, table, tip])
 header = CardHeader("Water temperature by tea", "Starting points for a 2-minute steep")
-views = Tabs([TabItem("chart", "Chart", [chart]), TabItem("table", "Table", [table])])
 chart = BarChart(["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"], [Series("Water (°C)", [60, 75, 80, 90, 95])], "grouped", "Tea", "°C")
 table = Table([Col("Tea", ["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"]), Col("Water (°C)", [60, 75, 80, 90, 95], "number"), Col("Why", ["Shaded leaf, sweet and delicate", "Balanced, grassy", "Whisked powder, scorches easily", "Partly oxidised, needs more heat", "Fully oxidised, robust"])])
 tip = Callout("info", "No thermometer?", "Let boiled water stand: about 80 °C after 5 minutes in an open cup.")
+```
+
+```
+root = Narration([title, head, low, high, why, tip])
+title = NarrationStep("title", "How hot should the water be? It depends on the leaf.")
+head = NarrationStep("part1", "Five teas, each at its usual starting point.", [Highlight("header")])
+low = NarrationStep("part2", "Gyokuro wants the coolest water of all.", [Highlight("chart.labels[0]")])
+high = NarrationStep("part2", "Black tea takes it almost boiling.", [Callout("chart.series[0].values[4]", "Fully oxidised leaf has little left to turn bitter.")])
+why = NarrationStep("part3", "The last column says why: gyokuro is shaded, so it is sweet and delicate.", [Spotlight(["table.columns[0].data[0]", "table.columns[2].data[0]"])])
+tip = NarrationStep("part4", "No thermometer? Time does the job.", [Highlight("tip")])
 ```
 
 ### Layouts for Other Content
@@ -624,7 +633,7 @@ Loom Viewer can play a topic hands-free (Present mode): each section plays beat 
 - Its `root` is `Narration([steps])`; each `NarrationStep(beat, caption, [effects])` plays on the beat it names. Give every beat of the section at least one step, in beat order. Several steps on one beat play in turn: use them to walk a dense beat (a table, a diagram, a long card) one point at a time, each step with its own effect.
 - `caption` is what the narrator says: one or two spoken sentences in the topic's language. Explain and connect, do not just repeat the screen: on a quiz's `.wrong` beat say why that answer is tempting and wrong, on its `.right` beat why the right one is right. Pass `null` for a step that only plays an effect (its Callout is still read).
 - Write it as a talk, not a template: vary how captions open, link a beat to the one before or to an earlier section, ask the question the learner is about to answer, and put the why or the example the screen leaves out in a Callout. Mix the effects to what each beat needs; not every step needs one.
-- Effects (optional): `Highlight(target)`, `Callout(target, text)` (a note beside an element, one or two short sentences, read after the caption), `Spotlight([targets])` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline. In a standard OpenUI section, a target can only name one of the root's children (see Standard OpenUI Sections), without a prop.
+- Effects (optional): `Highlight(target)`, `Callout(target, text)` (a note beside an element, one or two short sentences, read after the caption), `Spotlight([targets])` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline. In a standard OpenUI section, a target names one of the root's children (see Standard OpenUI Sections) or one value of a chart or table among them, by the path of the value in its statement: `"bars.series[0].values[4]"` (one bar or line point), `"bars.labels[4]"` (every bar or point at the fifth label), `"bars.series[1]"` (a whole series), `"pie.values[2]"` (a slice), `"table.columns[2].data[4]"` (a cell), `"table.columns[2]"` (a column) or `"table.columns[2].label"` (its header). To point at a table row, Spotlight its cells. Use these to explain one figure at a time: Highlight a bar while the caption names it, Callout a point with why it is there.
 - In the single .oui file, the narration file follows its section: `// === sections/vocabulary.narrate.oui ===`.
 
 Every section except the intro opens on a `title` beat: a card with the section's title, its `heading` and its `Lead` text. Its step introduces the section: what it is about and why it comes now (without one, the narrator reads the card). The intro's own beats start with its `title`.
