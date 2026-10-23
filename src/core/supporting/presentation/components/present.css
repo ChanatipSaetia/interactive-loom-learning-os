@@ -106,6 +106,8 @@
 
 .present-region-body {
   position: relative;
+  /* Its own stacking context: a section's layers (a flowchart's step caption) stay under the title card */
+  isolation: isolate;
   flex: 1;
   min-height: 0;
   display: flex;
@@ -152,10 +154,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 18px;
   padding: 40px 72px;
   border-radius: inherit;
   background: var(--background);
+}
+
+.present-title-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .present-title-kind {
