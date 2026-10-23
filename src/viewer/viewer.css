@@ -211,7 +211,8 @@ body {
   box-shadow: 0 12px 32px color-mix(in srgb, var(--ctp-crust) 45%, transparent);
 }
 .viewer-menu > .viewer-pill,
-.viewer-menu > button {
+.viewer-menu > button,
+.viewer-menu > .theme-toggle {
   justify-content: flex-start;
   width: 100%;
   padding: 9px 12px;
@@ -221,7 +222,9 @@ body {
   font-size: 14px;
 }
 .viewer-menu > .viewer-pill:hover,
-.viewer-menu > button:hover { background: var(--accent); }
+.viewer-menu > button:hover,
+.viewer-menu > .theme-toggle:hover { background: var(--accent); }
+.viewer-menu .theme-toggle-chevron { margin-left: auto; }
 .viewer-menu > .loom-tools { align-self: stretch; justify-content: space-between; margin-bottom: 4px; }
 .viewer-menu .viewer-pill-label,
 .viewer-menu .audio-toggle-label,

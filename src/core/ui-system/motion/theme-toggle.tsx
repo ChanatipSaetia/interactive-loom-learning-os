@@ -1,8 +1,7 @@
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Palette, Moon, Sun, Cat, BookOpen, MoonStar, Droplets, Droplet } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { Palette, Moon, Sun, Cat, BookOpen, MoonStar, Droplets, Droplet, ChevronDown } from "lucide-react";
 import { useTheme } from "../theme/useTheme";
 import { cn } from "../utils";
-import { SPRING_PRESS } from "./ease";
 
 const THEME_ICONS: Record<string, React.ReactNode> = {
   "": <Palette className="h-4 w-4" />,
@@ -26,30 +25,23 @@ const THEME_LABELS: Record<string, string> = {
   "liquid-glass-light": "Glass Light",
 };
 
+/**
+ * The theme picker: a pill showing the current theme, with a native <select> laid over it, so a
+ * click opens a dropdown of every theme (the system picker on phones). Pages may hide its label.
+ */
 export function ThemeToggle({ className }: { className?: string }) {
   const { themeId, setTheme, themes } = useTheme();
-  const reduce = useReducedMotion();
-
-  const nextTheme = () => {
-    const idx = themes.findIndex((t: { id: string }) => t.id === themeId);
-    const next = themes[(idx + 1) % themes.length];
-    setTheme(next.id);
-  };
 
   const icon = THEME_ICONS[themeId] ?? <Palette className="h-4 w-4" />;
   const label = THEME_LABELS[themeId] ?? "Catppuccin";
 
   return (
-    <motion.button
-      type="button"
-      onClick={nextTheme}
-      whileTap={reduce ? undefined : { scale: 0.95 }}
-      transition={SPRING_PRESS}
+    <label
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent",
+        "theme-toggle relative inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-within:ring-2 focus-within:ring-ring",
         className,
       )}
-      aria-label={`Current theme: ${label}. Click to cycle.`}
+      title="Theme"
     >
       <div className="relative h-4 w-4 overflow-hidden">
         <AnimatePresence mode="popLayout">
@@ -66,6 +58,20 @@ export function ThemeToggle({ className }: { className?: string }) {
         </AnimatePresence>
       </div>
       <span className="theme-toggle-label truncate">{label}</span>
-    </motion.button>
+      <ChevronDown className="theme-toggle-chevron h-3.5 w-3.5 opacity-60" aria-hidden />
+      <select
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+        value={themeId}
+        onChange={(e) => setTheme(e.target.value)}
+        aria-label="Theme"
+        data-testid="theme-select"
+      >
+        {themes.map((t) => (
+          <option key={t.id} value={t.id}>
+            {t.icon ? `${t.icon} ${t.label}` : t.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

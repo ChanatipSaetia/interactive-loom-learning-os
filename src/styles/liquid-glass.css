@@ -48,11 +48,25 @@
 /* ---- floating glass: blurs what is behind it ---- */
 
 :root[data-theme^='liquid-glass'] .topnav {
-  background: var(--glass-tint-dark);
+  background: none;
   border-bottom-color: var(--glass-edge);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 8px 30px -18px var(--glass-drop);
+}
+
+/* The header's glass sits on a layer behind its content rather than on the header itself: a
+   backdrop-filter on the header would stop its ⋯ menu from seeing (and refracting) the page */
+:root[data-theme^='liquid-glass'] .topnav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--glass-tint-dark);
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 8px 30px -18px var(--glass-drop);
+  pointer-events: none;
 }
 
 :root[data-theme^='liquid-glass'] .section-wrapper {
@@ -62,6 +76,11 @@
 :root[data-theme^='liquid-glass'] .flowchart-header-container {
   backdrop-filter: var(--glass-filter);
   -webkit-backdrop-filter: var(--glass-filter);
+}
+
+/* Panes that float over content: the rim catches light like the edge of thick glass */
+:root[data-theme^='liquid-glass'] :is(.topnav, .pick-bar, .viewer-menu, .present-caption, .present-controls) {
+  box-shadow: var(--glass-rim), var(--glass-shadow);
 }
 
 :root[data-theme^='liquid-glass'] .pick-bar,
@@ -88,20 +107,32 @@
   background: var(--glass-sheen), color-mix(in srgb, var(--primary) 18%, var(--glass-tint-dark));
 }
 
-/* The header's ⋯ menu: solid, since the header's own blur keeps it from blurring the page */
+/* Liquid lens (Chromium, src/core/ui-system/theme/glass-lens.ts): bars that float over content bend
+   what passes under their rim, then soften it. Elsewhere, and on the ⋯ menu, panes keep the blur. */
+:root[data-theme^='liquid-glass'][data-glass-lens] :is(.pick-bar, .present-caption, .present-controls),
+:root[data-theme^='liquid-glass'][data-glass-lens] .topnav::before {
+  backdrop-filter: url(#liquid-lens) var(--glass-lens-blur) var(--glass-lens-tone);
+  -webkit-backdrop-filter: url(#liquid-lens) var(--glass-lens-blur) var(--glass-lens-tone);
+}
+
+/* The header's ⋯ menu: frosted glass over the page */
 :root[data-theme^='liquid-glass'] .viewer-menu {
-  background: var(--glass-sheen), var(--glass-solid);
+  background: var(--glass-sheen), var(--glass-menu);
   border-color: var(--glass-edge);
+  backdrop-filter: var(--glass-filter);
+  -webkit-backdrop-filter: var(--glass-filter);
   box-shadow: var(--glass-highlight), 0 24px 60px -20px var(--glass-drop);
 }
 :root[data-theme^='liquid-glass'] .viewer-menu > .viewer-pill,
-:root[data-theme^='liquid-glass'] .viewer-menu > button {
+:root[data-theme^='liquid-glass'] .viewer-menu > button,
+:root[data-theme^='liquid-glass'] .viewer-menu > .theme-toggle {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
 }
 :root[data-theme^='liquid-glass'] .viewer-menu > .viewer-pill:hover,
-:root[data-theme^='liquid-glass'] .viewer-menu > button:hover {
+:root[data-theme^='liquid-glass'] .viewer-menu > button:hover,
+:root[data-theme^='liquid-glass'] .viewer-menu > .theme-toggle:hover {
   background: var(--glass-tint-strong);
 }
 
@@ -192,8 +223,10 @@
   border-color: var(--ctp-green);
 }
 
-/* Flashcard faces (Tailwind bg-card) */
-:root[data-theme^='liquid-glass'] .backface-hidden.bg-card {
+/* Flashcard faces (Tailwind bg-card in Read, .present-card-face in Present) are solid:
+   a deck stacks cards, and a see-through face shows the words underneath */
+:root[data-theme^='liquid-glass'] .backface-hidden.bg-card,
+:root[data-theme^='liquid-glass'] .present-region .present-card-face {
   background: var(--glass-sheen), var(--glass-face);
   border-color: var(--glass-edge);
   box-shadow: var(--glass-highlight), var(--glass-shadow);
@@ -203,6 +236,42 @@
 :root[data-theme^='liquid-glass'] .flowchart-svg,
 :root[data-theme^='liquid-glass'] .flowchart-grid-container {
   background-color: transparent;
+}
+
+/* ---- flowchart: glass nodes ----
+   SVG cannot blur what is behind it, so a node is glass by being see-through (its type tint
+   at --glass-node-opacity) with a glare and a bright top edge on its HTML card. Fills and
+   strokes stay the component's own, so highlight, dim and fork states keep working. */
+
+:root[data-theme^='liquid-glass'] .flowchart-node-rect {
+  fill-opacity: var(--glass-node-opacity);
+  stroke-opacity: 0.75;
+}
+
+/* A glowing node (highlighted, hovered, lit in Present) is solid: a drop-shadow paints behind
+   its shape, so a see-through fill would fill the node with its own glow */
+:root[data-theme^='liquid-glass'] :is(
+  .flowchart-node-rect.flowchart-node-highlighted,
+  .flowchart-node-group.has-links:hover .flowchart-node-rect,
+  .present-focus .flowchart-node-rect,
+  .present-narr-hl .flowchart-node-rect
+) {
+  fill-opacity: 1;
+}
+
+:root[data-theme^='liquid-glass'] .flowchart-node-card {
+  border-radius: 8px;
+  background: var(--glass-node-glare);
+  box-shadow: var(--glass-highlight);
+}
+
+:root[data-theme^='liquid-glass'] .flowchart-edge-label-pill {
+  fill-opacity: var(--glass-node-opacity);
+}
+
+:root[data-theme^='liquid-glass'] .flowchart-step-caption {
+  background: var(--glass-sheen), var(--glass-pane);
+  box-shadow: var(--glass-highlight), 0 18px 40px -16px var(--glass-drop);
 }
 
 /* ---- inset glass: elements inside a glass card ---- */
@@ -333,8 +402,7 @@
 :root[data-theme^='liquid-glass'] .present-region :is(
   .quiz-question-card, .bullets-card, .compare-card, .topic-intro-block, .topic-intro-roadmap,
   .dt-intro-card, .dt-decision, .dt-leaf-card, .scenario-intro-card, .scenario-decision,
-  .concept-map-canvas-wrapper, .flowchart-canvas-wrapper, .present-taxonomy-detail, .present-card-face,
-  .backface-hidden.bg-card
+  .concept-map-canvas-wrapper, .flowchart-canvas-wrapper, .present-taxonomy-detail
 ) {
   background: var(--glass-tint-inset);
   border-color: var(--glass-edge);
@@ -491,8 +559,10 @@
     --glass-tint-dark: var(--glass-solid);
     --glass-pane: var(--glass-solid);
     --glass-region: var(--glass-solid);
+    --glass-menu: var(--glass-solid);
     --glass-sheen: linear-gradient(transparent, transparent);
     --glass-filter: none;
+    --glass-lens-blur: none; /* makes the lens declaration invalid, so no lens either */
   }
   :root[data-theme^='liquid-glass'] body::before,
   :root[data-theme^='liquid-glass'] body::after {

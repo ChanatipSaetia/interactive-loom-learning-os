@@ -575,23 +575,29 @@
   --glass-tint:        rgba(255, 255, 255, 0.05);
   --glass-tint-strong: rgba(255, 255, 255, 0.08);
   --glass-tint-inset:  rgba(255, 255, 255, 0.03);
-  --glass-tint-dark:   rgba(16, 19, 29, 0.55);
+  --glass-tint-dark:   rgba(16, 19, 29, 0.38);
   --glass-edge:        rgba(255, 255, 255, 0.09);
   --glass-edge-strong: rgba(255, 255, 255, 0.16);
   --glass-sheen:       linear-gradient(170deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 40%, rgba(255, 255, 255, 0) 65%);
   --glass-highlight:   inset 0 1px 0 rgba(255, 255, 255, 0.10);
   --glass-shadow:      0 18px 50px -24px rgba(0, 0, 0, 0.55);
-  --glass-filter:      blur(24px) saturate(140%);
+  --glass-filter:      blur(14px) saturate(190%) brightness(1.05);
+  --glass-lens-blur:   blur(8px);                /* with the lens (glass-lens.ts) */
+  --glass-lens-tone:   saturate(190%) brightness(1.05);
+  --glass-rim:         inset 0 1px 1px rgba(255, 255, 255, 0.28), inset 0 -10px 18px -14px rgba(255, 255, 255, 0.22), inset 10px 0 18px -16px rgba(255, 255, 255, 0.14), inset -10px 0 18px -16px rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --glass-menu:        rgba(20, 24, 36, 0.78);   /* the header's ⋯ menu: thicker, so its labels stay easy to read */
   --glass-pane:        rgba(20, 24, 36, 0.84);   /* modals, callouts, Present title card */
-  --glass-face:        rgba(32, 37, 52, 0.72);   /* flashcard faces */
+  --glass-face:        #1f2433;                  /* flashcard faces: solid, so a deck never shows through */
   --glass-region:      rgba(255, 255, 255, 0.025); /* a Present slide */
-  --glass-sticky:      rgba(18, 21, 32, 0.5);    /* sticky section titles */
+  --glass-sticky:      rgba(18, 21, 32, 0.3);    /* sticky section titles */
   --glass-well:        rgba(8, 10, 16, 0.45);    /* text inputs */
   --glass-drop:        rgba(0, 0, 0, 0.6);       /* drop shadows */
   --glass-selection:   rgba(163, 180, 221, 0.28);
   --glass-solid:       #1e2230;                  /* surfaces when transparency is reduced */
   --glass-solid-edge:  #303646;
   --glass-base:        #0d1018;
+  --glass-node-opacity: 0.72;                    /* flowchart node fills */
+  --glass-node-glare:  linear-gradient(160deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 60%);
   --glass-backdrop:
     radial-gradient(70% 55% at 18% -5%, rgba(122, 142, 196, 0.20), transparent 70%),
     radial-gradient(55% 50% at 90% 105%, rgba(104, 124, 168, 0.13), transparent 70%),
@@ -602,7 +608,9 @@
    Theme: Liquid Glass Light — Morning Mist (light, translucent, calm)
 
    The light twin of Midnight Mist: frosted white glass over a pale
-   cool backdrop with two soft periwinkle glows and the same grain.
+   cool backdrop with soft periwinkle, lilac and aqua glows and the
+   same grain, a glare from the top left and a faint reflection from
+   the bottom right on every pane.
    Accents are the Catppuccin hues deepened for contrast on white.
    Surface roles follow the other light themes (crust = lightest).
    Shares src/styles/liquid-glass.css with the dark variant.
@@ -611,7 +619,7 @@
   /* shadcn semantic tokens — frosted white surfaces */
   --background:             #eef1f6;
   --foreground:             #1e2432;
-  --card:                   rgba(255, 255, 255, 0.55);
+  --card:                   rgba(255, 255, 255, 0.42);
   --card-foreground:        #1e2432;
   --primary-foreground:     #ffffff;
   --secondary-foreground:   #ffffff;
@@ -672,28 +680,38 @@
   --present-enter-blur: 6px;
 
   /* Glass material — frosted white, a hairline of shade for definition */
-  --glass-tint:        rgba(255, 255, 255, 0.55);
-  --glass-tint-strong: rgba(255, 255, 255, 0.75);
-  --glass-tint-inset:  rgba(255, 255, 255, 0.45);
-  --glass-tint-dark:   rgba(255, 255, 255, 0.62);
+  --glass-tint:        rgba(255, 255, 255, 0.42);
+  --glass-tint-strong: rgba(255, 255, 255, 0.62);
+  --glass-tint-inset:  rgba(255, 255, 255, 0.34);
+  --glass-tint-dark:   rgba(255, 255, 255, 0.40);
   --glass-edge:        rgba(30, 40, 70, 0.09);
   --glass-edge-strong: rgba(30, 40, 70, 0.16);
-  --glass-sheen:       linear-gradient(170deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 40%, rgba(255, 255, 255, 0) 65%);
-  --glass-highlight:   inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  --glass-shadow:      0 18px 50px -26px rgba(40, 55, 95, 0.28);
-  --glass-filter:      blur(24px) saturate(150%);
+  /* A glare from the top left and a faint reflection rising from the bottom right */
+  --glass-sheen:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.28) 24%, rgba(255, 255, 255, 0) 52%),
+    linear-gradient(340deg, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0) 28%);
+  --glass-highlight:   inset 0 1px 0 #ffffff, inset 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(30, 40, 70, 0.05);
+  --glass-shadow:      0 22px 50px -24px rgba(40, 55, 95, 0.34), 0 2px 6px -2px rgba(40, 55, 95, 0.10);
+  --glass-filter:      blur(14px) saturate(200%) brightness(1.05);
+  --glass-lens-blur:   blur(8px);
+  --glass-lens-tone:   saturate(200%) brightness(1.05);
+  --glass-rim:         inset 0 1px 1px #ffffff, inset 0 -10px 18px -14px rgba(255, 255, 255, 0.9), inset 10px 0 18px -16px rgba(255, 255, 255, 0.7), inset -10px 0 18px -16px rgba(255, 255, 255, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  --glass-menu:        rgba(250, 251, 254, 0.80);
   --glass-pane:        rgba(250, 251, 254, 0.86);
-  --glass-face:        rgba(255, 255, 255, 0.82);
-  --glass-region:      rgba(255, 255, 255, 0.38);
-  --glass-sticky:      rgba(240, 243, 248, 0.6);
+  --glass-face:        #ffffff;
+  --glass-region:      rgba(255, 255, 255, 0.28);
+  --glass-sticky:      rgba(240, 243, 248, 0.36);
   --glass-well:        rgba(255, 255, 255, 0.7);
   --glass-drop:        rgba(40, 55, 95, 0.22);
   --glass-selection:   rgba(74, 98, 166, 0.20);
   --glass-solid:       #ffffff;
   --glass-solid-edge:  #dfe3eb;
   --glass-base:        #e9edf3;
+  --glass-node-opacity: 0.6;
+  --glass-node-glare:  linear-gradient(160deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.15) 35%, rgba(255, 255, 255, 0) 60%);
   --glass-backdrop:
-    radial-gradient(70% 55% at 18% -5%, rgba(150, 168, 222, 0.38), transparent 70%),
-    radial-gradient(55% 50% at 90% 105%, rgba(170, 196, 214, 0.34), transparent 70%),
-    linear-gradient(180deg, #f1f3f8 0%, #e6eaf1 100%);
+    radial-gradient(70% 55% at 15% -5%, rgba(140, 160, 225, 0.55), transparent 70%),
+    radial-gradient(50% 45% at 95% 40%, rgba(196, 178, 232, 0.32), transparent 70%),
+    radial-gradient(60% 55% at 85% 108%, rgba(150, 196, 214, 0.50), transparent 70%),
+    linear-gradient(180deg, #eef1f7 0%, #e3e8f0 100%);
 }
