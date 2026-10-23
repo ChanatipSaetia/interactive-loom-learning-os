@@ -137,3 +137,17 @@ describe('tool rounds in the thread (decision 124)', () => {
     expect(loadThread('t').messages[1].steps).toEqual(steps)
   })
 })
+
+describe('thinking in the thread (decision 128)', () => {
+  it('keeps the thinking for the panel but never sends it to the model', () => {
+    const steps: ToolStep[] = [{ text: '', thinking: 'Which section?', calls: [{ id: 'c1', name: 'navigate', args: '{}', result: 'Topic', label: 'Topic outline' }] }]
+    const thread = [user('1', 'Hi'), reply('2', 'Hello.', { thinking: 'Greet back.', thoughtMs: 2400, steps })]
+    const sent = JSON.stringify(historyMessages(thread, 0, { tools: true }))
+    expect(sent).not.toContain('Greet back.')
+    expect(sent).not.toContain('Which section?')
+    saveThread('t', { messages: thread })
+    const loaded = loadThread('t').messages[1]
+    expect(loaded).toMatchObject({ thinking: 'Greet back.', thoughtMs: 2400 })
+    expect(loaded.steps?.[0].thinking).toBe('Which section?')
+  })
+})

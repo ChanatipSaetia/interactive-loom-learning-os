@@ -57,8 +57,15 @@ export interface ToolStepCall {
 /** One tool round: the text the model wrote with its calls, then the calls. */
 export interface ToolStep {
   text: string
+  /** What the model thought before these calls; shown only, never sent back (decision 128). */
+  thinking?: string
   calls: ToolStepCall[]
 }
+
+/** Thinking kept per round or reply; longer reasoning is cut, so the thread fits in localStorage. */
+export const MAX_THINKING = 20000
+
+export const clipThinking = (text: string) => (text.length > MAX_THINKING ? `${text.slice(0, MAX_THINKING)}…` : text)
 
 export interface ThreadMessage {
   id: string
@@ -78,6 +85,10 @@ export interface ThreadMessage {
   edits?: EditHunkState[]
   /** Assistant messages: the content-tool rounds before the answer (Viewer). */
   steps?: ToolStep[]
+  /** Assistant messages: what the model thought before its answer; shown only, never sent back (decision 128). */
+  thinking?: string
+  /** Assistant messages: how long the model spent thinking, in all rounds. */
+  thoughtMs?: number
   /** Assistant messages with edits: what the dry run found wrong (empty when they check out). */
   problems?: string[]
   /** User messages Studio sent itself: the validation retry. */
@@ -124,7 +135,10 @@ function readStep(value: unknown): ToolStep | null {
     if (typeof call.anchor === 'string') out.anchor = call.anchor
     return [out]
   })
-  return calls.length ? { text: typeof step.text === 'string' ? step.text : '', calls } : null
+  if (!calls.length) return null
+  const out: ToolStep = { text: typeof step.text === 'string' ? step.text : '', calls }
+  if (typeof step.thinking === 'string' && step.thinking) out.thinking = clipThinking(step.thinking)
+  return out
 }
 
 function readMessage(value: unknown): ThreadMessage | null {
@@ -150,6 +164,8 @@ function readMessage(value: unknown): ThreadMessage | null {
         ...(e && typeof e.error === 'string' ? { error: e.error } : {}),
       }))
     }
+    if (typeof message.thinking === 'string' && message.thinking) out.thinking = clipThinking(message.thinking)
+    if (typeof message.thoughtMs === 'number' && message.thoughtMs > 0) out.thoughtMs = message.thoughtMs
     if (Array.isArray(message.steps)) {
       const steps = message.steps.map(readStep).filter((s): s is ToolStep => s !== null)
       if (steps.length) out.steps = steps

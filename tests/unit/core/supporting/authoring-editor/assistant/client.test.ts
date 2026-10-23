@@ -298,3 +298,37 @@ describe('chatCompletion with tools (decision 120)', () => {
     expect(JSON.parse((fetch.mock.calls[0] as unknown as [string, RequestInit])[1].body as string)).not.toHaveProperty('tools')
   })
 })
+
+describe('chatCompletion with reasoning (decision 128)', () => {
+  const messages = [{ role: 'user' as const, content: 'Hi' }]
+  const delta = (d: Record<string, unknown>) => `data: ${JSON.stringify({ choices: [{ delta: d }] })}\n\n`
+
+  it('streams reasoning_content and reasoning fields apart from the text', async () => {
+    const fetch = async () => sse([delta({ reasoning_content: 'Hmm, ' }), delta({ reasoning: 'caches.' }), delta({ content: 'Answer.' }), 'data: [DONE]\n\n'])
+    const thoughts: string[] = []
+    const texts: string[] = []
+    const result = await chatCompletion(local, { model: 'm', messages, onReasoning: (r) => thoughts.push(r), onDelta: (t) => texts.push(t) }, { fetch, ...page })
+    expect(result.text).toBe('Answer.')
+    expect(result.reasoning).toBe('Hmm, caches.')
+    expect(thoughts).toEqual(['Hmm, ', 'caches.'])
+    expect(texts).toEqual(['Answer.'])
+  })
+
+  it('splits a leading <think> block off the text, with tags cut across chunks', async () => {
+    const fetch = async () => sse([delta({ content: '\n<thi' }), delta({ content: 'nk>Let me see' }), delta({ content: '.</th' }), delta({ content: 'ink>\n\nIt is ' }), delta({ content: 'private.' }), 'data: [DONE]\n\n'])
+    const texts: string[] = []
+    const result = await chatCompletion(local, { model: 'm', messages, onDelta: (t) => texts.push(t) }, { fetch, ...page })
+    expect(result.reasoning).toBe('Let me see.')
+    expect(result.text).toBe('It is private.')
+    expect(texts.join('')).toBe('It is private.')
+  })
+
+  it('reads reasoning from a whole answer, and leaves text without <think> alone', async () => {
+    const whole = async () => json({ choices: [{ message: { content: '<think>Short.</think>Done.', reasoning_content: 'Also.' } }] })
+    const result = await chatCompletion(local, { model: 'm', messages }, { fetch: whole, ...page })
+    expect(result).toMatchObject({ text: 'Done.', reasoning: 'Also.Short.' })
+    const plain = await chatCompletion(local, { model: 'm', messages }, { fetch: async () => json({ choices: [{ message: { content: 'Use <think> tags.' } }] }), ...page })
+    expect(plain.text).toBe('Use <think> tags.')
+    expect(plain.reasoning).toBeUndefined()
+  })
+})

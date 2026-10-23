@@ -276,9 +276,9 @@ describe('Content tools in Viewer (decisions 120–125)', () => {
     await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
     expect(screen.getByTestId('ai-reply')).toHaveTextContent('Yes is right.')
     // A pill says how many places; opened, it lists them (section, then the part).
-    expect(screen.getByTestId('ai-looked-toggle')).toHaveTextContent('Looked at 2 places')
+    expect(screen.getByTestId('ai-activity-toggle')).toHaveTextContent('Looked at 2 places')
     expect(screen.queryByTestId('ai-looked-line')).toBeNull()
-    fireEvent.click(screen.getByTestId('ai-looked-toggle'))
+    fireEvent.click(screen.getByTestId('ai-activity-toggle'))
     expect(screen.getAllByTestId('ai-looked-line').map((l) => l.textContent)).toEqual(['Topic outlineAll sections', 'CheckWhy?'])
 
     const bodies = chatBodies(fetchImpl)
@@ -335,5 +335,43 @@ describe('Content tools in Viewer (decisions 120–125)', () => {
     // Without tools, the section in view goes whole again.
     expect(last.messages[1].content).toContain('(whole file)')
     expect(JSON.parse(localStorage.getItem('loom-ai-profiles')!).profiles[0].tools).toBe(false)
+  })
+})
+
+describe('Thinking (decision 128)', () => {
+  it('shows the reasoning in the activity pill, apart from the answer, and does not send it back', async () => {
+    seed('http://localhost:11434/v1')
+    const reasoning = (text: string) => `data: ${JSON.stringify({ choices: [{ delta: { reasoning_content: text } }] })}\n\n`
+    const answer = (text: string) => `data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        for (const piece of [reasoning('The learner asks '), reasoning('about q1.'), answer('Yes is right.'), 'data: [DONE]\n\n']) controller.enqueue(enc.encode(piece))
+        controller.close()
+      },
+    })
+    let chatsSent = 0
+    const fetchImpl = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) =>
+      url.endsWith('/models')
+        ? new Response(JSON.stringify({ data: [{ id: 'm1' }] }), { headers: { 'content-type': 'application/json' } })
+        : chatsSent++ === 0
+          ? new Response(body, { headers: { 'content-type': 'text/event-stream' } })
+          : streamOf('Sure.'),
+    )
+    render(<Harness fetchImpl={fetchImpl as unknown as typeof fetch} />)
+    fireEvent.click(screen.getByTestId('pick-send'))
+    await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
+    expect(screen.getByTestId('ai-reply')).toHaveTextContent('Yes is right.')
+    expect(screen.getByTestId('ai-reply')).not.toHaveTextContent('The learner asks')
+    expect(screen.getByTestId('ai-activity-toggle')).toHaveTextContent(/^Thought/)
+    fireEvent.click(screen.getByTestId('ai-activity-toggle'))
+    expect(screen.getByTestId('ai-thought')).toHaveTextContent('The learner asks about q1.')
+
+    // A follow-up does not carry the thinking.
+    fireEvent.change(screen.getByTestId('pick-composer'), { target: { value: 'Thanks' } })
+    fireEvent.keyDown(screen.getByTestId('pick-composer'), { key: 'Enter' })
+    await waitFor(() => expect(screen.getAllByTestId('ai-reply')).toHaveLength(2))
+    const chats = fetchImpl.mock.calls.filter(([u]) => String(u).endsWith('/chat/completions'))
+    expect(chats).toHaveLength(2)
+    expect(String((chats[1][1] as RequestInit).body)).not.toContain('The learner asks')
   })
 })

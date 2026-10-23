@@ -154,7 +154,7 @@ Numbering continues from [grill-log-pick-and-comment.md](grill-log-pick-and-comm
 
 - Tests: `assistant-prompt.test.ts` (Viewer prompt, `firstSentence`), `context.test.ts` (On Screen sent once, resent when the view moves), `thread.test.ts` (Viewer picks), `assistant-dock.test.tsx`, `tests/e2e/assistant.spec.ts` (Viewer request).
 
-## Content Tools in Viewer — Decisions
+## Content Tools and Thinking in Viewer — Decisions
 
 The tutor (decision 119) only saw what was picked and the section on screen, so it could not
 say where else the topic covers something, or answer "how does this relate to what I read
@@ -171,6 +171,7 @@ decision 54 ("no tool calling") for Viewer.
 | 125 | What the learner sees | **A "Looked at" pill above the reply**: "Looking at <section>…" with a spinner while the model looks, then "Looked at N places". Opened, it lists the places as a small timeline, one row per call: an icon for the tool, the section title, and the part below it in muted text (`Knowledge Check` / `A logged-in dashboard…`). Clicking a row scrolls to it in Read mode, like a pick chip. |
 | 126 | Scope | **The open topic's sections and their narration scripts** (`sections/<name>.narrate.oui`). Not other topics in the same archive, and not Studio yet (the tools live in the shared `assistant/` module so Studio can switch them on in a later decision). |
 | 127 | What each message sends up front | **With the tools on: the picks and where the learner is, the rest on demand.** The picked statements are still sent, and the On Screen line names the section in view by address and title, but its whole file is no longer sent; the model reads it when it needs it. With the tools off, the section in view goes whole as in decision 119. The outline now gives each section's title, so even without tools the model can name where the topic covers something. The Viewer prompt also gains a length rule (brief by default, deeper with examples or analogies when asked) and a **Going further** rule: point at the topic's own sections by title, offer one or two directions to explore next, and never invent links or sources. |
+| 128 | The model's thinking | **Shown in the activity pill, never sent back.** Reasoning arrives in a `reasoning_content` field (llama.cpp, LM Studio, DeepSeek, vLLM), a `reasoning` field (Ollama, OpenRouter), or as a `<think>…</think>` block at the start of the text, which the client splits off (tags cut across chunks are held back until whole). It streams into the pill with decision 125's lookups: "Thinking…" with a one-line preview of the newest thought, then "Thought for 8s · Looked at 2 places"; opened, the timeline shows each round's thinking before its calls, and the final thinking last. It is kept in the thread for the panel (each round's and the reply's, cut at 20,000 characters) but left out of every request: some servers reject reasoning in input messages, and it would only spend tokens. Studio shows it the same way. |
 
 ## Decisions 120–127 — Implementation Notes
 
@@ -188,6 +189,17 @@ decision 54 ("no tool calling") for Viewer.
 
 - The mock server in `tests/e2e/fixtures/` calls a tool for `TOOL<<name {args}>>` in the last user message (streamed in two pieces) and answers with the result's first line.
 - Tests: `content-tree.test.ts`, `content-tools.test.ts`, `client.test.ts` (tool calls streamed and whole, body), `thread.test.ts` (rounds in history, saved), `assistant-dock.test.tsx` (the loop, the round limit, the fallback), `assistant-prompt.test.ts`, `tests/e2e/assistant.spec.ts` (Viewer tool round, "Looked at" line shows the place).
+
+## Decision 128 — Implementation Notes
+
+| Piece | Location |
+|---|---|
+| `readChoice` reads `reasoning_content` / `reasoning`; `ThinkSplitter` splits a leading `<think>` block; `AnswerCollector` serves the streamed, whole and mislabelled-SSE paths; `onReasoning`, `ChatResult.reasoning` | `assistant/client.ts` |
+| `ToolStep.thinking`, `ThreadMessage.thinking` and `thoughtMs`, `clipThinking` (20,000 characters); never in `historyMessages` | `assistant/thread.ts` |
+| Thinking streams into the reply, moves into the round when the model calls tools; time from a round's first reasoning to its first text or its end | `assistant/useAssistant.ts` |
+| `Activity` (was `LookedAt`): the pill's live states, the preview line, thought rows with auto-scrolling text | `assistant/AssistantPanel.tsx`, `assistant.css` |
+
+- Tests: `client.test.ts` (both fields, `<think>` cut across chunks, whole answers, text that only mentions the tag), `thread.test.ts` (kept, not sent), `assistant-dock.test.tsx` (pill, opened thought, follow-up without it).
 
 ## Open Questions
 

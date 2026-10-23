@@ -8,7 +8,7 @@
  * starts. `AssistantToggle` opens the panel from the page header.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { AlertTriangle, ArrowUpRight, Bot, ChevronDown, FileText, ListTree, Loader2, MessageSquarePlus, RotateCcw, Search, Settings2, X } from 'lucide-react'
+import { AlertTriangle, ArrowUpRight, Bot, Brain, ChevronDown, FileText, ListTree, Loader2, MessageSquarePlus, RotateCcw, Search, Settings2, X } from 'lucide-react'
 import { Modal } from '../../../ui-system'
 import { findPickElement } from '../pick/PickLayer'
 import { useNarrow } from '../pick/PickMode'
@@ -18,7 +18,7 @@ import { AssistantMarkdown } from './AssistantMarkdown'
 import { EditCard, ProposalBar, useEditBlocks } from './AssistantEdits'
 import { AssistantSettingsDialog } from './AssistantSettingsDialog'
 import { failureHint, type AssistantPresetId } from './presets'
-import type { ThreadMessage, ThreadPick } from './thread'
+import type { ThreadMessage, ThreadPick, ToolStepCall } from './thread'
 import type { AssistantFailureKind } from './client'
 import type { AssistantState } from './useAssistant'
 import type { PickAssistantBridge } from '../pick/PickMode'
@@ -129,47 +129,95 @@ function splitLabel(name: string, label: string): { title: string; detail?: stri
   return { title: label }
 }
 
+/** "Thought for 8s", or "Thought" under a second. */
+function thoughtLabel(ms?: number): string {
+  return ms && ms >= 1000 ? `Thought for ${Math.round(ms / 1000)}s` : 'Thought'
+}
+
+/** The last line of the thinking so far, for the live preview. */
+const lastLine = (text: string) => text.trimEnd().split('\n').filter((line) => line.trim()).pop()?.trim() ?? ''
+
+/** Reasoning text that keeps its newest lines in view while it streams. */
+function ThinkingText({ text, live }: { text: string; live: boolean }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    if (live && ref.current) ref.current.scrollTop = ref.current.scrollHeight
+  }, [text, live])
+  return <div ref={ref} className="ai-activity-thought" data-testid="ai-thought">{text.trim()}</div>
+}
+
+type ActivityRow = { kind: 'thought'; key: string; text: string; live: boolean } | { kind: 'call'; key: string; call: ToolStepCall }
+
 /**
- * The content-tool calls behind a reply (decision 125): a pill that says how
- * many places the model looked at (or, while it looks, which one), opening
- * on a timeline of the places; a click shows one on the page.
+ * What the model did before its answer (decisions 125 and 128): its thinking
+ * and the places it looked at, as one pill ("Thinking…", "Looking at …",
+ * then "Thought for 8s · Looked at 2 places") that opens on a timeline in
+ * the order they happened. A place's row shows it on the page.
  */
-function LookedAt({ message }: { message: ThreadMessage }) {
+function Activity({ message }: { message: ThreadMessage }) {
   const [open, setOpen] = useState(false)
-  const calls = (message.steps ?? []).flatMap((step) => step.calls)
-  if (!calls.length) return null
-  const looking = message.status === 'streaming' && !message.text
-  const latest = splitLabel(calls[calls.length - 1].name, calls[calls.length - 1].label)
-  const count = `${calls.length} ${calls.length === 1 ? 'place' : 'places'}`
+  const streaming = message.status === 'streaming'
+  const rows: ActivityRow[] = []
+  ;(message.steps ?? []).forEach((step, i) => {
+    if (step.thinking) rows.push({ kind: 'thought', key: `t${i}`, text: step.thinking, live: false })
+    step.calls.forEach((call) => rows.push({ kind: 'call', key: call.id, call }))
+  })
+  const thinkingNow = streaming && !!message.thinking && !message.text
+  if (message.thinking) rows.push({ kind: 'thought', key: 'final', text: message.thinking, live: thinkingNow })
+  if (!rows.length) return null
+
+  const calls = rows.filter((r) => r.kind === 'call').length
+  const thought = rows.some((r) => r.kind === 'thought')
+  const lastCall = [...rows].reverse().find((r): r is Extract<ActivityRow, { kind: 'call' }> => r.kind === 'call')
+  const looking = streaming && !message.text && !thinkingNow && !!lastCall
+  const done = [thought ? thoughtLabel(message.thoughtMs) : '', calls ? `Looked at ${calls} ${calls === 1 ? 'place' : 'places'}` : ''].filter(Boolean).join(' · ')
+  const busy = thinkingNow || looking
+  const preview = thinkingNow && !open ? lastLine(message.thinking ?? '') : ''
+
   return (
-    <div className={`ai-looked${open ? ' is-open' : ''}`} data-testid="ai-looked">
-      <button type="button" className="ai-looked-toggle" aria-expanded={open} onClick={() => setOpen((o) => !o)} data-testid="ai-looked-toggle">
-        {looking ? <Loader2 size={13} className="ai-spin" aria-hidden /> : <Search size={13} aria-hidden />}
-        <span className="ai-looked-summary">{looking ? <>Looking at <b>{latest.title}</b>…</> : <>Looked at {count}</>}</span>
-        <ChevronDown size={13} className="ai-looked-chevron" aria-hidden />
+    <div className={`ai-activity${open ? ' is-open' : ''}`} data-testid="ai-activity">
+      <button type="button" className="ai-activity-toggle" aria-expanded={open} onClick={() => setOpen((o) => !o)} data-testid="ai-activity-toggle">
+        {busy ? <Loader2 size={13} className="ai-spin" aria-hidden /> : thought && !calls ? <Brain size={13} aria-hidden /> : <Search size={13} aria-hidden />}
+        <span className="ai-activity-summary">
+          {thinkingNow ? 'Thinking…' : looking ? <>Looking at <b>{splitLabel(lastCall!.call.name, lastCall!.call.label).title}</b>…</> : done}
+        </span>
+        <ChevronDown size={13} className="ai-activity-chevron" aria-hidden />
       </button>
+      {preview && <p className="ai-activity-preview" aria-live="polite">{preview}</p>}
       {open && (
-        <ol className="ai-looked-list">
-          {calls.map((call) => {
+        <ol className="ai-activity-list">
+          {rows.map((row) => {
+            if (row.kind === 'thought') {
+              return (
+                <li key={row.key} className="ai-activity-row ai-activity-row--thought">
+                  <span className="ai-activity-icon">{row.live ? <Loader2 size={12} className="ai-spin" aria-hidden /> : <Brain size={12} aria-hidden />}</span>
+                  <span className="ai-activity-text">
+                    <span className="ai-activity-title">{row.live ? 'Thinking…' : 'Thought'}</span>
+                    <ThinkingText text={row.text} live={row.live} />
+                  </span>
+                </li>
+              )
+            }
+            const { call } = row
             const place = call.file ? { file: call.file, anchor: call.anchor ?? 'root' } : null
             const { title, detail } = splitLabel(call.name, call.label)
             const Icon = TOOL_ICONS[call.name] ?? Search
             return (
-              <li key={call.id}>
+              <li key={row.key}>
                 <button
                   type="button"
-                  className="ai-looked-line"
+                  className="ai-activity-row ai-activity-row--place"
                   disabled={!place}
                   onClick={() => place && showPick(place)}
                   title={place ? `Show on page: ${call.label}` : call.label}
                   data-testid="ai-looked-line"
                 >
-                  <span className="ai-looked-icon"><Icon size={12} aria-hidden /></span>
-                  <span className="ai-looked-text">
-                    <span className="ai-looked-title">{title}</span>
-                    {detail && <span className="ai-looked-detail">{detail}</span>}
+                  <span className="ai-activity-icon"><Icon size={12} aria-hidden /></span>
+                  <span className="ai-activity-text">
+                    <span className="ai-activity-title">{title}</span>
+                    {detail && <span className="ai-activity-detail">{detail}</span>}
                   </span>
-                  {place && <ArrowUpRight size={13} className="ai-looked-go" aria-hidden />}
+                  {place && <ArrowUpRight size={13} className="ai-activity-go" aria-hidden />}
                 </button>
               </li>
             )
@@ -191,8 +239,8 @@ function Reply({ assistant, message, preset, last, onRetry }: { assistant: Assis
   const page = typeof location !== 'undefined' ? location : undefined
   return (
     <div className="ai-message ai-message--assistant" data-testid="ai-reply" data-status={message.status}>
-      <LookedAt message={message} />
-      {message.text ? <AssistantMarkdown text={message.text} renderEdit={renderEdit} /> : streaming && !message.steps?.length ? <p className="ai-thinking"><Loader2 size={14} className="ai-spin" /> Thinking…</p> : null}
+      <Activity message={message} />
+      {message.text ? <AssistantMarkdown text={message.text} renderEdit={renderEdit} /> : streaming && !message.steps?.length && !message.thinking ? <p className="ai-thinking"><Loader2 size={14} className="ai-spin" /> Thinking…</p> : null}
       {message.status === 'stopped' && <p className="ai-note">(stopped)</p>}
       {assistant.canEdit && <ProposalBar assistant={assistant} message={message} />}
       {failed && (

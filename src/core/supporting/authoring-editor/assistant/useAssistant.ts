@@ -52,6 +52,7 @@ import {
   type ThreadPick,
   type ToolStep,
   type ToolStepCall,
+  clipThinking,
 } from './thread'
 
 /** Tool rounds per message before the model must answer (decision 124). */
@@ -275,6 +276,15 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
 
     let followUp: ThreadMessage[] | null = null
     let steps: ToolStep[] = []
+    // Thinking time (decision 128): from a round's first reasoning to its first text or the round's end.
+    let thoughtMs = 0
+    let thinkingSince: number | null = null
+    const stopThinking = () => {
+      if (thinkingSince === null) return
+      thoughtMs += Date.now() - thinkingSince
+      thinkingSince = null
+      patchMessage(reply.id, { thoughtMs })
+    }
     try {
       let result: Awaited<ReturnType<typeof chatCompletion>>
       for (let round = 0; ; round++) {
@@ -289,7 +299,14 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
               tools: tools ? CONTENT_TOOLS : undefined,
               toolChoice: tools && round >= MAX_TOOL_ROUNDS ? 'none' : undefined,
               signal: controller.signal,
-              onDelta: (delta) => patchMessage(reply.id, (m) => ({ text: m.text + delta })),
+              onDelta: (delta) => {
+                stopThinking()
+                patchMessage(reply.id, (m) => ({ text: m.text + delta }))
+              },
+              onReasoning: (delta) => {
+                thinkingSince ??= Date.now()
+                patchMessage(reply.id, (m) => ({ thinking: (m.thinking ?? '') + delta }))
+              },
             },
             { fetch: fetchImpl },
           )
@@ -307,12 +324,14 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
           round--
           continue
         }
+        stopThinking()
         const calls = tools && round < MAX_TOOL_ROUNDS ? result.toolCalls : undefined
         if (!calls?.length) break
         const runner = new ContentToolRunner(contextRef.current())
         const earlier = earlierResults([...messages.slice(start), { ...reply, steps }])
         const step: ToolStep = {
           text: result.text,
+          ...(result.reasoning ? { thinking: clipThinking(result.reasoning) } : {}),
           calls: calls.map((call): ToolStepCall => {
             const outcome = CONTENT_TOOL_NAMES.has(call.function.name)
               ? runner.run(call.function.name, call.function.arguments)
@@ -324,8 +343,8 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
         }
         if (round === MAX_TOOL_ROUNDS - 1) step.calls = step.calls.map((c, i, all) => (i === all.length - 1 ? { ...c, result: c.result + LIMIT_NOTE } : c))
         steps = [...steps, step]
-        // The text written with the calls moves into the round; the answer streams in fresh.
-        patchMessage(reply.id, { text: '', steps })
+        // The text and thinking written with the calls move into the round; the answer streams in fresh.
+        patchMessage(reply.id, { text: '', thinking: undefined, steps })
       }
       if (toolsRefused) {
         setSettings((current) => {
@@ -345,8 +364,17 @@ export function useAssistant({ topicId, app, getContext, editor, fetchImpl }: Us
           followUp = [...messages, done, auto]
         }
       }
-      patchMessage(reply.id, { text: done.text, status: 'done', edits: done.edits, problems: done.problems, ...(steps.length ? { steps } : {}) })
+      patchMessage(reply.id, {
+        text: done.text,
+        status: 'done',
+        edits: done.edits,
+        problems: done.problems,
+        thinking: result.reasoning ? clipThinking(result.reasoning) : undefined,
+        ...(steps.length ? { steps } : {}),
+        ...(thoughtMs ? { thoughtMs } : {}),
+      })
     } catch (error) {
+      stopThinking()
       const failure = error instanceof AssistantError ? error : new AssistantError('bad-response', String(error))
       if (failure.kind === 'aborted') {
         patchMessage(reply.id, (m) => ({ text: failure.partial ?? m.text, status: 'stopped' }))
