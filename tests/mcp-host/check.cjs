@@ -161,6 +161,27 @@ async function open(browser, query) {
   }
 
   {
+    // Pick (Read): point at a quiz question, ask about it, and the question goes into the chat with the words on screen
+    const { page, app } = await open(browser, '')
+    await app.locator('[data-testid=mcp-play]').click()
+    await app.locator('[data-testid=mcp-present]').waitFor({ timeout: 10000 })
+    await page.waitForTimeout(1500)
+    await app.locator('[data-testid=mcp-ask]').click()
+    await app.locator('[data-testid=mcp-read]').waitFor({ timeout: 10000 })
+    await page.waitForTimeout(1200)
+    const pickOn = await app.locator('[data-testid=pick-toggle]').getAttribute('aria-pressed')
+    const question = app.locator('[data-oui-file="sections/quiz.oui"][data-oui-anchor="q1"]').first()
+    await question.scrollIntoViewIfNeeded()
+    await question.click()
+    await app.locator('[data-testid=pick-composer]').fill('Why is this the answer?')
+    await app.locator('[data-testid=pick-send]').click()
+    await page.waitForTimeout(800)
+    const message = await page.evaluate(() => window.lastMessage ?? '')
+    results.pick = { pickOnFromAsk: pickOn, message: message.slice(0, 400) }
+    await shot(page, 'pick-ask')
+  }
+
+  {
     // The theme picker overrides the chat's mode for the session (decision 196)
     const { page, app } = await open(browser, '')
     const before = await app.locator('html').getAttribute('data-theme')

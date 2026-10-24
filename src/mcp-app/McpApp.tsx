@@ -6,10 +6,12 @@
  * Full screen asks the chat to give either the whole window. It
  * reads and checks the topic with the same steps as Loom Viewer, and hands any
  * errors back to the chat's model. Save my progress hands the chat today's
- * progress note to keep in the learner's drive (decision 199).
+ * progress note to keep in the learner's drive (decision 199). In Read, Pick
+ * (⌖ in the bar at the bottom) points at parts of the topic and sends a
+ * question about them into the chat; Ask in Present opens Read there.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, BookOpen, Check, ChevronDown, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
+import { AlertTriangle, BookOpen, Check, ChevronDown, Crosshair, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
@@ -22,6 +24,8 @@ import { TopicView } from '../viewer/ViewerApp'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/themes'
 import { copyText } from '../core/ui-system/clipboard'
+import { PickMode, findPickElement, sourceResolver, type PickAssistantBridge } from '../core/supporting/authoring-editor/pick'
+import { pickQuestion } from './ask'
 
 type View = 'card' | 'present' | 'read'
 
@@ -142,6 +146,10 @@ export function McpApp({ app }: { app: App }) {
   useEffect(() => {
     viewRef.current = view
   }, [view])
+  // The pick bar is fixed to the frame: in full screen it keeps above the chat's own bars
+  useEffect(() => {
+    document.documentElement.classList.toggle('mcp-is-full', full)
+  }, [full])
 
   /** The chat's light or dark mode (decision 196) until the learner picks a theme, which lasts the session. */
   const [themeId, setThemeId] = useState(() => document.documentElement.dataset.theme ?? '')
@@ -249,8 +257,11 @@ export function McpApp({ app }: { app: App }) {
   }, [app, loaded])
   const linkStrip = viewerLink && <LinkStrip url={viewerLink} onClose={() => setViewerLink(null)} />
 
+  /** The section Present is on, for Ask and for Read when Present ends. */
+  const presentAt = useRef(0)
   /** A section played in Present counts as seen (decision 154). */
   const recordSeen = useCallback((sectionIndex: number) => {
+    presentAt.current = sectionIndex
     const name = topic?.sections[sectionIndex]?.name
     const key = `${topic?.topicId}/${name}`
     if (!topic || !name || key === lastSeen.current) return
@@ -277,6 +288,44 @@ export function McpApp({ app }: { app: App }) {
     await app.sendMessage({ role: 'user', content: [{ type: 'text', text: loaded.report }] }).catch(() => setAsked(false))
   }, [app, loaded])
 
+  // ---- Pick: point at parts of the topic in Read and ask the chat about them ----
+  const [picking, setPicking] = useState(false)
+  const [asking, setAsking] = useState(false)
+  const pickResolver = useMemo(() => sourceResolver(topic?.files ?? {}), [topic])
+  const pickFileOrder = useMemo(() => (topic ? ['topic.oui', ...topic.sections.map((s) => `sections/${s.name}.oui`)] : []), [topic])
+  const chatBridge = useMemo((): PickAssistantBridge | undefined => topic ? {
+    panelOpen: false,
+    busy: asking,
+    unread: false,
+    hasPanel: false,
+    stop: () => {},
+    togglePanel: () => {},
+    send: async (draft) => {
+      const onScreen = (file: string, anchor: string) => findPickElement(file, anchor)?.textContent ?? ''
+      setAsking(true)
+      const result = await app.sendMessage({ role: 'user', content: [{ type: 'text', text: pickQuestion({ id: topic.topicId, title: topic.manifest?.title }, draft, onScreen) }] })
+        .catch(() => ({ isError: true }))
+      setAsking(false)
+      if (result?.isError) return false
+      setPicking(false)
+      return true
+    },
+  } : undefined, [app, asking, topic])
+
+  /** Read at a section (where Present was), with Pick on to ask about it. */
+  const readAt = useCallback((sectionIndex: number, pick: boolean) => {
+    open('read')
+    if (pick) setPicking(true)
+    const name = topic?.sections[sectionIndex]?.name
+    if (!name) return
+    // Once Read has laid out
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const file = `sections/${name}.oui`
+      const el = document.querySelector(`[data-oui-file="${file}"][data-oui-anchor="root"]`) ?? document.querySelector(`[data-oui-file="${file}"]`)
+      el?.scrollIntoView({ block: 'start' })
+    }))
+  }, [open, topic])
+
   if (!loaded) {
     return (
       <div className="mcp-card" data-testid="mcp-waiting">
@@ -290,6 +339,17 @@ export function McpApp({ app }: { app: App }) {
       <span className="mcp-bar-title">{topic.manifest?.title ?? topic.topicId}</span>
       {view === 'read' && presentSections.length > 0 && (
         <button type="button" className="mcp-button mcp-small" onClick={() => open('present')}><Play size={14} /> Present</button>
+      )}
+      {view === 'present' && (
+        <button
+          type="button"
+          className="mcp-button mcp-small"
+          onClick={() => readAt(presentAt.current, true)}
+          title="Point at part of this section and ask the chat about it"
+          data-testid="mcp-ask"
+        >
+          <Crosshair size={14} /> <span className="mcp-wide-only">Ask</span>
+        </button>
       )}
       <ThemePicker themeId={themeId} onPick={pickTheme} />
       <button
@@ -323,7 +383,7 @@ export function McpApp({ app }: { app: App }) {
             <div className={`mcp-player${full ? ' mcp-full' : ''}`} data-testid="mcp-present">
               {top}
               <div className="mcp-stage">
-                <PresentMode sections={presentSections} onExit={() => open('read')} onSectionChange={recordSeen} fillParent />
+                <PresentMode sections={presentSections} onExit={(sectionIndex) => readAt(sectionIndex, false)} onSectionChange={recordSeen} fillParent />
               </div>
             </div>
           </HUDProvider>
@@ -344,6 +404,14 @@ export function McpApp({ app }: { app: App }) {
               <TopicView topic={topic} />
             </LearnerMemoryProvider>
           </main>
+          <PickMode
+            topicId={topic.topicId}
+            active={picking}
+            onActiveChange={setPicking}
+            resolve={pickResolver}
+            fileOrder={pickFileOrder}
+            assistant={chatBridge}
+          />
         </div>
       </UISystemProvider>
     )

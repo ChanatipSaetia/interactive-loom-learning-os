@@ -323,3 +323,13 @@ body {
   flex-basis: 100%;
   font-style: normal;
 }
+
+/* Pick in Read: the bar floats at the foot of the frame, so the last section scrolls clear of it, and in
+   full screen it stays above the chat's own message bar */
+.mcp-read-scroll {
+  padding-bottom: calc(var(--pick-bar-height, 56px) + 16px);
+}
+
+.mcp-is-full .pick-bar {
+  bottom: calc(var(--mcp-inset-bottom, 88px) + 8px);
+}

@@ -5,7 +5,7 @@
 export { PickMode, useNarrow } from './PickMode'
 export type { PickAssistantBridge, PickModeApi, PickSendDraft } from './PickMode'
 export { PickSection } from './PickSection'
-export { PickLayer, pickTargetOf } from './PickLayer'
+export { PickLayer, findPickElement, pickTargetOf } from './PickLayer'
 export type { PickTarget } from './PickLayer'
 export {
   EMPTY_TRAY,

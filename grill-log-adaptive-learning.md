@@ -446,6 +446,11 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     title over the top of a full-screen app (about 110px) and its message bar over the bottom (about 100px).
     Full screen now pads the app by the chat's `safeAreaInsets` plus 12px, never less than 112px at the top
     and 104px at the bottom on touch screens (56px and 88px elsewhere).
+  - **Asking about part of a topic:** Pick from Viewer now works in the app's Read (⌖ in the bar at the
+    foot of the frame). Its Send posts the learner's question into the chat as their message, with each
+    picked place's pointer (`<topic>/<file> #<anchor>`, so the model finds the statement it wrote) and the
+    words on screen there (`src/mcp-app/ask.ts`). **Ask** in Present opens Read at the current section with
+    Pick on, since Present's animated slides are not pickable.
   - **Too much at once in a chat:** a whole lesson (intro, 5–8 sections, quiz) every time is a lot
     between messages. `loom-tutor-app` now writes a **short topic** by default (one idea, 1–3 sections
     that show it, no `Intro` or closing quiz unless a check is the point, one woven-in callback when it
