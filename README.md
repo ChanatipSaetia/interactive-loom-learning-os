@@ -1,6 +1,6 @@
 # Interactive Loom Learning OS
 
-An interactive learning platform that dynamically renders structured topic courses from dynamic Open Knowledge Format (OKF) bundles. Features rich animations, auto-laid event-storming flowcharts, tradeoff sandboxes, and active recall checks. Built with React, Vite, TailwindCSS, anime.js, and Motion. Employs a premium Catppuccin Frappé dark theme with Cohere structural design principles.
+An interactive learning platform that dynamically renders structured topic courses from dynamic Open Knowledge Format (OKF) bundles. Features rich animations, auto-laid event-storming flowcharts, tradeoff sandboxes, and active recall checks. Built with React, Vite, TailwindCSS, anime.js, and Motion. Defaults to the Liquid Glass theme, dark or light to follow the system, over the Catppuccin Frappé palette, with Cohere structural design principles.
 
 ---
 
@@ -22,7 +22,7 @@ An interactive learning platform that dynamically renders structured topic cours
 
 - **Framework**: React 18.x + React Router DOM v6
 - **Build System**: Vite 5.x + TypeScript 5.x
-- **Styling**: TailwindCSS 3.x + Catppuccin Frappé Theme
+- **Styling**: TailwindCSS 3.x + Catppuccin Frappé palette; Liquid Glass (dark) and Liquid Glass Light themes by default
 - **Animations**: anime.js v4 + Motion + Lenis (for smooth scrolling)
 - **Math & Utilities**: D3 (for force-directed Concept Map graphs), marked (for markdown parsing), Radix UI (for modal primitives)
 - **Testing**: Vitest (for unit tests) + Playwright (for E2E tests)

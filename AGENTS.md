@@ -5,7 +5,7 @@ Guidance for AI agents working in the **Interactive Loom Learning OS** repo.
 ## Project Overview
 
 Interactive learning platform with animated flowcharts, trade-off sandboxes, taxonomy
-browsers, visual OKF section editor, and progressive content. React + Vite + anime.js, Catppuccin Frappé theme.
+browsers, visual OKF section editor, and progressive content. React + Vite + anime.js, Catppuccin Frappé palette; the default theme is Liquid Glass, or Liquid Glass Light when the system is in light mode, until the learner picks one (`src/core/ui-system/theme/themes.ts`).
 See [README.md](README.md) for the tech stack, scripts, and project structure.
 
 ## Key Docs & Source of Truth
