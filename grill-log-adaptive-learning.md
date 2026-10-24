@@ -1,14 +1,14 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — under discussion, nothing implemented (decisions 161–177)**
+Status: **Concept — under discussion, nothing implemented (decisions 161–180)**
 
 ## Goal
 
 Let a learner keep improving across **many topics per domain** (for example Chinese, Blender 3D,
 retail stock management and pricing) without a separate review chore and without a server.
 Review is woven into each new topic; the system knows which skills the learner has and suggests,
-or has an AI write, the next topic. Starting must be quick: a learner should get going from a
-normal AI chat (Claude, Gemini, …) with little or no setup.
+or has an AI write, the next topic. Starting must be quick: a learner should get from a normal AI chat (Claude, Gemini, …) into
+Loom Viewer and Present mode with little or no setup.
 
 ## Baseline
 
@@ -58,12 +58,15 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 174 | Shared or personal topics | **Mixed: a shared core path for everyone, plus personal topics generated to fill each learner's gaps.** Shared topics carry generic callbacks to earlier topics in the path; personal ones target exactly what this learner is forgetting. |
 | 175 | When the next topic does not exist | **Loom writes a request for it**: the domain, the skill to teach next, the learner's mastered and weak skills, the goal and the callbacks to include. An AI chat with `loom-topic-writer` writes the topic; the learner opens the `.loom.oui` in Viewer. Only the summary the learner copies leaves the device. |
 
-### Starting from an AI chat (Claude, Gemini, …)
+### Viewer and Present as the learner's surface
 
 | # | Question | Decision |
 |---|---|---|
-| 176 | Ways in, by effort | **Four levels; build them in order, and none needs a server.** **Level 0 — works today:** the `loom-topic-writer` skill in the Claude app, and the published authoring prompt as knowledge in a Gemini Gem (or a ChatGPT GPT); ask for a topic, open the `.loom.oui` in Viewer. **Level 1 — one copy:** Viewer's **Ask for next topic** copies the request (decision 175), opening the chat with it filled in where the chat accepts a prompt in its URL. **Level 2 — no file handling:** the chat shows the topic itself, as an artifact or canvas page that loads the Loom CDN library and renders the `.loom.oui` text. **Level 3 — a local MCP server, `npx`-run** (no hosting): tools to validate a topic with the 3-tier gateway, read the learner summary from the synced memory folder (decision 149) and save topics to a folder; for Claude Desktop, Claude Code, Gemini CLI and other MCP clients. |
-| 177 | Remote connectors and MCP Apps | **Not now.** A remote MCP connector (the only kind the Claude and Gemini web and mobile apps can add) or an MCP App needs a hosted server, which decision 143 rules out. Revisit only if a free serverless host becomes acceptable. |
+| 176 | Where the learner learns | **In Loom Viewer, Read or Present.** An AI chat (Claude, Gemini, …) only writes topics and answers questions; it is never the place a topic is played. Present mode is the main way through a new topic (it gave the best focus); Read is for working through it by hand. |
+| 177 | Callbacks in Present | **Present stays hands-free, except for callbacks.** A callback (decision 162) or opening-check item pauses on **Your turn**: the learner answers or thinks and presses `Space`, then the stage plays the answer and its explanation. All other gates keep playing themselves (decision 101). Without this, review woven into a topic would never test the learner in Present. A Your-turn answer logs `answered`; beats played by the stage log `seen`. |
+| 178 | Opening Viewer straight into Present | **`viewer.html#present`** starts in Present at the first section, and pasting a topic (Open → Paste) with that flag goes straight to the stage. The flag lives in the hash, so nothing reaches GitHub Pages. |
+| 179 | Getting a topic from a chat into Viewer | **Four levels, built in order, none needs a server.** **Level 0 — works today:** the `loom-topic-writer` skill in the Claude app, or the published authoring prompt as knowledge in a Gemini Gem (or a ChatGPT GPT); the learner saves the `.loom.oui` or copies it, then opens or pastes it in Viewer. **Level 1 — a link made by code:** `viewer.html#present&oui=<deflate + base64url>` opens a whole topic from the link. The link is built by code, never typed by the model (a model cannot compress): by a one-button artifact or canvas page the chat writes around the topic text, or by the level 3 tool. **Level 2 — back to the chat:** Viewer's **Ask for next topic** copies the request of decision 175 (mastered and weak skills, goal, callbacks to include), opening the chat with it filled in where the chat accepts a prompt in its URL. **Level 3 — a local MCP server run with `npx`** (no hosting): validate a topic with the 3-tier gateway, read the learner summary from the synced memory folder (decision 149), save the topic to a folder, and return its level 1 link; for Claude Desktop, Claude Code, Gemini CLI and other MCP clients. |
+| 180 | Remote connectors and MCP Apps | **Not now.** A remote MCP connector (the only kind the Claude and Gemini web and mobile apps can add) or an MCP App needs a hosted server, which decision 143 rules out. Revisit only if a free serverless host becomes acceptable. |
 
 ## The Three Domains as Examples
 
@@ -78,10 +81,13 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 
 ## Open Questions
 
-- Which chats accept a prompt in their URL for decision 176 level 1 (and under what length limit)?
+- Which chats accept a prompt in their URL for decision 179 level 2 (and under what length limit)?
   Check Claude, Gemini and ChatGPT before relying on it.
-- Level 2 needs the CDN library to render `.loom.oui` text (it takes OKF JSON today) and the chat to
-  allow loading it from jsDelivr. Check Claude artifacts and Gemini Canvas.
+- Level 1 links: how long a compressed topic gets (a typical topic is tens of KB of OUI), whether
+  chats keep links that long intact, and whether Claude artifacts and Gemini Canvas may open a new
+  tab from a button. A topic too long for a link falls back to copy and paste.
+- Should a callback's Your turn in Present wait without limit, or play the answer after a while
+  so a learner who is only watching is not stuck?
 - Keep, simplify or retire the hex campaign now that review lives in topics?
 - How much skill tagging is acceptable for authors, with AI drafts?
 - Where shared domain files live and who maintains them, versus personal topics kept in the
