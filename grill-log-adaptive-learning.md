@@ -320,6 +320,25 @@ Size is relative: **S** small, **M** medium, **L** large.
 - **Done when:** choosing "order food in Chinese" shows a path, and the placement check skips
   what the learner knows.
 
+### What to prepare, by slice
+
+Accounts, keys and settings the slices need from the owner. Tokens and secrets go into GitHub
+repository secrets or the cloud environment's settings, never into a chat.
+
+| Needed by | What | Who | Notes |
+|---|---|---|---|
+| Slices 0–4 | **Goose** desktop app with a model provider: a local model (Ollama or LM Studio) and, for writing topics, an API key for a stronger model (e.g. OpenRouter or Anthropic) | Owner | The owner tests in real hosts; this session cannot run Goose or Claude Desktop |
+| Slices 0–4 | **Claude Desktop**, if the owner has Claude | Owner | Optional; Goose and MCPJam cover the early slices |
+| Slice 0 | **Where the spike's test script is served**: merge it to `main` so GitHub Pages deploys it, or serve it from a tunnel | Owner decides | Pages deploys from `main` (`.github/workflows/deploy-gh-pages.yml`) |
+| Slices 0–1 | **Network access for this session** to `chanatipsaetia.github.io` and `cdn.jsdelivr.net` | Owner, in the environment's Network access settings | Lets this session test the shell in MCPJam with Playwright; both are blocked today |
+| Slice 1, 4 | **npm publishing** for the server package (`npx …`): a package name and an npm automation token as the `NPM_TOKEN` repository secret | Owner | The owner already publishes `loom-learning-sections` |
+| Slice 5 | **Cloudflare account** (free plan), its **account ID**, a **workers.dev subdomain**, and an **API token** from the "Edit Cloudflare Workers" template | Owner | Stored as `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` **repository secrets**; a GitHub Actions workflow deploys with Wrangler. Deploying from this session instead would need the token as an environment secret and `api.cloudflare.com` allowed in Network access |
+| Slice 5 | **Claude plan with custom connectors**, if Claude is used on the web or phone | Owner | Check the plan's connector limits |
+| Slice 5–6 | **Microsoft 365 Copilot: work or personal account?** For work: does the tenant allow custom agents or connectors (Copilot Studio), and will an admin consent to OneDrive app-folder access? | Owner (and IT) | Decides whether Microsoft 365 Copilot is a slice 5 host |
+| Slice 6 | **Microsoft Entra app registration** for personal (and, if allowed, work) accounts: client ID, client secret, redirect URI on the Worker, `Files.ReadWrite.AppFolder` | Owner | Secret as a Worker secret; a Workers KV namespace for sign-in records (created by Wrangler) |
+| Slice 6 | **Google Cloud OAuth client** (`drive.appdata`), later | Owner | Second provider |
+| Every slice | **Names**: the npm package, the Worker, the connector's display name | Owner decides | Placeholders until chosen |
+
 ### Across every slice
 
 - `npm run typecheck`, `npm run test` and `npm run lint` pass; new behaviour gets Vitest tests and
