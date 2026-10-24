@@ -8,6 +8,8 @@ import { AppBridge, PostMessageTransport, getToolUiResourceUri } from '@modelcon
 const params = new URLSearchParams(location.search)
 const SERVER = params.get('server') ?? 'http://localhost:3001/mcp'
 const dropDomains = params.has('drop-domains')
+const hostTheme = params.get('theme') === 'light' ? 'light' : 'dark'
+document.body.classList.toggle('light', hostTheme === 'light')
 const chat = document.getElementById('chat')
 const say = (who, text) => {
   const div = document.createElement('div')
@@ -57,7 +59,7 @@ async function main() {
     client,
     { name: 'loom-spike-host', version: '0.0.1' },
     { openLinks: {}, serverTools: {}, logging: {}, updateModelContext: { text: {} }, message: { text: {} } },
-    { hostContext: { displayMode: 'inline', availableDisplayModes: ['inline', 'fullscreen'], theme: 'dark' } },
+    { hostContext: { displayMode: 'inline', availableDisplayModes: ['inline', 'fullscreen'], theme: hostTheme } },
   )
   bridge.oninitialized = async () => {
     await bridge.sendToolInput({ arguments: { oui } })
@@ -80,6 +82,11 @@ async function main() {
   }
   await bridge.connect(new PostMessageTransport(frame.contentWindow, frame.contentWindow))
   frame.srcdoc = html
+  // Switching the chat's mode while the app is open, as a host's own theme switch would.
+  window.setHostTheme = (theme) => {
+    document.body.classList.toggle('light', theme === 'light')
+    bridge.sendHostContextChange({ theme })
+  }
   window.__spike = { csp: cspFor(meta.csp), resourceDomains: meta.csp?.resourceDomains }
 }
 

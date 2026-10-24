@@ -45,10 +45,11 @@ npm run check         # screenshots and the result table
 | Audio after the click | ✅ `AudioContext` running | — |
 | Speech voices | ⚠️ 0 voices in headless Chromium (expected; real browsers have them) | — |
 | Message into the chat, update the model's context | ✅ both delivered | — |
+| Theme follows the chat's mode (`?theme=light`, and a switch while open) | ✅ Liquid Glass / Liquid Glass Light | — |
 | Same server over stdio: tool list, call, `ui://` resource with its CSP | ✅ | — |
 
 Screenshots: `results/declared-inline.png`, `results/declared-after-play.png`,
-`results/undeclared-inline.png`.
+`results/light-inline.png`, `results/switch-to-light.png`, `results/undeclared-inline.png`.
 
 **Not yet known:** the same checks in real hosts (Goose, Claude Desktop, Claude web), each with
 its own sandbox, and loading from `https://chanatipsaetia.github.io` instead of localhost.

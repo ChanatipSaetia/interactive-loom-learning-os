@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–195 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slice 0 is done in a local test host and waits on the owner's check in a real host.**
+Status: **Concept — decisions 161–196 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slice 0 is done in a local test host and waits on the owner's check in a real host.**
 
 ## Goal
 
@@ -87,6 +87,7 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 193 | Local models | **Tutor locally, write with a stronger model.** Writing a 5–30 KB topic and calling tools correctly is hard for small local models; in Goose the learner may keep the local model for tutoring and give a stronger model (through an API key) the writing. |
 | 194 | The CDN library | **Deprecated, and no part of future plans.** The `loom-learning-sections` package (`libs/loom-sections.tsx`, served from jsDelivr) renders only the old OKF JSON, without OUI or Present. Nothing new builds on it: the MCP App loads from GitHub Pages (decision 182) and topics open in Viewer. It is removed in its own change, listed under *Retiring the CDN library*. |
 | 195 | When a server is needed | **GitHub Pages serves the app's files; it can never be the MCP server**, which must answer requests (stdio, or HTTP POST with JSON-RPC). **Chats on the learner's computer need no hosted server:** the local server runs there and loads the app from Pages. **Web and phone chats need an HTTP endpoint**, so slice 5 is built only when the owner wants one of them. Until then, for personal use, the local server can be reached from a web chat through a tunnel (Cloudflare Tunnel or ngrok), working while the computer is on. The local server can run straight from the GitHub repository (`npx github:<owner>/<repo>`), so publishing to npm is optional. |
+| 196 | The app's theme | **It follows the chat app's light or dark mode, not the system's: Liquid Glass when the chat is dark, Liquid Glass Light when it is light** (the same pair as Loom's own default). The app reads `theme` from the host context and switches when the host sends a context change. It sets Loom's own `data-theme` ids, so it does not use the SDK's `applyDocumentTheme` (which writes `data-theme="light"`/`"dark"`). With no theme from the host it falls back to the system scheme. The learner's own pick from Loom's theme menu lasts for the session only, since storage inside a chat's sandboxed frame cannot be relied on. The glass blurs only the app's own content: it cannot blur the chat behind the frame. |
 
 **Hosts, in order of trying** (Oct 2026; check the official MCP Apps host list before relying on one):
 
@@ -251,6 +252,7 @@ topic (`chinese101-day1`):
 | Fullscreen on Play | ✅ the host switches to fullscreen |
 | Audio after the click | ✅ `AudioContext` running; headless Chromium has no speech voices (expected) |
 | Message into the chat, update the model's context | ✅ both delivered (decisions 190, 191) |
+| Theme follows the chat's light or dark mode, also when it switches (decision 196) | ✅ Liquid Glass when dark, Liquid Glass Light when light |
 | Same server over stdio | ✅ tool list, call, and the `ui://` resource with its CSP |
 
 The code follows decisions 182 and 189 so far. **Still open:** the same checks in the owner's real

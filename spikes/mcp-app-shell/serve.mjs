@@ -27,9 +27,13 @@ function serve(port, root, extra = {}) {
     const path = new URL(req.url, 'http://x').pathname
     res.setHeader('Access-Control-Allow-Origin', '*')
     try {
-      if (extra[path]) return res.writeHead(200, { 'Content-Type': types['.oui'] }).end(await extra[path]())
+      if (extra[path]) {
+        const body = await extra[path]()
+        return res.writeHead(200, { 'Content-Type': types['.oui'] }).end(body)
+      }
       const file = join(root, path === '/' ? 'index.html' : path)
-      res.writeHead(200, { 'Content-Type': types[extname(file)] ?? 'application/octet-stream' }).end(await readFile(file))
+      const body = await readFile(file)
+      res.writeHead(200, { 'Content-Type': types[extname(file)] ?? 'application/octet-stream' }).end(body)
     } catch {
       res.writeHead(404).end()
     }
