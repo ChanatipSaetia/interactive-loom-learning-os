@@ -446,6 +446,12 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     title over the top of a full-screen app (about 110px) and its message bar over the bottom (about 100px).
     Full screen now pads the app by the chat's `safeAreaInsets` plus 12px, never less than 112px at the top
     and 104px at the bottom on touch screens (56px and 88px elsewhere).
+  - **Narration always off in Claude:** Present turned the voice on only when `getVoices()` listed a
+    voice, and iOS web views (Claude's app) often list none yet speak with the default voice. The voice
+    now counts as available whenever `speechSynthesis` exists, and turns itself off for the session when
+    a line has not started within 2 seconds or the browser says it cannot speak
+    (`synthesis-unavailable`, `synthesis-failed`, `audio-hardware`), so Present never waits on a silent
+    voice. Android's web view has no `speechSynthesis`, so there the button stays off.
   - **Present's text was still small:** at about 0.58× the stage's body text (23px) showed at about 13px.
     Inside the card, and in full screen on windows up to 1000px wide, Present's sizes are about 30%
     larger (body 30px, cards 26px, small 21px, headings 44px); quizzes, bullets and title cards were

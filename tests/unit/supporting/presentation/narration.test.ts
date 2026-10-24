@@ -6,8 +6,9 @@ class FakeUtterance {
   voice: unknown = null
   lang = ''
   onboundary: ((e: { charIndex: number; name: string }) => void) | null = null
+  onstart: (() => void) | null = null
   onend: (() => void) | null = null
-  onerror: (() => void) | null = null
+  onerror: ((e?: { error?: string }) => void) | null = null
   constructor(text: string) { this.text = text }
 }
 
@@ -96,9 +97,44 @@ describe('narration', () => {
     await second
   })
 
-  it('is unavailable without voices', () => {
+  it('is available without a voice list (iOS web views), until a line fails to start', async () => {
+    vi.useFakeTimers()
     synth.voices = []
-    expect(createNarrator().available()).toBe(false)
+    const narrator = createNarrator()
+    expect(narrator.available()).toBe(true)
+    const changed = vi.fn()
+    narrator.onVoices(changed)
+    const done = narrator.speak([{ text: 'Hello' }])
+    vi.advanceTimersByTime(2100)
+    await done
+    expect(narrator.available()).toBe(false)
+    expect(changed).toHaveBeenCalled()
     synth.voices = [{ lang: 'en-US' }, { lang: 'th-TH' }]
+    vi.useRealTimers()
+  })
+
+  it('turns itself off when the browser says it cannot speak', async () => {
+    const narrator = createNarrator()
+    const done = narrator.speak([{ text: 'Hello' }])
+    spoken[0].onerror?.({ error: 'synthesis-failed' })
+    await done
+    expect(narrator.available()).toBe(false)
+    const next = createNarrator()
+    const cut = next.speak([{ text: 'Hello' }])
+    spoken[1].onerror?.({ error: 'interrupted' })
+    await cut
+    expect(next.available()).toBe(true)
+  })
+
+  it('keeps speaking once a line starts', async () => {
+    vi.useFakeTimers()
+    const narrator = createNarrator()
+    const done = narrator.speak([{ text: 'Hello' }])
+    spoken[0].onstart?.()
+    vi.advanceTimersByTime(5000)
+    spoken[0].onend?.()
+    await done
+    expect(narrator.available()).toBe(true)
+    vi.useRealTimers()
   })
 })
