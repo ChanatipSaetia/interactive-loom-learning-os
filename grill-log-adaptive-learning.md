@@ -446,6 +446,13 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     title over the top of a full-screen app (about 110px) and its message bar over the bottom (about 100px).
     Full screen now pads the app by the chat's `safeAreaInsets` plus 12px, never less than 112px at the top
     and 104px at the bottom on touch screens (56px and 88px elsewhere).
+  - **Changing a topic without resending it:** every fix made the model write the whole topic again
+    (about 15 KB, some 5,000 output tokens). The local server now has **`edit_topic(id, edits)`**: each edit
+    names a file and holds whole statements by name, as Studio's assistant writes them (replace, add,
+    `name = DELETE`, or `create` for a new section); the server applies them to the topic saved in its
+    memory folder with `applyEditBlock`, refuses the whole change if any edit cannot be placed, checks and
+    saves the topic and shows the new version (`src/mcp/edit-topic.ts`). **The hosted endpoint does not get
+    it** (the owner's call): it keeps no topics (decision 185), so there the model still sends whole topics.
 
 ### Slice 6 — Learner skills and progress notes (revised by decisions 197–204)
 

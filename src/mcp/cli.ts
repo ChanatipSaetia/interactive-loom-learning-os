@@ -14,6 +14,7 @@ import { serveStdio } from '@modelcontextprotocol/server/stdio'
 import { toNodeHandler, type NodeIncomingMessageLike, type NodeServerResponseLike } from '@modelcontextprotocol/node'
 import { createLoomServer } from './server'
 import { checkTopic } from './check'
+import { registerEditTool } from './edit-topic'
 import { defaultMemoryDir, folderStore } from './memory-folder'
 
 /** The part of Node's `process` this file uses (Node's types are not part of this project). */
@@ -29,9 +30,16 @@ const options = {
   check: checkTopic,
 }
 
+/** The server, with edit_topic when there is a memory folder to keep topics in. */
+function loomServer() {
+  const server = createLoomServer(options)
+  if (options.store) registerEditTool(server, options.store, checkTopic)
+  return server
+}
+
 if (args.includes('--http')) {
   const port = Number(args[args.indexOf('--http') + 1]) || 3001
-  const handler = toNodeHandler(createMcpHandler(() => createLoomServer(options)))
+  const handler = toNodeHandler(createMcpHandler(loomServer))
   createServer(async (req: NodeIncomingMessageLike, res: Response) => {
     // Browser-based test hosts call from another localhost origin.
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -46,5 +54,5 @@ if (args.includes('--http')) {
     await handler(req, res)
   }).listen(port, '127.0.0.1', () => console.error(`Loom MCP server on http://localhost:${port}/mcp`))
 } else {
-  serveStdio(() => createLoomServer(options))
+  serveStdio(loomServer)
 }

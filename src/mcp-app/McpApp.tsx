@@ -138,15 +138,20 @@ export function McpApp({ app }: { app: App }) {
     app.ontoolinputpartial = () => setWriting(true)
     app.ontoolinput = (params) => {
       const args = (params.arguments ?? {}) as { oui?: unknown; mode?: unknown }
+      // open_topic and edit_topic send the topic in their result, not their input
+      if (typeof args.oui !== 'string') {
+        setWriting(true)
+        return
+      }
       setWriting(false)
-      const oui = String(args.oui ?? '')
+      const oui = args.oui
       setLoaded({ ...loadTopic(oui), oui })
       setStartMode(args.mode === 'read' ? 'read' : 'present')
       setView('card')
       setAsked(false)
       told.current = false
     }
-    // open_topic sends the saved topic in its result rather than its input
+    // open_topic and edit_topic send the topic in their result rather than their input
     app.ontoolresult = (result) => {
       const oui = (result.structuredContent as { oui?: unknown } | undefined)?.oui
       if (typeof oui !== 'string') return

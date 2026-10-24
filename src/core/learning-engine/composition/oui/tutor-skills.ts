@@ -96,7 +96,7 @@ The learner learns with Interactive Loom inside this chat. The **Loom MCP App** 
 2. **Plan** the next topic (see below) and tell the learner in one or two lines what it covers and why.
 3. **Write** it with the Loom server: call \`get_authoring_guide\` once with no arguments, then again with the section types you will use, and write the whole topic as one \`.loom.oui\` text by those rules.
 4. **Check** it with \`validate_topic\` when that tool is there, fix only what the errors point at and check again.
-5. **Show** it with \`show_topic\`. If the app reports errors, fix them and call \`show_topic\` again.
+5. **Show** it with \`show_topic\`. If the app reports errors, fix them and call \`show_topic\` again. To change a topic already shown (a fix, or what the learner asks for), call \`edit_topic\` when the server has it (the server on the learner's computer) with only the changed statements, rather than the whole topic again.
 6. **Save** the topic as \`Loom/topics/<topic-id>.loom.oui\` with the drive connector, unless the server says it keeps topics itself (the server on the learner's computer saves them to its memory folder).
 7. **Save progress.** The app's **Save my progress** button sends a message with a progress note and the path to save it to: save it as it is, with no changes. If you cannot write files, say so and leave the note in the conversation.
 
