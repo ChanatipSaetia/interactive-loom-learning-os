@@ -1,0 +1,23 @@
+{
+  "name": "loom-mcp-app-spike",
+  "version": "1.0.0",
+  "description": "Slice 0 spike: can MCP App hosts load the Loom app from a declared asset origin?",
+  "scripts": {
+    "server": "node server.mjs --http 3001",
+    "stdio": "node server.mjs --stdio",
+    "serve": "node serve.mjs",
+    "check": "node check.cjs results"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "^2.4.0",
+    "@modelcontextprotocol/ext-apps": "^2.0.3",
+    "@modelcontextprotocol/node": "^2.1.2",
+    "@modelcontextprotocol/server": "^2.4.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "private": true,
+  "type": "module"
+}

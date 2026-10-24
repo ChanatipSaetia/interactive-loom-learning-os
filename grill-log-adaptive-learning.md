@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–195 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`, starting with slice 0.**
+Status: **Concept — decisions 161–195 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slice 0 is done in a local test host and waits on the owner's check in a real host.**
 
 ## Goal
 
@@ -237,6 +237,25 @@ Size is relative: **S** small, **M** medium, **L** large.
   connector**.
 - **Done when:** a table of which hosts load the script, allow fullscreen and play audio. It
   decides decisions 182 and 189 before slice 1 builds on them.
+
+**Status: local part done** (`spikes/mcp-app-shell/`, see its README). MCPJam could not be used
+here: it needs its own cloud service at start-up. In its place, a minimal host on the official
+`AppBridge` renders the app the way chat apps do (sandboxed iframe, opaque origin, a Content
+Security Policy built from the declared origins), driven by Playwright with a real 15,783-character
+topic (`chinese101-day1`):
+
+| Check | Result |
+|---|---|
+| Shell loads the app's script from the declared origin | ✅ runs; with the origin left out, the CSP blocks it |
+| Tool input reaches the app | ✅ |
+| Fullscreen on Play | ✅ the host switches to fullscreen |
+| Audio after the click | ✅ `AudioContext` running; headless Chromium has no speech voices (expected) |
+| Message into the chat, update the model's context | ✅ both delivered (decisions 190, 191) |
+| Same server over stdio | ✅ tool list, call, and the `ui://` resource with its CSP |
+
+The code follows decisions 182 and 189 so far. **Still open:** the same checks in the owner's real
+hosts (Goose first, then Claude Desktop, Claude web through a tunnel) and loading from
+`https://chanatipsaetia.github.io`.
 
 ### Slice 1 — A topic plays in a chat (local)
 
