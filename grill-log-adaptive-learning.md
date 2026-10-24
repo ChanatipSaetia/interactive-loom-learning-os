@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–196 drafted; decisions 144–148, 151, 178–184, 186–189 and 196 partly built (slices 0–4). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–4 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
+Status: **Concept — decisions 161–200 drafted; decisions 144–148, 151, 178–184, 186–189 and 196 partly built (slices 0–4). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–4 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
 
 ## Goal
 
@@ -88,6 +88,10 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 194 | The CDN library | **Deprecated, and no part of future plans.** The `loom-learning-sections` package (`libs/loom-sections.tsx`, served from jsDelivr) renders only the old OKF JSON, without OUI or Present. Nothing new builds on it: the MCP App loads from GitHub Pages (decision 182) and topics open in Viewer. It is removed in its own change, listed under *Retiring the CDN library*. |
 | 195 | When a server is needed | **GitHub Pages serves the app's files; it can never be the MCP server**, which must answer requests (stdio, or HTTP POST with JSON-RPC). **Chats on the learner's computer need no hosted server:** the local server runs there and loads the app from Pages. **Web and phone chats need an HTTP endpoint**, so slice 5 is built only when the owner wants one of them. Until then, for personal use, the local server can be reached from a web chat through a tunnel (Cloudflare Tunnel or ngrok), working while the computer is on. The local server can run straight from the GitHub repository (`npx github:<owner>/<repo>`), so publishing to npm is optional. |
 | 196 | The app's theme | **It follows the chat app's light or dark mode, not the system's: Liquid Glass when the chat is dark, Liquid Glass Light when it is light** (the same pair as Loom's own default). The app reads `theme` from the host context and switches when the host sends a context change. It sets Loom's own `data-theme` ids, so it does not use the SDK's `applyDocumentTheme` (which writes `data-theme="light"`/`"dark"`). With no theme from the host it falls back to the system scheme. The learner's own pick from Loom's theme menu lasts for the session only, since storage inside a chat's sandboxed frame cannot be relied on. The glass blurs only the app's own content: it cannot blur the chat behind the frame. |
+| 197 | Storage for chats on the web and phone | **Through the chat app's own storage connector, not through Loom.** Each chat already connects to the learner's cloud drive: **Claude** through Anthropic's Google Drive connector, **ChatGPT** through its Google Drive and SharePoint/OneDrive apps, **Microsoft 365 Copilot** through its built-in access to OneDrive and SharePoint. The chat's model reads topics and progress from the drive with that connector and passes topics to Loom. The hosted Loom server therefore never signs in to a cloud drive, holds no tokens and stores nothing (decision 185 stays as it is). Revises decision 186 for hosted chats: the connector sign-in to OneDrive or Google Drive becomes a later option, used only if this route falls short. Local chats keep the memory folder (decisions 186, 187). |
+| 198 | One Loom folder in the learner's drive | **`Loom/` in the drive the learner uses** (Google Drive, OneDrive or SharePoint): `Loom/topics/<id>.loom.oui` and `Loom/progress/<topic>-<date>.md`. On the computer the drive's desktop sync puts the same folder on disk, and the local server uses it as its memory folder (`--memory <synced>/Loom`), adding its `events-<machine>.jsonl`. So phone, web and computer see the same topics. |
+| 199 | Saving progress from a hosted chat | **A Save my progress button in the player, and the chat does the saving.** The app writes a short progress note (topic, sections played, answers right and wrong, what to review) and sends it into the chat as a message asking the model to save it to `Loom/progress/` with its storage connector; the learner approves the save in the chat. Notes are Markdown, readable by models and people. When a chat's connector cannot write files, the note stays in the conversation, and Open in Viewer keeps the full record. |
+| 200 | Finding topics from a phone | **The model looks them up with its storage connector** ("play my Chinese Day 1 topic" → find `Loom/topics/chinese101-day1.loom.oui`, read it, call `show_topic`). Whether each connector finds plain `.loom.oui` files is the first thing to test; if one only finds its own document types (one report says Claude's Google Drive search returns only Google Docs, Sheets and Slides), topics are also saved as a document of that kind holding the same text. |
 
 **Hosts, in order of trying** (Oct 2026; check the official MCP Apps host list before relying on one):
 
@@ -224,7 +228,7 @@ Size is relative: **S** small, **M** medium, **L** large.
 | 3 | **Viewer links** | jump from the chat to Viewer, straight into Present | V1, V2 (without memory) | 178, 179 | S |
 | 4 | **Memory, locally** | close the chat and find progress and saved topics in the next one | R4, N1, T3, V3 (local) | 144–149, 151, 152, 183 | L |
 | 5 | **Hosted endpoint** | learn in Claude web and mobile, Microsoft 365 Copilot or ChatGPT | U2 | 180, 184, 185 | M |
-| 6 | **Memory in your cloud** | sign in once and share one memory across web chats, local chats and Viewer | U3, U4, V3 | 150, 186 | L |
+| 6 | **Progress through the chat's drive** | save progress from Claude on the phone (or ChatGPT, Microsoft 365 Copilot) to their own drive, and find their topics there | U3, U4, V3 | 197–200 | M |
 | 7 | **Your turn and the tutor** | answer callbacks in Present and have the chat explain misses | P3, R2, R3, N5 | 162, 164, 177, 190 | M |
 | 8 | **The loop** | press Next topic and get a topic that carries what they are forgetting | N2, N3, N4 | 161, 163, 170–175, 191, 192 | L |
 | 9 | **Grow the domain** | pick a goal, take a placement check, follow a path | A3, D1, D2, D3 | 170, 173, 174 | M |
@@ -374,14 +378,22 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
   **ChatGPT**; the hosts table updated with what works.
 - **Done when:** Present plays inside Claude on the web and on a phone.
 
-### Slice 6 — Memory in your cloud
+### Slice 6 — Progress through the chat's drive (revised by decisions 197–200)
 
-- Connector sign-in with **Microsoft first** (Entra app, `Files.ReadWrite.AppFolder`), Google
-  second; sign-in records encrypted in Workers KV; the endpoint forwards to the OneDrive app
-  folder and stores no learner data.
-- A OneDrive adapter for Viewer and the local server, so all three read the same event-log files.
-- **Done when:** a quiz answered in Claude on the phone counts in Goose on the computer and in
-  Viewer. Work accounts that need admin consent are noted.
+- **Test first, per chat:** can its storage connector find and read a `.loom.oui` file in `Loom/topics/`,
+  and can it write a file to `Loom/progress/`? Claude with Google Drive first, then ChatGPT and
+  Microsoft 365 Copilot with OneDrive or SharePoint. The answers decide whether topics also need a
+  document copy (decision 200) and where notes go when a chat cannot write (decision 199).
+- **Save my progress** in the player: the note built from the session's events, sent into the chat
+  with the request to save it.
+- The authoring guide and tool descriptions tell the model where Loom's folder is and to read
+  `Loom/progress/` before suggesting what to learn next.
+- The local server reads `Loom/progress/*.md` too, so `learner_summary` on the computer includes
+  sessions from the phone.
+- **Done when:** a topic played on the phone in Claude, with its progress saved to Google Drive, shows
+  up in `learner_summary` from Goose on the computer.
+- The earlier plan (the hosted server signing in to OneDrive or Google Drive and writing the event
+  log itself) is kept as a later option.
 
 ### Slice 7 — Your turn and the tutor
 
@@ -439,8 +451,8 @@ repository secrets or the cloud environment's settings, never into a chat.
 | Slice 5 | **Cloudflare account** (free plan), its **account ID**, a **workers.dev subdomain**, and an **API token** from the "Edit Cloudflare Workers" template | Owner | Stored as `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` **repository secrets**; a GitHub Actions workflow deploys with Wrangler. Deploying from this session instead would need the token as an environment secret and `api.cloudflare.com` allowed in Network access |
 | Slice 5 | **Claude plan with custom connectors**, if Claude is used on the web or phone | Owner | Check the plan's connector limits |
 | Slice 5–6 | **Microsoft 365 Copilot: work or personal account?** For work: does the tenant allow custom agents or connectors (Copilot Studio), and will an admin consent to OneDrive app-folder access? | Owner (and IT) | Decides whether Microsoft 365 Copilot is a slice 5 host |
-| Slice 6 | **Microsoft Entra app registration** for personal (and, if allowed, work) accounts: client ID, client secret, redirect URI on the Worker, `Files.ReadWrite.AppFolder` | Owner | Secret as a Worker secret; a Workers KV namespace for sign-in records (created by Wrangler) |
-| Slice 6 | **Google Cloud OAuth client** (`drive.appdata`), later | Owner | Second provider |
+| Slice 6 | **The chat's own storage connector turned on** (Claude: Google Drive; ChatGPT: Google Drive or SharePoint/OneDrive; Microsoft 365 Copilot: built in) and a **`Loom/` folder** in that drive, synced to the computer | Owner | No OAuth client or Worker secrets needed (decision 197) |
+| Later, only if slice 6 falls short | **OAuth clients** for the hosted server (Google `drive.file`, Microsoft Entra) | Owner | The earlier sign-in route |
 | Every slice | **Names**: the npm package, the Worker, the connector's display name | Owner decides | Placeholders until chosen |
 
 ### Across every slice
