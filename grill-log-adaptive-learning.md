@@ -314,10 +314,32 @@ host (Goose) is next.**
   `mcp/` package, as it reuses Viewer's topic compiler and Present directly; running it through
   `npx` from the repository is left for when it is packaged.
 - **Known gaps:** the server bundle is about 11 MB, as validation pulls in the section code; the app
-  is about 1.4 MB gzipped. **Formula sandboxes cannot run in a chat:** they evaluate formulas with
-  `new Function`, which a chat's Content Security Policy (no `unsafe-eval`) blocks; they need an
-  evaluator that does not compile code. A theme picked inside the app is not offered yet (decision
+  is about 1.4 MB gzipped. **Formula sandboxes in a chat:** fixed, see *Inside the chat's sandboxed frame* below. A theme picked inside the app is not offered yet (decision
   196 allows one per session).
+
+### Inside the chat's sandboxed frame
+
+The app runs in a sandboxed `<iframe>` with an opaque origin, a Content Security Policy built from the
+declared origins (no `unsafe-eval`), and `postMessage` as its only channel to the chat. Two things in
+Loom did not fit and are fixed:
+
+- **Formula sandboxes** evaluated formulas with `new Function`, which that policy blocks. They now use
+  a small parser and evaluator (`tradeoff-sandbox/components/formula-sandbox/expression.ts`): numbers,
+  variable names, `+ - * / % **`, brackets, comparisons, `&&`, `||`, `? :` and `Math.<name>` functions
+  and constants, looked up as own properties only (`Math.constructor` is refused). A test runs every
+  formula in every topic through it and through JavaScript and expects the same values; in the test
+  chat the Haystack sandbox shows its metrics (68, 505 ms, $22.00).
+- **Modals in Read** (taxonomy details, help): Read in the conversation made the frame as tall as the
+  whole topic (16,559 px for Haystack), and a modal is placed in the frame's viewport, so a chat that
+  sizes the frame to its content would show it far from where the learner looks. Read in the
+  conversation is now a card of fixed height (640 px) that scrolls inside; the taxonomy details open
+  within it (checked in the test chat). Full screen gives Read the whole window.
+
+Other limits of the frame, and how Loom meets them: storage cannot be relied on (`record_events`, Save
+my progress); no pop-ups or navigation (`ui/open-link`); no downloads (`ui/download-file`, if a chat
+offers it); fullscreen only through the chat (`ui/request-display-mode`); sound only after a click
+(Play); clipboard and microphone only where the chat allows them; keyboard shortcuts once the frame has
+focus.
 
 ### Slice 3 — Viewer links
 

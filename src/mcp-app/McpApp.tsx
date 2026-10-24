@@ -209,7 +209,9 @@ export function McpApp({ app }: { app: App }) {
       <UISystemProvider>
         <div className={`mcp-read${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
           {bar}
-          <main className="main-content">
+          {/* Read scrolls inside a frame of fixed height, so the chat's frame stays that size and
+              the sections' modals (taxonomy details, help) open where the learner is looking */}
+          <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
             <LearnerMemoryProvider port={memory} device={DEVICE}>
               <TopicView topic={topic} />
             </LearnerMemoryProvider>

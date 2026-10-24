@@ -182,3 +182,25 @@ body {
 @media (max-width: 480px) {
   .mcp-wide-only { display: none; }
 }
+
+/* Read in the conversation: a fixed-height card that scrolls inside. A frame as tall as the whole
+   topic would centre modals (taxonomy details, help) far from what the learner sees */
+.mcp-read {
+  display: flex;
+  flex-direction: column;
+  height: 640px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--glass-edge, var(--ctp-surface1));
+}
+
+.mcp-read.mcp-full {
+  height: 100vh;
+}
+
+.mcp-read-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
