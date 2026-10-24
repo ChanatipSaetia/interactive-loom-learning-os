@@ -440,8 +440,12 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     (`unlockSpeech()`). Web views without speech (Android's) still show the captions only; a voice for them
     would have to come from the server (for example Cloudflare Workers AI text-to-speech), not built.
   - **The slide was small:** the card's height held the 16:9 stage back (the caption bar and controls take
-    about 200px), so it used 535 of 734px. The card is now tall enough for the stage, which runs edge to
-    edge at the card's full width.
+    about 200px), so it used 535 of 734px. The card is now tall enough for the stage at the card's width
+    less 16px on each side (12px above and below).
+  - **Full screen under the chat's own bars:** Claude's phone app keeps its status bar, close button and
+    title over the top of a full-screen app (about 110px) and its message bar over the bottom (about 100px).
+    Full screen now pads the app by the chat's `safeAreaInsets` plus 12px, never less than 112px at the top
+    and 104px at the bottom on touch screens (56px and 88px elsewhere).
 
 ### Slice 6 — Learner skills and progress notes (revised by decisions 197–204)
 

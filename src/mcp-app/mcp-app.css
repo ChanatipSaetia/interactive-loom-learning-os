@@ -166,8 +166,8 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Present in the conversation: the 16:9 stage at the card's full width, plus Present's caption bar
-   and controls below it (about 200px), so the stage is never held back by the height */
+/* Present in the conversation: the 16:9 stage at the card's width less its padding, plus Present's
+   caption bar and controls below it (about 210px), so the stage is never held back by the height */
 .mcp-player {
   display: flex;
   flex-direction: column;
@@ -177,31 +177,29 @@ body {
 }
 
 .mcp-stage {
-  height: calc(100vw * 9 / 16 + 200px);
+  height: calc((100vw - 32px) * 9 / 16 + 210px);
   min-height: 320px;
 }
 
-/* The slide runs edge to edge; only the captions and controls keep Present's side padding */
 .mcp-stage .present-mode {
-  padding: 0 0 12px;
+  padding: 12px 16px;
 }
 
-.mcp-stage .present-stage {
-  border-radius: 0;
-}
-
-.mcp-stage .present-caption-bar,
-.mcp-stage .present-controls {
-  padding-inline: 16px;
-}
-
+/* Full screen: the chat keeps its own bars over the app (the phone's status bar, its close button and
+   title, its message bar), so the app stays clear of them: the insets the chat reports
+   (safeAreaInsets, set by McpApp), or room for typical bars when it reports none */
 .mcp-full {
+  box-sizing: border-box;
+  height: 100vh;
+  padding: var(--mcp-inset-top, 56px) var(--mcp-inset-right, 0px) var(--mcp-inset-bottom, 88px) var(--mcp-inset-left, 0px);
   border: 0;
   border-radius: 0;
 }
 
-.mcp-full .mcp-stage {
-  height: calc(100vh - 48px);
+.mcp-player.mcp-full .mcp-stage {
+  flex: 1;
+  min-height: 0;
+  height: auto;
 }
 
 .mcp-bar {
@@ -257,6 +255,7 @@ body {
 
 .mcp-read.mcp-full {
   height: 100vh;
+  border-radius: 0;
 }
 
 .mcp-read-scroll {

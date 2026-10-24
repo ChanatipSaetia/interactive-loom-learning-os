@@ -53,6 +53,20 @@ function applyTheme(id: string) {
  */
 const TOUCH = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true
 
+/**
+ * How far the chat's own bars reach over the app in full screen (the phone's status bar, the chat's
+ * close button and title, its message bar), as CSS variables for `.mcp-full`: the insets the chat
+ * reports plus a margin, and never less than room for typical bars, since a chat may report only the
+ * phone's own (Claude's phone app covers about 110px at the top and 100px at the bottom).
+ */
+function applyInsets(insets: McpUiHostContext['safeAreaInsets']) {
+  const least = TOUCH ? { top: 112, right: 0, bottom: 104, left: 0 } : { top: 56, right: 0, bottom: 88, left: 0 }
+  for (const side of ['top', 'right', 'bottom', 'left'] as const) {
+    const margin = side === 'top' || side === 'bottom' ? 12 : 0
+    document.documentElement.style.setProperty(`--mcp-inset-${side}`, `${Math.max(least[side], (insets?.[side] ?? 0) + margin)}px`)
+  }
+}
+
 /** Every Loom theme in a dropdown (the system picker on phones). */
 function ThemePicker({ themeId, onPick }: { themeId: string; onPick: (id: string) => void }) {
   return (
@@ -146,6 +160,7 @@ export function McpApp({ app }: { app: App }) {
     }
     app.onhostcontextchanged = (context) => {
       if (context.theme) followHost(context.theme)
+      if (context.safeAreaInsets) applyInsets(context.safeAreaInsets)
       // The learner may leave fullscreen with the chat's own control; on a touch screen Read
       // cannot scroll inside the conversation, so it goes back to the card
       if (context.displayMode) {
@@ -153,7 +168,11 @@ export function McpApp({ app }: { app: App }) {
         if (context.displayMode === 'inline' && TOUCH && viewRef.current === 'read') setView('card')
       }
     }
-    void app.connect().then(() => followHost(app.getHostContext()?.theme))
+    applyInsets(undefined)
+    void app.connect().then(() => {
+      followHost(app.getHostContext()?.theme)
+      applyInsets(app.getHostContext()?.safeAreaInsets)
+    })
   }, [app, showTheme])
 
   // The chat's model learns about errors at once, without the learner pressing anything (decision 184)
