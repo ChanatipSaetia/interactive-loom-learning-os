@@ -22,6 +22,7 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 | Pick & Comment in Studio / Viewer (references for AI agents) | [grill-log-pick-and-comment.md](grill-log-pick-and-comment.md) |
 | AI Assistant for Pick (OpenAI-compatible API from the browser) | [grill-log-ai-assistant.md](grill-log-ai-assistant.md) |
 | Present mode in Viewer (guided motion play, motion rules) | [grill-log-presenting-mode.md](grill-log-presenting-mode.md) |
+| Learner memory without a server & the review journey (proposed) | [grill-log-learner-memory-review.md](grill-log-learner-memory-review.md) |
 | Creating / editing topics & flowchart schemas | [docs/creating-topics.md](docs/creating-topics.md) |
 | Design system & sensory experience | [DESIGN.md](DESIGN.md) |
 | Hex campaign maps (gamification) | [docs/creating-hexmaps.md](docs/creating-hexmaps.md) |
