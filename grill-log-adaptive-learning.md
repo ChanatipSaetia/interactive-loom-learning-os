@@ -68,6 +68,109 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 179 | Getting a topic from a chat into Viewer | **Four levels, built in order, none needs a server.** **Level 0 — works today:** the `loom-topic-writer` skill in the Claude app, or the published authoring prompt as knowledge in a Gemini Gem (or a ChatGPT GPT); the learner saves the `.loom.oui` or copies it, then opens or pastes it in Viewer. **Level 1 — a link made by code:** `viewer.html#present&oui=<deflate + base64url>` opens a whole topic from the link. The link is built by code, never typed by the model (a model cannot compress): by a one-button artifact or canvas page the chat writes around the topic text, or by the level 3 tool. **Level 2 — back to the chat:** Viewer's **Ask for next topic** copies the request of decision 175 (mastered and weak skills, goal, callbacks to include), opening the chat with it filled in where the chat accepts a prompt in its URL. **Level 3 — a local MCP server run with `npx`** (no hosting): validate a topic with the 3-tier gateway, read the learner summary from the synced memory folder (decision 149), save the topic to a folder, and return its level 1 link; for Claude Desktop, Claude Code, Gemini CLI and other MCP clients. |
 | 180 | Remote connectors and MCP Apps | **Not now.** A remote MCP connector (the only kind the Claude and Gemini web and mobile apps can add) or an MCP App needs a hosted server, which decision 143 rules out. Revisit only if a free serverless host becomes acceptable. |
 
+## Learner Journey & User Stories
+
+**Draft — to be adjusted.** The learner is a self-learner with a few domains in mind (Chinese,
+Blender 3D, stock management and pricing), who uses a normal AI chat and learns in Loom Viewer.
+Status: **Exists** today, or **New** with the decisions it depends on.
+
+```
+1. Start ──► 2. Get a topic ──► 3. Watch it (Present) ──► 4. Try it (Read)
+   ▲                                                          │
+   │                                                          ▼
+7. Grow the domain ◄── 6. Next topic (with callbacks) ◄── 5. Leave & come back
+```
+
+### 1. Start (first time)
+
+From "I want to learn X" to a first topic in minutes.
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| S1 | to add Loom to the chat I already use (Claude skill, Gemini Gem) in one step | I install nothing | Exists for the Claude skill; **New**: a Gem guide (179) |
+| S2 | to state my goal in plain words ("order food in Chinese") | the first topic fits what I want | **New** (170, 175) |
+| S3 | a short placement check when I know a bit already | I skip what I know | **New** (173) |
+
+### 2. Get a topic into Viewer
+
+From the chat's answer to Viewer without handling files.
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| G1 | to open the topic the chat wrote, by file or by paste | I can start learning | Exists |
+| G2 | to click one link and land in Viewer with the topic loaded | I skip saving and pasting | **New** (179 level 1) |
+| G3 | to copy a broken topic's errors back to the chat as a fix request | I need not understand the error | Exists |
+
+### 3. Watch it in Present (first pass)
+
+Understand with full focus and no decisions.
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| P1 | the topic to open straight into Present | it starts playing at once | **New** (178) |
+| P2 | one idea per beat, narrated | I follow without effort | Exists (decisions 101–111) |
+| P3 | a beat that recalls earlier learning to pause on **Your turn** | I remember it rather than just watch | **New** (162, 177) |
+| P4 | to pause and ask the tutor about what is on screen | my question is answered in context | Exists (decision 119) |
+
+### 4. Try it in Read (hands-on)
+
+Do the quizzes, sandboxes and scenarios myself.
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| R1 | to switch from Present to Read at the same section | I try what I just watched | Exists |
+| R2 | my answers remembered | Loom knows what I have learned | **New** (145, 147) |
+| R3 | hints before answers from the tutor when I am stuck | I still do the thinking | Exists (decision 119) |
+
+### 5. Leave and come back
+
+Nothing lost, and no guilt.
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| L1 | my progress kept on this device after I close the browser | I pick up where I left | **New** (147) |
+| L2 | my progress on my phone and laptop, with no Loom account or server | I learn on any device | **New** (149, 150) |
+| L3 | to see what I still remember in each domain, not a pile of overdue items | coming back feels good | **New** (172) |
+| L4 | optional shorts for vocabulary when I have a few minutes | fast-fading facts stay fresh | **New, optional** (166, after a prototype) |
+
+### 6. Get the next topic, with review inside
+
+Keep improving without a separate review session.
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| N1 | Loom to suggest what is next and why ("tones are solid; measure words are weak") | I trust the suggestion | **New** (173) |
+| N2 | to ask the chat for that topic in one click, carrying what I know and what is fading | the next topic fits me | **New** (175, 179 level 2) |
+| N3 | the next topic to bring back what I am forgetting inside the new material | I review without noticing | **New** (161–163) |
+| N4 | callback results to count for the old skill | Loom knows I still have it | **New** (164) |
+
+### 7. Grow the domain
+
+From separate topics to a path toward my goal.
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| D1 | to see my path toward my goal: done, next, fading | I know where I stand | **New** (170, 172) |
+| D2 | shared topics when they exist and personal ones when they do not | I get the best of both | **New** (174) |
+| D3 | to change my goal and have the path follow | my learning follows my needs | **New** (170, 173) |
+
+### When things go wrong
+
+- **The chat's topic is broken:** its errors go back to the chat with Copy (G3, exists).
+- **The topic is too long for a link:** fall back to paste (G1).
+- **No AI model connected in Viewer:** the topic still plays; callbacks stop at recall, with no apply
+  or teach back (169).
+- **Away for weeks:** the next topic carries more repair callbacks, still within the cap (163);
+  no backlog appears.
+- **Wrong facts in an AI-written topic:** the tutor marks what comes from the topic and what from
+  its own knowledge; validation checks structure only.
+
+### What the gap shows
+
+Watching (step 3), the error loop and the tutor already work. What is missing falls in three
+groups: **a smoother entry** (P1, G2), **memory** (R2, L1, L2) and **the loop** (N1–N4). The loop
+needs memory first: without it Loom cannot know what the learner is forgetting.
+
 ## The Three Domains as Examples
 
 | | **Chinese** | **Blender 3D** | **Stock management & pricing** |
