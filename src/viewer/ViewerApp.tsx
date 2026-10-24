@@ -6,7 +6,7 @@
  * again, so changes made by an AI show up without reopening anything.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MessageSquareShare, MoreHorizontal, Play, RefreshCw, Sparkles, Upload } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpen, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MessageSquareShare, MoreHorizontal, Play, RefreshCw, Save, Sparkles, Upload } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
@@ -27,6 +27,8 @@ import {
 } from '../core/supporting/authoring-editor/workspace'
 import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from './compileTopic'
 import { readTopicLink } from './topic-link'
+import { isLoomFolder, readFileListFiles, readHandleFiles, readLoomFolder, saveNoteToFolder, type DomainTopic, type FolderFiles, type LoomLibrary } from './library'
+import { DomainView, LibraryView } from './LibraryView'
 import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, PickSection, sourceResolver, useNarrow } from '../core/supporting/authoring-editor/pick'
 import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext, type AssistantView } from '../core/supporting/authoring-editor/assistant'
@@ -52,6 +54,22 @@ interface Loaded {
 interface Status {
   kind: 'ok' | 'error'
   text: string
+}
+
+/** A picked Loom folder: the library or one domain (decisions 210–215). */
+interface Shelf {
+  /** The picked folder's name. */
+  name: string
+  library: LoomLibrary
+  /** The domain page on screen; null shows the library. */
+  domainId: string | null
+  /** Present when the folder was picked with the File System Access API: Save progress writes into it. */
+  handle?: FileSystemDirectoryHandle
+  reread: () => Promise<FolderFiles>
+  /** Bumped on every read, so statuses are worked out again. */
+  revision: number
+  /** The domain folder (path prefix) the open topic came from. */
+  from?: string
 }
 
 /** File System Access pickers (Chromium); other browsers fall back to file inputs. */
@@ -133,6 +151,7 @@ const COMPACT_HEADER = '(max-width: 1199px)'
 
 export function ViewerApp() {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
+  const [shelf, setShelf] = useState<Shelf | null>(null)
   const [selected, setSelected] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<Status | null>(null)
@@ -143,11 +162,11 @@ export function ViewerApp() {
   /** Where the learner is in Present (topic section index and beat), for Read and Refresh to return to. */
   const presentAt = useRef({ sectionIndex: 0, beat: 0 })
   const [presentBeat, setPresentBeat] = useState(0)
-  const current = useRef({ loaded, selected })
+  const current = useRef({ loaded, selected, shelf })
   const compact = useNarrow(COMPACT_HEADER)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  current.current = { loaded, selected }
+  current.current = { loaded, selected, shelf }
 
   /** `viewer.html#present`: the first topic opened starts in Present (decision 178). */
   const linkPresent = useRef(new URLSearchParams(window.location.hash.slice(1)).has('present'))
@@ -216,10 +235,48 @@ export function ViewerApp() {
     (handle: FileSystemFileHandle) => load(handle.name, readFileHandle(handle), { refreshHint: `Reload ${handle.name} from disk` }),
     [load],
   )
+  /** A picked Loom folder (`index.oui` or `domain.oui`) opens as the library or the domain page. */
+  const openShelf = useCallback((name: string, files: FolderFiles, reread: () => Promise<FolderFiles>, handle?: FileSystemDirectoryHandle) => {
+    const library = readLoomFolder(files, name)
+    setShelf({ name, library, domainId: library.kind === 'domain' ? library.domains[0]?.id ?? null : null, handle, reread, revision: 0 })
+    setLoaded(null)
+    setError(null)
+    window.scrollTo(0, 0)
+  }, [])
+  const rereadShelf = useCallback(async () => {
+    const before = current.current.shelf
+    if (!before) return
+    try {
+      const files = await before.reread()
+      setShelf((s) => s && { ...s, library: readLoomFolder(files, s.name), revision: s.revision + 1 })
+    } catch (e) {
+      setStatus({ kind: 'error', text: `Could not read ${before.name}/ again: ${message(e)}` })
+    }
+  }, [])
   const openDirectory = useCallback(
-    (handle: FileSystemDirectoryHandle) => load(`${handle.name}/`, readDirectory(handle), { refreshHint: `Reload ${handle.name}/ from disk` }),
-    [load],
+    async (handle: FileSystemDirectoryHandle) => {
+      const files = await readHandleFiles(handle).catch(() => null)
+      if (files && isLoomFolder(files)) return openShelf(handle.name, files, () => readHandleFiles(handle), handle)
+      return load(`${handle.name}/`, readDirectory(handle), { refreshHint: `Reload ${handle.name}/ from disk` })
+    },
+    [load, openShelf],
   )
+  /** A topic from the domain page; Refresh reads the folder again. */
+  const openShelfTopic = useCallback((topic: DomainTopic) => {
+    const from = current.current.shelf
+    if (!from || !topic.topic || !topic.path) return
+    const domain = from.library.domains.find((d) => d.topics.includes(topic))
+    setShelf((s) => s && { ...s, from: domain?.prefix ?? '' })
+    const path = topic.path
+    const domainId = domain?.id
+    void load(`${from.name}/${path}`, async () => [topic.topic!], {
+      refresh: async () => {
+        const files = await from.reread()
+        return readTopicText(files[path] ?? '', topic.id).map((t) => ({ ...t, domainId: t.domainId ?? domainId }))
+      },
+      refreshHint: `Reload ${path} from disk`,
+    })
+  }, [load])
   const openText = useCallback(
     (text: string) => load('Pasted text', async () => readTopicText(text), {
       refresh: readClipboard,
@@ -229,12 +286,14 @@ export function ViewerApp() {
     [load],
   )
   const openFolder = useCallback(
-    (files: FileList) => {
+    async (files: FileList) => {
       const list = Array.from(files)
       const name = list[0]?.webkitRelativePath.split('/')[0] || 'folder'
+      const folder = await readFileListFiles(list).catch(() => null)
+      if (folder && isLoomFolder(folder)) return openShelf(name, folder, () => readFileListFiles(list))
       return load(`${name}/`, () => readTopicFolderFiles(list), { refreshHint: `Read ${name}/ again` })
     },
-    [load],
+    [load, openShelf],
   )
 
   // A link that carries the topic (`#present&oui=…`, decision 179) opens it at once
@@ -366,7 +425,15 @@ export function ViewerApp() {
         </button>
       )}
       <MemoryButtons onStatus={setStatus} labels={compact} />
-      {topic && !topic.error && <ProgressNoteButton topic={topic} onStatus={setStatus} labels={compact} />}
+      {topic && !topic.error && (
+        <ProgressNoteButton
+          topic={topic}
+          onStatus={setStatus}
+          labels={compact}
+          saveTo={shelf?.handle && shelf.from !== undefined ? { handle: shelf.handle, prefix: shelf.from } : undefined}
+          onSaved={() => void rereadShelf()}
+        />
+      )}
       <AudioToggle />
       <ThemeToggle />
     </>
@@ -379,6 +446,11 @@ export function ViewerApp() {
           <button type="button" className="topnav-title viewer-brand" onClick={() => setLoaded(null)} title="Open another topic">
             <Sparkles size={16} /> <span className="viewer-brand-label">Loom&nbsp;Viewer</span>
           </button>
+          {loaded && shelf?.from !== undefined && (
+            <button type="button" className="viewer-pill" onClick={() => { setLoaded(null); void rereadShelf() }} title="Back to the domain" data-testid="viewer-back-to-domain">
+              <ArrowLeft size={14} /> <span className="viewer-pill-label">{shelf.library.domains.find((d) => d.prefix === shelf.from)?.title ?? 'Domain'}</span>
+            </button>
+          )}
           {loaded && (
             <div className="viewer-topic-picker">
               <span className="viewer-source" title={loaded.source}>{loaded.source}</span>
@@ -451,6 +523,31 @@ export function ViewerApp() {
             )
             : topic
             ? <TopicView key={`${loaded.source}:${topic.topicId}:${loaded.revision}`} topic={topic} />
+            : shelf
+            ? (() => {
+              const domain = shelf.domainId ? shelf.library.domains.find((d) => d.id === shelf.domainId) : undefined
+              return domain
+                ? (
+                  <DomainView
+                    domain={domain}
+                    revision={shelf.revision}
+                    onOpenTopic={openShelfTopic}
+                    onBack={shelf.library.kind === 'library' ? () => setShelf({ ...shelf, domainId: null }) : undefined}
+                    onRefresh={() => void rereadShelf()}
+                    onClose={() => setShelf(null)}
+                  />
+                )
+                : (
+                  <LibraryView
+                    library={shelf.library}
+                    name={shelf.name}
+                    revision={shelf.revision}
+                    onOpenDomain={(id) => setShelf({ ...shelf, domainId: id })}
+                    onRefresh={() => void rereadShelf()}
+                    onClose={() => setShelf(null)}
+                  />
+                )
+            })()
             : (
               <Landing
                 onFile={openFile}
@@ -573,6 +670,9 @@ function Landing({ onFile, onFileHandle, onDirectory, onFolder, onText, error }:
         <p>
           Paste or open a <code>.loom.oui</code> topic (or a single section <code>.oui</code>), open a <code>.zip</code>{' '}
           exported from Loom Studio, or pick a topic folder. You can also drop a file or folder here.
+        </p>
+        <p className="viewer-hint">
+          Learning with a tutor skill? Open your <code>Loom</code> folder (synced by Google Drive for desktop), or one domain in it, to see your topics and progress.
         </p>
         <p className="viewer-hint">
           Writing a topic with Claude or a coding agent? <a href="create.html" data-testid="viewer-llm-prompt">Add the Loom skill, step by step</a>,
@@ -746,20 +846,48 @@ function RecordedSection({ topicId, name, config, sectionIndex }: { topicId: str
  * Copy progress for chat (decision 203): today's progress note for the open
  * topic, as a message to paste into the chat that plans the next topic.
  */
-function ProgressNoteButton({ topic, onStatus, labels }: { topic: ViewerTopic; onStatus: (status: Status) => void; labels: boolean }) {
+function ProgressNoteButton({ topic, onStatus, labels, saveTo, onSaved }: {
+  topic: ViewerTopic
+  onStatus: (status: Status) => void
+  labels: boolean
+  /** The Loom folder the topic came from, opened with write access possible: Save progress writes the note into it (decision 211). */
+  saveTo?: { handle: FileSystemDirectoryHandle; prefix: string }
+  onSaved?: () => void
+}) {
   const memory = useLearnerMemory()
   if (!memory) return null
 
-  const copy = async () => {
+  const todaysNote = async () => {
     const note = progressNote(noteTopicOf(topic), await memory.port.readAll())
-    if (note.empty) {
-      onStatus({ kind: 'error', text: 'Nothing played or answered in this topic today yet.' })
-      return
-    }
+    if (note.empty) onStatus({ kind: 'error', text: 'Nothing played or answered in this topic today yet.' })
+    return note.empty ? null : note
+  }
+  const copy = async () => {
+    const note = await todaysNote()
+    if (!note) return
     const copied = await copyText(progressNoteMessage(note))
     onStatus(copied ? { kind: 'ok', text: 'Progress copied. Paste it into your AI chat.' } : { kind: 'error', text: 'The browser did not allow copying.' })
   }
+  const save = async () => {
+    const note = await todaysNote()
+    if (!note || !saveTo) return
+    const fileName = note.path.split('/').pop()!
+    try {
+      await saveNoteToFolder(saveTo.handle, saveTo.prefix, fileName, note.text)
+      onStatus({ kind: 'ok', text: `Progress saved to ${saveTo.prefix}progress/${fileName}` })
+      onSaved?.()
+    } catch (e) {
+      onStatus({ kind: 'error', text: `Could not save: ${message(e)}` })
+    }
+  }
 
+  if (saveTo) {
+    return (
+      <button type="button" className="viewer-pill" onClick={() => void save()} title="Save today's progress in this topic to the domain's progress folder" aria-label="Save progress" data-closes-menu data-testid="viewer-save-progress">
+        <Save size={14} />{labels && <> <span className="viewer-pill-label">Save progress</span></>}
+      </button>
+    )
+  }
   return (
     <button type="button" className="viewer-pill" onClick={() => void copy()} title="Copy today's progress in this topic for your AI chat" aria-label="Copy progress for chat" data-closes-menu data-testid="viewer-copy-progress">
       <MessageSquareShare size={14} />{labels && <> <span className="viewer-pill-label">Copy progress</span></>}

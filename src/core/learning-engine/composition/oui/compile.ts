@@ -122,6 +122,20 @@ export interface OUICatalogManifest {
   topics: string[]
 }
 
+/** `Loom/<domain-id>/domain.oui` in the learner's drive (storage-guide.ts). */
+export interface OUIDomainManifest {
+  title: string
+  description: string
+  /** Topic IDs in suggested learning order. */
+  topics: string[]
+  goal?: string
+}
+
+/** `Loom/index.oui`: the learner's domains. */
+export interface OUILibraryManifest {
+  domains: string[]
+}
+
 // ============================================================================
 // Statement → line index
 // ============================================================================
@@ -559,4 +573,26 @@ export function compileOUICatalog(source: string): OUICompileResult<OUICatalogMa
     return { value: null, rootComponent: program.rootComponent, issues: [...program.issues, issue], sourceMap: program.sourceMap }
   }
   return { ...program, value: program.value as OUICatalogManifest | null }
+}
+
+/** Compile a domain's `domain.oui` (root must be `Domain`). */
+export function compileOUIDomain(source: string): OUICompileResult<OUIDomainManifest> {
+  const program = compileProgram(source)
+  if (program.root && program.rootComponent !== 'Domain') {
+    const issue = wrongRoot('Domain(…)', program.rootComponent)
+    issue.line = program.sourceMap.lineOf('root')
+    return { value: null, rootComponent: program.rootComponent, issues: [...program.issues, issue], sourceMap: program.sourceMap }
+  }
+  return { ...program, value: program.value as OUIDomainManifest | null }
+}
+
+/** Compile the learner's `Loom/index.oui` (root must be `Library`). */
+export function compileOUILibrary(source: string): OUICompileResult<OUILibraryManifest> {
+  const program = compileProgram(source)
+  if (program.root && program.rootComponent !== 'Library') {
+    const issue = wrongRoot('Library(…)', program.rootComponent)
+    issue.line = program.sourceMap.lineOf('root')
+    return { value: null, rootComponent: program.rootComponent, issues: [...program.issues, issue], sourceMap: program.sourceMap }
+  }
+  return { ...program, value: program.value as OUILibraryManifest | null }
 }
