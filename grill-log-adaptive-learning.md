@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — under discussion, nothing implemented (decisions 161–186)**
+Status: **Concept — under discussion, nothing implemented (decisions 161–187)**
 
 ## Goal
 
@@ -79,6 +79,7 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 185 | Hosting and cost | **Cloudflare Workers, free plan**, on its `*.workers.dev` address: 100,000 requests a day, about 4–6 per topic opened, so roughly 15,000–25,000 topic opens a day at $0. No sign-in: the endpoint holds nothing private. Vercel Hobby (personal, non-commercial only), Deno Deploy or Netlify Functions are alternatives behind the same code. The paid Workers plan starts at $5 a month if ever needed. |
 | 186 | Learner memory inside a chat | **Local: through the server.** Over stdio the app hands its events to a tool that writes them to the learner's memory folder (decision 149). **Hosted: not kept in the chat.** The sandboxed iframe cannot be trusted to keep browser storage or to sign in to Google Drive, so the app offers **Continue in Viewer**, a link carrying the topic and the session's results, and memory lives in Viewer (decisions 147–150). |
 
+| 187 | The local server | **Allowed, and a full peer of the hosted endpoint, not a fallback.** The npm package runs on the learner's computer over stdio (`npx`, or a `.mcpb` extension for Claude Desktop) and can do what the hosted endpoint cannot: keep learner memory in the memory folder (decision 186), validate topics with the 3-tier gateway with no CPU limit, save topics to a folder the learner picks, and serve the UI from the package itself so it works offline (GitHub Pages stays the default source). It is the preferred path whenever the chat runs on the learner's computer (VS Code Copilot, Goose, Claude Desktop, Cursor); the hosted endpoint covers web and mobile chats. |
 **Hosts, in order of trying** (Oct 2026; check the official MCP Apps host list before relying on one):
 
 | Order | Host | Kind | Server | MCP App UI |
