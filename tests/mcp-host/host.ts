@@ -50,7 +50,9 @@ function cspFor(csp: Csp = {}): string {
 }
 
 async function main() {
-  const client = new Client({ name: 'loom-test-host', version: '0.1.0' })
+  // A chat that shows MCP Apps says so; ?no-apps plays one that does not (show_topic then answers with a Viewer link)
+  const capabilities = params.has('no-apps') ? {} : { extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: ['text/html;profile=mcp-app'] } } }
+  const client = new Client({ name: 'loom-test-host', version: '0.1.0' }, { capabilities })
   await client.connect(new StreamableHTTPClientTransport(new URL(SERVER)))
   const { tools } = await client.listTools()
   const show = tools.find((t) => t.name === 'show_topic')!
@@ -97,6 +99,11 @@ async function main() {
   }
   bridge.onmessage = async (p) => {
     say('user', `(from the app) ${textOf(p).slice(0, 200)}`)
+    return {}
+  }
+  bridge.onopenlink = async ({ url }) => {
+    say('context', `opened link ← ${url.slice(0, 120)}`)
+    Object.assign(window, { lastOpenedLink: url })
     return {}
   }
   bridge.onsizechange = ({ height }) => {

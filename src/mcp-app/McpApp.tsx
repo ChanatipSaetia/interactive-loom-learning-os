@@ -8,7 +8,7 @@
  * errors back to the chat's model.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, BookOpen, Loader2, Maximize2, Minimize2, Play, Send, X } from 'lucide-react'
+import { AlertTriangle, BookOpen, ExternalLink, Loader2, Maximize2, Minimize2, Play, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
@@ -17,12 +17,17 @@ import { PresentMode, kindLabel, preloadPresenters, type PresentSection } from '
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
 import { TopicView } from '../viewer/ViewerApp'
+import { topicLinkUrl } from '../viewer/topic-link'
 import { SYSTEM_THEMES, systemThemeId } from '../core/ui-system/theme/themes'
 
 type View = 'card' | 'present' | 'read'
 
-/** What the tool input holds once it has been read. */
-type Loaded = { topic: ViewerTopic; report: string | null } | { topic: null; report: string }
+/** What the tool input holds once it has been read, with its source for Continue in Viewer. */
+type Loaded = ({ topic: ViewerTopic; report: string | null } | { topic: null; report: string }) & { oui?: string }
+
+/** Loom Viewer on the site the app was loaded from (`<site>/mcp-app/v1/app.js` → `<site>/viewer.html`). */
+// (not `new URL('../../viewer.html', import.meta.url)`, which Vite would bundle as an asset)
+const VIEWER_URL = import.meta.url.replace(/mcp-app\/v\d+\/[^/]*$/, 'viewer.html')
 
 /** Decision 196: Liquid Glass when the chat is dark, Liquid Glass Light when it is light. */
 export function themeForHost(theme: McpUiHostContext['theme']): string {
@@ -66,7 +71,8 @@ export function McpApp({ app }: { app: App }) {
     app.ontoolinput = (params) => {
       const args = (params.arguments ?? {}) as { oui?: unknown; mode?: unknown }
       setWriting(false)
-      setLoaded(loadTopic(String(args.oui ?? '')))
+      const oui = String(args.oui ?? '')
+      setLoaded({ ...loadTopic(oui), oui })
       setStartMode(args.mode === 'read' ? 'read' : 'present')
       setView('card')
       setAsked(false)
@@ -111,6 +117,18 @@ export function McpApp({ app }: { app: App }) {
     if (full) await displayMode('inline')
   }, [displayMode, full])
 
+  /** Open the topic in Loom Viewer, where progress is kept (decision 186), at Present. */
+  const [linkNote, setLinkNote] = useState<string | null>(null)
+  const continueInViewer = useCallback(async () => {
+    const url = loaded?.oui ? await topicLinkUrl(VIEWER_URL, loaded.oui) : null
+    if (!url) {
+      setLinkNote('This topic is too long for a link. Copy it from the chat and paste it into Loom Viewer.')
+      return
+    }
+    const result = await app.openLink({ url }).catch(() => ({ isError: true }))
+    setLinkNote(result?.isError ? 'The chat did not open the link.' : null)
+  }, [app, loaded])
+
   const askToFix = useCallback(async () => {
     if (!loaded?.report) return
     setAsked(true)
@@ -131,6 +149,9 @@ export function McpApp({ app }: { app: App }) {
       {view === 'read' && presentSections.length > 0 && (
         <button type="button" className="mcp-button mcp-small" onClick={() => setView('present')}><Play size={14} /> Present</button>
       )}
+      <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void continueInViewer()} title="Open in Loom Viewer" data-testid="mcp-viewer">
+        <ExternalLink size={14} /> <span className="mcp-wide-only">Viewer</span>
+      </button>
       {canFullscreen && (
         <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void displayMode(full ? 'inline' : 'fullscreen')} data-testid="mcp-fullscreen">
           {full ? <><Minimize2 size={14} /> Exit full screen</> : <><Maximize2 size={14} /> Full screen</>}
@@ -208,8 +229,12 @@ export function McpApp({ app }: { app: App }) {
               {startMode === 'read' ? <><Play size={14} /> Present</> : <><BookOpen size={14} /> Read</>}
             </button>
           )}
+          <button type="button" className="mcp-button mcp-quiet" onClick={() => void continueInViewer()} data-testid="mcp-viewer">
+            <ExternalLink size={14} /> Open in Viewer
+          </button>
         </div>
       )}
+      {linkNote && <p className="mcp-note">{linkNote}</p>}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–196 drafted; decisions 180–184, 188, 189 and 196 partly built (slices 0–2). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–2 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
+Status: **Concept — decisions 161–196 drafted; decisions 178–184, 188, 189 and 196 partly built (slices 0–3). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–3 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
 
 ## Goal
 
@@ -318,6 +318,15 @@ host (Goose) is next.**
 - The app's **Continue in Viewer**, and `show_topic`'s answer in hosts without app UI, use that
   link.
 - **Done when:** the link opens the same topic at the same place in Viewer.
+
+**Status: built and checked in the local test host.** `src/viewer/topic-link.ts` packs a topic into
+`#present&oui=<deflate-raw + base64url>` and reads it back (the Chinese Day 1 topic, 15.7 KB of
+text, becomes an 8.2 KB link). Viewer opens `#present` and topic links (`ViewerApp.tsx`); the app's
+**Open in Viewer** (card and player bar) asks the chat to open the link (`openLink`); and
+`show_topic` adds the link to its answer only when the chat does not say it shows MCP Apps
+(`getUiCapability`), so models in app-showing chats are not handed 8 KB of link text. The Viewer
+address is worked out from where the app was loaded (`<site>/mcp-app/v1/` → `<site>/viewer.html`).
+Links longer than 32,000 characters are not made; the learner is told to paste the topic instead.
 
 ### Slice 4 — Memory, locally
 

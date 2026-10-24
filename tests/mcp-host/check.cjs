@@ -94,6 +94,20 @@ async function open(browser, query) {
     await shot(page, 'broken')
   }
 
+  {
+    // Open in Viewer: the app asks the chat to open a link that carries the topic, and Viewer plays it
+    const { page, app } = await open(browser, '')
+    await app.locator('[data-testid=mcp-viewer]').click()
+    await page.waitForTimeout(800)
+    const link = await page.evaluate(() => window.lastOpenedLink)
+    const viewer = await browser.newPage({ viewport: { width: 960, height: 720 } })
+    await viewer.goto(link)
+    await viewer.locator('[data-testid=present-mode]').waitFor({ timeout: 15000 })
+    await viewer.waitForTimeout(2000)
+    results.viewerLink = { length: link.length, opensInPresent: true }
+    await shot(viewer, 'viewer-from-link')
+  }
+
   console.log(JSON.stringify(results, null, 2))
   await browser.close()
 })()

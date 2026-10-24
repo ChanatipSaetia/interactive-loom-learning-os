@@ -25,6 +25,7 @@ import {
   type TopicFiles,
 } from '../core/supporting/authoring-editor/workspace'
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from './compileTopic'
+import { readTopicLink } from './topic-link'
 import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, PickSection, sourceResolver, useNarrow } from '../core/supporting/authoring-editor/pick'
 import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext, type AssistantView } from '../core/supporting/authoring-editor/assistant'
@@ -147,6 +148,9 @@ export function ViewerApp() {
   const menuRef = useRef<HTMLDivElement>(null)
   current.current = { loaded, selected }
 
+  /** `viewer.html#present`: the first topic opened starts in Present (decision 178). */
+  const linkPresent = useRef(new URLSearchParams(window.location.hash.slice(1)).has('present'))
+
   const load = useCallback(async (source: string, read: ReadTopics, options: { refresh?: ReadTopics; refreshHint: string; pasted?: boolean }) => {
     try {
       const topics = (await read()).map(compileViewerTopic)
@@ -155,7 +159,10 @@ export function ViewerApp() {
       setError(null)
       setStatus(null)
       setPicking(false)
-      setMode('read')
+      setPresentStart(0)
+      setPresentBeat(0)
+      setMode(linkPresent.current ? 'present' : 'read')
+      linkPresent.current = false
       window.scrollTo(0, 0)
     } catch (e) {
       setError(message(e))
@@ -228,6 +235,18 @@ export function ViewerApp() {
     },
     [load],
   )
+
+  // A link that carries the topic (`#present&oui=…`, decision 179) opens it at once
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.hash.slice(1)).has('oui')) return
+    readTopicLink(window.location.hash)
+      .then(({ oui }) => {
+        if (!oui) return
+        const read = async () => readTopicText(oui)
+        return load('Linked topic', read, { refreshHint: 'Open the topic from the link again' })
+      })
+      .catch(() => setError('This link does not hold a readable topic. Ask the chat for a new link, or paste the topic instead.'))
+  }, [load])
 
   // A topic opened from pasted text is replaced by the next paste (outside text fields).
   const pasted = !!loaded?.pasted

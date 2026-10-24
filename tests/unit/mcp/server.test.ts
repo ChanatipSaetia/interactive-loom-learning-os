@@ -69,10 +69,21 @@ describe('Loom MCP server', () => {
     expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { oui: oui.replace('root = Quiz(', 'root = Quizz(') } }))).toContain('sections/quiz.oui')
   })
 
-  it('tells the model what show_topic showed', async () => {
+  it('tells the model what show_topic showed, with a Viewer link for a chat that does not show apps', async () => {
     const text = textOf(await client.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1') } }))
     expect(text).toContain('6 sections')
     expect(text).toContain('Play')
+    expect(text).toContain('http://localhost:5180/viewer.html#present&oui=')
+  })
+
+  it('leaves the link out for a chat that shows MCP Apps', async () => {
+    const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
+    await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/' }).connect(serverSide)
+    const appsClient = new Client({ name: 'apps', version: '0' }, { capabilities: { extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: ['text/html;profile=mcp-app'] } } } })
+    await appsClient.connect(clientSide)
+    const text = textOf(await appsClient.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1') } }))
+    expect(text).not.toContain('viewer.html')
+    await appsClient.close()
   })
 
   it('serves a shell that loads the app from its declared origin only', async () => {

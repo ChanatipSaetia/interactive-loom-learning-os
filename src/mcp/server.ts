@@ -8,11 +8,12 @@
  * path, decision 182); parsing, validation and rendering run in the app.
  */
 import { McpServer } from '@modelcontextprotocol/server'
-import { registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
+import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic, loadErrorReport, topicErrorReport } from '../viewer/compileTopic'
+import { topicLinkUrl } from '../viewer/topic-link'
 
 /** Where the published app lives; each server release names the app version it was built for. */
 export const DEFAULT_APP_URL = 'https://chanatipsaetia.github.io/interactive-loom-learning-os/mcp-app/v1/'
@@ -23,6 +24,11 @@ const FONT_ORIGINS = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com
 export interface LoomServerOptions {
   /** Base URL of the app's `app.js` and `app.css`, ending in `/`. */
   appUrl?: string
+}
+
+/** Loom Viewer, next to the app on the same site (`<site>/mcp-app/v1/` → `<site>/viewer.html`). */
+export function viewerUrlFor(appUrl: string): string {
+  return new URL('../../viewer.html', appUrl).href
 }
 
 /** The HTML the chat app renders: it only loads the app's script and styles. */
@@ -113,7 +119,16 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   }, async ({ oui }) => {
     const check = checkTopic(oui)
     const shown = check.title ? `Showing "${check.title}" (${check.sections.length} sections). The learner can press Play.` : 'Showing the topic.'
-    return { content: [{ type: 'text', text: check.ok ? shown : `${shown}\n\nIt has errors; the learner sees them in the app:\n\n${check.report}` }] }
+    let text = check.ok ? shown : `${shown}\n\nIt has errors; the learner sees them in the app:\n\n${check.report}`
+    // A chat that cannot show the app gets a link that opens the topic in Viewer (decision 179)
+    const showsApps = getUiCapability(server.server.getClientCapabilities())?.mimeTypes?.includes(RESOURCE_MIME_TYPE)
+    if (!showsApps) {
+      const link = await topicLinkUrl(viewerUrlFor(appUrl), oui)
+      text += link
+        ? `\n\nThis chat may not show Loom's player. Give the learner this link, which opens the topic in Loom Viewer, ready to play: ${link}`
+        : '\n\nThis chat may not show Loom\'s player, and the topic is too long for a link: the learner can paste it into Loom Viewer.'
+    }
+    return { content: [{ type: 'text', text }] }
   })
 
   return server

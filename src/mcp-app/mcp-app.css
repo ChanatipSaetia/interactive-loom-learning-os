@@ -172,3 +172,13 @@ body {
   padding: 6px 12px;
   font-size: 13px;
 }
+
+.mcp-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+}
+
+@media (max-width: 480px) {
+  .mcp-wide-only { display: none; }
+}
