@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–200 drafted; decisions 144–148, 151, 178–184, 186–189 and 196 partly built (slices 0–4). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–4 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
+Status: **Concept — decisions 161–204 drafted; decisions 144–148, 151, 178–184, 186–189 and 196 partly built (slices 0–4). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–4 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
 
 ## Goal
 
@@ -92,6 +92,10 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 198 | One Loom folder in the learner's drive | **`Loom/` in the drive the learner uses** (Google Drive, OneDrive or SharePoint): `Loom/topics/<id>.loom.oui` and `Loom/progress/<topic>-<date>.md`. On the computer the drive's desktop sync puts the same folder on disk, and the local server uses it as its memory folder (`--memory <synced>/Loom`), adding its `events-<machine>.jsonl`. So phone, web and computer see the same topics. |
 | 199 | Saving progress from a hosted chat | **A Save my progress button in the player, and the chat does the saving.** The app writes a short progress note (topic, sections played, answers right and wrong, what to review) and sends it into the chat as a message asking the model to save it to `Loom/progress/` with its storage connector; the learner approves the save in the chat. Notes are Markdown, readable by models and people. When a chat's connector cannot write files, the note stays in the conversation, and Open in Viewer keeps the full record. |
 | 200 | Finding topics from a phone | **The model looks them up with its storage connector** ("play my Chinese Day 1 topic" → find `Loom/topics/chinese101-day1.loom.oui`, read it, call `show_topic`). Whether each connector finds plain `.loom.oui` files is the first thing to test; if one only finds its own document types (one report says Claude's Google Drive search returns only Google Docs, Sheets and Slides), topics are also saved as a document of that kind holding the same text. |
+| 201 | How the chat's model learns the routine | **Two agent skills, one per way of learning, both for learners** (the `loom-topic-writer` skill stays as it is, for authors). **`loom-tutor-app`** for chats with the Loom MCP App: find the learner's `Loom/` folder with the chat's drive connector, read `Loom/progress/` (and `learner_summary` when the local server is there), plan the next topic, write it with `get_authoring_guide`, check it with `validate_topic`, play it with `show_topic`, save it to `Loom/topics/`, and save the note **Save my progress** sends to `Loom/progress/`. **`loom-tutor-viewer`** for chats without the app: the same planning and folder routine, but the model gives the topic as one `.loom.oui` for the learner to paste into Loom Viewer, and the learner brings progress back by pasting the note Viewer copies. |
+| 202 | What each skill carries | **The app skill is short**: the routine, the folder layout and the note format; the server hands over the authoring guide (decision 188). **The Viewer skill carries the authoring prompt** as a reference file, as `loom-topic-writer` does, since no server gives it. Both are generated from one source next to `composition/oui/skill.ts` by `npm run oui:schema`, so the shared parts (folder layout, note format, next-topic rules: 20–30% callbacks, decision 163) never drift apart, and published like the writer skill (zip for the Claude app, `npx skills add` for coding agents). |
+| 203 | Progress notes from Viewer | **Viewer gets Copy progress for chat**: the same Markdown note as the app's Save my progress (decision 199), built from Viewer's event log for the open topic, ready to paste into the chat. With it the Viewer skill closes the loop without any server. |
+| 204 | Chats without Claude skills | **The same text as instructions.** ChatGPT (a custom GPT or project instructions) and Microsoft 365 Copilot (an agent's instructions in Copilot Studio) take the skill's `SKILL.md` body as their instructions; the Create with AI page gets a section for each later. |
 
 **Hosts, in order of trying** (Oct 2026; check the official MCP Apps host list before relying on one):
 
@@ -228,7 +232,7 @@ Size is relative: **S** small, **M** medium, **L** large.
 | 3 | **Viewer links** | jump from the chat to Viewer, straight into Present | V1, V2 (without memory) | 178, 179 | S |
 | 4 | **Memory, locally** | close the chat and find progress and saved topics in the next one | R4, N1, T3, V3 (local) | 144–149, 151, 152, 183 | L |
 | 5 | **Hosted endpoint** | learn in Claude web and mobile, Microsoft 365 Copilot or ChatGPT | U2 | 180, 184, 185 | M |
-| 6 | **Progress through the chat's drive** | save progress from Claude on the phone (or ChatGPT, Microsoft 365 Copilot) to their own drive, and find their topics there | U3, U4, V3 | 197–200 | M |
+| 6 | **Learner skills and progress notes** | learn with the app or with Viewer, saving progress to their own drive, with a skill guiding the chat's model either way | U3, U4, V3, N2, N3 | 197–204 | M |
 | 7 | **Your turn and the tutor** | answer callbacks in Present and have the chat explain misses | P3, R2, R3, N5 | 162, 164, 177, 190 | M |
 | 8 | **The loop** | press Next topic and get a topic that carries what they are forgetting | N2, N3, N4 | 161, 163, 170–175, 191, 192 | L |
 | 9 | **Grow the domain** | pick a goal, take a placement check, follow a path | A3, D1, D2, D3 | 170, 173, 174 | M |
@@ -378,20 +382,23 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
   **ChatGPT**; the hosts table updated with what works.
 - **Done when:** Present plays inside Claude on the web and on a phone.
 
-### Slice 6 — Progress through the chat's drive (revised by decisions 197–200)
+### Slice 6 — Learner skills and progress notes (revised by decisions 197–204)
 
 - **Test first, per chat:** can its storage connector find and read a `.loom.oui` file in `Loom/topics/`,
   and can it write a file to `Loom/progress/`? Claude with Google Drive first, then ChatGPT and
   Microsoft 365 Copilot with OneDrive or SharePoint. The answers decide whether topics also need a
   document copy (decision 200) and where notes go when a chat cannot write (decision 199).
-- **Save my progress** in the player: the note built from the session's events, sent into the chat
-  with the request to save it.
-- The authoring guide and tool descriptions tell the model where Loom's folder is and to read
-  `Loom/progress/` before suggesting what to learn next.
+- **The progress note**: one Markdown format built from a session's events (topic, sections
+  played, answers right and wrong, what to review), shared by the app and Viewer.
+- **Save my progress** in the app's player and **Copy progress for chat** in Viewer, both producing
+  that note (decisions 199, 203).
+- **Two skills**, `loom-tutor-app` and `loom-tutor-viewer`, generated by `npm run oui:schema` from one
+  source and published with the writer skill (decisions 201, 202); the Create with AI page offers them.
 - The local server reads `Loom/progress/*.md` too, so `learner_summary` on the computer includes
   sessions from the phone.
-- **Done when:** a topic played on the phone in Claude, with its progress saved to Google Drive, shows
-  up in `learner_summary` from Goose on the computer.
+- **Done when:** with `loom-tutor-app`, a topic played on the phone in Claude, with its progress saved
+  to Google Drive, shows up in `learner_summary` from Goose on the computer; and with
+  `loom-tutor-viewer`, a chat plans the next topic from a note pasted from Viewer.
 - The earlier plan (the hosted server signing in to OneDrive or Google Drive and writing the event
   log itself) is kept as a later option.
 
