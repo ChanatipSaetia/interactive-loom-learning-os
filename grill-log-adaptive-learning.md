@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — under discussion, nothing implemented (decisions 161–193)**
+Status: **Concept — decisions 161–193 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`, starting with slice 0.**
 
 ## Goal
 
