@@ -13,6 +13,7 @@ import { McpServer } from '@modelcontextprotocol/server'
 import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
+import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { isLearnerEvent, summarize, summaryText, type LearnerEvent } from '../core/supporting/learner-progress/memory/events'
 import type { TopicCheck } from './check'
@@ -38,7 +39,8 @@ export interface LearnerStore {
   appendEvents(events: LearnerEvent[]): Promise<void>
   readEvents(): Promise<LearnerEvent[]>
   saveTopic(topic: SavedTopic): Promise<void>
-  listTopics(): Promise<string[]>
+  /** Saved topic IDs, all or one domain's. */
+  listTopics(domain?: string): Promise<string[]>
   readTopic(id: string): Promise<string | null>
   /** Progress notes saved by chats on other devices (`progress/*.md`, decisions 198–199), newest first. */
   readNotes?(): Promise<ProgressNoteFile[]>
@@ -73,7 +75,7 @@ export function appShell(appUrl: string): string {
 
 const GUIDE_TOOL_DESCRIPTION = `How to write a Loom learning topic (.loom.oui text) for show_topic. Call it before writing a topic: first with no section types to get the rules and the list of section types, then again with the section types the topic will use (e.g. ["flowchart"] or ["flashcards", "scenario"]) to get their components. ["all"] returns everything. In a chat, keep topics short by default: one idea in 1–3 sections, no intro or quiz unless a check is the point; write a full lesson (intro, several sections, a closing quiz) only when the learner asks for one.`
 
-const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). Write it with get_authoring_guide, and check it with validate_topic first when that tool is available. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements.`
+const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). Write it with get_authoring_guide, and check it with validate_topic first when that tool is available. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. To save it to the learner's drive, follow get_storage_guide.`
 
 const VALIDATE_TOOL_DESCRIPTION = `Check a Loom topic (.loom.oui text) the way Loom Viewer does, before showing it. Answers "valid" or the errors to fix; fix only what they point at and check again.`
 
@@ -93,6 +95,14 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
       _meta: { ui: { csp: { resourceDomains: [appOrigin, ...FONT_ORIGINS], connectDomains: [appOrigin] }, prefersBorder: true } },
     }],
   }))
+
+  // Where topics and progress notes go in the learner's drive (the Loom/<domain-id>/ layout)
+  server.registerTool('get_storage_guide', {
+    title: 'Where Loom keeps topics and progress',
+    description: STORAGE_GUIDE_DESCRIPTION,
+    inputSchema: z.object({}),
+    annotations: { readOnlyHint: true },
+  }, async () => ({ content: [{ type: 'text', text: getStorageGuide() }] }))
 
   server.registerTool('get_authoring_guide', {
     title: 'Loom authoring guide',
@@ -197,14 +207,19 @@ function registerMemoryTools(server: McpServer, store: LearnerStore) {
 
   server.registerTool('learner_summary', {
     title: "The learner's progress",
-    description: 'What the learner has seen and answered in each Loom topic, and which answers were last wrong. Use it to suggest what to learn or review next.',
-    inputSchema: z.object({ topic: z.string().optional().describe('One topic ID; all topics when left out.') }),
+    description: "What the learner has seen and answered in each Loom topic, and which answers were last wrong. Use it to suggest what to learn or review next; pass the domain to plan within one domain (see get_storage_guide).",
+    inputSchema: z.object({
+      topic: z.string().optional().describe('One topic ID; all topics when left out.'),
+      domain: z.string().optional().describe("One domain ID: only that domain's topics and progress notes."),
+    }),
     annotations: { readOnlyHint: true },
-  }, async ({ topic }) => {
-    const [events, notes] = await Promise.all([store.readEvents(), store.readNotes?.() ?? []])
-    const summaries = summarize(events).filter((s) => !topic || s.topic === topic)
-    // Sessions from the phone or the web arrive as notes the chat saved to progress/ (slice 6)
-    const fromNotes = notes.filter((n) => !topic || noteTopic(n.text) === topic).slice(0, MAX_NOTES)
+  }, async ({ topic, domain }) => {
+    const [events, notes, inDomain] = await Promise.all([store.readEvents(), store.readNotes?.() ?? [], domain ? store.listTopics(domain) : null])
+    const summaries = summarize(events).filter((s) => (!topic || s.topic === topic) && (!inDomain || inDomain.includes(s.topic)))
+    // Sessions from the phone or the web arrive as notes the chat saved to <domain>/progress/ (slice 6)
+    const fromNotes = notes
+      .filter((n) => (!topic || noteField(n.text, 'topic') === topic) && (!domain || noteField(n.text, 'domain') === domain))
+      .slice(0, MAX_NOTES)
     const text = fromNotes.length === 0
       ? summaryText(summaries)
       : `${summaries.length ? summaryText(summaries) : 'No learning recorded on this computer yet.'}\n\nProgress notes saved from other devices (newest first):\n\n${fromNotes.map((n) => `--- ${n.name} ---\n${n.text.trim()}`).join('\n\n')}`
@@ -215,7 +230,7 @@ function registerMemoryTools(server: McpServer, store: LearnerStore) {
 /** Notes read into one summary; older ones add little the newer ones do not say. */
 const MAX_NOTES = 5
 
-/** The `topic:` line of a progress note's front matter. */
-function noteTopic(text: string): string | undefined {
-  return /^topic:\s*(\S+)\s*$/m.exec(text)?.[1]
+/** A line of a progress note's front matter (`topic:`, `domain:`). */
+function noteField(text: string, field: 'topic' | 'domain'): string | undefined {
+  return new RegExp(`^${field}:\\s*(\\S+)\\s*$`, 'm').exec(text)?.[1]
 }

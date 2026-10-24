@@ -15,7 +15,7 @@ In the rules below, "program" means one file. The `root` of `topic.oui` is `Topi
 
 Answer in the format the user asks for. If they do not say, use the single .oui file.
 
-1. **Single .oui file** (`<topic-id>.loom.oui`): the first line is `// @loom-topic <topic-id>`, then every file of the topic, each after a marker line `// === <path> ===`. Put it in one code block. For several topics, repeat the `// @loom-topic` line before each topic's files.
+1. **Single .oui file** (`<topic-id>.loom.oui`): the first line is `// @loom-topic <topic-id>` (followed by `// @loom-domain <domain-id>` when the topic is kept in one of the learner's domains, the folder `Loom/<domain-id>/` in their drive), then every file of the topic, each after a marker line `// === <path> ===`. Put it in one code block. For several topics, repeat the `// @loom-topic` line before each topic's files.
 
    ```
    // @loom-topic <topic-id>
@@ -417,6 +417,17 @@ Catalog(topics: TopicRef[]) — Content catalog (root of index.oui): the ordered
   - topics: The topics in catalog order, as TopicRef calls.
 TopicRef(id: string) — Includes the topic folder <id>/topic.oui in the catalog.
   - id: Topic folder name under the content root.
+
+### The learner's Loom folder (Loom/index.oui, Loom/<domain-id>/domain.oui)
+Domain(title: string, description: string, topics: TopicRef[], goal?: string) — A learner's subject area (root of Loom/<domain-id>/domain.oui): its title, its topics in suggested learning order and the learner's goal.
+  - title: Domain name shown to the learner (e.g. "Fight Animation"); topics in it use it as their category.
+  - description: One or two sentences on what the domain covers.
+  - topics: Its topics in suggested learning order, as TopicRef calls naming files in topics/ (TopicRef("punch-basics") for topics/punch-basics.loom.oui).
+  - goal: Optional: what the learner wants to reach in this domain, in their words (e.g. "animate a 10-second fight scene in Blender").
+DomainRef(id: string) — Includes the domain folder Loom/<id>/ (its domain.oui) in the library.
+  - id: Domain ID: the folder name under Loom/, lowercase letters, digits, - and _ (e.g. "fight-animation").
+Library(domains: DomainRef[]) — The learner's library (root of Loom/index.oui): the list of their domains.
+  - domains: The domains, as DomainRef calls, most recently studied first.
 
 ### Narration (sections/<name>.narrate.oui)
 Narration(steps: NarrationStep[]) — Root of a narration file sections/<name>.narrate.oui: the script Present mode plays the section to, step by step.

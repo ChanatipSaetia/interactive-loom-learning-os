@@ -36,6 +36,12 @@ describe('editTopicSource', () => {
     expect(checkTopic(outcome.oui).ok).toBe(true)
   })
 
+  it('keeps the topic\'s domain line', () => {
+    const withDomain = oui.replace('// @loom-topic chinese101-day1\n', '// @loom-topic chinese101-day1\n// @loom-domain chinese\n')
+    const outcome = editTopicSource('chinese101-day1', withDomain, [{ file: 'sections/quiz.oui', statements: NEW_Q1 }])
+    expect(outcome.ok && outcome.oui.startsWith('// @loom-topic chinese101-day1\n// @loom-domain chinese\n')).toBe(true)
+  })
+
   it('changes nothing when an edit cannot be placed', () => {
     const outcome = editTopicSource('chinese101-day1', oui, [{ file: 'sections/quiz.oui', statements: 'nope = DELETE' }])
     expect(outcome).toEqual({ ok: false, error: expect.stringContaining('has no statement "nope" to delete') })

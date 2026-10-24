@@ -3,6 +3,7 @@ import { localDate, progressNote, progressNoteMessage, stampEvent, type NewLearn
 
 const topic: NoteTopic = {
   id: 'chinese101-day1',
+  domain: 'chinese',
   title: 'Chinese 101: Day 1',
   sections: [
     { name: 'intro', title: 'Welcome' },
@@ -29,8 +30,8 @@ describe('progressNote', () => {
   const note = progressNote(topic, events, now)
 
   it('names the topic and the day in its front matter and its path', () => {
-    expect(note.path).toBe('Loom/progress/chinese101-day1-2026-10-24.md')
-    expect(note.text).toMatch(/^---\nloom-progress: 1\ntopic: chinese101-day1\ndate: 2026-10-24\n---\n# Loom progress: Chinese 101: Day 1\n/)
+    expect(note.path).toBe('Loom/chinese/progress/chinese101-day1-2026-10-24.md')
+    expect(note.text).toMatch(/^---\nloom-progress: 1\ndomain: chinese\ntopic: chinese101-day1\ndate: 2026-10-24\n---\n# Loom progress: Chinese 101: Day 1\n/)
     expect(note.empty).toBe(false)
   })
 
@@ -55,8 +56,17 @@ describe('progressNote', () => {
 
   it('goes into the chat with what to do with it', () => {
     const message = progressNoteMessage(note)
-    expect(message).toContain('`Loom/progress/chinese101-day1-2026-10-24.md`')
+    expect(message).toContain('as `Loom/chinese/progress/chinese101-day1-2026-10-24.md`')
+    expect(message).toContain('My Drive')
+    expect(message).toContain('no conversion to a Google Doc')
     expect(message).toContain('```markdown\n---\nloom-progress: 1')
+  })
+
+  it('asks the chat to pick the domain when the topic names none', () => {
+    const loose = progressNote({ ...topic, domain: undefined }, events, now)
+    expect(loose.path).toBe('Loom/<domain-id>/progress/chinese101-day1-2026-10-24.md')
+    expect(loose.text).not.toContain('domain:')
+    expect(progressNoteMessage(loose)).toContain('a new domain you confirm with me first')
   })
 })
 

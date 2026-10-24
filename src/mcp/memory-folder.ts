@@ -3,8 +3,10 @@
  * event log as `events-<device>.jsonl` files (one per machine, merged by union,
  * so a folder synced by OneDrive, Google Drive or Dropbox never sees two
  * writers on one file) and the topics shown, as `topics/<id>.loom.oui`.
- * Pointed at the drive's `Loom/` folder (decision 198), it also reads the
- * progress notes chats on the phone or the web saved to `progress/*.md`.
+ * Pointed at the drive's `Loom/` folder (decision 198), it follows its domain
+ * layout (`<domain-id>/topics/`, `<domain-id>/progress/`, storage-guide.ts):
+ * topics that name a domain are saved in its folder, and the progress notes
+ * chats on the phone or the web saved there are read back.
  */
 // @ts-expect-error Node's fs has no types in this project (see tests/unit/sections/present/helpers.ts)
 import { appendFile, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises'
@@ -22,10 +24,28 @@ export function defaultMemoryDir(): string {
 
 const TOPIC_FILE = /^([\w-]+)\.loom\.oui$/
 const NOTE_FILE = /\.md$/
+const ID = /^[\w-]+$/
+const DOMAIN_LINE = /^\/\/\s*@loom-domain\s+([\w-]+)\s*$/m
 
 export function folderStore(dir: string, device = `local-${String(hostname()).replace(/[^\w-]/g, '-')}`): LearnerStore {
   const topics = join(dir, 'topics')
   const ready = Promise.all([mkdir(dir, { recursive: true }), mkdir(topics, { recursive: true })])
+
+  const list = async (folder: string): Promise<string[]> => {
+    try {
+      return (await readdir(folder)) as string[]
+    } catch {
+      return []
+    }
+  }
+  /** `<sub>/` at the top (topics saved without a domain) and in each domain folder, `<domain>/<sub>/` (storage-guide.ts). */
+  const foldersOf = async (sub: 'topics' | 'progress', domain?: string): Promise<Array<{ domain?: string; path: string }>> => {
+    await ready
+    if (domain) return ID.test(domain) ? [{ domain, path: join(dir, domain, sub) }] : []
+    const domains = (await list(dir)).filter((name) => ID.test(name) && name !== 'topics' && name !== 'progress')
+    return [{ path: join(dir, sub) }, ...domains.map((d) => ({ domain: d, path: join(dir, d, sub) }))]
+  }
+
   return {
     device,
     async appendEvents(events: LearnerEvent[]) {
@@ -40,34 +60,39 @@ export function folderStore(dir: string, device = `local-${String(hostname()).re
     },
     async saveTopic(topic: SavedTopic) {
       await ready
-      await writeFile(join(topics, `${topic.id}.loom.oui`), topic.oui)
+      // A topic that names its domain goes to Loom/<domain-id>/topics/, as the storage guide says
+      const domain = DOMAIN_LINE.exec(topic.oui)?.[1]
+      const folder = domain ? join(dir, domain, 'topics') : topics
+      await mkdir(folder, { recursive: true })
+      await writeFile(join(folder, `${topic.id}.loom.oui`), topic.oui)
     },
-    async listTopics() {
-      await ready
-      const files = ((await readdir(topics)) as string[]).filter((f) => TOPIC_FILE.test(f)).sort()
-      return files.map((f) => TOPIC_FILE.exec(f)![1])
+    async listTopics(domain?: string) {
+      const ids = new Set<string>()
+      for (const folder of await foldersOf('topics', domain)) {
+        for (const f of await list(folder.path)) if (TOPIC_FILE.test(f)) ids.add(TOPIC_FILE.exec(f)![1])
+      }
+      return [...ids].sort()
     },
     async readTopic(id: string) {
-      if (!/^[\w-]+$/.test(id)) return null
-      try {
-        return await readFile(join(topics, `${id}.loom.oui`), 'utf8')
-      } catch {
-        return null
+      if (!ID.test(id)) return null
+      for (const folder of await foldersOf('topics')) {
+        try {
+          return await readFile(join(folder.path, `${id}.loom.oui`), 'utf8')
+        } catch {
+          // Not in this folder
+        }
       }
+      return null
     },
     async readNotes() {
-      const progress = join(dir, 'progress')
-      let files: string[]
-      try {
-        files = ((await readdir(progress)) as string[]).filter((f) => NOTE_FILE.test(f))
-      } catch {
-        return []
+      const notes: Array<ProgressNoteFile & { time: number }> = []
+      for (const folder of await foldersOf('progress')) {
+        for (const name of (await list(folder.path)).filter((f) => NOTE_FILE.test(f))) {
+          const file = join(folder.path, name)
+          const [text, info] = await Promise.all([readFile(file, 'utf8'), stat(file)])
+          notes.push({ name: folder.domain ? `${folder.domain}/${name}` : name, text, time: Number(info.mtimeMs) })
+        }
       }
-      const notes = await Promise.all(files.map(async (name) => {
-        const file = join(progress, name)
-        const [text, info] = await Promise.all([readFile(file, 'utf8'), stat(file)])
-        return { name, text, time: Number(info.mtimeMs) }
-      }))
       return notes.sort((a, b) => b.time - a.time).map(({ name, text }): ProgressNoteFile => ({ name, text }))
     },
   }

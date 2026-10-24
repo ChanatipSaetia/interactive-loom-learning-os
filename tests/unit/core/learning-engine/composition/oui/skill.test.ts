@@ -64,10 +64,19 @@ describe('Loom learner skills (slice 6)', () => {
     const headings = note.text.split('\n').filter((line) => line.startsWith('## ') || /^[a-z-]+: /.test(line)).map((line) => line.replace(/: .*/, ':'))
     for (const skill of Object.values(skills)) {
       for (const heading of headings) expect(skill).toContain(heading)
-      expect(skill).toContain('Loom/progress/<topic>-<date>.md')
+      expect(skill).toContain('Loom/<domain-id>/progress/<topic>-<date>.md')
+      expect(skill).toContain('<domain-id>/\n    domain.oui')
       expect(skill).toContain('topics/<topic-id>.loom.oui')
       expect(skill).toContain('20–30% of the new topic callbacks')
     }
+  })
+
+  it('use the domain layout: the app skill asks the server for it, the Viewer skill carries the storage guide', () => {
+    expect(getTutorAppSkill()).toContain('Call `get_storage_guide` once')
+    expect(getTutorAppSkill()).toContain('`// @loom-domain <domain-id>` as its second line')
+    expect(getTutorViewerSkill()).toContain("## Where Loom keeps the learner's topics and progress")
+    expect(getTutorViewerSkill()).toContain('**Replace, never duplicate:**')
+    for (const skill of Object.values(skills)) expect(skill).not.toMatch(/Loom\/(topics|progress)\//)
   })
 
   it('leave the authoring prompt to the server in the app skill, and carry it in the Viewer skill', () => {

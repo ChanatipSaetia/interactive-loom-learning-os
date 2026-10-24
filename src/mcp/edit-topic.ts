@@ -32,7 +32,8 @@ export type EditOutcome =
 
 /** Apply statement edits to a topic's `.loom.oui` text. */
 export function editTopicSource(topicId: string, oui: string, edits: TopicEdit[]): EditOutcome {
-  const files = { ...parseTopicSource(oui, topicId)[0].files }
+  const parsed = parseTopicSource(oui, topicId)[0]
+  const files = { ...parsed.files }
   const blocks = edits.map((edit, index) => parseEditBlock(`oui-edit file=${edit.file}${edit.create ? ' mode=create' : ''}`, edit.statements, index))
   // Refuse the whole change when any edit cannot be placed, so nothing half-applied is saved
   const failed = checkProposal(topicId, blocks, files).results
@@ -45,7 +46,7 @@ export function editTopicSource(topicId: string, oui: string, edits: TopicEdit[]
     files[block.file] = result.source
     for (const change of result.changes) changed.push(`${change.kind} ${change.kind === 'create' ? change.name : `${change.name} in ${block.file}`}`)
   }
-  return { ok: true, oui: createTopicSource([{ topicId, files }]), changed }
+  return { ok: true, oui: createTopicSource([{ topicId, files, domainId: parsed.domainId }]), changed }
 }
 
 export function registerEditTool(server: McpServer, store: LearnerStore, check: (oui: string) => TopicCheck) {

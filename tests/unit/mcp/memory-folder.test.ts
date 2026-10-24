@@ -1,5 +1,7 @@
 // @ts-expect-error Node's fs has no types in this project (see tests/unit/sections/present/helpers.ts)
 import { mkdtemp, mkdir, rm, utimes, writeFile } from 'node:fs/promises'
+// @ts-expect-error Node's fs has no types in this project
+import { readFileSync } from 'node:fs'
 // @ts-expect-error Node's os has no types in this project
 import { tmpdir } from 'node:os'
 // @ts-expect-error Node's path has no types in this project
@@ -29,5 +31,18 @@ describe('memory folder: progress notes from other devices (slice 6)', () => {
       { name: 'chinese101-day1-2026-10-24.md', text: 'newer' },
       { name: 'kafka-2026-10-20.md', text: 'older' },
     ])
+  })
+
+  it('follows the domain layout: topics that name a domain go to its folder, notes come from every domain', async () => {
+    const store = folderStore(dir, 'test')
+    await store.saveTopic({ id: 'punch-basics', oui: '// @loom-topic punch-basics\n// @loom-domain fight-animation\n// === topic.oui ===\n' })
+    await store.saveTopic({ id: 'loose', oui: '// @loom-topic loose\n// === topic.oui ===\n' })
+    expect(readFileSync(join(dir, 'fight-animation', 'topics', 'punch-basics.loom.oui'), 'utf8')).toContain('@loom-domain')
+    expect(await store.listTopics()).toEqual(['loose', 'punch-basics'])
+    expect(await store.listTopics('fight-animation')).toEqual(['punch-basics'])
+    expect(await store.readTopic('punch-basics')).toContain('fight-animation')
+    await mkdir(join(dir, 'fight-animation', 'progress'), { recursive: true })
+    await writeFile(join(dir, 'fight-animation', 'progress', 'punch-basics-2026-10-24.md'), '---\ndomain: fight-animation\n---')
+    expect((await store.readNotes!()).map((n) => n.name)).toEqual(['fight-animation/punch-basics-2026-10-24.md'])
   })
 })

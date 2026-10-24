@@ -191,6 +191,15 @@
     "TopicRef": {
       "$ref": "#/$defs/TopicRef"
     },
+    "Domain": {
+      "$ref": "#/$defs/Domain"
+    },
+    "DomainRef": {
+      "$ref": "#/$defs/DomainRef"
+    },
+    "Library": {
+      "$ref": "#/$defs/Library"
+    },
     "Narration": {
       "$ref": "#/$defs/Narration"
     },
@@ -271,6 +280,9 @@
     "SectionRef",
     "Catalog",
     "TopicRef",
+    "Domain",
+    "DomainRef",
+    "Library",
     "Narration",
     "NarrationStep",
     "Highlight",
@@ -2528,6 +2540,68 @@
       ],
       "additionalProperties": false,
       "description": "Includes the topic folder <id>/topic.oui in the catalog."
+    },
+    "Domain": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Domain name shown to the learner (e.g. \"Fight Animation\"); topics in it use it as their category."
+        },
+        "description": {
+          "type": "string",
+          "description": "One or two sentences on what the domain covers."
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TopicRef"
+          },
+          "description": "Its topics in suggested learning order, as TopicRef calls naming files in topics/ (TopicRef(\"punch-basics\") for topics/punch-basics.loom.oui)."
+        },
+        "goal": {
+          "type": "string",
+          "description": "Optional: what the learner wants to reach in this domain, in their words (e.g. \"animate a 10-second fight scene in Blender\")."
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "topics"
+      ],
+      "additionalProperties": false,
+      "description": "A learner's subject area (root of Loom/<domain-id>/domain.oui): its title, its topics in suggested learning order and the learner's goal."
+    },
+    "DomainRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Domain ID: the folder name under Loom/, lowercase letters, digits, - and _ (e.g. \"fight-animation\")."
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "description": "Includes the domain folder Loom/<id>/ (its domain.oui) in the library."
+    },
+    "Library": {
+      "type": "object",
+      "properties": {
+        "domains": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DomainRef"
+          },
+          "description": "The domains, as DomainRef calls, most recently studied first."
+        }
+      },
+      "required": [
+        "domains"
+      ],
+      "additionalProperties": false,
+      "description": "The learner's library (root of Loom/index.oui): the list of their domains."
     },
     "Narration": {
       "type": "object",

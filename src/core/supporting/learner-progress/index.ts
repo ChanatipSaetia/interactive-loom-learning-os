@@ -13,7 +13,7 @@ export {
   toJSONL,
 } from './memory/events'
 export type { LearnerEvent, LearnerEventKind, NewLearnerEvent, TopicSummary } from './memory/events'
-export { localDate, progressNote, progressNoteMessage } from './memory/progress-note'
+export { localDate, progressNote, progressNoteMessage, progressNotePath } from './memory/progress-note'
 export type { NoteTopic, ProgressNote } from './memory/progress-note'
 export { deviceId, indexedDbAdapter, memoryAdapter } from './memory/port'
 export type { LearnerMemoryPort } from './memory/port'

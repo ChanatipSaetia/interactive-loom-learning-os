@@ -36,7 +36,7 @@ In the rules below, "program" means one file. The \`root\` of \`topic.oui\` is \
 
 Answer in the format the user asks for. If they do not say, use the single .oui file.
 
-1. **Single .oui file** (\`<topic-id>.loom.oui\`): the first line is \`// @loom-topic <topic-id>\`, then every file of the topic, each after a marker line \`// === <path> ===\`. Put it in one code block. For several topics, repeat the \`// @loom-topic\` line before each topic's files.
+1. **Single .oui file** (\`<topic-id>.loom.oui\`): the first line is \`// @loom-topic <topic-id>\` (followed by \`// @loom-domain <domain-id>\` when the topic is kept in one of the learner's domains, the folder \`Loom/<domain-id>/\` in their drive), then every file of the topic, each after a marker line \`// === <path> ===\`. Put it in one code block. For several topics, repeat the \`// @loom-topic\` line before each topic's files.
 
    \`\`\`
    // @loom-topic <topic-id>

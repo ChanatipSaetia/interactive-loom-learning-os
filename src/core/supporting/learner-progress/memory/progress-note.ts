@@ -2,7 +2,8 @@
  * The progress note (slice 6, decisions 198–203 in grill-log-adaptive-learning.md):
  * one day's learning in one topic as a short Markdown file, built from the
  * event log. The Loom MCP App's **Save my progress** sends it into the chat to
- * be saved to `Loom/progress/<topic>-<date>.md` in the learner's drive, and
+ * be saved to `Loom/<domain-id>/progress/<topic>-<date>.md` at the top of the
+ * learner's drive (the domain layout, `composition/oui/storage-guide.ts`), and
  * Loom Viewer's **Copy progress for chat** copies the same note to paste. The
  * local server reads the saved notes back into `learner_summary`. Notes are
  * for models and people alike: front matter for the topic and the date, then
@@ -12,6 +13,8 @@ import type { LearnerEvent } from './events'
 
 export interface NoteTopic {
   id: string
+  /** The domain the topic is kept under (`// @loom-domain`), when the topic says. */
+  domain?: string
   title?: string
   /** The topic's sections in reading order: file name and title. */
   sections: Array<{ name: string; title: string }>
@@ -20,6 +23,8 @@ export interface NoteTopic {
 export interface ProgressNote {
   /** Where the note goes in the learner's drive. */
   path: string
+  /** The topic's domain, when it names one; otherwise the chat picks it. */
+  domain?: string
   text: string
   /** Nothing was played or answered that day. */
   empty: boolean
@@ -29,6 +34,11 @@ export interface ProgressNote {
 export function localDate(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
+/** Where a progress note goes; `<domain-id>` stays a placeholder when the topic names no domain. */
+export function progressNotePath(topic: string, date: string, domain?: string): string {
+  return `Loom/${domain ?? '<domain-id>'}/progress/${topic}-${date}.md`
 }
 
 /** `sections/quiz.oui#q2` → `quiz`. */
@@ -56,6 +66,7 @@ export function progressNote(topic: NoteTopic, events: LearnerEvent[], now = new
   const lines = [
     '---',
     'loom-progress: 1',
+    ...(topic.domain ? [`domain: ${topic.domain}`] : []),
     `topic: ${topic.id}`,
     `date: ${date}`,
     '---',
@@ -75,13 +86,16 @@ export function progressNote(topic: NoteTopic, events: LearnerEvent[], now = new
     for (const item of missed) lines.push(`- \`${item}\`: last answer wrong`)
     for (const s of unplayed) lines.push(`- ${sectionLabel(s.name)}: not played yet`)
   }
-  return { path: `Loom/progress/${topic.id}-${date}.md`, text: `${lines.join('\n')}\n`, empty: today.length === 0 }
+  return { path: progressNotePath(topic.id, date, topic.domain), domain: topic.domain, text: `${lines.join('\n')}\n`, empty: today.length === 0 }
 }
 
 /** The message that hands a note to the chat: save it with the chat's drive connector, or keep it here. */
 export function progressNoteMessage(note: ProgressNote): string {
+  const where = note.domain
+    ? `as \`${note.path}\``
+    : `as \`${note.path}\`, in the folder of the domain this topic belongs to (an existing \`Loom/<domain-id>/\` that fits, or a new domain you confirm with me first), and add \`domain: <domain-id>\` to its front matter`
   return [
-    `Please save my Loom progress note as \`${note.path}\` in my drive with your storage connector (create the folders if they are missing, and replace the file if it is already there). If you cannot write files, keep it here in the conversation. Use it when you plan what I learn next.`,
+    `Please save my Loom progress note ${where}. Save it at the top of my drive (My Drive in Google Drive, not a shared drive), as plain text with no conversion to a Google Doc, with your storage connector; create the folders if they are missing and replace the file if it is already there. Keep it at this path: Loom plans my next topic from this folder (follow get_storage_guide when you have it). If you cannot write files, keep it here in the conversation. Use it when you plan what I learn next.`,
     '',
     '```markdown',
     note.text.trimEnd(),

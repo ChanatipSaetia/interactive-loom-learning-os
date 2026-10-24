@@ -5,6 +5,8 @@ import { LOOM_OUI_COMPONENTS } from '../../../../../../src/core/learning-engine/
 
 const signature = (name: string) => new RegExp(`^${name}\\(`, 'm')
 
+const DRIVE = new Set(['Domain', 'DomainRef', 'Library'])
+
 describe('getAuthoringGuide', () => {
   it('returns the whole prompt for "all"', () => {
     expect(getAuthoringGuide(['all'])).toBe(getLoomAuthoringPrompt())
@@ -12,7 +14,11 @@ describe('getAuthoringGuide', () => {
 
   it('keeps every component when every section type is asked for', () => {
     const guide = getAuthoringGuide(guideSectionTypes().map((t) => t.type))
-    for (const component of LOOM_OUI_COMPONENTS) expect(guide, component.name).toMatch(signature(component.name))
+    for (const component of LOOM_OUI_COMPONENTS) {
+      // The learner's Loom folder (domain.oui, index.oui) comes with get_storage_guide, not with how to write a topic
+      if (DRIVE.has(component.name)) expect(guide, component.name).not.toMatch(signature(component.name))
+      else expect(guide, component.name).toMatch(signature(component.name))
+    }
   })
 
   it('lists only the shared components and the section types without any asked for', () => {

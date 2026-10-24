@@ -23,6 +23,8 @@ export interface ViewerSection {
 
 export interface ViewerTopic {
   topicId: string
+  /** The learner's domain it is kept under (`// @loom-domain`), when the topic says. */
+  domainId?: string
   manifest: OUITopicManifest | null
   /** Set when topic.oui itself cannot be read. */
   error?: string
@@ -40,16 +42,17 @@ const formatIssues = (issues: Array<{ line?: number; message: string }>) =>
 export function noteTopicOf(topic: ViewerTopic): NoteTopic {
   return {
     id: topic.topicId,
+    domain: topic.domainId,
     title: topic.manifest?.title,
     sections: topic.sections.map((s) => ({ name: s.name, title: String(s.config?.props.title || s.name) })),
   }
 }
 
-export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic {
+export function compileViewerTopic({ topicId, files, domainId }: TopicFiles): ViewerTopic {
   const topic = compileOUITopic(files['topic.oui'] ?? '')
   const topicErrors = topic.issues.filter((i) => i.tier < 3)
   if (!topic.value || topicErrors.length) {
-    return { topicId, manifest: null, error: `topic.oui has errors:\n${formatIssues(topicErrors)}`, sections: [], files, narrationErrors: [] }
+    return { topicId, domainId, manifest: null, error: `topic.oui has errors:\n${formatIssues(topicErrors)}`, sections: [], files, narrationErrors: [] }
   }
 
   const sections = topic.value.sections.map((name): ViewerSection => {
@@ -76,7 +79,7 @@ export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic 
     if (result.diagnostics.length) narrationErrors.push({ file: path, error: formatIssues(result.diagnostics) })
     if (section && result.payload && !result.diagnostics.some((d) => d.tier < 3)) section.narration = result.payload
   }
-  return { topicId, manifest: topic.value, sections, files, narrationErrors }
+  return { topicId, domainId, manifest: topic.value, sections, files, narrationErrors }
 }
 
 /**
