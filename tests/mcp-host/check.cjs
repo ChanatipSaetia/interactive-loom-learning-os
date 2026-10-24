@@ -215,6 +215,36 @@ async function open(browser, query) {
     await context.close()
   }
 
+  {
+    // show_library and show_domain (decision 216): the library from the local server's folder, a domain, Open and Next topic
+    const page = await browser.newPage({ viewport: { width: 960, height: 900 } })
+    await page.goto('http://localhost:8090/?library=1')
+    const app = page.frameLocator('#app')
+    await app.locator('[data-testid=viewer-library]').waitFor({ timeout: 20000 })
+    const cards = await app.locator('.loom-domain-card').allInnerTexts()
+    await shot(page, 'library')
+    await app.locator('[data-testid=viewer-domain-chinese]').click()
+    await app.locator('[data-testid=viewer-domain]').waitFor({ timeout: 10000 })
+    await page.waitForTimeout(500)
+    const rows = await app.locator('.loom-topic').allInnerTexts()
+    const context = await page.locator('.msg.context').allTextContents()
+    await shot(page, 'domain')
+    await app.locator('[data-testid=mcp-next-topic]').click()
+    await page.waitForTimeout(500)
+    const asked = await page.evaluate(() => window.lastMessage ?? '')
+    await app.locator('[data-testid=viewer-open-topic-chinese101-day1]').click()
+    await app.locator('[data-testid=mcp-card]').waitFor({ timeout: 10000 })
+    results.library = {
+      cards: cards.map((c) => c.replace(/\n/g, ' | ')),
+      rows: rows.map((r) => r.replace(/\n/g, ' | ')),
+      toldModel: context.some((t) => t.includes('looking at their Loom domain "Chinese"')),
+      nextTopic: asked.slice(0, 120),
+      openedTitle: await app.locator('[data-testid=mcp-card] h1').textContent(),
+      backToDomain: await app.locator('[data-testid=mcp-back-to-shelf]').count(),
+    }
+    await shot(page, 'domain-opened')
+  }
+
   if (process.env.LOOM_WORKER_URL) {
     // The hosted endpoint (slice 5) under `npm run worker:dev`: no validate_topic, the app from the Worker's own assets
     const { page, app, errors } = await open(browser, `?server=${encodeURIComponent(process.env.LOOM_WORKER_URL)}`)

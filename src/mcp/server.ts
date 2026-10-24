@@ -44,6 +44,11 @@ export interface LearnerStore {
   readTopic(id: string): Promise<string | null>
   /** Progress notes saved by chats on other devices (`progress/*.md`, decisions 198–199), newest first. */
   readNotes?(): Promise<ProgressNoteFile[]>
+  /**
+   * The Loom folder's files for show_library / show_domain (decision 216): paths relative to the
+   * folder, or to `<domain>/` when one is given; `.oui`, `.loom.oui` and `.md` only.
+   */
+  readLoomFiles?(domain?: string): Promise<Record<string, string>>
 }
 
 export interface ProgressNoteFile {
@@ -158,8 +163,93 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     return { content: [{ type: 'text', text }] }
   })
 
+  registerLibraryTools(server, store)
   if (store) registerMemoryTools(server, store)
   return server
+}
+
+/** One file of the learner's Loom folder, as the chat passes it to show_library / show_domain. */
+const LoomFile = z.object({
+  path: z.string().describe('Path inside the folder named in the tool description, e.g. "domain.oui", "topics/punch-basics.loom.oui", "progress/punch-basics-2026-10-24.md".'),
+  text: z.string().describe("The file's text. For a topic, its header lines and its topic.oui part are enough."),
+})
+
+const LIBRARY_TOOL_DESCRIPTION = `Show the learner's Loom library in the chat: one card per domain with its goal and how far they are. Call it when the learner asks to see their library, their domains or everything they are learning. Pass files from their drive's Loom/ folder (see get_storage_guide), paths relative to Loom/: index.oui, each <domain-id>/domain.oui, each topic's header and topic.oui part as <domain-id>/topics/<topic-id>.loom.oui, and the latest progress note per topic as <domain-id>/progress/<file>.md. The Loom server on the learner's computer reads its own folder: call it there with no files.`
+
+const DOMAIN_TOOL_DESCRIPTION = `Show one of the learner's Loom domains in the chat: its topics in learning order, what is done, in progress or to review, and the topic up next. Call it only when the learner asks about a specific domain ("where am I in Chinese?", "show my fight animation topics"). Pass the domain ID and files from Loom/<domain-id>/ in their drive (see get_storage_guide), paths relative to that folder: domain.oui, each topic's header and topic.oui part as topics/<topic-id>.loom.oui (the whole topic is not needed), and the latest progress note per topic as progress/<file>.md. The Loom server on the learner's computer reads its own folder: call it there with only the domain.`
+
+/** A topic cut to its header lines and its topic.oui part: all a library or domain page needs. */
+export function topicHead(text: string): string {
+  const out: string[] = []
+  let inTopic = false
+  for (const line of text.split('\n')) {
+    const marker = /^\/\/\s*===\s*(.+?)\s*===\s*$/.exec(line)
+    if (marker) {
+      if (inTopic) break
+      inTopic = marker[1] === 'topic.oui'
+    }
+    out.push(line)
+  }
+  return `${out.join('\n').trimEnd()}\n`
+}
+
+/** At most this many files per page: a domain's plan, topics and notes fit well within it. */
+const MAX_FILES = 300
+
+/**
+ * show_library and show_domain (decision 216): the app draws the library or domain page (as Loom
+ * Viewer does) from the folder's files. The hosted endpoint passes on the files the chat read from
+ * the drive; the local server reads its memory folder. The app works out the statuses.
+ */
+function registerLibraryTools(server: McpServer, store?: LearnerStore) {
+  const files = async (given: Array<{ path: string; text: string }> | undefined, domain?: string) => {
+    // Paths may come with Loom/ (and the domain's folder) in front: keep them relative to the page's folder
+    const relative = (path: string) => {
+      const inLoom = path.replace(/^\/+/, '').replace(/^Loom\//, '')
+      return domain && inLoom.startsWith(`${domain}/`) ? inLoom.slice(domain.length + 1) : inLoom
+    }
+    if (given?.length) return Object.fromEntries(given.slice(0, MAX_FILES).map((f) => [relative(f.path), f.path.endsWith('.loom.oui') ? topicHead(f.text) : f.text]))
+    if (!store?.readLoomFiles) return null
+    const read = await store.readLoomFiles(domain)
+    return Object.fromEntries(Object.entries(read).slice(0, MAX_FILES).map(([path, text]) => [path, path.endsWith('.loom.oui') ? topicHead(text) : text]))
+  }
+  const missing = (what: string) => ({
+    content: [{ type: 'text' as const, text: `No files to show. Read ${what} from the learner's drive (see get_storage_guide) and pass them as files.` }],
+    isError: true,
+  })
+
+  registerAppTool(server, 'show_library', {
+    title: "Show the learner's Loom library",
+    description: LIBRARY_TOOL_DESCRIPTION,
+    inputSchema: z.object({ files: z.array(LoomFile).optional().describe('Files of the Loom/ folder; leave out on the server on the learner\'s computer.') }),
+    _meta: { ui: { resourceUri: APP_URI } },
+  }, async ({ files: given }) => {
+    const folder = await files(given)
+    if (!folder || !('index.oui' in folder || Object.keys(folder).some((p) => p.endsWith('/domain.oui')))) return missing('Loom/index.oui and the domains\' domain.oui files')
+    const domains = Object.keys(folder).filter((p) => /^[^/]+\/domain\.oui$/.test(p)).length
+    return {
+      content: [{ type: 'text', text: `Showing the learner's Loom library (${domains} domains). The learner can open a domain from it.` }],
+      structuredContent: { loom: { kind: 'library', name: 'Loom', files: folder } },
+    }
+  })
+
+  registerAppTool(server, 'show_domain', {
+    title: 'Show a Loom domain',
+    description: DOMAIN_TOOL_DESCRIPTION,
+    inputSchema: z.object({
+      domain: z.string().describe('The domain ID (its folder name under Loom/).'),
+      files: z.array(LoomFile).optional().describe("Files of Loom/<domain-id>/; leave out on the server on the learner's computer."),
+    }),
+    _meta: { ui: { resourceUri: APP_URI } },
+  }, async ({ domain, files: given }) => {
+    const folder = await files(given, domain)
+    if (!folder || !('domain.oui' in folder)) return missing(`Loom/${domain}/domain.oui, its topics and its progress notes`)
+    const topics = Object.keys(folder).filter((p) => p.startsWith('topics/')).length
+    return {
+      content: [{ type: 'text', text: `Showing the domain "${domain}" (${topics} topic files). The app tells you where the learner stands.` }],
+      structuredContent: { loom: { kind: 'domain', name: domain, files: folder } },
+    }
+  })
 }
 
 const OPEN_TOOL_DESCRIPTION = 'Show a Loom topic the learner saw before, by its ID (see list_topics), ready to play again.'

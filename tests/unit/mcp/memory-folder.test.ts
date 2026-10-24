@@ -45,4 +45,15 @@ describe('memory folder: progress notes from other devices (slice 6)', () => {
     await writeFile(join(dir, 'fight-animation', 'progress', 'punch-basics-2026-10-24.md'), '---\ndomain: fight-animation\n---')
     expect((await store.readNotes!()).map((n) => n.name)).toEqual(['fight-animation/punch-basics-2026-10-24.md'])
   })
+
+  it('reads the Loom folder for show_library and show_domain, leaving out its own event logs', async () => {
+    const store = folderStore(dir, 'test')
+    await store.appendEvents([])
+    await writeFile(join(dir, 'index.oui'), 'root = Library([DomainRef("chinese")])')
+    await mkdir(join(dir, 'chinese', 'topics'), { recursive: true })
+    await writeFile(join(dir, 'chinese', 'domain.oui'), 'root = Domain("Chinese", "", [])')
+    await writeFile(join(dir, 'chinese', 'topics', 'tones.loom.oui'), '// @loom-topic tones')
+    expect(Object.keys(await store.readLoomFiles!()).sort()).toEqual(['chinese/domain.oui', 'chinese/topics/tones.loom.oui', 'index.oui'])
+    expect(Object.keys(await store.readLoomFiles!('chinese')).sort()).toEqual(['domain.oui', 'topics/tones.loom.oui'])
+  })
 })

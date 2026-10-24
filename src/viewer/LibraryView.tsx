@@ -58,7 +58,8 @@ export function LibraryView({ library, name, revision, onOpenDomain, onRefresh, 
   revision: number
   onOpenDomain: (id: string) => void
   onRefresh?: () => void
-  onClose: () => void
+  /** Leave the library; the Loom MCP App has nothing to go back to. */
+  onClose?: () => void
 }) {
   const events = useEvents(revision)
   return (
@@ -96,14 +97,16 @@ export function LibraryView({ library, name, revision, onOpenDomain, onRefresh, 
   )
 }
 
-export function DomainView({ domain, revision, onOpenTopic, onBack, onRefresh, onClose }: {
+export function DomainView({ domain, revision, onOpenTopic, onBack, onRefresh, onClose, onAsk }: {
   domain: Domain
   revision: number
   onOpenTopic: (topic: DomainTopic) => void
   /** Back to the library, when the folder is one. */
   onBack?: () => void
   onRefresh?: () => void
-  onClose: () => void
+  onClose?: () => void
+  /** Hands the request to the chat itself (the Loom MCP App) instead of copying it. */
+  onAsk?: (request: string) => void
 }) {
   const events = useEvents(revision)
   const statuses = useMemo(() => statusesOf(domain, events), [domain, events])
@@ -150,14 +153,20 @@ export function DomainView({ domain, revision, onOpenTopic, onBack, onRefresh, o
       {domain.error && <p className="loom-shelf-error" role="alert">{domain.error}</p>}
       <div className="loom-ask">
         <p>{next ? (next.topic ? <>Up next: <strong>{next.title}</strong>. Ask your AI chat to plan it with you.</> : <>Up next is <strong>{next.id}</strong>, not written yet. Ask your AI chat to write it.</>) : 'Every planned topic is done. Ask your AI chat for the next step toward your goal.'}</p>
-        <button
-          type="button"
-          className="viewer-button loom-ask-button"
-          onClick={async () => setCopied(await copyText(nextTopicRequest(domain, statuses)))}
-          data-testid="viewer-copy-next-request"
-        >
-          {copied ? <><Check size={14} /> Copied: paste it into your AI chat</> : copied === false ? <><Copy size={14} /> Copy failed</> : <><MessageSquareShare size={14} /> Copy request for your AI chat</>}
-        </button>
+        {onAsk ? (
+          <button type="button" className="viewer-button loom-ask-button" onClick={() => { onAsk(nextTopicRequest(domain, statuses)); setCopied(true) }} data-testid="mcp-next-topic">
+            {copied ? <><Check size={14} /> Asked</> : <><MessageSquareShare size={14} /> Next topic</>}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="viewer-button loom-ask-button"
+            onClick={async () => setCopied(await copyText(nextTopicRequest(domain, statuses)))}
+            data-testid="viewer-copy-next-request"
+          >
+            {copied ? <><Check size={14} /> Copied: paste it into your AI chat</> : copied === false ? <><Copy size={14} /> Copy failed</> : <><MessageSquareShare size={14} /> Copy request for your AI chat</>}
+          </button>
+        )}
       </div>
       <ol className="loom-topics">{planned.map((t, i) => row(t, i))}</ol>
       {unplanned.length > 0 && (
@@ -171,11 +180,12 @@ export function DomainView({ domain, revision, onOpenTopic, onBack, onRefresh, o
   )
 }
 
-function ShelfActions({ onRefresh, onClose }: { onRefresh?: () => void; onClose: () => void }) {
+function ShelfActions({ onRefresh, onClose }: { onRefresh?: () => void; onClose?: () => void }) {
+  if (!onRefresh && !onClose) return null
   return (
     <div className="loom-shelf-actions">
       {onRefresh && <button type="button" className="viewer-pill" onClick={onRefresh} data-testid="viewer-library-refresh"><RefreshCw size={14} /> Refresh</button>}
-      <button type="button" className="viewer-pill" onClick={onClose} data-testid="viewer-library-close"><FolderOpen size={14} /> Open another…</button>
+      {onClose && <button type="button" className="viewer-pill" onClick={onClose} data-testid="viewer-library-close"><FolderOpen size={14} /> Open another…</button>}
     </div>
   )
 }

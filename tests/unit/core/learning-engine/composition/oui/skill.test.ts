@@ -74,6 +74,8 @@ describe('Loom learner skills (slice 6)', () => {
   it('use the domain layout: the app skill asks the server for it, the Viewer skill carries the storage guide', () => {
     expect(getTutorAppSkill()).toContain('Call `get_storage_guide` once')
     expect(getTutorAppSkill()).toContain('`// @loom-domain <domain-id>` as its second line')
+    expect(getTutorAppSkill()).toContain('show it with `show_domain`')
+    expect(getTutorAppSkill()).toContain('Never show them unasked')
     expect(getTutorViewerSkill()).toContain("## Where Loom keeps the learner's topics and progress")
     expect(getTutorViewerSkill()).toContain('**Replace, never duplicate:**')
     for (const skill of Object.values(skills)) expect(skill).not.toMatch(/Loom\/(topics|progress)\//)

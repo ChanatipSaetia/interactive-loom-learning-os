@@ -12,6 +12,8 @@
  *   ?mode=read       ask show_topic to open in Read
  *   ?open=<id>       call open_topic for a saved topic instead of show_topic
  *   ?summary=1       end with learner_summary, as a model planning the next topic would
+ *   ?library=1       call show_library instead (the local server reads its memory folder)
+ *   ?domain=<id>     call show_domain for that domain instead
  *   ?server=<url>    another Loom MCP endpoint, such as the Worker under `npm run worker:dev`
  *                    (http://127.0.0.1:8787/mcp), which offers no validate_topic
  */
@@ -71,7 +73,13 @@ async function main() {
   let args: Record<string, unknown>
   let result
   const openId = params.get('open')
-  if (openId) {
+  const domainId = params.get('domain')
+  if (params.has('library') || domainId) {
+    say('user', domainId ? `Where am I in ${domainId}?` : 'Show my library')
+    args = domainId ? { domain: domainId } : {}
+    result = await client.callTool({ name: domainId ? 'show_domain' : 'show_library', arguments: args })
+    say('model', `${domainId ? 'show_domain' : 'show_library'} → ${textOf(result).slice(0, 160)}`)
+  } else if (openId) {
     say('user', `Open ${openId} again`)
     args = { id: openId }
     result = await client.callTool({ name: 'open_topic', arguments: args })

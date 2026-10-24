@@ -333,3 +333,19 @@ body {
 .mcp-is-full .pick-bar {
   bottom: calc(var(--mcp-inset-bottom, 88px) + 8px);
 }
+
+/* show_library and show_domain: Viewer's library and domain pages inside the card */
+.mcp-read .loom-shelf {
+  padding: 16px 16px 24px;
+}
+
+.mcp-shelf-note {
+  padding: 6px 16px;
+}
+
+.mcp-read .loom-ask-button {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}

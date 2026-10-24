@@ -84,6 +84,24 @@ export function folderStore(dir: string, device = `local-${String(hostname()).re
       }
       return null
     },
+    async readLoomFiles(domain?: string) {
+      await ready
+      const root = domain ? (ID.test(domain) ? join(dir, domain) : null) : dir
+      if (!root) return {}
+      const files: Record<string, string> = {}
+      const walk = async (folder: string, prefix: string, depth: number) => {
+        for (const name of await list(folder)) {
+          if (name.startsWith('.') || name.startsWith('events-')) continue
+          const path = join(folder, name)
+          const info = await stat(path).catch(() => null)
+          if (info?.isDirectory()) {
+            if (depth < 2) await walk(path, `${prefix}${name}/`, depth + 1)
+          } else if (/\.(oui|md)$/.test(name)) files[`${prefix}${name}`] = await readFile(path, 'utf8')
+        }
+      }
+      await walk(root, '', 0)
+      return files
+    },
     async readNotes() {
       const notes: Array<ProgressNoteFile & { time: number }> = []
       for (const folder of await foldersOf('progress')) {

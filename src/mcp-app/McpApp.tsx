@@ -9,9 +9,11 @@
  * progress note to keep in the learner's drive (decision 199). In Read, Pick
  * (⌖ in the bar at the bottom) points at parts of the topic and sends a
  * question about them into the chat; Ask in Present opens Read there.
+ * show_library and show_domain show the learner's Loom folder as Loom Viewer
+ * does (decision 216): Open plays a topic, Next topic asks the chat.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, BookOpen, Check, ChevronDown, Crosshair, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, Crosshair, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
@@ -26,8 +28,35 @@ import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/th
 import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, findPickElement, sourceResolver, type PickAssistantBridge } from '../core/supporting/authoring-editor/pick'
 import { pickQuestion } from './ask'
+import { domainStatusLines, readLoomFolder, topicStatus, upNext, type DomainTopic, type LoomLibrary } from '../viewer/library'
+import { DomainView, LibraryView } from '../viewer/LibraryView'
 
-type View = 'card' | 'present' | 'read'
+type View = 'card' | 'present' | 'read' | 'shelf'
+
+/** What show_library and show_domain hand the app (decision 216). */
+interface LoomResult {
+  kind: 'library' | 'domain'
+  name: string
+  files: Record<string, string>
+}
+
+/** The learner's Loom folder on screen: the library, or one domain of it. */
+interface Shelf {
+  library: LoomLibrary
+  domainId: string | null
+  /** The library a domain was opened from, for Back. */
+  parent?: LoomLibrary
+}
+
+const shelfOf = (loom: LoomResult, parent?: LoomLibrary): Shelf => {
+  const library = readLoomFolder(loom.files, loom.name)
+  return { library, domainId: library.kind === 'domain' ? library.domains[0]?.id ?? null : null, parent }
+}
+
+const loomOf = (result: { structuredContent?: unknown } | null | undefined): LoomResult | null => {
+  const loom = (result?.structuredContent as { loom?: LoomResult } | undefined)?.loom
+  return loom && typeof loom.files === 'object' && loom.files ? loom : null
+}
 
 /** What the tool input holds once it has been read, with its source for Continue in Viewer. */
 type Loaded = ({ topic: ViewerTopic; report: string | null } | { topic: null; report: string }) & { oui?: string }
@@ -182,6 +211,14 @@ export function McpApp({ app }: { app: App }) {
     }
     // open_topic and edit_topic send the topic in their result rather than their input
     app.ontoolresult = (result) => {
+      // show_library and show_domain
+      const loom = loomOf(result)
+      if (loom) {
+        setWriting(false)
+        setShelf(shelfOf(loom))
+        setView('shelf')
+        return
+      }
       const oui = (result.structuredContent as { oui?: unknown } | undefined)?.oui
       if (typeof oui !== 'string') return
       setWriting(false)
@@ -326,6 +363,89 @@ export function McpApp({ app }: { app: App }) {
     }))
   }, [open, topic])
 
+  // ---- The learner's Loom folder: show_library and show_domain (decision 216) ----
+  const [shelf, setShelf] = useState<Shelf | null>(null)
+  const [shelfNote, setShelfNote] = useState<string | null>(null)
+  const shelfDomain = shelf?.domainId ? shelf.library.domains.find((d) => d.id === shelf.domainId) : undefined
+
+  // The chat's model learns where the learner stands in the domain on screen
+  useEffect(() => {
+    if (!shelfDomain) return
+    const statuses = new Map(shelfDomain.topics.map((t) => [t.id, topicStatus(t, shelfDomain.notes, [])]))
+    const next = upNext(shelfDomain, statuses)
+    const text = [
+      `The learner is looking at their Loom domain "${shelfDomain.title}" (\`Loom/${shelfDomain.id}/\`)${shelfDomain.goal ? `, goal: ${shelfDomain.goal}` : ''}.`,
+      ...domainStatusLines(shelfDomain, statuses),
+      next ? `Up next: ${next.title} (\`${next.id}\`).` : 'Every planned topic is done.',
+    ].join('\n')
+    void app.updateModelContext(textOf(text)).catch(() => {})
+  }, [app, shelfDomain])
+
+  /** Open plays the topic at once on the server on the learner's computer; elsewhere the chat reads it from the drive. */
+  const openFromShelf = useCallback(async (topic: DomainTopic) => {
+    const result = await app.callServerTool({ name: 'open_topic', arguments: { id: topic.id } }).catch(() => null)
+    const oui = result && !result.isError ? (result.structuredContent as { oui?: unknown } | undefined)?.oui : undefined
+    if (typeof oui === 'string') {
+      setLoaded({ ...loadTopic(oui), oui })
+      setStartMode('present')
+      setView('card')
+      return
+    }
+    const domain = shelf?.domainId ?? topic.topic?.domainId ?? '<domain-id>'
+    const sent = await app.sendMessage({ role: 'user', content: [{ type: 'text', text: `Open my Loom topic "${topic.title}" (\`Loom/${domain}/topics/${topic.id}.loom.oui\`) and show it with show_topic.` }] })
+      .catch(() => ({ isError: true }))
+    setShelfNote(sent?.isError ? 'The chat did not take the message.' : `Asked the chat to open "${topic.title}".`)
+  }, [app, shelf])
+
+  /** A domain from the library: the local server reads it; otherwise the library's own files, or the chat. */
+  const openDomain = useCallback(async (id: string) => {
+    if (!shelf) return
+    const loom = loomOf(await app.callServerTool({ name: 'show_domain', arguments: { domain: id } }).catch(() => null))
+    if (loom) {
+      setShelf(shelfOf(loom, shelf.library))
+      return
+    }
+    if (shelf.library.domains.find((d) => d.id === id)?.topics.some((t) => t.topic)) {
+      setShelf({ ...shelf, domainId: id })
+      return
+    }
+    const sent = await app.sendMessage({ role: 'user', content: [{ type: 'text', text: `Show my Loom domain \`${id}\` with show_domain.` }] }).catch(() => ({ isError: true }))
+    setShelfNote(sent?.isError ? 'The chat did not take the message.' : 'Asked the chat to show this domain.')
+  }, [app, shelf])
+
+  const askChat = useCallback((request: string) => {
+    void app.sendMessage({ role: 'user', content: [{ type: 'text', text: request }] }).catch(() => setShelfNote('The chat did not take the message.'))
+  }, [app])
+
+  if (view === 'shelf' && shelf) {
+    const back = shelf.library.kind === 'library'
+      ? () => setShelf({ ...shelf, domainId: null })
+      : shelf.parent ? () => setShelf({ library: shelf.parent!, domainId: null }) : undefined
+    return (
+      <UISystemProvider>
+        <div className={`mcp-read${full ? ' mcp-full' : TOUCH ? ' mcp-read-natural' : ''}`} data-testid="mcp-shelf">
+          <div className="mcp-bar">
+            <span className="mcp-bar-title">{shelfDomain?.title ?? 'Your Loom library'}</span>
+            <ThemePicker themeId={themeId} onPick={pickTheme} />
+            {canFullscreen && (
+              <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void displayMode(full ? 'inline' : 'fullscreen')}>
+                {full ? <><Minimize2 size={14} /> Exit full screen</> : <><Maximize2 size={14} /> Full screen</>}
+              </button>
+            )}
+          </div>
+          {shelfNote && <p className="mcp-note mcp-shelf-note" role="status">{shelfNote}</p>}
+          <main className="main-content mcp-read-scroll">
+            <LearnerMemoryProvider port={memory} device={DEVICE}>
+              {shelfDomain
+                ? <DomainView domain={shelfDomain} revision={0} onOpenTopic={(t) => void openFromShelf(t)} onBack={back} onAsk={askChat} />
+                : <LibraryView library={shelf.library} name="Loom" revision={0} onOpenDomain={(id) => void openDomain(id)} />}
+            </LearnerMemoryProvider>
+          </main>
+        </div>
+      </UISystemProvider>
+    )
+  }
+
   if (!loaded) {
     return (
       <div className="mcp-card" data-testid="mcp-waiting">
@@ -459,6 +579,11 @@ export function McpApp({ app }: { app: App }) {
             <ExternalLink size={14} /> Open in Viewer
           </button>
           <ThemePicker themeId={themeId} onPick={pickTheme} />
+          {shelf && (
+            <button type="button" className="mcp-button mcp-quiet" onClick={() => setView('shelf')} data-testid="mcp-back-to-shelf">
+              <ArrowLeft size={14} /> {shelfDomain?.title ?? 'Library'}
+            </button>
+          )}
         </div>
       )}
       {linkStrip}

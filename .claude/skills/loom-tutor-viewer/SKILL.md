@@ -175,6 +175,16 @@ Read only that domain: its `domain.oui` and its `progress/` notes (the latest no
 
 Other domains' progress does not count, unless the learner asks to connect them.
 
+### Showing the learner where they are
+
+With the Loom MCP App, show progress in the chat instead of describing it, but only when the learner asks:
+
+- **`show_domain`** when they ask about one domain ("where am I in Chinese?", "show my fight animation topics"): pass the domain ID and that folder's `domain.oui`, each topic's header and `topic.oui` part, and the latest progress note per topic. It shows the topics in order with their status and the topic up next, and tells you where the learner stands; its Next topic button sends you a request to plan the next one.
+- **`show_library`** when they ask for their library or all their domains: pass `index.oui` and the domains' files.
+- The Loom server on the learner's computer reads its own folder: call them there without files.
+
+Do not show either unasked, for example at the start of every session.
+
 ### Finding files that were moved
 
 Files can be moved by hand. When a path does not hold what you expect, search the drive by content: topics by their `// @loom-topic` line (and `// @loom-domain`), progress notes by `loom-progress:` in their front matter, keeping only those whose `domain:` is the domain you are working in. If the drive search finds no `.loom.oui` or `.md` files at all, the connector may only find its own document types: tell the learner, and keep a document copy of each file under the same name.

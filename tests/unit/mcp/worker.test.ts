@@ -15,7 +15,7 @@ describe('hosted Loom MCP endpoint (slice 5)', () => {
   it('lists the hosted tools, with CORS for chats in the browser', async () => {
     const { response, result } = await call({ jsonrpc: '2.0', id: 1, method: 'tools/list' })
     expect(response.headers.get('access-control-allow-origin')).toBe('*')
-    expect(result.tools.map((t: { name: string }) => t.name).sort()).toEqual(['get_authoring_guide', 'get_storage_guide', 'show_topic'])
+    expect(result.tools.map((t: { name: string }) => t.name).sort()).toEqual(['get_authoring_guide', 'get_storage_guide', 'show_domain', 'show_library', 'show_topic'])
   })
 
   it('points the app at its own assets, or at LOOM_APP_URL', async () => {

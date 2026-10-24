@@ -204,6 +204,18 @@ export function upNext(domain: Domain, statuses: Map<string, TopicStatus>): Doma
   return domain.topics.find((t) => t.planned && statuses.get(t.id)?.kind !== 'done')
 }
 
+/** Each planned topic's status, one line each, for the chat's model. */
+export function domainStatusLines(domain: Domain, statuses: Map<string, TopicStatus>): string[] {
+  return domain.topics.filter((t) => t.planned).map((t) => {
+      const s = statuses.get(t.id)!
+      const state = s.kind === 'missing' ? 'not written yet'
+        : s.kind === 'done' ? 'done'
+          : s.kind === 'not-started' ? 'not started'
+            : `${s.played} of ${s.total} sections played${s.review.length ? `, to review: ${s.review.map((r) => `\`${r}\``).join(', ')}` : ''}`
+      return `- ${t.title} (\`${t.id}\`): ${state}`
+  })
+}
+
 /** A request for the chat to plan or write the next topic in this domain (decision 214). */
 export function nextTopicRequest(domain: Domain, statuses: Map<string, TopicStatus>): string {
   const next = upNext(domain, statuses)
@@ -212,14 +224,7 @@ export function nextTopicRequest(domain: Domain, statuses: Map<string, TopicStat
     ...(domain.goal ? [`My goal: ${domain.goal}`] : []),
     '',
     'Where I am:',
-    ...domain.topics.filter((t) => t.planned).map((t) => {
-      const s = statuses.get(t.id)!
-      const state = s.kind === 'missing' ? 'not written yet'
-        : s.kind === 'done' ? 'done'
-          : s.kind === 'not-started' ? 'not started'
-            : `${s.played} of ${s.total} sections played${s.review.length ? `, to review: ${s.review.map((r) => `\`${r}\``).join(', ')}` : ''}`
-      return `- ${t.title} (\`${t.id}\`): ${state}`
-    }),
+    ...domainStatusLines(domain, statuses),
     '',
     next
       ? next.topic

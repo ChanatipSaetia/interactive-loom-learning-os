@@ -123,7 +123,7 @@ The learner learns with Interactive Loom inside this chat. The **Loom MCP App** 
 6. **Save** the topic as \`Loom/<domain-id>/topics/<topic-id>.loom.oui\` with the drive connector, with \`// @loom-domain <domain-id>\` as its second line, and add its \`TopicRef\` to the domain's \`domain.oui\` (unless the server says it keeps topics itself: the server on the learner's computer saves them to its memory folder).
 7. **Save progress.** The app's **Save my progress** button sends a message with a progress note and the path to save it to: save it as it is, with no changes. If you cannot write files, say so and leave the note in the conversation.
 
-To play a topic again, read it from the domain's \`topics/\` and pass it to \`show_topic\` (or call \`open_topic\` when the server has it). Without the app (the chat shows no player), \`show_topic\` answers with a link that opens the topic in Loom Viewer: give the learner that link.
+When the learner asks where they are in one domain, show it with \`show_domain\`; when they ask for their library, \`show_library\` (see "Showing the learner where they are" in \`get_storage_guide\`). Never show them unasked. To play a topic again, read it from the domain's \`topics/\` and pass it to \`show_topic\` (or call \`open_topic\` when the server has it). Without the app (the chat shows no player), \`show_topic\` answers with a link that opens the topic in Loom Viewer: give the learner that link.
 
 ${FOLDER}
 
