@@ -446,6 +446,10 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     title over the top of a full-screen app (about 110px) and its message bar over the bottom (about 100px).
     Full screen now pads the app by the chat's `safeAreaInsets` plus 12px, never less than 112px at the top
     and 104px at the bottom on touch screens (56px and 88px elsewhere).
+  - **Too much at once in a chat:** a whole lesson (intro, 5–8 sections, quiz) every time is a lot
+    between messages. `loom-tutor-app` now writes a **short topic** by default (one idea, 1–3 sections
+    that show it, no `Intro` or closing quiz unless a check is the point, one woven-in callback when it
+    fits) and a full lesson only when the learner asks for one; `loom-tutor-viewer` keeps full lessons.
   - **Narration always off in Claude:** Present turned the voice on only when `getVoices()` listed a
     voice, and iOS web views (Claude's app) often list none yet speak with the default voice. The voice
     now counts as available whenever `speechSynthesis` exists, and turns itself off for the session when

@@ -83,6 +83,15 @@ describe('Loom learner skills (slice 6)', () => {
     expect(getTutorViewerSkill()).toContain('Copy progress')
   })
 
+  it('write short topics in the app by default, and full lessons when asked (Viewer keeps full lessons)', () => {
+    const app = getTutorAppSkill()
+    expect(app).toContain('By default write a **short topic**')
+    expect(app).toContain('**1–3 sections**')
+    expect(app).toContain('**Write a full lesson only when the learner asks for one**')
+    expect(getTutorViewerSkill()).not.toContain('short topic')
+    expect(getTutorViewerSkill()).toContain('about 5–8 sections')
+  })
+
   it('encourage keeping progress in the learner\'s drive, and say how to connect one', () => {
     for (const skill of Object.values(skills)) {
       expect(skill).toContain('encourage the learner to turn one on')
