@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–194 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`, starting with slice 0.**
+Status: **Concept — decisions 161–195 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`, starting with slice 0.**
 
 ## Goal
 
@@ -86,6 +86,7 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 192 | The chat app's own memory | **Only a summary for the model**, never the learner's record. Claude, ChatGPT or Copilot memory may hold a line like "tones solid, measure words weak"; the event log in the learner's storage (decision 186) stays the source of truth. |
 | 193 | Local models | **Tutor locally, write with a stronger model.** Writing a 5–30 KB topic and calling tools correctly is hard for small local models; in Goose the learner may keep the local model for tutoring and give a stronger model (through an API key) the writing. |
 | 194 | The CDN library | **Deprecated, and no part of future plans.** The `loom-learning-sections` package (`libs/loom-sections.tsx`, served from jsDelivr) renders only the old OKF JSON, without OUI or Present. Nothing new builds on it: the MCP App loads from GitHub Pages (decision 182) and topics open in Viewer. It is removed in its own change, listed under *Retiring the CDN library*. |
+| 195 | When a server is needed | **GitHub Pages serves the app's files; it can never be the MCP server**, which must answer requests (stdio, or HTTP POST with JSON-RPC). **Chats on the learner's computer need no hosted server:** the local server runs there and loads the app from Pages. **Web and phone chats need an HTTP endpoint**, so slice 5 is built only when the owner wants one of them. Until then, for personal use, the local server can be reached from a web chat through a tunnel (Cloudflare Tunnel or ngrok), working while the computer is on. The local server can run straight from the GitHub repository (`npx github:<owner>/<repo>`), so publishing to npm is optional. |
 
 **Hosts, in order of trying** (Oct 2026; check the official MCP Apps host list before relying on one):
 
