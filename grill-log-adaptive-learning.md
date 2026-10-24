@@ -426,8 +426,22 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
   learner sees no player (2026-07-28 requests carry their capabilities and keep the slice 3 rule).
 - **Deviation:** `next_topic_request` is left to slice 8, where the Next topic button and its rules are
   designed.
-- **Not yet:** the first deploy (approved in the `cloudflare` environment), then Claude's custom connector
-  on the web and the phone, Microsoft 365 Copilot and ChatGPT, and the hosts table from what they do.
+- **Not yet:** Claude's custom connector on the web and the phone (first tries below), Microsoft 365
+  Copilot and ChatGPT, and the hosts table from what they do.
+- **After the first tries in Claude (deployed at `loom-mcp.loom-learning.workers.dev`):**
+  - **Theme:** a theme dropdown in the card and the player bar (every Loom theme, a native select so its
+    list is never cut off by the frame). A theme picked there wins over the chat's light or dark mode for
+    the session (decision 196).
+  - **Read did not scroll on the phone:** the chat's own scrolling takes the swipes a scroll box inside the
+    frame needs. On touch screens Read now opens full screen, where it scrolls inside, and goes back to the
+    card when the chat leaves full screen; without full screen it grows to its full height instead.
+  - **No narration:** iOS keeps speech silent unless the first utterance is spoken inside a tap, and Present
+    speaks from a timer. Play (and Viewer's Present) now speak an empty, silent utterance inside the tap
+    (`unlockSpeech()`). Web views without speech (Android's) still show the captions only; a voice for them
+    would have to come from the server (for example Cloudflare Workers AI text-to-speech), not built.
+  - **The slide was small:** the card's height held the 16:9 stage back (the caption bar and controls take
+    about 200px), so it used 535 of 734px. The card is now tall enough for the stage, which runs edge to
+    edge at the card's full width.
 
 ### Slice 6 — Learner skills and progress notes (revised by decisions 197–204)
 

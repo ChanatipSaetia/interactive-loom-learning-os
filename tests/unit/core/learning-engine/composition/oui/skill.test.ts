@@ -83,6 +83,15 @@ describe('Loom learner skills (slice 6)', () => {
     expect(getTutorViewerSkill()).toContain('Copy progress')
   })
 
+  it('encourage keeping progress in the learner\'s drive, and say how to connect one', () => {
+    for (const skill of Object.values(skills)) {
+      expect(skill).toContain('encourage the learner to turn one on')
+      expect(skill).toContain('Settings → Connectors → Google Drive')
+      expect(skill).toContain('Offer each save rather than wait to be asked')
+      expect(skill).toContain('remind them to keep their progress')
+    }
+  })
+
   it('publish fresh zips (npm run oui:schema)', () => {
     for (const name of [LOOM_TUTOR_APP_SKILL, LOOM_TUTOR_VIEWER_SKILL]) {
       const zipped = unzipSync(readFileSync(`public/${skillZipPath(name)}`))

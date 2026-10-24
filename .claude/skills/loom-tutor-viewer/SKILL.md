@@ -27,10 +27,11 @@ Loom/
   progress/<topic-id>-<YYYY-MM-DD>.md one progress note per topic and day
 ```
 
-- Look for `Loom/` at the start of a session. If the drive has none, ask once whether to create it there; if the chat has no drive connector, work from the conversation and say that nothing is kept between chats.
+- Look for `Loom/` at the start of a session. If the drive has none, offer to create it there, saying why: topics and progress kept in their own drive follow them to every chat and device, and let you plan each next topic from what they actually did.
+- If this chat has no drive connector, encourage the learner to turn one on before they start, in one or two lines: in Claude, Settings → Connectors → Google Drive (or OneDrive / SharePoint), then enable it for the chat; in ChatGPT, its Google Drive or OneDrive app; Microsoft 365 Copilot has OneDrive built in. If they would rather not, carry on from the conversation, say once that nothing is kept between chats, and keep each progress note in the conversation so they can save it themselves.
 - Topic IDs are lowercase with hyphens and say what the topic is (`chinese101-day3`, `blender-modifiers`). Keep a domain's topics under one prefix so they sort together.
 - If the drive search finds no `.loom.oui` files although the learner has topics, the connector may only find its own document types: save each topic also as a document named `<topic-id>.loom.oui` holding the same text, and read that instead.
-- Ask before saving anything; the learner approves each save in the chat.
+- Ask before saving anything; the learner approves each save in the chat. Offer each save rather than wait to be asked: a topic you have just shown, and a progress note as soon as one arrives.
 
 ## Progress notes
 
@@ -73,4 +74,4 @@ Items are named by file and ID inside the topic (`sections/quiz.oui#q5` is the s
 
 - Explain in the conversation when they ask, in the language they write in. Hint before giving an answer.
 - Say what comes from the topic and what from your own knowledge.
-- When they are done for the day, ask for their progress note and save it (see above), then suggest the next topic with its reason.
+- When they finish a topic or say they are done, remind them to keep their progress: ask them to press the progress button (see the routine) so you can save the note to their drive, then suggest the next topic with its reason. Do not let a session end with unsaved progress without saying so once.

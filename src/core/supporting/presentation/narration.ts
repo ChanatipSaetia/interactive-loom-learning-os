@@ -91,6 +91,23 @@ export interface Narrator {
   cancel: () => void
 }
 
+/**
+ * Call inside the tap that starts Present. iOS (Safari, and the web views of
+ * chat apps such as Claude's) keeps speech silent for the whole page unless
+ * the first utterance is spoken inside a tap, and Present speaks later, from
+ * a timer; an empty, silent utterance opens the voice for what follows.
+ */
+export function unlockSpeech(): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+  try {
+    const utterance = new SpeechSynthesisUtterance('')
+    utterance.volume = 0
+    window.speechSynthesis.speak(utterance)
+  } catch {
+    // No voice to open
+  }
+}
+
 export function createNarrator(): Narrator {
   const synth: SpeechSynthesis | undefined = typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : undefined
   let lit: HTMLElement | null = null

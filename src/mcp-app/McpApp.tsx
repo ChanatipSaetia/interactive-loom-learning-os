@@ -9,18 +9,18 @@
  * progress note to keep in the learner's drive (decision 199).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, BookOpen, Check, ExternalLink, Loader2, Maximize2, Minimize2, Play, Save, Send, X } from 'lucide-react'
+import { AlertTriangle, BookOpen, Check, ChevronDown, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
 import { LearnerMemoryProvider, ProgressProvider, progressNote, progressNoteMessage, stampEvent } from '../core/supporting/learner-progress'
 import { appMemoryAdapter } from './memory'
-import { PresentMode, kindLabel, preloadPresenters, type PresentSection } from '../core/supporting/presentation'
+import { PresentMode, kindLabel, preloadPresenters, unlockSpeech, type PresentSection } from '../core/supporting/presentation'
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
 import { TopicView } from '../viewer/ViewerApp'
 import { topicLinkUrl } from '../viewer/topic-link'
-import { SYSTEM_THEMES, systemThemeId } from '../core/ui-system/theme/themes'
+import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/themes'
 
 type View = 'card' | 'present' | 'read'
 
@@ -41,8 +41,29 @@ export function themeForHost(theme: McpUiHostContext['theme']): string {
   return systemThemeId()
 }
 
-function applyHostTheme(context: McpUiHostContext | undefined) {
-  document.documentElement.dataset.theme = themeForHost(context?.theme)
+function applyTheme(id: string) {
+  if (id) document.documentElement.dataset.theme = id
+  else delete document.documentElement.dataset.theme
+}
+
+/**
+ * Touch screens: the chat's own scrolling takes the swipes a scroll box inside
+ * the app would need, so Read opens full screen there, or grows to its full
+ * height where the chat has no full screen.
+ */
+const TOUCH = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true
+
+/** Every Loom theme in a dropdown (the system picker on phones). */
+function ThemePicker({ themeId, onPick }: { themeId: string; onPick: (id: string) => void }) {
+  return (
+    <span className="mcp-theme" title="Theme">
+      <Palette size={14} className="mcp-theme-icon" aria-hidden />
+      <select value={themeId} onChange={(e) => onPick(e.target.value)} aria-label="Theme" data-testid="mcp-theme">
+        {THEMES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+      </select>
+      <ChevronDown size={14} className="mcp-theme-arrow" aria-hidden />
+    </span>
+  )
 }
 
 /** Read `.loom.oui` text as Loom Viewer does (decision 184). */
@@ -82,6 +103,22 @@ export function McpApp({ app }: { app: App }) {
   const memory = useMemo(() => appMemoryAdapter(app, () => setKept(false)), [app])
   const lastSeen = useRef('')
   const told = useRef(false)
+  const viewRef = useRef(view)
+  useEffect(() => {
+    viewRef.current = view
+  }, [view])
+
+  /** The chat's light or dark mode (decision 196) until the learner picks a theme, which lasts the session. */
+  const [themeId, setThemeId] = useState(() => document.documentElement.dataset.theme ?? '')
+  const picked = useRef(false)
+  const showTheme = useCallback((id: string) => {
+    applyTheme(id)
+    setThemeId(id)
+  }, [])
+  const pickTheme = useCallback((id: string) => {
+    picked.current = true
+    showTheme(id)
+  }, [showTheme])
 
   useEffect(() => {
     app.ontoolinputpartial = () => setWriting(true)
@@ -104,13 +141,20 @@ export function McpApp({ app }: { app: App }) {
       setView('card')
       told.current = false
     }
-    app.onhostcontextchanged = (context) => {
-      if (context.theme) applyHostTheme({ ...app.getHostContext(), ...context })
-      // The learner may leave fullscreen with the chat's own control
-      if (context.displayMode) setFull(context.displayMode === 'fullscreen')
+    const followHost = (theme: McpUiHostContext['theme']) => {
+      if (!picked.current) showTheme(themeForHost(theme))
     }
-    void app.connect().then(() => applyHostTheme(app.getHostContext()))
-  }, [app])
+    app.onhostcontextchanged = (context) => {
+      if (context.theme) followHost(context.theme)
+      // The learner may leave fullscreen with the chat's own control; on a touch screen Read
+      // cannot scroll inside the conversation, so it goes back to the card
+      if (context.displayMode) {
+        setFull(context.displayMode === 'fullscreen')
+        if (context.displayMode === 'inline' && TOUCH && viewRef.current === 'read') setView('card')
+      }
+    }
+    void app.connect().then(() => followHost(app.getHostContext()?.theme))
+  }, [app, showTheme])
 
   // The chat's model learns about errors at once, without the learner pressing anything (decision 184)
   useEffect(() => {
@@ -134,9 +178,11 @@ export function McpApp({ app }: { app: App }) {
 
   /** Present and Read open in the conversation itself; Full screen is the learner's choice. */
   const open = useCallback((next: 'present' | 'read') => {
+    if (next === 'present') unlockSpeech()
     setView(next)
     window.scrollTo(0, 0)
-  }, [])
+    if (next === 'read' && TOUCH && canFullscreen && !full) void displayMode('fullscreen')
+  }, [canFullscreen, displayMode, full])
 
   const close = useCallback(async () => {
     setView('card')
@@ -195,8 +241,9 @@ export function McpApp({ app }: { app: App }) {
     <div className="mcp-bar">
       <span className="mcp-bar-title">{topic.manifest?.title ?? topic.topicId}</span>
       {view === 'read' && presentSections.length > 0 && (
-        <button type="button" className="mcp-button mcp-small" onClick={() => setView('present')}><Play size={14} /> Present</button>
+        <button type="button" className="mcp-button mcp-small" onClick={() => open('present')}><Play size={14} /> Present</button>
       )}
+      <ThemePicker themeId={themeId} onPick={pickTheme} />
       <button
         type="button"
         className="mcp-button mcp-quiet mcp-small"
@@ -227,7 +274,7 @@ export function McpApp({ app }: { app: App }) {
             <div className={`mcp-player${full ? ' mcp-full' : ''}`} data-testid="mcp-present">
               {bar}
               <div className="mcp-stage">
-                <PresentMode sections={presentSections} onExit={() => setView('read')} onSectionChange={recordSeen} fillParent />
+                <PresentMode sections={presentSections} onExit={() => open('read')} onSectionChange={recordSeen} fillParent />
               </div>
             </div>
           </HUDProvider>
@@ -239,7 +286,7 @@ export function McpApp({ app }: { app: App }) {
   if (topic && view === 'read') {
     return (
       <UISystemProvider>
-        <div className={`mcp-read${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
+        <div className={`mcp-read${full ? ' mcp-full' : TOUCH ? ' mcp-read-natural' : ''}`} data-testid="mcp-read">
           {bar}
           {/* Read scrolls inside a frame of fixed height, so the chat's frame stays that size and
               the sections' modals (taxonomy details, help) open where the learner is looking */}
@@ -294,6 +341,7 @@ export function McpApp({ app }: { app: App }) {
           <button type="button" className="mcp-button mcp-quiet" onClick={() => void continueInViewer()} data-testid="mcp-viewer">
             <ExternalLink size={14} /> Open in Viewer
           </button>
+          <ThemePicker themeId={themeId} onPick={pickTheme} />
         </div>
       )}
       {linkNote && <p className="mcp-note">{linkNote}</p>}

@@ -31,7 +31,7 @@ import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, PickSection, sourceResolver, useNarrow } from '../core/supporting/authoring-editor/pick'
 import { AssistantDock, AssistantToggle, pickBridgeOf, useAssistant, type AssistantTopicContext, type AssistantView } from '../core/supporting/authoring-editor/assistant'
 import type { PickSource } from '../core/learning-engine/composition/oui/pick-report'
-import { PresentMode, preloadPresenters, type PresentSection } from '../core/supporting/presentation'
+import { PresentMode, preloadPresenters, unlockSpeech, type PresentSection } from '../core/supporting/presentation'
 import '../core/delivery/web-app-shell/layout.css'
 
 type ReadTopics = () => Promise<TopicFiles[]>
@@ -310,6 +310,7 @@ export function ViewerApp() {
   useEffect(() => { if (!compact) setMenuOpen(false) }, [compact])
 
   const startPresent = useCallback(() => {
+    unlockSpeech()
     setPresentStart(sectionInView(presentSections))
     setPresentBeat(0)
     setPicking(false)

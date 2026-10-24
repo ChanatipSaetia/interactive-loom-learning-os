@@ -81,7 +81,53 @@ body {
 
 .mcp-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+/* The theme dropdown: a native select (its list opens outside the chat's frame, so a short card never
+   cuts it off), styled as a quiet pill with an arrow */
+.mcp-theme {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.mcp-theme svg {
+  position: absolute;
+  pointer-events: none;
+}
+
+.mcp-theme .mcp-theme-icon {
+  left: 10px;
+}
+
+.mcp-theme .mcp-theme-arrow {
+  right: 9px;
+}
+
+.mcp-theme select {
+  appearance: none;
+  -webkit-appearance: none;
+  max-width: 190px;
+  padding: 6px 28px 6px 30px;
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 14%, transparent);
+  border-radius: 999px;
+  font: 600 13px Inter, system-ui, sans-serif;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-text) 8%, transparent);
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.mcp-theme select option {
+  color: var(--ctp-text);
+  background: var(--ctp-base);
+}
+
+@media (max-width: 480px) {
+  .mcp-theme select { max-width: 44px; padding-right: 8px; color: transparent; }
+  .mcp-theme .mcp-theme-arrow { display: none; }
 }
 
 .mcp-button {
@@ -120,7 +166,8 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Present in the conversation: the 16:9 stage at the chat's width plus its controls */
+/* Present in the conversation: the 16:9 stage at the card's full width, plus Present's caption bar
+   and controls below it (about 200px), so the stage is never held back by the height */
 .mcp-player {
   display: flex;
   flex-direction: column;
@@ -130,8 +177,22 @@ body {
 }
 
 .mcp-stage {
-  height: calc(100vw * 9 / 16 + 96px);
+  height: calc(100vw * 9 / 16 + 200px);
   min-height: 320px;
+}
+
+/* The slide runs edge to edge; only the captions and controls keep Present's side padding */
+.mcp-stage .present-mode {
+  padding: 0 0 12px;
+}
+
+.mcp-stage .present-stage {
+  border-radius: 0;
+}
+
+.mcp-stage .present-caption-bar,
+.mcp-stage .present-controls {
+  padding-inline: 16px;
 }
 
 .mcp-full {
@@ -203,4 +264,16 @@ body {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Touch screens without the chat's full screen: Read at its full height, so the chat's own
+   scrolling moves through it (a scroll box inside the frame gets no swipes there) */
+.mcp-read.mcp-read-natural {
+  height: auto;
+  overflow: visible;
+}
+
+.mcp-read-natural .mcp-read-scroll {
+  overflow: visible;
 }

@@ -158,6 +158,40 @@ async function open(browser, query) {
     await shot(page, 'save-progress')
   }
 
+  {
+    // The theme picker overrides the chat's mode for the session (decision 196)
+    const { page, app } = await open(browser, '')
+    const before = await app.locator('html').getAttribute('data-theme')
+    await app.locator('[data-testid=mcp-theme]').first().selectOption('bedtime')
+    await page.waitForTimeout(300)
+    const picked = await app.locator('html').getAttribute('data-theme')
+    await page.evaluate(() => window.setHostTheme('light'))
+    await page.waitForTimeout(300)
+    results.theme = { before, picked, afterChatChange: await app.locator('html').getAttribute('data-theme') }
+    await shot(page, 'theme-picked')
+  }
+
+  {
+    // A touch screen: Read opens full screen, where it scrolls inside, and the chat's exit goes back to the card
+    const context = await browser.newContext({ viewport: { width: 390, height: 760 }, hasTouch: true, isMobile: true })
+    const page = await context.newPage()
+    await page.goto('http://localhost:8090/')
+    const app = page.frameLocator('#app')
+    await app.locator('[data-testid=mcp-other-mode]').click()
+    await app.locator('[data-testid=mcp-read]').waitFor({ timeout: 10000 })
+    await page.waitForTimeout(1000)
+    const full = await page.evaluate(() => document.body.classList.contains('fullscreen'))
+    const scroller = app.locator('[data-testid=mcp-read-scroll]')
+    const scroll = await scroller.evaluate((el) => ({ canScroll: el.scrollHeight > el.clientHeight + 10 }))
+    await scroller.evaluate((el) => el.scrollBy(0, 600))
+    const scrolled = await scroller.evaluate((el) => el.scrollTop)
+    await shot(page, 'touch-read-fullscreen')
+    await page.evaluate(() => document.querySelector('#app') && window.setHostDisplayMode?.('inline'))
+    await page.waitForTimeout(500)
+    results.touch = { fullscreen: full, ...scroll, scrolled, backToCard: await app.locator('[data-testid=mcp-card]').count() }
+    await context.close()
+  }
+
   if (process.env.LOOM_WORKER_URL) {
     // The hosted endpoint (slice 5) under `npm run worker:dev`: no validate_topic, the app from the Worker's own assets
     const { page, app, errors } = await open(browser, `?server=${encodeURIComponent(process.env.LOOM_WORKER_URL)}`)

@@ -134,7 +134,11 @@ async function main() {
   }
   await bridge.connect(new PostMessageTransport(frame.contentWindow!, frame.contentWindow!))
   frame.srcdoc = html
-  Object.assign(window, { setHostTheme: (t: 'light' | 'dark') => { document.body.classList.toggle('light', t === 'light'); void bridge.sendHostContextChange({ theme: t }) } })
+  Object.assign(window, {
+    setHostTheme: (t: 'light' | 'dark') => { document.body.classList.toggle('light', t === 'light'); void bridge.sendHostContextChange({ theme: t }) },
+    // The chat's own control for leaving fullscreen
+    setHostDisplayMode: (mode: 'inline' | 'fullscreen') => { document.body.classList.toggle('fullscreen', mode === 'fullscreen'); void bridge.sendHostContextChange({ displayMode: mode }) },
+  })
 }
 
 main().catch((e) => say('error', String(e?.stack ?? e)))
