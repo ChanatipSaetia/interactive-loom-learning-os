@@ -64,6 +64,8 @@ export interface PresentModeProps {
   onSectionChange?: (sectionIndex: number, beat: number) => void
   /** Start playing at once (decision 101); off, the viewer steps with Next. */
   autoplay?: boolean
+  /** Fill the parent element's height instead of the rest of the window (Present inside a chat's card, decision 189). */
+  fillParent?: boolean
 }
 
 const KIND_LABELS: Record<string, string> = {
@@ -173,7 +175,7 @@ function SectionBody({ section, view, beat, active }: { section: PresentSection;
   )
 }
 
-export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSectionChange, autoplay = true }: PresentModeProps) {
+export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSectionChange, autoplay = true, fillParent = false }: PresentModeProps) {
   const derived = useMemo(() => sections.map((s) => beatsOf(s.config)), [sections])
   const beats = derived
   /** Beats the stage plays before a section's own (its title beat, decision 114), per section. */
@@ -271,18 +273,21 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     const root = rootRef.current
     if (!area || !root) return
     const measure = () => {
-      root.style.height = `${Math.max(320, window.innerHeight - root.getBoundingClientRect().top)}px`
+      root.style.height = fillParent && root.parentElement
+        ? `${root.parentElement.clientHeight}px`
+        : `${Math.max(320, window.innerHeight - root.getBoundingClientRect().top)}px`
       setBox({ w: area.clientWidth, h: area.clientHeight })
     }
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(area)
+    if (fillParent && root.parentElement) ro.observe(root.parentElement)
     window.addEventListener('resize', measure)
     return () => {
       ro.disconnect()
       window.removeEventListener('resize', measure)
     }
-  }, [])
+  }, [fillParent])
   // Landscape lays out on a fixed 1200×675 stage scaled to fit; on a phone the stage is the space
   // itself at scale 1, so sections lay out (and read) as Read mode does on a phone
   const portrait = box.w > 0 && box.w < PORTRAIT_BELOW

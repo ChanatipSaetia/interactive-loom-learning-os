@@ -1,13 +1,14 @@
 /**
  * The Loom MCP App (decisions 180–196 in grill-log-adaptive-learning.md): what
- * a chat shows when its model calls `show_topic`. Inline it is a card with the
- * topic's title, its sections and ▶ Play; Play asks the chat for fullscreen and
- * plays the topic in Present mode, Read shows it to work through by hand. It
+ * a chat shows when its model calls `show_topic`. It starts as a card with the
+ * topic's title, its sections and ▶ Play; Play plays the topic in Present mode
+ * right there in the conversation, Read shows it to work through by hand, and
+ * Full screen asks the chat to give either the whole window. It
  * reads and checks the topic with the same steps as Loom Viewer, and hands any
  * errors back to the chat's model.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, ArrowLeft, BookOpen, Loader2, Play, Send } from 'lucide-react'
+import { AlertTriangle, BookOpen, Loader2, Maximize2, Minimize2, Play, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
@@ -56,6 +57,8 @@ export function McpApp({ app }: { app: App }) {
   const [view, setView] = useState<View>('card')
   const [asked, setAsked] = useState(false)
   const [startMode, setStartMode] = useState<'present' | 'read'>('present')
+  /** The chat is showing the app fullscreen. */
+  const [full, setFull] = useState(false)
   const told = useRef(false)
 
   useEffect(() => {
@@ -71,6 +74,8 @@ export function McpApp({ app }: { app: App }) {
     }
     app.onhostcontextchanged = (context) => {
       if (context.theme) applyHostTheme({ ...app.getHostContext(), ...context })
+      // The learner may leave fullscreen with the chat's own control
+      if (context.displayMode) setFull(context.displayMode === 'fullscreen')
     }
     void app.connect().then(() => applyHostTheme(app.getHostContext()))
   }, [app])
@@ -86,22 +91,25 @@ export function McpApp({ app }: { app: App }) {
   const presentSections = useMemo(() => (topic ? presentSectionsOf(topic) : []), [topic])
   useEffect(() => preloadPresenters(presentSections), [presentSections])
 
+  const canFullscreen = app.getHostContext()?.availableDisplayModes?.includes('fullscreen') ?? false
+
   const displayMode = useCallback(async (mode: McpUiDisplayMode) => {
     const modes = app.getHostContext()?.availableDisplayModes
     if (modes && !modes.includes(mode)) return
-    await app.requestDisplayMode({ mode }).catch(() => {})
+    const result = await app.requestDisplayMode({ mode }).catch(() => null)
+    setFull((result?.mode ?? mode) === 'fullscreen')
   }, [app])
 
-  const open = useCallback(async (next: 'present' | 'read') => {
-    await displayMode('fullscreen')
+  /** Present and Read open in the conversation itself; Full screen is the learner's choice. */
+  const open = useCallback((next: 'present' | 'read') => {
     setView(next)
     window.scrollTo(0, 0)
-  }, [displayMode])
+  }, [])
 
   const close = useCallback(async () => {
     setView('card')
-    await displayMode('inline')
-  }, [displayMode])
+    if (full) await displayMode('inline')
+  }, [displayMode, full])
 
   const askToFix = useCallback(async () => {
     if (!loaded?.report) return
@@ -117,13 +125,31 @@ export function McpApp({ app }: { app: App }) {
     )
   }
 
+  const bar = topic && (view === 'present' || view === 'read') && (
+    <div className="mcp-bar">
+      <span className="mcp-bar-title">{topic.manifest?.title ?? topic.topicId}</span>
+      {view === 'read' && presentSections.length > 0 && (
+        <button type="button" className="mcp-button mcp-small" onClick={() => setView('present')}><Play size={14} /> Present</button>
+      )}
+      {canFullscreen && (
+        <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void displayMode(full ? 'inline' : 'fullscreen')} data-testid="mcp-fullscreen">
+          {full ? <><Minimize2 size={14} /> Exit full screen</> : <><Maximize2 size={14} /> Full screen</>}
+        </button>
+      )}
+      <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void close()} aria-label="Close" title="Close" data-testid="mcp-close"><X size={14} /></button>
+    </div>
+  )
+
   if (topic && view === 'present' && presentSections.length > 0) {
     return (
       <UISystemProvider>
         <ProgressProvider>
           <HUDProvider>
-            <div className="mcp-stage" data-testid="mcp-present">
-              <PresentMode sections={presentSections} onExit={() => void close()} />
+            <div className={`mcp-player${full ? ' mcp-full' : ''}`} data-testid="mcp-present">
+              {bar}
+              <div className="mcp-stage">
+                <PresentMode sections={presentSections} onExit={() => setView('read')} fillParent />
+              </div>
             </div>
           </HUDProvider>
         </ProgressProvider>
@@ -134,11 +160,8 @@ export function McpApp({ app }: { app: App }) {
   if (topic && view === 'read') {
     return (
       <UISystemProvider>
-        <div className="mcp-read" data-testid="mcp-read">
-          <div className="mcp-read-bar">
-            <button type="button" className="mcp-button mcp-quiet" onClick={() => void close()}><ArrowLeft size={14} /> Back to the chat</button>
-            {presentSections.length > 0 && <button type="button" className="mcp-button" onClick={() => setView('present')}><Play size={14} /> Present</button>}
-          </div>
+        <div className={`mcp-read${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
+          {bar}
           <main className="main-content">
             <TopicView topic={topic} />
           </main>
@@ -176,12 +199,12 @@ export function McpApp({ app }: { app: App }) {
       {topic && (
         <div className="mcp-actions">
           {presentSections.length > 0 && (
-            <button type="button" className="mcp-button mcp-play" onClick={() => void open(startMode)} data-testid="mcp-play">
+            <button type="button" className="mcp-button mcp-play" onClick={() => open(startMode)} data-testid="mcp-play">
               {startMode === 'read' ? <><BookOpen size={16} /> Read</> : <><Play size={16} /> Play</>}
             </button>
           )}
           {presentSections.length > 0 && (
-            <button type="button" className="mcp-button mcp-quiet" onClick={() => void open(startMode === 'read' ? 'present' : 'read')} data-testid="mcp-other-mode">
+            <button type="button" className="mcp-button mcp-quiet" onClick={() => open(startMode === 'read' ? 'present' : 'read')} data-testid="mcp-other-mode">
               {startMode === 'read' ? <><Play size={14} /> Present</> : <><BookOpen size={14} /> Read</>}
             </button>
           )}

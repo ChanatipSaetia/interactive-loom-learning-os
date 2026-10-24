@@ -120,18 +120,55 @@ body {
   to { transform: rotate(360deg); }
 }
 
-.mcp-stage {
-  min-height: 100vh;
+/* Present in the conversation: the 16:9 stage at the chat's width plus its controls */
+.mcp-player {
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--glass-edge, var(--ctp-surface1));
 }
 
-.mcp-read-bar {
+.mcp-stage {
+  height: calc(100vw * 9 / 16 + 96px);
+  min-height: 320px;
+}
+
+.mcp-full {
+  border: 0;
+  border-radius: 0;
+}
+
+.mcp-full .mcp-stage {
+  height: calc(100vh - 48px);
+}
+
+.mcp-bar {
   position: sticky;
   top: 0;
   z-index: 20;
   display: flex;
-  gap: 8px;
-  padding: 10px 16px;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  color: var(--ctp-text);
   background: color-mix(in srgb, var(--ctp-base) 80%, transparent);
   backdrop-filter: var(--glass-filter, blur(18px));
   -webkit-backdrop-filter: var(--glass-filter, blur(18px));
+}
+
+.mcp-bar-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 14px Inter, 'Noto Sans Thai', system-ui, sans-serif;
+}
+
+.mcp-small {
+  padding: 6px 12px;
+  font-size: 13px;
 }

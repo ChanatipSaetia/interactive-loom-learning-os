@@ -100,7 +100,7 @@ async function main() {
     return {}
   }
   bridge.onsizechange = ({ height }) => {
-    if (height && !document.body.classList.contains('fullscreen')) frame.style.height = `${Math.min(height, 640)}px`
+    if (height && !document.body.classList.contains('fullscreen')) frame.style.height = `${Math.min(height, 900)}px`
   }
   await bridge.connect(new PostMessageTransport(frame.contentWindow!, frame.contentWindow!))
   frame.srcdoc = html

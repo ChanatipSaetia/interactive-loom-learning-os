@@ -31,8 +31,17 @@ async function open(browser, query) {
     await app.locator('[data-testid=mcp-play]').click()
     await app.locator('[data-testid=mcp-present]').waitFor({ timeout: 10000 })
     await page.waitForTimeout(4000)
-    results.present = { fullscreen: await page.evaluate(() => document.body.classList.contains('fullscreen')), errors }
-    await shot(page, 'present')
+    const inChat = !(await page.evaluate(() => document.body.classList.contains('fullscreen')))
+    const frameHeight = await page.locator('#app').evaluate((f) => f.getBoundingClientRect().height)
+    await shot(page, 'present-in-chat')
+    await app.locator('[data-testid=mcp-fullscreen]').click()
+    await page.waitForTimeout(1500)
+    const full = await page.evaluate(() => document.body.classList.contains('fullscreen'))
+    await shot(page, 'present-fullscreen')
+    await app.locator('[data-testid=mcp-fullscreen]').click()
+    await page.waitForTimeout(800)
+    const backInChat = !(await page.evaluate(() => document.body.classList.contains('fullscreen')))
+    results.present = { inChat, frameHeight: Math.round(frameHeight), fullscreenOnRequest: full, backInChat, errors }
   }
   {
     // Headless Chromium has no speech voices: give every frame a stand-in voice that records what it is asked to say
