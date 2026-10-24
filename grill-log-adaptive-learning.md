@@ -207,6 +207,127 @@ Three groups, in order: **the app shows a topic in a chat** (T1, P1; decisions 1
 **memory** (U3, U4, R4, N1; decision 186) and **the loop** (R2, N3–N5; decisions 161–164, 190–191).
 The loop needs memory first: without it Loom cannot know what the learner is forgetting.
 
+## Implementation Slices
+
+**Draft — to be adjusted.** Each slice is a thin, end-to-end piece the learner can use and demo,
+built in order: risk first, local before hosted (no deploy, every feature), memory before the loop.
+Size is relative: **S** small, **M** medium, **L** large.
+
+| # | Slice | The learner can… | Stories | Decisions | Size |
+|---|---|---|---|---|---|
+| 0 | **Spike: can hosts run the shell?** | — (a test, not a feature) | — | 181, 182, 189 | S |
+| 1 | **A topic plays in a chat (local)** | ask Goose for a topic and watch it in Present inside the chat | U1, A1, A2, T1, P1, P2, R1 | 181–183, 188, 189 | L |
+| 2 | **No broken topics** | never see a topic with errors | T2 | 184 | S |
+| 3 | **Viewer links** | jump from the chat to Viewer, straight into Present | V1, V2 (without memory) | 178, 179 | S |
+| 4 | **Memory, locally** | close the chat and find progress and saved topics in the next one | R4, N1, T3, V3 (local) | 144–149, 151, 152, 183 | L |
+| 5 | **Hosted endpoint** | learn in Claude web and mobile, Microsoft 365 Copilot or ChatGPT | U2 | 180, 184, 185 | M |
+| 6 | **Memory in your cloud** | sign in once and share one memory across web chats, local chats and Viewer | U3, U4, V3 | 150, 186 | L |
+| 7 | **Your turn and the tutor** | answer callbacks in Present and have the chat explain misses | P3, R2, R3, N5 | 162, 164, 177, 190 | M |
+| 8 | **The loop** | press Next topic and get a topic that carries what they are forgetting | N2, N3, N4 | 161, 163, 170–175, 191, 192 | L |
+| 9 | **Grow the domain** | pick a goal, take a placement check, follow a path | A3, D1, D2, D3 | 170, 173, 174 | M |
+
+### Slice 0 — Spike: can hosts run the shell?
+
+- A throwaway MCP server with one tool returning a `ui://` shell that loads a script from GitHub
+  Pages through `_meta.ui.csp.resourceDomains`, plays a sound after a click and asks for
+  fullscreen.
+- Tried in **MCPJam**, **Goose**, **Claude Desktop** and, through a tunnel, a **Claude custom
+  connector**.
+- **Done when:** a table of which hosts load the script, allow fullscreen and play audio. It
+  decides decisions 182 and 189 before slice 1 builds on them.
+
+### Slice 1 — A topic plays in a chat (local)
+
+- **App page on GitHub Pages:** a new Vite entry `mcp-app.html` (`src/mcp-app/`), deployed with the
+  site, that receives the tool input through the MCP Apps bridge (`@modelcontextprotocol/ext-apps`)
+  and reuses Viewer's topic loading and the Present stage
+  (`src/core/supporting/presentation/`). Inline: the card with ▶ Play; Play → fullscreen Present
+  with the voice; a Read toggle.
+- **Server package** (`mcp/`): one tool layer shared by both transports; this slice ships the stdio
+  transport with `show_topic` and `get_authoring_guide`. Runs with `npx`.
+- **Authoring guide split by section type:** `npm run oui:schema` also writes the core rules and
+  one part per section type, which `get_authoring_guide(sections?)` returns.
+- **Done when:** in Goose (and MCPJam) "teach me X" ends with Present playing in the chat; unit
+  tests for the tool layer and the guide split.
+
+### Slice 2 — No broken topics
+
+- `validate_topic` on the local server runs the 3-tier gateway in Node; the guide tells the model
+  to call it before `show_topic`.
+- The app validates too and, on errors, sends them back to the chat as a fix request (the Viewer
+  Copy-errors text).
+- **Done when:** a topic with a deliberate error is fixed by the model before it is shown.
+
+### Slice 3 — Viewer links
+
+- `viewer.html#present` starts in Present; `#present&oui=<deflate + base64url>` opens a whole
+  topic from the link.
+- The app's **Continue in Viewer**, and `show_topic`'s answer in hosts without app UI, use that
+  link.
+- **Done when:** the link opens the same topic at the same place in Viewer.
+
+### Slice 4 — Memory, locally
+
+- `LearnerMemoryPort` and the event log in `src/core/supporting/learner-progress/`; the IndexedDB
+  adapter replaces the `localStorage` calls in Viewer; `loom:progress:v1` is imported once.
+- Present logs `seen`, Read logs `answered`; items keyed by Pick pointer with a content hash.
+- Local server: the folder adapter, `record_events` (app-only), `save_topic`, `list_topics`,
+  `open_topic`.
+- Back up / Restore in Viewer. Claude Desktop packaging as `.mcpb`.
+- **Done when:** progress made in one Goose chat shows in the next chat and in Viewer opened on
+  the same folder.
+
+### Slice 5 — Hosted endpoint
+
+- The shared tool layer behind Streamable HTTP on **Cloudflare Workers** (free plan), with the
+  hosted tool set (`show_topic`, `get_authoring_guide`, `next_topic_request`); no sign-in yet.
+- Added to **Claude** as a custom connector, then tried in **Microsoft 365 Copilot** and
+  **ChatGPT**; the hosts table updated with what works.
+- **Done when:** Present plays inside Claude on the web and on a phone.
+
+### Slice 6 — Memory in your cloud
+
+- Connector sign-in with **Microsoft first** (Entra app, `Files.ReadWrite.AppFolder`), Google
+  second; sign-in records encrypted in Workers KV; the endpoint forwards to the OneDrive app
+  folder and stores no learner data.
+- A OneDrive adapter for Viewer and the local server, so all three read the same event-log files.
+- **Done when:** a quiz answered in Claude on the phone counts in Goose on the computer and in
+  Viewer. Work accounts that need admin consent are noted.
+
+### Slice 7 — Your turn and the tutor
+
+- Callback marking in OUI (`recalls`), in the authoring guide and in `npm run oui:schema`; the
+  Present beats of callback items pause on Your turn.
+- The app tells the chat's model about misses; the guide gives the model the tutor rules (hints
+  before answers).
+- **Done when:** a missed callback in Present gets an explanation in the chat, and its result
+  counts for the old skill.
+
+### Slice 8 — The loop
+
+- Domain files with skills (`public/domains/<domain>.oui`), `teaches` and `needs` in `topic.oui`,
+  Tier 3 checks for skill IDs.
+- Mastery per skill from the event log; `learner_summary`; Up next with its reason; the **Next
+  topic** button and `next_topic_request`, asking for 20–30% callbacks.
+- Worked first on the three example domains.
+- **Done when:** after one topic, Next topic produces a topic whose callbacks target the
+  learner's weak skills.
+
+### Slice 9 — Grow the domain
+
+- Goals in the domain file and the path they imply; the placement check; shared topics with
+  personal ones filling the gaps.
+- **Done when:** choosing "order food in Chinese" shows a path, and the placement check skips
+  what the learner knows.
+
+### Across every slice
+
+- `npm run typecheck`, `npm run test` and `npm run lint` pass; new behaviour gets Vitest tests and
+  a Playwright check against the dev server.
+- AGENTS.md, the README and this log are updated as decisions are built; component changes run
+  `npm run oui:schema`.
+- The shorts feed (decision 166) is outside these slices until its prototype says it is worth it.
+
 ## The Three Domains as Examples
 
 | | **Chinese** | **Blender 3D** | **Stock management & pricing** |
