@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — under discussion, nothing implemented (decisions 161–187)**
+Status: **Concept — under discussion, nothing implemented (decisions 161–193)**
 
 ## Goal
 
@@ -62,7 +62,7 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 
 | # | Question | Decision |
 |---|---|---|
-| 176 | Where the learner learns | **In Loom Viewer, Read or Present.** An AI chat (Claude, Gemini, …) only writes topics and answers questions; it is never the place a topic is played. Present mode is the main way through a new topic (it gave the best focus); Read is for working through it by hand. |
+| 176 | Where the learner learns | **In Loom's Read and Present, shown inside the chat by the Loom MCP App (decisions 180–193), or in Loom Viewer.** The chat's model writes topics and tutors; Loom plays them. Present is the main way through a new topic (it gave the best focus); Read is for working through it by hand. Viewer stays for topics opened from files or pasted text, offline use and chats without the app. |
 | 177 | Callbacks in Present | **Present stays hands-free, except for callbacks.** A callback (decision 162) or opening-check item pauses on **Your turn**: the learner answers or thinks and presses `Space`, then the stage plays the answer and its explanation. All other gates keep playing themselves (decision 101). Without this, review woven into a topic would never test the learner in Present. A Your-turn answer logs `answered`; beats played by the stage log `seen`. |
 | 178 | Opening Viewer straight into Present | **`viewer.html#present`** starts in Present at the first section, and pasting a topic (Open → Paste) with that flag goes straight to the stage. The flag lives in the hash, so nothing reaches GitHub Pages. |
 | 179 | Getting a topic from a chat into Viewer | **Four levels, built in order, none needs a server.** **Level 0 — works today:** the `loom-topic-writer` skill in the Claude app, or the published authoring prompt as knowledge in a Gemini Gem (or a ChatGPT GPT); the learner saves the `.loom.oui` or copies it, then opens or pastes it in Viewer. **Level 1 — a link made by code:** `viewer.html#present&oui=<deflate + base64url>` opens a whole topic from the link. The link is built by code, never typed by the model (a model cannot compress): by a one-button artifact or canvas page the chat writes around the topic text, or by the level 3 tool. **Level 2 — back to the chat:** Viewer's **Ask for next topic** copies the request of decision 175 (mastered and weak skills, goal, callbacks to include), opening the chat with it filled in where the chat accepts a prompt in its URL. **Level 3 — a local MCP server run with `npx`** (no hosting): validate a topic with the 3-tier gateway, read the learner summary from the synced memory folder (decision 149), save the topic to a folder, and return its level 1 link; for Claude Desktop, Claude Code, Gemini CLI and other MCP clients. |
@@ -74,11 +74,17 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 |---|---|---|
 | 181 | The parts | **Three, none with a database.** (1) **GitHub Pages** hosts the UI: Loom's Read and Present for one topic, as a page the app loads (exists as a site today). (2) **A serverless MCP endpoint** (Streamable HTTP) answers the chat app: it lists the tools and returns the UI resource. (3) **The same server as an npm package over stdio** for chats on the learner's computer (`npx`, or a `.mcpb` extension for Claude Desktop). |
 | 182 | The UI resource | **A small HTML shell at `ui://loom/present`** that loads Loom's script and styles from GitHub Pages, declared in `_meta.ui.csp.resourceDomains` (`https://chanatipsaetia.github.io`). The shell is a few KB, so the endpoint stays tiny and every Pages deploy updates the app in every chat at once. No nested iframe of the Pages site (`frameDomains`), since hosts may restrict it. |
-| 183 | Tools | **`show_topic(oui, mode?)`** renders a `.loom.oui` topic in Present (default) or Read; **`next_topic_request(summary)`** turns the learner's skill summary into the request of decision 175 for the model to write the next topic. More tools only when a story needs them. |
-| 184 | Where work runs | **In the learner's browser, inside the app**, not on the endpoint: parsing, the 3-tier validation and rendering all run in the UI (Loom does them in the browser already). The endpoint only passes text through, which keeps it within a free tier's per-request CPU limit (10 ms on Cloudflare Workers Free). Validation errors show in the app and are handed back to the model to fix. |
+| 183 | Tools | **`get_authoring_guide(sections?)`** (decision 188), **`show_topic(oui, mode?)`** (Present by default, or Read) and **`next_topic_request(summary)`** on both servers. The local server adds **`validate_topic(oui)`** (the full 3-tier check, called before `show_topic`), **`save_topic(oui, name)`**, **`list_topics(domain?)`**, **`open_topic(name)`**, **`learner_summary(domain)`** and **`record_events(events)`**, which only the app calls (hidden from the model). The hosted endpoint adds `learner_summary` and `record_events` once the learner has signed in (decision 186). |
+| 184 | Where work runs | **In the learner's browser, inside the app**, for parsing, rendering and, on the hosted endpoint, validation (Loom does all of them in the browser already); the endpoint only passes text through, within a free tier's per-request CPU limit (10 ms on Cloudflare Workers Free). **Locally**, `validate_topic` runs the 3-tier check before the topic is shown, so the model fixes errors before the learner sees them. **Hosted**, the app finds the errors and sends them back to the chat as a fix request (Viewer's Copy-errors flow, done for the learner). |
 | 185 | Hosting and cost | **Cloudflare Workers, free plan**, on its `*.workers.dev` address: 100,000 requests a day, about 4–6 per topic opened, so roughly 15,000–25,000 topic opens a day at $0. No sign-in: the endpoint holds nothing private. Vercel Hobby (personal, non-commercial only), Deno Deploy or Netlify Functions are alternatives behind the same code. The paid Workers plan starts at $5 a month if ever needed. |
-| 186 | Learner memory inside a chat | **Local: through the server.** Over stdio the app hands its events to a tool that writes them to the learner's memory folder (decision 149). **Hosted: not kept in the chat.** The sandboxed iframe cannot be trusted to keep browser storage or to sign in to Google Drive, so the app offers **Continue in Viewer**, a link carrying the topic and the session's results, and memory lives in Viewer (decisions 147–150). |
+| 186 | Learner memory | **In the learner's own storage, never on a Loom server.** **Local:** the server writes the app's events to the memory folder (decision 149), which may sit inside a OneDrive- or Drive-synced folder. **Hosted:** adding the connector asks the learner to **sign in with Microsoft or Google**; each request carries the learner's token and the endpoint reads and writes the event log in **the OneDrive app folder** (`Files.ReadWrite.AppFolder`, first, as the learner uses Microsoft 365) or **the Google Drive `appDataFolder`** (decision 150), then forgets. The endpoint keeps only an OAuth client secret per provider and the connector's sign-in records, encrypted in Workers KV (free tier); no topic, answer or progress. Without sign-in the app offers **Continue in Viewer**. The same event-log files (decisions 145–146) serve Viewer, the local server and the connector, so there is one memory. Revises the earlier "hosted: not kept in the chat". |
 | 187 | The local server | **Allowed, and a full peer of the hosted endpoint, not a fallback.** The npm package runs on the learner's computer over stdio (`npx`, or a `.mcpb` extension for Claude Desktop) and can do what the hosted endpoint cannot: keep learner memory in the memory folder (decision 186), validate topics with the 3-tier gateway with no CPU limit, save topics to a folder the learner picks, and serve the UI from the package itself so it works offline (GitHub Pages stays the default source). It is the preferred path whenever the chat runs on the learner's computer (VS Code Copilot, Goose, Claude Desktop, Cursor); the hosted endpoint covers web and mobile chats. |
+| 188 | How the model learns Loom's format | **From the server, not from a skill or a pasted prompt.** `get_authoring_guide(sections?)` returns the core rules plus only the section types the model plans to use (the whole prompt is about 72 KB, roughly 18k tokens, too much for every request). Any chat with the app connected can write topics; the `loom-topic-writer` skill stays for chats without it. |
+| 189 | How a topic looks in the chat | **A compact card inline** (title, sections, **▶ Play**); **Play asks the host for fullscreen**, where Present's 16:9 stage (1200×675) plays. Pressing Play also starts the narration (browsers allow audio only after a click) and gives the app keyboard focus (`Space`, arrows, `N`). Read opens the same way. Hosts that do not offer fullscreen play the stage scaled into the card. |
+| 190 | The chat's model as tutor | **The app tells the model what happened**: a missed Your turn ("learner missed `q2`: measure word for books") goes into the model's context, so the model explains in the conversation. Viewer's own assistant is not needed inside a chat. |
+| 191 | Next topic from inside the app | **A Next topic button** sends the learner's summary (mastered and weak skills, goal, callbacks to include; decisions 172–175) into the chat as a message; the model writes the next topic and calls `show_topic` again. |
+| 192 | The chat app's own memory | **Only a summary for the model**, never the learner's record. Claude, ChatGPT or Copilot memory may hold a line like "tones solid, measure words weak"; the event log in the learner's storage (decision 186) stays the source of truth. |
+| 193 | Local models | **Tutor locally, write with a stronger model.** Writing a 5–30 KB topic and calling tools correctly is hard for small local models; in Goose the learner may keep the local model for tutoring and give a stronger model (through an API key) the writing. |
 
 **Hosts, in order of trying** (Oct 2026; check the official MCP Apps host list before relying on one):
 
@@ -92,88 +98,79 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 4 | ChatGPT | Subscription | Hosted (Developer Mode, Apps SDK) | Reported, not on the official list |
 | 4 | Microsoft 365 Copilot | Work and school | Hosted (admin) | Yes (official list) |
 | 4 | Mistral Le Chat, Cursor | Subscription | Hosted; Cursor also local | Reported |
-| — | Gemini app | Subscription | Hosted custom apps (reportedly US, personal, web only) | Not confirmed: use a Gem and the Viewer link until it is |
 | — | LM Studio, Open WebUI, Jan, AnythingLLM | Local models | Local (stdio) | No evidence: tools only, so `show_topic` falls back to the Viewer link |
 
 ## Learner Journey & User Stories
 
-**Draft — to be adjusted.** The learner is a self-learner with a few domains in mind (Chinese,
-Blender 3D, stock management and pricing), who uses a normal AI chat and learns in Loom Viewer.
-Status: **Exists** today, or **New** with the decisions it depends on.
+**Draft — to be adjusted (second version, with the Loom MCP App).** The learner is a self-learner
+with a few domains in mind (Chinese, Blender 3D, stock management and pricing) who uses Microsoft
+365 Copilot, maybe Claude or ChatGPT, and a local model. Learning happens **inside the chat**
+through the Loom MCP App; Loom Viewer stays for files, pasted text and offline use. Status:
+**Exists** today, or **New** with the decisions it depends on.
 
 ```
-1. Start ──► 2. Get a topic ──► 3. Watch it (Present) ──► 4. Try it (Read)
-   ▲                                                          │
-   │                                                          ▼
-7. Grow the domain ◄── 6. Next topic (with callbacks) ◄── 5. Leave & come back
+0. Set up once ──► 1. Ask in the chat ──► 2. Topic appears in the chat ──► 3. Watch (Present)
+                                                                                │
+6. Grow the domain ◄── 5. Next topic (with callbacks) ◄── 4. Try it, ask the tutor ◄┘
+                              ▲
+                              └── Leave & come back: memory in your own folder or cloud
 ```
 
-### 1. Start (first time)
+### 0. Set up once
 
-From "I want to learn X" to a first topic in minutes.
-
-| # | As a learner, I want… | so that… | Status |
-|---|---|---|---|
-| S1 | to add Loom to the chat I already use (Claude skill, Gemini Gem) in one step | I install nothing | Exists for the Claude skill; **New**: a Gem guide (179) |
-| S2 | to state my goal in plain words ("order food in Chinese") | the first topic fits what I want | **New** (170, 175) |
-| S3 | a short placement check when I know a bit already | I skip what I know | **New** (173) |
-
-### 2. Get a topic into Viewer
-
-From the chat's answer to Viewer without handling files.
+Add Loom to the chats the learner uses, with memory in storage they own.
 
 | # | As a learner, I want… | so that… | Status |
 |---|---|---|---|
-| G1 | to open the topic the chat wrote, by file or by paste | I can start learning | Exists |
-| G2 | to click one link and land in Viewer with the topic loaded | I skip saving and pasting | **New** (179 level 1) |
-| G3 | to copy a broken topic's errors back to the chat as a fix request | I need not understand the error | Exists |
+| U1 | to add Loom to a chat on my computer (Goose, Claude Desktop, VS Code) with one command or one click | it runs locally, free, with no account | **New** (181, 187) |
+| U2 | to add Loom to a web or phone chat (Claude, Microsoft 365 Copilot, ChatGPT) by its connector address | I can learn anywhere | **New** (180, 185) |
+| U3 | to sign in with Microsoft (or Google) when I add the connector | my memory is kept in my own OneDrive (or Drive) and nowhere else | **New** (186) |
+| U4 | my computer's chats and my web chats to share one memory | my progress follows me | **New** (145–146, 186) |
 
-### 3. Watch it in Present (first pass)
-
-Understand with full focus and no decisions.
+### 1. Ask in the chat
 
 | # | As a learner, I want… | so that… | Status |
 |---|---|---|---|
-| P1 | the topic to open straight into Present | it starts playing at once | **New** (178) |
+| A1 | to ask for a topic or state a goal in plain words ("teach me Chinese for shopping") | I need no special prompt | **New** (188, 170) |
+| A2 | the chat to learn Loom's format by itself | I need no skill, Gem or pasted prompt | **New** (188) |
+| A3 | a short placement check when I start a domain | I skip what I know | **New** (173) |
+
+### 2. The topic appears in the chat
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| T1 | the topic to appear in the conversation as a card with ▶ Play | I never save, paste or switch apps | **New** (183, 189) |
+| T2 | errors fixed before I see the topic | I never deal with broken topics | **New** (184: validated locally, sent back to the chat when hosted) |
+| T3 | my topics saved so I can reopen them in a later chat | I build a library | **New** (183: local `save_topic`, `open_topic`) |
+
+### 3. Watch it in Present
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| P1 | Play to open Present fullscreen with the voice on | I get full focus with one click | **New** (189); Present itself exists |
 | P2 | one idea per beat, narrated | I follow without effort | Exists (decisions 101–111) |
-| P3 | a beat that recalls earlier learning to pause on **Your turn** | I remember it rather than just watch | **New** (162, 177) |
-| P4 | to pause and ask the tutor about what is on screen | my question is answered in context | Exists (decision 119) |
+| P3 | beats that recall earlier learning to pause on **Your turn** | I remember rather than just watch | **New** (162, 177) |
 
-### 4. Try it in Read (hands-on)
-
-Do the quizzes, sandboxes and scenarios myself.
+### 4. Try it, and ask the tutor
 
 | # | As a learner, I want… | so that… | Status |
 |---|---|---|---|
-| R1 | to switch from Present to Read at the same section | I try what I just watched | Exists |
-| R2 | my answers remembered | Loom knows what I have learned | **New** (145, 147) |
-| R3 | hints before answers from the tutor when I am stuck | I still do the thinking | Exists (decision 119) |
+| R1 | to switch to Read in the app and do the quizzes, sandboxes and scenarios myself | I practise what I watched | Exists in Viewer; **New** in the app |
+| R2 | the chat to know what I got wrong and explain it in the conversation | the tutor is the chat I already use | **New** (190) |
+| R3 | hints before answers | I still do the thinking | Exists as a rule of Viewer's tutor (decision 119); **New** for the chat's model |
+| R4 | my answers recorded | Loom knows what I learned | **New** (183 `record_events`, 186) |
 
-### 5. Leave and come back
-
-Nothing lost, and no guilt.
-
-| # | As a learner, I want… | so that… | Status |
-|---|---|---|---|
-| L1 | my progress kept on this device after I close the browser | I pick up where I left | **New** (147) |
-| L2 | my progress on my phone and laptop, with no Loom account or server | I learn on any device | **New** (149, 150) |
-| L3 | to see what I still remember in each domain, not a pile of overdue items | coming back feels good | **New** (172) |
-| L4 | optional shorts for vocabulary when I have a few minutes | fast-fading facts stay fresh | **New, optional** (166, after a prototype) |
-
-### 6. Get the next topic, with review inside
-
-Keep improving without a separate review session.
+### 5. Leave, come back, and get the next topic
 
 | # | As a learner, I want… | so that… | Status |
 |---|---|---|---|
-| N1 | Loom to suggest what is next and why ("tones are solid; measure words are weak") | I trust the suggestion | **New** (173) |
-| N2 | to ask the chat for that topic in one click, carrying what I know and what is fading | the next topic fits me | **New** (175, 179 level 2) |
-| N3 | the next topic to bring back what I am forgetting inside the new material | I review without noticing | **New** (161–163) |
-| N4 | callback results to count for the old skill | Loom knows I still have it | **New** (164) |
+| N1 | nothing lost when I close the chat | I continue in any later chat | **New** (186) |
+| N2 | to see what I still remember in each domain, not a pile of overdue items | coming back feels good | **New** (172) |
+| N3 | a **Next topic** button with a reason ("tones solid; measure words weak") | I trust the suggestion and act on it in one click | **New** (173, 191) |
+| N4 | the next topic to bring back what I am forgetting inside the new material | I review without noticing | **New** (161–163) |
+| N5 | callback results to count for the old skill | Loom knows I still have it | **New** (164) |
 
-### 7. Grow the domain
-
-From separate topics to a path toward my goal.
+### 6. Grow the domain
 
 | # | As a learner, I want… | so that… | Status |
 |---|---|---|---|
@@ -181,22 +178,34 @@ From separate topics to a path toward my goal.
 | D2 | shared topics when they exist and personal ones when they do not | I get the best of both | **New** (174) |
 | D3 | to change my goal and have the path follow | my learning follows my needs | **New** (170, 173) |
 
+### Viewer, still there
+
+| # | As a learner, I want… | so that… | Status |
+|---|---|---|---|
+| V1 | to open a topic file or pasted text in Viewer, straight into Present | I can learn outside a chat or offline | Exists (open, paste); **New** `#present` (178) |
+| V2 | **Continue in Viewer** from the app | I carry on with memory when the chat cannot keep it | **New** (186) |
+| V3 | Viewer and the app to share one memory | it is one learning record | **New** (145–150, 186) |
+
 ### When things go wrong
 
-- **The chat's topic is broken:** its errors go back to the chat with Copy (G3, exists).
-- **The topic is too long for a link:** fall back to paste (G1).
-- **No AI model connected in Viewer:** the topic still plays; callbacks stop at recall, with no apply
-  or teach back (169).
-- **Away for weeks:** the next topic carries more repair callbacks, still within the cap (163);
-  no backlog appears.
-- **Wrong facts in an AI-written topic:** the tutor marks what comes from the topic and what from
-  its own knowledge; validation checks structure only.
+- **The topic has errors:** locally the model fixes them before showing; hosted, the app sends them
+  back to the chat as a fix request (184).
+- **The chat does not render MCP App UI:** the tools still work and `show_topic` answers with a
+  Viewer link instead.
+- **The local model cannot write a valid topic:** keep it as tutor and let a stronger model write
+  (193).
+- **Sign-in declined, or a work account needs admin consent:** the app plays topics without memory
+  and offers Continue in Viewer (186).
+- **No fullscreen in the host:** the stage plays scaled into the card (189).
+- **Wrong facts in an AI-written topic:** validation checks structure only; the tutor marks what
+  comes from the topic and what from its own knowledge.
 
 ### What the gap shows
 
-Watching (step 3), the error loop and the tutor already work. What is missing falls in three
-groups: **a smoother entry** (P1, G2), **memory** (R2, L1, L2) and **the loop** (N1–N4). The loop
-needs memory first: without it Loom cannot know what the learner is forgetting.
+Present, Read, validation and the error flow exist; everything around them in a chat is new.
+Three groups, in order: **the app shows a topic in a chat** (T1, P1; decisions 181–183, 189),
+**memory** (U3, U4, R4, N1; decision 186) and **the loop** (R2, N3–N5; decisions 161–164, 190–191).
+The loop needs memory first: without it Loom cannot know what the learner is forgetting.
 
 ## The Three Domains as Examples
 
