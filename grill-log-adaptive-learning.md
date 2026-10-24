@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–193 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`, starting with slice 0.**
+Status: **Concept — decisions 161–194 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`, starting with slice 0.**
 
 ## Goal
 
@@ -21,7 +21,7 @@ Loom Viewer and Present mode with little or no setup.
 - Topics are written by AI chats today through the `loom-topic-writer` skill (Claude app, coding
   agents) or the published prompt `public/llm/loom-authoring-prompt.md`; the answer comes back as
   a `.loom.oui` file or a folder of `.oui` files that Loom Viewer opens.
-- The CDN library (`libs/loom-sections.tsx`, `loom-learning-sections` on jsDelivr) renders sections
+- The CDN library (`libs/loom-sections.tsx`, `loom-learning-sections` on jsDelivr), now deprecated (decision 194), renders sections
   from OKF JSON, not from `.loom.oui` text. Viewer opens files and pasted text, not a URL.
 
 ## Decisions
@@ -85,6 +85,7 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 191 | Next topic from inside the app | **A Next topic button** sends the learner's summary (mastered and weak skills, goal, callbacks to include; decisions 172–175) into the chat as a message; the model writes the next topic and calls `show_topic` again. |
 | 192 | The chat app's own memory | **Only a summary for the model**, never the learner's record. Claude, ChatGPT or Copilot memory may hold a line like "tones solid, measure words weak"; the event log in the learner's storage (decision 186) stays the source of truth. |
 | 193 | Local models | **Tutor locally, write with a stronger model.** Writing a 5–30 KB topic and calling tools correctly is hard for small local models; in Goose the learner may keep the local model for tutoring and give a stronger model (through an API key) the writing. |
+| 194 | The CDN library | **Deprecated, and no part of future plans.** The `loom-learning-sections` package (`libs/loom-sections.tsx`, served from jsDelivr) renders only the old OKF JSON, without OUI or Present. Nothing new builds on it: the MCP App loads from GitHub Pages (decision 182) and topics open in Viewer. It is removed in its own change, listed under *Retiring the CDN library*. |
 
 **Hosts, in order of trying** (Oct 2026; check the official MCP Apps host list before relying on one):
 
@@ -319,6 +320,21 @@ Size is relative: **S** small, **M** medium, **L** large.
   personal ones filling the gaps.
 - **Done when:** choosing "order food in Chinese" shows a path, and the placement check skips
   what the learner knows.
+
+### Retiring the CDN library
+
+Decision 194, done as its own change, outside the slices:
+
+- Mark `loom-learning-sections` deprecated on npm (`npm deprecate`, by the package owner), pointing
+  to Loom Viewer.
+- Remove `libs/` (`loom-sections.tsx`, `package.lib.json`), `scripts/publish-lib.js`, the
+  `build:lib`, `build:all` and `publish:lib` scripts and the library build mode in `vite.config.ts`.
+- Remove the `SingleHTMLEmbedAdapter` (`src/core/delivery/adapters/single-html-embed.tsx`), its
+  exports and port wiring, and their tests (`tests/unit/libs/`, the adapter test).
+- Remove or rewrite what points at it: `docs/cdn-library.md`, the README, `AGENTS.md`,
+  `docs/agents/domain.md`, `docs/sections/openui.md`, `grill-log-presenting-mode.md` (decision 66
+  mentions the embed bundle), `public/langgraph.html` and `test-okf-static/`.
+- `npm run typecheck`, `npm run test`, `npm run lint` and `npm run build` pass afterwards.
 
 ### What to prepare, by slice
 
