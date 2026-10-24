@@ -2,7 +2,8 @@
 import { readFileSync, readdirSync } from 'fs'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client'
-import { APP_URI, DEFAULT_APP_URL, appShell, checkTopic, createLoomServer, type LearnerStore } from '../../../src/mcp/server'
+import { APP_URI, DEFAULT_APP_URL, appShell, createLoomServer, type LearnerStore } from '../../../src/mcp/server'
+import { checkTopic } from '../../../src/mcp/check'
 import { mergeEvents, stampEvent, type LearnerEvent } from '../../../src/core/supporting/learner-progress'
 
 /** A topic folder as one .loom.oui text, as Studio exports it. */
@@ -45,7 +46,7 @@ describe('Loom MCP server', () => {
 
   beforeEach(async () => {
     const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
-    await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/' }).connect(serverSide)
+    await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/', check: checkTopic }).connect(serverSide)
     client = new Client({ name: 'test', version: '0' })
     await client.connect(clientSide)
   })
@@ -79,7 +80,7 @@ describe('Loom MCP server', () => {
 
   it('leaves the link out for a chat that shows MCP Apps', async () => {
     const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
-    await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/' }).connect(serverSide)
+    await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/', check: checkTopic }).connect(serverSide)
     const appsClient = new Client({ name: 'apps', version: '0' }, { capabilities: { extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: ['text/html;profile=mcp-app'] } } } })
     await appsClient.connect(clientSide)
     const text = textOf(await appsClient.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1') } }))
@@ -98,6 +99,27 @@ describe('Loom MCP server', () => {
   })
 })
 
+describe('Loom MCP server, hosted (slice 5)', () => {
+  let client: Client
+
+  beforeEach(async () => {
+    const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
+    await createLoomServer({ appUrl: 'https://loom-mcp.example.workers.dev/mcp-app/v1/' }).connect(serverSide)
+    client = new Client({ name: 'test', version: '0' })
+    await client.connect(clientSide)
+  })
+  afterEach(() => client.close())
+
+  it('offers only the guide and show_topic, and leaves checking to the app', async () => {
+    const { tools } = await client.listTools()
+    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'show_topic'])
+    const text = textOf(await client.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1').replace('root = Quiz(', 'root = Quizz(') } }))
+    expect(text).toContain('The app checks the topic')
+    expect(text).not.toContain('Quizz')
+    expect(text).toContain('https://loom-mcp.example.workers.dev/viewer.html#present&oui=')
+  })
+})
+
 describe('appShell', () => {
   it('loads the published app by default, under its versioned path', () => {
     expect(DEFAULT_APP_URL).toMatch(/\/mcp-app\/v1\/$/)
@@ -109,6 +131,10 @@ describe('appShell', () => {
 function memoryStore(): LearnerStore & { events: LearnerEvent[]; topics: Map<string, string> } {
   const events: LearnerEvent[] = []
   const topics = new Map<string, string>()
+  const notes = [
+    { name: 'chinese101-day1-2026-10-24.md', text: '---\nloom-progress: 1\ntopic: chinese101-day1\ndate: 2026-10-24\n---\n# Progress: Chinese Day 1\n\nAnswers: 3 of 4 right\n' },
+    { name: 'kafka-2026-10-20.md', text: '---\nloom-progress: 1\ntopic: kafka\ndate: 2026-10-20\n---\n# Progress: Kafka\n' },
+  ]
   return {
     device: 'test-machine',
     events,
@@ -118,6 +144,7 @@ function memoryStore(): LearnerStore & { events: LearnerEvent[]; topics: Map<str
     async saveTopic({ id, oui }) { topics.set(id, oui) },
     async listTopics() { return [...topics.keys()].sort() },
     async readTopic(id) { return topics.get(id) ?? null },
+    async readNotes() { return notes },
   }
 }
 
@@ -128,7 +155,7 @@ describe('Loom MCP server with a memory folder (slice 4)', () => {
   beforeEach(async () => {
     store = memoryStore()
     const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
-    await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/', store }).connect(serverSide)
+    await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/', store, check: checkTopic }).connect(serverSide)
     client = new Client({ name: 'test', version: '0' })
     await client.connect(clientSide)
   })
@@ -159,5 +186,15 @@ describe('Loom MCP server with a memory folder (slice 4)', () => {
     const summary = textOf(await client.callTool({ name: 'learner_summary', arguments: {} }))
     expect(summary).toContain('0 of 1 answers right')
     expect(summary).toContain('sections/quiz.oui#q1')
+  })
+
+  it('adds the progress notes chats on other devices saved', async () => {
+    const all = textOf(await client.callTool({ name: 'learner_summary', arguments: {} }))
+    expect(all).toContain('No learning recorded on this computer yet.')
+    expect(all).toContain('--- chinese101-day1-2026-10-24.md ---')
+    expect(all).toContain('--- kafka-2026-10-20.md ---')
+    const one = textOf(await client.callTool({ name: 'learner_summary', arguments: { topic: 'chinese101-day1' } }))
+    expect(one).toContain('Answers: 3 of 4 right')
+    expect(one).not.toContain('kafka')
   })
 })

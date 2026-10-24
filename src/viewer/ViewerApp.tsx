@@ -6,14 +6,14 @@
  * again, so changes made by an AI show up without reopening anything.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MoreHorizontal, Play, RefreshCw, Sparkles, Upload } from 'lucide-react'
+import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MessageSquareShare, MoreHorizontal, Play, RefreshCw, Sparkles, Upload } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
 import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 import { HUDDrawer, SectionRenderer } from '../core/delivery/web-app-shell/TopicShell'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
-import { ProgressProvider, mergeEvents, parseJSONL, toJSONL, useLearnerMemory, useSectionEventRecorder, type LearnerEvent } from '../core/supporting/learner-progress'
+import { ProgressProvider, mergeEvents, parseJSONL, progressNote, progressNoteMessage, toJSONL, useLearnerMemory, useSectionEventRecorder, type LearnerEvent } from '../core/supporting/learner-progress'
 import type { SectionConfig } from '../core/learning-engine/registry'
 import { SectionErrorBoundary } from '../core/ui-system/primitives/SectionErrorBoundary'
 import {
@@ -25,7 +25,7 @@ import {
   readTopicText,
   type TopicFiles,
 } from '../core/supporting/authoring-editor/workspace'
-import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from './compileTopic'
+import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from './compileTopic'
 import { readTopicLink } from './topic-link'
 import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, PickSection, sourceResolver, useNarrow } from '../core/supporting/authoring-editor/pick'
@@ -365,6 +365,7 @@ export function ViewerApp() {
         </button>
       )}
       <MemoryButtons onStatus={setStatus} labels={compact} />
+      {topic && !topic.error && <ProgressNoteButton topic={topic} onStatus={setStatus} labels={compact} />}
       <AudioToggle />
       <ThemeToggle />
     </>
@@ -738,6 +739,31 @@ export function TopicView({ topic }: { topic: ViewerTopic }) {
 function RecordedSection({ topicId, name, config, sectionIndex }: { topicId: string; name: string; config: SectionConfig; sectionIndex: number }) {
   const onEvent = useSectionEventRecorder(topicId, name)
   return <SectionRenderer config={config} sectionIndex={sectionIndex} onEvent={onEvent} />
+}
+
+/**
+ * Copy progress for chat (decision 203): today's progress note for the open
+ * topic, as a message to paste into the chat that plans the next topic.
+ */
+function ProgressNoteButton({ topic, onStatus, labels }: { topic: ViewerTopic; onStatus: (status: Status) => void; labels: boolean }) {
+  const memory = useLearnerMemory()
+  if (!memory) return null
+
+  const copy = async () => {
+    const note = progressNote(noteTopicOf(topic), await memory.port.readAll())
+    if (note.empty) {
+      onStatus({ kind: 'error', text: 'Nothing played or answered in this topic today yet.' })
+      return
+    }
+    const copied = await copyText(progressNoteMessage(note))
+    onStatus(copied ? { kind: 'ok', text: 'Progress copied. Paste it into your AI chat.' } : { kind: 'error', text: 'The browser did not allow copying.' })
+  }
+
+  return (
+    <button type="button" className="viewer-pill" onClick={() => void copy()} title="Copy today's progress in this topic for your AI chat" aria-label="Copy progress for chat" data-closes-menu data-testid="viewer-copy-progress">
+      <MessageSquareShare size={14} />{labels && <> <span className="viewer-pill-label">Copy progress</span></>}
+    </button>
+  )
 }
 
 /** Back up / Restore of learner memory as one JSONL file (decision 148). */

@@ -1,0 +1,18 @@
+# The hosted Loom MCP endpoint on Cloudflare Workers (slice 5 in grill-log-adaptive-learning.md).
+# Built by `npm run build:worker`; deployed by .github/workflows/deploy-mcp-worker.yml.
+# Chats connect to https://loom-mcp.<your-subdomain>.workers.dev/mcp
+name = "loom-mcp"
+main = "dist-worker/worker.mjs"
+compatibility_date = "2026-09-01"
+# vite.worker.config.ts bundles everything into one module
+no_bundle = true
+workers_dev = true
+
+# The built site, so the app the endpoint points chats at (/mcp-app/v1/) and
+# Open in Viewer (/viewer.html) come from the same release. Build it with
+# VITE_BASE_PATH=/ so its pages load from the Worker's root.
+[assets]
+directory = "dist"
+
+[observability]
+enabled = true

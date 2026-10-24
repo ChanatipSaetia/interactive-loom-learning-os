@@ -51,6 +51,15 @@ describe('Create with AI page', () => {
     expect(screen.getByTestId('create-assistant-agent').getAttribute('aria-checked')).toBe('true')
   })
 
+  it('offers the learner skills: zips for the Claude app, commands for coding agents', () => {
+    render(<CreateApp />)
+    expect(screen.getByTestId('create-download-loom-tutor-app').getAttribute('href')).toBe('/llm/skills/loom-tutor-app.zip')
+    expect(screen.getByTestId('create-download-loom-tutor-viewer').getAttribute('href')).toBe('/llm/skills/loom-tutor-viewer.zip')
+    fireEvent.click(screen.getByTestId('create-assistant-agent'))
+    expect(screen.getByTestId('create-add-loom-tutor-app').textContent).toBe('npx skills add ChanatipSaetia/interactive-loom-learning-os --skill loom-tutor-app -g')
+    expect(screen.queryByTestId('create-download-loom-tutor-app')).toBeNull()
+  })
+
   it('preselects the tab from ?ai= and falls back to the Claude app for old links', () => {
     localStorage.setItem('loom-create-assistant', 'agent')
     window.history.replaceState(null, '', '/?ai=claude')

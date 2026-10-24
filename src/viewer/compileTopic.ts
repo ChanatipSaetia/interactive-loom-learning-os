@@ -8,6 +8,7 @@ import { validateOUINarration, validateOUISection } from '../core/learning-engin
 import { NARRATION_FILE, type NarrationData } from '../core/learning-engine/composition/oui/narration'
 import type { SectionConfig } from '../core/learning-engine/registry'
 import type { TopicFiles } from '../core/supporting/authoring-editor/workspace'
+import type { NoteTopic } from '../core/supporting/learner-progress'
 
 export interface ViewerSection {
   name: string
@@ -34,6 +35,15 @@ export interface ViewerTopic {
 
 const formatIssues = (issues: Array<{ line?: number; message: string }>) =>
   issues.map((i) => `${i.line ? `line ${i.line}: ` : ''}${i.message}`).join('\n')
+
+/** The topic's outline for a progress note (Viewer's Copy progress for chat, the app's Save my progress). */
+export function noteTopicOf(topic: ViewerTopic): NoteTopic {
+  return {
+    id: topic.topicId,
+    title: topic.manifest?.title,
+    sections: topic.sections.map((s) => ({ name: s.name, title: String(s.config?.props.title || s.name) })),
+  }
+}
 
 export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic {
   const topic = compileOUITopic(files['topic.oui'] ?? '')

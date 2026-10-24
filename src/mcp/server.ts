@@ -1,20 +1,21 @@
 /**
  * The Loom MCP server (decisions 180–188 in grill-log-adaptive-learning.md):
  * the tools a chat's model calls and the `ui://` shell of the Loom MCP App.
- * The same server runs locally over stdio and, later, behind a serverless
- * HTTP endpoint; `cli.ts` picks the transport.
+ * The same server runs locally over stdio (`cli.ts`) and on Cloudflare Workers
+ * as the hosted endpoint (`worker.ts`, slice 5).
  *
  * The shell only loads the app from `appUrl` (GitHub Pages, under a versioned
- * path, decision 182); parsing, validation and rendering run in the app.
+ * path, decision 182, or the Worker's own assets); parsing, validation and
+ * rendering run in the app. The hosted endpoint passes topics through
+ * unchecked (decision 184); the local server checks them with `check`.
  */
 import { McpServer } from '@modelcontextprotocol/server'
 import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
-import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
-import { compileViewerTopic, loadErrorReport, topicErrorReport } from '../viewer/compileTopic'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { isLearnerEvent, summarize, summaryText, type LearnerEvent } from '../core/supporting/learner-progress/memory/events'
+import type { TopicCheck } from './check'
 
 /** Where the published app lives; each server release names the app version it was built for. */
 export const DEFAULT_APP_URL = 'https://chanatipsaetia.github.io/interactive-loom-learning-os/mcp-app/v1/'
@@ -39,6 +40,13 @@ export interface LearnerStore {
   saveTopic(topic: SavedTopic): Promise<void>
   listTopics(): Promise<string[]>
   readTopic(id: string): Promise<string | null>
+  /** Progress notes saved by chats on other devices (`progress/*.md`, decisions 198–199), newest first. */
+  readNotes?(): Promise<ProgressNoteFile[]>
+}
+
+export interface ProgressNoteFile {
+  name: string
+  text: string
 }
 
 export interface LoomServerOptions {
@@ -46,6 +54,8 @@ export interface LoomServerOptions {
   appUrl?: string
   /** Where the learner's events and topics are kept; none on a hosted endpoint without sign-in. */
   store?: LearnerStore
+  /** The full topic check, which adds `validate_topic`; left out on the hosted endpoint. */
+  check?: (oui: string) => TopicCheck
 }
 
 /** Loom Viewer, next to the app on the same site (`<site>/mcp-app/v1/` → `<site>/viewer.html`). */
@@ -61,34 +71,6 @@ export function appShell(appUrl: string): string {
 <body><div id="root"></div><script type="module" src="${appUrl}app.js"></script></body></html>`
 }
 
-export interface TopicCheck {
-  ok: boolean
-  topicId?: string
-  title?: string
-  sections: string[]
-  /** The fix request for the model, or null when the topic has no errors. */
-  report: string | null
-}
-
-/** Read and validate `.loom.oui` text with the same steps as Loom Viewer (decision 184). */
-export function checkTopic(oui: string): TopicCheck {
-  let topics
-  try {
-    topics = readTopicText(oui)
-  } catch (e) {
-    return { ok: false, sections: [], report: loadErrorReport(e instanceof Error ? e.message : String(e)) }
-  }
-  const topic = compileViewerTopic(topics[0])
-  const report = topicErrorReport(topic)
-  return {
-    ok: report === null,
-    topicId: topic.topicId,
-    title: topic.manifest?.title,
-    sections: topic.sections.map((s) => s.name),
-    report,
-  }
-}
-
 const GUIDE_TOOL_DESCRIPTION = `How to write a Loom learning topic (.loom.oui text) for show_topic. Call it before writing a topic: first with no section types to get the rules and the list of section types, then again with the section types the topic will use (e.g. ["intro", "flashcards", "quiz", "scenario"]) to get their components. ["all"] returns everything.`
 
 const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). Write it with get_authoring_guide, and check it with validate_topic first when that tool is available.`
@@ -97,7 +79,7 @@ const VALIDATE_TOOL_DESCRIPTION = `Check a Loom topic (.loom.oui text) the way L
 
 export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   const appUrl = options.appUrl ?? DEFAULT_APP_URL
-  const store = options.store
+  const { store, check: checkTopic } = options
   const appOrigin = new URL(appUrl).origin
   const server = new McpServer({ name: 'loom', version: '0.1.0' }, { capabilities: { tools: {}, resources: {} } })
 
@@ -121,7 +103,7 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     annotations: { readOnlyHint: true },
   }, async ({ sections }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections) }] }))
 
-  server.registerTool('validate_topic', {
+  if (checkTopic) server.registerTool('validate_topic', {
     title: 'Check a Loom topic',
     description: VALIDATE_TOOL_DESCRIPTION,
     inputSchema: z.object({ oui: z.string().describe('The whole topic as .loom.oui text.') }),
@@ -137,17 +119,27 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     inputSchema: z.object({
       oui: z.string().describe('The whole topic as .loom.oui text.'),
       mode: z.enum(['present', 'read']).optional().describe('Open in Present (default) or Read.'),
+      viewerLink: z.boolean().optional().describe('Also answer with a link that opens the topic in Loom Viewer, for a chat that shows no Loom player.'),
     }),
     _meta: { ui: { resourceUri: APP_URI } },
-  }, async ({ oui }) => {
-    const check = checkTopic(oui)
+  }, async ({ oui, viewerLink }) => {
+    const check = checkTopic?.(oui)
     // Topics shown are kept, so a later chat can open them again (story T3)
-    if (store && check.topicId && check.topicId !== 'pasted') await store.saveTopic({ id: check.topicId, oui }).catch(() => {})
-    const shown = check.title ? `Showing "${check.title}" (${check.sections.length} sections). The learner can press Play.` : 'Showing the topic.'
-    let text = check.ok ? shown : `${shown}\n\nIt has errors; the learner sees them in the app:\n\n${check.report}`
-    // A chat that cannot show the app gets a link that opens the topic in Viewer (decision 179)
-    const showsApps = getUiCapability(server.server.getClientCapabilities())?.mimeTypes?.includes(RESOURCE_MIME_TYPE)
-    if (!showsApps) {
+    if (store && check?.topicId && check.topicId !== 'pasted') await store.saveTopic({ id: check.topicId, oui }).catch(() => {})
+    let text: string
+    if (!check) text = 'Showing the topic. The learner can press Play. The app checks the topic and tells you about any errors to fix.'
+    else {
+      const shown = check.title ? `Showing "${check.title}" (${check.sections.length} sections). The learner can press Play.` : 'Showing the topic.'
+      text = check.ok ? shown : `${shown}\n\nIt has errors; the learner sees them in the app:\n\n${check.report}`
+    }
+    // A chat that cannot show the app gets a link that opens the topic in Viewer (decision 179). The
+    // hosted endpoint answers 2025-era requests statelessly and never sees the chat's capabilities:
+    // it leaves the 8 KB link out unless the model asks for it.
+    const capabilities = server.server.getClientCapabilities()
+    const showsApps = getUiCapability(capabilities)?.mimeTypes?.includes(RESOURCE_MIME_TYPE)
+    if (!viewerLink && !capabilities) {
+      text += '\n\nIf the learner sees no Loom player in the chat, call show_topic again with viewerLink: true for a link that opens the topic in Loom Viewer.'
+    } else if (viewerLink || !showsApps) {
       const link = await topicLinkUrl(viewerUrlFor(appUrl), oui)
       text += link
         ? `\n\nThis chat may not show Loom's player. Give the learner this link, which opens the topic in Loom Viewer, ready to play: ${link}`
@@ -209,7 +201,21 @@ function registerMemoryTools(server: McpServer, store: LearnerStore) {
     inputSchema: z.object({ topic: z.string().optional().describe('One topic ID; all topics when left out.') }),
     annotations: { readOnlyHint: true },
   }, async ({ topic }) => {
-    const summaries = summarize(await store.readEvents()).filter((s) => !topic || s.topic === topic)
-    return { content: [{ type: 'text', text: summaryText(summaries) }] }
+    const [events, notes] = await Promise.all([store.readEvents(), store.readNotes?.() ?? []])
+    const summaries = summarize(events).filter((s) => !topic || s.topic === topic)
+    // Sessions from the phone or the web arrive as notes the chat saved to progress/ (slice 6)
+    const fromNotes = notes.filter((n) => !topic || noteTopic(n.text) === topic).slice(0, MAX_NOTES)
+    const text = fromNotes.length === 0
+      ? summaryText(summaries)
+      : `${summaries.length ? summaryText(summaries) : 'No learning recorded on this computer yet.'}\n\nProgress notes saved from other devices (newest first):\n\n${fromNotes.map((n) => `--- ${n.name} ---\n${n.text.trim()}`).join('\n\n')}`
+    return { content: [{ type: 'text', text }] }
   })
+}
+
+/** Notes read into one summary; older ones add little the newer ones do not say. */
+const MAX_NOTES = 5
+
+/** The `topic:` line of a progress note's front matter. */
+function noteTopic(text: string): string | undefined {
+  return /^topic:\s*(\S+)\s*$/m.exec(text)?.[1]
 }

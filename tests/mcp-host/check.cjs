@@ -137,6 +137,39 @@ async function open(browser, query) {
     await shot(reopened.page, 'reopened')
   }
 
+  {
+    // Save my progress (slice 6): the app hands the chat today's note and where to save it
+    const { page, app } = await open(browser, '')
+    await app.locator('[data-testid=mcp-other-mode]').click()
+    await app.locator('[data-testid=mcp-read]').waitFor({ timeout: 10000 })
+    await page.waitForTimeout(1500)
+    const choice = app.locator('[data-testid^=quiz-choice-0-]').first()
+    await choice.scrollIntoViewIfNeeded()
+    await choice.click()
+    await page.waitForTimeout(500)
+    await app.locator('[data-testid=mcp-save-progress]').click()
+    await page.waitForTimeout(800)
+    const message = await page.evaluate(() => window.lastMessage ?? '')
+    results.saveProgress = {
+      label: await app.locator('[data-testid=mcp-save-progress]').getAttribute('aria-label'),
+      path: /Loom\/progress\/chinese101-day1-\d{4}-\d{2}-\d{2}\.md/.exec(message)?.[0] ?? null,
+      note: message.slice(message.indexOf('---'), message.indexOf('---') + 200),
+    }
+    await shot(page, 'save-progress')
+  }
+
+  if (process.env.LOOM_WORKER_URL) {
+    // The hosted endpoint (slice 5) under `npm run worker:dev`: no validate_topic, the app from the Worker's own assets
+    const { page, app, errors } = await open(browser, `?server=${encodeURIComponent(process.env.LOOM_WORKER_URL)}`)
+    const tools = await page.evaluate(() => window.toolNames)
+    const told = await page.locator('.msg.model').allTextContents()
+    await app.locator('[data-testid=mcp-play]').click()
+    await app.locator('[data-testid=mcp-present]').waitFor({ timeout: 10000 })
+    await page.waitForTimeout(3000)
+    results.hosted = { tools, showTopic: told.find((t) => t.startsWith('show_topic'))?.slice(0, 120), plays: true, errors }
+    await shot(page, 'hosted-present')
+  }
+
   console.log(JSON.stringify(results, null, 2))
   await browser.close()
 })()

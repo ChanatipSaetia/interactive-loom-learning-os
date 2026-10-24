@@ -8,6 +8,11 @@
 - [Loom OpenUI JSON Schema](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/loom-oui.schema.json): JSON Schema of every component's props, with descriptions.
 - [Loom agent skill](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-topic-writer/SKILL.md): `loom-topic-writer` skill for the Claude app and coding agents (Claude Code, opencode, …); its reference `references/loom-authoring-prompt.md` is the authoring prompt. Also as a [zip](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-topic-writer.zip) for uploading to the Claude app.
 
+## Learning
+
+- [Loom tutor skill, with the Loom MCP App](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-tutor-app/SKILL.md): `loom-tutor-app` plans, writes and plays each next topic inside the chat, and keeps topics and progress notes in the learner's drive ([zip](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-tutor-app.zip)).
+- [Loom tutor skill, with Loom Viewer](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-tutor-viewer/SKILL.md): `loom-tutor-viewer` does the same for chats without the app; the learner opens each topic in Loom Viewer and pastes back its progress notes ([zip](https://chanatipsaetia.github.io/interactive-loom-learning-os/llm/skills/loom-tutor-viewer.zip)).
+
 ## OpenUI
 
 - [OpenUI Lang specification](https://openui.com/docs/openui-lang): the language every `.oui` file is written in.

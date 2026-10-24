@@ -120,18 +120,27 @@ export const OUI_SECTION_TYPES: ReadonlyMap<string, string> = new Map(
   LOOM_OUI_COMPONENTS.filter((c) => c.sectionType).map((c) => [c.name, c.sectionType as string]),
 )
 
-/** Framework-agnostic OpenUI library (no renderers) used for parsing and prompts. */
-export const loomOUILibrary: Library = createLibrary({
-  id: 'loom',
-  root: 'Topic',
-  components: LOOM_OUI_COMPONENTS.map((c) => c.definition),
-  componentGroups: [
-    ...SUBDOMAIN_GROUPS.map((g) => ({ name: g.name, components: g.components.map((c) => c.name) })),
-    { name: 'Shared', components: [Lead.name] },
-    { name: 'Topic & Catalog', components: MANIFEST_COMPONENTS.map((c) => c.name) },
-    { name: 'Narration (sections/<name>.narrate.oui)', components: NARRATION_COMPONENTS.map((c) => c.name) },
-  ],
-})
+let library: Library | null = null
+
+/**
+ * Framework-agnostic OpenUI library (no renderers) used for parsing and prompts.
+ * Built on first use: creating it draws a random ID, which Cloudflare Workers
+ * forbid while a module loads (the hosted MCP endpoint, `src/mcp/worker.ts`).
+ */
+export function getLoomOUILibrary(): Library {
+  library ??= createLibrary({
+    id: 'loom',
+    root: 'Topic',
+    components: LOOM_OUI_COMPONENTS.map((c) => c.definition),
+    componentGroups: [
+      ...SUBDOMAIN_GROUPS.map((g) => ({ name: g.name, components: g.components.map((c) => c.name) })),
+      { name: 'Shared', components: [Lead.name] },
+      { name: 'Topic & Catalog', components: MANIFEST_COMPONENTS.map((c) => c.name) },
+      { name: 'Narration (sections/<name>.narrate.oui)', components: NARRATION_COMPONENTS.map((c) => c.name) },
+    ],
+  })
+  return library
+}
 
 let cachedJSONSchema: LibraryJSONSchema | null = null
 
@@ -143,7 +152,7 @@ type JSONSchemaNode = { description?: string; properties?: Record<string, JSONSc
  */
 export function getLoomOUIJSONSchema(): LibraryJSONSchema {
   if (!cachedJSONSchema) {
-    const schema = loomOUILibrary.toJSONSchema()
+    const schema = getLoomOUILibrary().toJSONSchema()
     const defs = (schema as { $defs?: Record<string, JSONSchemaNode> }).$defs ?? {}
     for (const component of LOOM_OUI_COMPONENTS) {
       const properties = defs[component.name]?.properties ?? {}
@@ -168,7 +177,7 @@ export function promptDescription(component: LoomOUIComponent): string {
  * prompt (syntax rules, signatures, hoisting) with every prop documented.
  */
 export function getLoomOUIPrompt(options: PromptOptions = {}): string {
-  const spec = loomOUILibrary.toSpec()
+  const spec = getLoomOUILibrary().toSpec()
   const components: PromptSpec['components'] = {}
   for (const [name, entry] of Object.entries(spec.components)) {
     const component = componentsByName.get(name)

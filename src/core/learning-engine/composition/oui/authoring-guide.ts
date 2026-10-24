@@ -79,13 +79,16 @@ function filterSignatures(part: string, wanted: Set<string>): string {
   return out.join('\n')
 }
 
+/** The prompt never changes while the program runs. */
+let prompt: string | undefined
+
 /**
  * The guide for writing a topic with the given section types. With none, the
  * core rules and a list of the section types to choose from, so the model can
  * ask again with the ones it will use. `['all']` returns the whole prompt.
  */
 export function getAuthoringGuide(sections: string[] = []): string {
-  const prompt = getLoomAuthoringPrompt()
+  prompt ??= getLoomAuthoringPrompt()
   if (sections.includes('all')) return prompt
   const known = new Set(guideSectionTypes().map((t) => t.type))
   const wanted = new Set(sections.filter((s) => known.has(s)))

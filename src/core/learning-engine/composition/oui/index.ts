@@ -23,7 +23,7 @@ export type {
 } from './compile'
 
 export {
-  loomOUILibrary,
+  getLoomOUILibrary,
   getLoomOUIJSONSchema,
   getLoomOUIComponent,
   LOOM_OUI_COMPONENTS,

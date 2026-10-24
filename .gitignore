@@ -58,6 +58,8 @@ spikes/*/assets/ext-apps.js
 spikes/*/host/host.bundle.js
 !spikes/*/results/*.png
 
-# Loom MCP server build and test host screenshots
+# Loom MCP server builds (local and Cloudflare Worker) and test host screenshots
 dist-mcp/
+dist-worker/
+.wrangler/
 tests/mcp-host/results/

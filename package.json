@@ -22,6 +22,8 @@
     "hexmap:validate": "npx -y tsx scripts/validate-hexmaps.ts",
     "build:mcp-app": "vite build --config vite.mcp-app.config.ts",
     "build:mcp": "vite build --config vite.mcp.config.ts && vite build --config vite.mcp-app.config.ts",
+    "build:worker": "VITE_BASE_PATH=/ npm run build && vite build --config vite.worker.config.ts",
+    "worker:dev": "npx --yes wrangler@4.146.0 dev",
     "mcp:host": "node tests/mcp-host/run.mjs",
     "mcp:check": "node tests/mcp-host/check.cjs"
   },

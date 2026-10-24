@@ -404,6 +404,31 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
   **ChatGPT**; the hosts table updated with what works.
 - **Done when:** Present plays inside Claude on the web and on a phone.
 
+**Status: built and checked locally; waiting for its first deploy and the real chats.**
+
+| Piece | Location |
+|---|---|
+| The Worker: `/mcp` over Streamable HTTP (the SDK's stateless handler, CORS for browser chats); every other path is the built site, served as static assets | `src/mcp/worker.ts`, `wrangler.toml` |
+| Hosted tool set: `get_authoring_guide` and `show_topic`; no `validate_topic`, since the full check moved to `src/mcp/check.ts` and only the local server passes it in (`createLoomServer({ check })`) | `src/mcp/server.ts`, `src/mcp/check.ts` |
+| One Workers module, built with the SDK's `workerd` build (no `eval`) and the published authoring prompt in place of building it per request (about 3 ms per call instead of 10 ms or more) | `vite.worker.config.ts`, `src/mcp/worker-prompt.ts` |
+| The app from the Worker's own assets (`/mcp-app/v1/`, decision 182's alternative), so app and server are one release; `LOOM_APP_URL` points at GitHub Pages instead. `public/_headers` gives the app CORS, as Pages does | `src/mcp/worker.ts`, `public/_headers` |
+| Deploy: GitHub Actions in the `cloudflare` environment (its secrets, its branch rule and its required reviewer), on pushes to the working branch or by hand; Wrangler pinned | `.github/workflows/deploy-mcp-worker.yml` |
+| `npm run build:worker` (the site at `/`, then the Worker) and `npm run worker:dev` (Wrangler's local runtime on port 8787) | `package.json` |
+
+- **Checked:** in Wrangler's local runtime, the test host (`?server=http://127.0.0.1:8787/mcp`) lists the
+  two hosted tools, loads the app from the Worker and plays Present; unit tests call the Worker's `fetch`
+  as a chat's connector does.
+- **Found while building:** `createLibrary()` drew a random ID while `library.ts` loaded, which Workers
+  forbid at startup; the OpenUI library is now built on first use (`getLoomOUILibrary()`).
+- **Stateless requests and the Viewer link:** a 2025-era request reaches a fresh server that never saw
+  the chat's `initialize`, so `show_topic` cannot tell whether the chat shows apps. When it cannot, it
+  leaves the 8 KB Viewer link out and tells the model to call it again with `viewerLink: true` if the
+  learner sees no player (2026-07-28 requests carry their capabilities and keep the slice 3 rule).
+- **Deviation:** `next_topic_request` is left to slice 8, where the Next topic button and its rules are
+  designed.
+- **Not yet:** the first deploy (approved in the `cloudflare` environment), then Claude's custom connector
+  on the web and the phone, Microsoft 365 Copilot and ChatGPT, and the hosts table from what they do.
+
 ### Slice 6 — Learner skills and progress notes (revised by decisions 197–204)
 
 - **Test first, per chat:** can its storage connector find and read a `.loom.oui` file in `Loom/topics/`,
@@ -423,6 +448,27 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
   `loom-tutor-viewer`, a chat plans the next topic from a note pasted from Viewer.
 - The earlier plan (the hosted server signing in to OneDrive or Google Drive and writing the event
   log itself) is kept as a later option.
+
+**Status: built and checked in the test host and in Viewer; the per-chat drive tests are the owner's.**
+
+| Piece | Location |
+|---|---|
+| The progress note: one day's events in one topic as Markdown (front matter with `topic` and `date`, sections played, every answer in order, what to review) and the message asking the chat to save it to `Loom/progress/<topic>-<date>.md` | `src/core/supporting/learner-progress/memory/progress-note.ts` |
+| **Save my progress** in the app's player bar (Present and Read) | `src/mcp-app/McpApp.tsx` |
+| **Copy progress** in Viewer's header (or its ⋯ menu), from the IndexedDB log | `src/viewer/ViewerApp.tsx` |
+| `loom-tutor-app` (short: routine, folder, note) and `loom-tutor-viewer` (the same, plus the authoring prompt as its reference), generated from one source by `npm run oui:schema` into `public/llm/skills/` (with zips) and `.claude/skills/` | `composition/oui/tutor-skills.ts`, `schema-files.ts` |
+| The Create with AI page offers both: zips for the Claude app, `npx skills add` for coding agents | `src/create/CreateApp.tsx` |
+| The local server reads `progress/*.md` from its memory folder (`--memory <drive>/Loom`) into `learner_summary`, newest first, up to five notes | `src/mcp/memory-folder.ts`, `src/mcp/server.ts` |
+
+- **Checked:** in the test host, an answer in Read and Save my progress sent the note for
+  `Loom/progress/chinese101-day1-<date>.md`; in Viewer, Copy progress copied the same note. Unit tests
+  cover the note, the skills (and that they describe the note Loom writes), the zips and the notes in
+  `learner_summary`.
+- **One note per topic and day**, from that day's events, so a second save replaces the first, and the
+  file name says which session it is.
+- **Not yet:** the per-chat tests (can Claude with Google Drive, ChatGPT and Microsoft 365 Copilot find a
+  `.loom.oui` in `Loom/topics/` and write to `Loom/progress/`?). The skills already tell the model to keep
+  a document copy of each topic if its search finds none (decision 200).
 
 ### Slice 7 — Your turn and the tutor
 

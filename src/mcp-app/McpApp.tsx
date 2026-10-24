@@ -5,18 +5,19 @@
  * right there in the conversation, Read shows it to work through by hand, and
  * Full screen asks the chat to give either the whole window. It
  * reads and checks the topic with the same steps as Loom Viewer, and hands any
- * errors back to the chat's model.
+ * errors back to the chat's model. Save my progress hands the chat today's
+ * progress note to keep in the learner's drive (decision 199).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, BookOpen, ExternalLink, Loader2, Maximize2, Minimize2, Play, Send, X } from 'lucide-react'
+import { AlertTriangle, BookOpen, Check, ExternalLink, Loader2, Maximize2, Minimize2, Play, Save, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
-import { LearnerMemoryProvider, ProgressProvider, stampEvent } from '../core/supporting/learner-progress'
+import { LearnerMemoryProvider, ProgressProvider, progressNote, progressNoteMessage, stampEvent } from '../core/supporting/learner-progress'
 import { appMemoryAdapter } from './memory'
 import { PresentMode, kindLabel, preloadPresenters, type PresentSection } from '../core/supporting/presentation'
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
-import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
+import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
 import { TopicView } from '../viewer/ViewerApp'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { SYSTEM_THEMES, systemThemeId } from '../core/ui-system/theme/themes'
@@ -59,6 +60,14 @@ function presentSectionsOf(topic: ViewerTopic): PresentSection[] {
 }
 
 const textOf = (text: string) => ({ content: [{ type: 'text' as const, text }] })
+
+const PROGRESS_LABEL = { idle: 'Save my progress', sent: 'Sent to the chat', empty: 'Nothing to save yet', failed: 'Not sent' }
+const PROGRESS_HINT = {
+  idle: 'Ask the chat to save today\'s progress note to Loom/progress/ in your drive',
+  sent: 'The chat has the note; approve the save there. Press again to send an updated note.',
+  empty: 'Play or answer something first',
+  failed: 'The chat did not take the message. Try again, or open the topic in Viewer.',
+}
 
 export function McpApp({ app }: { app: App }) {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
@@ -155,6 +164,19 @@ export function McpApp({ app }: { app: App }) {
     void memory.append([stampEvent({ topic: topic.topicId, item: `sections/${name}.oui`, kind: 'seen' }, DEVICE)])
   }, [memory, topic])
 
+  /** Save my progress (decision 199): the chat saves the note with its drive connector, the learner approves it there. */
+  const [progress, setProgress] = useState<'idle' | 'sent' | 'empty' | 'failed'>('idle')
+  const saveProgress = useCallback(async () => {
+    if (!topic) return
+    const note = progressNote(noteTopicOf(topic), await memory.readAll())
+    if (note.empty) {
+      setProgress('empty')
+      return
+    }
+    const result = await app.sendMessage({ role: 'user', content: [{ type: 'text', text: progressNoteMessage(note) }] }).catch(() => ({ isError: true }))
+    setProgress(result?.isError ? 'failed' : 'sent')
+  }, [app, memory, topic])
+
   const askToFix = useCallback(async () => {
     if (!loaded?.report) return
     setAsked(true)
@@ -175,6 +197,16 @@ export function McpApp({ app }: { app: App }) {
       {view === 'read' && presentSections.length > 0 && (
         <button type="button" className="mcp-button mcp-small" onClick={() => setView('present')}><Play size={14} /> Present</button>
       )}
+      <button
+        type="button"
+        className="mcp-button mcp-quiet mcp-small"
+        onClick={() => void saveProgress()}
+        title={PROGRESS_HINT[progress]}
+        aria-label={PROGRESS_LABEL[progress]}
+        data-testid="mcp-save-progress"
+      >
+        {progress === 'sent' ? <Check size={14} /> : <Save size={14} />} <span className="mcp-wide-only">{PROGRESS_LABEL[progress]}</span>
+      </button>
       <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void continueInViewer()} title="Open in Loom Viewer" data-testid="mcp-viewer">
         <ExternalLink size={14} /> <span className="mcp-wide-only">Viewer</span>
       </button>

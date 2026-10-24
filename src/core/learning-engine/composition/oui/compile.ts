@@ -25,7 +25,7 @@ import {
   type ParseResult,
   type Parser,
 } from '@openuidev/lang-core'
-import { getLoomOUIComponent, getLoomOUIJSONSchema, loomOUILibrary, OUI_SECTION_TYPES } from './library'
+import { getLoomOUIComponent, getLoomOUIJSONSchema, getLoomOUILibrary, OUI_SECTION_TYPES } from './library'
 import {
   OPENUI_SECTION_TYPE,
   openUIProgramOf,
@@ -324,7 +324,7 @@ function evaluateDynamicProps(root: ElementNode, stateDefaults: Record<string, u
       getState: (name) => stateDefaults[name],
       resolveRef: () => undefined,
     },
-    library: loomOUILibrary,
+    library: getLoomOUILibrary(),
     store: null,
     errors,
   })

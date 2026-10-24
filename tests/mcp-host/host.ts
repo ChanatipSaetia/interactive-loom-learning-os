@@ -12,6 +12,8 @@
  *   ?mode=read       ask show_topic to open in Read
  *   ?open=<id>       call open_topic for a saved topic instead of show_topic
  *   ?summary=1       end with learner_summary, as a model planning the next topic would
+ *   ?server=<url>    another Loom MCP endpoint, such as the Worker under `npm run worker:dev`
+ *                    (http://127.0.0.1:8787/mcp), which offers no validate_topic
  */
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client'
 import { AppBridge, PostMessageTransport, getToolUiResourceUri } from '@modelcontextprotocol/ext-apps/app-bridge'
@@ -79,8 +81,10 @@ async function main() {
     if (params.has('broken')) oui = oui.replace(/root = Quiz\(/, 'root = Quizz(')
     say('user', `Teach me: ${topicId}`)
 
-    const check = await client.callTool({ name: 'validate_topic', arguments: { oui } })
-    say('model', `validate_topic → ${textOf(check).slice(0, 160)}`)
+    if (tools.some((t) => t.name === 'validate_topic')) {
+      const check = await client.callTool({ name: 'validate_topic', arguments: { oui } })
+      say('model', `validate_topic → ${textOf(check).slice(0, 160)}`)
+    }
 
     args = { oui }
     if (params.get('mode') === 'read') args.mode = 'read'
@@ -117,6 +121,7 @@ async function main() {
   }
   bridge.onmessage = async (p) => {
     say('user', `(from the app) ${textOf(p).slice(0, 200)}`)
+    Object.assign(window, { lastMessage: textOf(p) })
     return {}
   }
   bridge.onopenlink = async ({ url }) => {

@@ -2,7 +2,8 @@
  * Command line of the Loom MCP server.
  *   loom-mcp --stdio            for chats on this computer (Goose, Claude Desktop, VS Code)
  *   loom-mcp --http [port]      Streamable HTTP on localhost (default 3001), for testing
- *   --memory <folder>           where the learner's events and topics are kept (default ~/.loom)
+ *   --memory <folder>           where the learner's events and topics are kept (default ~/.loom);
+ *                               point it at the drive's synced Loom/ folder to share progress notes
  *   --no-memory                 keep nothing
  * LOOM_APP_URL overrides where the app is loaded from (default: GitHub Pages); LOOM_MEMORY_DIR the memory folder.
  */
@@ -12,6 +13,7 @@ import { createMcpHandler } from '@modelcontextprotocol/server'
 import { serveStdio } from '@modelcontextprotocol/server/stdio'
 import { toNodeHandler, type NodeIncomingMessageLike, type NodeServerResponseLike } from '@modelcontextprotocol/node'
 import { createLoomServer } from './server'
+import { checkTopic } from './check'
 import { defaultMemoryDir, folderStore } from './memory-folder'
 
 /** The part of Node's `process` this file uses (Node's types are not part of this project). */
@@ -24,6 +26,7 @@ const memoryDir = args.includes('--memory') ? args[args.indexOf('--memory') + 1]
 const options = {
   appUrl: process.env.LOOM_APP_URL || undefined,
   store: args.includes('--no-memory') ? undefined : folderStore(memoryDir),
+  check: checkTopic,
 }
 
 if (args.includes('--http')) {
