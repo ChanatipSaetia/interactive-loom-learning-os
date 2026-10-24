@@ -103,6 +103,17 @@ const TUTOR = `## While the learner works
 - Say what comes from the topic and what from your own knowledge.
 - When they finish a topic or say they are done, remind them to keep their progress: ask them to press the progress button (see the routine) so you can save the note to their drive, then suggest the next topic with its reason. Do not let a session end with unsaved progress without saying so once.`
 
+/**
+ * What the Loom MCP server tells every chat when it connects (MCP server
+ * instructions), so the routine reaches chats that never installed the skill.
+ */
+export const LOOM_SERVER_INSTRUCTIONS = `Loom turns what a learner wants to learn into short interactive topics that play right in the chat. When the learner wants to learn or continue a subject with Loom, asks what to learn next, asks where they are in a subject, or sends a Loom progress note, call get_tutor_guide once and follow it: it is the tutoring routine (plan, write with get_authoring_guide, show with show_topic, keep topics and progress in their drive by get_storage_guide).`
+
+/** The tutoring routine for chats with the Loom MCP App, served by get_tutor_guide: loom-tutor-app's own text. */
+export function getTutorGuide(): string {
+  return getTutorAppSkill().replace(/^---\n[\s\S]*?\n---\n+/, '')
+}
+
 export function getTutorAppSkill(): string {
   return `---
 name: ${LOOM_TUTOR_APP_SKILL}
@@ -115,7 +126,7 @@ The learner learns with Interactive Loom inside this chat. The **Loom MCP App** 
 
 ## The routine
 
-1. **Find the folder.** Call \`get_storage_guide\` once: it is the contract for every path below. Find \`Loom/\` in the learner's drive, read \`Loom/index.oui\`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's \`domain.oui\` and \`progress/\`. When the Loom server's \`learner_summary\` tool is there (the server on the learner's computer), call it too with the domain: it also holds what the learner did on that computer.
+1. **Find the folder.** Call \`get_storage_guide\` once: it is the contract for every path below. Find \`Loom/\` in the learner's drive, read \`Loom/index.oui\`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's \`domain.oui\` and \`progress/\`. If you find topics or notes in the old flat \`Loom/topics/\` or \`Loom/progress/\`, offer once to move them into domains ("Moving from the old layout" in the storage guide). When the Loom server's \`learner_summary\` tool is there (the server on the learner's computer), call it too with the domain: it also holds what the learner did on that computer.
 2. **Plan** the next topic (see below): a short topic on one idea unless the learner asks for a full lesson. Tell them in one line what it covers and why.
 3. **Write** it with the Loom server: call \`get_authoring_guide\` once with no arguments, then again with the section types you will use, and write the whole topic as one \`.loom.oui\` text by those rules.
 4. **Check** it with \`validate_topic\` when that tool is there, fix only what the errors point at and check again.
@@ -147,7 +158,7 @@ The learner learns with Interactive Loom in **Loom Viewer** (${LOOM_PAGES_URL}vi
 
 ## The routine
 
-1. **Find the folder.** Find \`Loom/\` in the learner's drive (see "Where Loom keeps the learner's topics and progress" below, the contract for every path), read \`Loom/index.oui\`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's \`domain.oui\` and \`progress/\`.
+1. **Find the folder.** Find \`Loom/\` in the learner's drive (see "Where Loom keeps the learner's topics and progress" below, the contract for every path), read \`Loom/index.oui\`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's \`domain.oui\` and \`progress/\`. If you find topics or notes in the old flat \`Loom/topics/\` or \`Loom/progress/\`, offer once to move them into domains ("Moving from the old layout" below).
 2. **Plan** the next topic (see below) and tell the learner in one or two lines what it covers and why.
 3. **Write** it: read \`${LOOM_SKILL_REFERENCE}\` in full first (every component is positional; the signatures there are the only valid ones), then write the whole topic as **one \`<topic-id>.loom.oui\` file** in the "Single .oui file" format, with a narration file for every section.
 4. **Hand it over** as a file to download, or as one code block when the chat cannot make files. The learner opens it in Loom Viewer with **Open file**, or copies it and uses **Paste text**.

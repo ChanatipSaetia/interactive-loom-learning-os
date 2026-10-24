@@ -9,7 +9,7 @@ The learner learns with Interactive Loom in **Loom Viewer** (https://chanatipsae
 
 ## The routine
 
-1. **Find the folder.** Find `Loom/` in the learner's drive (see "Where Loom keeps the learner's topics and progress" below, the contract for every path), read `Loom/index.oui`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's `domain.oui` and `progress/`.
+1. **Find the folder.** Find `Loom/` in the learner's drive (see "Where Loom keeps the learner's topics and progress" below, the contract for every path), read `Loom/index.oui`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's `domain.oui` and `progress/`. If you find topics or notes in the old flat `Loom/topics/` or `Loom/progress/`, offer once to move them into domains ("Moving from the old layout" below).
 2. **Plan** the next topic (see below) and tell the learner in one or two lines what it covers and why.
 3. **Write** it: read `references/loom-authoring-prompt.md` in full first (every component is positional; the signatures there are the only valid ones), then write the whole topic as **one `<topic-id>.loom.oui` file** in the "Single .oui file" format, with a narration file for every section.
 4. **Hand it over** as a file to download, or as one code block when the chat cannot make files. The learner opens it in Loom Viewer with **Open file**, or copies it and uses **Paste text**.
@@ -184,6 +184,18 @@ With the Loom MCP App, show progress in the chat instead of describing it, but o
 - The Loom server on the learner's computer reads its own folder: call them there without files.
 
 Do not show either unasked, for example at the start of every session.
+
+### Moving from the old layout
+
+Topics and notes saved before domains existed sit flat in `Loom/topics/` and `Loom/progress/`. When you find files there, offer once to move them into domains, and do it only after the learner agrees:
+
+1. Group them by subject, propose the domains (an ID, a title and the learner's goal for each), and let the learner confirm or change them.
+2. For each domain, create `Loom/<domain-id>/` with its `domain.oui` (its topics in a sensible learning order), `topics/` and `progress/`, and add it to `Loom/index.oui` (create that file if it is missing).
+3. Move each topic to `Loom/<domain-id>/topics/<topic-id>.loom.oui`, adding `// @loom-domain <domain-id>` as its second line and setting its `Topic` category to the domain's title.
+4. Move each progress note to `Loom/<domain-id>/progress/` under the same name, adding `domain: <domain-id>` to its front matter after `loom-progress:`. Change nothing else in it.
+5. Remove the old copies only after the new ones are saved, then tell the learner what moved where.
+
+A file whose subject is unclear stays where it is until the learner says which domain it belongs to.
 
 ### Finding files that were moved
 

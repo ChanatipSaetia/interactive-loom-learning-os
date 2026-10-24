@@ -28,7 +28,7 @@ describe('storage guide', () => {
   })
 
   it('carries the rules: pick a domain, replace not duplicate, plain text, plan from one domain, find moved files, warn on moves', () => {
-    for (const rule of ['**Pick the domain.**', '**Replace, never duplicate:**', 'no conversion to Google Docs', '## Planning what comes next in a domain', '## Finding files that were moved', 'say so first', '**`show_domain`** when they ask about one domain', 'Do not show either unasked']) expect(guide).toContain(rule)
+    for (const rule of ['**Pick the domain.**', '**Replace, never duplicate:**', 'no conversion to Google Docs', '## Planning what comes next in a domain', '## Finding files that were moved', 'say so first', '**`show_domain`** when they ask about one domain', 'Do not show either unasked', '## Moving from the old layout', 'Remove the old copies only after the new ones are saved']) expect(guide).toContain(rule)
   })
 
   it('its domain.oui example is a valid Domain', () => {

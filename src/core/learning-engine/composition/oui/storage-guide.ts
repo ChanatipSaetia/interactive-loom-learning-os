@@ -123,6 +123,18 @@ With the Loom MCP App, show progress in the chat instead of describing it, but o
 
 Do not show either unasked, for example at the start of every session.
 
+## Moving from the old layout
+
+Topics and notes saved before domains existed sit flat in \`Loom/topics/\` and \`Loom/progress/\`. When you find files there, offer once to move them into domains, and do it only after the learner agrees:
+
+1. Group them by subject, propose the domains (an ID, a title and the learner's goal for each), and let the learner confirm or change them.
+2. For each domain, create \`Loom/<domain-id>/\` with its \`domain.oui\` (its topics in a sensible learning order), \`topics/\` and \`progress/\`, and add it to \`Loom/index.oui\` (create that file if it is missing).
+3. Move each topic to \`Loom/<domain-id>/topics/<topic-id>.loom.oui\`, adding \`// @loom-domain <domain-id>\` as its second line and setting its \`Topic\` category to the domain's title.
+4. Move each progress note to \`Loom/<domain-id>/progress/\` under the same name, adding \`domain: <domain-id>\` to its front matter after \`loom-progress:\`. Change nothing else in it.
+5. Remove the old copies only after the new ones are saved, then tell the learner what moved where.
+
+A file whose subject is unclear stays where it is until the learner says which domain it belongs to.
+
 ## Finding files that were moved
 
 Files can be moved by hand. When a path does not hold what you expect, search the drive by content: topics by their \`// @loom-topic\` line (and \`// @loom-domain\`), progress notes by \`loom-progress:\` in their front matter, keeping only those whose \`domain:\` is the domain you are working in. If the drive search finds no \`.loom.oui\` or \`.md\` files at all, the connector may only find its own document types: tell the learner, and keep a document copy of each file under the same name.

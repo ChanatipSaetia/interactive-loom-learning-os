@@ -9,7 +9,7 @@ The learner learns with Interactive Loom inside this chat. The **Loom MCP App** 
 
 ## The routine
 
-1. **Find the folder.** Call `get_storage_guide` once: it is the contract for every path below. Find `Loom/` in the learner's drive, read `Loom/index.oui`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's `domain.oui` and `progress/`. When the Loom server's `learner_summary` tool is there (the server on the learner's computer), call it too with the domain: it also holds what the learner did on that computer.
+1. **Find the folder.** Call `get_storage_guide` once: it is the contract for every path below. Find `Loom/` in the learner's drive, read `Loom/index.oui`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's `domain.oui` and `progress/`. If you find topics or notes in the old flat `Loom/topics/` or `Loom/progress/`, offer once to move them into domains ("Moving from the old layout" in the storage guide). When the Loom server's `learner_summary` tool is there (the server on the learner's computer), call it too with the domain: it also holds what the learner did on that computer.
 2. **Plan** the next topic (see below): a short topic on one idea unless the learner asks for a full lesson. Tell them in one line what it covers and why.
 3. **Write** it with the Loom server: call `get_authoring_guide` once with no arguments, then again with the section types you will use, and write the whole topic as one `.loom.oui` text by those rules.
 4. **Check** it with `validate_topic` when that tool is there, fix only what the errors point at and check again.

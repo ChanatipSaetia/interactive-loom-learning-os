@@ -14,6 +14,7 @@ import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TY
 import { z } from 'zod'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
 import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
+import { LOOM_SERVER_INSTRUCTIONS, getTutorGuide } from '../core/learning-engine/composition/oui/tutor-skills'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { isLearnerEvent, summarize, summaryText, type LearnerEvent } from '../core/supporting/learner-progress/memory/events'
 import type { TopicCheck } from './check'
@@ -88,7 +89,8 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   const appUrl = options.appUrl ?? DEFAULT_APP_URL
   const { store, check: checkTopic } = options
   const appOrigin = new URL(appUrl).origin
-  const server = new McpServer({ name: 'loom', version: '0.1.0' }, { capabilities: { tools: {}, resources: {} } })
+  // The routine reaches every chat that connects, with or without the loom-tutor-app skill (decision 218)
+  const server = new McpServer({ name: 'loom', version: '0.1.0' }, { capabilities: { tools: {}, resources: {} }, instructions: LOOM_SERVER_INSTRUCTIONS })
 
   registerAppResource(server, 'Loom topic player', APP_URI, {
     description: 'Plays a Loom topic in Present mode or shows it to read.',
@@ -100,6 +102,13 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
       _meta: { ui: { csp: { resourceDomains: [appOrigin, ...FONT_ORIGINS], connectDomains: [appOrigin] }, prefersBorder: true } },
     }],
   }))
+
+  server.registerTool('get_tutor_guide', {
+    title: 'How to tutor with Loom',
+    description: 'The tutoring routine for learning with Loom in this chat: planning short topics from the learner\'s progress, writing and showing them, saving topics and progress notes to their drive, and showing where they are. Call it once when the learner wants to learn or continue a subject with Loom, asks what to learn next, or sends a progress note.',
+    inputSchema: z.object({}),
+    annotations: { readOnlyHint: true },
+  }, async () => ({ content: [{ type: 'text', text: getTutorGuide() }] }))
 
   // Where topics and progress notes go in the learner's drive (the Loom/<domain-id>/ layout)
   server.registerTool('get_storage_guide', {

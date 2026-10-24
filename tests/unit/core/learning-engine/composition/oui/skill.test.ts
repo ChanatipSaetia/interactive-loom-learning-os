@@ -78,7 +78,8 @@ describe('Loom learner skills (slice 6)', () => {
     expect(getTutorAppSkill()).toContain('Never show them unasked')
     expect(getTutorViewerSkill()).toContain("## Where Loom keeps the learner's topics and progress")
     expect(getTutorViewerSkill()).toContain('**Replace, never duplicate:**')
-    for (const skill of Object.values(skills)) expect(skill).not.toMatch(/Loom\/(topics|progress)\//)
+    // The old flat folders come up only to move files out of them
+    for (const skill of Object.values(skills)) expect(skill).not.toMatch(/(as|to) `Loom\/(topics|progress)\//)
   })
 
   it('leave the authoring prompt to the server in the app skill, and carry it in the Viewer skill', () => {

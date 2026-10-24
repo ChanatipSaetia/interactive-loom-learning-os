@@ -67,3 +67,15 @@ describe('show_library and show_domain (decision 216)', () => {
     await client.close()
   })
 })
+
+describe('the tutoring routine from the server (decision 218)', () => {
+  it('tells every chat about it when it connects, and serves loom-tutor-app\'s text', async () => {
+    const client = await connect()
+    expect(client.getInstructions()).toContain('call get_tutor_guide once')
+    const guide = ((await client.callTool({ name: 'get_tutor_guide', arguments: {} })).content as Array<{ text: string }>)[0].text
+    expect(guide.startsWith('# Loom Tutor (Loom MCP App)')).toBe(true)
+    expect(guide).not.toContain('name: loom-tutor-app')
+    expect(guide).toContain('Moving from the old layout')
+    await client.close()
+  })
+})
