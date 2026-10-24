@@ -2,7 +2,8 @@
 import { readFileSync, readdirSync } from 'fs'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client'
-import { APP_URI, DEFAULT_APP_URL, appShell, checkTopic, createLoomServer } from '../../../src/mcp/server'
+import { APP_URI, DEFAULT_APP_URL, appShell, checkTopic, createLoomServer, type LearnerStore } from '../../../src/mcp/server'
+import { mergeEvents, stampEvent, type LearnerEvent } from '../../../src/core/supporting/learner-progress'
 
 /** A topic folder as one .loom.oui text, as Studio exports it. */
 function topicSource(id: string): string {
@@ -101,5 +102,62 @@ describe('appShell', () => {
   it('loads the published app by default, under its versioned path', () => {
     expect(DEFAULT_APP_URL).toMatch(/\/mcp-app\/v1\/$/)
     expect(appShell(DEFAULT_APP_URL)).toContain(`${DEFAULT_APP_URL}app.js`)
+  })
+})
+
+/** The memory folder's behaviour, kept in memory. */
+function memoryStore(): LearnerStore & { events: LearnerEvent[]; topics: Map<string, string> } {
+  const events: LearnerEvent[] = []
+  const topics = new Map<string, string>()
+  return {
+    device: 'test-machine',
+    events,
+    topics,
+    async appendEvents(list) { events.push(...list.map((e) => ({ ...e, device: 'test-machine' }))) },
+    async readEvents() { return mergeEvents(events) },
+    async saveTopic({ id, oui }) { topics.set(id, oui) },
+    async listTopics() { return [...topics.keys()].sort() },
+    async readTopic(id) { return topics.get(id) ?? null },
+  }
+}
+
+describe('Loom MCP server with a memory folder (slice 4)', () => {
+  let client: Client
+  let store: ReturnType<typeof memoryStore>
+
+  beforeEach(async () => {
+    store = memoryStore()
+    const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
+    await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/', store }).connect(serverSide)
+    client = new Client({ name: 'test', version: '0' })
+    await client.connect(clientSide)
+  })
+  afterEach(() => client.close())
+
+  it('adds the memory tools, record_events for the app only', async () => {
+    const { tools } = await client.listTools()
+    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'learner_summary', 'list_topics', 'open_topic', 'record_events', 'show_topic', 'validate_topic'])
+    const record = tools.find((t) => t.name === 'record_events')!
+    expect((record._meta as { ui?: { visibility?: string[] } }).ui?.visibility).toEqual(['app'])
+  })
+
+  it('saves a topic it shows and opens it again', async () => {
+    const oui = topicSource('chinese101-day1')
+    await client.callTool({ name: 'show_topic', arguments: { oui } })
+    expect(textOf(await client.callTool({ name: 'list_topics', arguments: {} }))).toContain('chinese101-day1: not started')
+    const opened = await client.callTool({ name: 'open_topic', arguments: { id: 'chinese101-day1' } })
+    expect((opened.structuredContent as { oui: string }).oui).toBe(oui)
+    const missing = await client.callTool({ name: 'open_topic', arguments: { id: 'nope' } })
+    expect(missing.isError).toBe(true)
+  })
+
+  it('keeps well-formed events and summarizes them', async () => {
+    const good = stampEvent({ topic: 'chinese101-day1', item: 'sections/quiz.oui#q1', kind: 'answered', result: 'wrong' }, 'mcp-app')
+    const kept = await client.callTool({ name: 'record_events', arguments: { events: [good, { id: 'junk' }] } })
+    expect(textOf(kept)).toBe('kept 1 of 2 events')
+    expect(store.events[0].device).toBe('test-machine')
+    const summary = textOf(await client.callTool({ name: 'learner_summary', arguments: {} }))
+    expect(summary).toContain('0 of 1 answers right')
+    expect(summary).toContain('sections/quiz.oui#q1')
   })
 })

@@ -108,6 +108,35 @@ async function open(browser, query) {
     await shot(viewer, 'viewer-from-link')
   }
 
+  {
+    // Memory (slice 4): play and answer in the chat, then find it in the memory folder, reopen and summarize
+    const memoryDir = path.join('tests/mcp-host/results/memory')
+    const { page, app } = await open(browser, '')
+    await app.locator('[data-testid=mcp-play]').click()
+    await page.waitForTimeout(3000)
+    await app.locator('[data-testid=mcp-close]').click()
+    await app.locator('[data-testid=mcp-other-mode]').click()
+    const choice = app.locator('[data-testid^=quiz-choice-0-]').first()
+    await choice.scrollIntoViewIfNeeded()
+    await choice.click()
+    await page.waitForTimeout(1000)
+    const files = fs.readdirSync(memoryDir)
+    const events = files.filter((f) => f.startsWith('events-')).flatMap((f) => fs.readFileSync(path.join(memoryDir, f), 'utf8').trim().split('\n')).map((l) => JSON.parse(l))
+    const reopened = await open(browser, '?open=chinese101-day1')
+    const summary = await browser.newPage()
+    await summary.goto('http://localhost:8090/?summary=1')
+    await summary.locator('.msg.model').first().waitFor()
+    await summary.waitForTimeout(500)
+    results.memory = {
+      topicSaved: fs.existsSync(path.join(memoryDir, 'topics/chinese101-day1.loom.oui')),
+      seen: events.filter((e) => e.kind === 'seen').length,
+      answered: events.filter((e) => e.kind === 'answered').map((e) => `${e.item} ${e.result}`),
+      reopenedTitle: await reopened.app.locator('[data-testid=mcp-card] h1').textContent(),
+      summary: (await summary.locator('.msg.model').first().textContent()).slice(0, 200),
+    }
+    await shot(reopened.page, 'reopened')
+  }
+
   console.log(JSON.stringify(results, null, 2))
   await browser.close()
 })()

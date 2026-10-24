@@ -6,14 +6,15 @@
  * again, so changes made by an AI show up without reopening anything.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, FileUp, FolderOpen, MoreHorizontal, Play, RefreshCw, Sparkles } from 'lucide-react'
+import { AlertTriangle, BookOpen, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MoreHorizontal, Play, RefreshCw, Sparkles, Upload } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
 import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 import { HUDDrawer, SectionRenderer } from '../core/delivery/web-app-shell/TopicShell'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
-import { ProgressProvider } from '../core/supporting/learner-progress'
+import { ProgressProvider, mergeEvents, parseJSONL, toJSONL, useLearnerMemory, useSectionEventRecorder, type LearnerEvent } from '../core/supporting/learner-progress'
+import type { SectionConfig } from '../core/learning-engine/registry'
 import { SectionErrorBoundary } from '../core/ui-system/primitives/SectionErrorBoundary'
 import {
   TopicArchiveError,
@@ -315,7 +316,18 @@ export function ViewerApp() {
     setMode('present')
     window.scrollTo(0, 0)
   }, [presentSections])
-  const onPresentSection = useCallback((sectionIndex: number, beat: number) => { presentAt.current = { sectionIndex, beat } }, [])
+  const memory = useLearnerMemory()
+  const lastSeen = useRef('')
+  const onPresentSection = useCallback((sectionIndex: number, beat: number) => {
+    presentAt.current = { sectionIndex, beat }
+    // A section played in Present counts as seen (decision 154)
+    const name = topic?.sections[sectionIndex]?.name
+    const key = `${topic?.topicId}/${name}`
+    if (memory && topic && name && key !== lastSeen.current) {
+      lastSeen.current = key
+      memory.record({ topic: topic.topicId, item: `sections/${name}.oui`, kind: 'seen' })
+    }
+  }, [memory, topic])
   const exitPresent = useCallback((sectionIndex: number) => {
     setMode('read')
     const name = topic?.sections[sectionIndex]?.name
@@ -352,6 +364,7 @@ export function ViewerApp() {
           <FileUp size={14} /> <span className="viewer-pill-label">Open…</span>
         </button>
       )}
+      <MemoryButtons onStatus={setStatus} labels={compact} />
       <AudioToggle />
       <ThemeToggle />
     </>
@@ -708,7 +721,7 @@ export function TopicView({ topic }: { topic: ViewerTopic }) {
             {topic.sections.map((section, idx) => section.config && (
               <SectionErrorBoundary key={section.name} sectionName={String(section.config.props.title ?? section.name)}>
                 <PickSection file={`sections/${section.name}.oui`} label={String(section.config.props.title ?? section.name)} sourceMap={section.sourceMap}>
-                  <SectionRenderer config={section.config} sectionIndex={idx} />
+                  <RecordedSection topicId={topic.topicId} name={section.name} config={section.config} sectionIndex={idx} />
                 </PickSection>
               </SectionErrorBoundary>
             ))}
@@ -718,5 +731,58 @@ export function TopicView({ topic }: { topic: ViewerTopic }) {
         </div>
       </HUDProvider>
     </ProgressProvider>
+  )
+}
+
+/** A section in Read mode whose answers go to learner memory. */
+function RecordedSection({ topicId, name, config, sectionIndex }: { topicId: string; name: string; config: SectionConfig; sectionIndex: number }) {
+  const onEvent = useSectionEventRecorder(topicId, name)
+  return <SectionRenderer config={config} sectionIndex={sectionIndex} onEvent={onEvent} />
+}
+
+/** Back up / Restore of learner memory as one JSONL file (decision 148). */
+function MemoryButtons({ onStatus, labels }: { onStatus: (status: Status) => void; labels: boolean }) {
+  const memory = useLearnerMemory()
+  const input = useRef<HTMLInputElement>(null)
+  if (!memory) return null
+
+  const backup = async () => {
+    const events = await memory.port.readAll()
+    const url = URL.createObjectURL(new Blob([toJSONL(events)], { type: 'application/jsonl' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `loom-memory-${new Date().toISOString().slice(0, 10)}.jsonl`
+    a.click()
+    URL.revokeObjectURL(url)
+    onStatus({ kind: 'ok', text: `Backed up ${events.length} events` })
+  }
+  const restore = async (file: File) => {
+    const events: LearnerEvent[] = parseJSONL(await file.text())
+    const before = (await memory.port.readAll()).length
+    await memory.port.append(events)
+    const added = mergeEvents(await memory.port.readAll()).length - before
+    onStatus({ kind: 'ok', text: `Restored: ${added} new events` })
+  }
+
+  return (
+    <>
+      <button type="button" className="viewer-pill" onClick={() => void backup()} title="Back up your learning record" aria-label="Back up your learning record" data-closes-menu data-testid="viewer-backup">
+        <Download size={14} />{labels && <> <span className="viewer-pill-label">Back up</span></>}
+      </button>
+      <button type="button" className="viewer-pill" onClick={() => input.current?.click()} title="Restore a backed-up learning record" aria-label="Restore a backed-up learning record" data-testid="viewer-restore">
+        <Upload size={14} />{labels && <> <span className="viewer-pill-label">Restore</span></>}
+      </button>
+      <input
+        ref={input}
+        type="file"
+        accept=".jsonl,.json,application/jsonl"
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          e.target.value = ''
+          if (file) void restore(file).catch(() => onStatus({ kind: 'error', text: 'That file is not a Loom learning record.' }))
+        }}
+      />
+    </>
   )
 }

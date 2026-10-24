@@ -1,6 +1,6 @@
 # Grill Log — Learner Memory & Review Journey
 
-Status: **Proposed — not implemented yet. Decisions 143–152 stand; the review journey (153–160) is set aside by decision 161 in [grill-log-adaptive-learning.md](grill-log-adaptive-learning.md)**
+Status: **Decisions 144–148 and 151 built (slice 4 in grill-log-adaptive-learning.md); 149, 150 and 152 (as revised there) to come. Decisions 143–152 stand; the review journey (153–160) is set aside by decision 161 in [grill-log-adaptive-learning.md](grill-log-adaptive-learning.md)**
 
 ## Goal
 

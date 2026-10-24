@@ -1,18 +1,21 @@
 // Starts everything the test host needs on localhost, after `npm run build:mcp`:
-//   http://localhost:3001/mcp   the Loom MCP server (dist-mcp/loom-mcp.mjs --http)
+//   http://localhost:3001/mcp   the Loom MCP server (dist-mcp/loom-mcp.mjs --http), memory in tests/mcp-host/results/memory
 //   http://localhost:5180       dist/ as the app's origin (stands in for GitHub Pages)
 //   http://localhost:8090       the test host, with /topics/<id>.loom.oui from public/content
 // Then open http://localhost:8090/ or run `node tests/mcp-host/check.cjs`.
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:http'
-import { readFile, readdir } from 'node:fs/promises'
+import { readFile, readdir, rm } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { createServer as createVite } from 'vite'
 
 const root = process.cwd()
 const types = { '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png' }
 
-const mcp = spawn('node', ['dist-mcp/loom-mcp.mjs', '--http', '3001'], {
+// The learner's memory folder for this run (topics shown and events), fresh each time
+const memoryDir = join(root, 'tests/mcp-host/results/memory')
+await rm(memoryDir, { recursive: true, force: true })
+const mcp = spawn('node', ['dist-mcp/loom-mcp.mjs', '--http', '3001', '--memory', memoryDir], {
   env: { ...process.env, LOOM_APP_URL: 'http://localhost:5180/mcp-app/v1/' },
   stdio: ['ignore', 'inherit', 'inherit'],
 })

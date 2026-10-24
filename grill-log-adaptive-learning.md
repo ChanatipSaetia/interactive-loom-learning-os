@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–196 drafted; decisions 178–184, 188, 189 and 196 partly built (slices 0–3). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–3 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
+Status: **Concept — decisions 161–196 drafted; decisions 144–148, 151, 178–184, 186–189 and 196 partly built (slices 0–4). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–4 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
 
 ## Goal
 
@@ -338,6 +338,33 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
 - Back up / Restore in Viewer. Claude Desktop packaging as `.mcpb`.
 - **Done when:** progress made in one Goose chat shows in the next chat and in Viewer opened on
   the same folder.
+
+**Status: built and checked in the local test host and in Viewer.**
+
+| Piece | Location |
+|---|---|
+| Event format, merge by union, JSONL, section events → learner events, summary | `src/core/supporting/learner-progress/memory/events.ts` |
+| `LearnerMemoryPort`; in-memory and IndexedDB adapters; device ID | `memory/port.ts` |
+| `LearnerMemoryProvider`, `useSectionEventRecorder`, one-time import of `loom:progress:v1` | `memory/context.tsx` |
+| `SectionRenderer` passes a section's own events on (`onEvent`) | `web-app-shell/TopicShell.tsx` |
+| Viewer: IndexedDB memory, answers in Read and sections played in Present recorded, **Back up** and **Restore** (JSONL) in the header | `src/viewer/` |
+| Server memory folder (`~/.loom`, `--memory <folder>`, `LOOM_MEMORY_DIR`, `--no-memory`): `events-<machine>.jsonl` and `topics/<id>.loom.oui` | `src/mcp/memory-folder.ts` |
+| Server tools with a memory folder: `record_events` (app only), `list_topics`, `open_topic` (shows the app with the saved topic), `learner_summary`; `show_topic` saves the topic | `src/mcp/server.ts` |
+| App: Present and Read activity sent to `record_events`; a note when the chat keeps no progress; topics from `open_topic` | `src/mcp-app/memory.ts`, `McpApp.tsx` |
+
+- **Checked:** in the test chat, playing and answering wrote `seen` and `answered` events to the
+  memory folder, the topic was saved, `open_topic` showed it again, and `learner_summary` named the
+  answer that was wrong; in Viewer, an answer in Read went to IndexedDB and came out of Back up as
+  a JSONL line. Unit tests cover merging, JSONL, the event mapping, the summary, the migration and
+  the memory tools.
+- **Deviation from decision 152:** items are keyed by the section's own IDs (`sections/quiz.oui#q1`:
+  the question, challenge or card ID), not by statement name, since those are what the sections'
+  events carry. Renaming an ID starts a new item.
+- **Deviation from decision 154:** Present records a section as `seen` once per section, not per
+  beat.
+- **Not yet:** Viewer reading the server's memory folder (the synced-folder adapter, decision 149),
+  so the chat and Viewer keep separate logs for now; the server's `events-*.jsonl` can be loaded into
+  Viewer with Restore. The Claude Desktop `.mcpb` package is left for when the server is published.
 
 ### Slice 5 — Hosted endpoint
 

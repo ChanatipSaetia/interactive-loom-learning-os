@@ -12,7 +12,8 @@ import { AlertTriangle, BookOpen, ExternalLink, Loader2, Maximize2, Minimize2, P
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
-import { ProgressProvider } from '../core/supporting/learner-progress'
+import { LearnerMemoryProvider, ProgressProvider, stampEvent } from '../core/supporting/learner-progress'
+import { appMemoryAdapter } from './memory'
 import { PresentMode, kindLabel, preloadPresenters, type PresentSection } from '../core/supporting/presentation'
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic, loadErrorReport, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
@@ -24,6 +25,9 @@ type View = 'card' | 'present' | 'read'
 
 /** What the tool input holds once it has been read, with its source for Continue in Viewer. */
 type Loaded = ({ topic: ViewerTopic; report: string | null } | { topic: null; report: string }) & { oui?: string }
+
+/** Events from the app carry this device name; the local server stamps its own when it keeps them. */
+const DEVICE = 'mcp-app'
 
 /** Loom Viewer on the site the app was loaded from (`<site>/mcp-app/v1/app.js` → `<site>/viewer.html`). */
 // (not `new URL('../../viewer.html', import.meta.url)`, which Vite would bundle as an asset)
@@ -64,6 +68,10 @@ export function McpApp({ app }: { app: App }) {
   const [startMode, setStartMode] = useState<'present' | 'read'>('present')
   /** The chat is showing the app fullscreen. */
   const [full, setFull] = useState(false)
+  /** False when the server keeps no learner memory (decision 186). */
+  const [kept, setKept] = useState(true)
+  const memory = useMemo(() => appMemoryAdapter(app, () => setKept(false)), [app])
+  const lastSeen = useRef('')
   const told = useRef(false)
 
   useEffect(() => {
@@ -76,6 +84,15 @@ export function McpApp({ app }: { app: App }) {
       setStartMode(args.mode === 'read' ? 'read' : 'present')
       setView('card')
       setAsked(false)
+      told.current = false
+    }
+    // open_topic sends the saved topic in its result rather than its input
+    app.ontoolresult = (result) => {
+      const oui = (result.structuredContent as { oui?: unknown } | undefined)?.oui
+      if (typeof oui !== 'string') return
+      setWriting(false)
+      setLoaded({ ...loadTopic(oui), oui })
+      setView('card')
       told.current = false
     }
     app.onhostcontextchanged = (context) => {
@@ -129,6 +146,15 @@ export function McpApp({ app }: { app: App }) {
     setLinkNote(result?.isError ? 'The chat did not open the link.' : null)
   }, [app, loaded])
 
+  /** A section played in Present counts as seen (decision 154). */
+  const recordSeen = useCallback((sectionIndex: number) => {
+    const name = topic?.sections[sectionIndex]?.name
+    const key = `${topic?.topicId}/${name}`
+    if (!topic || !name || key === lastSeen.current) return
+    lastSeen.current = key
+    void memory.append([stampEvent({ topic: topic.topicId, item: `sections/${name}.oui`, kind: 'seen' }, DEVICE)])
+  }, [memory, topic])
+
   const askToFix = useCallback(async () => {
     if (!loaded?.report) return
     setAsked(true)
@@ -169,7 +195,7 @@ export function McpApp({ app }: { app: App }) {
             <div className={`mcp-player${full ? ' mcp-full' : ''}`} data-testid="mcp-present">
               {bar}
               <div className="mcp-stage">
-                <PresentMode sections={presentSections} onExit={() => setView('read')} fillParent />
+                <PresentMode sections={presentSections} onExit={() => setView('read')} onSectionChange={recordSeen} fillParent />
               </div>
             </div>
           </HUDProvider>
@@ -184,7 +210,9 @@ export function McpApp({ app }: { app: App }) {
         <div className={`mcp-read${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
           {bar}
           <main className="main-content">
-            <TopicView topic={topic} />
+            <LearnerMemoryProvider port={memory} device={DEVICE}>
+              <TopicView topic={topic} />
+            </LearnerMemoryProvider>
           </main>
         </div>
       </UISystemProvider>
@@ -235,6 +263,7 @@ export function McpApp({ app }: { app: App }) {
         </div>
       )}
       {linkNote && <p className="mcp-note">{linkNote}</p>}
+      {!kept && <p className="mcp-note" data-testid="mcp-not-kept">This chat does not keep your progress. Open the topic in Viewer to keep it.</p>}
     </div>
   )
 }

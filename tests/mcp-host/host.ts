@@ -10,6 +10,8 @@
  *   ?broken=1        break one section first, to see the error path
  *   ?theme=light     the chat's light mode
  *   ?mode=read       ask show_topic to open in Read
+ *   ?open=<id>       call open_topic for a saved topic instead of show_topic
+ *   ?summary=1       end with learner_summary, as a model planning the next topic would
  */
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client'
 import { AppBridge, PostMessageTransport, getToolUiResourceUri } from '@modelcontextprotocol/ext-apps/app-bridge'
@@ -56,19 +58,35 @@ async function main() {
   await client.connect(new StreamableHTTPClientTransport(new URL(SERVER)))
   const { tools } = await client.listTools()
   const show = tools.find((t) => t.name === 'show_topic')!
+  Object.assign(window, { toolNames: tools.map((t) => t.name) })
   const uri = getToolUiResourceUri(show)!
 
-  let oui = await (await fetch(`/topics/${topicId}.loom.oui`)).text()
-  if (params.has('broken')) oui = oui.replace(/root = Quiz\(/, 'root = Quizz(')
-  say('user', `Teach me: ${topicId}`)
+  if (params.has('summary')) {
+    say('model', `learner_summary → ${textOf(await client.callTool({ name: 'learner_summary', arguments: {} }))}`)
+    say('model', `list_topics → ${textOf(await client.callTool({ name: 'list_topics', arguments: {} }))}`)
+  }
 
-  const check = await client.callTool({ name: 'validate_topic', arguments: { oui } })
-  say('model', `validate_topic → ${textOf(check).slice(0, 160)}`)
+  let args: Record<string, unknown>
+  let result
+  const openId = params.get('open')
+  if (openId) {
+    say('user', `Open ${openId} again`)
+    args = { id: openId }
+    result = await client.callTool({ name: 'open_topic', arguments: args })
+    say('model', `open_topic → ${textOf(result).slice(0, 160)}`)
+  } else {
+    let oui = await (await fetch(`/topics/${topicId}.loom.oui`)).text()
+    if (params.has('broken')) oui = oui.replace(/root = Quiz\(/, 'root = Quizz(')
+    say('user', `Teach me: ${topicId}`)
 
-  const args: Record<string, unknown> = { oui }
-  if (params.get('mode') === 'read') args.mode = 'read'
-  const result = await client.callTool({ name: 'show_topic', arguments: args })
-  say('model', `show_topic → ${textOf(result).slice(0, 160)}`)
+    const check = await client.callTool({ name: 'validate_topic', arguments: { oui } })
+    say('model', `validate_topic → ${textOf(check).slice(0, 160)}`)
+
+    args = { oui }
+    if (params.get('mode') === 'read') args.mode = 'read'
+    result = await client.callTool({ name: 'show_topic', arguments: args })
+    say('model', `show_topic → ${textOf(result).slice(0, 160)}`)
+  }
 
   const { contents } = await client.readResource({ uri })
   const ui = contents[0] as { text: string; _meta?: { ui?: { csp?: Csp } } }
