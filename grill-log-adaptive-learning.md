@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — under discussion, nothing implemented (decisions 161–180)**
+Status: **Concept — under discussion, nothing implemented (decisions 161–186)**
 
 ## Goal
 
@@ -66,7 +66,33 @@ Numbering continues from [grill-log-learner-memory-review.md](grill-log-learner-
 | 177 | Callbacks in Present | **Present stays hands-free, except for callbacks.** A callback (decision 162) or opening-check item pauses on **Your turn**: the learner answers or thinks and presses `Space`, then the stage plays the answer and its explanation. All other gates keep playing themselves (decision 101). Without this, review woven into a topic would never test the learner in Present. A Your-turn answer logs `answered`; beats played by the stage log `seen`. |
 | 178 | Opening Viewer straight into Present | **`viewer.html#present`** starts in Present at the first section, and pasting a topic (Open → Paste) with that flag goes straight to the stage. The flag lives in the hash, so nothing reaches GitHub Pages. |
 | 179 | Getting a topic from a chat into Viewer | **Four levels, built in order, none needs a server.** **Level 0 — works today:** the `loom-topic-writer` skill in the Claude app, or the published authoring prompt as knowledge in a Gemini Gem (or a ChatGPT GPT); the learner saves the `.loom.oui` or copies it, then opens or pastes it in Viewer. **Level 1 — a link made by code:** `viewer.html#present&oui=<deflate + base64url>` opens a whole topic from the link. The link is built by code, never typed by the model (a model cannot compress): by a one-button artifact or canvas page the chat writes around the topic text, or by the level 3 tool. **Level 2 — back to the chat:** Viewer's **Ask for next topic** copies the request of decision 175 (mastered and weak skills, goal, callbacks to include), opening the chat with it filled in where the chat accepts a prompt in its URL. **Level 3 — a local MCP server run with `npx`** (no hosting): validate a topic with the 3-tier gateway, read the learner summary from the synced memory folder (decision 149), save the topic to a folder, and return its level 1 link; for Claude Desktop, Claude Code, Gemini CLI and other MCP clients. |
-| 180 | Remote connectors and MCP Apps | **Not now.** A remote MCP connector (the only kind the Claude and Gemini web and mobile apps can add) or an MCP App needs a hosted server, which decision 143 rules out. Revisit only if a free serverless host becomes acceptable. |
+| 180 | Remote connectors and MCP Apps | **Yes: a Loom MCP App, served by a serverless, stateless endpoint, with its UI on GitHub Pages.** Revises the earlier "not now". MCP Apps is a shared standard, so one app plays Present and Read inside every chat that renders MCP App UI. The endpoint stores nothing about the learner, so decision 143 (no server for learner memory) still holds. Decisions 181–186 give the shape. |
+
+### The Loom MCP App
+
+| # | Question | Decision |
+|---|---|---|
+| 181 | The parts | **Three, none with a database.** (1) **GitHub Pages** hosts the UI: Loom's Read and Present for one topic, as a page the app loads (exists as a site today). (2) **A serverless MCP endpoint** (Streamable HTTP) answers the chat app: it lists the tools and returns the UI resource. (3) **The same server as an npm package over stdio** for chats on the learner's computer (`npx`, or a `.mcpb` extension for Claude Desktop). |
+| 182 | The UI resource | **A small HTML shell at `ui://loom/present`** that loads Loom's script and styles from GitHub Pages, declared in `_meta.ui.csp.resourceDomains` (`https://chanatipsaetia.github.io`). The shell is a few KB, so the endpoint stays tiny and every Pages deploy updates the app in every chat at once. No nested iframe of the Pages site (`frameDomains`), since hosts may restrict it. |
+| 183 | Tools | **`show_topic(oui, mode?)`** renders a `.loom.oui` topic in Present (default) or Read; **`next_topic_request(summary)`** turns the learner's skill summary into the request of decision 175 for the model to write the next topic. More tools only when a story needs them. |
+| 184 | Where work runs | **In the learner's browser, inside the app**, not on the endpoint: parsing, the 3-tier validation and rendering all run in the UI (Loom does them in the browser already). The endpoint only passes text through, which keeps it within a free tier's per-request CPU limit (10 ms on Cloudflare Workers Free). Validation errors show in the app and are handed back to the model to fix. |
+| 185 | Hosting and cost | **Cloudflare Workers, free plan**, on its `*.workers.dev` address: 100,000 requests a day, about 4–6 per topic opened, so roughly 15,000–25,000 topic opens a day at $0. No sign-in: the endpoint holds nothing private. Vercel Hobby (personal, non-commercial only), Deno Deploy or Netlify Functions are alternatives behind the same code. The paid Workers plan starts at $5 a month if ever needed. |
+| 186 | Learner memory inside a chat | **Local: through the server.** Over stdio the app hands its events to a tool that writes them to the learner's memory folder (decision 149). **Hosted: not kept in the chat.** The sandboxed iframe cannot be trusted to keep browser storage or to sign in to Google Drive, so the app offers **Continue in Viewer**, a link carrying the topic and the session's results, and memory lives in Viewer (decisions 147–150). |
+
+**Hosts, in order of trying** (Oct 2026; check the official MCP Apps host list before relying on one):
+
+| Order | Host | Kind | Server | MCP App UI |
+|---|---|---|---|---|
+| 1 | MCPJam, the SDK's basic host | Testing | Either | Yes |
+| 2 | VS Code + GitHub Copilot | Subscription or own key | Local (stdio) | Yes (official list) |
+| 2 | Goose | Local models (Ollama) or any API key | Local (stdio) | Yes (official list) |
+| 3 | Claude Desktop | Subscription | Local (`.mcpb`) or hosted | Yes (official list) |
+| 4 | Claude web and mobile | Subscription | Hosted (custom connector) | Yes (official list) |
+| 4 | ChatGPT | Subscription | Hosted (Developer Mode, Apps SDK) | Reported, not on the official list |
+| 4 | Microsoft 365 Copilot | Work and school | Hosted (admin) | Yes (official list) |
+| 4 | Mistral Le Chat, Cursor | Subscription | Hosted; Cursor also local | Reported |
+| — | Gemini app | Subscription | Hosted custom apps (reportedly US, personal, web only) | Not confirmed: use a Gem and the Viewer link until it is |
+| — | LM Studio, Open WebUI, Jan, AnythingLLM | Local models | Local (stdio) | No evidence: tools only, so `show_topic` falls back to the Viewer link |
 
 ## Learner Journey & User Stories
 
@@ -183,6 +209,10 @@ needs memory first: without it Loom cannot know what the learner is forgetting.
 | Where real practice happens | Talking with people | In Blender | With the learner's own shop numbers |
 
 ## Open Questions
+
+- Whether each host honours `_meta.ui.csp.resourceDomains` the same way, so the shell can load
+  Loom from GitHub Pages (decision 182). Test on MCPJam and Claude first.
+- What GitHub Pages entry the shell loads: the Viewer page as it is, or a slimmer page for one topic.
 
 - Which chats accept a prompt in their URL for decision 179 level 2 (and under what length limit)?
   Check Claude, Gemini and ChatGPT before relying on it.
