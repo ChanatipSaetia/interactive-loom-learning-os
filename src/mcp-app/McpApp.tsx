@@ -21,6 +21,7 @@ import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, typ
 import { TopicView } from '../viewer/ViewerApp'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/themes'
+import { copyText } from '../core/ui-system/clipboard'
 
 type View = 'card' | 'present' | 'read'
 
@@ -65,6 +66,26 @@ function applyInsets(insets: McpUiHostContext['safeAreaInsets']) {
     const margin = side === 'top' || side === 'bottom' ? 12 : 0
     document.documentElement.style.setProperty(`--mcp-inset-${side}`, `${Math.max(least[side], (insets?.[side] ?? 0) + margin)}px`)
   }
+}
+
+/**
+ * Open in Viewer's link, to copy. A chat may ignore or refuse the request to open a link (long links,
+ * links it asks about first, a phone app's own rules) and the app cannot tell, so the link stays at
+ * hand after every try.
+ */
+function LinkStrip({ url, onClose }: { url: string; onClose: () => void }) {
+  const [copied, setCopied] = useState<boolean | null>(null)
+  return (
+    <div className="mcp-link" data-testid="mcp-link">
+      <span>Nothing opened? Copy the link into your browser:</span>
+      <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} aria-label="Link to the topic in Loom Viewer" />
+      <button type="button" className="mcp-button mcp-small" onClick={async () => setCopied(await copyText(url))} data-testid="mcp-copy-link">
+        {copied ? <><Check size={14} /> Copied</> : 'Copy link'}
+      </button>
+      <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={onClose} aria-label="Hide the link"><X size={14} /></button>
+      {copied === false && <em>This chat does not allow copying: select the link and copy it.</em>}
+    </div>
+  )
 }
 
 /** Every Loom theme in a dropdown (the system picker on phones). */
@@ -215,15 +236,18 @@ export function McpApp({ app }: { app: App }) {
 
   /** Open the topic in Loom Viewer, where progress is kept (decision 186), at Present. */
   const [linkNote, setLinkNote] = useState<string | null>(null)
+  const [viewerLink, setViewerLink] = useState<string | null>(null)
   const continueInViewer = useCallback(async () => {
     const url = loaded?.oui ? await topicLinkUrl(VIEWER_URL, loaded.oui) : null
     if (!url) {
       setLinkNote('This topic is too long for a link. Copy it from the chat and paste it into Loom Viewer.')
       return
     }
+    setViewerLink(url)
     const result = await app.openLink({ url }).catch(() => ({ isError: true }))
     setLinkNote(result?.isError ? 'The chat did not open the link.' : null)
   }, [app, loaded])
+  const linkStrip = viewerLink && <LinkStrip url={viewerLink} onClose={() => setViewerLink(null)} />
 
   /** A section played in Present counts as seen (decision 154). */
   const recordSeen = useCallback((sectionIndex: number) => {
@@ -289,6 +313,7 @@ export function McpApp({ app }: { app: App }) {
       <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void close()} aria-label="Close" title="Close" data-testid="mcp-close"><X size={14} /></button>
     </div>
   )
+  const top = <>{bar}{linkStrip}</>
 
   if (topic && view === 'present' && presentSections.length > 0) {
     return (
@@ -296,7 +321,7 @@ export function McpApp({ app }: { app: App }) {
         <ProgressProvider>
           <HUDProvider>
             <div className={`mcp-player${full ? ' mcp-full' : ''}`} data-testid="mcp-present">
-              {bar}
+              {top}
               <div className="mcp-stage">
                 <PresentMode sections={presentSections} onExit={() => open('read')} onSectionChange={recordSeen} fillParent />
               </div>
@@ -311,7 +336,7 @@ export function McpApp({ app }: { app: App }) {
     return (
       <UISystemProvider>
         <div className={`mcp-read${full ? ' mcp-full' : TOUCH ? ' mcp-read-natural' : ''}`} data-testid="mcp-read">
-          {bar}
+          {top}
           {/* Read scrolls inside a frame of fixed height, so the chat's frame stays that size and
               the sections' modals (taxonomy details, help) open where the learner is looking */}
           <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
@@ -368,6 +393,7 @@ export function McpApp({ app }: { app: App }) {
           <ThemePicker themeId={themeId} onPick={pickTheme} />
         </div>
       )}
+      {linkStrip}
       {linkNote && <p className="mcp-note">{linkNote}</p>}
       {!kept && <p className="mcp-note" data-testid="mcp-not-kept">This chat does not keep your progress. Open the topic in Viewer to keep it.</p>}
     </div>

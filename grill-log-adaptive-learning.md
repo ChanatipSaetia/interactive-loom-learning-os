@@ -446,6 +446,13 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     title over the top of a full-screen app (about 110px) and its message bar over the bottom (about 100px).
     Full screen now pads the app by the chat's `safeAreaInsets` plus 12px, never less than 112px at the top
     and 104px at the bottom on touch screens (56px and 88px elsewhere).
+  - **Present's text was still small:** at about 0.58× the stage's body text (23px) showed at about 13px.
+    Inside the card, and in full screen on windows up to 1000px wide, Present's sizes are about 30%
+    larger (body 30px, cards 26px, small 21px, headings 44px); quizzes, bullets and title cards were
+    checked to still fit their slides.
+  - **Open in Viewer sometimes did nothing:** the chat decides whether to open a link and may ignore
+    or refuse it (topic links run 8–30 KB) without telling the app. The link now stays under the bar
+    after every try, with **Copy link** (or select-and-copy where the chat does not allow copying).
   - **Changing a topic without resending it:** every fix made the model write the whole topic again
     (about 15 KB, some 5,000 output tokens). The local server now has **`edit_topic(id, edits)`**: each edit
     names a file and holds whole statements by name, as Studio's assistant writes them (replace, add,

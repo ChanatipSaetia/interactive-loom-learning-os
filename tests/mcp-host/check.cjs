@@ -100,11 +100,13 @@ async function open(browser, query) {
     await app.locator('[data-testid=mcp-viewer]').click()
     await page.waitForTimeout(800)
     const link = await page.evaluate(() => window.lastOpenedLink)
+    // The link stays at hand to copy, in case the chat did not open it
+    const shown = await app.locator('[data-testid=mcp-link] input').inputValue()
     const viewer = await browser.newPage({ viewport: { width: 960, height: 720 } })
     await viewer.goto(link)
     await viewer.locator('[data-testid=present-mode]').waitFor({ timeout: 15000 })
     await viewer.waitForTimeout(2000)
-    results.viewerLink = { length: link.length, opensInPresent: true }
+    results.viewerLink = { length: link.length, opensInPresent: true, offeredToCopy: shown === link }
     await shot(viewer, 'viewer-from-link')
   }
 
