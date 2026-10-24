@@ -56,3 +56,4 @@ public/content/index.oui
 # Spike build output
 spikes/*/assets/ext-apps.js
 spikes/*/host/host.bundle.js
+!spikes/*/results/*.png
