@@ -1,6 +1,6 @@
 # Grill Log — Adaptive Learning: Callbacks, Skill Maps & AI Chat Integration
 
-Status: **Concept — decisions 161–196 drafted, nothing implemented. Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slice 0 is done in a local test host and waits on the owner's check in a real host.**
+Status: **Concept — decisions 161–196 drafted; decisions 180–184, 188, 189 and 196 partly built (slices 0–2). Implementation slices and preparation list agreed; the owner is preparing accounts and settings. Implementation happens on branch `claude/loom-mcp-app`; slices 0–2 are built and checked in a local test host and wait on the owner's check in a real host (Goose).**
 
 ## Goal
 
@@ -280,6 +280,36 @@ hosts (Goose first, then Claude Desktop, Claude web through a tunnel) and loadin
 - The app validates too and, on errors, sends them back to the chat as a fix request (the Viewer
   Copy-errors text).
 - **Done when:** a topic with a deliberate error is fixed by the model before it is shown.
+
+**Status of slices 1 and 2: built and checked in the local test host; the owner's check in a real
+host (Goose) is next.**
+
+| Piece | Location |
+|---|---|
+| Tool layer: `get_authoring_guide`, `validate_topic`, `show_topic` and the `ui://loom/app-v1.html` shell (CSP: the app's origin, plus Google Fonts for Loom's fonts) | `src/mcp/server.ts` |
+| Command line: `--stdio`, `--http [port]`; `LOOM_APP_URL` overrides the app's address | `src/mcp/cli.ts` |
+| Server built as one Node file, `dist-mcp/loom-mcp.mjs` (`npm run build:mcp`) | `vite.mcp.config.ts` |
+| The guide cut down to the asked-for section types (quiz only: about 24 KB of the 72 KB) | `composition/oui/authoring-guide.ts` |
+| The app: card inline (title, sections, ▶ Play, Read), Present or Read in fullscreen, theme from the chat (decision 196), errors told to the model at once and an **Ask the chat to fix it** button | `src/mcp-app/` |
+| The app built to `dist/mcp-app/v1/app.js` and `app.css` (part of `npm run build`, so Pages deploys it) | `vite.mcp-app.config.ts` |
+| Test host on the official `AppBridge`, started with `npm run mcp:host`; `npm run mcp:check` plays Present (with a stand-in voice), Read, the chat's light mode and a broken topic, and saves screenshots | `tests/mcp-host/` |
+| Unit tests: the guide, the tools over an in-memory client, the app's topic loading and theme | `tests/unit/mcp/`, `authoring-guide.test.ts` |
+
+- **Checked in the test host:** the card, Play → fullscreen Present with the narration voice
+  speaking each beat, Read with all sections, the light theme, and a broken section: the card marks
+  it, the model is told at once through its context, and the button sends the fix request into the
+  chat. `validate_topic` names the file and line of the error.
+- **Deviation from slice 1:** the guide is cut at run time from the full prompt
+  (`getAuthoringGuide`), not written by `npm run oui:schema` as separate files, so it can never fall
+  behind the prompt.
+- **Deviation from slice 1:** the code lives in `src/mcp/` and `src/mcp-app/` rather than a top-level
+  `mcp/` package, as it reuses Viewer's topic compiler and Present directly; running it through
+  `npx` from the repository is left for when it is packaged.
+- **Known gaps:** the server bundle is about 11 MB, as validation pulls in the section code; the app
+  is about 1.4 MB gzipped. **Formula sandboxes cannot run in a chat:** they evaluate formulas with
+  `new Function`, which a chat's Content Security Policy (no `unsafe-eval`) blocks; they need an
+  evaluator that does not compile code. A theme picked inside the app is not offered yet (decision
+  196 allows one per session).
 
 ### Slice 3 — Viewer links
 

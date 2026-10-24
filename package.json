@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "studio": "vite --open /studio.html",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && vite build --config vite.mcp-app.config.ts",
     "build:lib": "BUILD_MODE=lib vite build",
     "build:all": "tsc -b && BUILD_MODE=lib vite build && vite build",
     "publish:lib": "npm run build:lib && cp -r docs dist-lib/docs && cp libs/package.lib.json dist-lib/package.json && npm publish dist-lib/ --access public",
@@ -19,7 +19,11 @@
     "openui:gen": "npx -y tsx scripts/gen-openui-standard.ts",
     "oui:schema": "npx -y tsx scripts/gen-oui-schema.ts",
     "hexmap:schema": "npx -y tsx scripts/generate-hexmap-schema.ts",
-    "hexmap:validate": "npx -y tsx scripts/validate-hexmaps.ts"
+    "hexmap:validate": "npx -y tsx scripts/validate-hexmaps.ts",
+    "build:mcp-app": "vite build --config vite.mcp-app.config.ts",
+    "build:mcp": "vite build --config vite.mcp.config.ts && vite build --config vite.mcp-app.config.ts",
+    "mcp:host": "node tests/mcp-host/run.mjs",
+    "mcp:check": "node tests/mcp-host/check.cjs"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",
@@ -29,6 +33,10 @@
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.13",
     "@lezer/highlight": "^1.2.5",
+    "@modelcontextprotocol/client": "^2.4.0",
+    "@modelcontextprotocol/ext-apps": "^2.0.3",
+    "@modelcontextprotocol/node": "^2.1.2",
+    "@modelcontextprotocol/server": "^2.4.0",
     "@openuidev/lang-core": "^0.3.0",
     "@openuidev/react-headless": "^0.16.3",
     "@openuidev/react-lang": "^0.3.0",
@@ -68,6 +76,7 @@
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.1.0",
     "fflate": "^0.8.2",
+    "globals": "^14.0.0",
     "jsdom": "^25.0.1",
     "sirv": "^3.0.2",
     "tailwindcss": "^3.4.19",

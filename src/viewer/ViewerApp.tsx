@@ -631,7 +631,7 @@ function CopyErrorsButton({ text, label, testId }: { text: string; label: string
   )
 }
 
-function TopicView({ topic }: { topic: ViewerTopic }) {
+export function TopicView({ topic }: { topic: ViewerTopic }) {
   const title = topic.manifest?.title ?? topic.topicId
   const report = useMemo(() => topicErrorReport(topic), [topic])
   const errorCount = (topic.error ? 1 : 0) + topic.sections.filter((s) => s.error).length + topic.narrationErrors.length

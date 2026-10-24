@@ -57,3 +57,7 @@ public/content/index.oui
 spikes/*/assets/ext-apps.js
 spikes/*/host/host.bundle.js
 !spikes/*/results/*.png
+
+# Loom MCP server build and test host screenshots
+dist-mcp/
+tests/mcp-host/results/
