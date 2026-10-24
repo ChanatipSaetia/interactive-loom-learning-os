@@ -71,7 +71,7 @@ export function appShell(appUrl: string): string {
 <body><div id="root"></div><script type="module" src="${appUrl}app.js"></script></body></html>`
 }
 
-const GUIDE_TOOL_DESCRIPTION = `How to write a Loom learning topic (.loom.oui text) for show_topic. Call it before writing a topic: first with no section types to get the rules and the list of section types, then again with the section types the topic will use (e.g. ["intro", "flashcards", "quiz", "scenario"]) to get their components. ["all"] returns everything.`
+const GUIDE_TOOL_DESCRIPTION = `How to write a Loom learning topic (.loom.oui text) for show_topic. Call it before writing a topic: first with no section types to get the rules and the list of section types, then again with the section types the topic will use (e.g. ["flowchart"] or ["flashcards", "scenario"]) to get their components. ["all"] returns everything. In a chat, keep topics short by default: one idea in 1–3 sections, no intro or quiz unless a check is the point; write a full lesson (intro, several sections, a closing quiz) only when the learner asks for one.`
 
 const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). Write it with get_authoring_guide, and check it with validate_topic first when that tool is available. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements.`
 

@@ -88,7 +88,7 @@ ${PLAN_START}
 const NEXT_TOPIC_SHORT = `## Planning the next topic
 
 ${PLAN_START}
-3. **Size it to the moment.** By default write a **short topic**: one idea the learner can take in within a few minutes, in **1–3 sections** that show it best (a flowchart or a sandbox for how something works, flashcards for words, a scenario for a decision, one picture drawn with \`Svg\`). No \`Intro\` section and no closing quiz unless a quick check is the point; the authoring guide's "Start with an \`Intro\` section" and its section order are for full lessons. Weave in one thing from an earlier topic when it fits, rather than a set share of callbacks. Then talk with the learner in the chat and offer the next short topic.
+3. **Size it to the moment.** By default write a **short topic**: one idea the learner can take in within a few minutes, in **1–3 sections** that show it best (a flowchart or a sandbox for how something works, flashcards for words, a scenario for a decision, one picture drawn with \`Svg\`). No \`Intro\` section and no closing quiz unless a quick check is the point; the authoring guide's intro-first section order is for full lessons, and a short topic is what it calls one. Weave in one thing from an earlier topic when it fits, rather than a set share of callbacks. Then talk with the learner in the chat and offer the next short topic.
 4. **Write a full lesson only when the learner asks for one** ("a full lesson", "the whole topic", "teach me everything about …", a course or a chapter): then follow the authoring guide's order, with an \`Intro\`, about 5–8 sections mixing types and a closing quiz. ${FULL_LESSON}
 5. ${TEACH_FIRST}
 6. Never walls of text: each section shows its idea, it does not lecture.`

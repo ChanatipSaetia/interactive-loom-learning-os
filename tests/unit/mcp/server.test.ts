@@ -65,6 +65,14 @@ describe('Loom MCP server', () => {
     expect(quiz).not.toMatch(/^Flowchart\(/m)
   })
 
+  it('lets a chat write short topics: no Intro or quiz required, a full lesson when asked', async () => {
+    const guide = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { sections: ['flowchart'] } }))
+    expect(guide).toContain('Size the topic to the request. A short topic')
+    expect(guide).not.toMatch(/'?Start with an `Intro` section/)
+    const { tools } = await client.listTools()
+    expect(tools.find((t) => t.name === 'get_authoring_guide')!.description).toContain('keep topics short by default')
+  })
+
   it('validates topics and answers with the errors to fix', async () => {
     const oui = topicSource('chinese101-day1')
     expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { oui } }))).toMatch(/^valid: /)

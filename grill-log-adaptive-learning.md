@@ -455,6 +455,10 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     between messages. `loom-tutor-app` now writes a **short topic** by default (one idea, 1–3 sections
     that show it, no `Intro` or closing quiz unless a check is the point, one woven-in callback when it
     fits) and a full lesson only when the learner asks for one; `loom-tutor-viewer` keeps full lessons.
+    The authoring guide still said "Start with an `Intro` section", and models followed it over the skill:
+    that rule now sizes the topic to the request (a short topic is 1–3 sections with no `Intro` or quiz
+    unless a check is the point; a full lesson starts with an `Intro`), and `get_authoring_guide`'s
+    description says topics in a chat are short by default, for chats without the skill.
   - **Narration always off in Claude:** Present turned the voice on only when `getVoices()` listed a
     voice, and iOS web views (Claude's app) often list none yet speak with the default voice. The voice
     now counts as available whenever `speechSynthesis` exists, and turns itself off for the session when
