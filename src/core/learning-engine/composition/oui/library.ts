@@ -88,6 +88,52 @@ export const Catalog = defineOUIComponent({
 })
 
 // ============================================================================
+// The learner's Loom folder: domains and the library (storage-guide.ts)
+// ============================================================================
+
+/** `DomainRef("fight-animation")` — points at `Loom/<id>/domain.oui`. */
+export const DomainRef = defineOUIComponent({
+  name: 'DomainRef',
+  description: 'Includes the domain folder Loom/<id>/ (its domain.oui) in the library.',
+  props: z.object({
+    id: z.string(),
+  }),
+  fields: {
+    id: 'Domain ID: the folder name under Loom/, lowercase letters, digits, - and _ (e.g. "fight-animation").',
+  },
+})
+
+export const Domain = defineOUIComponent({
+  name: 'Domain',
+  description: "A learner's subject area (root of Loom/<domain-id>/domain.oui): its title, its topics in suggested learning order and the learner's goal.",
+  props: z.object({
+    title: z.string(),
+    description: z.string(),
+    topics: z.array(TopicRef.ref),
+    goal: z.string().optional(),
+  }),
+  fields: {
+    title: 'Domain name shown to the learner (e.g. "Fight Animation"); topics in it use it as their category.',
+    description: 'One or two sentences on what the domain covers.',
+    topics: 'Its topics in suggested learning order, as TopicRef calls naming files in topics/ (TopicRef("punch-basics") for topics/punch-basics.loom.oui).',
+    goal: "Optional: what the learner wants to reach in this domain, in their words (e.g. \"animate a 10-second fight scene in Blender\").",
+  },
+  toData: (p) => ({ ...p, topics: (p.topics as Array<{ id: string }>).map((t) => t.id) }),
+})
+
+export const LibraryIndex = defineOUIComponent({
+  name: 'Library',
+  description: "The learner's library (root of Loom/index.oui): the list of their domains.",
+  props: z.object({
+    domains: z.array(DomainRef.ref),
+  }),
+  fields: {
+    domains: 'The domains, as DomainRef calls, most recently studied first.',
+  },
+  toData: (p) => ({ domains: (p.domains as Array<{ id: string }>).map((d) => d.id) }),
+})
+
+// ============================================================================
 // Library assembly
 // ============================================================================
 
@@ -100,11 +146,13 @@ const SUBDOMAIN_GROUPS: Array<{ name: string; components: LoomOUIComponent[] }> 
 ]
 
 const MANIFEST_COMPONENTS = [Topic, SectionRef, Catalog, TopicRef]
+const DRIVE_COMPONENTS = [Domain, DomainRef, LibraryIndex]
 
 export const LOOM_OUI_COMPONENTS: LoomOUIComponent[] = [
   ...SUBDOMAIN_GROUPS.flatMap((g) => g.components),
   Lead,
   ...MANIFEST_COMPONENTS,
+  ...DRIVE_COMPONENTS,
   ...NARRATION_COMPONENTS,
 ]
 
@@ -120,18 +168,28 @@ export const OUI_SECTION_TYPES: ReadonlyMap<string, string> = new Map(
   LOOM_OUI_COMPONENTS.filter((c) => c.sectionType).map((c) => [c.name, c.sectionType as string]),
 )
 
-/** Framework-agnostic OpenUI library (no renderers) used for parsing and prompts. */
-export const loomOUILibrary: Library = createLibrary({
-  id: 'loom',
-  root: 'Topic',
-  components: LOOM_OUI_COMPONENTS.map((c) => c.definition),
-  componentGroups: [
-    ...SUBDOMAIN_GROUPS.map((g) => ({ name: g.name, components: g.components.map((c) => c.name) })),
-    { name: 'Shared', components: [Lead.name] },
-    { name: 'Topic & Catalog', components: MANIFEST_COMPONENTS.map((c) => c.name) },
-    { name: 'Narration (sections/<name>.narrate.oui)', components: NARRATION_COMPONENTS.map((c) => c.name) },
-  ],
-})
+let library: Library | null = null
+
+/**
+ * Framework-agnostic OpenUI library (no renderers) used for parsing and prompts.
+ * Built on first use: creating it draws a random ID, which Cloudflare Workers
+ * forbid while a module loads (the hosted MCP endpoint, `src/mcp/worker.ts`).
+ */
+export function getLoomOUILibrary(): Library {
+  library ??= createLibrary({
+    id: 'loom',
+    root: 'Topic',
+    components: LOOM_OUI_COMPONENTS.map((c) => c.definition),
+    componentGroups: [
+      ...SUBDOMAIN_GROUPS.map((g) => ({ name: g.name, components: g.components.map((c) => c.name) })),
+      { name: 'Shared', components: [Lead.name] },
+      { name: 'Topic & Catalog', components: MANIFEST_COMPONENTS.map((c) => c.name) },
+      { name: "The learner's Loom folder (Loom/index.oui, Loom/<domain-id>/domain.oui)", components: DRIVE_COMPONENTS.map((c) => c.name) },
+      { name: 'Narration (sections/<name>.narrate.oui)', components: NARRATION_COMPONENTS.map((c) => c.name) },
+    ],
+  })
+  return library
+}
 
 let cachedJSONSchema: LibraryJSONSchema | null = null
 
@@ -143,7 +201,7 @@ type JSONSchemaNode = { description?: string; properties?: Record<string, JSONSc
  */
 export function getLoomOUIJSONSchema(): LibraryJSONSchema {
   if (!cachedJSONSchema) {
-    const schema = loomOUILibrary.toJSONSchema()
+    const schema = getLoomOUILibrary().toJSONSchema()
     const defs = (schema as { $defs?: Record<string, JSONSchemaNode> }).$defs ?? {}
     for (const component of LOOM_OUI_COMPONENTS) {
       const properties = defs[component.name]?.properties ?? {}
@@ -168,7 +226,7 @@ export function promptDescription(component: LoomOUIComponent): string {
  * prompt (syntax rules, signatures, hoisting) with every prop documented.
  */
 export function getLoomOUIPrompt(options: PromptOptions = {}): string {
-  const spec = loomOUILibrary.toSpec()
+  const spec = getLoomOUILibrary().toSpec()
   const components: PromptSpec['components'] = {}
   for (const [name, entry] of Object.entries(spec.components)) {
     const component = componentsByName.get(name)

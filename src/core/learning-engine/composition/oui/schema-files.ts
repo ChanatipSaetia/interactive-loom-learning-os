@@ -5,8 +5,20 @@
  * committed files fresh.
  */
 import { LOOM_PAGES_URL, OPENUI_LANG_DOCS_URL, OPENUI_REACT_UI_DOCS_URL, getLoomAuthoringPrompt } from './authoring-prompt'
-import { LOOM_PROMPT_PATH, LOOM_SKILL_NAME, LOOM_SKILL_PATH, LOOM_SKILL_REFERENCE, LOOM_SKILL_ZIP_PATH } from './llm-guide'
+import {
+  LOOM_PROMPT_PATH,
+  LOOM_SKILL_NAME,
+  LOOM_SKILL_NAMES,
+  LOOM_SKILL_PATH,
+  LOOM_SKILL_REFERENCE,
+  LOOM_SKILL_ZIP_PATH,
+  LOOM_TUTOR_APP_SKILL,
+  LOOM_TUTOR_VIEWER_SKILL,
+  skillPath,
+  skillZipPath,
+} from './llm-guide'
 import { getLoomSkill } from './skill'
+import { getTutorAppSkill, getTutorViewerSkill } from './tutor-skills'
 import { getLoomOUIJSONSchema } from './library'
 
 const PROMPT_PATH = LOOM_PROMPT_PATH
@@ -24,6 +36,11 @@ function llmsTxt(): string {
 - [Loom OpenUI JSON Schema](${LOOM_PAGES_URL}${SCHEMA_PATH}): JSON Schema of every component's props, with descriptions.
 - [Loom agent skill](${LOOM_PAGES_URL}${LOOM_SKILL_PATH}/SKILL.md): \`${LOOM_SKILL_NAME}\` skill for the Claude app and coding agents (Claude Code, opencode, …); its reference \`${LOOM_SKILL_REFERENCE}\` is the authoring prompt. Also as a [zip](${LOOM_PAGES_URL}${LOOM_SKILL_ZIP_PATH}) for uploading to the Claude app.
 
+## Learning
+
+- [Loom tutor skill, with the Loom MCP App](${LOOM_PAGES_URL}${skillPath(LOOM_TUTOR_APP_SKILL)}/SKILL.md): \`${LOOM_TUTOR_APP_SKILL}\` plans, writes and plays each next topic inside the chat, and keeps topics and progress notes in the learner's drive ([zip](${LOOM_PAGES_URL}${skillZipPath(LOOM_TUTOR_APP_SKILL)})).
+- [Loom tutor skill, with Loom Viewer](${LOOM_PAGES_URL}${skillPath(LOOM_TUTOR_VIEWER_SKILL)}/SKILL.md): \`${LOOM_TUTOR_VIEWER_SKILL}\` does the same for chats without the app; the learner opens each topic in Loom Viewer and pastes back its progress notes ([zip](${LOOM_PAGES_URL}${skillZipPath(LOOM_TUTOR_VIEWER_SKILL)})).
+
 ## OpenUI
 
 - [OpenUI Lang specification](${OPENUI_LANG_DOCS_URL}): the language every \`.oui\` file is written in.
@@ -37,19 +54,25 @@ function llmsTxt(): string {
 `
 }
 
-/** The skill folder's files, keyed by path inside the folder. */
-function skillFiles(prompt: string): Record<string, string> {
+/**
+ * A skill folder's files, keyed by path inside the folder. The writer and the
+ * Viewer tutor carry the authoring prompt; the app tutor gets it from the
+ * Loom MCP server (decision 202).
+ */
+function skillFiles(name: string, prompt: string): Record<string, string> {
+  if (name === LOOM_TUTOR_APP_SKILL) return { 'SKILL.md': getTutorAppSkill() }
+  if (name === LOOM_TUTOR_VIEWER_SKILL) return { 'SKILL.md': getTutorViewerSkill(), [LOOM_SKILL_REFERENCE]: prompt }
   return { 'SKILL.md': getLoomSkill(), [LOOM_SKILL_REFERENCE]: prompt }
 }
 
 /**
- * Files of the published skill zip (`LOOM_SKILL_ZIP_PATH`), keyed by path
+ * Files of a published skill zip (`skillZipPath(name)`), keyed by path
  * inside it: the skill folder sits at the root, as the Claude app's skill
  * upload expects. scripts/gen-oui-schema.ts zips them.
  */
-export function skillZipFiles(): Record<string, string> {
-  const files = skillFiles(getLoomAuthoringPrompt())
-  return Object.fromEntries(Object.entries(files).map(([name, text]) => [`${LOOM_SKILL_NAME}/${name}`, text]))
+export function skillZipFiles(name: string = LOOM_SKILL_NAME): Record<string, string> {
+  const files = skillFiles(name, getLoomAuthoringPrompt())
+  return Object.fromEntries(Object.entries(files).map(([file, text]) => [`${name}/${file}`, text]))
 }
 
 export function ouiSchemaFiles(): Record<string, string> {
@@ -60,8 +83,10 @@ export function ouiSchemaFiles(): Record<string, string> {
     'public/llms.txt': llmsTxt(),
   }
   // Published for download, and the repo's own copy for agents working here.
-  for (const dir of [`public/${LOOM_SKILL_PATH}`, `.claude/skills/${LOOM_SKILL_NAME}`]) {
-    for (const [name, text] of Object.entries(skillFiles(prompt))) files[`${dir}/${name}`] = text
+  for (const skill of LOOM_SKILL_NAMES) {
+    for (const dir of [`public/${skillPath(skill)}`, `.claude/skills/${skill}`]) {
+      for (const [name, text] of Object.entries(skillFiles(skill, prompt))) files[`${dir}/${name}`] = text
+    }
   }
   return files
 }

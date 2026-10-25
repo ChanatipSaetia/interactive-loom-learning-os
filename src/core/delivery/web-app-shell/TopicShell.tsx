@@ -12,9 +12,11 @@ import { X } from 'lucide-react'
 interface SectionRendererProps {
   config: SectionConfig
   sectionIndex: number
+  /** The section's own events (answers, completion), for learner memory. */
+  onEvent?: (event: { type: string; [key: string]: unknown }) => void
 }
 
-function SectionRenderer({ config, sectionIndex }: SectionRendererProps) {
+function SectionRenderer({ config, sectionIndex, onEvent }: SectionRendererProps) {
   const Component = SectionRegistry.get(config.type)
   if (!Component) {
     return (
@@ -27,7 +29,7 @@ function SectionRenderer({ config, sectionIndex }: SectionRendererProps) {
   return (
     <div className="section-wrapper" data-section-type={config.type} data-section-index={sectionIndex}>
       <Suspense fallback={<div className="section-loading">Loading section...</div>}>
-        <Component sectionIndex={sectionIndex} {...config.props} />
+        <Component sectionIndex={sectionIndex} {...config.props} {...(onEvent && { onEvent })} />
       </Suspense>
     </div>
   )

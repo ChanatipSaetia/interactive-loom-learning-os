@@ -6,7 +6,7 @@ import {
   compileOUICatalog,
   indexStatementLines,
 } from '../../../../../../src/core/learning-engine/composition/oui/compile'
-import { OUI_SECTION_TYPES, getLoomOUIJSONSchema, loomOUILibrary } from '../../../../../../src/core/learning-engine/composition/oui/library'
+import { OUI_SECTION_TYPES, getLoomOUIJSONSchema, getLoomOUILibrary } from '../../../../../../src/core/learning-engine/composition/oui/library'
 import { KNOWN_SECTION_TYPES } from '../../../../../../src/core/learning-engine/validation/gateway'
 import { validateOUISection } from '../../../../../../src/core/learning-engine/validation/oui-gateway'
 import { deriveSchema } from '../../../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/derive'
@@ -24,7 +24,7 @@ describe('Loom OpenUI library', () => {
   })
 
   it('generates an authoring prompt with positional signatures', () => {
-    const prompt = loomOUILibrary.prompt()
+    const prompt = getLoomOUILibrary().prompt()
     expect(prompt).toContain('QuizChoice(id: string, text: string, correct: boolean, explanation: string)')
   })
 })

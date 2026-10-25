@@ -1,17 +1,12 @@
+import { evaluateExpression } from './expression'
+
 /** A formula's value for the variables (and earlier metrics) in scope; 0 when it does not evaluate. */
 export function evaluateFormula(formulaStr: string, variablesState: Record<string, number>): number {
-  let expression = formulaStr
-  for (const [key, val] of Object.entries(variablesState)) {
-    const regex = new RegExp(`\\b${key}\\b`, 'g')
-    expression = expression.replace(regex, String(val))
-  }
-
   try {
-    // Safe evaluation using Function
-    const fn = new Function('Math', `return (${expression})`)
-    return fn(Math)
+    // Parsed rather than compiled: `new Function` is blocked inside chat apps (no unsafe-eval)
+    return evaluateExpression(formulaStr, variablesState)
   } catch (err) {
-    console.error('Failed to evaluate formula:', formulaStr, 'Expression:', expression, err)
+    console.error('Failed to evaluate formula:', formulaStr, err)
     return 0
   }
 }

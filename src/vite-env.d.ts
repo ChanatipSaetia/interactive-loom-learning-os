@@ -7,3 +7,9 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+/** A file's text, inlined by Vite (`src/mcp/worker-prompt.ts`). */
+declare module '*?raw' {
+  const text: string
+  export default text
+}

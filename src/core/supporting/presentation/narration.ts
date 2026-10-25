@@ -81,20 +81,48 @@ const SCRIPTS: Array<[RegExp, string]> = [
   [/[؀-ۿ]/, 'ar'],
 ]
 
+/** A line that has not started speaking by then never will: this browser's speech is silent. */
+const START_TIMEOUT = 2000
+/** Speech errors that mean this browser cannot speak at all (not a cut-off or a refused line). */
+const CANNOT_SPEAK = new Set(['synthesis-unavailable', 'synthesis-failed', 'audio-hardware'])
+
 export interface Narrator {
-  /** A voice exists in this browser. */
+  /**
+   * The browser can speak: it has speech synthesis, and no line has failed to start. The voice list
+   * is not required, since iOS web views (Claude's app among them) often report none yet speak with
+   * the default voice.
+   */
   available: () => boolean
-  /** Calls back when the voice list changes; returns the unsubscribe. */
+  /** Calls back when the voice list or `available()` changes; returns the unsubscribe. */
   onVoices: (cb: () => void) => () => void
   /** Reads the parts; resolves when the voice finishes, is cancelled or fails. */
   speak: (parts: SpeechPart[]) => Promise<void>
   cancel: () => void
 }
 
+/**
+ * Call inside the tap that starts Present. iOS (Safari, and the web views of
+ * chat apps such as Claude's) keeps speech silent for the whole page unless
+ * the first utterance is spoken inside a tap, and Present speaks later, from
+ * a timer; an empty, silent utterance opens the voice for what follows.
+ */
+export function unlockSpeech(): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return
+  try {
+    const utterance = new SpeechSynthesisUtterance('')
+    utterance.volume = 0
+    window.speechSynthesis.speak(utterance)
+  } catch {
+    // No voice to open
+  }
+}
+
 export function createNarrator(): Narrator {
   const synth: SpeechSynthesis | undefined = typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : undefined
   let lit: HTMLElement | null = null
   let finish: (() => void) | null = null
+  let silent = false
+  const listeners = new Set<() => void>()
   const light = (el: HTMLElement | null) => {
     lit?.classList.remove(SPOKEN_CLASS)
     lit = el
@@ -107,11 +135,15 @@ export function createNarrator(): Narrator {
     light(null)
   }
   return {
-    available: () => !!synth && synth.getVoices().length > 0,
+    available: () => !!synth && !silent,
     onVoices: (cb) => {
       if (!synth) return () => {}
+      listeners.add(cb)
       synth.addEventListener('voiceschanged', cb)
-      return () => synth.removeEventListener('voiceschanged', cb)
+      return () => {
+        listeners.delete(cb)
+        synth.removeEventListener('voiceschanged', cb)
+      }
     },
     cancel,
     speak: (parts) => {
@@ -136,19 +168,35 @@ export function createNarrator(): Narrator {
         utterance.lang = voice.lang
       }
       return new Promise<void>((resolve) => {
+        let started = 0
         const end = () => {
           if (finish !== end) return
+          window.clearTimeout(started)
           finish = null
           light(null)
           resolve()
         }
         finish = end
+        const giveUp = () => {
+          silent = true
+          synth.cancel()
+          end()
+          listeners.forEach((cb) => cb())
+        }
+        // A browser with speech synthesis but no working voice never starts, or says it cannot speak
+        started = window.setTimeout(() => {
+          if (finish === end) giveUp()
+        }, START_TIMEOUT)
+        utterance.onstart = () => window.clearTimeout(started)
         utterance.onboundary = (e) => {
           if (finish !== end || e.name === 'sentence') return
           light(spans.find((s) => e.charIndex >= s.start && e.charIndex < s.end)?.el ?? null)
         }
         utterance.onend = end
-        utterance.onerror = end
+        utterance.onerror = (e) => {
+          if (finish === end && CANNOT_SPEAK.has((e as { error?: string }).error ?? '')) giveUp()
+          else end()
+        }
         synth.speak(utterance)
       })
     },

@@ -92,6 +92,8 @@ export interface PickAssistantBridge {
   /** Stop the reply that is streaming. */
   stop(): void
   togglePanel(open?: boolean): void
+  /** False when the replies show elsewhere (the chat around the Loom MCP App): no chat button on phones. */
+  hasPanel?: boolean
 }
 
 const rowLabel = (anchor: string) => (anchor === 'root' ? 'Whole section' : anchor)
@@ -472,7 +474,7 @@ export function PickMode({ topicId, active, onActiveChange, resolve, source, fil
           <span className="pick-tray-status" aria-live="polite">
             {copyState === 'copied' ? 'Copied' : copyState === 'failed' ? 'Copy failed' : copyState === 'empty' ? 'Nothing to copy' : ''}
           </span>
-          {narrow && assistant && !chatting && (
+          {narrow && assistant && assistant.hasPanel !== false && !chatting && (
             <button type="button" className="pick-bar-icon pick-chat-button" onClick={() => assistant.togglePanel(true)} aria-label="Open the AI chat" title="Open the AI chat" data-testid="pick-chat">
               <Bot size={16} />
               {assistant.unread && <span className="ai-dot" aria-label="New reply" />}

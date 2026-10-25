@@ -15,7 +15,7 @@ In the rules below, "program" means one file. The `root` of `topic.oui` is `Topi
 
 Answer in the format the user asks for. If they do not say, use the single .oui file.
 
-1. **Single .oui file** (`<topic-id>.loom.oui`): the first line is `// @loom-topic <topic-id>`, then every file of the topic, each after a marker line `// === <path> ===`. Put it in one code block. For several topics, repeat the `// @loom-topic` line before each topic's files.
+1. **Single .oui file** (`<topic-id>.loom.oui`): the first line is `// @loom-topic <topic-id>` (followed by `// @loom-domain <domain-id>` when the topic is kept in one of the learner's domains, the folder `Loom/<domain-id>/` in their drive), then every file of the topic, each after a marker line `// === <path> ===`. Put it in one code block. For several topics, repeat the `// @loom-topic` line before each topic's files.
 
    ```
    // @loom-topic <topic-id>
@@ -418,6 +418,17 @@ Catalog(topics: TopicRef[]) — Content catalog (root of index.oui): the ordered
 TopicRef(id: string) — Includes the topic folder <id>/topic.oui in the catalog.
   - id: Topic folder name under the content root.
 
+### The learner's Loom folder (Loom/index.oui, Loom/<domain-id>/domain.oui)
+Domain(title: string, description: string, topics: TopicRef[], goal?: string) — A learner's subject area (root of Loom/<domain-id>/domain.oui): its title, its topics in suggested learning order and the learner's goal.
+  - title: Domain name shown to the learner (e.g. "Fight Animation"); topics in it use it as their category.
+  - description: One or two sentences on what the domain covers.
+  - topics: Its topics in suggested learning order, as TopicRef calls naming files in topics/ (TopicRef("punch-basics") for topics/punch-basics.loom.oui).
+  - goal: Optional: what the learner wants to reach in this domain, in their words (e.g. "animate a 10-second fight scene in Blender").
+DomainRef(id: string) — Includes the domain folder Loom/<id>/ (its domain.oui) in the library.
+  - id: Domain ID: the folder name under Loom/, lowercase letters, digits, - and _ (e.g. "fight-animation").
+Library(domains: DomainRef[]) — The learner's library (root of Loom/index.oui): the list of their domains.
+  - domains: The domains, as DomainRef calls, most recently studied first.
+
 ### Narration (sections/<name>.narrate.oui)
 Narration(steps: NarrationStep[]) — Root of a narration file sections/<name>.narrate.oui: the script Present mode plays the section to, step by step.
   - steps: The narrated steps in order, as NarrationStep references.
@@ -721,7 +732,7 @@ back2 = NarrationStep("card2.back", "Steep time is the dial you control.", [Call
 
 - In the single .oui file, start EVERY file with its own marker line written exactly as `// === topic.oui ===`, `// === sections/<name>.oui ===` or `// === sections/<name>.narrate.oui ===` (three `=` on each side, no folder prefix). Each file holds exactly one `root =` statement; never put two sections in one file.
 - Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.
-- Start with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.
+- Size the topic to the request. A short topic (one idea, a quick explanation, the next small step in a chat) is 1–3 sections that show the idea best, with no `Intro` and no quiz unless a quick check is the point. A full lesson starts with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.
 - Mix interactive section types. Never build a topic out of Text sections only.
 - Fit each section to its own content rather than to the example: different section types, and different layouts for standard OpenUI sections (Steps, CodeBlock, cards, EntityList, a chart or a table, an Svg drawing, …).
 - Write a narration file for every section, at least one NarrationStep per beat of that section type (see Narration Files), in the topic's language.

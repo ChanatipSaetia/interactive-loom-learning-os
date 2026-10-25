@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const SCHEMA_FILES = import.meta.glob<string>(['/public/llm/**/*', '!/public/llm/**/*.zip', '/public/llms.txt', '/.claude/skills/loom-topic-writer/**/*'], { query: '?raw', import: 'default', eager: true })
+const SCHEMA_FILES = import.meta.glob<string>(['/public/llm/**/*', '!/public/llm/**/*.zip', '/public/llms.txt', '/.claude/skills/loom-topic-writer/**/*', '/.claude/skills/loom-tutor-app/**/*', '/.claude/skills/loom-tutor-viewer/**/*'], { query: '?raw', import: 'default', eager: true })
 const SOURCES = import.meta.glob<string>('/src/**/*.tsx', { query: '?raw', import: 'default', eager: true })
 
 type Def = { properties?: Record<string, { description?: string }> }

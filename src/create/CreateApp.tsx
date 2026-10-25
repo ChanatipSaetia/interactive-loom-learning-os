@@ -3,7 +3,8 @@
  * Loom topics with the `loom-topic-writer` agent skill: download it as a
  * zip and upload it to the Claude app, or install it for coding agents
  * (Claude Code, opencode, …) with `npx skills add`; then ask for a topic and
- * open it in Loom Viewer. `?ai=agent` preselects the coding-agent tab.
+ * open it in Loom Viewer. `?ai=agent` preselects the coding-agent tab. The
+ * learner skills (`loom-tutor-app`, `loom-tutor-viewer`) are offered below.
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Check, Copy, Download, ExternalLink, Eye, Sparkles } from 'lucide-react'
@@ -17,8 +18,13 @@ import {
   LOOM_SKILL_NAME,
   LOOM_SKILL_PATH,
   LOOM_SKILL_ZIP_PATH,
+  LOOM_TUTOR_APP_SKILL,
+  LOOM_TUTOR_VIEWER_SKILL,
   SKILL_ADD_COMMAND,
   SKILL_UPDATE_COMMAND,
+  skillAddCommand,
+  skillPath,
+  skillZipPath,
 } from '../core/learning-engine/composition/oui/llm-guide'
 import '../core/delivery/web-app-shell/layout.css'
 
@@ -134,6 +140,7 @@ export function CreateApp() {
           </div>
 
           {guideId === 'claude' ? <ClaudeAppGuide /> : <AgentGuide />}
+          <TutorSkills guide={guideId} />
         </main>
       </div>
     </UISystemProvider>
@@ -221,6 +228,50 @@ function ClaudeAppGuide() {
         <p className="create-tip">When the Loom skill is updated, download the zip again and upload it in place of the old one.</p>
       </Step>
     </>
+  )
+}
+
+const TUTOR_SKILLS = [
+  {
+    name: LOOM_TUTOR_APP_SKILL,
+    title: 'With the Loom MCP App',
+    text: 'For chats with the Loom MCP server connected: topics play right in the conversation, and Save my progress hands the chat a note to keep.',
+  },
+  {
+    name: LOOM_TUTOR_VIEWER_SKILL,
+    title: 'With Loom Viewer',
+    text: 'For any other chat: you open each topic in Loom Viewer and paste back what Copy progress gives you.',
+  },
+]
+
+/** The learner skills (slice 6): the chat plans each next topic and keeps topics and progress notes in your own drive. */
+function TutorSkills({ guide }: { guide: GuideId }) {
+  return (
+    <section className="create-step" aria-labelledby="tutor-skills">
+      <h2 id="tutor-skills">Learn with a tutor (optional)</h2>
+      <p>
+        Two more skills turn the chat into a tutor: it plans the next topic from your progress, mixes in what you learned before, and keeps
+        topics and progress notes in a <code>Loom/</code> folder in your own Google Drive or OneDrive, through the chat's drive connector.
+        Add the one that fits your chat.
+      </p>
+      <ul className="create-list">
+        {TUTOR_SKILLS.map((skill) => (
+          <li key={skill.name}>
+            <strong>{skill.title}</strong> (<code>{skill.name}</code>): {skill.text}{' '}
+            <a href={`${BASE}${skillPath(skill.name)}/SKILL.md`} target="_blank" rel="noreferrer">View <ExternalLink size={12} /></a>
+            {guide === 'claude' ? (
+              <div className="create-actions">
+                <a className="create-button" href={`${BASE}${skillZipPath(skill.name)}`} download data-testid={`create-download-${skill.name}`}>
+                  <Download size={16} /> Download {skill.name}.zip
+                </a>
+              </div>
+            ) : (
+              <Command command={skillAddCommand(skill.name)} testId={`create-add-${skill.name}`} />
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 

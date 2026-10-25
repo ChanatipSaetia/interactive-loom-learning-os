@@ -321,3 +321,18 @@ describe('narration files (sections/<name>.narrate.oui)', () => {
     expect(warned.narrationErrors[0].error).toMatch(/^line 2: "q7" does not name a statement of sections\/quiz.oui/)
   })
 })
+
+describe('the domain line (// @loom-domain)', () => {
+  const text = '// @loom-topic punch-basics\n// @loom-domain fight-animation\n// === topic.oui ===\nroot = Topic("Punch", "Fight Animation", "", [])\n'
+
+  it('reads the domain a topic is kept under, and writes it back', () => {
+    const [topic] = parseTopicSource(text)
+    expect(topic.domainId).toBe('fight-animation')
+    expect(createTopicSource([topic])).toBe(text)
+  })
+
+  it('leaves it out when the topic names none, and refuses a bad domain ID', () => {
+    expect(parseTopicSource(text.replace('// @loom-domain fight-animation\n', ''))[0]).not.toHaveProperty('domainId')
+    expect(() => parseTopicSource(text.replace('fight-animation', 'Fight Animation!'))).toThrow(/not a valid domain ID/)
+  })
+})

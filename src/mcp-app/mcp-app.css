@@ -1,0 +1,351 @@
+/* The Loom MCP App inside a chat: a glass card inline, Present or Read in fullscreen. */
+
+html, body {
+  min-height: 0;
+}
+
+body {
+  margin: 0;
+}
+
+.mcp-card {
+  margin: 0;
+  padding: 16px;
+  border-radius: 18px;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-base) 72%, transparent);
+  border: 1px solid var(--glass-edge, var(--ctp-surface1));
+  backdrop-filter: var(--glass-filter, blur(18px) saturate(1.6));
+  -webkit-backdrop-filter: var(--glass-filter, blur(18px) saturate(1.6));
+  box-shadow: 0 10px 30px -18px var(--glass-drop, rgba(0, 0, 0, 0.5));
+  font-family: Inter, 'Noto Sans Thai', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mcp-card-head h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.mcp-card-head p {
+  margin: 4px 0 0;
+  color: var(--ctp-subtext0);
+  font-size: 14px;
+}
+
+.mcp-sections {
+  margin: 0;
+  padding: 0 0 0 20px;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--ctp-subtext1);
+}
+
+.mcp-sections li span {
+  margin-right: 6px;
+}
+
+.mcp-sections em {
+  font-style: normal;
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ctp-blue) 16%, transparent);
+  color: var(--ctp-blue);
+}
+
+.mcp-sections .mcp-section-error span {
+  color: var(--ctp-red);
+}
+
+.mcp-errors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-red) 14%, transparent);
+}
+
+.mcp-errors svg {
+  color: var(--ctp-red);
+}
+
+.mcp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* The theme dropdown: a native select (its list opens outside the chat's frame, so a short card never
+   cuts it off), styled as a quiet pill with an arrow */
+.mcp-theme {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.mcp-theme svg {
+  position: absolute;
+  pointer-events: none;
+}
+
+.mcp-theme .mcp-theme-icon {
+  left: 10px;
+}
+
+.mcp-theme .mcp-theme-arrow {
+  right: 9px;
+}
+
+.mcp-theme select {
+  appearance: none;
+  -webkit-appearance: none;
+  max-width: 190px;
+  padding: 6px 28px 6px 30px;
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 14%, transparent);
+  border-radius: 999px;
+  font: 600 13px Inter, system-ui, sans-serif;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-text) 8%, transparent);
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.mcp-theme select option {
+  color: var(--ctp-text);
+  background: var(--ctp-base);
+}
+
+@media (max-width: 480px) {
+  .mcp-theme select { max-width: 44px; padding-right: 8px; color: transparent; }
+  .mcp-theme .mcp-theme-arrow { display: none; }
+}
+
+.mcp-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  font: 600 14px Inter, system-ui, sans-serif;
+  color: var(--ctp-base);
+  background: var(--ctp-blue);
+  cursor: pointer;
+}
+
+.mcp-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.mcp-quiet {
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-text) 8%, transparent);
+}
+
+.mcp-play {
+  padding: 9px 20px;
+}
+
+.mcp-spin {
+  animation: mcp-spin 1s linear infinite;
+  vertical-align: -3px;
+}
+
+@keyframes mcp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Present in the conversation: the 16:9 stage at the card's width less its padding, plus Present's
+   caption bar and controls below it (about 210px), so the stage is never held back by the height */
+.mcp-player {
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--glass-edge, var(--ctp-surface1));
+}
+
+.mcp-stage {
+  height: calc((100vw - 32px) * 9 / 16 + 210px);
+  min-height: 320px;
+}
+
+.mcp-stage .present-mode {
+  padding: 12px 16px;
+}
+
+/* Inside a chat's column the 1200×675 landscape stage is drawn at about 0.5–0.65×, so Present's text
+   sizes (body 23px on the stage) would show at 12–15px: they are about 30% larger here. Full screen
+   on a wide window draws the stage near full size, so it keeps Present's own sizes */
+.mcp-player:not(.mcp-full) .present-stage:not(.is-portrait) .present-region {
+  --present-fs-h2: 44px;
+  --present-fs-body: 30px;
+  --present-fs-card: 26px;
+  --present-fs-small: 21px;
+}
+
+@media (max-width: 1000px) {
+  .mcp-player.mcp-full .present-stage:not(.is-portrait) .present-region {
+    --present-fs-h2: 44px;
+    --present-fs-body: 30px;
+    --present-fs-card: 26px;
+    --present-fs-small: 21px;
+  }
+}
+
+/* Full screen: the chat keeps its own bars over the app (the phone's status bar, its close button and
+   title, its message bar), so the app stays clear of them: the insets the chat reports
+   (safeAreaInsets, set by McpApp), or room for typical bars when it reports none */
+.mcp-full {
+  box-sizing: border-box;
+  height: 100vh;
+  padding: var(--mcp-inset-top, 56px) var(--mcp-inset-right, 0px) var(--mcp-inset-bottom, 88px) var(--mcp-inset-left, 0px);
+  border: 0;
+  border-radius: 0;
+}
+
+.mcp-player.mcp-full .mcp-stage {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+
+.mcp-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-base) 80%, transparent);
+  backdrop-filter: var(--glass-filter, blur(18px));
+  -webkit-backdrop-filter: var(--glass-filter, blur(18px));
+}
+
+.mcp-bar-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 14px Inter, 'Noto Sans Thai', system-ui, sans-serif;
+}
+
+.mcp-small {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.mcp-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+}
+
+@media (max-width: 480px) {
+  .mcp-wide-only { display: none; }
+}
+
+/* Read in the conversation: a fixed-height card that scrolls inside. A frame as tall as the whole
+   topic would centre modals (taxonomy details, help) far from what the learner sees */
+.mcp-read {
+  display: flex;
+  flex-direction: column;
+  height: 640px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--glass-edge, var(--ctp-surface1));
+}
+
+.mcp-read.mcp-full {
+  height: 100vh;
+  border-radius: 0;
+}
+
+.mcp-read-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Touch screens without the chat's full screen: Read at its full height, so the chat's own
+   scrolling moves through it (a scroll box inside the frame gets no swipes there) */
+.mcp-read.mcp-read-natural {
+  height: auto;
+  overflow: visible;
+}
+
+.mcp-read-natural .mcp-read-scroll {
+  overflow: visible;
+}
+
+/* Open in Viewer's link, to copy when the chat does not open it */
+.mcp-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  padding: 8px 12px;
+  font: 13px Inter, system-ui, sans-serif;
+  color: var(--ctp-subtext0);
+  background: color-mix(in srgb, var(--ctp-base) 80%, transparent);
+}
+
+.mcp-link input {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, var(--ctp-text) 14%, transparent);
+  border-radius: 8px;
+  font: 12px ui-monospace, monospace;
+  color: var(--ctp-text);
+  background: color-mix(in srgb, var(--ctp-text) 6%, transparent);
+}
+
+.mcp-link em {
+  flex-basis: 100%;
+  font-style: normal;
+}
+
+/* Pick in Read: the bar floats at the foot of the frame, so the last section scrolls clear of it, and in
+   full screen it stays above the chat's own message bar */
+.mcp-read-scroll {
+  padding-bottom: calc(var(--pick-bar-height, 56px) + 16px);
+}
+
+.mcp-is-full .pick-bar {
+  bottom: calc(var(--mcp-inset-bottom, 88px) + 8px);
+}
+
+/* show_library and show_domain: Viewer's library and domain pages inside the card */
+.mcp-read .loom-shelf {
+  padding: 16px 16px 24px;
+}
+
+.mcp-shelf-note {
+  padding: 6px 16px;
+}
+
+.mcp-read .loom-ask-button {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}

@@ -8,6 +8,7 @@ import { validateOUINarration, validateOUISection } from '../core/learning-engin
 import { NARRATION_FILE, type NarrationData } from '../core/learning-engine/composition/oui/narration'
 import type { SectionConfig } from '../core/learning-engine/registry'
 import type { TopicFiles } from '../core/supporting/authoring-editor/workspace'
+import type { NoteTopic } from '../core/supporting/learner-progress'
 
 export interface ViewerSection {
   name: string
@@ -22,6 +23,8 @@ export interface ViewerSection {
 
 export interface ViewerTopic {
   topicId: string
+  /** The learner's domain it is kept under (`// @loom-domain`), when the topic says. */
+  domainId?: string
   manifest: OUITopicManifest | null
   /** Set when topic.oui itself cannot be read. */
   error?: string
@@ -35,11 +38,21 @@ export interface ViewerTopic {
 const formatIssues = (issues: Array<{ line?: number; message: string }>) =>
   issues.map((i) => `${i.line ? `line ${i.line}: ` : ''}${i.message}`).join('\n')
 
-export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic {
+/** The topic's outline for a progress note (Viewer's Copy progress for chat, the app's Save my progress). */
+export function noteTopicOf(topic: ViewerTopic): NoteTopic {
+  return {
+    id: topic.topicId,
+    domain: topic.domainId,
+    title: topic.manifest?.title,
+    sections: topic.sections.map((s) => ({ name: s.name, title: String(s.config?.props.title || s.name) })),
+  }
+}
+
+export function compileViewerTopic({ topicId, files, domainId }: TopicFiles): ViewerTopic {
   const topic = compileOUITopic(files['topic.oui'] ?? '')
   const topicErrors = topic.issues.filter((i) => i.tier < 3)
   if (!topic.value || topicErrors.length) {
-    return { topicId, manifest: null, error: `topic.oui has errors:\n${formatIssues(topicErrors)}`, sections: [], files, narrationErrors: [] }
+    return { topicId, domainId, manifest: null, error: `topic.oui has errors:\n${formatIssues(topicErrors)}`, sections: [], files, narrationErrors: [] }
   }
 
   const sections = topic.value.sections.map((name): ViewerSection => {
@@ -66,7 +79,7 @@ export function compileViewerTopic({ topicId, files }: TopicFiles): ViewerTopic 
     if (result.diagnostics.length) narrationErrors.push({ file: path, error: formatIssues(result.diagnostics) })
     if (section && result.payload && !result.diagnostics.some((d) => d.tier < 3)) section.narration = result.payload
   }
-  return { topicId, manifest: topic.value, sections, files, narrationErrors }
+  return { topicId, domainId, manifest: topic.value, sections, files, narrationErrors }
 }
 
 /**

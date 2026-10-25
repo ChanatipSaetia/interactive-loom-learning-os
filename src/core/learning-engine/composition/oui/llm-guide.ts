@@ -25,8 +25,19 @@ export const LOOM_SKILL_ZIP_PATH = `llm/skills/${LOOM_SKILL_NAME}.zip`
 /** The authoring prompt inside the skill folder. */
 export const LOOM_SKILL_REFERENCE = `references/${LOOM_PROMPT_FILE_NAME}`
 
-/** Installs the skill for every user-level agent the person picks (skills CLI, https://skills.sh). */
-export const SKILL_ADD_COMMAND = `npx skills add ${LOOM_REPO} --skill ${LOOM_SKILL_NAME} -g`
+/** The learner skills (slice 6): tutoring with the Loom MCP App, or with Loom Viewer. */
+export const LOOM_TUTOR_APP_SKILL = 'loom-tutor-app'
+export const LOOM_TUTOR_VIEWER_SKILL = 'loom-tutor-viewer'
+/** Every published skill, the writer first. */
+export const LOOM_SKILL_NAMES = [LOOM_SKILL_NAME, LOOM_TUTOR_APP_SKILL, LOOM_TUTOR_VIEWER_SKILL] as const
+
+/** A published skill's folder and zip, relative to the app base. */
+export const skillPath = (name: string) => `llm/skills/${name}`
+export const skillZipPath = (name: string) => `llm/skills/${name}.zip`
+
+/** Installs a skill for every user-level agent the person picks (skills CLI, https://skills.sh). */
+export const skillAddCommand = (name: string) => `npx skills add ${LOOM_REPO} --skill ${name} -g`
+export const SKILL_ADD_COMMAND = skillAddCommand(LOOM_SKILL_NAME)
 /** Fetches the latest version of installed skills. */
 export const SKILL_UPDATE_COMMAND = 'npx skills update -g'
 

@@ -1,0 +1,4 @@
+# Cloudflare Workers static assets (wrangler.toml): chats load the Loom MCP App into a sandboxed
+# frame with an opaque origin, so its module script and styles need CORS, as GitHub Pages gives them.
+/mcp-app/*
+  Access-Control-Allow-Origin: *

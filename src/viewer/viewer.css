@@ -249,3 +249,98 @@ body {
 @media (max-width: 400px) {
   .viewer-brand-label { display: none; }
 }
+
+/* The learner's Loom folder: library and domain pages (LibraryView.tsx, decisions 210–215) */
+.loom-shelf {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 16px 64px;
+}
+.loom-shelf-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px 20px;
+  margin-bottom: 20px;
+}
+.loom-shelf-head h1 { margin: 4px 0 6px; font-family: var(--font-display); font-size: 28px; }
+.loom-shelf-kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--muted-foreground); }
+.loom-shelf-lead { margin: 0 0 8px; line-height: 1.5; color: var(--muted-foreground); }
+.loom-shelf-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.loom-shelf-error { margin: 8px 0; padding: 8px 12px; border-radius: 10px; font-size: 13px; color: var(--foreground); background: color-mix(in srgb, var(--ctp-red) 14%, transparent); }
+.loom-shelf-empty { color: var(--muted-foreground); }
+.loom-back { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; padding: 4px 10px; border: 0; border-radius: 999px; font: inherit; font-size: 13px; color: var(--muted-foreground); background: transparent; cursor: pointer; }
+.loom-back:hover { color: var(--foreground); background: var(--accent); }
+
+.loom-domains { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.loom-domain-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font: inherit;
+  text-align: left;
+  color: var(--foreground);
+  background: var(--card);
+  cursor: pointer;
+  transition: border-color 120ms, transform 120ms;
+}
+.loom-domain-card:hover { border-color: var(--primary); transform: translateY(-1px); }
+.loom-domain-card strong { font-family: var(--font-display); font-size: 18px; }
+.loom-domain-goal { margin: 0 0 6px; font-size: 14px; line-height: 1.45; color: var(--muted-foreground); }
+.loom-domain-meta { margin: 0; font-size: 13px; color: var(--muted-foreground); }
+.loom-meter { display: block; height: 6px; border-radius: 999px; background: color-mix(in srgb, var(--foreground) 10%, transparent); overflow: hidden; }
+.loom-meter > span { display: block; height: 100%; border-radius: inherit; background: var(--ctp-green); }
+.loom-meter--wide { max-width: 320px; margin: 4px 0 6px; }
+
+.loom-ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 10%, var(--card));
+}
+.loom-ask p { margin: 0; line-height: 1.5; }
+.loom-ask-button { display: inline-flex; align-items: center; gap: 6px; }
+
+.loom-topics { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.loom-topic {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+.loom-topic.is-next { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.loom-topic.is-missing { border-style: dashed; background: transparent; }
+.loom-topic-number {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  font: 600 13px var(--font-mono);
+  color: var(--muted-foreground);
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+.loom-topic.is-done .loom-topic-number { color: var(--ctp-base); background: var(--ctp-green); }
+.loom-topic-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.loom-topic-title { font-weight: 600; }
+.loom-next-badge { margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-style: normal; color: var(--primary-foreground, var(--ctp-base)); background: var(--primary); vertical-align: 2px; }
+.loom-status { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted-foreground); }
+.loom-status--done { color: var(--ctp-green); }
+.loom-status--to-review { color: var(--ctp-peach); }
+.loom-status--in-progress { color: var(--ctp-blue); }
+.loom-subhead { margin: 24px 0 4px; font-size: 16px; }

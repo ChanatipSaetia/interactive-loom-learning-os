@@ -36,7 +36,7 @@ In the rules below, "program" means one file. The \`root\` of \`topic.oui\` is \
 
 Answer in the format the user asks for. If they do not say, use the single .oui file.
 
-1. **Single .oui file** (\`<topic-id>.loom.oui\`): the first line is \`// @loom-topic <topic-id>\`, then every file of the topic, each after a marker line \`// === <path> ===\`. Put it in one code block. For several topics, repeat the \`// @loom-topic\` line before each topic's files.
+1. **Single .oui file** (\`<topic-id>.loom.oui\`): the first line is \`// @loom-topic <topic-id>\` (followed by \`// @loom-domain <domain-id>\` when the topic is kept in one of the learner's domains, the folder \`Loom/<domain-id>/\` in their drive), then every file of the topic, each after a marker line \`// === <path> ===\`. Put it in one code block. For several topics, repeat the \`// @loom-topic\` line before each topic's files.
 
    \`\`\`
    // @loom-topic <topic-id>
@@ -312,7 +312,7 @@ ${DRAWING_NARRATION_EXAMPLE}\`\`\``
 const AUTHORING_RULES = [
   'In the single .oui file, start EVERY file with its own marker line written exactly as `// === topic.oui ===`, `// === sections/<name>.oui ===` or `// === sections/<name>.narrate.oui ===` (three `=` on each side, no folder prefix). Each file holds exactly one `root =` statement; never put two sections in one file.',
   'Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.',
-  'Start with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.',
+  'Size the topic to the request. A short topic (one idea, a quick explanation, the next small step in a chat) is 1–3 sections that show the idea best, with no `Intro` and no quiz unless a quick check is the point. A full lesson starts with an `Intro` section; then build understanding step by step: vocabulary (Flashcards) and maps (ConceptMap, TaxonomyBrowser) before explanations (Text, Bullets), processes (Flowchart) before practice (ReflectionSequence, Quiz), and trade-offs or decisions (TradeoffSandbox, FormulaSandbox, Scenario, DecisionTree) last.',
   'Mix interactive section types. Never build a topic out of Text sections only.',
   'Fit each section to its own content rather than to the example: different section types, and different layouts for standard OpenUI sections (Steps, CodeBlock, cards, EntityList, a chart or a table, an Svg drawing, …).',
   'Write a narration file for every section, at least one NarrationStep per beat of that section type (see Narration Files), in the topic\'s language.',

@@ -14,7 +14,7 @@ import type { z } from 'zod'
 import type { SectionConfig } from '../../registry'
 import { bundleToSections } from '../okf/sections'
 import { compileSectionElement } from './compile'
-import { LOOM_OUI_COMPONENTS, loomOUILibrary } from './library'
+import { LOOM_OUI_COMPONENTS, getLoomOUILibrary } from './library'
 
 export type RenderSectionFn = (config: SectionConfig) => ReactNode
 
@@ -36,9 +36,9 @@ export function createLoomReactLibrary(renderSection: RenderSectionFn) {
   })
   return createLibrary({
     id: 'loom-react',
-    root: loomOUILibrary.root,
+    root: getLoomOUILibrary().root,
     components,
-    componentGroups: loomOUILibrary.componentGroups,
+    componentGroups: getLoomOUILibrary().componentGroups,
   })
 }
 

@@ -3,7 +3,9 @@
  *
  *   - Single file (`<topic>.loom.oui`): every `.oui` file of one or more
  *     topics in one text file. Each topic starts with `// @loom-topic <id>`,
- *     each file with a `// === <path> ===` marker line. Easy for an LLM chat
+ *     optionally followed by `// @loom-domain <domain-id>` (the learner's
+ *     subject area it is kept under in their drive, `Loom/<domain-id>/`),
+ *     and each file with a `// === <path> ===` marker line. Easy for an LLM chat
  *     to write (see composition/oui/authoring-prompt.ts).
  *   - Zip (`<topic>.zip`): the topic folder itself (`<topic>/topic.oui`,
  *     `<topic>/sections/<name>.oui`), including folder entries.
@@ -20,6 +22,8 @@ export interface TopicFiles {
   topicId: string
   /** File contents keyed by path relative to the topic folder. */
   files: Record<string, string>
+  /** The domain it belongs to (`// @loom-domain`), when the topic says. */
+  domainId?: string
 }
 
 export class TopicArchiveError extends Error {
@@ -52,6 +56,7 @@ function sortedPaths(files: Record<string, string>): string[] {
 // ============================================================================
 
 const TOPIC_HEADER = /^\/\/\s*@loom-topic\s+(\S+)\s*$/
+const DOMAIN_HEADER = /^\/\/\s*@loom-domain\s+(.+?)\s*$/
 const FILE_MARKER = /^\/\/\s*={3,}\s*(\S+?)\s*={3,}\s*$/
 /**
  * Marker lines as LLM chats actually write them: a `//` comment naming one
@@ -86,9 +91,9 @@ const CODE_FENCE = /^\s*```[\w-]*\s*$/
  * with a newline (a missing final newline is added).
  */
 export function createTopicSource(topics: TopicFiles[]): string {
-  return topics.map(({ topicId, files }) => {
+  return topics.map(({ topicId, files, domainId }) => {
     const parts = sortedPaths(files).map((p) => `// === ${p} ===\n${files[p].endsWith('\n') ? files[p] : `${files[p]}\n`}`)
-    return `// @loom-topic ${topicId}\n${parts.join('')}`
+    return `// @loom-topic ${topicId}\n${domainId ? `// @loom-domain ${domainId}\n` : ''}${parts.join('')}`
   }).join('')
 }
 
@@ -104,7 +109,7 @@ export function parseTopicSource(text: string, fallbackId = 'topic'): TopicFiles
   const lines = text.replace(/\r\n?/g, '\n').split('\n')
   if (lines[lines.length - 1] === '') lines.pop()
 
-  const topics: Array<{ topicId: string; files: Record<string, string[]> }> = []
+  const topics: Array<{ topicId: string; files: Record<string, string[]>; domainId?: string }> = []
   let topic: (typeof topics)[number] | null = null
   let file: string[] | null = null
   for (const line of lines) {
@@ -114,6 +119,11 @@ export function parseTopicSource(text: string, fallbackId = 'topic'): TopicFiles
       topic = { topicId: header[1], files: {} }
       topics.push(topic)
       file = null
+      continue
+    }
+    const domain = DOMAIN_HEADER.exec(line)
+    if (domain && topic && !file) {
+      topic.domainId = domain[1]
       continue
     }
     const path = markerPath(line)
@@ -135,10 +145,11 @@ export function parseTopicSource(text: string, fallbackId = 'topic'): TopicFiles
   if (topics.every((t) => Object.keys(t.files).length === 0)) {
     throw new TopicArchiveError('This .oui file has no file markers. A .loom.oui file puts each file after a line like `// === sections/intro.oui ===`.')
   }
-  return topics.map(({ topicId, files }) => {
+  return topics.map(({ topicId, files, domainId }) => {
+    if (domainId && !CONTENT_ID.test(domainId)) throw new TopicArchiveError(`"${domainId}" is not a valid domain ID (lowercase letters, digits, - and _).`)
     if (!CONTENT_ID.test(topicId)) throw new TopicArchiveError(`"${topicId}" is not a valid topic ID (lowercase letters, digits, - and _).`)
     if (!(TOPIC_FILE in files)) throw new TopicArchiveError(`Topic "${topicId}" has no \`// === topic.oui ===\` part.`)
-    return { topicId, files: splitMergedFiles(topicId, Object.fromEntries(Object.entries(files).map(([p, l]) => [p, `${l.join('\n')}\n`]))) }
+    return { topicId, ...(domainId ? { domainId } : {}), files: splitMergedFiles(topicId, Object.fromEntries(Object.entries(files).map(([p, l]) => [p, `${l.join('\n')}\n`]))) }
   })
 }
 

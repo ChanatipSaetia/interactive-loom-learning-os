@@ -7,7 +7,7 @@
  * library for `// @openui` section files.
  */
 import { ACTION_NAMES, BUILTINS, type ComponentGroup } from '@openuidev/lang-core'
-import { getLoomOUIJSONSchema, loomOUILibrary, OUI_SECTION_TYPES } from '../../../learning-engine/composition/oui/library'
+import { getLoomOUIJSONSchema, getLoomOUILibrary, OUI_SECTION_TYPES } from '../../../learning-engine/composition/oui/library'
 import { isOpenUISource, standardOpenUISchema, standardOpenUISpec } from '../../../learning-engine/sub-contexts/progressive-content/openui-standard'
 
 type JSONSchema = {
@@ -145,8 +145,8 @@ export function getOUILanguageSpec(source?: string): OUILanguageSpec {
   }
   cached ??= buildSpec(
     getLoomOUIJSONSchema(),
-    loomOUILibrary.toSpec().components as PromptSpecs,
-    loomOUILibrary.componentGroups ?? [],
+    getLoomOUILibrary().toSpec().components as PromptSpecs,
+    getLoomOUILibrary().componentGroups ?? [],
     [...OUI_SECTION_TYPES.keys()],
   )
   return cached
