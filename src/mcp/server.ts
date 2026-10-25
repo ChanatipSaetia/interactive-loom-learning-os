@@ -20,7 +20,8 @@ import { isLearnerEvent, summarize, summaryText, type LearnerEvent } from '../co
 import type { TopicCheck } from './check'
 
 /** Where the published app lives; each server release names the app version it was built for. */
-export const DEFAULT_APP_URL = 'https://chanatipsaetia.github.io/interactive-loom-learning-os/mcp-app/v1/'
+// The hosted endpoint serves the app with each release (decision 219); GitHub Pages builds only `master`
+export const DEFAULT_APP_URL = 'https://loom-mcp.loom-learning.workers.dev/mcp-app/v1/'
 export const APP_URI = 'ui://loom/app-v1.html'
 /** The app's stylesheet loads Loom's fonts from Google Fonts. */
 const FONT_ORIGINS = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com']
