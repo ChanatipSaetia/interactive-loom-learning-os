@@ -1,182 +1,139 @@
 # Interactive Loom Learning OS
 
-An interactive learning platform that dynamically renders structured topic courses from dynamic Open Knowledge Format (OKF) bundles. Features rich animations, auto-laid event-storming flowcharts, tradeoff sandboxes, and active recall checks. Built with React, Vite, TailwindCSS, anime.js, and Motion. Defaults to the Liquid Glass theme, dark or light to follow the system, over the Catppuccin Frappé palette, with Cohere structural design principles.
+Interactive lessons from plain text. A Loom **topic** is a small folder of [OpenUI Lang](https://openui.com/docs/openui-lang) (`.oui`) files: animated flowcharts, trade-off sandboxes, scenarios, flashcards, quizzes, charts and drawings, each with a narration script. Loom plays a topic as a narrated, hands-free presentation (**Present**) or as a page to work through (**Read**), in the browser or right inside an AI chat.
+
+Built with React, Vite, TailwindCSS, anime.js and Motion. Defaults to the Liquid Glass theme, dark or light to follow the system, over the Catppuccin Frappé palette.
 
 ---
 
-## Features
+## What's here
 
-- **Auto-Laid Flowcharts** — Sugiyama-style layered rendering (Event Storming, System Architecture, State Machine, Sequence, Swimlanes) with pan, zoom, node drag, and animated journey walkthroughs.
-- **Tradeoff Sandbox** — Side-by-side comparison tables and interactive metric sliders that recompute architecture ratings in real-time.
-- **Taxonomy Browser** — Card grids with category metrics, analogies, in-scope/out-of-scope boundaries, and detail modals.
-- **Active Recall Widgets** — Includes drag-and-drop chronological sequencing challenges (`reflection-sequence`) and fill-in-the-blank text templates with draggable chip pools (`reflection-template`).
-- **Interactive Glossary & Quizzes** — Flip flashcards with IPA pronunciations and AI dialogues, and multiple-choice checkpoints with hints/explanations.
-- **Formula Sandbox** — Parametric system dynamic simulation dashboards calculating math formulas dynamically via sliders.
-- **Zero-Compile Content (OKF Pipeline)** — Load topics dynamically at runtime using simple Markdown and YAML catalog bundles. No React rebuild required!
-- **Standalone CDN Library** — Package any curriculum layout into a single HTML/JSON file running via UMD CDN script tags.
-- **Loom in your chat (MCP App)** — A Loom MCP server lets a chat app's model learn Loom's format, check a topic and show it right in the conversation: a card with ▶ Play that plays the topic in Present mode right in the conversation, with narration, or opens it to read. Download the local server from `https://loom-mcp.loom-learning.workers.dev/loom-mcp.mjs` (or build it with `npm run build:mcp`), run `node loom-mcp.mjs --stdio` from a chat on your computer, and try it on localhost with `npm run mcp:host`. Chats on the web and the phone connect to the hosted endpoint on Cloudflare Workers (`https://loom-mcp.<subdomain>.workers.dev/mcp`; `npm run build:worker`, then `npm run worker:dev` locally, deployed by `.github/workflows/deploy-mcp-worker.yml`). **Save my progress** in the player and **Copy progress** in Viewer hand the chat a progress note to keep in the learner's drive, and the `loom-tutor-app` and `loom-tutor-viewer` skills teach the chat the routine. Design: [grill-log-adaptive-learning.md](grill-log-adaptive-learning.md).
-- **AI Assistant in Loom Studio & Viewer** — Pick parts of a topic and ask any OpenAI-compatible model about them (Ollama, LM Studio, llama.cpp, OpenRouter, …), called straight from the browser with no backend. In Studio the model proposes edits as diffs you apply to the editor and save. Design: [grill-log-ai-assistant.md](grill-log-ai-assistant.md).
-
----
-
-## Tech Stack
-
-- **Framework**: React 18.x + React Router DOM v6
-- **Build System**: Vite 5.x + TypeScript 5.x
-- **Styling**: TailwindCSS 3.x + Catppuccin Frappé palette; Liquid Glass (dark) and Liquid Glass Light themes by default
-- **Animations**: anime.js v4 + Motion + Lenis (for smooth scrolling)
-- **Math & Utilities**: D3 (for force-directed Concept Map graphs), marked (for markdown parsing), Radix UI (for modal primitives)
-- **Testing**: Vitest (for unit tests) + Playwright (for E2E tests)
-
----
-
-## Section Types
-
-Loom supports 14 interactive section types registered dynamically in the `SectionRegistry`. For a detailed guide on the design intent, mental models, and recommended progressive page order for these types, see [docs/sections-reference.md](docs/sections-reference.md).
-
-| Section Type | Category | Description |
+| | What it is | Where |
 |---|---|---|
-| `text` | Prose | Markdown-rendered paragraphs with optional scroll-reveal animations. |
-| `bullets` | Taxonomy | Hierarchical lists with checkable items and staggered animations. |
-| `flowchart` | Architecture | SUGY-laid flowcharts with multi-view layout, pan/zoom, and journey playback. |
-| `tradeoff-sandbox` | Decision | Strategy dashboard comparing choices with interactive metric changes. |
-| `taxonomy-browser` | Taxonomy | Accent-colored grids for grouping concepts with scope details & analogies. |
-| `concept-map` | Semantic | Directed node-link semantic graphs auto-laid via D3 force simulation. |
-| `decision-tree` | Diagnostic | Q&A wizard recommending specific solutions based on diagnostic paths. |
-| `flashcards` | Recall | Flippable cards deck displaying terms, IPA pronunciation, and AI thoughts. |
-| `image-gallery` | Visual | Lightbox grid of images with lazy-loading and attribution credit support. |
-| `formula-sandbox` | Simulation | Slider-driven calculator evaluating custom JavaScript math formulas. |
-| `reflection-sequence` | Recall | Drag-and-drop chronological step-ordering challenges. |
-| `reflection-template` | Recall | Fill-in-the-blank paragraphs with draggable vocabulary chips. |
-| `scenario` | Decision | Consequence-driven branching narratives grading choice outcomes (A, B, C). |
-| `quiz` | Validation | Multiple-choice questions with score tracking, hints, and explanations. |
+| **Loom in your AI chat** | An MCP server and MCP App: your chat writes a topic, checks it and plays it in the conversation, keeps topics and progress in your own drive, and shows your library and what is up next | [docs/mcp-setup.md](docs/mcp-setup.md) |
+| **Loom Viewer** | Opens a `.loom.oui` topic, a `.zip`, pasted text, a topic folder, or your `Loom` folder (library and domain pages), read-only, with Present and an AI tutor | `viewer.html` |
+| **Loom Studio** | Edits a topic folder with code, a visual form and a live preview, plus Pick and an AI assistant that proposes edits | `studio.html` (`npm run studio`) |
+| **Create with AI** | Adds the Loom skills to the Claude app or to coding agents, step by step | `create.html` |
+| **The learning app** | The catalog of topics in this repository, and hex campaign maps | `index.html` |
+
+The site is published at **https://loom-mcp.loom-learning.workers.dev/** (from the working branch, with the MCP endpoint at `/mcp`) and **https://chanatipsaetia.github.io/interactive-loom-learning-os/** (from `master`).
 
 ---
 
-## Dynamic OKF Topic Creation
+## Quick start
 
-All topic content lives in the `public/okf/` folder. Topics are structured as [OKF v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) bundles. The reader pipeline loads them dynamically at runtime — **no TypeScript changes or recompilations are needed**.
+**Learn in your AI chat (nothing to install).** In Claude, open **Settings → Connectors → Add custom connector**, enter `https://loom-mcp.loom-learning.workers.dev/mcp`, turn it on in a chat (with Google Drive to keep your progress), and ask *"Teach me something short about HTTP caching with Loom."*
 
-### Topic Bundle Folder Layout
-```
-public/okf/[topic-id]/
-  ├── index.md                 # OKF directory listing (progressive disclosure links)
-  ├── index.yaml               # App metadata (category, tags, related files list)
-  └── sections/                # Subfolders containing YAML/Markdown data
-      ├── intro/
-      │     ├── section.md     # Section manifest (type, title, resource)
-      │     └── content.md     # Markdown paragraphs
-      └── flowchart/
-            ├── section.md     
-            ├── actors.yaml    # Actor definitions
-            ├── systems.yaml   # Systems metadata
-            ├── steps.yaml     # Step configurations (linear/branch)
-            └── journeys.yaml  # Journey playlists
+**Use it from a chat app or agent on your computer.** Install Node.js, download the local server and add it to your client:
+
+```bash
+curl -fsSL https://loom-mcp.loom-learning.workers.dev/loom-mcp.mjs -o ~/loom/loom-mcp.mjs --create-dirs
+# then in your client: node ~/loom/loom-mcp.mjs --stdio --memory "/path/to/My Drive/Loom"
 ```
 
-### Quick Start
-1. **Create folder**: Initialize `public/okf/my-new-topic/`
-2. **Define topic registry**: Add links to the topic in the catalog indexes:
-   - Root index file: [public/okf/index.md](file:///Users/chanatipsaetia/Work/interactive-loom-learning-os/public/okf/index.md)
-   - Fallback registry: Run `npm run dev` or regenerate with `node scripts/update-okf-manifest.js` to compile the `public/index.yaml` list.
-3. **Assemble sections**: Create subfolders under `sections/` and define your data files (YAML or Markdown).
-4. **Link sections**: Add links to each section manifest inside your topic's `index.md` file and register the data files under the `related` property in `index.yaml`.
+Ready-to-paste settings for Claude Desktop, VS Code, Claude Code, opencode, Goose, Continue and DeepSeek Harness (dsh), Windows PowerShell commands, skills, and how to use every feature are in **[docs/mcp-setup.md](docs/mcp-setup.md)**.
 
-For detailed technical instructions and schema definitions, see [docs/creating-topics.md](docs/creating-topics.md). To understand the flowchart Event Storming rules, see [docs/event-storming-conventions.md](docs/event-storming-conventions.md). For the progressive section ordering guide and mental models, see [docs/sections-reference.md](docs/sections-reference.md).
+**Write topics with any chat, no MCP.** Add the `loom-topic-writer` skill (Create with AI page, or `npx skills add ChanatipSaetia/interactive-loom-learning-os --skill loom-topic-writer -g`), ask for a topic, and open the `.loom.oui` it gives you in Loom Viewer.
 
----
+**Run the repository.**
 
-## Project Structure
-
-```
-interactive-loom-learning-os/
-├── public/
-│   ├── okf/                   # Dynamic OKF topic bundles (Markdown/YAML)
-│   ├── index.yaml             # Auto-generated topics manifest
-│   ├── langgraph.html         # Standalone CDN showcase file
-│   └── langgraph.json         # Standalone showcase curriculum data
-├── src/
-│   ├── core/                  # Core Learning OS DDD engine
-│   │   ├── subdomains/        # 5 Core Bounded Contexts (ProcessSimulation, TradeoffSandbox, etc.)
-│   │   │   ├── process-simulation/   # flowchart, scenario
-│   │   │   ├── tradeoff-sandbox/     # tradeoff-sandbox, formula-sandbox, decision-tree
-│   │   │   ├── reflection-synthesis/ # reflection-sequence, reflection-template
-│   │   │   ├── progressive-content/  # text, intro, bullets, taxonomy-browser, image-gallery
-│   │   │   └── practice-assessment/  # quiz, flashcards, concept-map
-│   │   ├── validation/        # 3-Tier ValidationGateway & Tell-Back Protocol (gateway.ts)
-│   │   ├── delivery/          # Hexagonal Ports (ports.ts) & Adapters (in-repo, web-app, embed)
-│   │   ├── ui-system/         # UISystemProvider & Contracts (theme, primitives, sound, motion)
-│   │   ├── okf/               # OKF bundle reader and section parser
-│   │   └── registry/          # Dynamic SectionRegistry loader
-│   ├── sections/              # Backward-compatible re-exports for the 15 section types
-│   ├── components/            # Layout, sidebar, editor split-pane, and UI primitives
-│   ├── styles/                # Catppuccin theme stylesheets and resets
-│   ├── App.tsx                # Base router setup
-│   └── main.tsx               # App entrypoint registering section renderers
-├── libs/
-│   └── loom-sections.tsx      # Standalone UMD CDN embed library bundle
-├── scripts/
-│   ├── update-okf-manifest.js # Script compiling the dynamic public topic indexes
-│   └── publish-lib.js         # Script packaging the standalone CDN library bundle
-├── docs/
-│   ├── agents/
-│   │   └── domain.md          # Strategic & Tactical DDD Architecture Specification
-│   ├── creating-topics.md     # Technical schemas & OKF configuration guide
-│   ├── sections-reference.md  # Section mental models & ordering pedagogy
-│   ├── event-storming-conventions.md # Flowchart conventions & node semantics
-│   └── cdn-library.md         # CDN standalone UMD usage specification
-└── tests/
-    ├── unit/                  # Unit tests (Vitest)
-    └── e2e/                   # End-to-end tests (Playwright)
+```bash
+npm ci
+npm run dev          # the learning app at http://localhost:5173 (also /viewer.html, /studio.html, /create.html)
 ```
 
 ---
 
-## Standalone CDN Usage (No Repository Required)
+## Topics
 
-You do not need to clone this repository to render interactive learning sections. The component library is packaged as a standalone bundle that can be loaded on any static website via CDN.
+Topics live in `public/content/<topic-id>/`:
 
-### Load CDN Assets
-Include the CSS and UMD Javascript files directly in your HTML:
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.css">
-<script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.3.0/loom-sections.umd.js"></script>
+```
+public/content/http-caching/
+  topic.oui                   root = Topic(title, category, description, [SectionRef("intro"), …])
+  sections/
+    intro.oui                 root = Intro(...)            one section per file
+    directives.oui            root = TaxonomyBrowser(...)
+    directives.narrate.oui    root = Narration(...)        what the narrator says in Present
+    quiz.oui                  root = Quiz(...)
 ```
 
-For setup directions (including Local JSON loading, CORS handling, and code templates), check [docs/cdn-library.md](docs/cdn-library.md).
+A whole topic can also be one `.loom.oui` file (a `// @loom-topic <id>` line, then each file after a `// === <path> ===` marker), which is what AI chats write and Studio exports. The full specification, with every component and its props, is the authoring prompt: [public/llm/loom-authoring-prompt.md](public/llm/loom-authoring-prompt.md) (also served at `/llm/loom-authoring-prompt.md`, with a JSON Schema and `llms.txt`); the `loom-topic-writer` skill in `.claude/skills/` carries it for AI agents working in this repository. Check topics with `npx vitest run tests/unit/content`.
 
-### Prompting AIs to Generate Standalone Pages or Repository Topics
+### Section types
 
-You can copy and send the following user prompt directly to coding models (such as Gemini, Claude, or ChatGPT) to automatically generate a fully complete, interactive topic page on any subject.
+| Type | Component | What it is |
+|---|---|---|
+| `intro` | `Intro` | Topic opener: what it is, why it matters, a roadmap |
+| `text` | `Text` | Paragraphs with inline markdown |
+| `bullets` | `Bullets` | Bulleted or numbered checklist |
+| `taxonomy-browser` | `TaxonomyBrowser` | Categories with scope, analogy and details |
+| `image-gallery` | `ImageGallery` | Captioned images |
+| `pillar-layer` | `PillarLayer` | Layer-stack map with dependencies |
+| `flowchart` | `Flowchart` | Event Storming flowchart with architecture, swimlane, sequence, data-flow and state-machine views and guided journeys |
+| `scenario` | `Scenario` | Branching "what would you do?" story |
+| `tradeoff-sandbox` | `TradeoffSandbox` | Design choices that move metrics |
+| `formula-sandbox` | `FormulaSandbox` | Sliders driving live formulas |
+| `decision-tree` | `DecisionTree` | Questions leading to a recommendation |
+| `reflection-sequence` | `ReflectionSequence` | Put steps in the right order |
+| `reflection-template` | `ReflectionTemplate` | Complete sentences with chips |
+| `quiz` | `Quiz` | Multiple-choice questions with hints and explanations |
+| `flashcards` | `Flashcards` | Flip cards for key vocabulary |
+| `concept-map` | `ConceptMap` | Graph of concepts and relations |
+| `openui` | `// @openui` | Free layout from the standard OpenUI library: cards, tabs, tables, charts and `Svg` drawings |
 
-Copy-paste this block into your AI chat session:
-
-```text
-Create page for [TOPIC]: Do not generate any files yet. First, ask me to specify:
-
-1. The topic I want to create a curriculum page for.
-2. My preferred output format:
-   * Option A (Embedded CDN Page): A single static HTML file with the curriculum sections array embedded directly inside a script tag (completely standalone).
-   * Option B (Static CDN Page with local OKF catalog): An HTML file loading sections from a local OKF bundle folder (e.g. './okf-data') using the UMD method 'LoomSections.loadAndRenderOKF(container, okfBaseUrl, topicId)'.
-   * Option C (Repository OKF Catalog Bundle): A multi-file directory structure to be placed under 'public/okf/[topic-id]/' inside this repository (index.md, index.yaml, and subfolders containing yaml/markdown files).
-
-Once I provide the topic and layout choice, you MUST fetch and read the specifications from the following documentation files (hosted on GitHub master branch, accessible to all AI tools):
-
-1. CDN Integration Specification (for Option A & B UMD setup): https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/cdn-library.md
-2. OKF Topic Creation Manual (for Option B & C schemas): https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/creating-topics.md
-3. Progressive section ordering rules & mental models (All Options): https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/sections-reference.md
-4. Flowchart Event Storming conventions & nodes structure (All Options): https://raw.githubusercontent.com/ChanatipSaetia/interactive-loom-learning-os/master/docs/event-storming-conventions.md
-
-For a MORE COMPREHENSIVE build, also pull the per-section-type reference docs and the worked example bundle from this directory (fetch the repo tarball via codeload.github.com if GitHub's tree UI blocks direct access — it does):
-https://github.com/ChanatipSaetia/interactive-loom-learning-os/tree/master/docs/sections
-— this includes docs/sections/README.md plus one .md per section type (text, bullets, concept-map, flashcards, taxonomy-browser, flowchart, reflection-sequence, quiz, tradeoff-sandbox, formula-sandbox, reflection-template, scenario, decision-tree, image-gallery), and a full worked example at public/okf/poe2-flicker-monk/ showing real field usage, image-gallery sourcing, and multi-file taxonomy/tradeoff sections.
-
-CDN version: pin to loom-learning-sections@1.3.0 for the stylesheet and UMD script (both <link> and <script src>) unless I specify a different version.
-
-Then generate the complete curriculum structure matching the specs.
-```
+Section design intent and recommended order: [docs/sections-reference.md](docs/sections-reference.md).
 
 ---
+
+## Development
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Dev server for every page |
+| `npm run studio` | Dev server opening Loom Studio |
+| `npm run build` | Production build of the site and the MCP App |
+| `npm run test` / `npm run typecheck` / `npm run lint` | Unit tests (Vitest), type check, lint |
+| `npm run oui:schema` | Regenerates the authoring prompt, JSON Schema, `llms.txt` and the skills after a component or prompt change |
+| `npm run openui:gen` | Regenerates Loom's additions to the standard OpenUI library |
+| `npm run hexmap:validate` / `npm run hexmap:schema` | Checks hex campaign maps; regenerates their YAML schema |
+| `npm run build:mcp` | Builds the local MCP server (`dist-mcp/loom-mcp.mjs`) |
+| `npm run mcp:host` / `npm run mcp:check` | MCP Apps test host on localhost, and its browser checks |
+| `npm run build:worker` / `npm run worker:dev` | Builds the hosted endpoint (site, Worker, downloadable server); runs it locally |
+
+## Project structure
+
+```
+src/
+  core/                     learning engine, section sub-contexts, OUI compiler, validation, UI system
+    learning-engine/        sections by subdomain, OUI composition (prompts, skills, storage guide)
+    supporting/             authoring editor (Pick, AI assistant), presentation (Present), learner progress
+  viewer/                   Loom Viewer, with the library and domain pages (library.ts, LibraryView.tsx)
+  studio/                   Loom Studio
+  create/                   Create with AI page
+  mcp/                      MCP server: server.ts, cli.ts (local), worker.ts (Cloudflare), memory-folder.ts
+  mcp-app/                  The Loom MCP App shown inside chats
+public/
+  content/                  topics (OUI)
+  llm/                      authoring prompt, JSON Schema, skills and their zips
+  hexmaps/                  hex campaign maps
+docs/                       guides (setup, topics, sections, hexmaps, architecture)
+tests/
+  unit/                     Vitest
+  mcp-host/                 MCP Apps test host
+```
+
+## Docs and design logs
+
+- [docs/mcp-setup.md](docs/mcp-setup.md): Loom in your AI chat, every way to install and use it
+- [public/llm/loom-authoring-prompt.md](public/llm/loom-authoring-prompt.md): the topic format, every component and the authoring rules
+- [docs/sections-reference.md](docs/sections-reference.md), [docs/event-storming-conventions.md](docs/event-storming-conventions.md): section design and flowchart conventions
+- [docs/creating-topics.md](docs/creating-topics.md): the older OKF (YAML/Markdown) topic format in `public/okf/`
+- [docs/creating-hexmaps.md](docs/creating-hexmaps.md): hex campaign maps
+- [docs/agents/domain.md](docs/agents/domain.md) and [AGENTS.md](AGENTS.md): architecture and guidance for AI agents working here
+- Design logs: [adaptive learning and the MCP App](grill-log-adaptive-learning.md), [Present mode](grill-log-presenting-mode.md), [AI assistant](grill-log-ai-assistant.md), [Pick and comment](grill-log-pick-and-comment.md), [OpenUI input](grill-log-openui-input.md), [learner memory](grill-log-learner-memory-review.md)
+
+The standalone CDN library (`loom-learning-sections`, [docs/cdn-library.md](docs/cdn-library.md)) renders only the older OKF format and is deprecated (decision 194 in the adaptive-learning log); new work uses OUI topics and Loom Viewer.
 
 ## License
 

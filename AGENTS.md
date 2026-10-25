@@ -25,6 +25,7 @@ Read the relevant doc before starting work — **all documentation in `docs/` an
 | Learner memory without a server (partly built) | [grill-log-learner-memory-review.md](grill-log-learner-memory-review.md) |
 | Adaptive learning: callbacks, skill maps, AI chat integration (concept) | [grill-log-adaptive-learning.md](grill-log-adaptive-learning.md) |
 | Creating / editing topics & flowchart schemas | [docs/creating-topics.md](docs/creating-topics.md) |
+| Installing and using Loom in AI chats (MCP server, every client, skills, Viewer) | [docs/mcp-setup.md](docs/mcp-setup.md) |
 | Design system & sensory experience | [DESIGN.md](DESIGN.md) |
 | Hex campaign maps (gamification) | [docs/creating-hexmaps.md](docs/creating-hexmaps.md) |
 
