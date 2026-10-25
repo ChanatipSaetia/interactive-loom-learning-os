@@ -20,7 +20,7 @@ This page covers every way to set it up and use it. The design is in [grill-log-
 | Way | For | Shows the player in the chat | Needs |
 |---|---|---|---|
 | **Hosted connector** | Claude on the web, phone and desktop; other chats that add MCP servers by URL | Yes, where the chat supports MCP Apps | Nothing to install |
-| **Local server** | Claude Desktop, VS Code, Claude Code, opencode, Goose, Continue, DeepSeek Harness, … | Where the client supports MCP Apps (Claude Desktop, VS Code, Goose; dsh with an MCP Apps plugin) | Node.js and one file |
+| **Local server** | Claude Desktop, VS Code, Claude Code, opencode, Goose, Continue, DeepSeek Harness, … | Where the client supports MCP Apps (Claude Desktop, VS Code, Goose; dsh with `@openma/dsh-mcp-apps`) | Node.js and one file |
 | **Skills only** | Any chat without MCP (the Claude app, ChatGPT, coding agents) | No: topics open in Loom Viewer | Upload or install a skill |
 | **Loom Viewer only** | Opening a topic someone sent you, or your Loom folder | — | A browser |
 
@@ -217,44 +217,71 @@ mcpServers:
 <a id="deepseek-harness-dsh"></a>
 ### DeepSeek Harness (dsh)
 
-dsh adds MCP servers as `insert` entries in a profile's patch file (`~/.dsh/profiles/<name>/cordis.patch.yml`, or `~/.dsh/cordis.patch.yml` for every profile). It watches the file, so saving connects the server. Use **one** of the two entries below, not both, or every Loom tool appears twice.
+dsh connects MCP servers with its own client, `@deepseek-ai/dsh-mcp-client`, which gives the model Loom's tools but draws no player. An MCP Apps plugin adds the player to the **web** profile (the browser UI at `http://127.0.0.1:3080`): **`@openma/dsh-mcp-apps`**, which renders the apps of the servers dsh's client already connects, so Loom needs only the client entry below.
 
-**With an MCP Apps plugin (shows the player in dsh).** Install an MCP Apps plugin first, for example `npx @deepseek-ai/dsh plugin --profile web add @sugarforever/dsh-mcp-apps`, then:
+Which plugin (checked against the packages on npm, October 2026):
 
-```yaml
-- insert:
-    - id: mcp-apps-loom
-      name: '@sugarforever/dsh-mcp-apps'
-      config:
-        serverName: loom
-        transport: stdio
-        command: node
-        args: ['C:/loom/loom-mcp.mjs', '--stdio', '--memory', 'G:/My Drive/Loom']
-        failOnStartupError: true
-```
+| Plugin | Status |
+|---|---|
+| `@openma/dsh-mcp-apps` 0.1.1 | **Use this one.** Installs as a bundle, accepts dsh `0.1.0-rc.6` up to `1.0`, and runs apps with the official `AppBridge` |
+| `@sugarforever/dsh-mcp-apps` 0.1.1 | The npm release declares no `dsh.bundle`, so `plugin add` fails with *"declares no dsh.bundle"* (its README describes an unpublished 0.1.2) |
+| `dsh-mcp-apps` (katticot) 0.2.4 | Needs dsh `^0.1.7-rc.2`, which excludes dsh 0.2.x: current dsh refuses it as incompatible |
 
-- `failOnStartupError: true` shows an error when Loom cannot start, instead of failing silently (for example when `config` is indented one level too shallow, which leaves it empty).
-- Leave out `toolCallTimeoutMs`: it belongs to `@deepseek-ai/dsh-mcp-client`, and this plugin's README does not list it. Loom's tools answer in a second or two.
-- If `plugin add` fails with *"declares no dsh.bundle"*, the published plugin and your dsh version do not match. Try installing it from GitHub (`… add github:sugarforever/dsh-mcp-apps`), or another MCP Apps plugin for dsh (openma-ai, katticot, eziyuhz); with another plugin, change `name` to its package and check its README for the config keys.
+**Windows desktop, step by step** (PowerShell):
 
-**With dsh's own MCP client (no player; topics open in Loom Viewer):**
+1. Node.js `^22.19.0` or `>=24.0.0`, and pnpm (dsh's plugin manager runs it):
 
-```yaml
-- insert:
-    - id: mcp-loom
-      name: '@deepseek-ai/dsh-mcp-client'
-      config:
-        serverName: loom
-        transport: stdio
-        command: node
-        args:
-          - C:/loom/loom-mcp.mjs
-          - --stdio
-          - --memory
-          - G:/My Drive/Loom
-        toolCallTimeoutMs: 120000
-        failOnStartupError: true
-```
+   ```powershell
+   winget install -e --id OpenJS.NodeJS.LTS
+   npm install --global pnpm@11.7.0
+   ```
+
+2. Get Loom's local server ([Get the server](#get-the-server)), so `C:\loom\loom-mcp.mjs` exists.
+3. Start the web profile once to create it (`%USERPROFILE%\.dsh\profiles\web`), then stop it with Ctrl+C:
+
+   ```powershell
+   npx @deepseek-ai/dsh web
+   ```
+
+4. Install the MCP Apps plugin into that profile (or in dsh: **Plugins → + Add plugin →** `@openma/dsh-mcp-apps` **→ Install**):
+
+   ```powershell
+   npx @deepseek-ai/dsh plugin --profile web add @openma/dsh-mcp-apps
+   ```
+
+5. Open the profile's patch file and add Loom:
+
+   ```powershell
+   notepad $env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml
+   ```
+
+   ```yaml
+   - insert:
+       - id: mcp-loom
+         name: '@deepseek-ai/dsh-mcp-client'
+         config:
+           serverName: loom
+           transport: stdio
+           command: node
+           args:
+             - C:/loom/loom-mcp.mjs
+             - --stdio
+             - --memory
+             - G:/My Drive/Loom
+           toolCallTimeoutMs: 120000
+           failOnStartupError: true
+   ```
+
+   Remove any earlier Loom entry that names `@sugarforever/dsh-mcp-apps` or `dsh-mcp-apps`: one entry per server, or every Loom tool appears twice.
+6. Start dsh again with `npx @deepseek-ai/dsh web`, open `http://127.0.0.1:3080`, and ask *"Teach me something short about HTTP caching with Loom."* The player appears under the `show_topic` call.
+
+Check it:
+
+- `npx @deepseek-ai/dsh --profile web --dump-config` prints the composed configuration: it should hold one `@openma/dsh-mcp-apps` row (`mcp-apps-bundle`) and one `mcp-loom` row.
+- `failOnStartupError: true` reports Loom failing to start instead of hiding it (a wrong path, or `config` indented one level too shallow, which leaves it empty).
+- The player only draws in the **web** profile; dsh's terminal and headless entries get the tools, and `show_topic` there answers with a Loom Viewer link.
+
+What works in dsh's player: ▶ Play, Present and Read, the theme, Full screen (a side panel), Open in Viewer, and Open on the library pages (they call Loom's tools). The plugin does not yet let an app post into the chat, so **Save my progress**, **Ask**, Pick's question and **Next topic** report that the chat did not take it; ask in the chat instead. With `--memory`, the local server keeps what the learner did in its folder anyway, and `learner_summary` reads it back.
 
 The tools appear as `mcp__loom__show_topic`, `mcp__loom__get_tutor_guide` and so on.
 
@@ -350,7 +377,7 @@ Loom Viewer (`/viewer.html` on the Loom site) opens topics without any chat:
 | "Where am I in …" finds nothing | Your folder is still in the old flat layout: ask the chat to reorganise it into domains |
 | No narration | On iPhone, check the silent switch and press Play (speech starts from the tap); on Android, use Open in Viewer in Chrome |
 | Read does not scroll on a phone | Read opens full screen on touch screens; use Full screen if it did not |
-| dsh: *"declares no dsh.bundle"* | See [DeepSeek Harness](#deepseek-harness-dsh) |
+| dsh: *"declares no dsh.bundle"*, or a plugin "incompatible with dsh" | Use `@openma/dsh-mcp-apps`; see [DeepSeek Harness](#deepseek-harness-dsh) |
 | YAML path errors on Windows | Write `G:/My Drive/Loom`, not `"G:\My Drive\Loom"` |
 | `node` not found after installing it | Open a new terminal window |
 
