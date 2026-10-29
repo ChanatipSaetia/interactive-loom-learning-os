@@ -642,6 +642,8 @@ warning = NarrationStep("part4", "One rule you cannot skip.", [Callout("warning"
 
 When a picture explains it better than words or boxes and arrows, draw it with `Svg` in a standard OpenUI section: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Prefer a Loom section when one fits: a process with actors is a Flowchart, figures are a chart, categories are a TaxonomyBrowser.
 
+Plan the picture before the prose: what should the learner be able to picture or explain afterward? Include a labelled concept drawing whenever it makes the idea clearer, without waiting for a request for a picture. For an abstract idea, use a concrete visual analogy and explicitly label where the analogy or schematic simplifies reality. A drawing should explain a relationship, structure or change, not decorate the page. Pair it with a short explanation of what to notice and why it matters, and use narration to connect its parts to the idea one at a time.
+
 Svg(markup: string, caption?: string) — A drawing: one <svg> element with a viewBox, and a caption under it.
 
 How to draw:
@@ -650,6 +652,7 @@ How to draw:
 - Use shapes, paths, text, groups, markers and gradients. Scripts, event handlers, links, external images and `foreignObject` are removed. Use a SMIL `<animate>` only for a loop (`repeatCount="indefinite"`) that shows motion.
 - Colors: write a Loom palette name, `fill="green"`, `stroke="overlay1"` (rosewater, flamingo, pink, mauve, red, maroon, peach, yellow, green, teal, sky, sapphire, blue, lavender, text, subtext1, subtext0, overlay2, overlay1, overlay0, surface2, surface1, surface0, base, mantle, crust), so the drawing follows the theme; shapes and text without a fill draw in the text color. Keep it to a few colors with a meaning each.
 - Label the parts with `<text>` (font-size about 12–16 in a viewBox a few hundred units wide) and leader lines, as in a textbook figure. Keep it simple and schematic: the few parts the lesson is about, not a detailed illustration.
+- Check readability at phone width: a few large shapes, short non-overlapping labels and theme-aware contrast. Split a dense figure into simpler views instead of shrinking the text. Prefer static shapes with narration highlights; animate only a change that teaches something, and avoid expensive filters, blur and decorative loops. Label a schematic as not to scale when proportions could mislead.
 - Give every shape narration will point at an `id` (`<path id="bud" …>`), unique within the drawing; make the Svg a named child of a Card or Stack root (`shoot = Svg(…)`), then point at `"shoot.bud"`. Several steps on the drawing's beat can walk it part by part.
 
 Example section file, and its narration walking the drawing shape by shape:
