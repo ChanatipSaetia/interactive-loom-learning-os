@@ -343,6 +343,37 @@ body {
   padding: 6px 16px;
 }
 
+/* Mobile chat webviews repaint backdrop blur and SVG refraction while the host scrolls or
+   Present moves its camera. Keep the glass palette and highlights without those extra layers.
+   This stylesheet belongs only to the embedded app; desktop and standalone Viewer keep glass. */
+@media (hover: none) and (pointer: coarse) {
+  :root[data-theme^='liquid-glass'] {
+    --glass-filter: none;
+    --glass-tint-dark: var(--glass-solid);
+    --glass-pane: var(--glass-solid);
+    --glass-menu: var(--glass-solid);
+  }
+
+  :root[data-theme^='liquid-glass'] body::after {
+    display: none;
+  }
+
+  :root[data-theme^='liquid-glass'][data-glass-lens] :is(.pick-bar, .present-caption, .present-controls, .ui-modal),
+  :root[data-theme^='liquid-glass'][data-glass-lens] .topnav::before,
+  :root[data-theme^='liquid-glass'] .present-title-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  :root[data-theme^='liquid-glass'] .ui-modal::before {
+    filter: none;
+  }
+
+  :root[data-theme^='liquid-glass'] :is(.mcp-card, .mcp-bar) {
+    background: var(--glass-sheen), var(--glass-solid);
+  }
+}
+
 .mcp-read .loom-ask-button {
   display: inline-flex;
   flex-direction: row;
