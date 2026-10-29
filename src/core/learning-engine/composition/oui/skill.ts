@@ -26,6 +26,14 @@ Interactive Loom turns OpenUI Lang (\`.oui\`) files into interactive lessons. \`
 2. If the request is vague, ask at most two short questions (who the learner is, roughly how many sections). Otherwise start.
 3. Read any source material the user points at (notes, docs, code) and teach only what it supports. Use real, specific facts and figures.
 
+## Plan how to show the concept
+
+- Before writing, identify what the learner should be able to picture or explain. When a spatial relationship, mechanism, structure or abstract idea is easier to understand visually, include a labelled concept drawing with \`Svg\`; do not wait for the learner to ask for a picture.
+- Choose the visual that teaches the idea: a schematic or before/after drawing for a mechanism, a Flowchart for a process with actors, a chart for quantities, or a ConceptMap for relationships. A useful drawing can be the main section of a short topic; do not add decorative pictures or force a diagram into every topic.
+- Pair the drawing with a short explanation of what to notice and why it matters. Name important shapes with IDs and use narration to highlight them one at a time, connecting each visible part to the concept. Clearly label analogies and simplifications; never imply that a schematic is to scale.
+- Design for a phone: a few large labelled parts, readable text, strong theme-aware contrast and no overlapping labels. Split a dense drawing into simpler views. Prefer static SVG with narration highlights; use motion only when it explains a change, avoiding blur, filters and decorative animation.
+- Follow the reference's \`// @openui\` section format and \`Svg\` signature. Keep the drawing a named child of a Card or Stack so Present narration can target \`"drawing.shapeId"\`.
+
 ## Where to write
 
 Always write a **topic folder**, one file per program, using the "Folder of .oui files" format from the reference (not the single \`.loom.oui\` file it defaults to for chats):
