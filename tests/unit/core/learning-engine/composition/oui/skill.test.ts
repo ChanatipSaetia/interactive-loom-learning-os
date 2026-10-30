@@ -10,6 +10,13 @@ import { progressNote, stampEvent } from '../../../../../../src/core/supporting/
 import { ouiSchemaFiles, skillZipFiles } from '../../../../../../src/core/learning-engine/composition/oui/schema-files'
 
 describe('Loom agent skill', () => {
+  it('guides the authoring bot to choose meaningful icons and let content determine pages', () => {
+    expect(getLoomSkill()).toContain('Icons are independent')
+    expect(getLoomSkill()).toContain('Let Present measure and paginate')
+    expect(getLoomSkill()).toContain('**bold phrases**')
+    expect(getLoomSkill()).toContain('Bullet("Prepare **access**", null, "key")')
+  })
+
   it('has valid frontmatter for Claude Code and opencode', () => {
     const [, frontmatter] = getLoomSkill().split('---\n')
     const meta = yaml.load(frontmatter) as { name: string; description: string }

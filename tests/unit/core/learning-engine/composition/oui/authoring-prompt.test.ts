@@ -1,3 +1,4 @@
+import { BULLET_AUTHORING_EXAMPLE, BULLET_NARRATION_EXAMPLE } from '../../../../../../src/core/learning-engine/composition/oui/bullet-authoring'
 import { describe, it, expect } from 'vitest'
 import { AUTHORING_EXAMPLE, DRAWING_EXAMPLE, DRAWING_NARRATION_EXAMPLE, FACTS_EXAMPLE, HOWTO_EXAMPLE, HOWTO_NARRATION_EXAMPLE, NARRATION_EXAMPLE, TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, getLoomAuthoringPrompt } from '../../../../../../src/core/learning-engine/composition/oui/authoring-prompt'
 import { compileOUITopic } from '../../../../../../src/core/learning-engine/composition/oui/compile'
@@ -5,6 +6,17 @@ import { sectionBeatsOf, validateOUINarration, validateOUISection } from '../../
 import { parseTopicSource } from '../../../../../../src/core/supporting/authoring-editor/workspace'
 
 describe('Loom authoring prompt', () => {
+  it('teaches icons and emphasis with a valid bullet hierarchy and complete narration', () => {
+    const section = validateOUISection(BULLET_AUTHORING_EXAMPLE)
+    expect(section.diagnostics).toEqual([])
+    const beats = sectionBeatsOf(BULLET_AUTHORING_EXAMPLE)!.map((beat) => beat.id)
+    expect(beats).toEqual(['title', 'item1', 'item1.child1', 'item1.child2', 'item2', 'item2.child1'])
+    const narration = validateOUINarration(BULLET_NARRATION_EXAMPLE, BULLET_AUTHORING_EXAMPLE)
+    expect(narration.diagnostics).toEqual([])
+    expect(narration.payload!.steps.map((step) => step.beat)).toEqual(beats)
+    expect(getLoomAuthoringPrompt()).toContain(BULLET_AUTHORING_EXAMPLE)
+  })
+
   it('has a worked example that is a valid single-file topic', () => {
     const [{ topicId, files }] = parseTopicSource(AUTHORING_EXAMPLE)
     expect(topicId).toBe('green-tea')

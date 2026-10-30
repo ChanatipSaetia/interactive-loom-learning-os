@@ -100,6 +100,10 @@ export function getAuthoringGuide(sections: string[] = []): string {
     const narration = after.indexOf(`\n${NARRATION_FILES}\n`)
     text = before + (narration < 0 ? after : after.slice(narration))
   }
+  if (!wanted.has('bullets')) {
+    const { before, after } = cut(text, '## Bullet Composition')
+    text = before + after
+  }
   const { before, part, after } = cut(text, SIGNATURES)
   const index = guideSectionTypes().map((t) => `- \`${t.type}\` (${t.component}): ${t.summary}`).join('\n')
   const notes = [

@@ -482,3 +482,8 @@ pure and tested directly.
 - Beat IDs follow the content's order (`q2` is the second question), so inserting a question or a card
   shifts the IDs after it and the narration file must follow (validation flags steps whose beat is gone,
   not steps that now land on a different item).
+
+
+### Taxonomy visual prototype (awaiting review)
+
+Present taxonomy now prototypes the supplied circular-icon reference: a balanced overview (five categories use a 3 + 2 layout) with category names and short focus lines, followed by an analogy-led explanation beside its definition. Category icons and colors carry across both views; the category agenda moves below the focus view. Existing `cards` and `cardN` narration IDs and Pick targets are preserved. Read-mode taxonomy and category data are unchanged.

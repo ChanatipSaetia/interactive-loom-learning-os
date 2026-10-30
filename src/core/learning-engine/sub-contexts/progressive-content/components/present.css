@@ -79,21 +79,52 @@
 .present-stage.is-portrait .present-bullet-icon { width: 36px; height: 36px; }
 @media (prefers-reduced-motion: reduce) { .present-bullet-row { transition: none; } }
 
-/* ---- taxonomy: the cards by name, then an agenda beside the open card (decisions 109 and 111) ---- */
+/* ---- taxonomy prototype: icon medallions, balanced overview, analogy-led explanations ---- */
 
-.present-region .present-taxonomy { margin: 0; min-height: 100%; }
-.present-stage:not(.is-portrait) .present-region .present-taxonomy .taxonomy-browser-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.present-stage:not(.is-portrait) .present-region .present-taxonomy.is-many .taxonomy-browser-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.85rem; }
-.present-stage:not(.is-portrait) .present-region .present-taxonomy.is-lots .taxonomy-browser-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.present-stage.is-portrait .present-region .present-taxonomy .taxonomy-browser-grid { grid-template-columns: 1fr; gap: 0.75rem; }
-.present-region .present-taxonomy .taxonomy-browser-card-title { font-size: var(--present-fs-card); }
-
-.present-taxonomy-detail { display: flex; flex-direction: column; gap: 20px; padding: 26px 30px; border: 1px solid var(--border); border-top: 3px solid var(--present-accent); border-radius: 16px; background: var(--card); }
-.present-taxonomy-detail-head { display: flex; align-items: center; gap: 18px; }
-.present-taxonomy-detail-head .taxonomy-modal-icon { margin: 0; }
-.present-taxonomy-detail-head .taxonomy-modal-subtitle { margin: 0 0 4px; }
-.present-region .present-taxonomy-detail .present-taxonomy-overview { color: var(--foreground); }
-.present-region .present-taxonomy-detail .taxonomy-modal-analogy { margin: 0; font-size: var(--present-fs-card); }
+.present-region .present-taxonomy { position: relative; flex: 1; min-height: 0; margin: 0; }
+.present-taxonomy-overview-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 28px 24px; align-content: safe center; overflow: auto; padding: 8px; }
+.present-region .present-taxonomy-overview-grid.present-focus,
+:root[data-theme] .present-region .present-taxonomy-overview-grid.present-focus { outline: none; box-shadow: none; animation: none; }
+.present-taxonomy-overview-card { grid-column: span 2; display: flex; align-items: center; gap: 18px; min-width: 0; padding: 16px 12px; border-radius: var(--radius-lg); background: linear-gradient(100deg, color-mix(in srgb, var(--card) 75%, transparent), transparent); }
+.present-taxonomy-overview-grid[data-count='1'] .present-taxonomy-overview-card { grid-column: 2 / span 4; }
+.present-taxonomy-overview-grid[data-count='2'],
+.present-taxonomy-overview-grid[data-count='4'] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.present-taxonomy-overview-grid[data-count='5'] .present-taxonomy-overview-card:nth-child(4) { grid-column: 2 / span 2; }
+.present-taxonomy-overview-grid[data-count='5'] .present-taxonomy-overview-card:nth-child(5) { grid-column: 4 / span 2; }
+.present-taxonomy-medallion { position: relative; display: grid; place-items: center; flex: none; width: 82px; height: 82px; border-radius: 50%; color: color-mix(in srgb, var(--taxonomy-accent) 70%, var(--foreground)); border: 1px solid color-mix(in srgb, var(--taxonomy-accent) 65%, transparent); background: linear-gradient(145deg, color-mix(in srgb, var(--taxonomy-accent) 32%, var(--card)), color-mix(in srgb, var(--taxonomy-accent) 12%, var(--card))); box-shadow: inset 0 0 0 5px color-mix(in srgb, var(--card) 50%, transparent); }
+.present-taxonomy-medallion::before { content: ''; position: absolute; inset: -5px; border: 1px solid color-mix(in srgb, var(--taxonomy-accent) 40%, transparent); border-radius: inherit; }
+.present-taxonomy-medallion.is-large { width: 94px; height: 94px; }
+.present-taxonomy-overview-copy { min-width: 0; }
+.present-taxonomy-overview-copy h3 { margin: 0 0 8px; color: color-mix(in srgb, var(--taxonomy-accent) 60%, var(--foreground)); font: 650 var(--present-fs-card) / 1.25 var(--font-display); text-wrap: balance; overflow-wrap: anywhere; }
+.present-taxonomy-overview-copy p { margin: 0; color: var(--muted-foreground); font: 400 calc(var(--present-fs-small) + 1px) / 1.45 var(--font-body); text-wrap: pretty; overflow-wrap: anywhere; }
+.present-taxonomy-focus { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 20px; }
+.present-taxonomy-focus:not([data-shown]) { visibility: hidden; pointer-events: none; }
+.present-taxonomy-details { position: relative; flex: 1; min-height: 0; }
+.present-taxonomy-detail-scene { position: absolute; inset: 0; overflow: auto; padding: 8px; }
+.present-taxonomy-detail { --present-accent: var(--taxonomy-accent); display: flex; flex-direction: column; justify-content: center; gap: 28px; min-height: 100%; box-sizing: border-box; }
+:root[data-theme] .present-region .present-taxonomy .present-taxonomy-detail { background: transparent; box-shadow: none; }
+.present-taxonomy-detail-head { display: flex; align-items: center; gap: 28px; padding: 8px 4px; }
+.present-taxonomy-subtitle { margin: 0 0 8px; color: var(--muted-foreground); font: 500 var(--present-fs-small) / 1.4 var(--font-ui); }
+.present-taxonomy-detail-head .present-headline { font-size: var(--present-fs-h2); }
+.present-taxonomy-explainer { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; }
+.present-taxonomy-explainer.without-analogy { grid-template-columns: 1fr; }
+.present-taxonomy-analogy { display: flex; flex-direction: column; gap: 18px; padding: 26px 28px; border: 1px solid color-mix(in srgb, var(--taxonomy-accent) 35%, var(--border)); border-left: 4px solid var(--taxonomy-accent); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--taxonomy-accent) 8%, var(--card)); }
+.present-taxonomy-analogy blockquote { margin: 0; color: var(--foreground); font: 500 calc(var(--present-fs-body) + 3px) / 1.45 var(--font-display); text-wrap: pretty; }
+.present-taxonomy-meaning { display: flex; flex-direction: column; gap: 14px; }
+.present-taxonomy-focus .present-agenda { flex-direction: row; gap: 8px; }
+.present-taxonomy-focus .present-agenda li { flex: 1; min-width: 0; align-items: flex-start; padding: 8px; }
+.present-stage.is-portrait .present-taxonomy-overview-grid { grid-template-columns: 1fr; gap: 12px; align-content: start; }
+.present-stage.is-portrait .present-taxonomy-overview-card { grid-column: 1 / -1 !important; gap: 16px; padding: 8px; }
+.present-stage.is-portrait .present-taxonomy-overview-copy h3 { font-size: 16px; margin-bottom: 6px; }
+.present-stage.is-portrait .present-taxonomy-overview-copy p { font-size: 14px; line-height: 1.35; }
+.present-stage.is-portrait .present-taxonomy-overview-card .present-taxonomy-medallion { width: 52px; height: 52px; }
+.present-stage.is-portrait .present-taxonomy-medallion { width: 62px; height: 62px; }
+.present-stage.is-portrait .present-taxonomy-medallion svg { width: 28px; height: 28px; }
+.present-stage.is-portrait .present-taxonomy-detail-head { gap: 20px; }
+.present-stage.is-portrait .present-taxonomy-explainer { grid-template-columns: 1fr; gap: 20px; }
+.present-stage.is-portrait .present-taxonomy-detail { gap: 22px; justify-content: flex-start; }
+.present-stage.is-portrait .present-taxonomy-analogy { padding: 20px; }
+.present-stage.is-portrait .present-taxonomy-analogy blockquote { font-size: calc(var(--present-fs-body) + 3px); }
 
 /* ---- pillar & layer ---- */
 

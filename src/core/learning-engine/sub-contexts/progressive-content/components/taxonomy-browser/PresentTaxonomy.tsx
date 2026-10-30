@@ -2,85 +2,76 @@ import type { CSSProperties } from 'react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { PresentAgenda } from '../../../PresentAgenda'
 import { PresentWords } from '../../../PresentWords'
-import { beatMarks, focus, lead, type BeatMarkAttributes, type BeatMarkOptions, type PresentRendererProps } from '../../../present-kernel'
+import { beatMarks, focus, lead, QUIET, type BeatMarkAttributes, type BeatMarkOptions, type PresentRendererProps } from '../../../present-kernel'
 import type { TaxonomyPresentData } from '../../present'
 import { colorAccentMap, resolveIcon, type TaxonomyCategory } from './index'
 import './taxonomy-browser.css'
 import '../present.css'
 
 type Mark = (at: number, options?: BeatMarkOptions) => BeatMarkAttributes
+const accentOf = (category: TaxonomyCategory) => ({ '--taxonomy-accent': colorAccentMap[category.color] ?? 'var(--ctp-blue)' } as CSSProperties)
 
-/** Sentences of a card's description the stage shows when the card is open; the rest stays in Read. */
-const OVERVIEW_SENTENCES = 2
+function Medallion({ category, large = false }: { category: TaxonomyCategory; large?: boolean }) {
+  const Icon = resolveIcon(category.icon)
+  return <div className={`present-taxonomy-medallion${large ? ' is-large' : ''}`} aria-hidden="true"><Icon size={large ? 44 : 34} strokeWidth={1.5} /></div>
+}
 
-/**
- * One card opened (beat `at`), in the Read detail dialog's look (decision 109): its title as the
- * headline, the opening of its description, and its analogy. The deep dive, primary focus and scope
- * lists stay in Read.
- */
+/** An analogy leads the explanation; the definition connects the familiar example to the category. */
 function Detail({ category, at, mark, anchors }: { category: TaxonomyCategory; at: number; mark: Mark; anchors: boolean }) {
   const anchor = usePickAnchors()
   const pick = (...args: Parameters<typeof anchor>) => (anchors ? anchor(...args) : {})
-  const Icon = resolveIcon(category.icon)
-  const accent = colorAccentMap[category.color] ?? 'var(--ctp-blue)'
   return (
-    <div className="present-taxonomy-detail" style={{ '--present-accent': accent } as CSSProperties} {...pick(category)}>
-      <div className="present-taxonomy-detail-head">
-        <div className="taxonomy-modal-icon" style={{ color: accent }} {...mark(at, { motion: 'pop' })}><Icon size={36} strokeWidth={1.5} /></div>
+    <div className="present-taxonomy-detail" style={accentOf(category)} {...pick(category)}>
+      <div className="present-taxonomy-detail-head" {...mark(at, { motion: 'fade' })}>
+        <Medallion category={category} large />
         <div>
-          {category.subtitle && <p className="taxonomy-modal-subtitle" style={{ color: accent }} {...mark(at, { motion: 'fade', delay: 120 })} {...pick(category, 'subtitle')}>{category.subtitle}</p>}
-          <h2 className="present-headline" style={{ color: accent }} {...mark(at, { motion: 'zoom', delay: 120 })} {...pick(category, 'title')}>{category.title}</h2>
+          {category.subtitle && <p className="present-taxonomy-subtitle" {...pick(category, 'subtitle')}><PresentWords text={category.subtitle} /></p>}
+          <h2 className="present-headline" {...pick(category, 'title')}><PresentWords text={category.title} /></h2>
         </div>
       </div>
-      <p className="present-lead present-taxonomy-overview" {...mark(at, { motion: 'words', delay: 500 })} {...focus(true)} {...pick(category, 'description')}>
-        <PresentWords text={lead(category.description, OVERVIEW_SENTENCES)} />
-      </p>
-      {category.analogy && <blockquote className="taxonomy-modal-analogy" {...mark(at, { motion: 'unfold', delay: 1100 })} {...pick(category, 'analogy')}>{category.analogy}</blockquote>}
+      <div className={`present-taxonomy-explainer${category.analogy ? '' : ' without-analogy'}`}>
+        {category.analogy && <div className="present-taxonomy-analogy" {...mark(at, { motion: 'unfold', delay: 300 })} {...focus(anchors)}>
+          <p className="present-eyebrow" {...QUIET}>Think of it this way</p>
+          <blockquote {...pick(category, 'analogy')}><PresentWords text={category.analogy} /></blockquote>
+        </div>}
+        <div className="present-taxonomy-meaning" {...mark(at, { motion: 'fade', delay: category.analogy ? 700 : 300 })}>
+          <p className="present-eyebrow" {...QUIET}>What it means</p>
+          <p className="present-lead" {...pick(category, 'description')}><PresentWords text={lead(category.description, 2)} /></p>
+
+        </div>
+      </div>
     </div>
   )
 }
 
-/**
- * Taxonomy browser in Present mode (taxonomyBeats): the Read cards cascade in, by name only; then the
- * grid makes way for an agenda of the cards beside the open one, and each beat opens the next card
- * (decisions 109 and 111).
- */
+/** A visual category overview, then analogy-led focus views. Existing narration beat IDs stay valid. */
 export default function PresentTaxonomy({ data, beat }: PresentRendererProps<TaxonomyPresentData>) {
   const mark = beatMarks(beat)
   const pick = usePickAnchors()
   const categories = data.categories ?? []
   const open = beat >= 1 && beat <= categories.length ? beat - 1 : null
-
   return (
-    <div className={`taxonomy-browser-section present-taxonomy present-scenes${categories.length > 4 ? ' is-many' : ''}${categories.length > 6 ? ' is-lots' : ''}`} data-testid="present-taxonomy">
-      <div className="taxonomy-browser-grid" {...mark(0, { motion: 'fade', ...(categories.length > 0 && { until: 0 }) })}>
-        {categories.map((cat, i) => {
-          const Icon = resolveIcon(cat.icon)
-          const accent = colorAccentMap[cat.color] ?? 'var(--ctp-blue)'
-          return (
-            <div key={cat.title} className="taxonomy-browser-card" style={{ borderTopColor: accent }} {...mark(0, { delay: i * 90 })} {...(open === null && pick(cat))}>
-              <div className="taxonomy-browser-card-icon"><Icon style={{ color: accent }} size={22} strokeWidth={1.5} /></div>
-              <div className="taxonomy-browser-card-body">
-                {cat.subtitle && <p className="taxonomy-browser-subtitle" {...(open === null && pick(cat, 'subtitle'))}>{cat.subtitle}</p>}
-                <h4 className="taxonomy-browser-card-title" {...(open === null && pick(cat, 'title'))}>{cat.title}</h4>
-              </div>
+    <div className="taxonomy-browser-section present-taxonomy" data-testid="present-taxonomy">
+      <div className="present-taxonomy-overview-grid" data-count={categories.length} {...mark(0, { motion: 'fade', until: 0 })}>
+        {categories.map((cat, i) => (
+          <div key={i} className="present-taxonomy-overview-card" style={accentOf(cat)} {...mark(0, { motion: 'rise', delay: i * 100, until: 0 })} {...(open === null && pick(cat))}>
+            <Medallion category={cat} />
+            <div className="present-taxonomy-overview-copy">
+              <h3 {...(open === null && pick(cat, 'title'))}><PresentWords text={cat.title} /></h3>
+              <p {...(open === null && pick(cat, cat.primaryFocus ? 'primaryFocus' : 'description'))}><PresentWords text={cat.primaryFocus || lead(cat.description)} /></p>
             </div>
-          )
-        })}
-      </div>
-      {categories.length > 0 && (
-        <div className="present-with-agenda" {...mark(1, { motion: 'fade' })}>
-          <PresentAgenda items={categories.map((c) => c.title)} current={open ?? -1} label="Categories" />
-          <div className="present-scenes">
-            {categories.map((cat, i) => (
-              <div key={cat.title} {...mark(i + 1, { motion: 'fade', ...(i < categories.length - 1 && { until: i + 1 }) })}>
-                {/* Only the open card carries its Pick anchors, so narration targets find what is in view */}
-                <Detail category={cat} at={i + 1} mark={mark} anchors={open === i} />
-              </div>
-            ))}
           </div>
+        ))}
+        {!categories.length && <p className="present-lead">No categories to present.</p>}
+      </div>
+      {categories.length > 0 && <div className="present-taxonomy-focus" {...(beat >= 1 && { 'data-shown': '' })}>
+        <div className="present-taxonomy-details">
+          {categories.map((cat, i) => <div key={i} className="present-taxonomy-detail-scene" {...mark(i + 1, { motion: 'fade', until: i + 1 })}>
+            <Detail category={cat} at={i + 1} mark={mark} anchors={open === i} />
+          </div>)}
         </div>
-      )}
+        {categories.length > 1 && <PresentAgenda items={categories.map((cat) => cat.title)} current={open ?? -1} label="Categories" />}
+      </div>}
     </div>
   )
 }

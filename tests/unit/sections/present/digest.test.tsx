@@ -36,11 +36,11 @@ describe('one idea at a time (decision 109)', () => {
     expect(screen.queryByText('CDN')).toBeNull()
   })
 
-  it('taxonomy: the grid shows names only; an open card shows its overview, not its deep dive', () => {
+  it('taxonomy: the grid shows names and short focuses; an open card explains through its analogy', () => {
     const data = propsOf<TaxonomyPresentData>(content('http-caching/sections/directives.oui'))
     const first = data.categories[0]
     const { rerender } = render(<PresentTaxonomy data={data} beats={taxonomyBeats(data)} beat={0} sectionIndex={0} active />)
-    expect(document.querySelector('.taxonomy-browser-description')).toBeNull()
+    expect(document.querySelector('.present-taxonomy-overview-copy')?.textContent).toContain(first.primaryFocus)
     rerender(<PresentTaxonomy data={data} beats={taxonomyBeats(data)} beat={1} sectionIndex={0} active />)
     expect(document.querySelector('.present-agenda .is-now')?.textContent).toContain(first.title)
     if (first.details) expect(document.body.textContent).not.toContain(first.details)
