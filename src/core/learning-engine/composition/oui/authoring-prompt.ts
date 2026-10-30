@@ -7,6 +7,7 @@
  * the output formats), authoring rules and a worked example.
  * `npm run oui:schema` publishes it as `public/llm/loom-authoring-prompt.md`.
  */
+import { BULLET_AUTHORING_GUIDE } from './bullet-authoring'
 import { standardOpenUISpec } from '../../sub-contexts/progressive-content/openui-standard'
 import { SVG_THEME_COLORS } from '../../sub-contexts/progressive-content/components/openui/svg-markup'
 import { LOOM_PAGES_URL } from './llm-guide'
@@ -410,5 +411,5 @@ export function getLoomAuthoringPrompt(): string {
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)
   prompt = dropStreamingNotes(prompt)
-  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${LAYOUTS}\n\n${DRAWINGS}\n\n${NARRATION}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
+  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${LAYOUTS}\n\n${DRAWINGS}\n\n${NARRATION}\n\n${BULLET_AUTHORING_GUIDE}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
 }

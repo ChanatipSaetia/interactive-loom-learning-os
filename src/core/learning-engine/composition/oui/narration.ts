@@ -98,12 +98,12 @@ export const targetProp = (target: string) => /^[^.[]*\.([A-Za-z_]\w*)/.exec(tar
  */
 export const BEAT_IDS: Record<string, string> = {
   intro: '`title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap)',
-  text: '`p1`, `p2`, … one per paragraph',
-  bullets: '`item1`, `item2`, … one per top-level bullet',
+  text: '`p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs',
+  bullets: '`item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, …',
   'pillar-layer': '`layer1`, `layer2`, … one per layer',
   'image-gallery': '`image1`, `image2`, … one per image',
   'taxonomy-browser': '`cards` (all cards), then `card1`, `card2`, … each card opened',
-  'concept-map': '`group1`, `group2`, … one per category in order of first appearance, then `map` (the whole map, when there is more than one category)',
+  'concept-map': '`group1`, `group2`, … introduce categories in first-appearance order; after each group, `linkN` explains every ConceptLink whose endpoints are now introduced (N is its 1-based position in the links list); then `map` shows the complete map when there are links or several groups. Explain from → label → to without assuming every relation is a flow or a cause.',
   flowchart: '`step1`, `step2`, … one per step of the first journey',
   scenario: '`start`; then one path per ending (weaker endings first, the best last): along path P, `pathP.choice1` (the choice picked on its card), `pathP.choice1.next` (where it leads), `pathP.choice2`, … (the last `.next` shows its ending); a later path starts at the fork where it leaves the one before',
   'decision-tree': '`start` (the first question), then per answer taken (the recommended choice, else the first) `answer1` (picked on its question, with its rationale), `q2` (the next question), `answer2`, …, then `result` (the recommendation)',

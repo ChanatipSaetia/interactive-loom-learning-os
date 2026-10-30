@@ -87,7 +87,7 @@ describe('ConceptMap Section', () => {
 
   it('renders edge labels', () => {
     render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
-    expect(screen.getByTestId('concept-map-edge-label-0')).toHaveTextContent('deleg...')
+    expect(screen.getByTestId('concept-map-edge-label-0')).toHaveTextContent('delegates to')
     expect(screen.getByTestId('concept-map-edge-label-1')).toHaveTextContent('uses')
   })
 
@@ -164,11 +164,11 @@ describe('ConceptMap Section', () => {
     void mod
   })
 
-  it('renders pulsing glow rect on entry point node', () => {
+  it('does not imply live activity with a pulsing starting node', () => {
     render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
     const entryNode = screen.getByTestId('concept-map-node-orchestrator')
     const pulseRect = entryNode.querySelector('.cm-entry-pulse')
-    expect(pulseRect).not.toBeNull()
+    expect(pulseRect).toBeNull()
   })
 
   it('shows prev/next buttons when multiple disconnected graphs exist', () => {
@@ -325,7 +325,19 @@ describe('ConceptMap Section', () => {
     expect(nodeB).toBeInTheDocument()
   })
 
-  it('truncates edge labels longer than 5 characters before hover and reveals full text on hover', () => {
+  it('lets touch and keyboard users select a node and read incoming and outgoing relationships', () => {
+    render(<ConceptMapSection nodes={mockNodes} edges={mockEdges} />)
+    const node = screen.getByRole('button', { name: 'Explore Workers' })
+    fireEvent.keyDown(node, { key: 'Enter' })
+    expect(node).toHaveAttribute('aria-pressed', 'true')
+    const panel = screen.getByTestId('concept-map-relations')
+    expect(panel).toHaveTextContent('delegates to')
+    expect(panel).toHaveTextContent('uses')
+    fireEvent.click(screen.getByRole('button', { name: 'Show all' }))
+    expect(node).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('keeps the full relationship phrase visible before and after hover', () => {
     const longLabelNodes: Record<string, ConceptNode> = {
       n1: { id: 'n1', title: 'Node 1', category: 'concept' },
       n2: { id: 'n2', title: 'Node 2', category: 'concept' },
@@ -337,7 +349,7 @@ describe('ConceptMap Section', () => {
     render(<ConceptMapSection nodes={longLabelNodes} edges={longLabelEdges} />)
 
     const labelEl = screen.getByTestId('concept-map-edge-label-0')
-    expect(labelEl).toHaveTextContent('orche...')
+    expect(labelEl).toHaveTextContent('orchestrates')
 
     const node1 = screen.getByTestId('concept-map-node-n1')
     fireEvent.mouseEnter(node1)

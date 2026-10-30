@@ -35,10 +35,10 @@ why = IntroWhy("Origin requests cost time.")
     expect(textBeats(props)[0]).toEqual({ id: 'p1', about: 'Paragraph 1: First paragraph.' })
   })
 
-  it('bullets: one beat per top-level bullet, children included', () => {
+  it('bullets: each nested point gets a beat before the next top-level point', () => {
     const props = propsOf<Parameters<typeof bulletsBeats>[0]>(`root = Bullets("Where copies live", [Bullet("Private caches", [Bullet("Memory"), Bullet("Disk")]), Bullet("Shared caches")])
 `)
-    expect(bulletsBeats(props)).toHaveLength(2)
+    expect(ids(bulletsBeats(props))).toEqual(['item1', 'item1.child1', 'item1.child2', 'item2'])
   })
 
   it('openui: a single beat when the root is not a Card or Stack of several children', () => {

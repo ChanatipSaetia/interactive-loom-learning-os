@@ -52,9 +52,13 @@ export type IntroSectionData = z.infer<typeof IntroSectionSchema>
 
 // --- Bullets Section Schema ---
 
+export const BULLET_ICON_NAMES = ['list', 'check', 'shield', 'clock', 'key', 'lightbulb', 'target', 'users', 'chart', 'code'] as const
+export const BulletIconSchema = z.enum(BULLET_ICON_NAMES)
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BulletItemRef: z.ZodType<any> = z.object({
   text: z.string(),
+  icon: BulletIconSchema.optional(),
   children: z.array(z.lazy(() => BulletItemRef)).optional(),
 })
 

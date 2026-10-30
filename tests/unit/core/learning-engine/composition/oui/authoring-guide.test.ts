@@ -8,6 +8,15 @@ const signature = (name: string) => new RegExp(`^${name}\\(`, 'm')
 const DRIVE = new Set(['Domain', 'DomainRef', 'Library'])
 
 describe('getAuthoringGuide', () => {
+  it('includes bullet composition guidance only when bullets are requested', () => {
+    const bullets = getAuthoringGuide(['bullets'])
+    expect(bullets).toContain('## Bullet Composition')
+    expect(bullets).toContain('Bullet("Prepare **access**", null, "key")')
+    expect(bullets).toContain('NarrationStep("item1.child1"')
+    expect(getAuthoringGuide(['quiz'])).not.toContain('## Bullet Composition')
+    expect(getAuthoringGuide()).not.toContain('## Bullet Composition')
+  })
+
   it('returns the whole prompt for "all"', () => {
     expect(getAuthoringGuide(['all'])).toBe(getLoomAuthoringPrompt())
   })

@@ -1,3 +1,5 @@
+import { BulletText } from './BulletText'
+import { BulletIcon, type BulletIconName } from './icons'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronDown } from 'lucide-react'
@@ -8,6 +10,7 @@ import './bullets.css'
 
 export interface BulletItem {
   text: string
+  icon?: BulletIconName
   children?: BulletItem[]
 }
 
@@ -20,6 +23,16 @@ export interface BulletsSectionProps {
 }
 
 
+
+/** Keep ordered counters while using the same author-selected icons as Present mode. */
+function ReadBulletMarker({ item, ordered, nested, path }: { item: BulletItem; ordered: boolean; nested: boolean; path: string }) {
+  return <>
+    {ordered && <span className="bullet-marker bullet-marker-ordered" data-testid={`bullet-number-${path}`} aria-hidden="true" />}
+    <span className={`read-bullet-icon${nested ? ' is-child' : ''}`} data-testid={`bullet-marker-${path}`} aria-hidden="true">
+      <BulletIcon name={item.icon} nested={nested} size={nested ? 14 : 20} />
+    </span>
+  </>
+}
 
 function BulletItemRow({
   item,
@@ -44,17 +57,6 @@ function BulletItemRow({
   const isTopLevel = depth === 0
 
   const staggerDelay = (depth * 150 + index * 80) / 1000
-
-  let markerContent = '◆'
-  const markerColor = depth === 0 ? 'var(--primary)' : 'var(--secondary)'
-
-  if (depth === 0) {
-    markerContent = '◆'
-  } else if (depth === 1) {
-    markerContent = '◦'
-  } else {
-    markerContent = '–'
-  }
 
   if (isTopLevel) {
     return (
@@ -89,28 +91,14 @@ function BulletItemRow({
           }
         >
           <div className="bullet-item-row">
-            {ordered ? (
-              <span
-                className="bullet-marker bullet-marker-ordered"
-                data-testid={`bullet-number-${path}`}
-                style={{ color: markerColor }}
-              />
-            ) : (
-              <span
-                className="bullet-marker bullet-marker-unordered"
-                data-testid={`bullet-marker-${path}`}
-                style={{ color: markerColor }}
-              >
-                {markerContent}
-              </span>
-            )}
+            <ReadBulletMarker item={item} ordered={ordered} nested={!isTopLevel} path={path} />
 
             <span
               className="bullet-text bullet-text-parent"
               data-testid={`bullet-text-${path}`}
               {...pick(item, 'text')}
             >
-              {item.text}
+              <BulletText text={item.text} />
             </span>
           </div>
 
@@ -172,28 +160,14 @@ function BulletItemRow({
       }
     >
       <div className="bullet-item-row">
-        {ordered ? (
-          <span
-            className="bullet-marker bullet-marker-ordered"
-            data-testid={`bullet-number-${path}`}
-            style={{ color: markerColor }}
-          />
-        ) : (
-          <span
-            className="bullet-marker bullet-marker-unordered"
-            data-testid={`bullet-marker-${path}`}
-            style={{ color: markerColor }}
-          >
-            {markerContent}
-          </span>
-        )}
+        <ReadBulletMarker item={item} ordered={ordered} nested={!isTopLevel} path={path} />
 
         <span
           className="bullet-text"
           data-testid={`bullet-text-${path}`}
           {...pick(item, 'text')}
         >
-          {item.text}
+          <BulletText text={item.text} />
         </span>
       </div>
 

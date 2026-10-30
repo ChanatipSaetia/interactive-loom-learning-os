@@ -14,14 +14,14 @@
 
 /* ---- flashcards: the Read deck's card (Tailwind classes in the component), sized for the stage ---- */
 
-.present-cards { flex: 1; display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; align-items: center; }
-.present-deck { position: relative; height: 360px; margin-right: 24px; perspective: 1400px; }
+.present-cards { flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.present-deck { position: relative; flex: 1; min-height: 0; width: 100%; perspective: 1400px; }
 .present-card-stack {
   position: absolute;
   inset: 0;
   z-index: calc(10 - var(--k));
   opacity: calc(1 - var(--k) * 0.25);
-  transform: translate(calc(var(--k) * 10px), calc(var(--k) * 10px));
+  transform: translateY(calc(var(--k) * 3px)) scale(calc(1 - var(--k) * 0.015));
   transition: transform 0.48s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.42s ease-in;
 }
 .present-card-stack.is-leaving { transform: translateX(115%) rotate(8deg); opacity: 0; transition-timing-function: cubic-bezier(0.7, 0, 0.84, 0); }
@@ -33,29 +33,28 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 28px 34px;
+  padding: clamp(20px, 4cqw, 56px);
+  overflow: auto;
+  overflow-wrap: anywhere;
   color: var(--foreground);
   text-align: left;
   font: inherit;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+.present-region .present-card-face { box-shadow: 0 2px 8px -4px color-mix(in srgb, var(--foreground) 12%, transparent); }
 .present-card-face.is-back { transform: rotateY(180deg); justify-content: center; }
 .present-card-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 36px; padding-bottom: 14px; }
 .present-card-body { display: flex; flex-direction: column; gap: 14px; margin: auto 0; }
-.present-card-word { font-size: 44px; line-height: 1.15; }
-.present-card-back-word { font-size: 30px; line-height: 1.2; }
+.present-card-word { font-size: clamp(32px, 6cqw, 80px); line-height: 1.15; }
+.present-card-back-word { font-size: clamp(26px, 4cqw, 52px); line-height: 1.2; }
 .present-card-quote { position: relative; display: block; padding-left: 24px; }
 .present-card-quote-bar { position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
 .present-card-quote p { margin: 0; font-size: calc(var(--present-fs-card) + 3px); }
 .present-deck-done { position: absolute; inset: 0; display: grid; place-items: center; border: 1.5px dashed var(--ctp-green); border-radius: var(--radius-lg); color: var(--ctp-green); font: 600 var(--present-fs-body) / 1.3 var(--font-display); }
-.present-cards-side { display: flex; flex-direction: column; gap: 18px; }
-.present-cards-lead { margin: 0; font: 400 var(--present-fs-body) / 1.5 var(--font-body); }
-.present-cards-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .present-cards-count { margin: 0; color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.3 var(--font-mono); }
 
-.present-stage.is-portrait .present-cards { grid-template-columns: 1fr; gap: 24px; align-content: start; }
-.present-stage.is-portrait .present-deck { height: 260px; }
+.present-stage.is-portrait .present-cards { gap: 12px; }
 
 @media (prefers-reduced-motion: reduce) {
   .present-quiz-choice,
@@ -64,25 +63,34 @@
   .present-quiz-choice.is-wrong { animation: none; }
 }
 
-/* ---- concept map: the Read map's classes (concept-map.css), sized for the stage ---- */
+/* ---- concept maps: authored relationships, explained source → relation → target ---- */
 
-.present-cm { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.present-cm { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 20px; }
 .present-cm-canvas { flex: 1; min-height: 0; display: flex; }
 .present-cm-svg { flex: 1; min-height: 0; width: 100%; height: 100%; }
 .present-cm-node { transform-box: fill-box; transform-origin: center; }
-.present-cm-node.is-past { opacity: 0.55; }
-.present-cm.is-exploring .present-cm-node { cursor: pointer; }
-.present-cm.is-exploring .present-cm-node:hover rect { stroke-width: 3; }
-/* The stage frames the map smaller than Read's zoom, so the type is a touch larger */
-.present-cm .cm-node-title { font-size: 13px; }
-.present-cm .cm-node-category { font-size: 9px; }
-.present-cm-legend { pointer-events: none; }
-.present-cm-legend .concept-map-legend-item { font-size: 12px; transition: color 0.3s ease; }
-.present-cm-legend .concept-map-legend-item.is-now { color: var(--ctp-text); }
-.present-cm-hint { margin: 0; text-align: right; color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.2 var(--font-body); }
+.present-cm-node.is-context { opacity: 0.45; }
+.present-cm .present-cm-edge { stroke-width: 2; }
+.present-cm .present-cm-edge.is-context { opacity: 0.12; }
+.present-cm .present-cm-edge.is-active { stroke: var(--primary); stroke-width: 4; opacity: 1; }
+.present-cm .present-cm-active-label .cm-edge-label { font-size: 12px; font-weight: 600; fill: var(--primary); }
+.present-cm .present-cm-active-label .cm-edge-label-bg { fill: var(--card); stroke: var(--primary); }
+.present-cm .cm-node-title { font-size: 22px; }
+.present-cm .cm-node-category { font-size: 11px; }
+.present-cm-explanation { flex: none; display: flex; flex-direction: column; gap: 12px; padding: 18px 22px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+.present-cm-statement { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 20px; align-items: center; }
+.present-region .present-cm-statement strong { color: var(--foreground); font: 600 var(--present-fs-card) / 1.4 var(--font-display); text-align: center; text-wrap: balance; overflow-wrap: anywhere; background: color-mix(in srgb, var(--concept-accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--concept-accent) 35%, var(--border)); border-radius: var(--radius-md); padding: 12px 16px; }
+.present-cm-verb { display: flex; flex-direction: column; align-items: center; gap: 6px; max-width: 26ch; color: var(--primary); text-align: center; font: 600 var(--present-fs-card) / 1.35 var(--font-body); }
+.present-cm-group-title { margin: 0; color: var(--foreground); font: 600 var(--present-fs-body) / 1.3 var(--font-display); }
+.present-cm-group-names { margin: 0; color: var(--muted-foreground); font: 400 var(--present-fs-card) / 1.4 var(--font-body); }
+.present-stage.is-portrait .present-cm { gap: 14px; }
+.present-stage.is-portrait .present-cm-explanation { padding: 14px; }
+.present-stage.is-portrait .present-cm-statement { grid-template-columns: 1fr; gap: 10px; }
+.present-stage.is-portrait .present-cm-verb { max-width: none; font-size: var(--present-fs-small); }
+.present-stage.is-portrait .present-cm-verb svg { rotate: 90deg; }
+.present-stage.is-portrait .present-cm-statement strong { padding: 8px 12px; }
 
 @media (prefers-reduced-motion: reduce) {
   .present-cm .cm-node-group,
-  .present-cm .cm-edge,
-  .present-cm-legend .concept-map-legend-item { transition: none; }
+  .present-cm .cm-edge { transition: none; }
 }

@@ -1,3 +1,4 @@
+import { BULLET_ICON_NAMES } from '../../schema'
 import { useState, useCallback } from 'react'
 import { Plus, Trash2, HelpCircle, ArrowUp, ArrowDown, List, Layers, CornerDownRight } from 'lucide-react'
 import { BulletsHelpModal } from './BulletsHelpModal'
@@ -7,6 +8,7 @@ import * as OUI from '../../openui'
 
 export interface BulletItem {
   text: string
+  icon?: typeof BULLET_ICON_NAMES[number]
   children?: BulletItem[]
 }
 
@@ -69,6 +71,13 @@ function BulletItemEditor({
 
   return (
     <div className="visual-form-card" data-testid={`bullet-item-card-${path}`}>
+      <label className="visual-form-label">
+        Icon
+        <select className="visual-form-input" value={item.icon ?? ''} onChange={(e) => onChange({ ...item, icon: e.target.value ? e.target.value as BulletItem['icon'] : undefined })} aria-label={`Icon for bullet ${path}`}>
+          <option value="">Automatic</option>
+          {BULLET_ICON_NAMES.map((icon) => <option key={icon} value={icon}>{icon}</option>)}
+        </select>
+      </label>
       <div className="visual-form-card-header">
         <span className="card-header-title">
           <List size={14} className="text-primary" />

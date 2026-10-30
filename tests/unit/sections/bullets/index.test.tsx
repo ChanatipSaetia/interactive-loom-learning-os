@@ -21,6 +21,24 @@ describe('Bullets Section', () => {
     expect(screen.getByTestId('bullet-text-2')).toHaveTextContent('Third item')
   })
 
+  it('shows selected icons on parent cards and expanded sub-items', () => {
+    const items: BulletItem[] = [{ text: 'Prepare access', icon: 'key', children: [{ text: 'Before Monday', icon: 'clock' }] }]
+    render(<BulletsSection items={items} animate={false} />)
+    expect(screen.getByTestId('bullet-marker-0').querySelector('svg.lucide-key-round')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Prepare access/ }))
+    expect(screen.getByTestId('bullet-marker-0-0').querySelector('svg.lucide-clock')).toBeInTheDocument()
+    expect(screen.getByTestId('bullet-marker-0-0')).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  it('keeps ordered counters alongside fallback icons', () => {
+    render(<BulletsSection items={[{ text: 'Prepare access', children: [{ text: 'Check permissions' }] }]} ordered animate={false} />)
+    expect(screen.getByTestId('bullet-number-0')).toBeInTheDocument()
+    expect(screen.getByTestId('bullet-marker-0').querySelector('svg')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Prepare access/ }))
+    expect(screen.getByTestId('bullet-number-0-0')).toBeInTheDocument()
+    expect(screen.getByTestId('bullet-marker-0-0').querySelector('svg')).toBeInTheDocument()
+  })
+
   it('renders ordered list with numbered markers', () => {
     render(<BulletsSection items={mockItems} ordered animate={false} />)
     expect(screen.getByTestId('bullet-number-0')).toBeInTheDocument()
