@@ -98,8 +98,8 @@ export const targetProp = (target: string) => /^[^.[]*\.([A-Za-z_]\w*)/.exec(tar
  */
 export const BEAT_IDS: Record<string, string> = {
   intro: '`title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap)',
-  text: '`p1`, `p2`, … one per paragraph',
-  bullets: '`item1`, `item2`, … one per top-level bullet',
+  text: '`p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs',
+  bullets: '`item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, …',
   'pillar-layer': '`layer1`, `layer2`, … one per layer',
   'image-gallery': '`image1`, `image2`, … one per image',
   'taxonomy-browser': '`cards` (all cards), then `card1`, `card2`, … each card opened',

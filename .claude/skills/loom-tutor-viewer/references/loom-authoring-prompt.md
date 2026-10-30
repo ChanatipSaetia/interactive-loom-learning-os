@@ -80,9 +80,10 @@ Bullets(title: string, items: Bullet[], ordered?: boolean, heading?: string, lea
   - ordered: Optional: true numbers the list.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
-Bullet(text: string, children?: Bullet[]) — A bullet point, optionally with nested child bullets.
-  - text: Bullet text.
+Bullet(text: string, children?: Bullet[], icon?: "list" | "check" | "shield" | "clock" | "key" | "lightbulb" | "target" | "users" | "chart" | "code") — A bullet point, optionally with nested child bullets.
+  - text: Bullet text. Wrap any phrase in **double asterisks** to make it bold, in both top-level and nested bullets (Read and Present).
   - children: Optional nested bullets, as Bullet calls.
+  - icon: Optional meaningful icon: list, check, shield, clock, key, lightbulb, target, users, chart, code. Present groups points into pages that fit the stage; sub-items remain visibly nested.
 TaxonomyBrowser(title: string, categories: TaxonomyCategory[], heading?: string, lead?: Lead) — Browsable taxonomy of categories with scope, analogy and details.
   - title: Section title, shown in the topic outline and as the section header.
   - categories: The categories, as TaxonomyCategory references.
@@ -703,8 +704,8 @@ Beat IDs by section type (n counts from 1; every type but `intro` starts with `t
 | Section type | Beats |
 |---|---|
 | `intro` | `title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap) |
-| `text` | `p1`, `p2`, … one per paragraph |
-| `bullets` | `item1`, `item2`, … one per top-level bullet |
+| `text` | `p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs |
+| `bullets` | `item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, … |
 | `pillar-layer` | `layer1`, `layer2`, … one per layer |
 | `image-gallery` | `image1`, `image2`, … one per image |
 | `taxonomy-browser` | `cards` (all cards), then `card1`, `card2`, … each card opened |

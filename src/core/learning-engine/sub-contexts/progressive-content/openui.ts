@@ -4,6 +4,7 @@
  *   root = Text("Overview", ["First paragraph.", "Second paragraph."])
  *   root = Bullets("Capabilities", [Bullet("Tool use", [Bullet("Search")])], false)
  */
+import { BulletIconSchema } from './schema'
 import { tagSchemaId } from '@openuidev/lang-core'
 import { z } from 'zod'
 import {
@@ -157,6 +158,7 @@ tagSchemaId(NestedBullet, 'Bullet')
 const BulletProps: z.ZodObject = z.object({
   text: z.string(),
   children: z.array(NestedBullet).optional(),
+  icon: BulletIconSchema.optional(),
 })
 
 export const Bullet = defineOUIComponent({
@@ -164,8 +166,9 @@ export const Bullet = defineOUIComponent({
   description: 'A bullet point, optionally with nested child bullets.',
   props: BulletProps,
   fields: {
-    text: 'Bullet text.',
+    text: 'Bullet text. Wrap any phrase in **double asterisks** to make it bold, in both top-level and nested bullets (Read and Present).',
     children: 'Optional nested bullets, as Bullet calls.',
+    icon: 'Optional meaningful icon: list, check, shield, clock, key, lightbulb, target, users, chart, code. Present groups points into pages that fit the stage; sub-items remain visibly nested.',
   },
 })
 
@@ -194,7 +197,7 @@ export const Bullets: LoomOUIComponent = defineOUISection({
 })
 
 function bulletCall(item: BulletItem): OUIValue {
-  return call(Bullet, { text: item.text, children: item.children?.length ? item.children.map(bulletCall) : undefined })
+  return call(Bullet, { text: item.text, icon: item.icon, children: item.children?.length ? item.children.map(bulletCall) : undefined })
 }
 
 // --- Taxonomy Browser ---

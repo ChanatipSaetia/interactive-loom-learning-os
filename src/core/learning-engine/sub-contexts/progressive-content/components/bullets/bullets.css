@@ -136,3 +136,10 @@
 .bullet-item {
   @apply list-none m-0 p-0;
 }
+
+/* Authors can emphasize a phrase in either a parent point or a nested point. */
+.bullets-section .bullet-text strong { color: var(--primary); font-weight: 750; }
+
+/* Read mode shares the Present icon vocabulary, sized for its compact cards. */
+.read-bullet-icon { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 32px; height: 32px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--primary) 13%, transparent); color: var(--primary); }
+.read-bullet-icon.is-child { width: 22px; height: 22px; border-radius: 50%; background: color-mix(in srgb, var(--secondary) 12%, transparent); color: var(--secondary); margin-top: 2px; }

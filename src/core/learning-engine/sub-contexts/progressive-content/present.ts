@@ -3,6 +3,7 @@
  * grill-log-presenting-mode.md). Each function reads the compiled section props only; every beat
  * plays by itself (decision 101). Beat IDs name the beats for narration files (decision 108).
  */
+import { textScenes } from './text-scenes'
 import { brief, show, type Beat, type SectionPresenter } from '../present-kernel'
 import type { BulletItem, GalleryItem, IntroSectionData, OpenUISectionData, PillarLayerSectionData, TaxonomyCategory, TextSectionData } from './schema'
 
@@ -29,14 +30,35 @@ export function introBeats(data: IntroPresentData): Beat[] {
   ]
 }
 
-/** One beat per paragraph: `p1`, `p2`, … */
+/** Short prose scenes; pN remains the first beat of each paragraph. */
 export function textBeats(data: TextPresentData): Beat[] {
-  return (data.paragraphs ?? []).map((p, i) => show(`p${i + 1}`, `Paragraph ${i + 1}: ${brief(p)}`))
+  return textScenes(data).map((scene) => show(scene.id, `Paragraph ${scene.paragraph + 1}: ${brief(scene.source)}`))
 }
 
-/** One beat per top-level bullet, its children unfolding with it: `item1`, `item2`, … */
+/** A logical point and its ancestry; the renderer packs these into content-sized pages. */
+export interface BulletScene {
+  id: string
+  item: BulletItem
+  parents: BulletItem[]
+  topIndex: number
+}
+
+/** Depth-first scenes preserve existing itemN narration IDs and add stable child paths. */
+export function bulletScenes(data: BulletsPresentData): BulletScene[] {
+  const scenes: BulletScene[] = []
+  const visit = (item: BulletItem, id: string, parents: BulletItem[], topIndex: number) => {
+    scenes.push({ id, item, parents, topIndex })
+    item.children?.forEach((child: BulletItem, i: number) => visit(child, `${id}.child${i + 1}`, [...parents, item], topIndex))
+  }
+  const items = data.items ?? []
+  items.forEach((item, i) => visit(item, `item${i + 1}`, [], i))
+  return scenes
+}
+
+/** One narration beat per point; related points accumulate on measured pages in the renderer. */
 export function bulletsBeats(data: BulletsPresentData): Beat[] {
-  return (data.items ?? []).map((b, i) => show(`item${i + 1}`, `Bullet ${i + 1}: ${brief(b.text)}`))
+  return bulletScenes(data).map(({ id, item, parents, topIndex }) => show(id,
+    `${parents.length ? 'Subpoint' : 'Bullet'} ${topIndex + 1}: ${brief(item.text)}`))
 }
 
 /** A top-level child of an OpenUI section's root: its statement name when it is a reference, else its component. */

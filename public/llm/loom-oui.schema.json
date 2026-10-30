@@ -512,7 +512,7 @@
       "properties": {
         "text": {
           "type": "string",
-          "description": "Bullet text."
+          "description": "Bullet text. Wrap any phrase in **double asterisks** to make it bold, in both top-level and nested bullets (Read and Present)."
         },
         "children": {
           "type": "array",
@@ -520,6 +520,22 @@
             "$ref": "#/$defs/Bullet"
           },
           "description": "Optional nested bullets, as Bullet calls."
+        },
+        "icon": {
+          "type": "string",
+          "enum": [
+            "list",
+            "check",
+            "shield",
+            "clock",
+            "key",
+            "lightbulb",
+            "target",
+            "users",
+            "chart",
+            "code"
+          ],
+          "description": "Optional meaningful icon: list, check, shield, clock, key, lightbulb, target, users, chart, code. Present groups points into pages that fit the stage; sub-items remain visibly nested."
         }
       },
       "required": [
