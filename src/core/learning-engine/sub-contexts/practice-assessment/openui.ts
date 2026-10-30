@@ -181,7 +181,7 @@ export const ConceptLink = defineOUIComponent({
   fields: {
     from: 'Source concept (Concept reference or ID).',
     to: 'Target concept (Concept reference or ID).',
-    label: 'Optional relation label drawn on the edge (e.g. "uses").',
+    label: 'A short verb phrase that makes from + label + to a meaningful statement, e.g. "uses", "is a", "contains" or "depends on". Present explains each relation in this authored direction; do not imply causality or data flow unless that is what the label means. An omitted label is shown neutrally as "is connected to".',
   },
   toData: (p) => ({ from: idOf(p.from), to: idOf(p.to), label: p.label }),
 })

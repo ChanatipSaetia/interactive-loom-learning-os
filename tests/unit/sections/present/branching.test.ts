@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { flowchartBeats, scenarioBeats, scenarioPlan, type FlowchartPresentData, type ScenarioPresentData } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/present'
 import { conceptCategories, conceptMapBeats, type ConceptMapPresentData } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/present'
 import { decisionTreeBeats, decisionTreeWalk, drawTree, type DecisionTreePresentData } from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/present'
-import { layoutConceptMap } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/concept-map'
+import { layoutConceptMap, getNodeWidth } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/concept-map'
 import { content, ids, kinds, propsOf } from './helpers'
 
 describe('spatial and branching beats', () => {
@@ -14,14 +14,16 @@ describe('spatial and branching beats', () => {
     expect(kinds(flowchartBeats({}))).toEqual(['show'])
   })
 
-  it('concept map: a beat per category in first-appearance order, then the whole map', () => {
+  it('concept map: retain category introductions, add every relationship, then the whole map', () => {
     const props = propsOf<ConceptMapPresentData>(content('pixijs/sections/concept-map.oui'))
     const groups = conceptCategories(props)
     expect(groups.length).toBeGreaterThan(1)
     expect(groups[0]).toBe(Object.values(props.nodes ?? {})[0].category)
     const beats = conceptMapBeats(props)
-    expect(beats).toHaveLength(groups.length + 1)
-    expect(ids(beats)).toEqual([...groups.map((_, i) => `group${i + 1}`), 'map'])
+    expect(beats).toHaveLength(groups.length + (props.edges?.length ?? 0) + 1)
+    expect(ids(beats).filter((id) => id.startsWith('group'))).toEqual(groups.map((_, i) => `group${i + 1}`))
+    expect(ids(beats).filter((id) => id.startsWith('link')).sort()).toEqual((props.edges ?? []).map((_, i) => `link${i + 1}`).sort())
+    expect(ids(beats)[beats.length - 1]).toBe('map')
     expect(kinds(conceptMapBeats({ nodes: {} }))).toEqual(['show'])
     expect(ids(conceptMapBeats({ nodes: { a: { id: 'a', title: 'A', category: 'x' }, b: { id: 'b', title: 'B', category: 'x' } } }))).toEqual(['group1'])
   })
@@ -34,7 +36,7 @@ describe('spatial and branching beats', () => {
     const layout = layoutConceptMap(nodes, [{ from: 'a', to: 'b' }, { from: 'c', to: 'd' }])
     expect(Object.keys(layout.nodes).sort()).toEqual(['a', 'b', 'c', 'd'])
     expect(Object.keys(layout.edgeAnchors).sort()).toEqual(['a->b', 'c->d'])
-    const left = Math.min(...Object.values(layout.nodes).map((n) => (n.x ?? 0) - 50))
+    const left = Math.min(...Object.values(layout.nodes).map((n) => (n.x ?? 0) - getNodeWidth(n.title) / 2))
     expect(left).toBeCloseTo(0)
     expect(Math.max(layout.nodes.a.x ?? 0, layout.nodes.b.x ?? 0)).toBeLessThan(Math.min(layout.nodes.c.x ?? 0, layout.nodes.d.x ?? 0))
   })

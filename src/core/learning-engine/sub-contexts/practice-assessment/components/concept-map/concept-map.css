@@ -3,7 +3,7 @@
 }
 
 .concept-map-layout {
-  @apply flex gap-4 h-[480px] w-full;
+  @apply flex gap-4 h-[640px] w-full;
 }
 
 .concept-map-canvas-wrapper {
@@ -31,7 +31,7 @@
 }
 
 .cm-edge-label {
-  font-size: 10px;
+  font-size: 11px;
   fill: var(--muted-foreground);
   font-family: var(--font-mono);
   transition: fill 0.2s ease, opacity 0.2s ease;
@@ -80,7 +80,7 @@
 }
 
 .cm-node-dimmed {
-  opacity: 0.2;
+  opacity: 0.45;
 }
 
 .cm-node-selected circle {
@@ -116,14 +116,16 @@
 }
 
 .cm-node-title {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
+  fill: var(--foreground);
   font-family: var(--font-body);
   pointer-events: none;
 }
 
 .cm-node-category {
-  font-size: 8px;
+  font-size: 11px;
+  fill: var(--muted-foreground);
   font-family: var(--font-mono);
   font-weight: 500;
   text-transform: uppercase;
@@ -492,3 +494,24 @@
 .loom-picking .cm-node-category {
   pointer-events: auto;
 }
+
+.concept-map-relations { margin-top: 16px; padding: 18px 22px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); }
+.concept-map-relations-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.concept-map-relations h3 { margin: 0; color: var(--foreground); font: 600 var(--text-body-large) / 1.4 var(--font-display); }
+.concept-map-relations p { margin: 8px 0 0; color: var(--muted-foreground); }
+.concept-map-relations-heading button { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; background: var(--background); color: var(--foreground); cursor: pointer; }
+.concept-map-relations ul { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.concept-map-relations li { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font: 400 var(--text-body) / 1.5 var(--font-body); }
+.concept-map-relations li strong { color: var(--primary); font-weight: 600; text-align: center; }
+.cm-node-group[role='button'] { cursor: pointer; }
+.cm-node-group[role='button']:focus { outline: none; }
+.cm-node-group[role='button']:focus-visible > rect { stroke-width: 4px; }
+@media (max-width: 640px) { .concept-map-layout { height: 480px; } .concept-map-relations li { grid-template-columns: 1fr; gap: 4px; } .concept-map-relations li strong { text-align: left; } }
+
+/* Opaque cards keep names distinct from the graph behind them in every theme. */
+.cm-node-surface {
+  fill: var(--card);
+  stroke-width: 2;
+  filter: drop-shadow(0 3px 4px color-mix(in srgb, var(--foreground) 10%, transparent));
+}
+.cm-node-highlight .cm-node-surface { stroke-width: 3; }

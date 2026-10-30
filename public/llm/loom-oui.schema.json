@@ -2451,7 +2451,7 @@
         },
         "label": {
           "type": "string",
-          "description": "Optional relation label drawn on the edge (e.g. \"uses\")."
+          "description": "A short verb phrase that makes from + label + to a meaningful statement, e.g. \"uses\", \"is a\", \"contains\" or \"depends on\". Present explains each relation in this authored direction; do not imply causality or data flow unless that is what the label means. An omitted label is shown neutrally as \"is connected to\"."
         }
       },
       "required": [

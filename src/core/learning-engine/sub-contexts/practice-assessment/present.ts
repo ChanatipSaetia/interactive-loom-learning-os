@@ -48,18 +48,47 @@ export function flashcardsBeats(data: FlashcardsPresentData): Beat[] {
 
 /** The concepts' categories in order of first appearance; beat `i` brings in the concepts of category `i`. */
 export function conceptCategories(data: ConceptMapPresentData): string[] {
-  return [...new Set(Object.values(data.nodes ?? {}).map((n) => n.category))]
+  return [...new Set(Object.values(data.nodes ?? {}).map((n) => n.category ?? ''))]
 }
 
-/**
- * One beat per category group (`group1`, `group2`, …), its links drawing once both ends are on screen,
- * then the whole map (`map`) when there is more than one group.
- */
+export type ConceptMapStep =
+  | { kind: 'group'; group: number }
+  | { kind: 'relation'; edge: number }
+  | { kind: 'map' }
+
+/** Introduce endpoints before explaining each authored relation; edge IDs retain their source-list positions. */
+export function conceptMapPlan(data: ConceptMapPresentData): ConceptMapStep[] {
+  const groups = conceptCategories(data)
+  const nodes = data.nodes ?? {}
+  const edges = (data.edges ?? []).map((edge, index) => ({ edge, index }))
+    .filter(({ edge }) => nodes[edge.from] && nodes[edge.to])
+  if (!groups.length) return [{ kind: 'map' }]
+  const plan: ConceptMapStep[] = []
+  groups.forEach((_, group) => {
+    plan.push({ kind: 'group', group })
+    edges.forEach(({ edge, index }) => {
+      const from = groups.indexOf(nodes[edge.from].category ?? '')
+      const to = groups.indexOf(nodes[edge.to].category ?? '')
+      if (Math.max(from, to) === group) plan.push({ kind: 'relation', edge: index })
+    })
+  })
+  if (groups.length > 1 || edges.length) plan.push({ kind: 'map' })
+  return plan
+}
+
+/** No cause, flow or other meaning is inferred: read the authored from → label → to statement. */
+export function conceptRelationText(data: ConceptMapPresentData, edge: ConceptEdge): string {
+  const nodes = data.nodes ?? {}
+  return `${nodes[edge.from]?.title ?? edge.from} ${edge.label?.trim() || 'is connected to'} ${nodes[edge.to]?.title ?? edge.to}`
+}
+
 export function conceptMapBeats(data: ConceptMapPresentData): Beat[] {
   const groups = conceptCategories(data)
-  if (!groups.length) return [show('map', 'The map')]
-  const beats = groups.map((g, i) => show(`group${i + 1}`, `The ${quoted(g)} concepts`))
-  return groups.length > 1 ? [...beats, show('map', 'The whole map')] : beats
+  return conceptMapPlan(data).map((step) => {
+    if (step.kind === 'group') return show(`group${step.group + 1}`, `The ${quoted(groups[step.group] || 'concept')} concepts`)
+    if (step.kind === 'relation') return show(`link${step.edge + 1}`, conceptRelationText(data, data.edges![step.edge]))
+    return show('map', 'The whole map')
+  })
 }
 
 export const quizPresenter: SectionPresenter<QuizPresentData> = {
