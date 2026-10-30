@@ -254,6 +254,11 @@
   box-shadow: var(--glass-highlight), var(--glass-shadow);
 }
 
+/* Full-stage presenter cards need only a soft edge, without multiplying deck shadows. */
+:root[data-theme^='liquid-glass'] .present-region .present-card-face {
+  box-shadow: var(--glass-highlight), 0 2px 8px -4px color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
 /* Canvases behind diagrams let the backdrop through; nodes keep their own fills */
 :root[data-theme^='liquid-glass'] .flowchart-svg,
 :root[data-theme^='liquid-glass'] .flowchart-grid-container {

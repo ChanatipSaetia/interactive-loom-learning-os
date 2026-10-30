@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
-import { PresentWords } from '../../../PresentWords'
 import { beatMarks, focus, type PresentRendererProps } from '../../../present-kernel'
 import type { FlashcardsPresentData } from '../../present'
 import { FlashcardCategoryBadge, FlashcardCrosshairs } from './index'
@@ -64,12 +63,7 @@ export default function PresentFlashcards({ data, beat }: PresentRendererProps<F
           )
         })}
       </div>
-      <div className="present-cards-side">
-        <p className="present-cards-lead" {...mark(0, { motion: 'words' })}>
-          <PresentWords text={`${terms.length} ${terms.length === 1 ? 'card' : 'cards'}: each word, then what it means.`} />
-        </p>
-        <p className="present-cards-count" {...mark(0, { motion: 'fade', delay: 700 })}>Card {top + 1} of {terms.length}{flipped ? ' · turned' : ''}</p>
-      </div>
+      <p className="present-cards-count">Card {top + 1} of {terms.length}{flipped ? ' · Definition' : ' · Term'}</p>
     </div>
   )
 }
