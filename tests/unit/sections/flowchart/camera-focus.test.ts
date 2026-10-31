@@ -37,6 +37,17 @@ describe('useCamera focusOnNodes', () => {
     expect(getNodesBBox(nodes, ['a', 'missing'])).toEqual({ minX: 30, minY: 50, maxX: 170, maxY: 150 });
   });
 
+  it('fits large diagram bounds instead of using a fixed zoom', () => {
+    const { result } = setup();
+    act(() => { result.current.fitToScreen(0, 2000, 0, 1000); });
+    const t = result.current.transform;
+    expect(t.scale).toBeLessThan(0.4);
+    expect(t.translateX).toBeGreaterThanOrEqual(0);
+    expect(t.translateY).toBeGreaterThanOrEqual(0);
+    expect(2000 * t.scale + t.translateX).toBeLessThanOrEqual(800);
+    expect(1000 * t.scale + t.translateY).toBeLessThanOrEqual(600);
+  });
+
   it('centers the nodes above the dock by default', () => {
     const { result } = setup();
     let placement;

@@ -166,7 +166,8 @@ export function useCamera({ positionedNodesRef }: UseCameraOptions): UseCameraRe
     const H = svgRef.current.clientHeight || 500;
     const nx = minX + (maxX - minX) / 2;
     const ny = minY + (maxY - minY) / 2;
-    animateTo(W / 2 - nx * 0.4, H / 2 - ny * 0.4, 0.4);
+    const scale = Math.max(0.01, Math.min((W - 64) / Math.max(1, maxX - minX + 140), (H - 240) / Math.max(1, maxY - minY + 100), 1));
+    animateTo(W / 2 - nx * scale, (H - 140) / 2 - ny * scale, scale);
   }, [animateTo]);
 
   const resetTransform = useCallback(() => {

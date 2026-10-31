@@ -519,3 +519,7 @@ In Present mode, swimlane backgrounds span the canvas and their headings remain 
 ### Compact architecture overview
 
 For a flowchart that opens on Architecture, a compact diagram (at most six architectural entities) uses one overview beat. When a narration step switches into a compact architecture view from another overview, the complete system and boundary are framed rather than clipped. Larger architecture diagrams retain the overview paging.
+
+### Read-mode diagram readability
+
+Read shares the clearer node typography and softer architecture cards. Its swimlane bands and labels remain visible while panning, sequence messages use full labels, and journey captions sit below the diagram. Read opens each view centered on its full content, allows manual zoom/pan, and frames played journey steps more closely. Fit-to-screen calculates a scale from actual bounds rather than the former fixed 0.4. Read's canvas is taller to give diagrams room alongside their controls.

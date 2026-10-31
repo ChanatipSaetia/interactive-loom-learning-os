@@ -56,8 +56,7 @@ export const StandardView = memo(function StandardView({
   isFullscreen,
   forkHighlights,
   storyRoute,
-  hideLanes = false,
-  presenting = false
+  hideLanes = false
 }: StandardViewProps) {
   const pick = usePickAnchors();
   const minX = positioned.length > 0 ? Math.min(...positioned.map(n => n.x || 0)) : 0;
@@ -558,7 +557,7 @@ export const StandardView = memo(function StandardView({
                       overflow: 'hidden'
                     }}
                   >
-                    {presenting && viewKey === 'SYS_ARCH'
+                    {viewKey === 'SYS_ARCH'
                       ? (entity.viewTitles?.[viewKey] ?? entity.title).split(/(?<=[a-z0-9])(?=[A-Z])/g).map((part, index) => <Fragment key={index}>{index > 0 && <wbr />}{part}</Fragment>)
                       : entity.viewTitles?.[viewKey] ?? entity.title}
                   </p>

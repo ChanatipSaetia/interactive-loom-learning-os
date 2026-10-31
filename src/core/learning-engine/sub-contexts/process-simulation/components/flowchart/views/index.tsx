@@ -196,10 +196,10 @@ export function FlowchartView({
   const [captionPlacement, setCaptionPlacement] = useState<CaptionPlacement>('below');
   useEffect(() => {
     if (!focusBBox || overview) return;
-    const captionEl = stepCaption && !presenting ? captionRef.current : null;
+    const captionEl = stepCaption && isGridMode ? captionRef.current : null;
     const captionH = captionEl?.offsetHeight ?? 0;
     const placement = focusOnBox(focusBBox, {
-      maxScale: focusMaxScale,
+      maxScale: focusMaxScale ?? 0.85,
       insets: measureOverlayInsets(camera.svgRef.current),
       caption: captionEl && captionH > 0
         ? {
@@ -210,7 +210,7 @@ export function FlowchartView({
         : undefined,
     });
     if (placement) setCaptionPlacement(placement);
-  }, [focusBBox, focusOnBox, stepCaption, camera.svgRef, viewportSize, focusMaxScale, presenting, overview]);
+  }, [focusBBox, focusOnBox, stepCaption, camera.svgRef, viewportSize, focusMaxScale, presenting, overview, isGridMode]);
 
   // Small architecture diagrams benefit from showing the complete system boundary.
   const wholeArchitecture = useMemo(() => {
@@ -221,7 +221,7 @@ export function FlowchartView({
 
   // Split overviews between columns so the viewport never cuts through a card.
   const overviewBox = useMemo(() => {
-    if (!overview || !view || (!positioned.length && !isSequenceView)) return null;
+    if ((!overview && presenting) || !view || (!positioned.length && !isSequenceView)) return null;
     let box = getNodesBBox(positioned, positioned.map((node) => node.id));
     if (isSequenceView) {
       const cols = view.nodes.flatMap((node) => node.grid ? [node.grid[0]] : []);
@@ -248,19 +248,21 @@ export function FlowchartView({
       }
     }
     return box;
-  }, [overview, positioned, isSequenceView, view, schema, sequenceOverview, overviewPage, overviewPages, wholeArchitecture]);
+  }, [overview, presenting, positioned, isSequenceView, view, schema, sequenceOverview, overviewPage, overviewPages, wholeArchitecture]);
 
   useEffect(() => {
     const svg = camera.svgRef.current;
     const box = overviewBox;
-    if (!svg || !box) return;
+    if (!svg || !box || (!presenting && focusBBox)) return;
+    const overlays = !presenting ? measureOverlayInsets(svg) : undefined;
+    const top = overlays?.top ?? 0, bottom = overlays?.bottom ?? 0;
     const padding = 32;
     const width = svg.clientWidth, height = svg.clientHeight;
     if (!width || !height) return;
     const laneLabelSpace = viewKey === 'SWIMLANES' ? Math.min(210, width * 0.3) : 0;
-    const scale = Math.max(0.01, Math.min(Math.max(1, width - padding * 2 - laneLabelSpace) / Math.max(1, box.maxX - box.minX), Math.max(1, height - padding * 2) / Math.max(1, box.maxY - box.minY), 1));
-    camera.animateTo((width + laneLabelSpace) / 2 - (box.minX + box.maxX) / 2 * scale, height / 2 - (box.minY + box.maxY) / 2 * scale, scale);
-  }, [overviewBox, camera.svgRef, camera.animateTo, viewportSize, viewKey]);
+    const scale = Math.max(0.01, Math.min(Math.max(1, width - padding * 2 - laneLabelSpace) / Math.max(1, box.maxX - box.minX), Math.max(1, height - padding * 2 - top - bottom) / Math.max(1, box.maxY - box.minY), 1));
+    camera.animateTo((width + laneLabelSpace) / 2 - (box.minX + box.maxX) / 2 * scale, (height + top - bottom) / 2 - (box.minY + box.maxY) / 2 * scale, scale);
+  }, [overviewBox, camera.svgRef, camera.animateTo, viewportSize, viewKey, presenting, focusBBox]);
 
   const hasFocusedRef = useRef(false);
   useEffect(() => {
@@ -276,10 +278,10 @@ export function FlowchartView({
       onCameraControls({
         handleZoomIn,
         handleZoomOut,
-        handleFitToScreen: () => fitToScreen(minX, maxX, minY, maxY)
+        handleFitToScreen: () => fitToScreen(overviewBox?.minX ?? minX, overviewBox?.maxX ?? maxX, overviewBox?.minY ?? minY, overviewBox?.maxY ?? maxY)
       });
     }
-  }, [handleZoomIn, handleZoomOut, fitToScreen, onCameraControls, minX, maxX, minY, maxY]);
+  }, [handleZoomIn, handleZoomOut, fitToScreen, onCameraControls, minX, maxX, minY, maxY, overviewBox]);
 
   if (!view) {
     return (
@@ -406,7 +408,7 @@ export function FlowchartView({
             </pattern>
           </defs>
 
-          {presenting && viewKey === 'SWIMLANES' && view.groups?.filter((group) => group.isLane).map((group) => {
+          {viewKey === 'SWIMLANES' && view.groups?.filter((group) => group.isLane).map((group) => {
             const row = group.row ?? 0;
             const laneTop = group.row === undefined ? (group.y ?? 100) : row * spacing.rowSpacing + spacing.offsetY - spacing.rowSpacing / 2;
             const laneHeight = group.row === undefined ? (group.h ?? 180) : spacing.rowSpacing * (group.rowSpan ?? 1);
@@ -434,7 +436,7 @@ export function FlowchartView({
                   viewInstanceId={viewInstanceId}
                   schema={sequenceOverview?.schema ?? schema}
                   view={sequenceOverview?.view ?? view}
-                  showFullLabels={presenting && overview}
+                  showFullLabels={!presenting || overview}
                   activeNodeIds={activeNodeIds}
                   activeRelationIds={activeRelationIds}
                   highlightedNodeId={highlightedNodeId}
@@ -458,7 +460,7 @@ export function FlowchartView({
                  isFullscreen={isFullscreen}
                  forkHighlights={forkHighlights}
                  storyRoute={storyRoute}
-                 hideLanes={presenting && viewKey === 'SWIMLANES'}
+                 hideLanes={viewKey === 'SWIMLANES'}
                  presenting={presenting}
                />
              )}
@@ -466,7 +468,7 @@ export function FlowchartView({
         </svg>
 
         {stepCaption && (() => {
-          if (presenting) return <StepCaption key={stepCaption.id} caption={stepCaption} placement="below" style={{}} />;
+          if (!isGridMode) return <StepCaption key={stepCaption.id} caption={stepCaption} placement="below" style={{}} onSwitchPath={onSwitchPath} />;
           const viewportW = camera.svgRef.current?.clientWidth ?? 0;
           const width = viewportW > 0 ? Math.min(CAPTION_MAX_W, viewportW - CAPTION_EDGE * 2) : CAPTION_MAX_W;
           if (!focusBBox) {
