@@ -4,16 +4,29 @@
  * plays by itself (decision 101). Beat IDs name the beats for narration files (decision 108).
  */
 import { answer, brief, quoted, show, type Beat, type SectionPresenter } from '../present-kernel'
-import type { UnifiedFlowchartSchema } from './components/flowchart/types'
+import { MASTER_MAPPING_MATRIX, type UnifiedFlowchartSchema } from './components/flowchart/types'
+import { getEntityType } from './components/flowchart/derivations/utils'
 import type { ScenarioChoice, ScenarioNode, ScenarioOutcome } from './schema'
 
 export type FlowchartPresentData = { title?: string; schema?: UnifiedFlowchartSchema }
 export type ScenarioPresentData = { id?: string; title?: string; intro?: string; nodes?: Record<string, ScenarioNode>; startNode?: string }
 
-/** One beat per step of the first journey (`step1`, `step2`, …), played through the flowchart's own journey playback. */
+/** The overview follows the first journey in readable groups of up to two steps. */
+export function flowchartOverviewPages(data: FlowchartPresentData): number {
+  const schema = data.schema
+  if (schema?.initialView === 'SYS_ARCH') {
+    const explicit = schema.views?.SYS_ARCH?.nodes.length
+    const candidates = explicit ?? Object.values(schema.entities ?? {}).filter((entity) => !!MASTER_MAPPING_MATRIX[getEntityType(entity)]?.SYS_ARCH).length
+    if (candidates > 0 && candidates <= 6) return 1
+  }
+  return Math.max(1, Math.ceil((schema?.journeys?.[0]?.steps?.length ?? 0) / 2))
+}
+
+/** Overview pages precede the stable step beats of the first journey. */
 export function flowchartBeats(data: FlowchartPresentData): Beat[] {
   const steps = data.schema?.journeys?.[0]?.steps ?? []
-  return steps.length ? steps.map((_, i) => show(`step${i + 1}`, `Journey step ${i + 1}`)) : [show('chart', 'The chart')]
+  const pages = Array.from({ length: flowchartOverviewPages(data) }, (_, i) => show(i ? `chart.part${i + 1}` : 'chart', `Flowchart overview, part ${i + 1}`))
+  return [...pages, ...steps.map((_, i) => show(`step${i + 1}`, `Journey step ${i + 1}`))]
 }
 
 export const scenarioNext = (c: ScenarioChoice) => c.next ?? c.nextNode ?? ''

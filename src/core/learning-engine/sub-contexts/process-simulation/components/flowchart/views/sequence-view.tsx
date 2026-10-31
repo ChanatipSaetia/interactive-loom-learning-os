@@ -20,6 +20,7 @@ export interface SequenceViewProps {
   highlightedNodeId: string | null;
   /** Marks the `alt:` frame of the option the step takes and of the others. */
   forkHighlights?: ForkHighlights | null;
+  showFullLabels?: boolean;
 }
 
 export const SequenceView = memo(function SequenceView({
@@ -30,7 +31,8 @@ export const SequenceView = memo(function SequenceView({
   activeNodeIds,
   activeRelationIds,
   highlightedNodeId,
-  forkHighlights
+  forkHighlights,
+  showFullLabels = false
 }: SequenceViewProps) {
   const pick = usePickAnchors();
   const [tooltip, setTooltip] = useState<{ description: string; x: number; y: number } | null>(null);
@@ -204,7 +206,7 @@ export const SequenceView = memo(function SequenceView({
         const segmentLength = isSelf ? COL_W - 40 : Math.abs(x2 - x1);
         
         // Ensure the label pill doesn't exceed the segment length unless expanded
-        if (!isExpanded && displayLabel) {
+        if (!isExpanded && !showFullLabels && displayLabel) {
           const maxAllowedChars = Math.max(5, Math.floor((segmentLength - 80) / 7));
           if (displayLabel.length > maxAllowedChars) {
             displayLabel = displayLabel.substring(0, Math.max(2, maxAllowedChars - 3)) + '...';
@@ -329,7 +331,7 @@ export const SequenceView = memo(function SequenceView({
                   y="3"
                   textAnchor="middle"
                   fill={isEdgeActive ? 'var(--secondary)' : 'var(--ctp-subtext0)'}
-                  fontSize="10"
+                  fontSize={showFullLabels ? "12" : "10"}
                   fontFamily="var(--font-mono)"
                   fontWeight={isEdgeActive ? "600" : "500"}
                   data-testid={`flowchart-seq-msg-label-${viewKey}-${idx}`}

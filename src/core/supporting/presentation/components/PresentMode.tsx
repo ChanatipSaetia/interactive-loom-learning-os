@@ -145,12 +145,12 @@ function SectionTitleCard({ section, beat }: { section: PresentSection; beat: nu
   )
 }
 
-function SectionBody({ section, view, beat, active }: { section: PresentSection; view: SectionView; beat: number; active: boolean }) {
+function SectionBody({ section, view, beat, active, narrationStep }: { section: PresentSection; view: SectionView; beat: number; active: boolean; narrationStep?: NarrationStepData }) {
   const beats = useMemo(() => beatsOf(section.config).slice(titleBeatCount(section.config.type)), [section.config])
   let body: ReactNode
   if (view.kind === 'present') {
     const Renderer = view.Component
-    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} active={active} />
+    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} active={active} narrationStep={narrationStep} />
   } else {
     // No Present renderer yet: the Read section, entering as one beat
     const Read = view.kind === 'read' ? view.Component : null
@@ -634,7 +634,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
                     )}
                     {lead[i] > 0 && <SectionTitleCard section={section} beat={beat} />}
                     <div className={`present-region-body${PresentRegistry.get(section.config.type) ? '' : ' is-fallback'}`}>
-                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} active={i === state.section && !complete && !overview} />}
+                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} active={i === state.section && !complete && !overview} narrationStep={i === state.section ? step : undefined} />}
                       {mounted && !viewReady(i) && i === state.section && <p className="present-loading" role="status">Loading…</p>}
                     </div>
                     {i === state.section && step && landed === beatKey && !overview && !complete && regionRefs.current[i] && (

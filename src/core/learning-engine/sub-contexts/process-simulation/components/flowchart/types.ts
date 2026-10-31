@@ -365,7 +365,7 @@ export interface FlowchartProps {
    * Present mode: hold the first journey at this step (-1 for the overview before it starts) and hide
    * the section's own title, tools and playback controls, which the Present stage replaces.
    */
-  present?: { step: number; maxZoom?: number };
+  present?: { step: number; overview?: boolean; overviewPage?: number; overviewPages?: number; maxZoom?: number; view?: import('./abstract-flow/types').FlowchartViewName };
 }
 
 export interface TransformState {

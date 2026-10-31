@@ -2663,6 +2663,18 @@
             ]
           },
           "description": "Highlight, Callout and Spotlight calls for the step."
+        },
+        "view": {
+          "type": "string",
+          "enum": [
+            "event-storming",
+            "architecture",
+            "swimlanes",
+            "sequence",
+            "data-flow",
+            "state-machine"
+          ],
+          "description": "For flowcharts, optionally switch to this view while this narration step plays; null keeps the flowchart’s initial view."
         }
       },
       "required": [

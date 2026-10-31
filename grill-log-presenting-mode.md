@@ -499,3 +499,23 @@ Trade-off comparisons show the metric table and each option's gains and costs. S
 ### Trade-off conclusion on one page
 
 Keep the existing `resultN` beat as a single conclusion page. Each decision shows the authored recommended option, the opening two sentences of its rationale (description fallback), and its first listed cost as the main compromise. The compact metric dashboard follows all decisions. Read's Try it tab uses the same conclusion with full explanations and compromise descriptions; its interactive selections and dashboard remain separate. Missing recommendations or costs are stated explicitly, never invented. Rows enter in sequence on the same beat; no extra conclusion pages or narration IDs.
+
+### Flowchart narration views and presenter canvas
+
+A flowchart NarrationStep may choose a view using its optional fourth argument; multiple narration steps on one journey beat can switch views as they play. An omitted or unavailable view uses the chart's initial view. Existing journey beat IDs stay unchanged. Present reserves a separate caption area and frames active diagram content without floating the caption over it; Read keeps its floating caption and controls. Presentation nodes use a larger, four-line name while retaining their type; decision diamonds retain their original sizing.
+
+### Flowchart overview
+
+Present opens flowcharts with overview beats before the existing `stepN` journey beats. Narration can choose the view for each overview beat. A short diagram fits on one page; longer journeys use the readable overview pages described below before returning to the step framing.
+
+### Readable flowchart overview pages
+
+A long journey introduces its diagram in multiple `chart`, `chart.part2`, … beats, approximately two journey steps per page. Pages frame groups of diagram columns with one neighboring column retained at each boundary, followed by the unchanged `stepN` beats. Page count is deterministic from the first journey; narration can choose the view for each overview beat. A chart without a journey keeps one overview beat.
+
+### Swimlane and sequence presenter framing
+
+In Present mode, swimlane backgrounds span the canvas and their headings remain pinned while overview pages frame the steps. Sequence overview pages divide messages in time, keep all participant lifelines, and show full message labels; branch group frames follow their messages. Read mode keeps its existing layout and abbreviated labels.
+
+### Compact architecture overview
+
+For a flowchart that opens on Architecture, a compact diagram (at most six architectural entities) uses one overview beat. When a narration step switches into a compact architecture view from another overview, the complete system and boundary are framed rather than clipped. Larger architecture diagrams retain the overview paging.

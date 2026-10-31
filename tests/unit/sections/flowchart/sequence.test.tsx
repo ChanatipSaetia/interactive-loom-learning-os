@@ -174,6 +174,22 @@ describe('Flowchart SEQUENCE view', () => {
   });
 
 
+  it('keeps a branch frame with its messages when a sequence overview is paged', () => {
+    const schemaWithBranch: UnifiedFlowchartSchema = {
+      ...seqSchema,
+      relations: seqSchema.relations.map((relation, i) => ({ ...relation, seqIndex: i })),
+      views: { ...seqSchema.views, SEQUENCE: { ...seqSchema.views!.SEQUENCE, groups: [{
+        id: 'alt_group', title: 'alt [failure]', nodeIds: ['server', 'database'],
+        y: 208, h: 100, seqIndexMin: 2, seqIndexMax: 3,
+      }] } },
+    };
+    const showPage = (page: number) => <Flowchart title="Seq" schema={schemaWithBranch} present={{ step: -1, view: 'sequence', overview: true, overviewPage: page, overviewPages: 2 }} />;
+    const { rerender } = render(showPage(0), { wrapper });
+    expect(screen.queryByTestId('flowchart-seq-group-SEQUENCE-alt_group')).not.toBeInTheDocument();
+    rerender(showPage(1));
+    expect(screen.getByTestId('flowchart-seq-group-SEQUENCE-alt_group')).toHaveTextContent('alt [failure]');
+  });
+
   it('renders SEQUENCE condition boundary groups', () => {
     const schemaWithGroups: UnifiedFlowchartSchema = {
       ...seqSchema,

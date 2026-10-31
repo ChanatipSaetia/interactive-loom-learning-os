@@ -17,6 +17,7 @@ import { computeStoryRoute } from './story-route';
 import { usePlaybackState } from './usePlaybackState';
 import { autoDeriveViews } from './derivations';
 import { buildCanonicalIdMapper } from './abstract-flow/derive';
+import { FLOWCHART_VIEW_KEYS } from './abstract-flow/types';
 import { InspectorSidebar } from './inspector';
 import { FlowchartHelpModal } from './FlowchartHelpModal';
 import {
@@ -101,6 +102,16 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0, pr
       setActiveViewKey(viewKeys[0]);
     }
   }, [viewKeys, activeViewKey]);
+
+  // A narrated view is scoped to its current narration step; an absent or empty view falls back safely.
+  const isPresenting = !!present;
+  const narratedView = present?.view;
+  useEffect(() => {
+    if (!isPresenting) return;
+    const requested = narratedView ? FLOWCHART_VIEW_KEYS[narratedView] : openingViewKey;
+    const usable = localSchema.views?.[requested]?.nodes?.length;
+    setActiveViewKey(usable ? requested : openingViewKey);
+  }, [isPresenting, narratedView, openingViewKey, localSchema.views]);
 
   const activeView = useMemo(() => {
     const views = localSchema.views!;
@@ -673,6 +684,7 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0, pr
     <div
       className={`flowchart-section${isFullscreen ? ' fullscreen' : ''}${present ? ' is-presenting' : ''}`}
       data-testid="flowchart-section"
+      data-flow-view={activeViewKey}
       onKeyDown={present ? undefined : handlePlaybackKeyDown}
     >
       {!present && <SectionTitleBar title={title} sectionIndex={sectionIndex} HelpModal={FlowchartHelpModal} titleTestId="flowchart-title" />}
@@ -706,6 +718,10 @@ export function Flowchart({ title, schema = INITIAL_SCHEMA, sectionIndex = 0, pr
           storyRoute={storyRoute}
           onSwitchPath={playback.jumpTo}
           focusMaxScale={present?.maxZoom}
+          presenting={!!present}
+          overview={!!present?.overview}
+          overviewPage={present?.overviewPage}
+          overviewPages={present?.overviewPages}
         />
 
         {/* Canvas tools - fullscreen + zoom, stacked vertically top-left */}
