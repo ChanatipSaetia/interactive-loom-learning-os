@@ -47,6 +47,18 @@
     "MatrixBlock": {
       "$ref": "#/$defs/MatrixBlock"
     },
+    "Timeline": {
+      "$ref": "#/$defs/Timeline"
+    },
+    "TimelineLane": {
+      "$ref": "#/$defs/TimelineLane"
+    },
+    "TimelineActivity": {
+      "$ref": "#/$defs/TimelineActivity"
+    },
+    "TimelineGroup": {
+      "$ref": "#/$defs/TimelineGroup"
+    },
     "Flowchart": {
       "$ref": "#/$defs/Flowchart"
     },
@@ -232,6 +244,10 @@
     "Layer",
     "LayerItem",
     "MatrixBlock",
+    "Timeline",
+    "TimelineLane",
+    "TimelineActivity",
+    "TimelineGroup",
     "Flowchart",
     "Actor",
     "System",
@@ -868,6 +884,10 @@
             }
           },
           "description": "Optional custom shape: [rowOffset, colOffset] cells relative to the anchor. Overrides spans and shape."
+        },
+        "group": {
+          "type": "string",
+          "description": "Optional named outer container in Present mode. Blocks with the same group within a single-row layer share a box; different groups sit side by side."
         }
       },
       "required": [
@@ -877,6 +897,189 @@
       ],
       "additionalProperties": false,
       "description": "A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is \"rect\" or an L-shape. `dependsOn` lists block IDs."
+    },
+    "Timeline": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "lanes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimelineLane"
+          },
+          "description": "Participant or resource metadata for task labels and colors; task rows are ordered automatically by start time."
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimelineActivity"
+          },
+          "description": "Timed activities; bars use one shared scale across all lanes."
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimelineGroup"
+          },
+          "description": "Optional ordered presentation groups; cover every activity. Without groups, activities sharing a start time are explained together."
+        },
+        "unit": {
+          "type": "string",
+          "description": "Time unit for every start and duration; default \"ms\". Use a consistent unit."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional context, including whether timing is measured or illustrative."
+        },
+        "takeaway": {
+          "type": "string",
+          "description": "Optional conclusion shown on the final summary beat."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "lanes",
+        "activities"
+      ],
+      "additionalProperties": false,
+      "description": "Measured task timeline: one row per activity, sorted by start time, with duration-scaled bars, parallel work and finish-to-start dependencies. Present keeps the whole diagram visible while focusing authored groups."
+    },
+    "TimelineLane": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Lane ID, unique within the timeline."
+        },
+        "title": {
+          "type": "string",
+          "description": "Readable lane name."
+        },
+        "color": {
+          "type": "string",
+          "enum": [
+            "blue",
+            "teal",
+            "green",
+            "mauve",
+            "peach",
+            "sky",
+            "yellow",
+            "pink",
+            "lavender"
+          ],
+          "description": "Optional theme accent for the lane and its activities."
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": false,
+      "description": "A named participant or resource used as a task’s secondary label and color. Each task gets its own row."
+    },
+    "TimelineActivity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Activity ID, unique within the timeline."
+        },
+        "title": {
+          "type": "string",
+          "description": "Short readable activity name."
+        },
+        "lane": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/TimelineLane"
+            }
+          ],
+          "description": "TimelineLane reference or ID."
+        },
+        "start": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Elapsed start time from zero, in the timeline unit."
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Duration in the same unit; zero is a milestone."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional explanation shown on selection in Read mode."
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional activity IDs that must finish before this activity starts; draws dependency connectors."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "lane",
+        "start",
+        "duration"
+      ],
+      "additionalProperties": false,
+      "description": "Activity positioned by elapsed start time and duration; zero duration represents a milestone."
+    },
+    "TimelineGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Group ID, unique within the timeline."
+        },
+        "title": {
+          "type": "string",
+          "description": "Short stage name shown in Present."
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/TimelineActivity"
+              }
+            ]
+          },
+          "description": "Activities to highlight together, as references or IDs; include parallel activities in one group."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional explanation of what this stage means."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "activities"
+      ],
+      "additionalProperties": false,
+      "description": "Activities explained together on one presentation beat, including parallel work or a join."
     },
     "Flowchart": {
       "type": "object",
@@ -2663,6 +2866,18 @@
             ]
           },
           "description": "Highlight, Callout and Spotlight calls for the step."
+        },
+        "view": {
+          "type": "string",
+          "enum": [
+            "event-storming",
+            "architecture",
+            "swimlanes",
+            "sequence",
+            "data-flow",
+            "state-machine"
+          ],
+          "description": "For flowcharts, optionally switch to this view while this narration step plays; null keeps the flowchart’s initial view."
         }
       },
       "required": [

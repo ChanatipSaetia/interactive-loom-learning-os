@@ -126,7 +126,7 @@ Layer(id: string, title: string, description?: string, items?: LayerItem[]) — 
 LayerItem(title: string, description?: string) — A labelled item listed inside a layer.
   - title: Item name.
   - description: Optional detail.
-MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number, colSpan?: number, rowSpan?: number, description?: string, color?: string, dependsOn?: string[], shape?: "rect" | "l-bottom-left" | "l-bottom-right" | "l-top-left" | "l-top-right", offsets?: number[][]) — A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is "rect" or an L-shape. `dependsOn` lists block IDs.
+MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number, colSpan?: number, rowSpan?: number, description?: string, color?: string, dependsOn?: string[], shape?: "rect" | "l-bottom-left" | "l-bottom-right" | "l-top-left" | "l-top-right", offsets?: number[][], group?: string) — A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is "rect" or an L-shape. `dependsOn` lists block IDs.
   - id: Block ID, unique within the map; `dependsOn` refers to it.
   - title: Text shown on the block.
   - layer: Anchor row: Layer reference or ID.
@@ -138,6 +138,34 @@ MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number
   - dependsOn: Optional IDs of blocks this block depends on.
   - shape: Optional "rect" (default) or an L-shape inside the span: "l-bottom-left", "l-bottom-right", "l-top-left", "l-top-right".
   - offsets: Optional custom shape: [rowOffset, colOffset] cells relative to the anchor. Overrides spans and shape.
+  - group: Optional named outer container in Present mode. Blocks with the same group within a single-row layer share a box; different groups sit side by side.
+Timeline(title: string, lanes: TimelineLane[], activities: TimelineActivity[], groups?: TimelineGroup[], unit?: string, description?: string, takeaway?: string, heading?: string, lead?: Lead) — Measured task timeline: one row per activity, sorted by start time, with duration-scaled bars, parallel work and finish-to-start dependencies. Present keeps the whole diagram visible while focusing authored groups.
+  - title: Section title, shown in the topic outline and as the section header.
+  - lanes: Participant or resource metadata for task labels and colors; task rows are ordered automatically by start time.
+  - activities: Timed activities; bars use one shared scale across all lanes.
+  - groups: Optional ordered presentation groups; cover every activity. Without groups, activities sharing a start time are explained together.
+  - unit: Time unit for every start and duration; default "ms". Use a consistent unit.
+  - description: Optional context, including whether timing is measured or illustrative.
+  - takeaway: Optional conclusion shown on the final summary beat.
+  - heading: Optional sub-heading shown under the section title.
+  - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
+TimelineLane(id: string, title: string, color?: "blue" | "teal" | "green" | "mauve" | "peach" | "sky" | "yellow" | "pink" | "lavender") — A named participant or resource used as a task’s secondary label and color. Each task gets its own row.
+  - id: Lane ID, unique within the timeline.
+  - title: Readable lane name.
+  - color: Optional theme accent for the lane and its activities.
+TimelineActivity(id: string, title: string, lane: string | TimelineLane, start: number, duration: number, description?: string, dependsOn?: string[]) — Activity positioned by elapsed start time and duration; zero duration represents a milestone.
+  - id: Activity ID, unique within the timeline.
+  - title: Short readable activity name.
+  - lane: TimelineLane reference or ID.
+  - start: Elapsed start time from zero, in the timeline unit.
+  - duration: Duration in the same unit; zero is a milestone.
+  - description: Optional explanation shown on selection in Read mode.
+  - dependsOn: Optional activity IDs that must finish before this activity starts; draws dependency connectors.
+TimelineGroup(id: string, title: string, activities: (string | TimelineActivity)[], description?: string) — Activities explained together on one presentation beat, including parallel work or a join.
+  - id: Group ID, unique within the timeline.
+  - title: Short stage name shown in Present.
+  - activities: Activities to highlight together, as references or IDs; include parallel activities in one group.
+  - description: Optional explanation of what this stage means.
 
 ### Process Simulation
 Flowchart(title: string, actors: Actor[], systems: System[], steps: (Step | Branch)[], journeys: Journey[], heading?: string, lead?: Lead, initialView?: "event-storming" | "architecture" | "swimlanes" | "sequence" | "data-flow" | "state-machine") — Animated Event Storming flowchart. Every actor and system must be used by at least one step.
@@ -433,10 +461,11 @@ Library(domains: DomainRef[]) — The learner's library (root of Loom/index.oui)
 ### Narration (sections/<name>.narrate.oui)
 Narration(steps: NarrationStep[]) — Root of a narration file sections/<name>.narrate.oui: the script Present mode plays the section to, step by step.
   - steps: The narrated steps in order, as NarrationStep references.
-NarrationStep(beat: string, caption?: string, effects?: (Highlight | Callout | Spotlight)[]) — One narrated step: the beat it plays on, a caption line read aloud, and effects. Several steps on one beat play in turn.
+NarrationStep(beat: string, caption?: string, effects?: (Highlight | Callout | Spotlight)[], view?: "event-storming" | "architecture" | "swimlanes" | "sequence" | "data-flow" | "state-machine") — One narrated step: the beat it plays on, a caption line read aloud, and effects. Several steps on one beat play in turn.
   - beat: The beat it plays on, by its ID for the section type, e.g. "q1", "q1.wrong", "q1.right" for a quiz, "p2" for a text paragraph (see Narration Files).
   - caption: Subtitle line shown and read aloud while the beat plays, in the topic's language; null for none.
   - effects: Highlight, Callout and Spotlight calls for the step.
+  - view: For flowcharts, optionally switch to this view while this narration step plays; null keeps the flowchart’s initial view.
 Highlight(target: string) — Narration effect: outlines and pulses one element of the section for its step.
   - target: Pick pointer to what it points at in the section file: a statement name, optionally with a prop path, e.g. "noCache", "q2.explanation", "root.categories[0]".
 Callout(target: string, text: string) — Narration effect: a note that pops up beside one element of the section, with explanation the section does not say itself.
@@ -526,7 +555,7 @@ How to write them:
 
 - Data is written as literal arrays, e.g. `Col("Tea", ["Sencha", "Matcha"])`. There is no `data.rows`, Query or `@` function call over fetched data.
 - Every Col of a Table, and every Series of a chart, has one value per row or label, in the same order.
-- Use real, specific figures; never invent numbers to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
+- Use source-backed figures for factual claims. Clearly label deliberate teaching examples as illustrative data; never invent measured figures to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
 - Value axes start at 0, so values only a few percent apart look the same height. When the lesson is the difference, chart the difference (e.g. "°C below boiling", "ms over the baseline") and keep the absolute values in a Table.
 - Wrap a chart in a Card with a CardHeader for its title, and add a Callout for the takeaway. Put a chart and a table of the same data in Tabs only when the narrator does not need both: Present shows the first tab only.
 
@@ -538,6 +567,7 @@ BarChart(labels: string[], series: Series[], variant?: "grouped" | "stacked", xL
 HorizontalBarChart(labels: string[], series: Series[], variant?: "grouped" | "stacked", xLabel?: string, yLabel?: string) — Like BarChart, for long category labels or a ranked list.
 LineChart(labels: string[], series: Series[], variant?: "linear" | "natural" | "step", xLabel?: string, yLabel?: string, height?: number) — A value changing over time or along an ordered scale.
 AreaChart(labels: string[], series: Series[], variant?: "linear" | "natural" | "step", xLabel?: string, yLabel?: string, height?: number) — Totals or volumes accumulating over time.
+SingleStackedBarChart(labels: string[], values: number[]) — Parts of one whole shown as a single horizontal bar; use percentages summing to 100% for a share.
 PieChart(labels: string[], values: number[], variant?: "pie" | "donut", appearance?: "circular" | "semiCircular") — Parts of one whole that add up to 100%; at most about six slices.
 RadarChart(labels: string[], series: Series[]) — Two or three items scored on the same set of criteria.
 ScatterChart(datasets: ScatterSeries[], xLabel?: string, yLabel?: string) — The relationship between two numeric variables.
@@ -687,11 +717,170 @@ older = NarrationStep("part2", null, [Callout("shoot.older", "Older leaves are t
 why = NarrationStep("part3", "So two leaves and a bud is a recipe for flavour.", [Highlight("why")])
 ```
 
+## Time and Usage Visuals
+
+- Proactively visualize time and quantities when they are central to the explanation; do not wait for the learner to request a chart. Use Timeline for measured start times, duration, parallel work and waiting; a custom Svg can show a qualitative event timeline, LineChart for change over time, HorizontalBarChart for comparing amounts, PieChart or SingleStackedBarChart for shares of one whole, and stacked bars for used versus remaining capacity. Request the timeline guide for measured timelines, and the openui guide for charts and custom Svg. Use source-backed figures for factual claims; clearly label intentional teaching examples as illustrative data. In Present, keep the whole visual visible while several narration steps highlight its phases, points, bars or slices, then explain the takeaway.
+- During planning, look for claims such as “before/after”, “takes longer”, “grows over time”, “used more”, “most of the total”, or “nearly full”. Choose the visual that lets the learner see that relationship. Do not leave the central relationship buried in bullets or a table. Use these visuals when they teach the idea; do not add a chart quota to every topic.
+
+| Learner's question | Visual | What it encodes |
+|---|---|---|
+| What happens when, and what takes longest? | `Timeline` | Ordered events or intervals; scale interval widths to duration when known. |
+| How does a measurement change over time? | `LineChart` | Times on the horizontal axis, measured values on the vertical axis. |
+| Which is used more, or handles more? | `HorizontalBarChart` | Comparable counts or amounts over the same observation window. |
+| What fraction belongs to each category? | `PieChart` or `SingleStackedBarChart` | Mutually exclusive parts of the same whole; percentages sum to 100%. |
+| How much capacity is used or remains? | Stacked `HorizontalBarChart` | Used and remaining values summing to 100% for each resource. |
+
+- Say what is measured, its units, observation window and denominator. Request share is different from CPU utilization: more requests do not by themselves prove higher resource cost. Each capacity row has its own denominator; do not sum CPU, memory and storage percentages.
+- Use real source data for factual claims. A deliberately constructed worked example is allowed when it teaches the mechanism: label it “illustrative data” visibly and in narration, and keep its arithmetic consistent. When quantitative data is unavailable, use a qualitative or explicitly not-to-scale schematic, or ask for measurements if exact comparison is essential; never invent measured performance or adoption figures.
+- Show a few large, readable labels with a consistent palette. Use supported components and theme-aware Svg colors. Charts are composed `openui` sections; measured timing uses the dedicated `Timeline` section. There is no Utilization section type.
+
+### OpenUI chart and custom Svg presentation recipe
+
+- Use `root = Card([header, chart, takeaway], "clear")` (or Stack), with all three children named. The main beats are `title` → `part1` (measurement and context) → `part2` (whole visual) → `part3` (conclusion). Earlier parts stay visible; the chart remains in view for the takeaway. Keep content needed for presentation out of Tabs and Carousel.
+- Write several `NarrationStep("part2", …)` entries to explain the visual without replacing it. Move the highlight through a timeline's phases, a line's start/peak/recovery, relevant comparison bars, slices of a whole, or capacity rows. Explain what the pattern means instead of only reading labels. Autoplay finishes those narration steps before advancing; Next advances a main beat, not one data point at a time.
+- Target named visuals precisely: `drawing.processing` for an Svg shape's ID, `chart.series[0].values[1]` for a bar or line point, and `chart.values[0]` for a pie slice. Indices are zero-based. Give every narrated Svg shape a unique ID. Use a final takeaway to connect the highlighted evidence to the lesson.
+- The worked examples in the authoring reference’s Time and Usage Visuals section are starting points, not a required five-section sequence. Choose only the visual the topic needs, replace example data and narration together, and validate the section plus every narration target.
+
+
+### Worked example: timeline
+
+Section (sections/timeline.oui):
+
+```
+// @openui "Timeline · Where does the time go?"
+root = Card([header, drawing, takeaway], "clear")
+header = CardHeader("Timeline · Where does the time go?", "Order and duration · illustrative request trace")
+drawing = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 280">
+<text x="28" y="35" fill="text" font-size="24">One illustrative request · 200 ms total</text>
+<g id="ingress"><rect x="40" y="100" width="92" height="66" rx="10" fill="sky"/><text x="86" y="200" text-anchor="middle" fill="text" font-size="20">Ingress</text><text x="86" y="227" text-anchor="middle" fill="subtext0" font-size="18">20 ms</text></g>
+<g id="queue"><rect x="132" y="100" width="138" height="66" rx="10" fill="yellow"/><text x="201" y="125" text-anchor="middle" fill="base" font-size="20">Queue</text><text x="201" y="151" text-anchor="middle" fill="base" font-size="18">30 ms</text></g>
+<g id="processing"><rect x="270" y="100" width="690" height="66" rx="10" fill="mauve"/><text x="615" y="139" text-anchor="middle" fill="base" font-size="25">Processing · 150 ms</text></g>
+<path d="M40 80 H960" fill="none" stroke="overlay0" stroke-width="2"/>
+<g fill="subtext0" font-size="20"><text x="40" y="68">0</text><text x="132" y="68">20</text><text x="270" y="68">50</text><text x="960" y="68" text-anchor="end">200 ms</text></g>
+</svg>', "Widths represent elapsed time.")
+takeaway = Callout("info", "What to notice", "Processing accounts for 150 of 200 ms: 75% of this request’s elapsed time.")
+```
+
+Narration (sections/timeline.narrate.oui):
+
+```
+root = Narration([
+  NarrationStep("title", "Timeline · Where does the time go? This sample uses illustrative data."),
+  NarrationStep("part1", "Order and duration · illustrative request trace", [Highlight("header")]),
+  NarrationStep("part2", "The request spends its first 20 milliseconds entering the service.", [Highlight("drawing.ingress")]),
+  NarrationStep("part2", "It then waits in a queue for 30 milliseconds.", [Highlight("drawing.queue")]),
+  NarrationStep("part2", "Processing takes 150 milliseconds, the longest phase. These intervals run sequentially in this simplified trace.", [Highlight("drawing.processing")]),
+  NarrationStep("part3", "Processing accounts for 150 of 200 ms: 75% of this request’s elapsed time.", [Highlight("takeaway")])
+])
+```
+
+### Worked example: trend
+
+Section (sections/trend.oui):
+
+```
+// @openui "Trend · How does usage change?"
+root = Card([header, chart, takeaway], "clear")
+header = CardHeader("Trend · How does usage change?", "CPU utilization at four observation times · illustrative data")
+chart = LineChart(["09:00", "09:05", "09:10", "09:15"], [Series("CPU utilization (%)", [20, 45, 80, 35])], "linear", "Observation time", "CPU (%)", 280)
+takeaway = Callout("info", "What to notice", "CPU peaks at 80% at 09:10, then falls to 35%; a peak is different from sustained high usage.")
+```
+
+Narration (sections/trend.narrate.oui):
+
+```
+root = Narration([
+  NarrationStep("title", "Trend · How does usage change? This sample uses illustrative data."),
+  NarrationStep("part1", "CPU utilization at four observation times · illustrative data", [Highlight("header")]),
+  NarrationStep("part2", "At nine o’clock, CPU utilization is 20 percent.", [Highlight("chart.series[0].values[0]")]),
+  NarrationStep("part2", "At nine ten, utilization reaches the highest observed value: 80 percent.", [Highlight("chart.series[0].values[2]")]),
+  NarrationStep("part2", "The final sample drops to 35 percent, so these samples show a spike rather than a sustained plateau.", [Highlight("chart.series[0].values[3]")]),
+  NarrationStep("part3", "CPU peaks at 80% at 09:10, then falls to 35%; a peak is different from sustained high usage.", [Highlight("takeaway")])
+])
+```
+
+### Worked example: comparison
+
+Section (sections/comparison.oui):
+
+```
+// @openui "Comparison · Which handles more?"
+root = Card([header, chart, takeaway], "clear")
+header = CardHeader("Comparison · Which handles more?", "Requests by operation in one observation window · illustrative data")
+chart = HorizontalBarChart(["Search", "Database", "Other"], [Series("Requests", [600, 300, 100])], "grouped", "Request count", "Operation")
+takeaway = Callout("info", "What to notice", "Search handles twice as many requests as Database in this sample; counts alone do not measure resource cost.")
+```
+
+Narration (sections/comparison.narrate.oui):
+
+```
+root = Narration([
+  NarrationStep("title", "Comparison · Which handles more? This sample uses illustrative data."),
+  NarrationStep("part1", "Requests by operation in one observation window · illustrative data", [Highlight("header")]),
+  NarrationStep("part2", "Search handles 600 requests, the largest count.", [Highlight("chart.labels[0]")]),
+  NarrationStep("part2", "Database handles 300. Search therefore handles twice as many requests.", [Highlight("chart.series[0].values[1]")]),
+  NarrationStep("part2", "The remaining category handles 100 requests. These are counts over the same window.", [Highlight("chart.labels[2]")]),
+  NarrationStep("part3", "Search handles twice as many requests as Database in this sample; counts alone do not measure resource cost.", [Highlight("takeaway")])
+])
+```
+
+### Worked example: share
+
+Section (sections/share.oui):
+
+```
+// @openui "Proportion · How is the whole divided?"
+root = Card([header, chart, takeaway], "clear")
+header = CardHeader("Proportion · How is the whole divided?", "Share of the same 1,000 requests · illustrative data")
+chart = PieChart(["Search · 60%", "Database · 30%", "Other · 10%"], [60, 30, 10], "donut")
+takeaway = Callout("info", "What to notice", "These shares add to 100%. They describe the request mix, not percentage of machine capacity.")
+```
+
+Narration (sections/share.narrate.oui):
+
+```
+root = Narration([
+  NarrationStep("title", "Proportion · How is the whole divided? This sample uses illustrative data."),
+  NarrationStep("part1", "Share of the same 1,000 requests · illustrative data", [Highlight("header")]),
+  NarrationStep("part2", "Search accounts for 60 percent of all requests.", [Highlight("chart.values[0]")]),
+  NarrationStep("part2", "Database accounts for 30 percent, while the remaining requests account for 10 percent.", [Highlight("chart.values[1]")]),
+  NarrationStep("part2", "Together the three slices make one whole: all one thousand requests.", [Highlight("chart")]),
+  NarrationStep("part3", "These shares add to 100%. They describe the request mix, not percentage of machine capacity.", [Highlight("takeaway")])
+])
+```
+
+### Worked example: utilization
+
+Section (sections/utilization.oui):
+
+```
+// @openui "Utilization · How much capacity remains?"
+root = Card([header, chart, takeaway], "clear")
+header = CardHeader("Utilization · How much capacity remains?", "Used versus remaining capacity · illustrative snapshot")
+chart = HorizontalBarChart(["CPU", "Memory", "Storage"], [Series("Used (%)", [60, 80, 35]), Series("Remaining (%)", [40, 20, 65])], "stacked", "Percent of each resource’s capacity", "Resource")
+takeaway = Callout("info", "What to notice", "Memory has the least remaining capacity: 20%. Each row has its own capacity denominator; do not add the rows together.")
+```
+
+Narration (sections/utilization.narrate.oui):
+
+```
+root = Narration([
+  NarrationStep("title", "Utilization · How much capacity remains? This sample uses illustrative data."),
+  NarrationStep("part1", "Used versus remaining capacity · illustrative snapshot", [Highlight("header")]),
+  NarrationStep("part2", "CPU is 60 percent used, leaving 40 percent available.", [Highlight("chart.series[0].values[0]")]),
+  NarrationStep("part2", "Memory is 80 percent used, leaving only 20 percent available.", [Highlight("chart.series[0].values[1]")]),
+  NarrationStep("part2", "Storage is 35 percent used, leaving 65 percent available. Each resource has its own full-capacity baseline.", [Highlight("chart.series[1].values[2]")]),
+  NarrationStep("part3", "Memory has the least remaining capacity: 20%. Each row has its own capacity denominator; do not add the rows together.", [Highlight("takeaway")])
+])
+```
+
 ## Narration Files
 
 Loom Viewer can play a topic hands-free (Present mode): each section plays beat by beat, answers its own quiz questions (a wrong try, then the right answer), walks scenarios and decision trees, and lights the main content of each beat. Write a narration file for every section, `sections/<name>.narrate.oui`: it is the script the narrator reads, beat by beat. A beat with no step reads its on-screen text instead.
 
 - Its `root` is `Narration([steps])`; each `NarrationStep(beat, caption, [effects])` plays on the beat it names. Give every beat of the section at least one step, in beat order. Several steps on one beat play in turn: use them to walk a dense beat (a table, a diagram, a long card) one point at a time, each step with its own effect.
+- Flowcharts can choose a view per narration step with a fourth argument, e.g. `NarrationStep("step1", "First the systems.", null, "architecture")`, followed by another `NarrationStep("step1", "Now follow the messages.", null, "sequence")`. Supported views: "event-storming", "architecture", "swimlanes", "sequence", "data-flow", "state-machine". Use only views that explain the topic; an empty or missing view falls back to the initial view. Multiple narration steps on the same beat play in order.
+
 - `caption` is what the narrator says: one or two spoken sentences in the topic's language. Explain and connect, do not just repeat the screen: on a quiz's `.wrong` beat say why that answer is tempting and wrong, on its `.right` beat why the right one is right. Pass `null` for a step that only plays an effect (its Callout is still read).
 - Write it as a talk, not a template: vary how captions open, link a beat to the one before or to an earlier section, ask the question the learner is about to answer, and put the why or the example the screen leaves out in a Callout. Mix the effects to what each beat needs; not every step needs one.
 - Effects (optional): `Highlight(target)`, `Callout(target, text)` (a note beside an element, one or two short sentences, read after the caption), `Spotlight([targets])` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: `"catechins"`, `"q1.hint"`, `"root.items[0]"`. Name the statements you will point at in the section file (e.g. `catechins = Flashcard(...)`) rather than writing them inline. In a standard OpenUI section, a target names one of the root's children (see Standard OpenUI Sections) or one value of a chart or table among them, by the path of the value in its statement: `"bars.series[0].values[4]"` (one bar or line point), `"bars.labels[4]"` (every bar or point at the fifth label), `"bars.series[1]"` (a whole series), `"pie.values[2]"` (a slice), `"table.columns[2].data[4]"` (a cell), `"table.columns[2]"` (a column) or `"table.columns[2].label"` (its header). To point at a table row, Spotlight its cells. In a drawing (`Svg`), a target names one shape by its `id` in the markup: `"plant.bud"`. Use these to explain one figure or one part of a picture at a time: Highlight a bar while the caption names it, Callout a point with why it is there, Spotlight the shapes of a drawing the caption is about.
@@ -706,14 +895,15 @@ Beat IDs by section type (n counts from 1; every type but `intro` starts with `t
 | `intro` | `title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap) |
 | `text` | `p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs |
 | `bullets` | `item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, … |
-| `pillar-layer` | `layer1`, `layer2`, … one per layer |
+| `timeline` | `overview` (whole timeline), `group1`, `group2`, … (authored groups or activities sharing a start time), `summary` (whole timeline and takeaway) |
+| `pillar-layer` | `layerN` … `layer1` (foundation first; N is the authored top-to-bottom layer index); extra peer groups use `layerN.group2`, `layerN.group3`, …; then `overview` |
 | `image-gallery` | `image1`, `image2`, … one per image |
 | `taxonomy-browser` | `cards` (all cards), then `card1`, `card2`, … each card opened |
 | `concept-map` | `group1`, `group2`, … introduce categories in first-appearance order; after each group, `linkN` explains every ConceptLink whose endpoints are now introduced (N is its 1-based position in the links list); then `map` shows the complete map when there are links or several groups. Explain from → label → to without assuming every relation is a flow or a cause. |
-| `flowchart` | `step1`, `step2`, … one per step of the first journey |
+| `flowchart` | `chart`, `chart.part2`, … show readable portions of the overview (up to two journey steps per page; compact architecture diagrams can use one page), then `step1`, `step2`, … one per step of the first journey |
 | `scenario` | `start`; then one path per ending (weaker endings first, the best last): along path P, `pathP.choice1` (the choice picked on its card), `pathP.choice1.next` (where it leads), `pathP.choice2`, … (the last `.next` shows its ending); a later path starts at the fork where it leaves the one before |
 | `decision-tree` | `start` (the first question), then per answer taken (the recommended choice, else the first) `answer1` (picked on its question, with its rationale), `q2` (the next question), `answer2`, …, then `result` (the recommendation) |
-| `tradeoff-sandbox` | `step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.choice1`, `stepN.choice2`, … (the gains and costs of each choice that has some, numbered in the step) and `stepN.recommended` when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation |
+| `tradeoff-sandbox` | `situation1`, `situation2`, … introduces each scenario by title and description before its steps; `step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.choice1`, `stepN.choice2`, … (the gains and costs of each choice that has some, numbered in the step) and `stepN.recommended` as a separate recommendation scene (name, description and why it fits) when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation |
 | `formula-sandbox` | `formulas`, then `sweep1`, `sweep2`, … one per variable that can move (it sweeps from its min to its max while the trend of each metric is stated) |
 | `quiz` | `q1`, `q1.wrong`, `q1.right`, `q2`, … per question: asked, its first wrong choice tried, the right answer given |
 | `flashcards` | `card1`, `card1.back`, `card2`, … per card: its word, then its definition |
@@ -763,6 +953,83 @@ root = Narration([
   NarrationStep("item1.child2", "Signing in is only half the check: the account must also be allowed to open the project."),
   NarrationStep("item2", "Once access works, give the newcomer one clear outcome to aim for."),
   NarrationStep("item2.child1", "Working with a teammate connects that goal to a real task and gives questions somewhere to go.")
+])
+```
+
+## Layer Composition
+
+- Use `PillarLayer` when the learner needs to understand a foundation supporting higher responsibilities: network protocols or a deployment stack, for example. Put layers in top-to-bottom order with the foundation last. Horizontal position means peers within one level; place components inside their actual layer rather than making every component another layer.
+- For simple contained bands in Present, use rectangular `MatrixBlock`s with `rowSpan = 1`. Keep titles short and put explanations in `description`: Present shows names only, while Read retains descriptions and dependency exploration. Use multi-row spans and shapes only when those relationships matter; those use the matrix presentation.
+- A layer can contain several separate outer boxes. Set the trailing `group` argument on each block to its container's name, such as `"Tools"` or `"Knowledge"`. Matching names within the same layer share one box; different names form peer boxes on the same row. Blocks without a group share the layer-title box. Group names are authored explicitly and are scoped to the layer; they are not extra layers or inferred from titles.
+- Present uses a soft color tint and accent border on each outer box, with neutral white inner items in the light theme (neutral surfaces in dark themes). Set `color` on the group's first block to choose its outer accent, and use a consistent color for the group's blocks. Keep subitems visually neutral; do not add colored cards, HTML, CSS, emoji or icon arguments to force a different item appearance.
+- Use `colOffset` and `colSpan` to fill the grid without gaps or overlaps. In grouped Present rows, each box's width is proportional to its members' total column spans; items stay contained within their box. For example, Agent can hold Plan & Execute and Policy & Approvals, alongside separate Database and Cloud Run boxes at the same level.
+- `MatrixBlock(id, title, layer, colOffset?, colSpan?, rowSpan?, description?, color?, dependsOn?, shape?, offsets?, group?)` is positional. Skip optional values with `null` before `group`, as in the example. Set `dependsOn` to real block IDs for Read's dependency tracing; shared group membership does not create dependencies.
+- Narrate from the foundation upward. Beat IDs keep their authored top-to-bottom layer identity: for three layers, playback starts with `layer3`, then `layer2`, then `layer1`. Each layer's first group uses its `layerN` beat; later groups use `layerN.group2`, `layerN.group3`, … in first-appearance order among that layer's blocks. Earlier groups and layers stay visible. Finish with `overview` to connect the whole stack. The stage adds `title` before these beats. Explain what each level enables and how peer groups differ; narration can highlight individual block IDs without adding a beat per item. Label illustrative architectures and simplifications so learners do not mistake one deployment choice for a mandatory architecture.
+
+Example section (`sections/agent-foundation.oui`):
+
+```
+root = PillarLayer("Actions and knowledge build on a foundation", [capabilities, foundation], [tools, connectors, retrieval, search, compute, storage])
+capabilities = Layer("capabilities", "Tools & Knowledge")
+foundation = Layer("foundation", "Cloud Foundation")
+tools = MatrixBlock("tools", "Tool Execution", capabilities, 0, 1, 1, "Runs permitted actions.", "teal", ["compute"], null, null, "Tools")
+connectors = MatrixBlock("connectors", "APIs & Connectors", capabilities, 1, 1, 1, "Connects to external services.", "teal", ["compute"], null, null, "Tools")
+retrieval = MatrixBlock("retrieval", "Knowledge Retrieval", capabilities, 2, 1, 1, "Finds relevant source material.", "green", ["storage"], null, null, "Knowledge")
+search = MatrixBlock("search", "Document Search", capabilities, 3, 1, 1, "Searches indexed documents.", "green", ["storage"], null, null, "Knowledge")
+compute = MatrixBlock("compute", "Compute", foundation, 0, 2, 1, "Hosts the services.", "blue")
+storage = MatrixBlock("storage", "Storage", foundation, 2, 2, 1, "Persists documents and indexes.", "blue")
+```
+
+Matching narration (`sections/agent-foundation.narrate.oui`):
+
+```
+root = Narration([
+  NarrationStep("title", "Separate the capabilities an agent uses from the foundation that runs them."),
+  NarrationStep("layer2", "Compute hosts the services, while storage persists their documents and indexes."),
+  NarrationStep("layer1", "Tools perform actions. Connectors give those actions access to external services.", [Highlight("tools"), Highlight("connectors")]),
+  NarrationStep("layer1.group2", "Knowledge capabilities find source material through retrieval and search.", [Highlight("retrieval"), Highlight("search")]),
+  NarrationStep("overview", "Both action and knowledge services rely on the cloud foundation below. These boxes represent responsibilities, not a required deployment architecture.")
+])
+```
+
+## Measured Timeline
+
+Use the dedicated `Timeline` section for elapsed start times, durations, overlapping work, waiting and joins. A Flowchart sequence view explains messages and their order; its vertical spacing is not measured time. Prefer Timeline when duration is the teaching point. Use an OpenUI Svg only when a custom qualitative timeline is needed.
+
+- `Timeline(title, lanes, activities, groups?, unit?, description?, takeaway?, heading?, lead?)` uses one shared time unit (default ms), with zero at the left. Declare participant/resource metadata with `TimelineLane(id, title, color?)` and `TimelineActivity(id, title, lane, start, duration, description?, dependsOn?)`. All times must be finite and nonnegative. Zero duration is a milestone.
+- Dependencies are explicit finish-to-start activity IDs. A dependent activity cannot start before any dependency finishes. Every task gets a separate row, sorted top-to-bottom by start time; equal starts keep their authored order and align horizontally. The lane names a participant/resource, shown beneath the task title. Parallel tasks have overlapping start/end intervals, even if they share an owner. Do not add durations of overlapping work to calculate total elapsed time. The displayed total is the latest activity end measured from zero, including idle gaps.
+- Explain parallel activities together using `TimelineGroup(id, title, activities, description?)`. Groups are ordered presentation stages and must cover every activity; the same activity may appear in multiple groups when explanation needs it. Without groups, activities sharing a start time form one stage automatically.
+- Present beats are `title`, `overview`, `group1`, `group2`, …, `summary`. Overview and summary show the whole diagram. Stage beats highlight their activities together; dense schedules enlarge the current task rows with a whole-schedule map and the same absolute time axis. Prefer meaningful groups of a few related activities for a 15-item schedule; arrows within the current stage and a list of external prerequisites show what it waits for. Several narration steps can explain one stage. Keep labels short and put longer explanations in descriptions or narration. Read mode lets learners select an activity for its timing, explanation and dependencies.
+- Use source-backed timing for factual claims. Clearly label a worked example as illustrative. Durations are encoded spatially; presentation animation speed does not represent execution time.
+
+Example section (sections/parallel-retrieval.oui):
+
+```
+root = Timeline("Parallel retrieval · 200 ms elapsed", [request, database, search, agent], [validate, records, documents, compose], [prepare, retrieve, join], "ms", "Illustrative timings for one request; tasks are ordered by start time on a shared scale.", "20 + max(80, 150) + 30 = 200 ms elapsed. Running everything sequentially would take 280 ms.")
+request = TimelineLane("request", "Request", "blue")
+database = TimelineLane("database", "Database", "teal")
+search = TimelineLane("search", "Search", "mauve")
+agent = TimelineLane("agent", "Agent", "peach")
+validate = TimelineActivity("validate", "Validate", request, 0, 20, "Validate the request before starting both retrieval tasks.")
+records = TimelineActivity("records", "Fetch records", database, 20, 80, "Finishes at 100 ms; composing still waits for Search.", ["validate"])
+documents = TimelineActivity("documents", "Find documents", search, 20, 150, "Runs concurrently with the database task and finishes at 170 ms.", ["validate"])
+compose = TimelineActivity("compose", "Compose answer", agent, 170, 30, "Waits for both retrieval tasks. The request completes at 200 ms.", ["records", "documents"])
+prepare = TimelineGroup("prepare", "Prepare the request", [validate], "Validation completes before retrieval begins.")
+retrieve = TimelineGroup("retrieve", "Retrieve in parallel", [records, documents], "Both tasks start at 20 ms. Search takes longer; their durations overlap.")
+join = TimelineGroup("join", "Wait for both, then compose", [compose], "Records are ready at 100 ms, but composing cannot start until Search finishes at 170 ms.")
+```
+
+Matching narration (sections/parallel-retrieval.narrate.oui):
+
+```
+root = Narration([
+  NarrationStep("title", "Parallel tasks reduce elapsed time by overlapping work. These timings are illustrative."),
+  NarrationStep("overview", "Read time from left to right. Every task row uses the same millisecond scale; bar widths represent durations."),
+  NarrationStep("group1", "Validation takes the first twenty milliseconds, then both retrieval tasks can begin.", [Highlight("validate")]),
+  NarrationStep("group2", "Database and Search start together at twenty milliseconds. Their bars overlap, so their durations do not add to elapsed time.", [Highlight("records"), Highlight("documents")]),
+  NarrationStep("group2", "The database finishes at one hundred milliseconds. Search continues until one hundred seventy milliseconds.", [Highlight("documents")]),
+  NarrationStep("group3", "Both arrows lead to Compose. It waits for the later dependency, then takes thirty milliseconds to finish at two hundred.", [Highlight("compose")]),
+  NarrationStep("summary", "Total elapsed time is twenty plus the longer parallel task of one hundred fifty, plus thirty: two hundred milliseconds, rather than two hundred eighty sequentially.")
 ])
 ```
 

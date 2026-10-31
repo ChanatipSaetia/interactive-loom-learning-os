@@ -149,7 +149,8 @@ a performed answer (decision 103). The `code` names are the beat IDs a narration
 | `intro` | `title` title and tagline (when it has either) · `what` the definition (else the summary) and up to three bullets · `why` the summary, then the impact as the takeaway · `roadmap` the `RoadmapStep` titles on a drawn path. One scene per beat (decision 109) |
 | `text` | `p1`, `p2`, … per paragraph with `pN.part2`, … continuations for dense prose; one short scene at a time, keeping a bold opening term as its headline (decision 120) |
 | `bullets` | `item1`, … for top-level points, with descendants in depth-first order (`item1.child1`, `item1.child1.child1`, …); content-sized pages retain parents and progressively reveal connected sub-items, with icons and continuation context (decision 121) |
-| `pillar-layer` | `layer1`, … one per `Layer`, settling onto the stack from the bottom; `MatrixBlock`s fill with the layer they belong to, by title only |
+| `timeline` | `overview`, `group1`, `group2`, …, `summary`; whole time-scaled diagram on overview/summary; dense stages enlarge a group with a whole-schedule map and the original time scale; parallel activities focus together; authored groups or shared start times define the stages |
+| `pillar-layer` | `layerN` … `layer1` in foundation-to-top playback order, preserving authored top-to-bottom indices; simple stacks focus peer groups with `layerN.group2`, `layerN.group3`, …; earlier content remains; final `overview` focuses the complete stack. Blocks show titles only. |
 | `image-gallery` | `image1`, … one per `GalleryImage`: the image with a slow push-in (ambient, outside the beat timeline) and its caption |
 | `taxonomy-browser` | `cards` all `TaxonomyCategory` cards cascading in, by name · `card1`, … each card opened in turn beside the agenda: title, the first two sentences of its description, its analogy |
 | `concept-map` | `group1`, … introduce categories; `linkN` follows after both endpoint groups are known and explains source → authored label → target; `map` ends with the complete graph (decision 123) |
@@ -491,3 +492,35 @@ pure and tested directly.
 ### Taxonomy visual prototype (awaiting review)
 
 Present taxonomy now prototypes the supplied circular-icon reference: a balanced overview (five categories use a 3 + 2 layout) with category names and short focus lines, followed by an analogy-led explanation beside its definition. Category icons and colors carry across both views; the category agenda moves below the focus view. Existing `cards` and `cardN` narration IDs and Pick targets are preserved. Read-mode taxonomy and category data are unchanged.
+
+### Trade-off context scenes
+
+Trade-off comparisons show the metric table and each option's gains and costs. Situation names and descriptions are introduced on dedicated `situationN` beats before each scenario's first decision. Existing `stepN.recommended` beats now show standalone recommendation name, description and rationale, without the comparison table. Read keeps situation and recommendation context in the Try it sandbox; Compare options retains the detailed option explanations. Existing step and result narration IDs remain unchanged.
+
+### Trade-off conclusion on one page
+
+Keep the existing `resultN` beat as a single conclusion page. Each decision shows the authored recommended option, the opening two sentences of its rationale (description fallback), and its first listed cost as the main compromise. The compact metric dashboard follows all decisions. Read's Try it tab uses the same conclusion with full explanations and compromise descriptions; its interactive selections and dashboard remain separate. Missing recommendations or costs are stated explicitly, never invented. Rows enter in sequence on the same beat; no extra conclusion pages or narration IDs.
+
+### Flowchart narration views and presenter canvas
+
+A flowchart NarrationStep may choose a view using its optional fourth argument; multiple narration steps on one journey beat can switch views as they play. An omitted or unavailable view uses the chart's initial view. Existing journey beat IDs stay unchanged. Present reserves a separate caption area and frames active diagram content without floating the caption over it; Read keeps its floating caption and controls. Presentation nodes use a larger, four-line name while retaining their type; decision diamonds retain their original sizing.
+
+### Flowchart overview
+
+Present opens flowcharts with overview beats before the existing `stepN` journey beats. Narration can choose the view for each overview beat. A short diagram fits on one page; longer journeys use the readable overview pages described below before returning to the step framing.
+
+### Readable flowchart overview pages
+
+A long journey introduces its diagram in multiple `chart`, `chart.part2`, … beats, approximately two journey steps per page. Pages frame groups of diagram columns with one neighboring column retained at each boundary, followed by the unchanged `stepN` beats. Page count is deterministic from the first journey; narration can choose the view for each overview beat. A chart without a journey keeps one overview beat.
+
+### Swimlane and sequence presenter framing
+
+In Present mode, swimlane backgrounds span the canvas and their headings remain pinned while overview pages frame the steps. Sequence overview pages divide messages in time, keep all participant lifelines, and show full message labels; branch group frames follow their messages. Read mode keeps its existing layout and abbreviated labels.
+
+### Compact architecture overview
+
+For a flowchart that opens on Architecture, a compact diagram (at most six architectural entities) uses one overview beat. When a narration step switches into a compact architecture view from another overview, the complete system and boundary are framed rather than clipped. Larger architecture diagrams retain the overview paging.
+
+### Read-mode diagram readability
+
+Read shares the clearer node typography and softer architecture cards. Its swimlane bands and labels remain visible while panning, sequence messages use full labels, and journey captions sit below the diagram. Read opens each view centered on its full content, allows manual zoom/pan, and frames played journey steps more closely. Fit-to-screen calculates a scale from actual bounds rather than the former fixed 0.4. Read's canvas is taller to give diagrams room alongside their controls.

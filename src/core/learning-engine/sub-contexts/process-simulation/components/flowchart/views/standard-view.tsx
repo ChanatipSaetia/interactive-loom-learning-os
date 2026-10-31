@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, memo } from 'react';
+import { useState, memo, Fragment } from 'react';
 import * as Icons from 'lucide-react';
 import { COLORS, BORDER_COLORS, ICONS, ICON_ANIMATIONS, NODE_W, NODE_H, wrapTooltipText, TYPES } from '../types';
 import type { UnifiedFlowchartSchema, FlowchartRelation, FlowchartViewNode, FlowchartViewGroup } from '../types';
@@ -36,6 +36,8 @@ export interface StandardViewProps {
   forkHighlights?: ForkHighlights | null;
   /** Route views: numbered trail of hand-offs and the current one's label. */
   storyRoute?: StoryRoute | null;
+  hideLanes?: boolean;
+  presenting?: boolean;
 }
 
 export const StandardView = memo(function StandardView({
@@ -53,7 +55,8 @@ export const StandardView = memo(function StandardView({
   handleNodeClick,
   isFullscreen,
   forkHighlights,
-  storyRoute
+  storyRoute,
+  hideLanes = false
 }: StandardViewProps) {
   const pick = usePickAnchors();
   const minX = positioned.length > 0 ? Math.min(...positioned.map(n => n.x || 0)) : 0;
@@ -87,6 +90,7 @@ export const StandardView = memo(function StandardView({
       {view.groups && view.groups.map(group => {
         const isFaded = activeNodeIds !== null;
         if (group.isLane) {
+          if (hideLanes) return null;
           let yVal = group.y ?? 100;
           let hVal = group.h ?? 180;
           if (typeof group.row === 'number') {
@@ -463,6 +467,7 @@ export const StandardView = memo(function StandardView({
             <foreignObject x={0} y={0} width={nW} height={nH}>
               <div
                 className="flowchart-node-card"
+                data-node-type={viewType}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -552,7 +557,9 @@ export const StandardView = memo(function StandardView({
                       overflow: 'hidden'
                     }}
                   >
-                    {entity.viewTitles?.[viewKey] ?? entity.title}
+                    {viewKey === 'SYS_ARCH'
+                      ? (entity.viewTitles?.[viewKey] ?? entity.title).split(/(?<=[a-z0-9])(?=[A-Z])/g).map((part, index) => <Fragment key={index}>{index > 0 && <wbr />}{part}</Fragment>)
+                      : entity.viewTitles?.[viewKey] ?? entity.title}
                   </p>
                 </div>
               </div>

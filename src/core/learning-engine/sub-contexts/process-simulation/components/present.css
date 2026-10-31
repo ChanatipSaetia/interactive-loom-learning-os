@@ -4,8 +4,32 @@
 
 .present-flowchart { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .present-flowchart .flowchart-section { flex: 1; margin: 0; gap: 0; }
-.present-flowchart .flowchart-svg { height: 500px; border-radius: var(--radius-lg); }
-.present-stage.is-portrait .present-flowchart .flowchart-svg { height: calc(var(--present-stage-h, 640px) - 120px); }
+.present-flowchart .flowchart-section, .present-flowchart .flowchart-canvas-wrapper, .present-flowchart .flowchart-canvas-inner { min-height: 0; }
+.present-flowchart .flowchart-canvas-wrapper { flex: 1; }
+.present-flowchart .flowchart-body { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.present-flowchart .flowchart-svg { flex: 1; min-height: 0; height: auto; border-radius: var(--radius-lg); }
+.present-flowchart .flowchart-step-caption { position: relative; flex: none; width: auto; max-width: none; margin: 8px 0 0; box-shadow: none; }
+.present-flowchart .flowchart-step-caption-title { white-space: normal; overflow: visible; text-overflow: clip; }
+.present-flowchart .flowchart-step-caption-text { font-size: var(--present-fs-small); }
+.present-flowchart .flowchart-node-card p { overflow-wrap: anywhere; }
+
+.present-flowchart-overview-count { position: absolute; z-index: 2; right: 14px; bottom: 14px; padding: 5px 10px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card); color: var(--muted-foreground); font: 500 var(--present-fs-small) / 1.2 var(--font-body); }
+
+.present-swimlane-label { color: var(--foreground); background: color-mix(in srgb, var(--card) 90%, transparent); border-radius: var(--radius-sm); padding: 4px 6px; font: 600 13px / 1.25 var(--font-body); overflow-wrap: anywhere; }
+
+/* Keep node types while making room for clearer names in every presentation view. */
+.present-flowchart .flowchart-node-card:not([data-node-type="Decision"]) { padding: 6px !important; }
+.present-flowchart .flowchart-node-meta { padding-bottom: 2px !important; margin-bottom: 2px !important; }
+.present-flowchart .flowchart-node-card:not([data-node-type="Decision"]) p { font-size: 15px !important; line-height: 1.18 !important; font-family: var(--font-ui); font-weight: 400 !important; letter-spacing: 0; -webkit-line-clamp: 4 !important; overflow-wrap: anywhere; }
+
+/* Architecture: keep the diagram calm and names prominent in presentation. */
+.present-flowchart [data-flow-view="SYS_ARCH"] .flowchart-node-group { opacity: 1 !important; }
+.present-flowchart [data-flow-view="SYS_ARCH"] .flowchart-node-rect { fill: var(--card); stroke: color-mix(in srgb, var(--foreground) 24%, var(--border)); stroke-width: 1; filter: none; }
+.present-flowchart [data-flow-view="SYS_ARCH"] .flowchart-node-group.active .flowchart-node-rect { stroke: var(--primary); stroke-width: 2; }
+.present-flowchart [data-flow-view="SYS_ARCH"] .flowchart-node-card { background: transparent; box-shadow: none; }
+.present-flowchart [data-flow-view="SYS_ARCH"] .flowchart-node-meta { border-color: var(--border) !important; }
+.present-flowchart [data-flow-view="SYS_ARCH"] .flowchart-node-card p { font-weight: 400 !important; color: var(--foreground) !important; overflow-wrap: normal; }
+.present-flowchart [data-flow-view="SYS_ARCH"] .flowchart-node-link-icon { display: none !important; }
 
 /* ---- scenario: the Read cards (scenario.css), sized for the stage ---- */
 

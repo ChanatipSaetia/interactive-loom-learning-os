@@ -152,3 +152,19 @@
 @media (prefers-reduced-motion: reduce) {
   .present-gallery-img.is-live { animation: none; }
 }
+
+/* Simple layer stacks express containment: items sit inside their layer band. */
+.present-region .present-layer-stack { flex: 1; min-height: 0; gap: 12px; }
+.present-layer-band { border: 1px solid color-mix(in srgb, var(--layer-accent) 55%, var(--border)); border-left: 5px solid var(--layer-accent); border-radius: var(--radius-md); padding: 8px 14px; background: color-mix(in srgb, var(--layer-accent) 12%, var(--ctp-mantle)); display: flex; flex-direction: column; gap: 6px; }
+.present-layer-band.is-current { border-color: var(--layer-accent); }
+.present-layer-name { align-self: flex-start; margin: 0; color: var(--foreground); font: 500 var(--present-fs-card) / 1.25 var(--font-ui); }
+.present-layer-items { display: grid; grid-template-columns: repeat(var(--layer-cols), minmax(0, 1fr)); gap: 10px; }
+.present-layer-item { padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--ctp-surface0); color: var(--foreground); font: 400 var(--present-fs-card) / 1.3 var(--font-ui); text-align: center; overflow-wrap: anywhere; }
+.present-stage.is-portrait .present-layer-band { padding: 10px 12px; gap: 8px; }
+.present-stage.is-portrait .present-layer-item { padding: 7px 5px; font-size: 14px; }
+
+/* Separate peers share a level; each group owns its border, heading and items. */
+.present-layer-level { display: flex; gap: 12px; min-width: 0; }
+.present-layer-level > .present-layer-band { min-width: 0; }
+.present-layer-level .present-layer-item { display: flex; align-items: center; justify-content: center; }
+.present-stage.is-portrait .present-layer-level { gap: 6px; }

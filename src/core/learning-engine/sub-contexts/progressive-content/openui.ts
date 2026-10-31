@@ -1,3 +1,5 @@
+import { timelineOUIComponents } from './timeline-openui'
+export { Timeline, TimelineLane, TimelineActivity, TimelineGroup } from './timeline-openui'
 /**
  * OpenUI Lang vocabulary for the Progressive Content subdomain.
  *
@@ -351,6 +353,7 @@ export const MatrixBlock = defineOUIComponent({
     dependsOn: z.array(z.string()).optional(),
     shape: z.enum(['rect', 'l-bottom-left', 'l-bottom-right', 'l-top-left', 'l-top-right']).optional(),
     offsets: z.array(z.array(z.number().int())).optional(),
+    group: z.string().optional(),
   }),
   fields: {
     id: 'Block ID, unique within the map; `dependsOn` refers to it.',
@@ -364,6 +367,7 @@ export const MatrixBlock = defineOUIComponent({
     dependsOn: 'Optional IDs of blocks this block depends on.',
     shape: 'Optional "rect" (default) or an L-shape inside the span: "l-bottom-left", "l-bottom-right", "l-top-left", "l-top-right".',
     offsets: 'Optional custom shape: [rowOffset, colOffset] cells relative to the anchor. Overrides spans and shape.',
+    group: 'Optional named outer container in Present mode. Blocks with the same group within a single-row layer share a box; different groups sit side by side.',
   },
   toData: (p) => ({
     id: p.id,
@@ -377,6 +381,7 @@ export const MatrixBlock = defineOUIComponent({
     offsets: p.offsets,
     color: p.color,
     depends_on: p.dependsOn,
+    group: p.group,
   }),
 })
 
@@ -427,6 +432,7 @@ export const PillarLayer: LoomOUIComponent = defineOUISection({
       dependsOn: b.depends_on,
       shape: b.shape,
       offsets: b.offsets as OUIValue,
+      group: b.group,
     }, b.id ?? `block-${i + 1}`)),
     description: data.description,
     ...sectionTail(meta),
@@ -440,4 +446,5 @@ export const progressiveContentOUIComponents = [
   TaxonomyBrowser, TaxonomyCategory,
   ImageGallery, GalleryImage,
   PillarLayer, Layer, LayerItem, MatrixBlock,
+  ...timelineOUIComponents,
 ]

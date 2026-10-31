@@ -48,6 +48,8 @@ export interface PresentRendererProps<D = Record<string, unknown>> {
   sectionIndex: number
   /** This section is the one on stage (not done, not in the overview): timed motion such as a sweep plays. */
   active: boolean
+  /** Current authored narration step, including an optional flowchart view. */
+  narrationStep?: import('../composition/oui/narration').NarrationStepData
 }
 
 export interface SectionPresenter<D = Record<string, unknown>> {

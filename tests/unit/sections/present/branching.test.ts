@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { flowchartBeats, scenarioBeats, scenarioPlan, type FlowchartPresentData, type ScenarioPresentData } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/present'
+import { flowchartBeats, flowchartOverviewPages, scenarioBeats, scenarioPlan, type FlowchartPresentData, type ScenarioPresentData } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/present'
 import { conceptCategories, conceptMapBeats, type ConceptMapPresentData } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/present'
 import { decisionTreeBeats, decisionTreeWalk, drawTree, type DecisionTreePresentData } from '../../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/present'
 import { layoutConceptMap, getNodeWidth } from '../../../../src/core/learning-engine/sub-contexts/practice-assessment/components/concept-map'
@@ -10,8 +10,20 @@ describe('spatial and branching beats', () => {
     const props = propsOf<FlowchartPresentData>(content('kamado-beef/sections/flowchart.oui'))
     const steps = props.schema?.journeys[0]?.steps ?? []
     expect(steps.length).toBeGreaterThan(1)
-    expect(flowchartBeats(props)).toHaveLength(steps.length)
+    expect(flowchartBeats(props)).toHaveLength(steps.length + flowchartOverviewPages(props))
+    expect(ids(flowchartBeats(props))).toEqual([...Array.from({ length: flowchartOverviewPages(props) }, (_, i) => i ? `chart.part${i + 1}` : 'chart'), ...steps.map((_, i) => `step${i + 1}`)])
     expect(kinds(flowchartBeats({}))).toEqual(['show'])
+  })
+
+  it('uses one architecture overview for a compact system', () => {
+    const source = content('hexagonal-architecture/sections/flowchart.oui').replace('  ),\n)\n', '  ),\n  "architecture",\n)\n')
+    const props = propsOf<FlowchartPresentData>(source)
+    expect(flowchartOverviewPages(props)).toBe(1)
+    expect(ids(flowchartBeats(props)).slice(0, 2)).toEqual(['chart', 'step1'])
+    const larger = { ...props, schema: { ...props.schema!, entities: { ...props.schema!.entities,
+      extra1: { title: 'Extra 1', desc: '', type: 'Service' }, extra2: { title: 'Extra 2', desc: '', type: 'Service' },
+    } } }
+    expect(flowchartOverviewPages(larger)).toBeGreaterThan(1)
   })
 
   it('concept map: retain category introductions, add every relationship, then the whole map', () => {

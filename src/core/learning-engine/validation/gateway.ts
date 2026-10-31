@@ -28,6 +28,7 @@ import {
   TaxonomyBrowserSectionSchema,
   ImageGallerySectionSchema,
   PillarLayerSectionSchema,
+  TimelineSectionSchema,
 } from '../sub-contexts/progressive-content/schema'
 import { validateProgressiveContentTier3 } from '../sub-contexts/progressive-content/validation'
 
@@ -73,6 +74,7 @@ const SCHEMA_REGISTRY: Record<string, SchemaEntry> = {
   'bullets': { schema: BulletsSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
   'taxonomy-browser': { schema: TaxonomyBrowserSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
   'image-gallery': { schema: ImageGallerySectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
+  'timeline': { schema: TimelineSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
   'pillar-layer': { schema: PillarLayerSectionSchema, subdomain: 'progressive-content', validateTier3: validateProgressiveContentTier3 },
   'flowchart': { schema: FlowchartSectionSchema, subdomain: 'process-simulation', validateTier3: validateProcessSimulationTier3 },
 

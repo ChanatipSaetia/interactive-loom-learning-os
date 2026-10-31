@@ -20,4 +20,10 @@ export interface GalleryItemViewed {
   timestamp: number
 }
 
-export type ProgressiveContentEvents = CategorySelected | GalleryItemViewed
+export interface TimelineActivitySelected {
+  type: 'TimelineActivitySelected'
+  activityId: string
+  timestamp: number
+}
+
+export type ProgressiveContentEvents = CategorySelected | GalleryItemViewed | TimelineActivitySelected

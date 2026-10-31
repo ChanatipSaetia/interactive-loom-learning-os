@@ -1,3 +1,4 @@
+import { TIMELINE_EXAMPLE } from '../../../learning-engine/composition/oui/timeline-authoring'
 /**
  * Starter `.oui` sources for new sections and topics in Loom Studio.
  * Every template is a small, valid example of its section type.
@@ -17,6 +18,11 @@ export interface SectionTemplate {
 const q = (text: string) => JSON.stringify(text)
 
 export const SECTION_TEMPLATES: SectionTemplate[] = [
+  {
+    type: 'timeline', component: 'Timeline', label: 'Timeline',
+    description: 'Measured time, parallel activities, waiting and dependencies',
+    source: (title) => TIMELINE_EXAMPLE.replace('"Parallel retrieval · 200 ms elapsed"', q(title)),
+  },
   {
     type: 'intro',
     component: 'Intro',

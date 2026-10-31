@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { within, render, screen, fireEvent } from '@testing-library/react'
 import { SectionRegistry } from '../../../../src/core/learning-engine/registry'
 import TradeoffSandboxSection, {
   type TradeoffScenario,
@@ -83,6 +83,8 @@ describe('TradeoffSandbox Section', () => {
 
   it('renders scenario banner with description', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
+    expect(screen.getByTestId('scenario-banner')).not.toBeVisible()
+    fireEvent.click(screen.getByTestId('tradeoff-tab-sandbox'))
     expect(screen.getByTestId('scenario-banner')).toBeInTheDocument()
     expect(screen.getByText('Build an enterprise web application.')).toBeInTheDocument()
   })
@@ -437,9 +439,12 @@ describe('TradeoffSandbox Section', () => {
     expect(con).toHaveTextContent('Requires SSR for search indexing')
   })
 
-  it('Compare options tab shows recommended badge for recommended choice', () => {
+  it('recommendation context appears in the sandbox instead of comparison', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    expect(screen.getByTestId('compare-recommended-badge-0-ssr')).toHaveTextContent('Recommended')
+    expect(screen.queryByTestId('compare-recommended-badge-0-ssr')).not.toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Recommended options' })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('tradeoff-tab-sandbox'))
+    expect(screen.getByLabelText('Recommended options')).toHaveTextContent('SSR')
     expect(screen.queryByTestId('compare-recommended-badge-0-spa')).not.toBeInTheDocument()
   })
 
@@ -465,8 +470,19 @@ describe('TradeoffSandbox Section', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     expect(screen.getByTestId('compare-card-desc-0-spa')).toHaveTextContent('Single page application.')
     const effects = screen.getByTestId('compare-effects-0-ssr')
-    expect(effects).toHaveTextContent('Performance +15')
-    expect(effects).toHaveTextContent('Cost −5')
+    expect(effects).toHaveTextContent('↑ Higher Performance')
+    expect(effects).toHaveTextContent('↓ Lower Cost')
+  })
+
+  it('compares metrics on shared rows and focuses an option from its column heading', () => {
+    render(<TradeoffSandboxSection {...defaultProps} />)
+    const table = screen.getByRole('table', { name: `${mockSteps[0].title} metric comparison` })
+    expect(table).toHaveTextContent('↑ Higher')
+    expect(table).toHaveTextContent('↓ Lower')
+    const option = within(table).getByRole('button', { name: mockSteps[0].choices[0].label })
+    fireEvent.click(option)
+    expect(option).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByTestId('compare-card-0-spa')).toHaveClass('compare-card-focused')
   })
 
   it('options without why/when text are not tappable', () => {

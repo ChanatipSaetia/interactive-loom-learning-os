@@ -1,3 +1,4 @@
+import { LAYER_AUTHORING_EXAMPLE, LAYER_NARRATION_EXAMPLE } from '../../../../../../src/core/learning-engine/composition/oui/layer-authoring'
 import { BULLET_AUTHORING_EXAMPLE, BULLET_NARRATION_EXAMPLE } from '../../../../../../src/core/learning-engine/composition/oui/bullet-authoring'
 import { describe, it, expect } from 'vitest'
 import { AUTHORING_EXAMPLE, DRAWING_EXAMPLE, DRAWING_NARRATION_EXAMPLE, FACTS_EXAMPLE, HOWTO_EXAMPLE, HOWTO_NARRATION_EXAMPLE, NARRATION_EXAMPLE, TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, getLoomAuthoringPrompt } from '../../../../../../src/core/learning-engine/composition/oui/authoring-prompt'
@@ -6,6 +7,18 @@ import { sectionBeatsOf, validateOUINarration, validateOUISection } from '../../
 import { parseTopicSource } from '../../../../../../src/core/supporting/authoring-editor/workspace'
 
 describe('Loom authoring prompt', () => {
+  it('teaches separate peer containers with a valid, gap-free layer example', () => {
+    const result = validateOUISection(LAYER_AUTHORING_EXAMPLE)
+    expect(result.diagnostics).toEqual([])
+    const blocks = (result.payload?.data as { matrix_blocks: Array<{ group?: string }> }).matrix_blocks
+    expect(blocks.map((block) => block.group)).toEqual(['Tools', 'Tools', 'Knowledge', 'Knowledge', undefined, undefined])
+    expect(getLoomAuthoringPrompt()).toContain(LAYER_AUTHORING_EXAMPLE)
+    const beats = sectionBeatsOf(LAYER_AUTHORING_EXAMPLE)!.map((beat) => beat.id)
+    expect(beats).toEqual(['title', 'layer2', 'layer1', 'layer1.group2', 'overview'])
+    const narration = validateOUINarration(LAYER_NARRATION_EXAMPLE, LAYER_AUTHORING_EXAMPLE)
+    expect(narration.diagnostics).toEqual([])
+    expect(narration.payload!.steps.map((step) => step.beat)).toEqual(beats)
+  })
   it('teaches icons and emphasis with a valid bullet hierarchy and complete narration', () => {
     const section = validateOUISection(BULLET_AUTHORING_EXAMPLE)
     expect(section.diagnostics).toEqual([])

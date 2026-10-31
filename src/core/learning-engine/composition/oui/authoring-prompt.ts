@@ -1,3 +1,4 @@
+import { TIMELINE_AUTHORING_GUIDE } from './timeline-authoring'
 /**
  * LLM authoring prompt: everything an external LLM chat needs to write a
  * whole Loom topic that Loom Viewer and Loom Studio can open.
@@ -8,6 +9,8 @@
  * `npm run oui:schema` publishes it as `public/llm/loom-authoring-prompt.md`.
  */
 import { BULLET_AUTHORING_GUIDE } from './bullet-authoring'
+import { LAYER_AUTHORING_GUIDE } from './layer-authoring'
+import { TIME_USAGE_AUTHORING_GUIDE, timeUsageExamplesGuide } from './time-usage-authoring'
 import { standardOpenUISpec } from '../../sub-contexts/progressive-content/openui-standard'
 import { SVG_THEME_COLORS } from '../../sub-contexts/progressive-content/components/openui/svg-markup'
 import { LOOM_PAGES_URL } from './llm-guide'
@@ -67,6 +70,8 @@ const NARRATION = `## Narration Files
 Loom Viewer can play a topic hands-free (Present mode): each section plays beat by beat, answers its own quiz questions (a wrong try, then the right answer), walks scenarios and decision trees, and lights the main content of each beat. Write a narration file for every section, \`sections/<name>.narrate.oui\`: it is the script the narrator reads, beat by beat. A beat with no step reads its on-screen text instead.
 
 - Its \`root\` is \`Narration([steps])\`; each \`NarrationStep(beat, caption, [effects])\` plays on the beat it names. Give every beat of the section at least one step, in beat order. Several steps on one beat play in turn: use them to walk a dense beat (a table, a diagram, a long card) one point at a time, each step with its own effect.
+- Flowcharts can choose a view per narration step with a fourth argument, e.g. \`NarrationStep("step1", "First the systems.", null, "architecture")\`, followed by another \`NarrationStep("step1", "Now follow the messages.", null, "sequence")\`. Supported views: "event-storming", "architecture", "swimlanes", "sequence", "data-flow", "state-machine". Use only views that explain the topic; an empty or missing view falls back to the initial view. Multiple narration steps on the same beat play in order.
+
 - \`caption\` is what the narrator says: one or two spoken sentences in the topic's language. Explain and connect, do not just repeat the screen: on a quiz's \`.wrong\` beat say why that answer is tempting and wrong, on its \`.right\` beat why the right one is right. Pass \`null\` for a step that only plays an effect (its Callout is still read).
 - Write it as a talk, not a template: vary how captions open, link a beat to the one before or to an earlier section, ask the question the learner is about to answer, and put the why or the example the screen leaves out in a Callout. Mix the effects to what each beat needs; not every step needs one.
 - Effects (optional): \`Highlight(target)\`, \`Callout(target, text)\` (a note beside an element, one or two short sentences, read after the caption), \`Spotlight([targets])\` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: \`"catechins"\`, \`"q1.hint"\`, \`"root.items[0]"\`. Name the statements you will point at in the section file (e.g. \`catechins = Flashcard(...)\`) rather than writing them inline. In a standard OpenUI section, a target names one of the root's children (see Standard OpenUI Sections) or one value of a chart or table among them, by the path of the value in its statement: \`"bars.series[0].values[4]"\` (one bar or line point), \`"bars.labels[4]"\` (every bar or point at the fifth label), \`"bars.series[1]"\` (a whole series), \`"pie.values[2]"\` (a slice), \`"table.columns[2].data[4]"\` (a cell), \`"table.columns[2]"\` (a column) or \`"table.columns[2].label"\` (its header). To point at a table row, Spotlight its cells. In a drawing (\`Svg\`), a target names one shape by its \`id\` in the markup: \`"plant.bud"\`. Use these to explain one figure or one part of a picture at a time: Highlight a bar while the caption names it, Callout a point with why it is there, Spotlight the shapes of a drawing the caption is about.
@@ -109,6 +114,7 @@ const TABLE_CHART_COMPONENTS: Array<[name: string, use: string]> = [
   ['HorizontalBarChart', 'Like BarChart, for long category labels or a ranked list.'],
   ['LineChart', 'A value changing over time or along an ordered scale.'],
   ['AreaChart', 'Totals or volumes accumulating over time.'],
+  ['SingleStackedBarChart', 'Parts of one whole shown as a single horizontal bar; use percentages summing to 100% for a share.'],
   ['PieChart', 'Parts of one whole that add up to 100%; at most about six slices.'],
   ['RadarChart', 'Two or three items scored on the same set of criteria.'],
   ['ScatterChart', 'The relationship between two numeric variables.'],
@@ -156,7 +162,7 @@ How to write them:
 
 - Data is written as literal arrays, e.g. \`Col("Tea", ["Sencha", "Matcha"])\`. There is no \`data.rows\`, Query or \`@\` function call over fetched data.
 - Every Col of a Table, and every Series of a chart, has one value per row or label, in the same order.
-- Use real, specific figures; never invent numbers to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
+- Use source-backed figures for factual claims. Clearly label deliberate teaching examples as illustrative data; never invent measured figures to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
 - Value axes start at 0, so values only a few percent apart look the same height. When the lesson is the difference, chart the difference (e.g. "°C below boiling", "ms over the baseline") and keep the absolute values in a Table.
 - Wrap a chart in a Card with a CardHeader for its title, and add a Callout for the takeaway. Put a chart and a table of the same data in Tabs only when the narrator does not need both: Present shows the first tab only.
 
@@ -411,5 +417,5 @@ export function getLoomAuthoringPrompt(): string {
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)
   prompt = dropStreamingNotes(prompt)
-  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${LAYOUTS}\n\n${DRAWINGS}\n\n${NARRATION}\n\n${BULLET_AUTHORING_GUIDE}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
+  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${LAYOUTS}\n\n${DRAWINGS}\n\n${TIME_USAGE_AUTHORING_GUIDE}\n\n${timeUsageExamplesGuide()}\n\n${NARRATION}\n\n${BULLET_AUTHORING_GUIDE}\n\n${LAYER_AUTHORING_GUIDE}\n\n${TIMELINE_AUTHORING_GUIDE}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
 }

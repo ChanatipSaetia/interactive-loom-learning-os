@@ -10,7 +10,7 @@ import type { StoryRoute } from '../story-route';
 import { ICONS, COLORS } from '../types';
 import type { UnifiedFlowchartSchema } from '../types';
 
-import { getViewSpacing, positionViewNodes, routeViewRelations, sequenceFocusBBox } from './geometry';
+import { getViewSpacing, positionViewNodes, routeViewRelations, sequenceFocusBBox, SEQUENCE_LAYOUT } from './geometry';
 import { SequenceView } from './sequence-view';
 import { StandardView } from './standard-view';
 
@@ -68,6 +68,10 @@ export interface FlowchartViewProps {
   onSwitchPath?: (journeyId: string, stepIndex: number) => void;
   /** Closest zoom when framing a step (Present mode zooms in further so labels stay readable). */
   focusMaxScale?: number;
+  presenting?: boolean;
+  overview?: boolean;
+  overviewPage?: number;
+  overviewPages?: number;
 }
 
 export function FlowchartView({
@@ -91,9 +95,40 @@ export function FlowchartView({
   storyRoute,
   onSwitchPath,
   focusMaxScale,
+  presenting = false,
+  overview = false,
+  overviewPage = 0,
+  overviewPages = 1,
 }: FlowchartViewProps) {
   const view = schema.views![viewKey];
   const isSequenceView = viewKey === 'SEQUENCE';
+
+  // Sequence pages divide the timeline, keeping all participant lifelines on every page.
+  const sequenceOverview = useMemo(() => {
+    if (!overview || !isSequenceView || overviewPages <= 1 || !view) return null;
+    const messages = schema.relations.filter((relation) => relation.views?.includes('SEQUENCE'));
+    if (!messages.length) return null;
+    const page = Math.min(overviewPage, overviewPages - 1);
+    const start = Math.min(messages.length - 1, Math.floor(page * messages.length / overviewPages));
+    const end = Math.max(start + 1, Math.ceil((page + 1) * messages.length / overviewPages));
+    const selected = messages.slice(start, end);
+    const baseOffset = selected[0].yOffset ?? 0;
+    const normalized = selected.map((relation) => ({ ...relation, yOffset: (relation.yOffset ?? 0) - baseOffset }));
+    const groups = view.groups?.flatMap((group) => {
+      if (group.seqIndexMin !== undefined && group.seqIndexMax !== undefined && !selected.some((relation) => (relation.seqIndex ?? -1) >= group.seqIndexMin! && (relation.seqIndex ?? -1) <= group.seqIndexMax!)) return [];
+      const pageTop = SEQUENCE_LAYOUT.TOP_Y + 50;
+      const pageBottom = SEQUENCE_LAYOUT.MSG_START_Y + normalized.length * SEQUENCE_LAYOUT.MSG_SPACING + 45;
+      const originalTop = group.y ?? pageTop;
+      const originalHeight = group.h ?? (SEQUENCE_LAYOUT.MSG_START_Y + messages.length * SEQUENCE_LAYOUT.MSG_SPACING + 60 - originalTop);
+      const shift = start * SEQUENCE_LAYOUT.MSG_SPACING + baseOffset;
+      const shiftedTop = originalTop - shift, shiftedBottom = originalTop + originalHeight - shift;
+      if (shiftedBottom < pageTop || shiftedTop > pageBottom) return [];
+      const top = Math.max(pageTop, shiftedTop);
+      const bottom = Math.min(pageBottom, shiftedBottom);
+      return [{ ...group, y: top, h: Math.max(40, bottom - top) }];
+    });
+    return { schema: { ...schema, relations: [...schema.relations.filter((relation) => !relation.views?.includes('SEQUENCE')), ...normalized] }, view: { ...view, groups } };
+  }, [overview, isSequenceView, overviewPages, overviewPage, view, schema]);
 
   const spacing = useMemo(() => getViewSpacing(view, viewKey), [view, viewKey]);
 
@@ -160,11 +195,11 @@ export function FlowchartView({
   }, [camera.svgRef]);
   const [captionPlacement, setCaptionPlacement] = useState<CaptionPlacement>('below');
   useEffect(() => {
-    if (!focusBBox) return;
-    const captionEl = stepCaption ? captionRef.current : null;
+    if (!focusBBox || overview) return;
+    const captionEl = stepCaption && isGridMode ? captionRef.current : null;
     const captionH = captionEl?.offsetHeight ?? 0;
     const placement = focusOnBox(focusBBox, {
-      maxScale: focusMaxScale,
+      maxScale: focusMaxScale ?? 0.85,
       insets: measureOverlayInsets(camera.svgRef.current),
       caption: captionEl && captionH > 0
         ? {
@@ -175,7 +210,59 @@ export function FlowchartView({
         : undefined,
     });
     if (placement) setCaptionPlacement(placement);
-  }, [focusBBox, focusOnBox, stepCaption, camera.svgRef, viewportSize, focusMaxScale]);
+  }, [focusBBox, focusOnBox, stepCaption, camera.svgRef, viewportSize, focusMaxScale, presenting, overview, isGridMode]);
+
+  // Small architecture diagrams benefit from showing the complete system boundary.
+  const wholeArchitecture = useMemo(() => {
+    if (viewKey !== 'SYS_ARCH' || positioned.length > 6) return false;
+    const bounds = getNodesBBox(positioned, positioned.map((node) => node.id));
+    return !!bounds && bounds.maxX - bounds.minX <= 1450 && bounds.maxY - bounds.minY <= 700;
+  }, [viewKey, positioned]);
+
+  // Split overviews between columns so the viewport never cuts through a card.
+  const overviewBox = useMemo(() => {
+    if ((!overview && presenting) || !view || (!positioned.length && !isSequenceView)) return null;
+    let box = getNodesBBox(positioned, positioned.map((node) => node.id));
+    if (isSequenceView) {
+      const cols = view.nodes.flatMap((node) => node.grid ? [node.grid[0]] : []);
+      const messages = (sequenceOverview?.schema ?? schema).relations.filter((relation) => relation.views?.includes('SEQUENCE'));
+      if (cols.length) {
+        const lastY = messages.length ? Math.max(...messages.map((relation, index) => SEQUENCE_LAYOUT.MSG_START_Y + index * SEQUENCE_LAYOUT.MSG_SPACING + (relation.yOffset ?? 0))) : SEQUENCE_LAYOUT.MSG_START_Y;
+        box = { minX: SEQUENCE_LAYOUT.START_X + Math.min(...cols) * SEQUENCE_LAYOUT.COL_W - 110, maxX: SEQUENCE_LAYOUT.START_X + Math.max(...cols) * SEQUENCE_LAYOUT.COL_W + 110, minY: SEQUENCE_LAYOUT.TOP_Y - 30, maxY: lastY + 160 };
+      }
+    }
+    if (!box) return null;
+    if (wholeArchitecture) box = { minX: box.minX - 40, maxX: box.maxX + 40, minY: box.minY - 40, maxY: box.maxY + 40 };
+    if (overviewPages > 1 && !isSequenceView && !wholeArchitecture) {
+      // Partition at node columns rather than cutting through a card; repeat an
+      // adjacent column on each boundary to keep the connection in context.
+      const coordinates = [...new Set(isSequenceView
+        ? view.nodes.flatMap((node) => node.grid ? [SEQUENCE_LAYOUT.START_X + node.grid[0] * SEQUENCE_LAYOUT.COL_W] : [])
+        : positioned.flatMap((node) => typeof node.x === 'number' ? [node.x] : []))].sort((a, b) => a - b);
+      if (coordinates.length > 1) {
+        const start = Math.floor(Math.min(overviewPage, overviewPages - 1) * coordinates.length / overviewPages);
+        const end = Math.max(start, Math.ceil((Math.min(overviewPage, overviewPages - 1) + 1) * coordinates.length / overviewPages) - 1);
+        const first = Math.max(0, Math.min(start, coordinates.length - 1) - (overviewPage > 0 ? 1 : 0));
+        const last = Math.min(coordinates.length - 1, end + (overviewPage < overviewPages - 1 ? 1 : 0));
+        box = { ...box, minX: first > 0 ? (coordinates[first - 1] + coordinates[first]) / 2 : box.minX, maxX: last < coordinates.length - 1 ? (coordinates[last] + coordinates[last + 1]) / 2 : box.maxX };
+      }
+    }
+    return box;
+  }, [overview, presenting, positioned, isSequenceView, view, schema, sequenceOverview, overviewPage, overviewPages, wholeArchitecture]);
+
+  useEffect(() => {
+    const svg = camera.svgRef.current;
+    const box = overviewBox;
+    if (!svg || !box || (!presenting && focusBBox)) return;
+    const overlays = !presenting ? measureOverlayInsets(svg) : undefined;
+    const top = overlays?.top ?? 0, bottom = overlays?.bottom ?? 0;
+    const padding = 32;
+    const width = svg.clientWidth, height = svg.clientHeight;
+    if (!width || !height) return;
+    const laneLabelSpace = viewKey === 'SWIMLANES' ? Math.min(210, width * 0.3) : 0;
+    const scale = Math.max(0.01, Math.min(Math.max(1, width - padding * 2 - laneLabelSpace) / Math.max(1, box.maxX - box.minX), Math.max(1, height - padding * 2 - top - bottom) / Math.max(1, box.maxY - box.minY), 1));
+    camera.animateTo((width + laneLabelSpace) / 2 - (box.minX + box.maxX) / 2 * scale, (height + top - bottom) / 2 - (box.minY + box.maxY) / 2 * scale, scale);
+  }, [overviewBox, camera.svgRef, camera.animateTo, viewportSize, viewKey, presenting, focusBBox]);
 
   const hasFocusedRef = useRef(false);
   useEffect(() => {
@@ -191,10 +278,10 @@ export function FlowchartView({
       onCameraControls({
         handleZoomIn,
         handleZoomOut,
-        handleFitToScreen: () => fitToScreen(minX, maxX, minY, maxY)
+        handleFitToScreen: () => fitToScreen(overviewBox?.minX ?? minX, overviewBox?.maxX ?? maxX, overviewBox?.minY ?? minY, overviewBox?.maxY ?? maxY)
       });
     }
-  }, [handleZoomIn, handleZoomOut, fitToScreen, onCameraControls, minX, maxX, minY, maxY]);
+  }, [handleZoomIn, handleZoomOut, fitToScreen, onCameraControls, minX, maxX, minY, maxY, overviewBox]);
 
   if (!view) {
     return (
@@ -262,6 +349,7 @@ export function FlowchartView({
           onTouchEnd={camera.handlePointerUp}
         >
           <defs>
+            {overviewBox && overviewPages > 1 && !isSequenceView && !wholeArchitecture && <clipPath id={`flowchart-overview-clip-${viewInstanceId}`} clipPathUnits="userSpaceOnUse"><rect x={overviewBox.minX} y={-100000} width={overviewBox.maxX - overviewBox.minX} height={200000} /></clipPath>}
             <filter id={`flowchart-desc-shadow-${viewInstanceId}`} x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="3" stdDeviation="6" floodColor="var(--ctp-mauve)" floodOpacity="0.25" />
             </filter>
@@ -320,7 +408,20 @@ export function FlowchartView({
             </pattern>
           </defs>
 
-          <g transform={transformStr} data-testid={`flowchart-canvas-${viewKey}`}>
+          {viewKey === 'SWIMLANES' && view.groups?.filter((group) => group.isLane).map((group) => {
+            const row = group.row ?? 0;
+            const laneTop = group.row === undefined ? (group.y ?? 100) : row * spacing.rowSpacing + spacing.offsetY - spacing.rowSpacing / 2;
+            const laneHeight = group.row === undefined ? (group.h ?? 180) : spacing.rowSpacing * (group.rowSpan ?? 1);
+            const y = laneTop * camera.transform.scale + camera.transform.translateY;
+            const height = laneHeight * camera.transform.scale;
+            return <g key={`present-lane-${group.id}`} data-testid={`present-swimlane-${group.id}`}>
+              <rect x={0} y={y} width="100%" height={height} fill={group.color || 'color-mix(in srgb, var(--ctp-lavender) 12%, transparent)'} stroke={group.borderColor || 'var(--ctp-overlay1)'} strokeWidth="1" />
+              <foreignObject x={10} y={y + 8} width={Math.min(185, (camera.svgRef.current?.clientWidth ?? 600) * 0.27)} height={Math.max(0, height - 12)}>
+                <div className="present-swimlane-label">{group.title}</div>
+              </foreignObject>
+            </g>;
+          })}
+          <g transform={transformStr} data-testid={`flowchart-canvas-${viewKey}`} clipPath={overviewBox && overviewPages > 1 && !isSequenceView && !wholeArchitecture ? `url(#flowchart-overview-clip-${viewInstanceId})` : undefined}>
             <rect
               x="-50000"
               y="-50000"
@@ -333,8 +434,9 @@ export function FlowchartView({
                 <SequenceView 
                   viewKey={viewKey}
                   viewInstanceId={viewInstanceId}
-                  schema={schema}
-                  view={view}
+                  schema={sequenceOverview?.schema ?? schema}
+                  view={sequenceOverview?.view ?? view}
+                  showFullLabels={!presenting || overview}
                   activeNodeIds={activeNodeIds}
                   activeRelationIds={activeRelationIds}
                   highlightedNodeId={highlightedNodeId}
@@ -358,12 +460,15 @@ export function FlowchartView({
                  isFullscreen={isFullscreen}
                  forkHighlights={forkHighlights}
                  storyRoute={storyRoute}
+                 hideLanes={viewKey === 'SWIMLANES'}
+                 presenting={presenting}
                />
              )}
           </g>
         </svg>
 
         {stepCaption && (() => {
+          if (!isGridMode) return <StepCaption key={stepCaption.id} caption={stepCaption} placement="below" style={{}} onSwitchPath={onSwitchPath} />;
           const viewportW = camera.svgRef.current?.clientWidth ?? 0;
           const width = viewportW > 0 ? Math.min(CAPTION_MAX_W, viewportW - CAPTION_EDGE * 2) : CAPTION_MAX_W;
           if (!focusBBox) {

@@ -1,3 +1,4 @@
+import { FLOWCHART_VIEW_NAMES } from '../../sub-contexts/process-simulation/components/flowchart/abstract-flow/types'
 /**
  * Narration files (decisions 91–95 and 108 in grill-log-presenting-mode.md): `sections/<name>.narrate.oui`
  * is the script a section plays to in Loom Viewer's Present mode. Its root is `Narration([...])`; each
@@ -48,11 +49,13 @@ export const NarrationStep = defineOUIComponent({
     beat: z.string(),
     caption: z.string().optional(),
     effects: z.array(z.union([Highlight.ref, Callout.ref, Spotlight.ref])).optional(),
+    view: z.enum(FLOWCHART_VIEW_NAMES).optional(),
   }),
   fields: {
     beat: 'The beat it plays on, by its ID for the section type, e.g. "q1", "q1.wrong", "q1.right" for a quiz, "p2" for a text paragraph (see Narration Files).',
     caption: 'Subtitle line shown and read aloud while the beat plays, in the topic\'s language; null for none.',
     effects: 'Highlight, Callout and Spotlight calls for the step.',
+    view: 'For flowcharts, optionally switch to this view while this narration step plays; null keeps the flowchart’s initial view.',
   },
 })
 
@@ -75,6 +78,7 @@ export interface NarrationStepData {
   beat: string
   caption?: string
   effects?: NarrationEffect[]
+  view?: typeof FLOWCHART_VIEW_NAMES[number]
 }
 
 export interface NarrationData {
@@ -100,14 +104,15 @@ export const BEAT_IDS: Record<string, string> = {
   intro: '`title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap)',
   text: '`p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs',
   bullets: '`item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, …',
-  'pillar-layer': '`layer1`, `layer2`, … one per layer',
+  'timeline': '`overview` (whole timeline), `group1`, `group2`, … (authored groups or activities sharing a start time), `summary` (whole timeline and takeaway)',
+  'pillar-layer': '`layerN` … `layer1` (foundation first; N is the authored top-to-bottom layer index); extra peer groups use `layerN.group2`, `layerN.group3`, …; then `overview`',
   'image-gallery': '`image1`, `image2`, … one per image',
   'taxonomy-browser': '`cards` (all cards), then `card1`, `card2`, … each card opened',
   'concept-map': '`group1`, `group2`, … introduce categories in first-appearance order; after each group, `linkN` explains every ConceptLink whose endpoints are now introduced (N is its 1-based position in the links list); then `map` shows the complete map when there are links or several groups. Explain from → label → to without assuming every relation is a flow or a cause.',
-  flowchart: '`step1`, `step2`, … one per step of the first journey',
+  flowchart: '`chart`, `chart.part2`, … show readable portions of the overview (up to two journey steps per page; compact architecture diagrams can use one page), then `step1`, `step2`, … one per step of the first journey',
   scenario: '`start`; then one path per ending (weaker endings first, the best last): along path P, `pathP.choice1` (the choice picked on its card), `pathP.choice1.next` (where it leads), `pathP.choice2`, … (the last `.next` shows its ending); a later path starts at the fork where it leaves the one before',
   'decision-tree': '`start` (the first question), then per answer taken (the recommended choice, else the first) `answer1` (picked on its question, with its rationale), `q2` (the next question), `answer2`, …, then `result` (the recommendation)',
-  'tradeoff-sandbox': '`step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.choice1`, `stepN.choice2`, … (the gains and costs of each choice that has some, numbered in the step) and `stepN.recommended` when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation',
+  'tradeoff-sandbox': '`situation1`, `situation2`, … introduces each scenario by title and description before its steps; `step1`, `step2`, … one per step (numbered across scenarios), each followed by `stepN.choice1`, `stepN.choice2`, … (the gains and costs of each choice that has some, numbered in the step) and `stepN.recommended` as a separate recommendation scene (name, description and why it fits) when it has a recommended choice; then `result1`, `result2`, … one per scenario with a recommendation',
   'formula-sandbox': '`formulas`, then `sweep1`, `sweep2`, … one per variable that can move (it sweeps from its min to its max while the trend of each metric is stated)',
   quiz: '`q1`, `q1.wrong`, `q1.right`, `q2`, … per question: asked, its first wrong choice tried, the right answer given',
   flashcards: '`card1`, `card1.back`, `card2`, … per card: its word, then its definition',

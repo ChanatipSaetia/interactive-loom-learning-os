@@ -46,12 +46,33 @@ describe('one idea at a time (decision 109)', () => {
     if (first.details) expect(document.body.textContent).not.toContain(first.details)
   })
 
+  it('tradeoff gives situation and recommendation their own scenes', () => {
+    const data = propsOf<TradeoffPresentData>(content('haystack/sections/tradeoffs.oui'))
+    const beats = tradeoffBeats(data)
+    expect(beats[0].id).toBe('situation1')
+    const draw = (beat: number) => <PresentTradeoff data={data} beats={beats} beat={beat} sectionIndex={0} active />
+    const { rerender } = render(draw(0))
+    const situation = document.querySelector('.present-tradeoff-context[data-shown]')!
+    expect(situation.textContent).toContain(data.scenarios![0].title)
+    expect(situation.textContent).toContain(data.scenarios![0].description)
+    expect(document.querySelector('.present-tradeoff-step[data-shown]')).toBeNull()
+    rerender(draw(beats.findIndex((b) => b.id === 'step1.recommended')))
+    const step = data.scenarios![0].steps[0]
+    const recommended = step.choices.find((c) => c.id === step.recommended)!
+    const scene = document.querySelector('.present-tradeoff-context[data-shown]')!
+    expect(scene.textContent).toContain(recommended.label)
+    expect(scene.textContent).toContain(recommended.description)
+    expect(document.querySelector('.present-tradeoff-step[data-shown]')).toBeNull()
+  })
+
   it('tradeoff: cards by name and effects; the gains and costs of each choice get their own beat under the cards (decision 112)', () => {
     const data = propsOf<TradeoffPresentData>(content('haystack/sections/tradeoffs.oui'))
     const beats = tradeoffBeats(data)
     const { rerender } = render(<PresentTradeoff data={data} beats={beats} beat={0} sectionIndex={0} active />)
-    expect(document.querySelectorAll('.compare-card').length).toBeGreaterThan(1)
-    expect(document.querySelector('.compare-card .compare-pros, .compare-card .compare-cons, .compare-card-summary')).toBeNull()
+    const table = document.querySelector('.present-tradeoff-table')!
+    expect(table.querySelectorAll('thead th').length).toBe(data.scenarios![0].steps[0].choices.length + 1)
+    for (const cell of table.querySelectorAll('td')) expect(cell.textContent).toMatch(/^(↑ Higher|↓ Lower|— Unchanged)$/)
+    expect(table.querySelector('.compare-pros, .compare-cons')).toBeNull()
     const at = beats.findIndex((b) => b.id === 'step1.choice1')
     rerender(<PresentTradeoff data={data} beats={beats} beat={at} sectionIndex={0} active />)
     const choice = data.scenarios![0].steps[0].choices[0]
@@ -59,7 +80,7 @@ describe('one idea at a time (decision 109)', () => {
     expect(panel?.textContent).toContain(choice.label)
     expect(panel?.textContent).toContain(choice.pros[0].title)
     expect(panel?.textContent).toContain(choice.cons[0].title)
-    expect(document.querySelectorAll('.compare-card')[0]).toHaveClass('present-tradeoff-weighing')
+    expect(document.querySelector('.present-tradeoff-table thead .is-active')?.textContent).toContain(choice.label)
   })
 })
 

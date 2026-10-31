@@ -2058,3 +2058,36 @@ button.flowchart-step-caption-alt:hover {
 .flowchart-edge-group[data-route-dir="reverse"] .flowchart-edge {
   animation-direction: reverse;
 }
+
+/* Shared readable diagram nodes in Read and Present. */
+/* Keep node types while making room for clearer names in every presentation view. */
+.flowchart-section .flowchart-node-card:not([data-node-type="Decision"]) { padding: 6px !important; }
+.flowchart-section .flowchart-node-meta { padding-bottom: 2px !important; margin-bottom: 2px !important; }
+.flowchart-section .flowchart-node-card:not([data-node-type="Decision"]) p { font-size: 15px !important; line-height: 1.18 !important; font-family: var(--font-ui); font-weight: 400 !important; letter-spacing: 0; -webkit-line-clamp: 4 !important; overflow-wrap: anywhere; }
+
+/* Architecture: keep the diagram calm and names prominent in presentation. */
+.flowchart-section[data-flow-view="SYS_ARCH"] .flowchart-node-group { opacity: 1 !important; }
+.flowchart-section[data-flow-view="SYS_ARCH"] .flowchart-node-rect { fill: var(--card); stroke: color-mix(in srgb, var(--foreground) 24%, var(--border)); stroke-width: 1; filter: none; }
+.flowchart-section[data-flow-view="SYS_ARCH"] .flowchart-node-group.active .flowchart-node-rect { stroke: var(--primary); stroke-width: 2; }
+.flowchart-section[data-flow-view="SYS_ARCH"] .flowchart-node-card { background: transparent; box-shadow: none; }
+.flowchart-section[data-flow-view="SYS_ARCH"] .flowchart-node-meta { border-color: var(--border) !important; }
+.flowchart-section[data-flow-view="SYS_ARCH"] .flowchart-node-card p { font-weight: 400 !important; color: var(--foreground) !important; overflow-wrap: normal; }
+
+
+
+.flowchart-section:not(.is-presenting) .flowchart-body { display: flex; flex-direction: column; }
+.flowchart-section:not(.is-presenting) .flowchart-step-caption { position: relative; flex: none; width: auto; max-width: none; margin: 8px; box-shadow: none; }
+.flowchart-section:not(.is-presenting) .flowchart-step-caption-title { white-space: normal; overflow: visible; text-overflow: clip; }
+.flowchart-section:not(.is-presenting) .flowchart-step-caption-text { font-size: 14px; }
+
+.present-swimlane-label { color: var(--foreground); background: color-mix(in srgb, var(--card) 90%, transparent); border-radius: var(--radius-sm); padding: 4px 6px; font: 600 13px / 1.25 var(--font-body); overflow-wrap: anywhere; }
+
+.flowchart-section:not(.is-presenting) .flowchart-svg { height: 640px; }
+.flowchart-section[data-flow-view="SWIMLANES"]:not(.is-presenting) .flowchart-canvas-tools { left: auto; right: 12px; }
+:root[data-theme^='liquid-glass'] .flowchart-section:not(.is-presenting) .flowchart-step-caption { box-shadow: none; }
+@media (max-width: 640px) { .flowchart-section:not(.is-presenting) .flowchart-svg { height: 560px; } }
+
+/* Quiet metadata gives node names a clear, lighter reading hierarchy. */
+.flowchart-section .flowchart-node-meta { border-bottom: 0 !important; padding-bottom: 1px !important; margin-bottom: 2px !important; }
+.flowchart-section .flowchart-node-meta > span { font-family: var(--font-ui); font-weight: 400 !important; text-transform: none !important; letter-spacing: 0 !important; font-size: 10px !important; color: var(--muted-foreground) !important; }
+.flowchart-section .flowchart-node-meta svg { width: 12px; height: 12px; opacity: 0.7; }

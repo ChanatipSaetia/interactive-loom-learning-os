@@ -1,3 +1,4 @@
+import { TradeoffConclusion } from './TradeoffConclusion'
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import type { CSSProperties, KeyboardEvent } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
@@ -281,7 +282,7 @@ function StepComparisonModal({
                           }}
                           {...pick(metric, 'label')}
                         >
-                          {metric.label}: {delta > 0 ? '+' : ''}{delta}
+                          {metric.label}: {delta > 0 ? '↑ Higher' : delta < 0 ? '↓ Lower' : '— Unchanged'}
                         </span>
                       )
                     })}
@@ -617,7 +618,7 @@ function DetailsModal({
   )
 }
 
-/** A choice's metric effects as small chips, e.g. "Understanding +20", coloured by whether the change helps. */
+/** A choice's metric effects as small chips, e.g. "Understanding ↑ Higher", coloured by whether the change helps. */
 function EffectChips({ choice, metrics, testId }: { choice: TradeoffChoice; metrics: MetricDef[]; testId: string }) {
   const pick = usePickAnchors()
   const effects = Object.entries(choice.metrics).flatMap(([mid, delta]) => {
@@ -631,7 +632,7 @@ function EffectChips({ choice, metrics, testId }: { choice: TradeoffChoice; metr
         const isGood = (metric.direction ?? 'higher') === 'higher' ? delta > 0 : delta < 0
         return (
           <li key={metric.id} className={`compare-effect ${isGood ? 'compare-effect-good' : 'compare-effect-bad'}`} {...pick(metric, 'label')}>
-            {metric.label} {delta > 0 ? '+' : '−'}{Math.abs(delta)}
+            {delta > 0 ? '↑ Higher' : '↓ Lower'} {metric.label}
           </li>
         )
       })}
@@ -679,6 +680,26 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
               )}
             </header>
 
+            <div className="read-tradeoff-table-wrap">
+              <table className="read-tradeoff-table" aria-label={`${step.title} metric comparison`}>
+                <thead><tr><th scope="col">Metric</th>{step.choices.map((choice) => <th key={choice.id} scope="col" className={focusedId === choice.id ? 'is-active' : ''}>
+                  <button type="button" aria-pressed={focusedId === choice.id} onClick={() => toggleFocus(step.id, choice.id)} {...pick(choice, 'label')}>{choice.label}</button>
+                  {chosenIds[step.id] === choice.id && <span className="read-tradeoff-status">Selected</span>}
+                </th>)}</tr></thead>
+                <tbody>{scenario.metrics.filter((metric) => step.choices.some((choice) => choice.metrics[metric.id])).map((metric) => <tr key={metric.id}>
+                  <th scope="row" {...pick(metric, 'label')}>{metric.label}</th>
+                  {step.choices.map((choice) => {
+                    const delta = choice.metrics[metric.id] ?? 0
+                    const helps = (metric.direction ?? 'higher') === 'higher' ? delta > 0 : delta < 0
+                    return <td key={choice.id} className={`${focusedId === choice.id ? 'is-active ' : ''}${delta ? helps ? 'is-benefit' : 'is-cost' : 'is-neutral'}`} aria-label={`${choice.label}: ${metric.label} ${delta > 0 ? 'higher' : delta < 0 ? 'lower' : 'unchanged'}`}>
+                      {delta > 0 ? '↑ Higher' : delta < 0 ? '↓ Lower' : '— Unchanged'}
+                    </td>
+                  })}
+                </tr>)}</tbody>
+              </table>
+              <p className="read-tradeoff-key">Green: benefit · Red: cost · — Unchanged</p>
+            </div>
+
             <div
               className="compare-grid"
               data-testid={`compare-grid-${sIdx}`}
@@ -686,7 +707,6 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
             >
               {step.choices.map((choice) => {
                 const isChosen = chosenIds[step.id] === choice.id
-                const isRecommended = step.recommended === choice.id
                 const isFocused = focusedId === choice.id
                 const isDimmed = focusedId !== undefined && !isFocused
                 const showDetails = isFocused && (choice.whyThisFits || choice.whenToUse)
@@ -710,7 +730,6 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                       'compare-card',
                       hasDetails && 'compare-card-tappable',
                       isChosen && 'compare-card-chosen',
-                      isRecommended && 'compare-card-recommended',
                       isFocused && 'compare-card-focused',
                       isDimmed && 'compare-card-dimmed',
                     ].filter(Boolean).join(' ')}
@@ -724,12 +743,6 @@ function CompareAllPanel({ scenario, chosenIds }: { scenario: TradeoffScenario; 
                       >
                         {choice.label}
                       </span>
-                      {isRecommended && (
-                        <span className="compare-recommended-badge" data-testid={`compare-recommended-badge-${sIdx}-${choice.id}`} title="Recommended">
-                          <Star size={14} style={{ fill: 'currentColor' }} />
-                          <span style={{ display: 'none' }}>Recommended</span>
-                        </span>
-                      )}
                       {isChosen && (
                         <span className="compare-badge" data-testid={`compare-badge-${sIdx}-${choice.id}`} title="Selected">
                           <Check size={14} strokeWidth={3} />
@@ -964,9 +977,7 @@ function TradeoffSandboxSection({
         </div>
       )}
 
-      <div className="scenario-banner" data-testid={getTestId("scenario-banner")} {...pick(scenario)}>
-        <p className="scenario-description" {...pick(scenario, 'description')}>{scenario.description}</p>
-      </div>
+
 
 
       {detailsChoice && (
@@ -988,6 +999,11 @@ function TradeoffSandboxSection({
         </TabsContent>
 
         <TabsContent value="sandbox" className="tradeoff-tab-panel">
+      <div className="scenario-banner" data-testid={getTestId("scenario-banner")} {...pick(scenario)}>
+        <h3 className="scenario-context-title" {...pick(scenario, 'title')}>{scenario.title}</h3>
+        <p className="scenario-description" {...pick(scenario, 'description')}>{scenario.description}</p>
+      </div>
+          <TradeoffConclusion scenario={scenario} />
           <div className="tradeoff-layout">
             <div className="metric-dashboard" data-testid={getTestId("metric-dashboard")}>
               <div className="dashboard-header">

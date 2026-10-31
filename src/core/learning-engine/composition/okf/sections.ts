@@ -94,6 +94,7 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
       case 'image-gallery':
         props.items = data.items
         break
+      case 'timeline':
       case 'pillar-layer':
         props.section = data
         break

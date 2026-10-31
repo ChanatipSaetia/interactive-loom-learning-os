@@ -1,3 +1,4 @@
+import { brief } from '../../../../src/core/learning-engine/sub-contexts/present-kernel'
 import { describe, it, expect } from 'vitest'
 import {
   bulletsBeats,
@@ -56,11 +57,17 @@ why = IntroWhy("Origin requests cost time.")
     expect(openuiParts('root = Stack(a)')).toBeNull()
   })
 
-  it('pillar-layer: one beat per layer', () => {
+  it('pillar-layer: foundation first with matching labels and a final overview', () => {
     const props = propsOf<Parameters<typeof pillarLayerBeats>[0]>(worldHistoryLayers)
     const layers = props.section?.layers ?? []
     expect(layers.length).toBeGreaterThan(1)
-    expect(pillarLayerBeats(props)).toHaveLength(layers.length)
+    const beats = pillarLayerBeats(props)
+    expect(beats).toHaveLength(layers.length + 1)
+    expect(beats[0].id).toBe(`layer${layers.length}`)
+    expect(beats[0].about).toContain(brief(layers[layers.length - 1].title))
+    expect(beats[beats.length - 2].id).toBe('layer1')
+    expect(beats[beats.length - 2].about).toContain(brief(layers[0].title))
+    expect(beats[beats.length - 1].id).toBe('overview')
   })
 
   it('image-gallery: one beat per image', () => {

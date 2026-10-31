@@ -189,6 +189,7 @@ export const PillarLayerBlockSchema = z.object({
   offsets: z.array(z.tuple([z.number().int(), z.number().int()])).optional(), // [row_offset, col_offset]
   color: z.enum(PILLAR_LAYER_BLOCK_COLORS).optional(),
   depends_on: z.array(z.string()).optional(),
+  group: z.string().optional(),
 })
 
 export function getBlockOccupiedCells(
@@ -346,3 +347,6 @@ export type PillarLayerBlock = z.infer<typeof PillarLayerBlockSchema>
 export type PillarLayerBlockShape = z.infer<typeof PillarLayerBlockShapeSchema>
 export type PillarLayerBlockCell = z.infer<typeof PillarLayerBlockCellSchema>
 export type PillarLayerSectionData = z.infer<typeof PillarLayerSectionSchema>
+
+export { TimelineSectionSchema } from './timeline'
+export type { TimelineSectionData, TimelineActivity, TimelineLane, TimelineGroup } from './timeline'
