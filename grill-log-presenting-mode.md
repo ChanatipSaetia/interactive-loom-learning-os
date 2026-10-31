@@ -491,3 +491,11 @@ pure and tested directly.
 ### Taxonomy visual prototype (awaiting review)
 
 Present taxonomy now prototypes the supplied circular-icon reference: a balanced overview (five categories use a 3 + 2 layout) with category names and short focus lines, followed by an analogy-led explanation beside its definition. Category icons and colors carry across both views; the category agenda moves below the focus view. Existing `cards` and `cardN` narration IDs and Pick targets are preserved. Read-mode taxonomy and category data are unchanged.
+
+### Trade-off context scenes
+
+Trade-off comparisons show the metric table and each option's gains and costs. Situation names and descriptions are introduced on dedicated `situationN` beats before each scenario's first decision. Existing `stepN.recommended` beats now show standalone recommendation name, description and rationale, without the comparison table. Read keeps situation and recommendation context in the Try it sandbox; Compare options retains the detailed option explanations. Existing step and result narration IDs remain unchanged.
+
+### Trade-off conclusion on one page
+
+Keep the existing `resultN` beat as a single conclusion page. Each decision shows the authored recommended option, the opening two sentences of its rationale (description fallback), and its first listed cost as the main compromise. The compact metric dashboard follows all decisions. Read's Try it tab uses the same conclusion with full explanations and compromise descriptions; its interactive selections and dashboard remain separate. Missing recommendations or costs are stated explicitly, never invented. Rows enter in sequence on the same beat; no extra conclusion pages or narration IDs.

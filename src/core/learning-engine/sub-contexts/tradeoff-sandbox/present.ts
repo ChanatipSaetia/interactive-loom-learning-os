@@ -103,21 +103,23 @@ export function decisionTreeBeats(data: DecisionTreePresentData): Beat[] {
 }
 
 /**
- * What each tradeoff beat shows: a step's choices, one choice's gains and costs (`choice` is its index
+ * What each tradeoff beat shows: a scenario's situation, a step's choices, one choice's gains and costs (`choice` is its index
  * in the step), or the step's recommended choice.
  */
-export type TradeoffBeat = { scenario: number; step: number; show: 'choices' | 'choice' | 'recommended'; choice?: number }
+export type TradeoffBeat = { scenario: number; step: number; show: 'situation' | 'choices' | 'choice' | 'recommended'; choice?: number }
 
 /**
- * Per TradeoffStep: its choices with their effects, then each choice that has gains or costs in turn
+ * Introduce each situation, then per TradeoffStep show choices and each choice's gains or costs in turn
  * (decision 112), then its `recommended` choice when it has one.
  */
 export function tradeoffPlan(data: TradeoffPresentData): TradeoffBeat[] {
-  return (data.scenarios ?? []).flatMap((sc, scenario) => sc.steps.flatMap((st, step): TradeoffBeat[] => [
+  return (data.scenarios ?? []).flatMap((sc, scenario) => [
+    { scenario, step: 0, show: 'situation' as const },
+    ...sc.steps.flatMap((st, step): TradeoffBeat[] => [
     { scenario, step, show: 'choices' },
     ...st.choices.flatMap((c, choice): TradeoffBeat[] => (c.pros.length || c.cons.length ? [{ scenario, step, show: 'choice', choice }] : [])),
     ...(st.recommended && st.choices.some((c) => c.id === st.recommended) ? [{ scenario, step, show: 'recommended' as const }] : []),
-  ]))
+  ])])
 }
 
 /** Scenarios with a recommended choice somewhere: each ends on the metrics those choices add up to. */
@@ -135,6 +137,7 @@ export function tradeoffBeats(data: TradeoffPresentData): Beat[] {
   if (!plan.length) return [show('sandbox', 'The sandbox')]
   let k = 0
   const steps = plan.map((b) => {
+    if (b.show === 'situation') return show(`situation${b.scenario + 1}`, `The situation: ${quoted(data.scenarios?.[b.scenario].title ?? '')}`)
     const step = data.scenarios?.[b.scenario].steps[b.step]
     if (b.show === 'choices') {
       k += 1

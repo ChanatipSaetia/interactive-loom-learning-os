@@ -9,17 +9,17 @@ describe('sandbox beats', () => {
     const recommended = steps.filter((s) => s.recommended).length
     const weighed = steps.flatMap((s) => s.choices).filter((c) => c.pros.length || c.cons.length).length
     expect(weighed).toBeGreaterThan(0)
-    expect(tradeoffPlan(props)).toHaveLength(steps.length + weighed + recommended)
+    expect(tradeoffPlan(props)).toHaveLength(steps.length + weighed + recommended + (props.scenarios ?? []).length)
     const first = steps[0]
     const firstWeighed = first.choices.flatMap((c, i) => (c.pros.length || c.cons.length ? [i] : []))
-    expect(tradeoffPlan(props).slice(0, firstWeighed.length + 2)).toEqual([
+    expect(tradeoffPlan(props).slice(1, firstWeighed.length + 3)).toEqual([
       { scenario: 0, step: 0, show: 'choices' },
       ...firstWeighed.map((choice) => ({ scenario: 0, step: 0, show: 'choice', choice })),
       { scenario: 0, step: 0, show: 'recommended' },
     ])
     const beats = tradeoffBeats(props)
     expect(beats).toHaveLength(tradeoffPlan(props).length + (props.scenarios ?? []).length)
-    expect(ids(beats).slice(0, firstWeighed.length + 3)).toEqual(['step1', ...firstWeighed.map((i) => `step1.choice${i + 1}`), 'step1.recommended', 'step2'])
+    expect(ids(beats).slice(1, firstWeighed.length + 4)).toEqual(['step1', ...firstWeighed.map((i) => `step1.choice${i + 1}`), 'step1.recommended', 'step2'])
     expect(ids(beats).slice(-(props.scenarios ?? []).length)).toEqual((props.scenarios ?? []).map((_, i) => `result${i + 1}`))
     expect(kinds(tradeoffBeats({ scenarios: [] }))).toEqual(['show'])
   })
@@ -32,7 +32,7 @@ describe('sandbox beats', () => {
     expect(tradeoffPlan(props).filter((b) => b.show === 'choices')).toHaveLength(steps.length)
     expect(tradeoffPlan(props).filter((b) => b.show === 'recommended')).toEqual([])
     expect(tradeoffSummaries(props)).toEqual([])
-    expect(tradeoffBeats(props)).toHaveLength(steps.length + weighed)
+    expect(tradeoffBeats(props)).toHaveLength(steps.length + weighed + (props.scenarios ?? []).length)
   })
 
   it('formula: variables and metrics, then one sweep per variable that can move', () => {

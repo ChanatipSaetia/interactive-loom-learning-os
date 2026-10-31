@@ -134,3 +134,56 @@
   .present-tradeoff .compare-card,
   .present-formula .gauge-fill { transition: none; }
 }
+
+/* A shared metric axis keeps every option comparable while one is explained below. */
+.present-tradeoff-table-wrap { min-width: 0; overflow-x: auto; }
+.present-tradeoff-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; font: 400 var(--present-fs-card) / 1.3 var(--font-body); }
+.present-tradeoff-table th, .present-tradeoff-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: center; overflow-wrap: anywhere; }
+.present-tradeoff-table th { font-weight: 600; color: var(--foreground); }
+.present-tradeoff-table th:first-child { width: 26%; text-align: left; }
+.present-tradeoff-table thead th { vertical-align: top; background: var(--card); }
+.present-tradeoff-table td { font-size: var(--present-fs-card); font-weight: 600; }
+.present-tradeoff-table .is-active { background: color-mix(in srgb, var(--primary) 9%, var(--card)); border-left: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border)); border-right: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border)); }
+.present-tradeoff-table .is-benefit { color: var(--ctp-green); }
+.present-tradeoff-table .is-cost { color: var(--ctp-red); }
+.present-tradeoff-table .is-neutral { color: var(--muted-foreground); }
+.present-tradeoff-column-status { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 5px; color: var(--primary); font: 500 var(--present-fs-small) / 1.2 var(--font-body); }
+.present-tradeoff-table-key { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0 0; color: var(--muted-foreground); font: 400 var(--present-fs-small) / 1.3 var(--font-body); }
+.present-stage.is-portrait .present-tradeoff-table { font-size: 13px; }
+.present-stage.is-portrait .present-tradeoff-table th, .present-stage.is-portrait .present-tradeoff-table td { padding: 8px 5px; }
+.present-stage.is-portrait .present-tradeoff-column-status { font-size: 10px; }
+
+.present-stage.is-portrait .present-tradeoff-procons { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.present-stage.is-portrait .present-tradeoff .compare-block { padding: 8px; }
+.present-stage.is-portrait .present-tradeoff .compare-procon-title { font-size: 13px; }
+.present-stage.is-portrait .present-tradeoff .compare-pro,
+.present-stage.is-portrait .present-tradeoff .compare-con { align-items: flex-start; }
+
+.present-stage.is-portrait .present-tradeoff-table td { font-size: 13px; }
+
+.present-tradeoff-context { grid-area: 1 / 1; align-self: start; display: flex; flex-direction: column; gap: 20px; padding: 20px 4px; max-width: 920px; }
+.present-tradeoff-context h3 { margin: 0; color: var(--foreground); font: 600 var(--present-fs-h2) / 1.15 var(--font-display); overflow-wrap: anywhere; }
+.present-tradeoff-context p { margin: 0; color: var(--muted-foreground); font: 400 var(--present-fs-body) / 1.5 var(--font-body); }
+.present-tradeoff-context .compare-step-eyebrow { font-size: var(--present-fs-small); }
+.present-tradeoff-context-why { margin-top: 12px; padding-top: 20px; border-top: 1px solid var(--border); }
+.present-tradeoff-context-why h4 { margin: 0 0 10px; color: var(--primary); font: 600 var(--present-fs-card) / 1.3 var(--font-body); }
+
+.present-tradeoff .tradeoff-conclusion { margin: 0; gap: 12px; }
+.present-tradeoff .tradeoff-conclusion-heading h3 { font-size: calc(var(--present-fs-body) - 3px); }
+.present-tradeoff .tradeoff-conclusion h4 { font-size: calc(var(--present-fs-card) - 4px); }
+.present-tradeoff .tradeoff-conclusion p { font-size: calc(var(--present-fs-small) - 3px); line-height: 1.35; }
+.present-tradeoff .tradeoff-conclusion-row { grid-template-columns: minmax(140px, 0.5fr) minmax(0, 2fr); }
+.present-tradeoff .tradeoff-conclusion-reasoning { grid-template-columns: minmax(0, 2.5fr) minmax(0, 1fr); gap: 14px; }
+.present-tradeoff .tradeoff-conclusion-decision, .present-tradeoff .tradeoff-conclusion-explanation { padding: 8px 12px; }
+.present-tradeoff .tradeoff-conclusion-explanation { gap: 4px; }
+.present-tradeoff .tradeoff-conclusion-label { font-size: calc(var(--present-fs-small) - 4px); }
+.present-tradeoff .tradeoff-conclusion-overall h4 { font-size: var(--present-fs-small); }
+.present-tradeoff .tradeoff-conclusion-metrics .metric-bar { margin-bottom: 0; }
+.present-tradeoff .tradeoff-conclusion .metric-label { font-size: 11px; letter-spacing: 0.02em; }
+.present-tradeoff .tradeoff-conclusion .metric-value { font-size: 13px; }
+.present-stage.is-portrait .tradeoff-conclusion-row { grid-template-columns: minmax(80px, 0.6fr) minmax(0, 2fr); }
+.present-stage.is-portrait .tradeoff-conclusion h4 { font-size: 13px; }
+.present-stage.is-portrait .tradeoff-conclusion p { font-size: 12px; }
+.present-stage.is-portrait .tradeoff-conclusion-label { font-size: 11px; }
+.present-stage.is-portrait .tradeoff-conclusion-decision, .present-stage.is-portrait .tradeoff-conclusion-explanation { padding: 8px; }
+.present-stage.is-portrait .tradeoff-conclusion .metric-label { font-size: 10px; }

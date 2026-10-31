@@ -901,3 +901,52 @@
     height: 85vh;
   }
 }
+/* Read comparison: a shared metric axis, followed by the full option explanations. */
+.read-tradeoff-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-md); }
+.read-tradeoff-table { width: 100%; min-width: 520px; border-collapse: collapse; table-layout: fixed; font: 400 var(--text-body) / 1.4 var(--font-body); }
+.read-tradeoff-table th, .read-tradeoff-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: center; overflow-wrap: anywhere; }
+.read-tradeoff-table th { color: var(--foreground); font-weight: 600; }
+.read-tradeoff-table th:first-child { text-align: left; width: 26%; }
+.read-tradeoff-table thead { background: var(--card); }
+.read-tradeoff-table button { border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; border-radius: var(--radius-sm); padding: 4px; }
+.read-tradeoff-table button:hover { color: var(--primary); }
+.read-tradeoff-table button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.read-tradeoff-table .is-active { background: color-mix(in srgb, var(--primary) 10%, var(--card)); }
+.read-tradeoff-table .is-benefit { color: var(--ctp-green); font-weight: 600; }
+.read-tradeoff-table .is-cost { color: var(--ctp-red); font-weight: 600; }
+.read-tradeoff-table .is-neutral { color: var(--muted-foreground); }
+.read-tradeoff-status { display: block; margin-top: 4px; color: var(--primary); font-size: var(--text-small); }
+.read-tradeoff-key { margin: 0; padding: 10px 16px; color: var(--muted-foreground); font-size: var(--text-small); }
+
+.scenario-context-title { margin: 0 0 8px; color: var(--foreground); font: 600 var(--text-feature-heading) / 1.3 var(--font-display); }
+.sandbox-recommendations { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 14px; margin: 16px 0 24px; }
+.sandbox-recommendations section { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; background: var(--card); }
+.sandbox-recommendations h4 { margin: 8px 0; color: var(--foreground); }
+.sandbox-recommendations p { color: var(--muted-foreground); margin: 8px 0 0; line-height: 1.5; }
+
+/* One-page conclusion: decisions, authored reasons, accepted compromises, then totals. */
+.tradeoff-conclusion { display: flex; flex-direction: column; gap: 18px; margin: 16px 0 24px; }
+.tradeoff-conclusion h3, .tradeoff-conclusion h4, .tradeoff-conclusion p { margin: 0; }
+.tradeoff-conclusion-heading h3 { margin-top: 4px; color: var(--foreground); font: 600 var(--text-feature-heading) / 1.25 var(--font-display); }
+.tradeoff-conclusion-decisions { list-style: none; padding: 0; margin: 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.tradeoff-conclusion-row { display: grid; grid-template-columns: minmax(140px, 0.65fr) minmax(0, 2fr); border-bottom: 1px solid var(--border); background: var(--card); }
+.tradeoff-conclusion-row:last-child { border-bottom: 0; }
+.tradeoff-conclusion-decision { display: flex; gap: 10px; align-items: flex-start; padding: 18px; background: color-mix(in srgb, var(--primary) 5%, var(--card)); }
+.tradeoff-conclusion-decision > span { color: var(--primary); font-weight: 600; }
+.tradeoff-conclusion h4 { color: var(--foreground); font: 600 var(--text-body) / 1.4 var(--font-body); }
+.tradeoff-conclusion-explanation { display: flex; flex-direction: column; gap: 8px; padding: 18px; }
+.tradeoff-conclusion-explanation > h4 { color: var(--primary); }
+.tradeoff-conclusion p { color: var(--muted-foreground); font: 400 var(--text-body) / 1.5 var(--font-body); }
+.tradeoff-conclusion-reasoning { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; }
+.tradeoff-conclusion-label { display: block; margin-bottom: 3px; color: var(--foreground); font: 600 var(--text-small) / 1.4 var(--font-body); }
+.tradeoff-conclusion-label.is-cost { color: var(--ctp-red); }
+.tradeoff-conclusion-overall { border-top: 1px solid var(--border); padding-top: 12px; }
+.tradeoff-conclusion-overall > h4 { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.tradeoff-conclusion-overall > h4 > span { color: var(--muted-foreground); font-size: var(--text-small); font-weight: 400; }
+.tradeoff-conclusion-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 20px; }
+@media(max-width: 640px) {
+  .tradeoff-conclusion-row { grid-template-columns: 1fr; }
+  .tradeoff-conclusion-decision, .tradeoff-conclusion-explanation { padding: 12px; }
+  .tradeoff-conclusion-reasoning { grid-template-columns: 1fr; gap: 10px; }
+  .tradeoff-conclusion-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
