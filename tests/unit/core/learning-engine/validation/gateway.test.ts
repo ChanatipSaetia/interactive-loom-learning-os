@@ -914,8 +914,9 @@ describe('KNOWN_SECTION_TYPES', () => {
     expect(KNOWN_SECTION_TYPES.has('bullets')).toBe(true)
   })
 
-  it('includes the measured timeline among 18 section types', () => {
-    expect(KNOWN_SECTION_TYPES.size).toBe(18)
+  it('includes measured timeline and breakdown trees among 19 section types', () => {
+    expect(KNOWN_SECTION_TYPES.size).toBe(19)
+    expect(KNOWN_SECTION_TYPES.has('breakdown-tree')).toBe(true)
     expect(KNOWN_SECTION_TYPES.has('timeline')).toBe(true)
   })
 })

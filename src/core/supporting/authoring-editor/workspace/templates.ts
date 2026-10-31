@@ -1,3 +1,4 @@
+import { BREAKDOWN_TREE_EXAMPLE } from '../../../learning-engine/composition/oui/breakdown-tree-authoring'
 import { TIMELINE_EXAMPLE } from '../../../learning-engine/composition/oui/timeline-authoring'
 /**
  * Starter `.oui` sources for new sections and topics in Loom Studio.
@@ -18,6 +19,7 @@ export interface SectionTemplate {
 const q = (text: string) => JSON.stringify(text)
 
 export const SECTION_TEMPLATES: SectionTemplate[] = [
+  { type: 'breakdown-tree', component: 'BreakdownTree', label: 'Breakdown Tree', description: 'A measurable whole divided into quantities, shares or conditional probabilities', source: (title) => BREAKDOWN_TREE_EXAMPLE.replace('"Where does the meal budget go?"', q(title)) },
   {
     type: 'timeline', component: 'Timeline', label: 'Timeline',
     description: 'Measured time, parallel activities, waiting and dependencies',

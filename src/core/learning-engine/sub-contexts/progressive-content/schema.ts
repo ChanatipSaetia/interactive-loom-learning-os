@@ -350,3 +350,6 @@ export type PillarLayerSectionData = z.infer<typeof PillarLayerSectionSchema>
 
 export { TimelineSectionSchema } from './timeline'
 export type { TimelineSectionData, TimelineActivity, TimelineLane, TimelineGroup } from './timeline'
+
+export { BreakdownTreeSectionSchema } from './breakdown-tree'
+export type { BreakdownTreeSectionData, BreakdownNode } from './breakdown-tree'

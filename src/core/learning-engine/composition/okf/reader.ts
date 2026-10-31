@@ -27,6 +27,7 @@ import type {
   ImageGallerySectionData,
   PillarLayerSectionData,
   TimelineSectionData,
+  BreakdownTreeSectionData,
   GalleryItem,
 } from '../../sub-contexts/progressive-content'
 import type {
@@ -214,6 +215,12 @@ async function loadSectionResource(
       return loadDecisionTreeSection(basePath, resource)
     case 'image-gallery':
       return loadImageGallerySection(basePath, resource, resourceFiles)
+    case 'breakdown-tree': {
+      const targetFile = resource !== '.' ? resource : resourceFiles.find((f) => f.endsWith('.yaml') && f !== 'section.yaml')
+      if (!targetFile) throw new Error('Breakdown Tree requires a data file with nodes.')
+      const raw = await fetchYaml<Omit<BreakdownTreeSectionData, 'type'>>(`${basePath}/${targetFile}`)
+      return { ...raw, type: 'breakdown-tree', mode: raw.mode ?? 'quantity', unit: raw.unit ?? '' }
+    }
     case 'timeline': {
       const targetFile = resource !== '.' ? resource : resourceFiles.find((f) => f.endsWith('.yaml') && f !== 'section.yaml')
       if (!targetFile) throw new Error('Timeline requires a data file with lanes and activities.')

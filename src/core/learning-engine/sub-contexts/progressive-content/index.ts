@@ -7,6 +7,7 @@ export {
   ImageGallerySectionSchema,
   PillarLayerSectionSchema,
   TimelineSectionSchema,
+  BreakdownTreeSectionSchema,
 } from './schema'
 export type {
   TextSectionData,
@@ -21,6 +22,7 @@ export type {
   GalleryItem,
   PillarLayerSectionData,
   TimelineSectionData, TimelineActivity, TimelineLane, TimelineGroup,
+  BreakdownTreeSectionData, BreakdownNode,
   PillarLayerLayer,
   PillarLayerBlock,
 } from './schema'
@@ -70,6 +72,7 @@ export type {
   CategorySelected,
   GalleryItemViewed,
   TimelineActivitySelected,
+  BreakdownNodeSelected,
 } from './events'
 export { validateProgressiveContentTier3 } from './validation'
 
@@ -77,3 +80,8 @@ export { default as TimelineSection } from './components/timeline'
 export type { TimelineSectionProps } from './components/timeline'
 
 export { TimelineFormEditor } from './components/timeline/TimelineFormEditor'
+
+export { default as BreakdownTreeSection } from './components/breakdown-tree'
+export type { BreakdownTreeSectionProps } from './components/breakdown-tree'
+
+export { BreakdownTreeFormEditor } from './components/breakdown-tree/BreakdownTreeFormEditor'

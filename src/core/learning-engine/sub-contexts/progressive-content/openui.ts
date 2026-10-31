@@ -1,3 +1,5 @@
+import { breakdownTreeOUIComponents } from './breakdown-tree-openui'
+export { BreakdownTree, BreakdownNode } from './breakdown-tree-openui'
 import { timelineOUIComponents } from './timeline-openui'
 export { Timeline, TimelineLane, TimelineActivity, TimelineGroup } from './timeline-openui'
 /**
@@ -447,4 +449,5 @@ export const progressiveContentOUIComponents = [
   ImageGallery, GalleryImage,
   PillarLayer, Layer, LayerItem, MatrixBlock,
   ...timelineOUIComponents,
+  ...breakdownTreeOUIComponents,
 ]

@@ -140,6 +140,7 @@ export {
   ImageGallerySectionSchema,
   PillarLayerSectionSchema,
   TimelineSectionSchema,
+  BreakdownTreeSectionSchema,
 } from './progressive-content'
 
 export type {
@@ -155,6 +156,7 @@ export type {
   GalleryItem,
   PillarLayerSectionData,
   TimelineSectionData, TimelineActivity, TimelineLane, TimelineGroup,
+  BreakdownTreeSectionData, BreakdownNode,
   PillarLayerLayer,
   PillarLayerBlock,
 } from './progressive-content'
@@ -206,6 +208,7 @@ export type {
   CategorySelected,
   GalleryItemViewed,
   TimelineActivitySelected,
+  BreakdownNodeSelected,
 } from './progressive-content'
 export { validateProgressiveContentTier3 } from './progressive-content'
 
@@ -268,3 +271,8 @@ export { TimelineSection } from './progressive-content'
 export type { TimelineSectionProps } from './progressive-content'
 
 export { TimelineFormEditor } from './progressive-content'
+
+export { BreakdownTreeSection } from './progressive-content'
+export type { BreakdownTreeSectionProps } from './progressive-content'
+
+export { BreakdownTreeFormEditor } from './progressive-content'

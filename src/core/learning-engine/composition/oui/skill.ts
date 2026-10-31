@@ -1,3 +1,4 @@
+import { BREAKDOWN_TREE_AUTHORING_GUIDE } from './breakdown-tree-authoring'
 import { TIMELINE_AUTHORING_GUIDE } from './timeline-authoring'
 /**
  * Agent skill (https://agentskills.io format) for the Claude app and coding
@@ -45,6 +46,8 @@ ${BULLET_AUTHORING_GUIDE}
 ${LAYER_AUTHORING_GUIDE}
 
 ${TIMELINE_AUTHORING_GUIDE}
+
+${BREAKDOWN_TREE_AUTHORING_GUIDE}
 
 ## Where to write
 

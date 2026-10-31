@@ -1,3 +1,4 @@
+import { breakdownModel, type BreakdownTreeSectionData } from './breakdown-tree'
 import { timelineGroups } from './timeline-layout'
 import type { TimelineSectionData } from './timeline'
 /**
@@ -170,4 +171,14 @@ export function timelineBeats(data: TimelinePresentData): Beat[] {
 export const timelinePresenter: SectionPresenter<TimelinePresentData> = {
   toBeats: timelineBeats,
   load: () => import('./components/timeline/PresentTimeline'),
+}
+
+export type BreakdownTreePresentData = { title?: string; section?: BreakdownTreeSectionData }
+export function breakdownTreeBeats(data: BreakdownTreePresentData): Beat[] {
+  const splits = data.section ? breakdownModel(data.section).splits : []
+  return [show('overview', 'The whole breakdown'), ...splits.map((node, i) => show(`split${i + 1}`, `Break down ${node.title}`)), show('summary', 'Connect the parts to the whole')]
+}
+export const breakdownTreePresenter: SectionPresenter<BreakdownTreePresentData> = {
+  toBeats: breakdownTreeBeats,
+  load: () => import('./components/breakdown-tree/PresentBreakdownTree'),
 }

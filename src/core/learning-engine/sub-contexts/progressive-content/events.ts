@@ -26,4 +26,10 @@ export interface TimelineActivitySelected {
   timestamp: number
 }
 
-export type ProgressiveContentEvents = CategorySelected | GalleryItemViewed | TimelineActivitySelected
+export interface BreakdownNodeSelected {
+  type: 'BreakdownNodeSelected'
+  nodeId: string
+  timestamp: number
+}
+
+export type ProgressiveContentEvents = BreakdownNodeSelected | CategorySelected | GalleryItemViewed | TimelineActivitySelected

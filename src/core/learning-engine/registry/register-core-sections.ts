@@ -5,6 +5,7 @@ import { SectionRegistry } from './index'
  * Shared by the learning app (src/main.tsx) and Loom Studio (src/studio/main.tsx).
  */
 export function registerCoreSections(): void {
+  SectionRegistry.register('breakdown-tree', () => import('../sub-contexts/progressive-content/components/breakdown-tree'))
   SectionRegistry.register('timeline', () => import('../sub-contexts/progressive-content/components/timeline'))
   SectionRegistry.register('intro', () => import('../sub-contexts/progressive-content/components/intro'))
   SectionRegistry.register('text', () => import('../sub-contexts/progressive-content/components/text'))

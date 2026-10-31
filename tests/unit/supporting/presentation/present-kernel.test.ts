@@ -53,7 +53,7 @@ describe('present registry', () => {
   })
 
   it('registers the section types that have a Present renderer', () => {
-    expect(PresentRegistry.list().sort()).toEqual(['bullets', 'concept-map', 'decision-tree', 'flashcards', 'flowchart', 'formula-sandbox', 'image-gallery', 'intro', 'openui', 'pillar-layer', 'quiz', 'reflection-sequence', 'reflection-template', 'scenario', 'taxonomy-browser', 'text', 'timeline', 'tradeoff-sandbox'])
+    expect(PresentRegistry.list().sort()).toEqual(['breakdown-tree', 'bullets', 'concept-map', 'decision-tree', 'flashcards', 'flowchart', 'formula-sandbox', 'image-gallery', 'intro', 'openui', 'pillar-layer', 'quiz', 'reflection-sequence', 'reflection-template', 'scenario', 'taxonomy-browser', 'text', 'timeline', 'tradeoff-sandbox'])
   })
 
   it('gives a type without a presenter one beat, all, after its title beat', () => {

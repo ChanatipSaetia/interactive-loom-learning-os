@@ -112,6 +112,10 @@ export function getAuthoringGuide(sections: string[] = []): string {
     const { before, after } = cut(text, '## Measured Timeline')
     text = before + after
   }
+  if (!wanted.has('breakdown-tree')) {
+    const { before, after } = cut(text, '## Breakdown Trees')
+    text = before + after
+  }
   const { before, part, after } = cut(text, SIGNATURES)
   const index = guideSectionTypes().map((t) => `- \`${t.type}\` (${t.component}): ${t.summary}`).join('\n')
   const notes = [

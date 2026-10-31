@@ -104,6 +104,7 @@ export const BEAT_IDS: Record<string, string> = {
   intro: '`title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap)',
   text: '`p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs',
   bullets: '`item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, …',
+  'breakdown-tree': '`overview`, `split1`, `split2`, … (one per non-leaf node in depth-first authored order), `summary`',
   'timeline': '`overview` (whole timeline), `group1`, `group2`, … (authored groups or activities sharing a start time), `summary` (whole timeline and takeaway)',
   'pillar-layer': '`layerN` … `layer1` (foundation first; N is the authored top-to-bottom layer index); extra peer groups use `layerN.group2`, `layerN.group3`, …; then `overview`',
   'image-gallery': '`image1`, `image2`, … one per image',
