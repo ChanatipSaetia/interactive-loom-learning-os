@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { TIME_USAGE_EXAMPLES, TIME_USAGE_PLANNING_RULE } from '../../../../../../src/core/learning-engine/composition/oui/time-usage-authoring'
-import { getLoomSkill } from '../../../../../../src/core/learning-engine/composition/oui/skill'
+import { getWriterSkillReferences } from '../../../../../../src/core/learning-engine/composition/oui/skill-references'
 import { getTutorAppSkill, getTutorViewerSkill } from '../../../../../../src/core/learning-engine/composition/oui/tutor-skills'
 import { getAuthoringGuide } from '../../../../../../src/core/learning-engine/composition/oui/authoring-guide'
 import { sectionBeatsOf, validateOUINarration, validateOUISection } from '../../../../../../src/core/learning-engine/validation/oui-gateway'
 
 describe('time and usage authoring guidance', () => {
   it('puts proactive visual selection in the writer and both tutor planning workflows', () => {
-    for (const skill of [getLoomSkill(), getTutorAppSkill(), getTutorViewerSkill()]) {
+    for (const skill of [getWriterSkillReferences()['references/openui/time-usage.md'], getTutorAppSkill(), getTutorViewerSkill()]) {
       expect(skill).toContain(TIME_USAGE_PLANNING_RULE)
     }
-    expect(getLoomSkill()).toContain('Request share is different from CPU utilization')
-    expect(getLoomSkill()).toContain('NarrationStep("part2", …)')
+    expect(getWriterSkillReferences()['references/openui/time-usage.md']).toContain('Request share is different from CPU utilization')
+    expect(getWriterSkillReferences()['references/openui/time-usage.md']).toContain('NarrationStep("part2", …)')
   })
 
   it('includes the worked examples when requesting OpenUI rather than unrelated section types', () => {

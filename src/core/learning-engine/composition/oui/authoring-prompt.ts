@@ -1,3 +1,4 @@
+import { MENTAL_MODEL_GUIDE } from './mental-model-guide'
 import { BREAKDOWN_TREE_AUTHORING_GUIDE } from './breakdown-tree-authoring'
 import { TIMELINE_AUTHORING_GUIDE } from './timeline-authoring'
 /**
@@ -413,7 +414,7 @@ function dropStreamingNotes(text: string): string {
  */
 export function getLoomAuthoringPrompt(): string {
   let prompt = getLoomOUIPrompt({
-    preamble: PREAMBLE,
+    preamble: PREAMBLE + '\n\n' + MENTAL_MODEL_GUIDE,
     examples: [`A complete topic in the single .oui file format:\n\n\`\`\`\n${AUTHORING_EXAMPLE}\`\`\``],
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)

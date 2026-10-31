@@ -1,3 +1,4 @@
+import { MENTAL_MODEL_GUIDE } from './mental-model-guide'
 /**
  * The two learner skills (slice 6, decisions 201–202 in grill-log-adaptive-learning.md),
  * written from one source so their shared parts never drift apart:
@@ -88,7 +89,9 @@ ${PLAN_START}
 4. ${TEACH_FIRST}
 5. Keep it to one sitting: about 5–8 sections, mixing section types (flashcards, scenarios, sandboxes, quizzes), never walls of text.
 6. ${SHOW_CONCEPT}
-7. ${TIME_USAGE_PLANNING_RULE}`
+7. ${TIME_USAGE_PLANNING_RULE}
+
+${MENTAL_MODEL_GUIDE}`
 
 /**
  * In a chat the topic plays right in the conversation, between messages, so a whole lesson at a time
@@ -102,7 +105,9 @@ ${PLAN_START}
 5. ${TEACH_FIRST}
 6. Never walls of text: each section shows its idea, it does not lecture.
 7. ${SHOW_CONCEPT}
-8. ${TIME_USAGE_PLANNING_RULE}`
+8. ${TIME_USAGE_PLANNING_RULE}
+
+${MENTAL_MODEL_GUIDE}`
 
 const TUTOR = `## While the learner works
 
