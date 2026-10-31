@@ -1,11 +1,10 @@
-# Deploys the hosted Loom MCP endpoint to Cloudflare Workers (slice 5 in grill-log-adaptive-learning.md).
-# Runs in the `cloudflare` environment, which holds CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID,
-# allows only the branches set there and waits for its required reviewer to approve each deploy.
-name: Deploy Loom MCP to Cloudflare Workers
+# Deploy the whole site and /mcp together from master.
+# The cloudflare environment supplies the credentials and must allow master.
+name: Deploy Loom to Cloudflare
 
 on:
   push:
-    branches: ['ccr-399ddc4d-f64k4o']
+    branches: ['master']
   workflow_dispatch:
 
 permissions:
@@ -14,6 +13,10 @@ permissions:
 concurrency:
   group: cloudflare-worker
   cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   deploy:
@@ -30,6 +33,14 @@ jobs:
         with:
           node-version: 22
           cache: npm
+
+      - name: Check deployment credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::Set CLOUDFLARE_API_TOKEN in the cloudflare environment"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::Set CLOUDFLARE_ACCOUNT_ID in the cloudflare environment"; exit 1; }
 
       - name: Install dependencies
         run: npm ci
@@ -48,6 +59,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           npx --yes wrangler@4.146.0 deploy | tee deploy.log
-          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -n 1)
-          echo "url=$url/mcp" >> "$GITHUB_OUTPUT"
+          url=$(grep -m 1 -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log)
+          echo "url=$url/" >> "$GITHUB_OUTPUT"
+          echo "Loom site: $url/" >> "$GITHUB_STEP_SUMMARY"
           echo "Loom MCP endpoint: $url/mcp" >> "$GITHUB_STEP_SUMMARY"

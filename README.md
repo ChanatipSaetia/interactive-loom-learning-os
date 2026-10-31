@@ -16,7 +16,7 @@ Built with React, Vite, TailwindCSS, anime.js and Motion. Defaults to the Liquid
 | **Create with AI** | Adds the Loom skills to the Claude app or to coding agents, step by step | `create.html` |
 | **The learning app** | The catalog of topics in this repository, and hex campaign maps | `index.html` |
 
-The site is published at **https://loom-mcp.loom-learning.workers.dev/** (from the working branch, with the MCP endpoint at `/mcp`) and **https://chanatipsaetia.github.io/interactive-loom-learning-os/** (from `master`).
+The site is published at **https://loom-mcp.loom-learning.workers.dev/**, with the MCP endpoint at `/mcp`. Pushes to `master` automatically run `.github/workflows/deploy-mcp-worker.yml` to build and deploy both to Cloudflare Workers. GitHub Pages deployment is retired.
 
 ---
 

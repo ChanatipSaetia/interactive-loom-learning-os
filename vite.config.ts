@@ -67,7 +67,7 @@ function contentCatalogPlugin(): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const isLib = env.BUILD_MODE === 'lib'
-  const basePath = env.VITE_BASE_PATH || (process.env.GITHUB_ACTIONS ? '/interactive-loom-learning-os/' : '/')
+  const basePath = env.VITE_BASE_PATH || '/'
 
   if (isLib) {
     return {
