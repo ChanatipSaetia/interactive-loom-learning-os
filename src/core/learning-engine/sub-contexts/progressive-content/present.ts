@@ -4,6 +4,7 @@
  * plays by itself (decision 101). Beat IDs name the beats for narration files (decision 108).
  */
 import { textScenes } from './text-scenes'
+import { pillarLayerPlan } from './pillar-layer-scenes'
 import { brief, show, type Beat, type SectionPresenter } from '../present-kernel'
 import type { BulletItem, GalleryItem, IntroSectionData, OpenUISectionData, PillarLayerSectionData, TaxonomyCategory, TextSectionData } from './schema'
 
@@ -113,9 +114,9 @@ export function openuiBeats(data: OpenUIPresentData = { source: '' }): Beat[] {
   return parts.map((p, i) => show(`part${i + 1}`, `Part ${i + 1}: ${p.name ?? p.component ?? 'element'}`))
 }
 
-/** One beat per layer, settling onto the stack from the bottom; blocks arrive with their layer: `layer1`, … */
+/** Foundation upward, peer-group focus within each layer, then the whole stack. */
 export function pillarLayerBeats(data: PillarLayerPresentData): Beat[] {
-  return (data.section?.layers ?? []).map((l, i) => show(`layer${i + 1}`, `Layer ${i + 1}: ${brief(l.title)}`))
+  return pillarLayerPlan(data.section).scenes.map(({ id, about }) => show(id, about))
 }
 
 /** One beat per image: `image1`, `image2`, … */

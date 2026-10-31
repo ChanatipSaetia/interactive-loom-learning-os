@@ -868,6 +868,10 @@
             }
           },
           "description": "Optional custom shape: [rowOffset, colOffset] cells relative to the anchor. Overrides spans and shape."
+        },
+        "group": {
+          "type": "string",
+          "description": "Optional named outer container in Present mode. Blocks with the same group within a single-row layer share a box; different groups sit side by side."
         }
       },
       "required": [

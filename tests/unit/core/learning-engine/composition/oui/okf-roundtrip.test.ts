@@ -59,6 +59,18 @@ afterAll(() => {
 })
 
 describe('OKF → OpenUI Lang round trip', () => {
+  it('preserves named peer containers when a layer stack is saved and reopened', () => {
+    const result = validateOUISection(`root = PillarLayer("Stack", [layer], [tool, knowledge])
+layer = Layer("capabilities", "Capabilities")
+tool = MatrixBlock("tool", "Execute", layer, 0, 1, 1, null, "teal", [], null, null, "Tools")
+knowledge = MatrixBlock("knowledge", "Retrieve", layer, 1, 1, 1, null, "green", [], null, null, "Knowledge")`)
+    expect(result.diagnostics).toEqual([])
+    const section = result.payload!
+    const back = validateOUISection(printOUISection(section.meta, section.data))
+    expect(back.diagnostics).toEqual([])
+    expect(back.payload?.data).toEqual(section.data)
+    expect((back.payload?.data as { matrix_blocks: Array<{ group?: string }> }).matrix_blocks.map((block) => block.group)).toEqual(['Tools', 'Knowledge'])
+  })
   it('finds the OKF topics', () => {
     expect(TOPICS.length).toBeGreaterThanOrEqual(12)
   })

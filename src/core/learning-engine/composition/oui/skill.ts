@@ -6,6 +6,7 @@
  * repo's own copy in `.claude/skills/` (Claude Code and opencode both read it).
  */
 import { BULLET_AUTHORING_GUIDE } from './bullet-authoring'
+import { LAYER_AUTHORING_GUIDE } from './layer-authoring'
 import { LOOM_PAGES_URL, LOOM_SKILL_NAME, LOOM_SKILL_REFERENCE } from './llm-guide'
 
 export const LOOM_SKILL_DESCRIPTION =
@@ -36,6 +37,8 @@ Interactive Loom turns OpenUI Lang (\`.oui\`) files into interactive lessons. \`
 - Follow the reference's \`// @openui\` section format and \`Svg\` signature. Keep the drawing a named child of a Card or Stack so Present narration can target \`"drawing.shapeId"\`.
 
 ${BULLET_AUTHORING_GUIDE}
+
+${LAYER_AUTHORING_GUIDE}
 
 ## Where to write
 

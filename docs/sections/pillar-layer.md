@@ -104,3 +104,11 @@ matrix_blocks:
 - **Responsive Layout**: Layers render top to bottom in the order listed (put the foundation layer last). Below 640px each layer is a band with its blocks in one column; from 640px blocks wrap two per row (`col_span > 1` takes the full row); from 1024px layer names sit in a left column and blocks keep their `col_offset`, `col_span`, `row_span` and L-shape. Columns, row spans and shapes only apply in the wide layout.
 - **Uses & Tap-to-Trace (`depends_on`)**: Each block lists the blocks it uses. When any block has `depends_on`, tapping a block (or `Enter`/`Space`) highlights everything it needs (transitively, below) and everything it affects if it changes (transitively, above), dims the rest, and lists both inside the block; tap a listed name to move the trace, tap the block again to clear it. Without any `depends_on`, blocks are static.
 - **Block Colours**: `color` (a Catppuccin name such as `blue`, `mauve`, `peach`) sets the block's accent bar.
+
+### Presenting a simple layer stack
+
+Single-row rectangular blocks appear inside their layer band in Present mode. Only names are shown; descriptions and dependency exploration remain in Read. Foundation layers arrive first. Multi-row and shaped blocks retain the matrix presentation.
+
+For separate peer containers on the same level, set the optional trailing `group` argument on `MatrixBlock` (after `offsets`). Blocks with the same group name within that layer share a named outer box. Different groups appear side by side, with widths proportional to their total column spans. Ungrouped blocks share the layer-title container. For example, use `"Tools"` for tool execution and connectors, and `"Knowledge"` for retrieval and document search. Groups are presentation containers, not extra layers or dependencies.
+
+Present plays layers from the foundation upward while preserving their authored identity: with three top-to-bottom layers, beats are `layer3`, `layer2`, `layer1`, then `overview`. In grouped simple stacks, each layer's first group uses `layerN`; later groups add `layerN.group2`, `layerN.group3`, … in first-appearance order. Each group reveals and receives focus on its own beat; earlier content stays visible. The final overview shows and focuses the whole diagram. Narration labels and rendering use the same plan.

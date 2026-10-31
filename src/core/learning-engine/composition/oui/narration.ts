@@ -104,7 +104,7 @@ export const BEAT_IDS: Record<string, string> = {
   intro: '`title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap)',
   text: '`p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs',
   bullets: '`item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, …',
-  'pillar-layer': '`layer1`, `layer2`, … one per layer',
+  'pillar-layer': '`layerN` … `layer1` (foundation first; N is the authored top-to-bottom layer index); extra peer groups use `layerN.group2`, `layerN.group3`, …; then `overview`',
   'image-gallery': '`image1`, `image2`, … one per image',
   'taxonomy-browser': '`cards` (all cards), then `card1`, `card2`, … each card opened',
   'concept-map': '`group1`, `group2`, … introduce categories in first-appearance order; after each group, `linkN` explains every ConceptLink whose endpoints are now introduced (N is its 1-based position in the links list); then `map` shows the complete map when there are links or several groups. Explain from → label → to without assuming every relation is a flow or a cause.',

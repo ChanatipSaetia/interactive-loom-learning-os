@@ -126,7 +126,7 @@ Layer(id: string, title: string, description?: string, items?: LayerItem[]) — 
 LayerItem(title: string, description?: string) — A labelled item listed inside a layer.
   - title: Item name.
   - description: Optional detail.
-MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number, colSpan?: number, rowSpan?: number, description?: string, color?: string, dependsOn?: string[], shape?: "rect" | "l-bottom-left" | "l-bottom-right" | "l-top-left" | "l-top-right", offsets?: number[][]) — A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is "rect" or an L-shape. `dependsOn` lists block IDs.
+MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number, colSpan?: number, rowSpan?: number, description?: string, color?: string, dependsOn?: string[], shape?: "rect" | "l-bottom-left" | "l-bottom-right" | "l-top-left" | "l-top-right", offsets?: number[][], group?: string) — A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is "rect" or an L-shape. `dependsOn` lists block IDs.
   - id: Block ID, unique within the map; `dependsOn` refers to it.
   - title: Text shown on the block.
   - layer: Anchor row: Layer reference or ID.
@@ -138,6 +138,7 @@ MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number
   - dependsOn: Optional IDs of blocks this block depends on.
   - shape: Optional "rect" (default) or an L-shape inside the span: "l-bottom-left", "l-bottom-right", "l-top-left", "l-top-right".
   - offsets: Optional custom shape: [rowOffset, colOffset] cells relative to the anchor. Overrides spans and shape.
+  - group: Optional named outer container in Present mode. Blocks with the same group within a single-row layer share a box; different groups sit side by side.
 
 ### Process Simulation
 Flowchart(title: string, actors: Actor[], systems: System[], steps: (Step | Branch)[], journeys: Journey[], heading?: string, lead?: Lead, initialView?: "event-storming" | "architecture" | "swimlanes" | "sequence" | "data-flow" | "state-machine") — Animated Event Storming flowchart. Every actor and system must be used by at least one step.
@@ -709,7 +710,7 @@ Beat IDs by section type (n counts from 1; every type but `intro` starts with `t
 | `intro` | `title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap) |
 | `text` | `p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs |
 | `bullets` | `item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, … |
-| `pillar-layer` | `layer1`, `layer2`, … one per layer |
+| `pillar-layer` | `layerN` … `layer1` (foundation first; N is the authored top-to-bottom layer index); extra peer groups use `layerN.group2`, `layerN.group3`, …; then `overview` |
 | `image-gallery` | `image1`, `image2`, … one per image |
 | `taxonomy-browser` | `cards` (all cards), then `card1`, `card2`, … each card opened |
 | `concept-map` | `group1`, `group2`, … introduce categories in first-appearance order; after each group, `linkN` explains every ConceptLink whose endpoints are now introduced (N is its 1-based position in the links list); then `map` shows the complete map when there are links or several groups. Explain from → label → to without assuming every relation is a flow or a cause. |
@@ -766,6 +767,42 @@ root = Narration([
   NarrationStep("item1.child2", "Signing in is only half the check: the account must also be allowed to open the project."),
   NarrationStep("item2", "Once access works, give the newcomer one clear outcome to aim for."),
   NarrationStep("item2.child1", "Working with a teammate connects that goal to a real task and gives questions somewhere to go.")
+])
+```
+
+## Layer Composition
+
+- Use `PillarLayer` when the learner needs to understand a foundation supporting higher responsibilities: network protocols or a deployment stack, for example. Put layers in top-to-bottom order with the foundation last. Horizontal position means peers within one level; place components inside their actual layer rather than making every component another layer.
+- For simple contained bands in Present, use rectangular `MatrixBlock`s with `rowSpan = 1`. Keep titles short and put explanations in `description`: Present shows names only, while Read retains descriptions and dependency exploration. Use multi-row spans and shapes only when those relationships matter; those use the matrix presentation.
+- A layer can contain several separate outer boxes. Set the trailing `group` argument on each block to its container's name, such as `"Tools"` or `"Knowledge"`. Matching names within the same layer share one box; different names form peer boxes on the same row. Blocks without a group share the layer-title box. Group names are authored explicitly and are scoped to the layer; they are not extra layers or inferred from titles.
+- Present uses a soft color tint and accent border on each outer box, with neutral white inner items in the light theme (neutral surfaces in dark themes). Set `color` on the group's first block to choose its outer accent, and use a consistent color for the group's blocks. Keep subitems visually neutral; do not add colored cards, HTML, CSS, emoji or icon arguments to force a different item appearance.
+- Use `colOffset` and `colSpan` to fill the grid without gaps or overlaps. In grouped Present rows, each box's width is proportional to its members' total column spans; items stay contained within their box. For example, Agent can hold Plan & Execute and Policy & Approvals, alongside separate Database and Cloud Run boxes at the same level.
+- `MatrixBlock(id, title, layer, colOffset?, colSpan?, rowSpan?, description?, color?, dependsOn?, shape?, offsets?, group?)` is positional. Skip optional values with `null` before `group`, as in the example. Set `dependsOn` to real block IDs for Read's dependency tracing; shared group membership does not create dependencies.
+- Narrate from the foundation upward. Beat IDs keep their authored top-to-bottom layer identity: for three layers, playback starts with `layer3`, then `layer2`, then `layer1`. Each layer's first group uses its `layerN` beat; later groups use `layerN.group2`, `layerN.group3`, … in first-appearance order among that layer's blocks. Earlier groups and layers stay visible. Finish with `overview` to connect the whole stack. The stage adds `title` before these beats. Explain what each level enables and how peer groups differ; narration can highlight individual block IDs without adding a beat per item. Label illustrative architectures and simplifications so learners do not mistake one deployment choice for a mandatory architecture.
+
+Example section (`sections/agent-foundation.oui`):
+
+```
+root = PillarLayer("Actions and knowledge build on a foundation", [capabilities, foundation], [tools, connectors, retrieval, search, compute, storage])
+capabilities = Layer("capabilities", "Tools & Knowledge")
+foundation = Layer("foundation", "Cloud Foundation")
+tools = MatrixBlock("tools", "Tool Execution", capabilities, 0, 1, 1, "Runs permitted actions.", "teal", ["compute"], null, null, "Tools")
+connectors = MatrixBlock("connectors", "APIs & Connectors", capabilities, 1, 1, 1, "Connects to external services.", "teal", ["compute"], null, null, "Tools")
+retrieval = MatrixBlock("retrieval", "Knowledge Retrieval", capabilities, 2, 1, 1, "Finds relevant source material.", "green", ["storage"], null, null, "Knowledge")
+search = MatrixBlock("search", "Document Search", capabilities, 3, 1, 1, "Searches indexed documents.", "green", ["storage"], null, null, "Knowledge")
+compute = MatrixBlock("compute", "Compute", foundation, 0, 2, 1, "Hosts the services.", "blue")
+storage = MatrixBlock("storage", "Storage", foundation, 2, 2, 1, "Persists documents and indexes.", "blue")
+```
+
+Matching narration (`sections/agent-foundation.narrate.oui`):
+
+```
+root = Narration([
+  NarrationStep("title", "Separate the capabilities an agent uses from the foundation that runs them."),
+  NarrationStep("layer2", "Compute hosts the services, while storage persists their documents and indexes."),
+  NarrationStep("layer1", "Tools perform actions. Connectors give those actions access to external services.", [Highlight("tools"), Highlight("connectors")]),
+  NarrationStep("layer1.group2", "Knowledge capabilities find source material through retrieval and search.", [Highlight("retrieval"), Highlight("search")]),
+  NarrationStep("overview", "Both action and knowledge services rely on the cloud foundation below. These boxes represent responsibilities, not a required deployment architecture.")
 ])
 ```
 
