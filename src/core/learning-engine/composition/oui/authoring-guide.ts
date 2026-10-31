@@ -108,6 +108,10 @@ export function getAuthoringGuide(sections: string[] = []): string {
     const { before, after } = cut(text, '## Layer Composition')
     text = before + after
   }
+  if (!wanted.has('timeline')) {
+    const { before, after } = cut(text, '## Measured Timeline')
+    text = before + after
+  }
   const { before, part, after } = cut(text, SIGNATURES)
   const index = guideSectionTypes().map((t) => `- \`${t.type}\` (${t.component}): ${t.summary}`).join('\n')
   const notes = [

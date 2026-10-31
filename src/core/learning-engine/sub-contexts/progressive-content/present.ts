@@ -1,3 +1,5 @@
+import { timelineGroups } from './timeline-layout'
+import type { TimelineSectionData } from './timeline'
 /**
  * Present mode beats for the progressive-content section types (Beat Derivation in
  * grill-log-presenting-mode.md). Each function reads the compiled section props only; every beat
@@ -158,4 +160,14 @@ export const galleryPresenter: SectionPresenter<GalleryPresentData> = {
 export const taxonomyPresenter: SectionPresenter<TaxonomyPresentData> = {
   toBeats: taxonomyBeats,
   load: () => import('./components/taxonomy-browser/PresentTaxonomy'),
+}
+
+export type TimelinePresentData = { title?: string; section?: TimelineSectionData }
+export function timelineBeats(data: TimelinePresentData): Beat[] {
+  if (!data.section) return [show('overview', 'The timeline')]
+  return [show('overview', 'The whole measured timeline'), ...timelineGroups(data.section).map((group, i) => show(`group${i + 1}`, group.title)), show('summary', 'Connect timing, overlap and the result')]
+}
+export const timelinePresenter: SectionPresenter<TimelinePresentData> = {
+  toBeats: timelineBeats,
+  load: () => import('./components/timeline/PresentTimeline'),
 }

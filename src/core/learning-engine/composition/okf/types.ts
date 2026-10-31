@@ -29,6 +29,7 @@ import type {
   TaxonomyBrowserSectionData,
   ImageGallerySectionData,
   PillarLayerSectionData,
+  TimelineSectionData,
   IntroRoadmapStep,
   GalleryItem,
 } from '../../sub-contexts/progressive-content'
@@ -89,6 +90,7 @@ export type OKFSectionData =
   | ReflectionSequenceSectionData
   | ReflectionTemplateSectionData
   | PillarLayerSectionData
+  | TimelineSectionData
 
 export type OKFIntroSectionData = IntroSectionData
 export type OKFTextSectionData = TextSectionData

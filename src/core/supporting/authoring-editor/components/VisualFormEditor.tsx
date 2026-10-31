@@ -14,6 +14,7 @@ import {
   BulletsFormEditor,
   TaxonomyBrowserFormEditor,
   PillarLayerFormEditor,
+  TimelineFormEditor,
   ReflectionSequenceFormEditor,
   ReflectionTemplateFormEditor,
 } from '../../..'
@@ -85,6 +86,8 @@ export function VisualFormEditor({ data, meta, onChange, onMetaChange }: VisualF
     if (isType(data, 'taxonomy-browser')) {
       return <TaxonomyBrowserFormEditor data={data} onChange={onChange} />
     }
+
+    if (isType(data, 'timeline')) return <TimelineFormEditor data={data} onChange={onChange} />
 
     if (isType(data, 'pillar-layer')) {
       return <PillarLayerFormEditor data={data} onChange={onChange} />

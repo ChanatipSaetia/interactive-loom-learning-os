@@ -347,3 +347,6 @@ export type PillarLayerBlock = z.infer<typeof PillarLayerBlockSchema>
 export type PillarLayerBlockShape = z.infer<typeof PillarLayerBlockShapeSchema>
 export type PillarLayerBlockCell = z.infer<typeof PillarLayerBlockCellSchema>
 export type PillarLayerSectionData = z.infer<typeof PillarLayerSectionSchema>
+
+export { TimelineSectionSchema } from './timeline'
+export type { TimelineSectionData, TimelineActivity, TimelineLane, TimelineGroup } from './timeline'

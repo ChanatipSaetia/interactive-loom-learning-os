@@ -26,6 +26,7 @@ import type {
   TaxonomyBrowserSectionData,
   ImageGallerySectionData,
   PillarLayerSectionData,
+  TimelineSectionData,
   GalleryItem,
 } from '../../sub-contexts/progressive-content'
 import type {
@@ -213,6 +214,12 @@ async function loadSectionResource(
       return loadDecisionTreeSection(basePath, resource)
     case 'image-gallery':
       return loadImageGallerySection(basePath, resource, resourceFiles)
+    case 'timeline': {
+      const targetFile = resource !== '.' ? resource : resourceFiles.find((f) => f.endsWith('.yaml') && f !== 'section.yaml')
+      if (!targetFile) throw new Error('Timeline requires a data file with lanes and activities.')
+      const raw = await fetchYaml<Omit<TimelineSectionData, 'type'>>(`${basePath}/${targetFile}`)
+      return { ...raw, type: 'timeline', groups: raw.groups ?? [], unit: raw.unit ?? 'ms' }
+    }
     case 'pillar-layer':
       return loadPillarLayerSection(basePath, resource, resourceFiles)
     case 'formula-sandbox':

@@ -1,3 +1,5 @@
+import { timelineOUIComponents } from './timeline-openui'
+export { Timeline, TimelineLane, TimelineActivity, TimelineGroup } from './timeline-openui'
 /**
  * OpenUI Lang vocabulary for the Progressive Content subdomain.
  *
@@ -444,4 +446,5 @@ export const progressiveContentOUIComponents = [
   TaxonomyBrowser, TaxonomyCategory,
   ImageGallery, GalleryImage,
   PillarLayer, Layer, LayerItem, MatrixBlock,
+  ...timelineOUIComponents,
 ]

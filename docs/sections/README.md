@@ -21,6 +21,7 @@ Each section type has its own dedicated reference document. Each doc covers:
 | `concept-map` | [concept-map.md](concept-map.md) | Semantic relationships & groupings | `practice-assessment` |
 | `flashcards` | [flashcards.md](flashcards.md) | Vocabulary recall & dialogue | `practice-assessment` |
 | `taxonomy-browser` | [taxonomy-browser.md](taxonomy-browser.md) | Concept categorized grids & properties | `progressive-content` |
+| `timeline` | [timeline.md](timeline.md) | Measured duration, parallel work, waiting and joins | `progressive-content` |
 | `flowchart` | [flowchart.md](flowchart.md) | Dynamic process flows & swimlanes | `process-simulation` |
 | `reflection-sequence` | [reflection-sequence.md](reflection-sequence.md) | Chronological step ordering | `reflection-synthesis` |
 | `quiz` | [quiz.md](quiz.md) | Knowledge check & validation | `practice-assessment` |

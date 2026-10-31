@@ -139,6 +139,7 @@ export {
   TaxonomyBrowserSectionSchema,
   ImageGallerySectionSchema,
   PillarLayerSectionSchema,
+  TimelineSectionSchema,
 } from './progressive-content'
 
 export type {
@@ -153,6 +154,7 @@ export type {
   ImageGallerySectionData,
   GalleryItem,
   PillarLayerSectionData,
+  TimelineSectionData, TimelineActivity, TimelineLane, TimelineGroup,
   PillarLayerLayer,
   PillarLayerBlock,
 } from './progressive-content'
@@ -203,6 +205,7 @@ export type {
   ProgressiveContentEvents,
   CategorySelected,
   GalleryItemViewed,
+  TimelineActivitySelected,
 } from './progressive-content'
 export { validateProgressiveContentTier3 } from './progressive-content'
 
@@ -260,3 +263,8 @@ export { validatePracticeAssessmentTier3 } from './practice-assessment'
 
 // ─── OUI field descriptions (form tooltips) ────────────────────────────
 export { OUIFieldHelp, OUIFieldKey } from './OUIFieldKey'
+
+export { TimelineSection } from './progressive-content'
+export type { TimelineSectionProps } from './progressive-content'
+
+export { TimelineFormEditor } from './progressive-content'

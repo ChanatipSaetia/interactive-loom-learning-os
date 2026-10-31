@@ -1,3 +1,4 @@
+import { validateTimeline, type TimelineSectionData } from './timeline'
 import type { ValidationDiagnostic, ValidationContext } from '../../validation/types'
 import { getBlockOccupiedCells } from './schema'
 import { isLucideIconName, LUCIDE_ICON_NAMES } from './lucide-icon-names'
@@ -33,6 +34,8 @@ export function validateProgressiveContentTier3(
   ctx?: ValidationContext
 ): ValidationDiagnostic[] {
   const diagnostics: ValidationDiagnostic[] = []
+
+  if (sectionType === 'timeline') return validateTimeline(payload as TimelineSectionData).map((d) => ({ ...d, file: ctx?.file }))
 
   if (sectionType === 'taxonomy-browser') {
     const categories = Array.isArray(payload.categories)

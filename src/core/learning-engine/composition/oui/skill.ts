@@ -1,3 +1,4 @@
+import { TIMELINE_AUTHORING_GUIDE } from './timeline-authoring'
 /**
  * Agent skill (https://agentskills.io format) for the Claude app and coding
  * agents such as Claude Code and opencode: `SKILL.md` with the workflow, and the full
@@ -7,6 +8,7 @@
  */
 import { BULLET_AUTHORING_GUIDE } from './bullet-authoring'
 import { LAYER_AUTHORING_GUIDE } from './layer-authoring'
+import { TIME_USAGE_AUTHORING_GUIDE } from './time-usage-authoring'
 import { LOOM_PAGES_URL, LOOM_SKILL_NAME, LOOM_SKILL_REFERENCE } from './llm-guide'
 
 export const LOOM_SKILL_DESCRIPTION =
@@ -36,9 +38,13 @@ Interactive Loom turns OpenUI Lang (\`.oui\`) files into interactive lessons. \`
 - Design for a phone: a few large labelled parts, readable text, strong theme-aware contrast and no overlapping labels. Split a dense drawing into simpler views. Prefer static SVG with narration highlights; use motion only when it explains a change, avoiding blur, filters and decorative animation.
 - Follow the reference's \`// @openui\` section format and \`Svg\` signature. Keep the drawing a named child of a Card or Stack so Present narration can target \`"drawing.shapeId"\`.
 
+${TIME_USAGE_AUTHORING_GUIDE}
+
 ${BULLET_AUTHORING_GUIDE}
 
 ${LAYER_AUTHORING_GUIDE}
+
+${TIMELINE_AUTHORING_GUIDE}
 
 ## Where to write
 

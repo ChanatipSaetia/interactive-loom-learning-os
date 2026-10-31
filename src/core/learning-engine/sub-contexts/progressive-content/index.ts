@@ -6,6 +6,7 @@ export {
   TaxonomyBrowserSectionSchema,
   ImageGallerySectionSchema,
   PillarLayerSectionSchema,
+  TimelineSectionSchema,
 } from './schema'
 export type {
   TextSectionData,
@@ -19,6 +20,7 @@ export type {
   ImageGallerySectionData,
   GalleryItem,
   PillarLayerSectionData,
+  TimelineSectionData, TimelineActivity, TimelineLane, TimelineGroup,
   PillarLayerLayer,
   PillarLayerBlock,
 } from './schema'
@@ -67,5 +69,11 @@ export type {
   ProgressiveContentEvents,
   CategorySelected,
   GalleryItemViewed,
+  TimelineActivitySelected,
 } from './events'
 export { validateProgressiveContentTier3 } from './validation'
+
+export { default as TimelineSection } from './components/timeline'
+export type { TimelineSectionProps } from './components/timeline'
+
+export { TimelineFormEditor } from './components/timeline/TimelineFormEditor'

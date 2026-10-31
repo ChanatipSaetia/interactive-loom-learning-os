@@ -13,6 +13,7 @@
  * (`schema-files.ts`). The note format matches `progressNote()` in
  * `learner-progress/memory/progress-note.ts`.
  */
+import { TIME_USAGE_PLANNING_RULE } from './time-usage-authoring'
 import { LOOM_PAGES_URL, LOOM_SKILL_REFERENCE, LOOM_TUTOR_APP_SKILL, LOOM_TUTOR_VIEWER_SKILL } from './llm-guide'
 import { getStorageGuide } from './storage-guide'
 
@@ -86,7 +87,8 @@ ${PLAN_START}
 3. ${FULL_LESSON}
 4. ${TEACH_FIRST}
 5. Keep it to one sitting: about 5–8 sections, mixing section types (flashcards, scenarios, sandboxes, quizzes), never walls of text.
-6. ${SHOW_CONCEPT}`
+6. ${SHOW_CONCEPT}
+7. ${TIME_USAGE_PLANNING_RULE}`
 
 /**
  * In a chat the topic plays right in the conversation, between messages, so a whole lesson at a time
@@ -99,7 +101,8 @@ ${PLAN_START}
 4. **Write a full lesson only when the learner asks for one** ("a full lesson", "the whole topic", "teach me everything about …", a course or a chapter): then follow the authoring guide's order, with an \`Intro\`, about 5–8 sections mixing types and a closing quiz. ${FULL_LESSON}
 5. ${TEACH_FIRST}
 6. Never walls of text: each section shows its idea, it does not lecture.
-7. ${SHOW_CONCEPT}`
+7. ${SHOW_CONCEPT}
+8. ${TIME_USAGE_PLANNING_RULE}`
 
 const TUTOR = `## While the learner works
 

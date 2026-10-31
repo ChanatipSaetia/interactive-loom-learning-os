@@ -1,3 +1,4 @@
+import { TIMELINE_AUTHORING_GUIDE } from './timeline-authoring'
 /**
  * LLM authoring prompt: everything an external LLM chat needs to write a
  * whole Loom topic that Loom Viewer and Loom Studio can open.
@@ -9,6 +10,7 @@
  */
 import { BULLET_AUTHORING_GUIDE } from './bullet-authoring'
 import { LAYER_AUTHORING_GUIDE } from './layer-authoring'
+import { TIME_USAGE_AUTHORING_GUIDE, timeUsageExamplesGuide } from './time-usage-authoring'
 import { standardOpenUISpec } from '../../sub-contexts/progressive-content/openui-standard'
 import { SVG_THEME_COLORS } from '../../sub-contexts/progressive-content/components/openui/svg-markup'
 import { LOOM_PAGES_URL } from './llm-guide'
@@ -112,6 +114,7 @@ const TABLE_CHART_COMPONENTS: Array<[name: string, use: string]> = [
   ['HorizontalBarChart', 'Like BarChart, for long category labels or a ranked list.'],
   ['LineChart', 'A value changing over time or along an ordered scale.'],
   ['AreaChart', 'Totals or volumes accumulating over time.'],
+  ['SingleStackedBarChart', 'Parts of one whole shown as a single horizontal bar; use percentages summing to 100% for a share.'],
   ['PieChart', 'Parts of one whole that add up to 100%; at most about six slices.'],
   ['RadarChart', 'Two or three items scored on the same set of criteria.'],
   ['ScatterChart', 'The relationship between two numeric variables.'],
@@ -159,7 +162,7 @@ How to write them:
 
 - Data is written as literal arrays, e.g. \`Col("Tea", ["Sencha", "Matcha"])\`. There is no \`data.rows\`, Query or \`@\` function call over fetched data.
 - Every Col of a Table, and every Series of a chart, has one value per row or label, in the same order.
-- Use real, specific figures; never invent numbers to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
+- Use source-backed figures for factual claims. Clearly label deliberate teaching examples as illustrative data; never invent measured figures to fill a chart. Put the unit in the Col header or the axis label, e.g. "Water (°C)".
 - Value axes start at 0, so values only a few percent apart look the same height. When the lesson is the difference, chart the difference (e.g. "°C below boiling", "ms over the baseline") and keep the absolute values in a Table.
 - Wrap a chart in a Card with a CardHeader for its title, and add a Callout for the takeaway. Put a chart and a table of the same data in Tabs only when the narrator does not need both: Present shows the first tab only.
 
@@ -414,5 +417,5 @@ export function getLoomAuthoringPrompt(): string {
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)
   prompt = dropStreamingNotes(prompt)
-  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${LAYOUTS}\n\n${DRAWINGS}\n\n${NARRATION}\n\n${BULLET_AUTHORING_GUIDE}\n\n${LAYER_AUTHORING_GUIDE}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
+  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${LAYOUTS}\n\n${DRAWINGS}\n\n${TIME_USAGE_AUTHORING_GUIDE}\n\n${timeUsageExamplesGuide()}\n\n${NARRATION}\n\n${BULLET_AUTHORING_GUIDE}\n\n${LAYER_AUTHORING_GUIDE}\n\n${TIMELINE_AUTHORING_GUIDE}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
 }
