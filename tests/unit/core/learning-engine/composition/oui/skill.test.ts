@@ -3,6 +3,12 @@ import { readFileSync } from 'fs'
 import { unzipSync } from 'fflate'
 import { describe, it, expect } from 'vitest'
 import * as yaml from 'js-yaml'
+import { getWriterSkillReferences } from '../../../../../../src/core/learning-engine/composition/oui/skill-references'
+import { getLoomAuthoringPrompt } from '../../../../../../src/core/learning-engine/composition/oui/authoring-prompt'
+import { BEAT_IDS } from '../../../../../../src/core/learning-engine/composition/oui/narration'
+import { SECTION_MENTAL_MODELS } from '../../../../../../src/core/learning-engine/composition/oui/mental-model-guide'
+// @ts-expect-error Node's path has no types in this project (same as fs above)
+import { posix } from 'path'
 import { getLoomSkill } from '../../../../../../src/core/learning-engine/composition/oui/skill'
 import { LOOM_SKILL_NAME, LOOM_SKILL_REFERENCE, LOOM_SKILL_ZIP_PATH, LOOM_TUTOR_APP_SKILL, LOOM_TUTOR_VIEWER_SKILL, skillZipPath } from '../../../../../../src/core/learning-engine/composition/oui/llm-guide'
 import { getTutorAppSkill, getTutorViewerSkill } from '../../../../../../src/core/learning-engine/composition/oui/tutor-skills'
@@ -11,10 +17,10 @@ import { ouiSchemaFiles, skillZipFiles } from '../../../../../../src/core/learni
 
 describe('Loom agent skill', () => {
   it('guides the authoring bot to choose meaningful icons and let content determine pages', () => {
-    expect(getLoomSkill()).toContain('Icons are independent')
-    expect(getLoomSkill()).toContain('Let Present measure and paginate')
-    expect(getLoomSkill()).toContain('**bold phrases**')
-    expect(getLoomSkill()).toContain('Bullet("Prepare **access**", null, "key")')
+    expect(getWriterSkillReferences()['references/sections/bullets.md']).toContain('Icons are independent')
+    expect(getWriterSkillReferences()['references/sections/bullets.md']).toContain('Let Present measure and paginate')
+    expect(getWriterSkillReferences()['references/sections/bullets.md']).toContain('**bold phrases**')
+    expect(getWriterSkillReferences()['references/sections/bullets.md']).toContain('Bullet("Prepare **access**", null, "key")')
   })
 
   it('has valid frontmatter for Claude Code and opencode', () => {
@@ -27,7 +33,7 @@ describe('Loom agent skill', () => {
   })
 
   it('writes topic folders, not a single .loom.oui file, by default', () => {
-    const skill = getLoomSkill()
+    const skill = getWriterSkillReferences()['references/workflow/output.md'] + getWriterSkillReferences()['references/workflow/validation.md']
     expect(skill).toContain('Always write a **topic folder**')
     expect(skill).toContain('public/content/<topic-id>/')
     expect(skill).toContain('write a single `<topic-id>.loom.oui` file only when the user asks for one file')
@@ -35,19 +41,55 @@ describe('Loom agent skill', () => {
     expect(skill).toContain('**Open folder**')
   })
 
-  it('ships the authoring prompt as its reference, published and in the repo', () => {
+  it('ships focused references in both distributions without the old full prompt', () => {
     const files = ouiSchemaFiles()
     for (const dir of [`public/llm/skills/${LOOM_SKILL_NAME}`, `.claude/skills/${LOOM_SKILL_NAME}`]) {
       expect(files[`${dir}/SKILL.md`]).toBe(getLoomSkill())
-      expect(files[`${dir}/${LOOM_SKILL_REFERENCE}`]).toBe(files['public/llm/loom-authoring-prompt.md'])
+      expect(files[`${dir}/${LOOM_SKILL_REFERENCE}`]).toBeUndefined()
+      for (const [path, text] of Object.entries(getWriterSkillReferences())) expect(files[`${dir}/${path}`]).toBe(text)
     }
-    expect(getLoomSkill()).toContain(LOOM_SKILL_REFERENCE)
+  })
+
+  it('keeps the entry point small and all local Markdown links resolvable in the package', () => {
+    const files = { 'SKILL.md': getLoomSkill(), ...getWriterSkillReferences() }
+    expect(new TextEncoder().encode(getLoomSkill()).length).toBeLessThan(8000)
+    expect(getLoomSkill()).not.toContain('Read `references/loom-authoring-prompt.md` in full')
+    for (const [file, text] of Object.entries(files)) {
+      const prose = text.replace(/```[\s\S]*?```|`[^`\n]*`/g, '')
+      for (const match of prose.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
+        const target = match[1].split('#')[0]
+        // The authoring rules demonstrate Markdown with [links](url).
+        if (!target || target === 'url' || /^(https?:|#)/.test(target)) continue
+        const resolved = posix.normalize(posix.join(posix.dirname(file), target))
+        expect(files[resolved as keyof typeof files], `${file} → ${target}`).toBeDefined()
+      }
+    }
+  })
+
+  it('preserves every canonical Loom signature and field description exactly once', () => {
+    const prompt = getLoomAuthoringPrompt().split('## Component Signatures')[1].split('## Hoisting')[0]
+    const references = Object.values(getWriterSkillReferences()).join('\n')
+    for (const line of prompt.split('\n').filter(line => /^[A-Z][A-Za-z0-9]*\(/.test(line) || line.startsWith('  - '))) {
+      // Identical field descriptions can belong to several different components.
+      expect(references.split('\n').filter(candidate => candidate === line).length, line)
+        .toBe(prompt.split('\n').filter(candidate => candidate === line).length)
+    }
+  })
+
+  it('routes every section to its own beat contract and keeps narration syntax shared', () => {
+    const files = getWriterSkillReferences()
+    for (const { type } of SECTION_MENTAL_MODELS) {
+      expect(files[`references/sections/${type}.md`]).toContain(BEAT_IDS[type])
+      expect(getLoomSkill()).toContain(`references/sections/${type}.md`)
+    }
+    expect(files['references/core/narration.md']).toContain('NarrationStep(beat:')
+    expect(files['references/core/narration.md']).not.toContain('| Section type | Beats |')
   })
 
   it('publishes a fresh zip with the skill folder at its root (npm run oui:schema)', () => {
     const zipped = unzipSync(readFileSync(`public/${LOOM_SKILL_ZIP_PATH}`))
     const expected = skillZipFiles()
-    expect(Object.keys(zipped).sort()).toEqual([`${LOOM_SKILL_NAME}/SKILL.md`, `${LOOM_SKILL_NAME}/${LOOM_SKILL_REFERENCE}`].sort())
+    expect(Object.keys(zipped).sort()).toEqual(Object.keys(expected).sort())
     for (const [name, text] of Object.entries(expected)) expect(new TextDecoder().decode(zipped[name]), name).toBe(text)
     expect(expected[`${LOOM_SKILL_NAME}/SKILL.md`]).toBe(getLoomSkill())
   })

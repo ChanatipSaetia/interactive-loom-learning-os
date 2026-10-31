@@ -59,6 +59,12 @@
     "TimelineGroup": {
       "$ref": "#/$defs/TimelineGroup"
     },
+    "BreakdownTree": {
+      "$ref": "#/$defs/BreakdownTree"
+    },
+    "BreakdownNode": {
+      "$ref": "#/$defs/BreakdownNode"
+    },
     "Flowchart": {
       "$ref": "#/$defs/Flowchart"
     },
@@ -248,6 +254,8 @@
     "TimelineLane",
     "TimelineActivity",
     "TimelineGroup",
+    "BreakdownTree",
+    "BreakdownNode",
     "Flowchart",
     "Actor",
     "System",
@@ -1080,6 +1088,104 @@
       ],
       "additionalProperties": false,
       "description": "Activities explained together on one presentation beat, including parallel work or a join."
+    },
+    "BreakdownTree": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BreakdownNode"
+          },
+          "description": "All nodes, with one root and parent IDs linking every other node to it."
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "quantity",
+            "probability"
+          ],
+          "description": "Optional \"quantity\" (default): children sum to their parent; \"probability\": each sibling set sums to 1 and path probabilities multiply."
+        },
+        "unit": {
+          "type": "string",
+          "description": "One unit for all quantities, such as USD, grams or requests; leave empty in probability mode."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional context, source and assumptions; label constructed figures as illustrative."
+        },
+        "takeaway": {
+          "type": "string",
+          "description": "Optional conclusion shown on the final summary beat."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "nodes"
+      ],
+      "additionalProperties": false,
+      "description": "A whole divided into measurable parts: costs, counts, time allocation or conditional probability. Calculates each part’s share of its parent and the whole, validates totals, and explains one split per presentation beat."
+    },
+    "BreakdownNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Node ID, unique within this tree."
+        },
+        "title": {
+          "type": "string",
+          "description": "Short name for this part."
+        },
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Quantity in the shared unit, or a conditional probability from 0 to 1 in probability mode; root probability is 1."
+        },
+        "parent": {
+          "type": "string",
+          "description": "Optional parent node ID; exactly one node omits parent and becomes the root."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional explanation for Read details and narration."
+        },
+        "color": {
+          "type": "string",
+          "enum": [
+            "blue",
+            "teal",
+            "green",
+            "mauve",
+            "peach",
+            "sky",
+            "yellow",
+            "pink",
+            "lavender"
+          ],
+          "description": "Optional theme accent for the node; descendants inherit their parent accent unless overridden."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "value"
+      ],
+      "additionalProperties": false,
+      "description": "A named part of a measurable whole; parent IDs define the hierarchy."
     },
     "Flowchart": {
       "type": "object",

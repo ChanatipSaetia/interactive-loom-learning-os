@@ -1,0 +1,39 @@
+.breakdown-section { display:flex; flex-direction:column; gap:14px; color:var(--foreground); }
+.breakdown-description,.breakdown-legend,.breakdown-hint { margin:0; color:var(--muted-foreground); line-height:1.5; }
+.breakdown-legend,.breakdown-hint { font-size:14px; }
+.breakdown-scroll { overflow-x:auto; padding:5px; }
+.breakdown-diagram { width:100%; min-width:var(--breakdown-board-width); display:block; overflow:visible; font-family:var(--font-ui); }
+.breakdown-node { box-sizing:border-box; width:100%; height:100%; padding:12px 16px; display:flex; flex-direction:column; gap:5px; background:var(--ctp-base); border:1px solid color-mix(in srgb,var(--breakdown-accent) 35%,var(--border)); border-left:4px solid var(--breakdown-accent); border-radius:var(--radius-md); color:var(--foreground); }
+.breakdown-node[role=button] { cursor:pointer; }
+.breakdown-node.is-active,.breakdown-node:focus-visible { border-color:var(--breakdown-accent); background:color-mix(in srgb,var(--breakdown-accent) 6%,var(--ctp-base)); outline:none; }
+.breakdown-node-name { font-size:21px; font-weight:400; line-height:1.2; overflow-wrap:anywhere; }
+.breakdown-node-value { font-size:27px; font-weight:500; line-height:1.2; }
+.breakdown-node-share { margin-top:auto; font-size:16px; color:var(--muted-foreground); }
+.breakdown-share-track { height:4px; background:var(--border); border-radius:var(--radius-full); overflow:hidden; }
+.breakdown-share-track > span { display:block; height:100%; background:var(--breakdown-accent); }
+.breakdown-link path { fill:none; stroke:var(--ctp-overlay0); stroke-width:1.5; }
+.breakdown-link rect { fill:var(--ctp-base); stroke:var(--border); stroke-width:1; }
+.breakdown-link text { font:400 17px var(--font-ui); fill:var(--foreground); }
+.breakdown-details { padding:16px 20px; border:1px solid var(--border); background:var(--card); border-radius:var(--radius-md); }
+.breakdown-details h3 { margin:12px 0 6px; font-size:19px; font-weight:500; }
+.breakdown-details p { margin:6px 0; }
+.breakdown-details button { padding:2px 5px; color:var(--primary); font:inherit; border:0; background:transparent; text-decoration:underline; }
+.breakdown-calculation { color:var(--primary); }
+.breakdown-takeaway { margin:0; padding:12px 16px; border-left:3px solid var(--ctp-blue); background:color-mix(in srgb,var(--ctp-blue) 7%,transparent); border-radius:var(--radius-sm); }
+.present-region .present-breakdown { width:100%; flex:1; min-height:0; gap:12px; }
+.breakdown-context { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; color:var(--muted-foreground); font:400 14px/1.4 var(--font-ui); }
+.breakdown-breadcrumb { flex:none; margin:0; color:var(--muted-foreground); font:400 var(--present-fs-small)/1.3 var(--font-ui); }
+.present-breakdown .breakdown-diagram-frame { flex:1; min-height:0; }
+.present-breakdown .breakdown-scroll { width:100%; height:100%; min-height:0; box-sizing:border-box; overflow:visible; }
+.present-breakdown .breakdown-diagram { min-width:0; height:100%; }
+.breakdown-scene-caption { flex:none; padding:12px 18px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--card); }
+.breakdown-scene-caption h3 { margin:0; font:500 var(--present-fs-card)/1.3 var(--font-ui); }
+.breakdown-scene-caption p { margin:6px 0 0; font:400 calc(var(--present-fs-card) - 2px)/1.45 var(--font-ui); }
+.breakdown-scene-caption p:first-child { margin-top:0; }
+.present-region .breakdown-node.present-narr-hl,.present-region .breakdown-node.present-focus { outline:none; box-shadow:none; filter:none; animation:none; border-color:var(--breakdown-accent); background:color-mix(in srgb,var(--breakdown-accent) 12%,var(--ctp-base)); }
+.breakdown-form { display:flex; flex-direction:column; gap:12px; }
+.breakdown-form-card { border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px; display:flex; flex-direction:column; gap:10px; }
+.breakdown-form-card legend { color:var(--muted-foreground); font-size:12px; }
+.breakdown-form-actions { display:flex; gap:8px; }
+.breakdown-form button { align-self:flex-start; padding:5px 10px; border:1px solid var(--border); background:var(--card); color:var(--foreground); border-radius:var(--radius-sm); }
+.breakdown-form button:disabled { opacity:.45; }

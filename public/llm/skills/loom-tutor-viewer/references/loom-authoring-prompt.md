@@ -29,6 +29,67 @@ Answer in the format the user asks for. If they do not say, use the single .oui 
 
 The user opens the result in Loom Viewer (https://chanatipsaetia.github.io/interactive-loom-learning-os/viewer.html) or imports it into Loom Studio. Outside the code block(s), say nothing or at most one short sentence.
 
+## Start Here: Mental Model and Section Selection
+
+Use this table as the agent's table of contents before planning or writing a topic. Identify what the learner should be able to define, picture, compare, explain or do; then select the section that teaches that mental model. Each row names a supported section type to request from the authoring guide. Read its exact component signatures before writing.
+
+| Mental model / learning goal | Section type | Learner question and selection cue |
+|---|---|---|
+| Orientation, purpose and roadmap | `intro` | What will I learn, why does it matter, and where are we going? |
+| Definitions, meaning, vocabulary and recall | `flashcards` | What does this term or concept mean? Teach its meaning on the back of a card, then use it for recall; flashcards introduce concepts as well as practise them. |
+| Connected explanation and narrative | `text` | Why does this happen, or how should I understand the explanation? Use for connected prose, reasoning or context beyond a concise definition. |
+| Key points, supporting details and checklists | `bullets` | What are the important points, requirements or supporting subpoints? |
+| Visual recognition and concrete references | `image-gallery` | What does it look like? Compare examples, textures, objects or screenshots. |
+| Classification and distinctions | `taxonomy-browser` | What kinds exist, what defines them, and how do I recognise their differences? |
+| Relationships between concepts | `concept-map` | How do ideas connect, depend on, support or differ from each other? Label the relationship explicitly. |
+| Layered dependency and foundation | `pillar-layer` | What builds on or is supported by what? Examples include network layers or cloud foundation → agent runtime → application. |
+| Process, responsibility and interaction | `flowchart` | What happens, what triggers it, who handles it, and how do participants interact? Choose the view from the table below. |
+| Measured time, duration, overlap and waiting | `timeline` | When does each task start and finish, what runs together, and what must wait? |
+| Parts of a measurable whole and conditional probability | `breakdown-tree` | How does a total divide through a hierarchy? Use quantity mode for costs/counts and probability mode for conditional branches and path probabilities. |
+| Presenting options, comparing alternatives and trade-offs | `tradeoff-sandbox` | What are my options, how do they compare, and when should I choose each? Show strengths, limitations, gains, costs and suitability; a recommendation can explain why an option fits. Use this for option comparison even without formal mathematical optimisation. |
+| Input–output relationships and sensitivity | `formula-sandbox` | How does changing an input change a calculated result? Let the learner vary inputs to an authored formula. |
+| Rule-based diagnosis and selection | `decision-tree` | Which option fits my situation after answering a sequence of questions? |
+| Consequences across decisions | `scenario` | What happens if I choose this, then make another decision? Explore authored paths and outcomes. |
+| Checking understanding and applying knowledge | `quiz` | Can I answer or apply what has already been taught? |
+| Reconstructing order and procedure | `reflection-sequence` | Can I arrange the supplied steps into the correct sequence? |
+| Structured reasoning and explanation | `reflection-template` | Can I complete a sound explanation using the supplied concepts and sentence blanks? |
+| Composed visual explanation, comparison and data | `openui` | Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below. |
+
+### Choosing views within a Flowchart
+
+| View | Mental model it teaches |
+|---|---|
+| Event Storming | Event → policy → command → system → resulting event; explain triggers and rules. |
+| System Architecture | Components, their responsibilities and their connections. |
+| Swimlanes | Ownership and handoffs between participants. |
+| Sequence | Who sends what to whom, and in what order; vertical spacing is not measured duration. |
+| Data Flow | What information moves between components. |
+| State Machine | How events change the state of something. |
+
+### Choosing an OpenUI visual
+
+| Mental model / learning goal | Visual |
+|---|---|
+| Compare amounts or rank categories | BarChart / HorizontalBarChart |
+| Follow a measurement over time | LineChart |
+| Show an amount developing over time | AreaChart; use cumulative data when teaching accumulation |
+| Show flat shares of one whole | PieChart / donut variant / SingleStackedBarChart |
+| Compare used and remaining capacity | Stacked HorizontalBarChart |
+| Examine two numeric variables | ScatterChart; an association alone does not establish causation |
+| Compare profiles across comparable criteria | RadarChart |
+| Look up or compare factual attributes | Table |
+| Explain spatial structure, anatomy, a mechanism or a concrete analogy | Labelled Svg drawing |
+| Explain a straightforward procedure | Steps |
+
+### Applying the selection
+
+- Flashcards can define and introduce a concept before the learner has memorised it. Put the term or question on the front and a concise meaning on the back; use examples or dialogue when helpful. They are a teaching format as well as a recall activity. Use Text or OpenUI when a longer connected explanation is needed.
+- Tradeoff Sandbox also presents choices and compares alternatives. Choose it when the learner needs to evaluate options, their strengths and weaknesses, or suitability for a situation. A simple factual lookup matrix can use an OpenUI Table; input-driven calculations belong in Formula Sandbox.
+- Keep the distinctions explicit: Taxonomy classifies; Breakdown Tree divides a measurable whole. Pillar Layer shows foundations; Flowchart shows process. Sequence shows interaction order; Timeline shows measured time. Decision Tree selects by rules; Scenario explores consequences.
+- Select only the sections that help this topic. This is a catalogue of teaching choices, not a mandatory lesson sequence or a requirement to include every type. A focused explanation may use one strong section; a fuller topic can introduce meanings, show relationships or a mechanism, compare options, then practise applying the idea.
+- Read and Present deliver the same mental model. Read supports inspection and learner interaction; Present guides attention with narration and focus. Use each section's documented beats and view controls. In Present, quiz and reflection answers can be demonstrated by the stage; they are learner practice in the interactive Read mode.
+
+
 ## Syntax Rules
 
 1. Each statement is on its own line: `identifier = Expression`
@@ -166,6 +227,22 @@ TimelineGroup(id: string, title: string, activities: (string | TimelineActivity)
   - title: Short stage name shown in Present.
   - activities: Activities to highlight together, as references or IDs; include parallel activities in one group.
   - description: Optional explanation of what this stage means.
+BreakdownTree(title: string, nodes: BreakdownNode[], mode?: "quantity" | "probability", unit?: string, description?: string, takeaway?: string, heading?: string, lead?: Lead) — A whole divided into measurable parts: costs, counts, time allocation or conditional probability. Calculates each part’s share of its parent and the whole, validates totals, and explains one split per presentation beat.
+  - title: Section title, shown in the topic outline and as the section header.
+  - nodes: All nodes, with one root and parent IDs linking every other node to it.
+  - mode: Optional "quantity" (default): children sum to their parent; "probability": each sibling set sums to 1 and path probabilities multiply.
+  - unit: One unit for all quantities, such as USD, grams or requests; leave empty in probability mode.
+  - description: Optional context, source and assumptions; label constructed figures as illustrative.
+  - takeaway: Optional conclusion shown on the final summary beat.
+  - heading: Optional sub-heading shown under the section title.
+  - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
+BreakdownNode(id: string, title: string, value: number, parent?: string, description?: string, color?: "blue" | "teal" | "green" | "mauve" | "peach" | "sky" | "yellow" | "pink" | "lavender") — A named part of a measurable whole; parent IDs define the hierarchy.
+  - id: Node ID, unique within this tree.
+  - title: Short name for this part.
+  - value: Quantity in the shared unit, or a conditional probability from 0 to 1 in probability mode; root probability is 1.
+  - parent: Optional parent node ID; exactly one node omits parent and becomes the root.
+  - description: Optional explanation for Read details and narration.
+  - color: Optional theme accent for the node; descendants inherit their parent accent unless overridden.
 
 ### Process Simulation
 Flowchart(title: string, actors: Actor[], systems: System[], steps: (Step | Branch)[], journeys: Journey[], heading?: string, lead?: Lead, initialView?: "event-storming" | "architecture" | "swimlanes" | "sequence" | "data-flow" | "state-machine") — Animated Event Storming flowchart. Every actor and system must be used by at least one step.
@@ -719,7 +796,7 @@ why = NarrationStep("part3", "So two leaves and a bud is a recipe for flavour.",
 
 ## Time and Usage Visuals
 
-- Proactively visualize time and quantities when they are central to the explanation; do not wait for the learner to request a chart. Use Timeline for measured start times, duration, parallel work and waiting; a custom Svg can show a qualitative event timeline, LineChart for change over time, HorizontalBarChart for comparing amounts, PieChart or SingleStackedBarChart for shares of one whole, and stacked bars for used versus remaining capacity. Request the timeline guide for measured timelines, and the openui guide for charts and custom Svg. Use source-backed figures for factual claims; clearly label intentional teaching examples as illustrative data. In Present, keep the whole visual visible while several narration steps highlight its phases, points, bars or slices, then explain the takeaway.
+- Proactively visualize time and quantities when they are central to the explanation; do not wait for the learner to request a chart. Use Timeline for measured start times, duration, parallel work and waiting; a custom Svg can show a qualitative event timeline, LineChart for change over time, HorizontalBarChart for comparing amounts, PieChart or SingleStackedBarChart for a flat share of one whole, BreakdownTree for a hierarchy of quantities or conditional probabilities, and stacked bars for used versus remaining capacity. Request the timeline guide for measured timelines, the breakdown-tree guide for hierarchical shares, and the openui guide for charts and custom Svg. Use source-backed figures for factual claims; clearly label intentional teaching examples as illustrative data. In Present, keep the whole visual visible while several narration steps highlight its phases, points, bars or slices, then explain the takeaway.
 - During planning, look for claims such as “before/after”, “takes longer”, “grows over time”, “used more”, “most of the total”, or “nearly full”. Choose the visual that lets the learner see that relationship. Do not leave the central relationship buried in bullets or a table. Use these visuals when they teach the idea; do not add a chart quota to every topic.
 
 | Learner's question | Visual | What it encodes |
@@ -895,6 +972,7 @@ Beat IDs by section type (n counts from 1; every type but `intro` starts with `t
 | `intro` | `title` (when it has a title or tagline), `what`, `why`, `roadmap` (when it has a roadmap) |
 | `text` | `p1`, `p2`, … for each paragraph; long prose continues as `p1.part2`, `p1.part3`, … in short scenes, preserving Markdown constructs |
 | `bullets` | `item1`, `item2`, … one per top-level bullet; nested points get their own beats in depth-first order, progressively revealed on pages measured to fit (parents stay visible): `item1.child1`, `item1.child1.child1`, `item1.child2`, … |
+| `breakdown-tree` | `overview`, `split1`, `split2`, … (one per non-leaf node in depth-first authored order), `summary` |
 | `timeline` | `overview` (whole timeline), `group1`, `group2`, … (authored groups or activities sharing a start time), `summary` (whole timeline and takeaway) |
 | `pillar-layer` | `layerN` … `layer1` (foundation first; N is the authored top-to-bottom layer index); extra peer groups use `layerN.group2`, `layerN.group3`, …; then `overview` |
 | `image-gallery` | `image1`, `image2`, … one per image |
@@ -1030,6 +1108,70 @@ root = Narration([
   NarrationStep("group2", "The database finishes at one hundred milliseconds. Search continues until one hundred seventy milliseconds.", [Highlight("documents")]),
   NarrationStep("group3", "Both arrows lead to Compose. It waits for the later dependency, then takes thirty milliseconds to finish at two hundred.", [Highlight("compose")]),
   NarrationStep("summary", "Total elapsed time is twenty plus the longer parallel task of one hundred fifty, plus thirty: two hundred milliseconds, rather than two hundred eighty sequentially.")
+])
+```
+
+## Breakdown Trees
+
+Use `BreakdownTree` to divide a measurable whole into a hierarchy: meal cost → dishes → ingredients, calories → meals → foods, spending → categories → expenses, populations → subgroups, or conditional outcomes. Choose Taxonomy for classification without quantities, DecisionTree for recommendations, Timeline for execution duration and overlap, and BreakdownTree for parts of a whole. Time allocation can be a breakdown when the parts sum to a budget; overlapping execution durations do not form such a partition.
+
+- `BreakdownTree(title, nodes, mode?, unit?, description?, takeaway?, heading?, lead?)` takes `BreakdownNode(id, title, value, parent?, description?, color?)` entries. Exactly one node omits parent; every other node names a parent ID. IDs must be unique, all nodes must connect to the root, and cycles are invalid.
+- Default `quantity` mode uses one unit for all nodes (USD, grams, requests, minutes, …). Every non-leaf node's children must sum to its value. Children must be mutually exclusive and exhaustive; do not double count categories or mix units. Author an Other category explicitly if the source has a remainder. Cards show absolute quantities and share of the total; branches show share of their parent. Zero totals display an undefined share rather than dividing by zero.
+- `probability` mode uses conditional fractions from 0 to 1, leaves unit empty, and sets root value to 1. Each complete sibling set sums to 1. Branches show conditional probability; cards show overall probability, computed by multiplying along the path. This is the conditional-probability chain rule; do not claim the stages are independent. Use quantity mode for actual observed counts and their derived shares.
+- Use short names, meaningful inherited branch colors, source-backed figures and one clear takeaway. Label deliberately constructed teaching examples as illustrative data. Descriptions explain denominators and assumptions; do not copy long paragraphs into node titles.
+- Present beats: `title`, `overview`, `split1`, `split2`, …, `summary`. Split beats visit non-leaf nodes in depth-first authored child order. Overview and summary show the complete tree; each split enlarges its parent and immediate children, with an ancestry breadcrumb and the whole's value retained. The overall denominator always stays the original root, even in a focused subtree. Multiple narration steps can explain one split. Highlight named nodes; narrate the difference between share of parent and share of the whole.
+- In Read, learners can select a node by click or keyboard to inspect its ancestry, description, percentages and probability calculation. Changing the hierarchy changes split beats, so update the narration too.
+
+Cooking-cost section:
+
+```
+root = BreakdownTree("Where does the meal budget go?", [meal, main, side, protein, vegetables, rice, other], "quantity", "USD", "Illustrative cost of one meal. All values use the same currency.", "Protein costs 8 USD: 66.7% of the main dish, but 40% of the whole meal.")
+meal = BreakdownNode("meal", "Whole meal", 20, null, "The total budget for the main dish and side dish.", "blue")
+main = BreakdownNode("main", "Main dish", 12, "meal", "The main dish accounts for 60% of the meal cost.", "teal")
+side = BreakdownNode("side", "Side dish", 8, "meal", "The side dish accounts for 40% of the meal cost.", "peach")
+protein = BreakdownNode("protein", "Protein", 8, "main", "8 of the main dish's 12 dollars, and 8 of the meal's 20 dollars.")
+vegetables = BreakdownNode("vegetables", "Vegetables", 4, "main", "The rest of the main dish costs 4 dollars.")
+rice = BreakdownNode("rice", "Rice", 3, "side", "Rice accounts for 15% of the whole meal cost.")
+other = BreakdownNode("other", "Other ingredients", 5, "side", "The remaining side-dish ingredients account for 25% of the whole meal cost.")
+```
+
+Matching narration:
+
+```
+root = Narration([
+  NarrationStep("title", "A meal budget can be divided into dishes, then ingredients. These costs are illustrative."),
+  NarrationStep("overview", "Start with the whole twenty-dollar meal. Branch percentages refer to the parent; card percentages refer to the entire meal."),
+  NarrationStep("split1", "Twelve dollars goes to the main dish and eight to the side: sixty and forty percent of the total.", [Highlight("main"), Highlight("side")]),
+  NarrationStep("split2", "The main dish's twelve dollars divides into eight for protein and four for vegetables.", [Highlight("protein"), Highlight("vegetables")]),
+  NarrationStep("split2", "Protein is two thirds of the main dish, but forty percent of the whole meal. The denominator changes the percentage.", [Highlight("protein")]),
+  NarrationStep("split3", "The side's eight dollars divides into three for rice and five for other ingredients.", [Highlight("rice"), Highlight("other")]),
+  NarrationStep("summary", "Always name the whole you are comparing with: eight dollars can be sixty-six point seven percent of a dish and forty percent of a meal.")
+])
+```
+
+Conditional-probability section:
+
+```
+root = BreakdownTree("Request outcome probabilities", [requests, cached, uncached, cachedSuccess, cachedFailure, uncachedSuccess, uncachedFailure], "probability", null, "Illustrative conditional probabilities; cached and uncached requests form a complete partition.", "A cached failure has probability 60% × 1% = 0.6% of all requests.")
+requests = BreakdownNode("requests", "All requests", 1)
+cached = BreakdownNode("cached", "Cached", 0.6, "requests", "60% of requests use the cache.", "teal")
+uncached = BreakdownNode("uncached", "Uncached", 0.4, "requests", "40% of requests do not use the cache.", "mauve")
+cachedSuccess = BreakdownNode("cachedSuccess", "Success", 0.99, "cached", "99% conditional on cached; 59.4% of all requests.")
+cachedFailure = BreakdownNode("cachedFailure", "Failure", 0.01, "cached", "1% conditional on cached; 0.6% of all requests.")
+uncachedSuccess = BreakdownNode("uncachedSuccess", "Success", 0.95, "uncached", "95% conditional on uncached; 38% of all requests.")
+uncachedFailure = BreakdownNode("uncachedFailure", "Failure", 0.05, "uncached", "5% conditional on uncached; 2% of all requests.")
+```
+
+Matching narration:
+
+```
+root = Narration([
+  NarrationStep("title", "A probability tree separates conditional chances from overall outcomes. These figures are illustrative."),
+  NarrationStep("overview", "Branch labels show conditional probabilities; cards show the probability of reaching each node from the root."),
+  NarrationStep("split1", "Sixty percent of requests are cached, and forty percent are uncached.", [Highlight("cached"), Highlight("uncached")]),
+  NarrationStep("split2", "Within cached requests, one percent fail. Multiplying sixty percent by one percent gives zero point six percent of all requests.", [Highlight("cachedFailure")]),
+  NarrationStep("split3", "Within uncached requests, five percent fail. Forty percent times five percent is two percent overall.", [Highlight("uncachedFailure")]),
+  NarrationStep("summary", "Path probabilities multiply conditional chances. A branch percentage alone does not describe its share of all requests.")
 ])
 ```
 

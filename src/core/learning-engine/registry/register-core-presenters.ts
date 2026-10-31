@@ -8,6 +8,7 @@ import {
   openuiPresenter,
   pillarLayerPresenter,
   timelinePresenter,
+  breakdownTreePresenter,
   taxonomyPresenter,
   textPresenter,
 } from '../sub-contexts/progressive-content/present'
@@ -23,6 +24,7 @@ const loose = <D>(presenter: SectionPresenter<D>) => presenter as unknown as Any
 export const CORE_PRESENTERS: Record<string, AnyPresenter> = {
   intro: loose(introPresenter),
   timeline: loose(timelinePresenter),
+  'breakdown-tree': loose(breakdownTreePresenter),
   text: loose(textPresenter),
   bullets: loose(bulletsPresenter),
   openui: loose(openuiPresenter),

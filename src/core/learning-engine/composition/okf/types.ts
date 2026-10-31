@@ -30,6 +30,7 @@ import type {
   ImageGallerySectionData,
   PillarLayerSectionData,
   TimelineSectionData,
+  BreakdownTreeSectionData,
   IntroRoadmapStep,
   GalleryItem,
 } from '../../sub-contexts/progressive-content'
@@ -91,6 +92,7 @@ export type OKFSectionData =
   | ReflectionTemplateSectionData
   | PillarLayerSectionData
   | TimelineSectionData
+  | BreakdownTreeSectionData
 
 export type OKFIntroSectionData = IntroSectionData
 export type OKFTextSectionData = TextSectionData

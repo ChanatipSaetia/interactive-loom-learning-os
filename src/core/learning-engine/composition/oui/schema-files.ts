@@ -18,6 +18,7 @@ import {
   skillZipPath,
 } from './llm-guide'
 import { getLoomSkill } from './skill'
+import { getWriterSkillReferences } from './skill-references'
 import { getTutorAppSkill, getTutorViewerSkill } from './tutor-skills'
 import { getLoomOUIJSONSchema } from './library'
 
@@ -34,7 +35,7 @@ function llmsTxt(): string {
 
 - [Loom authoring prompt](${LOOM_PAGES_URL}${PROMPT_PATH}): system prompt for writing a topic: layout, output formats, every component and prop, rules and an example.
 - [Loom OpenUI JSON Schema](${LOOM_PAGES_URL}${SCHEMA_PATH}): JSON Schema of every component's props, with descriptions.
-- [Loom agent skill](${LOOM_PAGES_URL}${LOOM_SKILL_PATH}/SKILL.md): \`${LOOM_SKILL_NAME}\` skill for the Claude app and coding agents (Claude Code, opencode, …); its reference \`${LOOM_SKILL_REFERENCE}\` is the authoring prompt. Also as a [zip](${LOOM_PAGES_URL}${LOOM_SKILL_ZIP_PATH}) for uploading to the Claude app.
+- [Loom agent skill](${LOOM_PAGES_URL}${LOOM_SKILL_PATH}/SKILL.md): \`${LOOM_SKILL_NAME}\` skill for the Claude app and coding agents (Claude Code, opencode, …); its \`references/\` folder contains focused core, planning, section and visual guides. Also as a [zip](${LOOM_PAGES_URL}${LOOM_SKILL_ZIP_PATH}) for uploading to the Claude app.
 
 ## Learning
 
@@ -56,13 +57,13 @@ function llmsTxt(): string {
 
 /**
  * A skill folder's files, keyed by path inside the folder. The writer and the
- * Viewer tutor carry the authoring prompt; the app tutor gets it from the
+ * Viewer tutor carry authoring guidance (focused references for the writer); the app tutor gets it from the
  * Loom MCP server (decision 202).
  */
 function skillFiles(name: string, prompt: string): Record<string, string> {
   if (name === LOOM_TUTOR_APP_SKILL) return { 'SKILL.md': getTutorAppSkill() }
   if (name === LOOM_TUTOR_VIEWER_SKILL) return { 'SKILL.md': getTutorViewerSkill(), [LOOM_SKILL_REFERENCE]: prompt }
-  return { 'SKILL.md': getLoomSkill(), [LOOM_SKILL_REFERENCE]: prompt }
+  return { 'SKILL.md': getLoomSkill(), ...getWriterSkillReferences() }
 }
 
 /**

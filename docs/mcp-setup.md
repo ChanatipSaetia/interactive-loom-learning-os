@@ -290,7 +290,7 @@ With the connector, you need no skill: the server tells every chat to read `get_
   npx skills update -g
   ```
 
-- **ChatGPT, Microsoft 365 Copilot and others:** paste the skill's `SKILL.md` (served at `/llm/skills/<name>/SKILL.md`) as the instructions of a custom GPT, project or agent.
+- **ChatGPT, Microsoft 365 Copilot and others:** attach the skill's reference files as accessible knowledge as well as its entry point; `loom-topic-writer/SKILL.md` routes to focused references rather than containing the whole specification. Then paste the skill's `SKILL.md` (served at `/llm/skills/<name>/SKILL.md`) as the instructions of a custom GPT, project or agent.
 
 ## Using it
 

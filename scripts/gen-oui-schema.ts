@@ -7,7 +7,7 @@
  *   public/llm/loom-authoring-prompt.md  system prompt for writing a topic (.loom.oui file or folder)
  *   public/llm/loom-oui.schema.json      JSON Schema of every component's props
  *   public/llms.txt                      llms.txt index linking the two
- *   public/llm/skills/loom-topic-writer/ agent skill (SKILL.md + the prompt as a reference), also
+ *   public/llm/skills/loom-topic-writer/ agent skill (short SKILL.md + focused reference folders), also
  *                                        kept in .claude/skills/ (where `npx skills add` finds it)
  *   public/llm/skills/loom-topic-writer.zip  the skill folder zipped, for uploading to the Claude app
  *   public/llm/skills/loom-tutor-app/, loom-tutor-viewer/ (and their zips)  the learner skills, also in .claude/skills/
@@ -24,13 +24,27 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { strToU8, unzipSync, zipSync } from 'fflate'
-import { LOOM_SKILL_NAMES, skillZipPath } from '../src/core/learning-engine/composition/oui/llm-guide'
+import { LOOM_SKILL_NAME, LOOM_SKILL_NAMES, LOOM_SKILL_REFERENCE, skillZipPath } from '../src/core/learning-engine/composition/oui/llm-guide'
 import { ouiSchemaFiles, skillZipFiles } from '../src/core/learning-engine/composition/oui/schema-files'
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 const check = process.argv.includes('--check')
 let stale = false
+// Retire the writer's old monolithic reference. The Viewer tutor still uses
+// its own full prompt, so remove only these two known generated files.
+for (const dir of ['public/llm/skills', '.claude/skills']) {
+  const relative = `${dir}/${LOOM_SKILL_NAME}/${LOOM_SKILL_REFERENCE}`
+  const file = path.join(ROOT, relative)
+  if (!fs.existsSync(file)) continue
+  if (check) {
+    console.error(`obsolete: ${relative}`)
+    stale = true
+  } else {
+    fs.unlinkSync(file)
+    console.log(`removed ${relative}`)
+  }
+}
 for (const [relative, text] of Object.entries(ouiSchemaFiles())) {
   const file = path.join(ROOT, relative)
   if (check) {

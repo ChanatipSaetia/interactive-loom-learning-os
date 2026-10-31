@@ -13,10 +13,10 @@ export const LOOM_REPO = 'ChanatipSaetia/interactive-loom-learning-os'
 
 /** Published authoring prompt, relative to the app base. */
 export const LOOM_PROMPT_PATH = 'llm/loom-authoring-prompt.md'
-/** File name of the prompt (also the skill's reference). */
+/** File name of the full prompt (also bundled by the Viewer tutor). */
 export const LOOM_PROMPT_FILE_NAME = 'loom-authoring-prompt.md'
 
-/** Agent skill (Claude app, Claude Code, opencode, …): `<name>/SKILL.md` plus the prompt as a reference. */
+/** Agent skills: entry points plus bundled references (focused folders for the topic writer). */
 export const LOOM_SKILL_NAME = 'loom-topic-writer'
 /** Published skill folder, relative to the app base. */
 export const LOOM_SKILL_PATH = `llm/skills/${LOOM_SKILL_NAME}`

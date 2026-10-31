@@ -1,3 +1,4 @@
+import { validateBreakdownTree, type BreakdownTreeSectionData } from './breakdown-tree'
 import { validateTimeline, type TimelineSectionData } from './timeline'
 import type { ValidationDiagnostic, ValidationContext } from '../../validation/types'
 import { getBlockOccupiedCells } from './schema'
@@ -34,6 +35,8 @@ export function validateProgressiveContentTier3(
   ctx?: ValidationContext
 ): ValidationDiagnostic[] {
   const diagnostics: ValidationDiagnostic[] = []
+
+  if (sectionType === 'breakdown-tree') return validateBreakdownTree(payload as BreakdownTreeSectionData).map((d) => ({ ...d, file: ctx?.file }))
 
   if (sectionType === 'timeline') return validateTimeline(payload as TimelineSectionData).map((d) => ({ ...d, file: ctx?.file }))
 
