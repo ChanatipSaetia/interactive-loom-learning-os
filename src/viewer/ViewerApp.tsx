@@ -401,9 +401,22 @@ export function ViewerApp() {
   }, [topic])
   const pickAssistant = pickBridgeOf(assistant)
 
+  const domainTitle = shelf?.library.domains.find((d) => d.prefix === shelf.from)?.title ?? 'Domain'
+  const modeControls = topic && presentSections.length > 0 && (
+    <div className="viewer-mode" role="group" aria-label="Viewer mode" data-testid="viewer-mode">
+      <button type="button" aria-pressed={!presenting} onClick={() => presenting && exitPresent(presentAt.current.sectionIndex)} data-closes-menu data-testid="viewer-mode-read">
+        <BookOpen size={14} /> <span className="viewer-pill-label">Read</span>
+      </button>
+      <button type="button" aria-pressed={presenting} onClick={() => !presenting && startPresent()} data-closes-menu data-testid="viewer-mode-present">
+        <Play size={14} /> <span className="viewer-pill-label">Present</span>
+      </button>
+    </div>
+  )
+
   // In the bar on wide screens, in the ⋯ menu on narrower ones
   const secondary = (
     <>
+      {compact && modeControls}
       {compact && <LoomToolsNav current="viewer" />}
       {loaded && (
         <button
@@ -441,14 +454,14 @@ export function ViewerApp() {
 
   return (
     <UISystemProvider>
-      <div className="app-layout viewer">
+      <div className={`app-layout viewer${topic && !presenting ? ' viewer-has-ai-bar' : ''}`}>
         <header className="topnav">
           <button type="button" className="topnav-title viewer-brand" onClick={() => setLoaded(null)} title="Open another topic">
             <Sparkles size={16} /> <span className="viewer-brand-label">Loom&nbsp;Viewer</span>
           </button>
           {loaded && shelf?.from !== undefined && (
-            <button type="button" className="viewer-pill" onClick={() => { setLoaded(null); void rereadShelf() }} title="Back to the domain" data-testid="viewer-back-to-domain">
-              <ArrowLeft size={14} /> <span className="viewer-pill-label">{shelf.library.domains.find((d) => d.prefix === shelf.from)?.title ?? 'Domain'}</span>
+            <button type="button" className="viewer-pill viewer-domain-back" onClick={() => { setLoaded(null); void rereadShelf() }} title={domainTitle} aria-label={`Back to domain: ${domainTitle}`} data-testid="viewer-back-to-domain">
+              <ArrowLeft size={14} /> <span className="viewer-domain-title">{domainTitle}</span>
             </button>
           )}
           {loaded && (
@@ -479,16 +492,7 @@ export function ViewerApp() {
               </span>
             )}
             {!compact && <LoomToolsNav current="viewer" />}
-            {topic && presentSections.length > 0 && (
-              <div className="viewer-mode" role="group" aria-label="Viewer mode" data-testid="viewer-mode">
-                <button type="button" aria-pressed={!presenting} onClick={() => presenting && exitPresent(presentAt.current.sectionIndex)} data-testid="viewer-mode-read">
-                  <BookOpen size={14} /> <span className="viewer-pill-label">Read</span>
-                </button>
-                <button type="button" aria-pressed={presenting} onClick={() => !presenting && startPresent()} data-testid="viewer-mode-present">
-                  <Play size={14} /> <span className="viewer-pill-label">Present</span>
-                </button>
-              </div>
-            )}
+            {!compact && modeControls}
             {topic && !presenting && <AssistantToggle assistant={assistant} className="viewer-pill" />}
             {compact ? (
               <div className="viewer-menu-wrap" ref={menuRef}>
