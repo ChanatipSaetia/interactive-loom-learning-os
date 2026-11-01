@@ -344,3 +344,36 @@ body {
 .loom-status--to-review { color: var(--ctp-peach); }
 .loom-status--in-progress { color: var(--ctp-blue); }
 .loom-subhead { margin: 24px 0 4px; font-size: 16px; }
+
+/* Keep the domain breadcrumb on one line without crowding the compact toolbar. */
+.viewer-brand,.viewer-nav-actions { flex-shrink:0; }
+.viewer-domain-back { min-width:0; max-width:min(32vw,340px); flex-shrink:1; }
+.viewer-domain-back>svg { flex:none; }
+.viewer-domain-title { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.viewer-topic-picker select { min-width:0; }
+.viewer-menu .viewer-mode { flex-direction:column; padding:0; border:0; border-radius:0; background:none; }
+.viewer-menu .viewer-mode button { justify-content:flex-start; width:100%; padding:9px 12px; border-radius:10px; }
+@media(max-width:640px) { .viewer-domain-back { max-width:45vw; } }
+
+/* PickMode measures the floating composer, including changes from multiline input and chips. */
+.viewer.viewer-has-ai-bar>.main-content { padding-bottom:calc(var(--pick-bar-height,64px) + 32px); }
+:root:has(.viewer-has-ai-bar) { scroll-padding-bottom:calc(var(--pick-bar-height,64px) + 32px); }
+
+/* PickSection wraps each renderer, so spacing belongs to these siblings rather than the inner section wrappers. */
+.viewer .topic-content { display:flex; flex-direction:column; gap:clamp(64px,8vw,112px); }
+.viewer .topic-content>.pick-section { padding-top:clamp(20px,3vw,32px); border-top:1px solid var(--border); scroll-margin-top:96px; }
+.viewer .topic-content .section-title-bar { margin-bottom:28px; }
+.viewer .topic-content .section-title-bar-title { padding:0; color:var(--foreground); font-family:var(--font-display); font-size:clamp(28px,3vw,40px); font-weight:750; line-height:1.2; letter-spacing:-.025em; }
+.viewer .topic-content .section-title-bar-title::before { width:4px; height:1em; border-radius:2px; background:var(--primary); box-shadow:none; }
+.viewer .topic-content .section-title-bar-title::after { display:none; }
+
+/* Contrast and type scale establish the section hierarchy; accent color is a structural cue. */
+.viewer .topic-content .journey-goal-banner { border-inline-start-width:2px; background:color-mix(in srgb,var(--primary) 3%,transparent); }
+.viewer .topic-content .journey-goal-statement { font-size:clamp(20px,2.3vw,26px); font-weight:550; line-height:1.4; color:color-mix(in srgb,var(--foreground) 85%,var(--background)); }
+.viewer .topic-content .journey-detail p { color:color-mix(in srgb,var(--foreground) 88%,var(--background)); }
+
+/* Present fills the viewport; the header and playback controls float over the slide. */
+.viewer-is-presenting { height:100dvh; min-height:0; overflow:hidden; }
+.viewer-is-presenting>.main-content { position:fixed; inset:0; z-index:40; padding:0; }
+.viewer .topnav[hidden] { display:none; }
+.viewer-show-header { position:fixed; z-index:51; top:max(12px,env(safe-area-inset-top,0px)); right:max(16px,env(safe-area-inset-right,0px)); min-height:40px; }

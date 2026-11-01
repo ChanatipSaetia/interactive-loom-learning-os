@@ -1,5 +1,5 @@
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
-import { QUIET, focus, lead, type BeatMarkAttributes } from '../../../present-kernel'
+import { QUIET, focus, type BeatMarkAttributes } from '../../../present-kernel'
 import type { TradeoffScenario } from '../../schema'
 import { MetricBar } from './index'
 
@@ -9,7 +9,7 @@ type Props = {
   rowMarks?: (index: number) => BeatMarkAttributes
 }
 
-/** The recommended configuration and its authored reasoning, kept together on one page. */
+/** Present recaps the selected configuration; Read also explains the reasons and compromises. */
 export function TradeoffConclusion({ scenario, compact = false, rowMarks }: Props) {
   const pick = usePickAnchors()
   const decisions = scenario.steps.map((step) => ({ step, choice: step.choices.find((c) => c.id === step.recommended) }))
@@ -17,8 +17,7 @@ export function TradeoffConclusion({ scenario, compact = false, rowMarks }: Prop
   for (const { choice } of decisions) {
     for (const [id, delta] of Object.entries(choice?.metrics ?? {})) values[id] = (values[id] ?? 0) + delta
   }
-  const text = (value: string) => compact ? lead(value, 2) : value
-  return <section className={`tradeoff-conclusion${compact ? ' is-compact' : ''}`} aria-label="Recommended options" data-testid="tradeoff-conclusion">
+  return <section className={`tradeoff-conclusion${compact ? ' is-compact' : ''}`} tabIndex={compact ? 0 : undefined} aria-label="Recommended options" data-testid="tradeoff-conclusion">
     <header className="tradeoff-conclusion-heading">
       <span className="compare-step-eyebrow">Conclusion</span>
       <h3 {...focus(compact)}>Recommended approach</h3>
@@ -33,10 +32,10 @@ export function TradeoffConclusion({ scenario, compact = false, rowMarks }: Prop
             {choice ? <>
               <h4 {...pick(choice, 'label')}>{choice.label}</h4>
               {!compact && choice.description && <p {...pick(choice, 'description')}>{choice.description}</p>}
-              <div className="tradeoff-conclusion-reasoning">
-                <div><span className="tradeoff-conclusion-label">Why this fits</span><p {...pick(choice, reason === choice.whyThisFits ? 'whyThisFits' : reason ? 'whenToUse' : 'description')}>{reason ? text(reason) : choice.description ? text(choice.description) : 'No rationale provided.'}</p></div>
+              {!compact && <div className="tradeoff-conclusion-reasoning">
+                <div><span className="tradeoff-conclusion-label">Why this fits</span><p {...pick(choice, reason === choice.whyThisFits ? 'whyThisFits' : reason ? 'whenToUse' : 'description')}>{reason || choice.description || 'No rationale provided.'}</p></div>
                 <div><span className="tradeoff-conclusion-label is-cost">Main compromise</span>{compromise ? <p {...pick(compromise, 'title')}>{compromise.title}{!compact && compromise.description && <span {...pick(compromise, 'description')}> — {compromise.description}</span>}</p> : <p>No compromise specified.</p>}</div>
-              </div>
+              </div>}
             </> : <p className="tradeoff-conclusion-missing">No recommendation provided.</p>}
           </div>
         </li>

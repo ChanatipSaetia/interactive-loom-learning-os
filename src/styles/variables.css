@@ -555,11 +555,7 @@
   --pale-blue:     rgba(163, 180, 221, 0.12);
   --pale-pink:     rgba(211, 179, 200, 0.10);
 
-  /* Type — a clean system sans (SF Pro on Apple, Inter elsewhere) */
-  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
-  --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
-  --font-ui:      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
-  --font-mono:    'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
+  /* Typography inherits the shared font families from :root. */
 
   /* Softer, rounder corners */
   --radius:      0.75rem;
@@ -667,11 +663,7 @@
   --pale-blue:     rgba(74, 98, 166, 0.10);
   --pale-pink:     rgba(163, 82, 133, 0.08);
 
-  /* Type and corners: as in the dark variant */
-  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
-  --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
-  --font-ui:      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'Noto Sans Thai', system-ui, sans-serif;
-  --font-mono:    'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
+  /* Shared typography; corners match the dark variant. */
   --radius:      0.75rem;
   --radius-sm:   10px;
   --radius-md:   20px;

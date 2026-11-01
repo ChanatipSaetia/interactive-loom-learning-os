@@ -122,6 +122,29 @@ describe('PillarLayer Section (Layer Stacked Architecture)', () => {
     expect(screen.getByTestId('pillar-layer-block-0')).not.toHaveAttribute('role')
   })
 
+  it('contains simple stacks in the same peer bands as Present and keeps dependency tracing', () => {
+    const data: PillarLayerSectionData = {
+      type: 'pillar-layer', title: 'Capabilities',
+      layers: [{ id: 'cap', title: 'Capabilities' }, { id: 'base', title: 'Foundation' }],
+      matrix_blocks: [
+        { id: 'tool', title: 'Tool Execution', description: 'Runs actions.', layer_id: 'cap', group: 'Tools', depends_on: ['compute'] },
+        { id: 'search', title: 'Retrieval', layer_id: 'cap', group: 'Knowledge', col_offset: 1 },
+        { id: 'compute', title: 'Compute', layer_id: 'base', col_span: 2 },
+      ],
+    }
+    const { container } = render(<PillarLayerSection section={data} />)
+    const levels = container.querySelectorAll('.pillar-stack-level')
+    expect(levels).toHaveLength(2)
+    const peers = levels[0].querySelectorAll('.pillar-stack-band')
+    expect(peers).toHaveLength(2)
+    expect(peers[0]).toHaveTextContent('ToolsTool ExecutionRuns actions.')
+    expect(peers[0]).not.toHaveTextContent('Retrieval')
+    expect(peers[1]).toHaveTextContent('KnowledgeRetrieval')
+    fireEvent.click(screen.getByTestId('pillar-layer-block-0'))
+    expect(screen.getByTestId('pillar-layer-block-2')).toHaveClass('is-needed')
+    expect(screen.getByTestId('pillar-trace')).toHaveTextContent('NeedsCompute')
+  })
+
   describe('tracing dependencies', () => {
     const linked: PillarLayerSectionData = {
       ...mockSectionData,

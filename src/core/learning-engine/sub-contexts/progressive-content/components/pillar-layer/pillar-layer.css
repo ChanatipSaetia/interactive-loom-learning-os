@@ -245,3 +245,21 @@
 .color-flamingo { --pillar-accent: var(--ctp-flamingo, #eebebe); --block-accent: var(--ctp-flamingo, #eebebe); }
 .color-pink { --pillar-accent: var(--ctp-pink, #f4b8e4); --block-accent: var(--ctp-pink, #f4b8e4); }
 .color-red { --pillar-accent: var(--ctp-red, #e78284); --block-accent: var(--ctp-red, #e78284); }
+
+/* Read and Present share the same containment bands for ordinary single-row stacks. */
+.pillar-stack { display:flex; flex-direction:column; gap:12px; min-width:0; }
+.pillar-stack-level { display:flex; gap:12px; min-width:0; }
+.pillar-stack-band { min-width:0; border:1px solid color-mix(in srgb,var(--layer-accent) 55%,var(--border)); border-left:5px solid var(--layer-accent); border-radius:var(--radius-md); padding:8px 14px; background:color-mix(in srgb,var(--layer-accent) 12%,var(--ctp-mantle)); display:flex; flex-direction:column; gap:6px; }
+.pillar-stack-band.is-current,.pillar-stack-band.is-highlighted { border-color:var(--layer-accent); }
+.pillar-stack-name { align-self:flex-start; margin:0; color:var(--foreground); font:500 20px/1.25 var(--font-ui); }
+.pillar-stack-items { display:grid; grid-template-columns:repeat(var(--layer-cols),minmax(0,1fr)); gap:10px; }
+.pillar-stack-item { padding:6px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--ctp-surface0); color:var(--foreground); font:400 20px/1.3 var(--font-ui); text-align:center; overflow-wrap:anywhere; }
+.pillar-stack-level .pillar-stack-item { display:flex; flex-direction:column; justify-content:center; }
+.pillar-stack-item .pillar-block-title { font-size:18px; font-weight:400; }
+.pillar-stack-item .pillar-block-desc,.pillar-stack-item .pillar-block-uses,.pillar-stack-item .pillar-trace { text-align:left; }
+.pillar-stack>section>.pillar-layer-description { margin-bottom:8px; }
+@media(max-width:639px) {
+  .pillar-layer-section .pillar-stack-level { flex-direction:column; }
+  .pillar-layer-section .pillar-stack-items { grid-template-columns:minmax(0,1fr); }
+  .pillar-layer-section .pillar-stack-item { grid-column:1/-1 !important; }
+}

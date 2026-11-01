@@ -1,0 +1,4 @@
+root = FormulaSandbox("17 · Formula sandbox — Estimate the review effort", [sources, minutes], [effort])
+sources = FormulaVariable("sources", "Sources to inspect", 1, 12, 1, 4)
+minutes = FormulaVariable("minutes", "Minutes per source", 1, 10, 1, 3)
+effort = FormulaMetric("effort", "Estimated review time (min)", "sources * minutes", "Illustrative estimate: sources multiplied by minutes per source. Real review time varies.", "Like estimating a reading session")

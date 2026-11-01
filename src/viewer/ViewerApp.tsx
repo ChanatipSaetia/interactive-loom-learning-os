@@ -6,7 +6,7 @@
  * again, so changes made by an AI show up without reopening anything.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import { AlertTriangle, ArrowLeft, BookOpen, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MessageSquareShare, MoreHorizontal, Play, RefreshCw, Save, Sparkles, Upload } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, ChevronUp, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MessageSquareShare, MoreHorizontal, Play, RefreshCw, Save, Sparkles, Upload } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
@@ -158,6 +158,7 @@ export function ViewerApp() {
   const [refreshing, setRefreshing] = useState(false)
   const [picking, setPicking] = useState(false)
   const [mode, setMode] = useState<'read' | 'present'>('read')
+  const [headerHidden, setHeaderHidden] = useState(false)
   const [presentStart, setPresentStart] = useState(0)
   /** Where the learner is in Present (topic section index and beat), for Read and Refresh to return to. */
   const presentAt = useRef({ sectionIndex: 0, beat: 0 })
@@ -369,6 +370,7 @@ export function ViewerApp() {
   useEffect(() => { if (!compact) setMenuOpen(false) }, [compact])
 
   const startPresent = useCallback(() => {
+    setHeaderHidden(false)
     unlockSpeech()
     setPresentStart(sectionInView(presentSections))
     setPresentBeat(0)
@@ -389,6 +391,7 @@ export function ViewerApp() {
     }
   }, [memory, topic])
   const exitPresent = useCallback((sectionIndex: number) => {
+    setHeaderHidden(false)
     setMode('read')
     const name = topic?.sections[sectionIndex]?.name
     // Back where the learner was in Present, once Read has laid out
@@ -401,9 +404,22 @@ export function ViewerApp() {
   }, [topic])
   const pickAssistant = pickBridgeOf(assistant)
 
+  const domainTitle = shelf?.library.domains.find((d) => d.prefix === shelf.from)?.title ?? 'Domain'
+  const modeControls = topic && presentSections.length > 0 && (
+    <div className="viewer-mode" role="group" aria-label="Viewer mode" data-testid="viewer-mode">
+      <button type="button" aria-pressed={!presenting} onClick={() => presenting && exitPresent(presentAt.current.sectionIndex)} data-closes-menu data-testid="viewer-mode-read">
+        <BookOpen size={14} /> <span className="viewer-pill-label">Read</span>
+      </button>
+      <button type="button" aria-pressed={presenting} onClick={() => !presenting && startPresent()} data-closes-menu data-testid="viewer-mode-present">
+        <Play size={14} /> <span className="viewer-pill-label">Present</span>
+      </button>
+    </div>
+  )
+
   // In the bar on wide screens, in the ⋯ menu on narrower ones
   const secondary = (
     <>
+      {compact && modeControls}
       {compact && <LoomToolsNav current="viewer" />}
       {loaded && (
         <button
@@ -441,14 +457,14 @@ export function ViewerApp() {
 
   return (
     <UISystemProvider>
-      <div className="app-layout viewer">
-        <header className="topnav">
+      <div className={`app-layout viewer${presenting ? ' viewer-is-presenting' : topic ? ' viewer-has-ai-bar' : ''}`}>
+        <header className="topnav" hidden={presenting && headerHidden}>
           <button type="button" className="topnav-title viewer-brand" onClick={() => setLoaded(null)} title="Open another topic">
             <Sparkles size={16} /> <span className="viewer-brand-label">Loom&nbsp;Viewer</span>
           </button>
           {loaded && shelf?.from !== undefined && (
-            <button type="button" className="viewer-pill" onClick={() => { setLoaded(null); void rereadShelf() }} title="Back to the domain" data-testid="viewer-back-to-domain">
-              <ArrowLeft size={14} /> <span className="viewer-pill-label">{shelf.library.domains.find((d) => d.prefix === shelf.from)?.title ?? 'Domain'}</span>
+            <button type="button" className="viewer-pill viewer-domain-back" onClick={() => { setLoaded(null); void rereadShelf() }} title={domainTitle} aria-label={`Back to domain: ${domainTitle}`} data-testid="viewer-back-to-domain">
+              <ArrowLeft size={14} /> <span className="viewer-domain-title">{domainTitle}</span>
             </button>
           )}
           {loaded && (
@@ -479,16 +495,8 @@ export function ViewerApp() {
               </span>
             )}
             {!compact && <LoomToolsNav current="viewer" />}
-            {topic && presentSections.length > 0 && (
-              <div className="viewer-mode" role="group" aria-label="Viewer mode" data-testid="viewer-mode">
-                <button type="button" aria-pressed={!presenting} onClick={() => presenting && exitPresent(presentAt.current.sectionIndex)} data-testid="viewer-mode-read">
-                  <BookOpen size={14} /> <span className="viewer-pill-label">Read</span>
-                </button>
-                <button type="button" aria-pressed={presenting} onClick={() => !presenting && startPresent()} data-testid="viewer-mode-present">
-                  <Play size={14} /> <span className="viewer-pill-label">Present</span>
-                </button>
-              </div>
-            )}
+            {!compact && modeControls}
+            {presenting && <button type="button" className="viewer-pill" onClick={() => { setMenuOpen(false); setHeaderHidden(true) }} aria-label="Hide Viewer header" title="Hide Viewer header" data-testid="viewer-hide-header"><ChevronUp size={16} /></button>}
             {topic && !presenting && <AssistantToggle assistant={assistant} className="viewer-pill" />}
             {compact ? (
               <div className="viewer-menu-wrap" ref={menuRef}>
@@ -505,6 +513,7 @@ export function ViewerApp() {
             ) : secondary}
           </div>
         </header>
+        {presenting && headerHidden && <button type="button" className="viewer-pill viewer-show-header" onClick={() => setHeaderHidden(false)} aria-label="Show Viewer header" title="Show Viewer header" data-testid="viewer-show-header" autoFocus><ChevronDown size={16} /></button>}
         <main className="main-content">
           {topic && presenting
             ? (

@@ -337,6 +337,7 @@ Loom Viewer (`/viewer.html` on the Loom site) opens topics without any chat:
 
 - **Open file** or **Paste text**: a `.loom.oui` topic, a single section, or a `.zip` from Loom Studio. A link from the chat opens straight into Present.
 - **Open folder**: a topic folder, or your **`Loom` folder** (Google Drive for desktop on Chrome or Edge) for the library and domain pages, with status, Up next and **Copy request for your AI chat**. A topic opened from a domain gets **Save progress**, which writes the note into the folder.
+- **Read / Present**: use the header controls on wide screens, or open **… → Read / Present** on compact screens. Long domain breadcrumbs use an ellipsis while retaining the full name in their tooltip and accessible label.
 - **Copy progress** copies today's note to paste into your chat; **Back up** and **Restore** keep this browser's learning record.
 
 ## Troubleshooting

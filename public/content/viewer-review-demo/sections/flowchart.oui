@@ -1,0 +1,8 @@
+root = Flowchart("09 · Flowchart — Behind the research request", [sam], [assistant, search], [submit, retrieve, compose], [research])
+sam = Actor("sam", "Sam", "Reviews and approves the answer")
+assistant = System("assistant", "Assistant", "Coordinates the research request", "aggregate")
+search = System("search", "Evidence search", "Retrieves relevant source material", "external")
+submit = Step("submit", "When Sam asks a scoped question", "SubmitQuestion", assistant, [Event("requested", "Research Requested")], sam, search, "retrieve")
+retrieve = Step("retrieve", "When research is requested", "FindEvidence", search, [Event("found", "Evidence Found")], null, null, "compose", null, assistant)
+compose = Step("compose", "When evidence is found", "DraftAnswer", assistant, [Event("drafted", "Answer Drafted")], null, null, null, null, sam)
+research = Journey("research", "Research request", "Question to draft", [JourneyStep(submit, "Ask", "Sam sends a scoped question."), JourneyStep(retrieve, "Retrieve", "Search finds relevant records."), JourneyStep(compose, "Draft", "The assistant links claims to sources.")])

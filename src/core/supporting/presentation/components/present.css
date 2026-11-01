@@ -9,14 +9,24 @@
   min-height: 320px;
   padding: 14px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));
   box-sizing: border-box;
+  position: relative;
 }
 
 .present-stage-area {
+  position: absolute;
+  inset: 0;
   flex: 1;
   min-height: 0;
   display: grid;
   place-items: center;
 }
+
+.present-overlay-bars { position:absolute; z-index:10; inset-inline: max(16px, env(safe-area-inset-right, 0px)); bottom:max(12px, env(safe-area-inset-bottom, 0px)); display:flex; flex-direction:column; align-items:center; gap:10px; pointer-events:none; }
+.present-overlay-bars[hidden] { display:none; }
+.present-overlay-bars>.present-controls { pointer-events:auto; width:min(100%,1040px); }
+.present-overlay-bars>.present-caption-bar { max-width:100%; }
+.present-mini-controls { position:absolute; z-index:11; right:max(16px,env(safe-area-inset-right,0px)); bottom:max(12px,env(safe-area-inset-bottom,0px)); display:flex; align-items:center; gap:6px; padding:6px; border:1px solid var(--border); border-radius:var(--radius-full); background:color-mix(in srgb,var(--card) 85%,transparent); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); }
+.present-mini-controls>.present-ctl { border-radius:var(--radius-full); }
 
 .present-stage {
   position: relative;
@@ -128,6 +138,9 @@
 
 /* A Read section shown as one beat may be taller than the region: let it scroll visibly */
 .present-region-body.is-fallback { scrollbar-width: thin; }
+/* Long recommendation summaries keep their reading size and can be scrolled in place. */
+.present-region-body:has(.present-tradeoff-try[data-shown]) { pointer-events:auto; scrollbar-width:thin; }
+.present-region-body:has(.present-tradeoff-try[data-shown])::-webkit-scrollbar { display:block; width:6px; }
 .present-fallback { min-height: 0; }
 
 .present-loading {
@@ -453,11 +466,15 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .present-seg {
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 1 0 auto;
+  min-width: max-content;
   display: flex;
   align-items: center;
   gap: 2px;

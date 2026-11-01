@@ -105,8 +105,8 @@ export default function PresentConceptMap({ data, beat }: PresentRendererProps<C
           <p className="present-sr" aria-hidden="true">{conceptRelationText(data, relation)}.</p>
         </> : step?.kind === 'group' ? <>
           <p className="present-eyebrow" {...QUIET}>Meet the concepts</p>
-          <p className="present-cm-group-title" {...QUIET} {...focus(true)}>{groups[step.group] || 'Concepts'}</p>
-          <p className="present-cm-group-names" {...QUIET}>{Object.keys(nodes).filter((id) => groupOf(id) === step.group).map((id) => nodes[id].title).join(' · ')}</p>
+          <p className="present-cm-group-type" {...QUIET}>{groups[step.group] || 'Concepts'}</p>
+          <p className="present-cm-group-names" {...QUIET} {...focus(true)}>{Object.keys(nodes).filter((id) => groupOf(id) === step.group).map((id) => nodes[id].title).join(' · ')}</p>
           <p className="present-sr" aria-hidden="true">{groups[step.group] || 'Concepts'}. {Object.keys(nodes).filter((id) => groupOf(id) === step.group).map((id) => nodes[id].title).join(', ')}.</p>
         </> : <p className="present-cm-group-title">{Object.keys(nodes).length ? 'The complete map' : 'No concepts to present'}</p>}
       </div>

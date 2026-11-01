@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { useReducedMotion } from 'motion/react'
 import { Pointer, TrendingDown, TrendingUp } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
@@ -44,6 +44,8 @@ const TREND_VERB: Record<FormulaTrend['shape'], string> = { rises: 'rises', fall
  * gauge follows, and the trend of each metric that moves is stated as the sweep plays (decision 112).
  */
 export default function PresentFormula({ data, beat, active }: PresentRendererProps<FormulaPresentData>) {
+  const formulaId = useId()
+  const [openMetric, setOpenMetric] = useState<string | null>(null)
   const pick = usePickAnchors()
   const { playSound } = useSound()
   const reduced = useReducedMotion()
@@ -95,15 +97,7 @@ export default function PresentFormula({ data, beat, active }: PresentRendererPr
   return (
     <div className="present-formula sandbox-layout" data-testid="present-formula">
       <div className="controls-panel">
-        <div className="formula-explanation" {...focus(beat === 0)}>
-          <span className="present-formula-heading">System Formulas:</span>
-          {metrics.map((m, i) => (
-            <span key={m.id} className="present-formula-line" {...mark(0, { delay: 150 + i * 90 })} {...pick(m, 'formula')}>
-              • {m.label.replace(/\s*\([^)]*\)\s*$/, '')} = <code>{humanizeFormula(m.formula, variables)}</code>
-            </span>
-          ))}
-        </div>
-        <div className="present-sliders" {...QUIET}>
+        <div className="present-sliders" {...QUIET} {...focus(beat === 0)}>
           {variables.map((v, i) => {
             const isSwept = sweeping && v.id === moving?.id
             return (
@@ -173,12 +167,13 @@ export default function PresentFormula({ data, beat, active }: PresentRendererPr
           const range = ranges[m.id] ?? { min: 0, max: 100 }
           return (
             <div key={m.id} className="sim-metric-row" {...mark(0, { delay: 800 + i * 110 })} {...pick(m)}>
-              <div className="sim-metric-meta">
+              <button type="button" className="sim-metric-meta sim-metric-trigger" aria-expanded={openMetric === m.id} aria-controls={`${formulaId}-${i}`} onClick={() => setOpenMetric((id) => id === m.id ? null : m.id)} tabIndex={active ? 0 : -1} title="Show or hide formula">
                 <span className="sim-metric-name" {...pick(m, 'label')}>{m.label}</span>
                 <span className="sim-metric-val sky present-gauge-value">{getMetricUnitAndFormat(m, val).display}</span>
-              </div>
+              </button>
               <div className="gauge-bg"><div className="gauge-fill sky" style={{ width: `${pct(val, range.min, range.max)}%` }} /></div>
               <span className="present-gauge-desc" {...pick(m, 'description')}>{m.description}</span>
+              {openMetric === m.id && <div id={`${formulaId}-${i}`} className="sim-metric-formula formula-explanation" {...pick(m, 'formula')}><code>{humanizeFormula(m.formula, variables)}</code></div>}
             </div>
           )
         })}

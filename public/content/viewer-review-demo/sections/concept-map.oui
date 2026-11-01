@@ -1,0 +1,5 @@
+root = ConceptMap("08 · Concept map — How a supported answer fits together", [question, evidence, claim, summary], [ConceptLink(question, evidence, "guides retrieval"), ConceptLink(evidence, claim, "supports"), ConceptLink(claim, summary, "forms"), ConceptLink(summary, question, "answers")])
+question = Concept("question", "Question", "core")
+evidence = Concept("evidence", "Evidence", "data")
+claim = Concept("claim", "Checked claim", "mechanism")
+summary = Concept("summary", "Summary", "pattern")

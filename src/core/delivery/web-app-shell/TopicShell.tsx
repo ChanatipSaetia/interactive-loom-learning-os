@@ -8,6 +8,7 @@ import { useTopicBundle } from '../../learning-engine/composition/content'
 import { ProgressProvider } from '../../supporting/learner-progress'
 import { HUDProvider, useHUD } from '../../learning-engine/composition/context/HUDContext'
 import { X } from 'lucide-react'
+import * as Dialog from '@radix-ui/react-dialog'
 
 interface SectionRendererProps {
   config: SectionConfig
@@ -39,15 +40,20 @@ export function HUDDrawer() {
   const { isOpen, title, body, closeHUD } = useHUD()
 
   return (
-    <div className={`hud-drawer ${isOpen ? 'open' : ''}`} data-testid="hud-drawer">
+    <Dialog.Root open={isOpen} onOpenChange={(open) => { if (!open) closeHUD() }}>
+    <Dialog.Portal>
+    <Dialog.Overlay className="hud-backdrop" data-testid="hud-backdrop" />
+    <Dialog.Content className="hud-drawer open" data-testid="hud-drawer" data-lenis-prevent>
       <div className="hud-header">
-        <span className="hud-title">{title}</span>
-        <button className="hud-close" onClick={closeHUD} aria-label="Close details">
+        <Dialog.Title asChild><span className="hud-title">{title}</span></Dialog.Title>
+        <Dialog.Close asChild><button type="button" className="hud-close" aria-label="Close details">
           <X size={18} />
-        </button>
+        </button></Dialog.Close>
       </div>
-      <div className="hud-body" dangerouslySetInnerHTML={{ __html: body }} />
-    </div>
+      <Dialog.Description asChild><div className="hud-body" dangerouslySetInnerHTML={{ __html: body }} /></Dialog.Description>
+    </Dialog.Content>
+    </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 

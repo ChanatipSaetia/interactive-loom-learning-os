@@ -500,19 +500,17 @@
   font-weight: 600;
 }
 
-/* Section kind chips: frosted pills instead of outlined mono tags */
+/* Section kind chips: frosted pills using the shared mono font. */
 :root[data-theme^='liquid-glass'] .present-kind,
 :root[data-theme^='liquid-glass'] .present-title-kind {
   border: 1px solid var(--glass-edge-strong);
   background: var(--glass-tint);
-  font-family: var(--font-ui);
   letter-spacing: 0.06em;
 }
 
 :root[data-theme^='liquid-glass'] .present-caption {
   border-radius: var(--radius-full);
   padding: 10px 22px;
-  font-family: var(--font-ui);
   font-weight: 500;
 }
 

@@ -1,0 +1,5 @@
+root = DecisionTree("15 · Decision tree — What should the assistant do next?", "next-action", "start", [start, clarify, verify, deliver])
+start = DecisionNode("start", "Is the question scoped clearly?", [DecisionChoice("no", "No: dates or channels are missing", "clarify", "Clarify before retrieving.", true), DecisionChoice("yes", "Yes: the scope is clear", "verify", "Check whether the evidence supports an answer.")])
+clarify = DecisionNode("clarify", null, null, DecisionLeaf("Ask a focused question", "Confirm the date range and support channels.", ["Adds one exchange before research starts"]))
+verify = DecisionNode("verify", "Does every material claim have support?", [DecisionChoice("ready", "Yes", "deliver", "Share with citations.", true), DecisionChoice("gap", "No", "clarify", "Explain the evidence gap and request what is missing.")])
+deliver = DecisionNode("deliver", null, null, DecisionLeaf("Share a sourced summary", "Keep citations and limitations with the answer.", ["The reader still needs to judge relevance"]))

@@ -217,3 +217,10 @@
   color: var(--ctp-pink);
   font-family: var(--font-mono);
 }
+
+/* Equations are available on demand from their computed metric. */
+.sim-metric-trigger { width:100%; gap:12px; padding:0; border:0; background:none; text-align:left; cursor:pointer; font-family:inherit; }
+.sim-metric-trigger:focus-visible { outline:2px solid var(--ring); outline-offset:4px; border-radius:var(--radius-sm); }
+.sim-metric-formula { margin-top:12px; overflow-wrap:anywhere; }
+.present-formula .sim-metric-trigger { pointer-events:auto; }
+.present-formula .sim-metric-formula { font-size:var(--present-fs-card); line-height:1.5; }

@@ -22,14 +22,15 @@ describe('one-page tradeoff conclusion', () => {
     expect(within(conclusion).getByTestId('conclusion-test-metric-value-quality')).toHaveTextContent('70')
   })
 
-  it('shortens the presenter reason without losing the selected option or compromise', () => {
+  it('recaps the decision, selected option and totals without repeating the explanation in Present', () => {
     render(<TradeoffConclusion scenario={scenario} compact />)
     const row = document.querySelector('.tradeoff-conclusion-row')!
-    expect(row).toHaveTextContent('Supports both exact and semantic matches.')
-    expect(row).toHaveTextContent('Further explanation.')
-    expect(row).not.toHaveTextContent('Additional detail.')
-    expect(row).toHaveTextContent('More infrastructure')
-    expect(row).not.toHaveTextContent('Operate an embedding service.')
+    expect(row).toHaveTextContent('Retrieval strategy')
+    expect(row).toHaveTextContent('Hybrid')
+    expect(row).not.toHaveTextContent('Supports both exact and semantic matches.')
+    expect(row).not.toHaveTextContent('More infrastructure')
+    expect(row).not.toHaveTextContent('Combine keywords and vectors.')
+    expect(screen.getByTestId('conclusion-test-metric-value-quality')).toHaveTextContent('70')
   })
 
   it('does not invent a recommendation or apply deltas for an invalid recommendation', () => {
