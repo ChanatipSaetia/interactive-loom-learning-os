@@ -61,6 +61,7 @@ export function getWriterSkillReferences(): Record<string, string> {
   const composition: Record<string, string> = {
     bullets: take('Bullet Composition'),
     'pillar-layer': take('Layer Composition'),
+    'user-journey': take('User Journeys'),
     timeline: take('Measured Timeline'),
     'breakdown-tree': take('Breakdown Trees'),
   }

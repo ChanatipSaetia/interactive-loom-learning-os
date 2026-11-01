@@ -1,0 +1,5 @@
+root = Narration([title, question, wrong, right])
+title = NarrationStep("title", "Watch the question, a mistaken answer, and its correction. Each part should stay long enough to follow.")
+question = NarrationStep("q1", "What happens when a beat has more text? Read both choices before the demonstration continues.")
+wrong = NarrationStep("q1.wrong", "Nine seconds was the old ceiling. That could hide a long explanation before you had finished reading it.")
+right = NarrationStep("q1.right", "The new timing grows with the text. Short beats get at least five seconds, and you can always pause or move forward yourself.")

@@ -95,6 +95,7 @@ export function bundleToSections(bundle: OKFBundled): SectionConfig[] {
         props.items = data.items
         break
       case 'breakdown-tree':
+      case 'user-journey':
       case 'timeline':
       case 'pillar-layer':
         props.section = data

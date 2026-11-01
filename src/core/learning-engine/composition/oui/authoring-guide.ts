@@ -108,6 +108,10 @@ export function getAuthoringGuide(sections: string[] = []): string {
     const { before, after } = cut(text, '## Layer Composition')
     text = before + after
   }
+  if (!wanted.has('user-journey')) {
+    const { before, after } = cut(text, '## User Journeys')
+    text = before + after
+  }
   if (!wanted.has('timeline')) {
     const { before, after } = cut(text, '## Measured Timeline')
     text = before + after

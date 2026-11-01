@@ -1,0 +1,4 @@
+root = Bullets("Short, medium, and long", [short, medium, long], true, "Try with narration on, then muted")
+short = Bullet("Pause. Take a breath. Notice the screen.", null, "clock")
+medium = Bullet("A little more to read: find the main idea first, then follow the supporting detail. This longer beat gives you extra time before the next idea appears.", null, "clock")
+long = Bullet("Longer explanations need more time. Read this paragraph once to understand its message, then look back for the key detail: autoplay now grows with the amount of text instead of stopping at nine seconds. You can still pause whenever you need to reflect, or press Next when you are ready to continue.", null, "clock")

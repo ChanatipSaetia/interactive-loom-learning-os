@@ -32,4 +32,11 @@ export interface BreakdownNodeSelected {
   timestamp: number
 }
 
-export type ProgressiveContentEvents = BreakdownNodeSelected | CategorySelected | GalleryItemViewed | TimelineActivitySelected
+export type ProgressiveContentEvents = JourneyStageSelected | BreakdownNodeSelected | CategorySelected | GalleryItemViewed | TimelineActivitySelected
+
+export interface JourneyStageSelected {
+  type: 'JourneyStageSelected'
+  stageIndex: number
+  stageName: string
+  timestamp: number
+}

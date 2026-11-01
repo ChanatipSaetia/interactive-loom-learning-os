@@ -1,0 +1,1 @@
+root = Topic("Pacing Demo: Take Your Time", "Demo", "Compare short, medium, and longer beats, then watch a worked quiz answer.", [SectionRef("reading"), SectionRef("check")], ["demo", "pacing"], "beginner")

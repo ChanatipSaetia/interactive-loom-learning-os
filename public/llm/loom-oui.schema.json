@@ -47,6 +47,12 @@
     "MatrixBlock": {
       "$ref": "#/$defs/MatrixBlock"
     },
+    "UserJourney": {
+      "$ref": "#/$defs/UserJourney"
+    },
+    "JourneyStage": {
+      "$ref": "#/$defs/JourneyStage"
+    },
     "Timeline": {
       "$ref": "#/$defs/Timeline"
     },
@@ -250,6 +256,8 @@
     "Layer",
     "LayerItem",
     "MatrixBlock",
+    "UserJourney",
+    "JourneyStage",
     "Timeline",
     "TimelineLane",
     "TimelineActivity",
@@ -905,6 +913,87 @@
       ],
       "additionalProperties": false,
       "description": "A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is \"rect\" or an L-shape. `dependsOn` lists block IDs."
+    },
+    "UserJourney": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Section title, shown in the topic outline and as the section header."
+        },
+        "person": {
+          "type": "string",
+          "description": "Person or role experiencing the journey."
+        },
+        "goal": {
+          "type": "string",
+          "description": "Overall goal across the journey."
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/JourneyStage"
+          },
+          "description": "Ordered JourneyStage references. Works for physical products, software and services."
+        },
+        "heading": {
+          "type": "string",
+          "description": "Optional sub-heading shown under the section title."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
+        }
+      },
+      "required": [
+        "title",
+        "person",
+        "goal",
+        "stages"
+      ],
+      "additionalProperties": false,
+      "description": "A person’s experience across product or service stages. Read explores stages; Present walks goals, actions, responses and optional friction and outcomes without an Event Storming diagram."
+    },
+    "JourneyStage": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Short stage name used in the journey rail."
+        },
+        "goal": {
+          "type": "string",
+          "description": "What the person wants to accomplish in this stage."
+        },
+        "action": {
+          "type": "string",
+          "description": "What the person actually does."
+        },
+        "response": {
+          "type": "string",
+          "description": "What the product, service or staff visibly does in response."
+        },
+        "friction": {
+          "type": "string",
+          "description": "Optional difficulty or unmet need; do not invent research findings."
+        },
+        "recovery": {
+          "type": "string",
+          "description": "Optional way to address the authored friction; requires friction."
+        },
+        "outcome": {
+          "type": "string",
+          "description": "Optional resulting state or next step; do not assume success."
+        }
+      },
+      "required": [
+        "name",
+        "goal",
+        "action",
+        "response"
+      ],
+      "additionalProperties": false,
+      "description": "One stage of a person’s experience: their goal, action, product response, and optional friction, recovery and outcome."
     },
     "Timeline": {
       "type": "object",

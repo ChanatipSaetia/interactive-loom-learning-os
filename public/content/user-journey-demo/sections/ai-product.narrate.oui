@@ -1,0 +1,15 @@
+root = Narration([
+  NarrationStep("title", "An illustrative product experience. Follow the person, rather than the mechanism behind the product."),
+  NarrationStep("overview", "Sam wants to find a supported answer to a research question."),
+  NarrationStep("stage1.goal", "Set a useful scope"),
+  NarrationStep("stage1.action", "Sam asks why customer support volume increased."),
+  NarrationStep("stage1.response", "The assistant asks which date range and channels to examine."),
+  NarrationStep("stage2.goal", "Check the answer before relying on it"),
+  NarrationStep("stage2.action", "Sam reads the findings and opens their cited sources."),
+  NarrationStep("stage2.response", "The assistant connects each claim to the available evidence."),
+  NarrationStep("stage2.friction", "One claim has no supporting source. Recovery: Flag the gap, remove the unsupported claim, and ask for more evidence."),
+  NarrationStep("stage2.outcome", "Sam keeps only the findings supported by the sources."),
+  NarrationStep("stage3.goal", "Share a traceable summary"),
+  NarrationStep("stage3.action", "Sam edits the summary and confirms the final version."),
+  NarrationStep("stage3.response", "The assistant exports the approved summary with its sources.")
+])

@@ -4,6 +4,7 @@ import {
   holdMs,
   initialRunnerState,
   isComplete,
+  postNarrationHoldMs,
   runnerReducer,
   type RunnerState,
 } from '../../../../src/core/supporting/presentation/beat-runner'
@@ -55,9 +56,22 @@ describe('beat runner', () => {
     expect([0, 1, 2].map((i) => beatToDraw(s, sections, i))).toEqual([1, 0, -1])
   })
 
-  it('holds a beat for its reading time, within bounds', () => {
-    expect(holdMs(0)).toBe(1500)
-    expect(holdMs(23)).toBe(800 + 6000)
-    expect(holdMs(1000)).toBe(9000)
+  it('gives short beats at least five seconds to read', () => {
+    expect(holdMs(0)).toBe(5000)
+    expect(holdMs(8)).toBe(5000)
+  })
+
+  it('allows longer content its full reading time instead of capping at nine seconds', () => {
+    expect(holdMs(90)).toBe(31500)
+    expect(holdMs(180)).toBe(61500)
+  })
+
+  it('keeps a short or unavailable voice from bypassing reading time', () => {
+    expect(postNarrationHoldMs(holdMs(8), 1000)).toBe(4000)
+    expect(postNarrationHoldMs(holdMs(90), 0)).toBe(31500)
+  })
+
+  it('leaves a brief pause after narration that outlasts reading time', () => {
+    expect(postNarrationHoldMs(holdMs(8), 10000)).toBe(700)
   })
 })

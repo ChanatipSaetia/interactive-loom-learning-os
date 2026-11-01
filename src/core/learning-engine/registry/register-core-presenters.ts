@@ -8,6 +8,7 @@ import {
   openuiPresenter,
   pillarLayerPresenter,
   timelinePresenter,
+  userJourneyPresenter,
   breakdownTreePresenter,
   taxonomyPresenter,
   textPresenter,
@@ -23,6 +24,7 @@ const loose = <D>(presenter: SectionPresenter<D>) => presenter as unknown as Any
 /** The section types with a Present renderer, and their presenters. */
 export const CORE_PRESENTERS: Record<string, AnyPresenter> = {
   intro: loose(introPresenter),
+  'user-journey': loose(userJourneyPresenter),
   timeline: loose(timelinePresenter),
   'breakdown-tree': loose(breakdownTreePresenter),
   text: loose(textPresenter),

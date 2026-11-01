@@ -62,7 +62,12 @@ export function runnerReducer(sections: Beat[][]) {
   }
 }
 
-/** Reading-time hold of a beat: about 230 words a minute plus 0.8s, between 1.5s and 9s. */
+/** Allow time to orient, then read at 180 words per minute; even short beats get five seconds. */
 export function holdMs(words: number): number {
-  return Math.min(9000, Math.max(1500, 800 + (words / 230) * 60000))
+  return Math.max(5000, 1500 + (words / 180) * 60000)
+}
+
+/** Speech can overlap reading time, but a short voice line must not shorten the beat. */
+export function postNarrationHoldMs(readingMs: number, elapsedMs: number): number {
+  return Math.max(700, readingMs - elapsedMs)
 }

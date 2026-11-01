@@ -153,3 +153,13 @@ For optimal cognitive progression, structure your topic's sections in the follow
 - **Mental Model Focus**: Conceptual validation.
 - **Interactivity**: Multiple-choice list with instant checks, hints, and details.
 - **Pedagogical Rationale**: Validates learning progress and clarifies common misconceptions.
+
+### User Journey (`user-journey`)
+
+Use for the person's experience with a physical product, software or service: goals, actions, visible responses, and optional friction, recovery and outcomes. Unlike Flowchart, this explains the experience rather than the underlying system. Unlike Scenario, it does not branch or assess a learner's choice.
+
+Author `UserJourney(title, person, goal, [stages], heading?, lead?)` with `JourneyStage(name, goal, action, response, friction?, recovery?, outcome?)`. Fields are positional; use null to skip an optional value. Recovery requires friction. Describe research findings only when supported; identify proposed experiences as illustrative. No thoughts, emotions, illustrations or IDs are required.
+
+Read shows the current stage as a heading, a slider with only the previous and next stages, and full details of the selected stage. Both Read and Present support neighbor clicks, horizontal swipes and arrow keys on the slider. Present shows `title`, `overview`, then `stage1.goal`, `stage1.action`, `stage1.response`, and optional `stage1.friction` (with recovery) and `stage1.outcome`, repeated per stage. Stages split into readable pages of at most two moments, targeting 42 words. Beats reveal details within the current page; moving to another page replaces those details. The active stage is the prominent rail heading, without a duplicate inside the panel. Beat IDs stay unchanged. Each beat uses the shared reading-time and narration controls. Pick targets use named stage statements and their field names. Reordering stages changes numbered beat IDs, so update narration after reordering.
+
+Studio includes a visual editor, stage ordering, and a new-section template. The authoring prompt, schema and topic-writer skill are generated from the same component definitions.

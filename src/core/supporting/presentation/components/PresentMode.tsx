@@ -14,7 +14,7 @@ import { SectionRegistry, type SectionConfig } from '../../../learning-engine/re
 import { PresentRegistry, beatsOf } from '../../../learning-engine/registry/present-registry'
 import { beatMarks, titleBeatCount, type PresentRendererProps } from '../../../learning-engine/sub-contexts/present-kernel'
 import { SectionErrorBoundary } from '../../../ui-system/primitives/SectionErrorBoundary'
-import { beatToDraw, holdMs, initialRunnerState, isComplete, runnerReducer } from '../beat-runner'
+import { beatToDraw, holdMs, initialRunnerState, isComplete, postNarrationHoldMs, runnerReducer } from '../beat-runner'
 import {
   PORTRAIT_BELOW,
   STAGE_LANDSCAPE,
@@ -69,7 +69,7 @@ export interface PresentModeProps {
 }
 
 const KIND_LABELS: Record<string, string> = {
-  intro: 'Intro', text: 'Text', bullets: 'Bullets', openui: 'OpenUI', flowchart: 'Flowchart',
+  'user-journey': 'User journey', intro: 'Intro', text: 'Text', bullets: 'Bullets', openui: 'OpenUI', flowchart: 'Flowchart',
   'tradeoff-sandbox': 'Trade-offs', 'taxonomy-browser': 'Taxonomy', flashcards: 'Flashcards', quiz: 'Quiz',
   'concept-map': 'Concept map', scenario: 'Scenario', 'decision-tree': 'Decision tree', 'image-gallery': 'Gallery',
   'breakdown-tree': 'Breakdown', 'timeline': 'Timeline', 'pillar-layer': 'Layers', 'formula-sandbox': 'Formula', 'reflection-sequence': 'Sequence', 'reflection-template': 'Template',
@@ -108,10 +108,6 @@ async function loadView(type: string): Promise<SectionView> {
 
 const formatAnchor = (anchor: OUIAnchor | undefined) => (anchor ? `${anchor.statement}${anchor.path}` : undefined)
 
-/** Shortest time a narration step stays up, without and with effects (decision 98). */
-const STEP_MIN_MS = 2000
-const STEP_WITH_EFFECTS_MS = 3200
-
 /** Class the stage puts on a beat's main content while the beat plays (decision 105). */
 export const FOCUS_CLASS = 'present-focus'
 
@@ -145,12 +141,12 @@ function SectionTitleCard({ section, beat }: { section: PresentSection; beat: nu
   )
 }
 
-function SectionBody({ section, view, beat, active, narrationStep }: { section: PresentSection; view: SectionView; beat: number; active: boolean; narrationStep?: NarrationStepData }) {
+function SectionBody({ section, view, beat, active, narrationStep, onBeatChange }: { section: PresentSection; view: SectionView; beat: number; active: boolean; narrationStep?: NarrationStepData; onBeatChange?: (beat: number) => void }) {
   const beats = useMemo(() => beatsOf(section.config).slice(titleBeatCount(section.config.type)), [section.config])
   let body: ReactNode
   if (view.kind === 'present') {
     const Renderer = view.Component
-    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} active={active} narrationStep={narrationStep} />
+    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} active={active} narrationStep={narrationStep} onBeatChange={onBeatChange} />
   } else {
     // No Present renderer yet: the Read section, entering as one beat
     const Read = view.kind === 'read' ? view.Component : null
@@ -404,7 +400,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
       })
     }
     // Long enough to see the effects land (and the camera arrive for a spotlight), however short the words
-    const least = (step.effects?.length ? STEP_WITH_EFFECTS_MS : STEP_MIN_MS) + (landed === beatKey ? 0 : 600)
+    const least = holdMs(stepWords(step)) + (landed === beatKey ? 0 : 600)
     const started = Date.now()
     if (narrating) {
       // The first step of a beat opens with the section's heading (first beat) and the beat's frame lines
@@ -461,10 +457,11 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     const reading = beatSteps.length ? null : speech.current
     void wait.then(async () => {
       const ms = beatSteps.length ? 700 : holdMs(wordsOfBeat(regionRefs.current[state.section], bodyBeat))
+      const started = Date.now()
       // A voice that never ends cannot stall the lesson
       if (reading) await Promise.race([reading, new Promise((r) => window.setTimeout(r, ms * 2 + 3000))])
       if (cancelled) return
-      const hold = reading ? 700 : ms
+      const hold = reading ? postNarrationHoldMs(ms, Date.now() - started) : ms
       setHolding(hold)
       holdTimer.current = window.setTimeout(() => dispatch({ type: 'next' }), hold)
     })
@@ -512,11 +509,11 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     setOverview(false)
     dispatch({ type: 'prev' })
   }, [])
-  const jump = useCallback((section: number) => {
+  const jump = useCallback((section: number, beat = 0) => {
     finishCamera()
     finishEntrance()
     setOverview(false)
-    dispatch({ type: 'jump', section })
+    dispatch({ type: 'jump', section, beat })
   }, [])
   const replay = useCallback(() => {
     finishCamera()
@@ -634,7 +631,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
                     )}
                     {lead[i] > 0 && <SectionTitleCard section={section} beat={beat} />}
                     <div className={`present-region-body${PresentRegistry.get(section.config.type) ? '' : ' is-fallback'}`}>
-                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} active={i === state.section && !complete && !overview} narrationStep={i === state.section ? step : undefined} />}
+                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} onBeatChange={(bodyBeat) => jump(i, bodyBeat + lead[i])} active={i === state.section && !complete && !overview} narrationStep={i === state.section ? step : undefined} />}
                       {mounted && !viewReady(i) && i === state.section && <p className="present-loading" role="status">Loading…</p>}
                     </div>
                     {i === state.section && step && landed === beatKey && !overview && !complete && regionRefs.current[i] && (

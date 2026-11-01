@@ -6,6 +6,7 @@ import { SectionRegistry } from './index'
  */
 export function registerCoreSections(): void {
   SectionRegistry.register('breakdown-tree', () => import('../sub-contexts/progressive-content/components/breakdown-tree'))
+  SectionRegistry.register('user-journey', () => import('../sub-contexts/progressive-content/components/user-journey'))
   SectionRegistry.register('timeline', () => import('../sub-contexts/progressive-content/components/timeline'))
   SectionRegistry.register('intro', () => import('../sub-contexts/progressive-content/components/intro'))
   SectionRegistry.register('text', () => import('../sub-contexts/progressive-content/components/text'))

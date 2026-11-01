@@ -29,6 +29,7 @@ import type {
   TaxonomyBrowserSectionData,
   ImageGallerySectionData,
   PillarLayerSectionData,
+  UserJourneySectionData,
   TimelineSectionData,
   BreakdownTreeSectionData,
   IntroRoadmapStep,
@@ -91,6 +92,7 @@ export type OKFSectionData =
   | ReflectionSequenceSectionData
   | ReflectionTemplateSectionData
   | PillarLayerSectionData
+  | UserJourneySectionData
   | TimelineSectionData
   | BreakdownTreeSectionData
 

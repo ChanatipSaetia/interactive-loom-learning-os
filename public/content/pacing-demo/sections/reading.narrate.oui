@@ -1,0 +1,5 @@
+root = Narration([title, short, medium, long])
+title = NarrationStep("title", "Compare three reading lengths. Keep narration on for one run, then mute it and replay to judge the silent reading pace.")
+short = NarrationStep("item1", "Pause. Take a breath. Notice the screen.")
+medium = NarrationStep("item2", "A little more to read: find the main idea first, then follow the supporting detail. This longer beat gives you extra time before the next idea appears.")
+long = NarrationStep("item3", "Longer explanations need more time. Read this paragraph once to understand its message, then look back for the key detail: autoplay now grows with the amount of text instead of stopping at nine seconds. You can still pause whenever you need to reflect, or press Next when you are ready to continue.")

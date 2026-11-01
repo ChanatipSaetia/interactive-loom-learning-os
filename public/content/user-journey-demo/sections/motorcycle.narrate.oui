@@ -1,0 +1,17 @@
+root = Narration([
+  NarrationStep("title", "An illustrative product experience. Follow the person, rather than the mechanism behind the product."),
+  NarrationStep("overview", "Maya wants to find a motorcycle for a daily commute."),
+  NarrationStep("stage1.goal", "Find models that fit everyday needs"),
+  NarrationStep("stage1.action", "Maya compares riding position, parking needs, and ownership costs."),
+  NarrationStep("stage1.response", "The comparison page explains the practical differences between models."),
+  NarrationStep("stage2.goal", "Check whether the motorcycle feels manageable"),
+  NarrationStep("stage2.action", "With the dealer supporting a stationary motorcycle, Maya checks the riding position."),
+  NarrationStep("stage2.response", "The dealer explains the controls and suitable alternatives."),
+  NarrationStep("stage2.friction", "The first model feels uncomfortable. Recovery: Try another model before deciding."),
+  NarrationStep("stage2.outcome", "Maya identifies a model worth considering further."),
+  NarrationStep("stage3.goal", "Understand the full commitment"),
+  NarrationStep("stage3.action", "Maya reviews the itemized offer, ongoing costs, and support arrangements."),
+  NarrationStep("stage3.response", "The dealer answers her questions and gives her time to decide."),
+  NarrationStep("stage3.friction", "An unexpected charge changes the total. Recovery: Explain the charge and update the offer before asking for a decision."),
+  NarrationStep("stage3.outcome", "Maya buys only if the fit and terms work for her. Postponing is valid too.")
+])

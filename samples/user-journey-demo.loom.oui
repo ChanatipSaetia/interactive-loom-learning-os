@@ -1,0 +1,75 @@
+// @loom-topic user-journey-demo
+// === topic.oui ===
+root = Topic("User Journeys: Motorcycle and AI", "Product experience", "Two illustrative proposed experiences, not customer research. Explore stages in Read, then watch goals, actions, responses and recovery in Present.", [SectionRef("motorcycle"), SectionRef("ai-product")], ["demo", "user-journey", "product"], "beginner")
+
+// === sections/ai-product.narrate.oui ===
+root = Narration([
+  NarrationStep("title", "An illustrative product experience. Follow the person, rather than the mechanism behind the product."),
+  NarrationStep("overview", "Sam wants to find a supported answer to a research question."),
+  NarrationStep("stage1.goal", "Set a useful scope"),
+  NarrationStep("stage1.action", "Sam asks why customer support volume increased."),
+  NarrationStep("stage1.response", "The assistant asks which date range and channels to examine."),
+  NarrationStep("stage2.goal", "Check the answer before relying on it"),
+  NarrationStep("stage2.action", "Sam reads the findings and opens their cited sources."),
+  NarrationStep("stage2.response", "The assistant connects each claim to the available evidence."),
+  NarrationStep("stage2.friction", "One claim has no supporting source. Recovery: Flag the gap, remove the unsupported claim, and ask for more evidence."),
+  NarrationStep("stage2.outcome", "Sam keeps only the findings supported by the sources."),
+  NarrationStep("stage3.goal", "Share a traceable summary"),
+  NarrationStep("stage3.action", "Sam edits the summary and confirms the final version."),
+  NarrationStep("stage3.response", "The assistant exports the approved summary with its sources.")
+])
+
+// === sections/ai-product.oui ===
+root = UserJourney("Research with an AI assistant", "Sam", "Find a supported answer to a research question", [ask, review, save])
+ask = JourneyStage("Ask", "Set a useful scope", "Sam asks why customer support volume increased.", "The assistant asks which date range and channels to examine.")
+review = JourneyStage("Review evidence", "Check the answer before relying on it", "Sam reads the findings and opens their cited sources.", "The assistant connects each claim to the available evidence.", "One claim has no supporting source.", "Flag the gap, remove the unsupported claim, and ask for more evidence.", "Sam keeps only the findings supported by the sources.")
+save = JourneyStage("Save the result", "Share a traceable summary", "Sam edits the summary and confirms the final version.", "The assistant exports the approved summary with its sources.")
+
+// === sections/motorcycle.narrate.oui ===
+root = Narration([
+  NarrationStep("title", "An illustrative product experience. Follow the person, rather than the mechanism behind the product."),
+  NarrationStep("overview", "Maya wants to find a motorcycle for a daily commute."),
+  NarrationStep("stage1.goal", "Find models that fit everyday needs"),
+  NarrationStep("stage1.action", "Maya compares riding position, parking needs, and ownership costs."),
+  NarrationStep("stage1.response", "The comparison page explains the practical differences between models."),
+  NarrationStep("stage2.goal", "Check whether the motorcycle feels manageable"),
+  NarrationStep("stage2.action", "With the dealer supporting a stationary motorcycle, Maya checks the riding position."),
+  NarrationStep("stage2.response", "The dealer explains the controls and suitable alternatives."),
+  NarrationStep("stage2.friction", "The first model feels uncomfortable. Recovery: Try another model before deciding."),
+  NarrationStep("stage2.outcome", "Maya identifies a model worth considering further."),
+  NarrationStep("stage3.goal", "Understand the full commitment"),
+  NarrationStep("stage3.action", "Maya reviews the itemized offer, ongoing costs, and support arrangements."),
+  NarrationStep("stage3.response", "The dealer answers her questions and gives her time to decide."),
+  NarrationStep("stage3.friction", "An unexpected charge changes the total. Recovery: Explain the charge and update the offer before asking for a decision."),
+  NarrationStep("stage3.outcome", "Maya buys only if the fit and terms work for her. Postponing is valid too.")
+])
+
+// === sections/motorcycle.oui ===
+root = UserJourney("Choosing a motorcycle", "Maya", "Find a motorcycle for a daily commute", [compare, visit, decide])
+
+compare = JourneyStage(
+  "Compare options",
+  "Find models that fit everyday needs",
+  "Maya compares riding position, parking needs, and ownership costs.",
+  "The comparison page explains the practical differences between models."
+)
+
+visit = JourneyStage(
+  "Visit the dealer",
+  "Check whether the motorcycle feels manageable",
+  "With the dealer supporting a stationary motorcycle, Maya checks the riding position.",
+  "The dealer explains the controls and suitable alternatives.",
+  "The first model feels uncomfortable.",
+  "Try another model before deciding.",
+  "Maya identifies a model worth considering further."
+)
+
+decide = JourneyStage(
+  "Make a decision",
+  "Understand the full commitment",
+  "Maya reviews the itemized offer, ongoing costs, and support arrangements.",
+  "The dealer answers her questions and gives her time to decide.",
+  "An unexpected charge changes the total.",
+  "Explain the charge and update the offer before asking for a decision.",
+  "Maya buys only if the fit and terms work for her. Postponing is valid too."
+)

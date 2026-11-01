@@ -276,3 +276,6 @@ export { BreakdownTreeSection } from './progressive-content'
 export type { BreakdownTreeSectionProps } from './progressive-content'
 
 export { BreakdownTreeFormEditor } from './progressive-content'
+
+export { UserJourneySectionSchema, UserJourneySection, UserJourneyFormEditor } from './progressive-content'
+export type { UserJourneySectionData, JourneyStageData, JourneyStageSelected } from './progressive-content'
