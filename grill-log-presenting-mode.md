@@ -525,3 +525,7 @@ For a flowchart that opens on Architecture, a compact diagram (at most six archi
 ### Read-mode diagram readability
 
 Read shares the clearer node typography and softer architecture cards. Its swimlane bands and labels remain visible while panning, sequence messages use full labels, and journey captions sit below the diagram. Read opens each view centered on its full content, allows manual zoom/pan, and frames played journey steps more closely. Fit-to-screen calculates a scale from actual bounds rather than the former fixed 0.4. Read's canvas is taller to give diagrams room alongside their controls.
+
+### Readable autoplay pacing
+
+Beats and authored narration steps get at least five seconds, with longer text budgeted at 180 words per minute plus 1.5 seconds to orient. Reading time has no nine-second ceiling. A narrated beat waits for both its reading budget and its voice, with at least 700 ms after speech; authored steps also respect their reading budget before changing captions or effects. Animation time is additional for ordinary beats. Pause and manual Next remain available for learners who want more time or want to move ahead.

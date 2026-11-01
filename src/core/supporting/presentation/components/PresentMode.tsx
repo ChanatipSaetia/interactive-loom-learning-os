@@ -14,7 +14,7 @@ import { SectionRegistry, type SectionConfig } from '../../../learning-engine/re
 import { PresentRegistry, beatsOf } from '../../../learning-engine/registry/present-registry'
 import { beatMarks, titleBeatCount, type PresentRendererProps } from '../../../learning-engine/sub-contexts/present-kernel'
 import { SectionErrorBoundary } from '../../../ui-system/primitives/SectionErrorBoundary'
-import { beatToDraw, holdMs, initialRunnerState, isComplete, runnerReducer } from '../beat-runner'
+import { beatToDraw, holdMs, initialRunnerState, isComplete, postNarrationHoldMs, runnerReducer } from '../beat-runner'
 import {
   PORTRAIT_BELOW,
   STAGE_LANDSCAPE,
@@ -107,10 +107,6 @@ async function loadView(type: string): Promise<SectionView> {
 }
 
 const formatAnchor = (anchor: OUIAnchor | undefined) => (anchor ? `${anchor.statement}${anchor.path}` : undefined)
-
-/** Shortest time a narration step stays up, without and with effects (decision 98). */
-const STEP_MIN_MS = 2000
-const STEP_WITH_EFFECTS_MS = 3200
 
 /** Class the stage puts on a beat's main content while the beat plays (decision 105). */
 export const FOCUS_CLASS = 'present-focus'
@@ -404,7 +400,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
       })
     }
     // Long enough to see the effects land (and the camera arrive for a spotlight), however short the words
-    const least = (step.effects?.length ? STEP_WITH_EFFECTS_MS : STEP_MIN_MS) + (landed === beatKey ? 0 : 600)
+    const least = holdMs(stepWords(step)) + (landed === beatKey ? 0 : 600)
     const started = Date.now()
     if (narrating) {
       // The first step of a beat opens with the section's heading (first beat) and the beat's frame lines
@@ -461,10 +457,11 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     const reading = beatSteps.length ? null : speech.current
     void wait.then(async () => {
       const ms = beatSteps.length ? 700 : holdMs(wordsOfBeat(regionRefs.current[state.section], bodyBeat))
+      const started = Date.now()
       // A voice that never ends cannot stall the lesson
       if (reading) await Promise.race([reading, new Promise((r) => window.setTimeout(r, ms * 2 + 3000))])
       if (cancelled) return
-      const hold = reading ? 700 : ms
+      const hold = reading ? postNarrationHoldMs(ms, Date.now() - started) : ms
       setHolding(hold)
       holdTimer.current = window.setTimeout(() => dispatch({ type: 'next' }), hold)
     })
