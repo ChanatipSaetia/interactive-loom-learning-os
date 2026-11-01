@@ -209,7 +209,7 @@ export function formulaTrends(data: FormulaPresentData, variable: FormulaVariabl
 export function formulaBeats(data: FormulaPresentData): Beat[] {
   if (!data.variables?.length || !data.metrics?.length) return [show('formulas', 'The formulas')]
   return [
-    show('formulas', 'The formulas, sliders and metrics'),
+    show('formulas', 'The inputs and computed metrics'),
     ...sweptVariables(data).map((v, i) => show(`sweep${i + 1}`, `${quoted(v.label)} moves from ${v.min} to ${v.max}, and how each metric follows`)),
   ]
 }

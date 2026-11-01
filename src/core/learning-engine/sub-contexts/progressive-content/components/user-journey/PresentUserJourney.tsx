@@ -9,30 +9,13 @@ export default function PresentUserJourney({ data, beat, onBeatChange }: Present
   const pick = usePickAnchors()
   const section = data.section
   const momentsRef = useRef<HTMLDivElement>(null)
-  // Fit the current page to the available canvas; retain the normal reading size for dense pages.
+  // Keep typography stable between beats; scroll longer content into view instead of shrinking it.
   useLayoutEffect(() => {
     const scroller = momentsRef.current
-    const content = scroller?.querySelector<HTMLElement>('.journey-page-content')
-    if (!scroller || !content) return
+    if (!scroller) return
     let live = true
     const fit = () => {
       if (!live || !scroller.clientHeight || !scroller.clientWidth) return
-      const base = parseFloat(getComputedStyle(scroller).getPropertyValue('--present-fs-body')) || 23
-      let low = base
-      let high = Math.max(base, Math.min(36, scroller.clientWidth / 11))
-      const set = (size: number) => scroller.style.setProperty('--journey-page-font-size', `${size}px`)
-      // Leave room for focus, glyph descenders and fractional layout rounding.
-      const room = (scroller.clientHeight - 16) * .85
-      set(low)
-      if (content.offsetHeight <= room) {
-        for (let i = 0; i < 9; i++) {
-          const size = (low + high) / 2
-          set(size)
-          if (content.offsetHeight <= room) low = size
-          else high = size
-        }
-      }
-      set(Math.floor(low * 10) / 10)
       const active = scroller.querySelector<HTMLElement>('[data-focus]')
       if (!active || scroller.scrollHeight <= scroller.clientHeight) return
       const top = active.offsetTop
@@ -67,6 +50,10 @@ export default function PresentUserJourney({ data, beat, onBeatChange }: Present
           </div>,
         ] : [])}
       </div></div>
-    </section> : <div className="journey-stage" {...mark(0, { motion: 'fade' })} {...focus(true)}><h3>The path to that goal</h3><p>{section.stages.length} stages · follow what {section.person} does and what happens in response.</p></div>}
+    </section> : <div className="journey-stage journey-path" {...mark(0, { motion: 'fade' })} {...focus(true)}>
+      <h3>The path to that goal</h3>
+      <p>{section.stages.length} stages · follow what {section.person} does and what happens in response.</p>
+      <ol aria-label="Journey path">{section.stages.map((item, index) => <li key={index}>{item.name}</li>)}</ol>
+    </div>}
   </div>
 }

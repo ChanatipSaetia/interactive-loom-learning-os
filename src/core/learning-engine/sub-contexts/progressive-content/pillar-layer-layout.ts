@@ -57,6 +57,21 @@ export interface PlacedBlock {
   clipPath?: string
 }
 
+/** The same peer groups and relative widths in Read and Present. */
+export function pillarLayerBands(items: PlacedBlock[], title: string, maxCols: number) {
+  const grouped = items.some((p) => p.block.group)
+  const groups = new Map<string, PlacedBlock[]>()
+  for (const p of items) {
+    const name = grouped ? p.block.group || title : title
+    groups.set(name, [...(groups.get(name) ?? []), p])
+  }
+  if (!items.length) groups.set(title, [])
+  return [...groups].map(([name, members]) => ({
+    name, members, grouped,
+    cols: grouped ? members.reduce((sum, p) => sum + p.colSpan, 0) : maxCols,
+  }))
+}
+
 /** Where each block sits in the layer grid (shared by the Read and Present views). */
 export function placePillarBlocks(layers: PillarLayerLayer[], matrix_blocks: PillarLayerBlock[]): PlacedBlock[] {
   return matrix_blocks.map((block, idx) => {

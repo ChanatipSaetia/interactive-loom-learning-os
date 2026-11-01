@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type ComponentType, type ReactNode } from 'react'
 import { animate, cubicBezier, type JSAnimation } from 'animejs'
 import { motion, useReducedMotion } from 'motion/react'
-import { BookOpen, RotateCcw } from 'lucide-react'
+import { BookOpen, ChevronLeft, ChevronRight, ChevronUp, Pause, Play, RotateCcw } from 'lucide-react'
 import { PRESENT_MOTION } from '../../../ui-system'
 import { useSound } from '../../../ui-system/sensory/SoundContext'
 import { SectionRegistry, type SectionConfig } from '../../../learning-engine/registry'
@@ -183,6 +183,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
   const [epoch, setEpoch] = useState(0)
   const [playing, setPlaying] = useState(autoplay)
   const [overview, setOverview] = useState(false)
+  const [controlsHidden, setControlsHidden] = useState(false)
   const [holding, setHolding] = useState<number | null>(null)
   const [views, setViews] = useState<Record<string, SectionView>>({})
   const [box, setBox] = useState({ w: 0, h: 0 })
@@ -554,6 +555,8 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
       if (e.metaKey || e.ctrlKey || e.altKey) return
       const target = e.target as HTMLElement | null
       if (target?.closest('input, textarea, select, [contenteditable="true"]')) return
+      // Let native button activation handle the bars without also advancing the slide.
+      if ((e.key === ' ' || e.key === 'Enter') && target?.closest('button, a, [role="button"]')) return
       const inStage = !!target?.closest('.present-complete button')
       if (e.key === 'ArrowRight' || (e.key === ' ' && !inStage)) {
         e.preventDefault()
@@ -658,7 +661,8 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
         </div>
       </div>
 
-      {/* Subtitles under the stage, so the narrator's line never covers what it talks about */}
+      {/* Bars overlay the canvas, so hiding them never resizes or moves the slide. */}
+      <div className="present-overlay-bars" hidden={controlsHidden}>
       <div className="present-caption-bar" aria-live="polite">
         {caption && !overview && !complete && (
           <motion.p
@@ -693,7 +697,15 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
         onNarrate={toggleNarration}
         onJump={jump}
         onExit={exit}
+        onHide={() => setControlsHidden(true)}
       />
+      </div>
+      {controlsHidden && <div className="present-mini-controls" role="toolbar" aria-label="Compact presentation controls" data-testid="present-mini-controls">
+        <button type="button" className="present-ctl" onClick={prev} disabled={state.section === 0 && state.beat === 0} aria-label="Previous beat" data-testid="present-mini-prev"><ChevronLeft size={18} /></button>
+        <button type="button" className="present-ctl" onClick={togglePlay} aria-label={playing ? 'Pause autoplay' : complete ? 'Replay' : 'Play'} aria-pressed={playing} data-testid="present-mini-play">{playing ? <Pause size={18} /> : <Play size={18} />}</button>
+        <button type="button" className="present-ctl" onClick={next} disabled={complete} aria-label="Next beat" data-testid="present-mini-next"><ChevronRight size={18} /></button>
+        <button type="button" className="present-ctl" onClick={() => setControlsHidden(false)} aria-label="Show presentation controls" title="Show presentation controls" data-testid="present-show-controls" autoFocus><ChevronUp size={18} /></button>
+      </div>}
     </div>
   )
 }

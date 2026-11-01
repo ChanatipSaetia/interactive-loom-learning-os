@@ -1,0 +1,4 @@
+root = Bullets("03 · Bullets — Before sharing an AI answer", [scope, evidence, share], true)
+scope = Bullet("Confirm the scope", [Bullet("Name the date range and support channels"), Bullet("State the question in one sentence")])
+evidence = Bullet("Check the evidence", [Bullet("Open the cited sources"), Bullet("Remove claims that the sources do not support")])
+share = Bullet("Share with context", [Bullet("Include the sources and limitations")])

@@ -19,6 +19,17 @@ const at = (edge: number) => conceptMapPlan(data).findIndex((step) => step.kind 
 const draw = (beat: number, value = data) => <PresentConceptMap data={value} beats={conceptMapBeats(value)} beat={beat} sectionIndex={0} active />
 
 describe('concept map relationship explanations', () => {
+  it('focuses the concept names rather than their type when introducing a group', () => {
+    const { container } = render(draw(0))
+    const names = container.querySelector('.present-cm-group-names')!
+    const type = container.querySelector('.present-cm-group-type')!
+    expect(names).toHaveTextContent('Renderer · Sprite')
+    expect(names).toHaveAttribute('data-focus')
+    expect(type).toHaveTextContent('system')
+    expect(type).not.toHaveAttribute('data-focus')
+    expect(beatSpeech(container, 0).map((part) => part.text).join(' ')).toBe('system. Renderer, Sprite.')
+  })
+
   it('introduces both endpoints first, preserving edge-list IDs rather than presentation-order IDs', () => {
     expect(conceptMapBeats(data).map((b) => b.id)).toEqual(['group1', 'link2', 'group2', 'link1', 'map'])
     expect(conceptMapBeats(data)[3].about).toBe('Renderer draws on Canvas')

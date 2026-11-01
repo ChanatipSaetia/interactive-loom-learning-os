@@ -5,7 +5,7 @@ import { PillarLayerHelpModal } from './PillarLayerHelpModal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import './pillar-layer.css'
-import { placePillarBlocks } from '../../pillar-layer-layout'
+import { pillarLayerBands, placePillarBlocks } from '../../pillar-layer-layout'
 export { placePillarBlocks } from '../../pillar-layer-layout'
 
 export interface PillarLayerSectionProps {
@@ -31,9 +31,9 @@ function reachable(start: string, edges: Map<string, string[]>): Set<string> {
 }
 
 /**
- * Layers stacked top to bottom with their blocks. On wide screens the layer names sit in a left column and
- * blocks keep their columns, spans and L-shapes; on narrower screens each layer becomes a band with its
- * blocks wrapped underneath. `depends_on` is shown as a "Uses" line on each block, and tapping a block traces
+ * Simple stacks share Present's named containment bands; shaped and multi-row blocks keep the matrix.
+ * Narrow screens stack peer bands and their blocks vertically. `depends_on` is shown as a "Uses" line,
+ * and tapping a block traces
  * everything it needs (below) and everything it affects (above).
  */
 
@@ -55,6 +55,7 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
 
   const placed = useMemo(() => placePillarBlocks(layers, matrix_blocks), [matrix_blocks, layers])
 
+  const simpleStack = placed.every((p) => p.rowSpan === 1 && !p.clipPath)
   const maxCols = Math.max(1, ...placed.map((p) => p.colStart + p.colSpan))
   const titles = useMemo(() => new Map(placed.map((p) => [p.key, p.block.title])), [placed])
 
@@ -101,6 +102,66 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
     ))
   }
 
+  const renderBlock = (p: (typeof placed)[number], autoFlow = false) => {
+    const { block } = p
+    const isSelected = p.key === selectedKey
+    const role = isSelected ? 'is-selected' : needs.has(p.key) ? 'is-needed' : affects.has(p.key) ? 'is-affected' : selectedKey ? 'is-dimmed' : ''
+    const blockUses = uses.get(p.key) ?? []
+    const tappable = hasLinks
+    return (
+      <div
+        key={p.key}
+        className={[
+          'pillar-block',
+          simpleStack ? 'pillar-stack-item' : '',
+          block.color ? `color-${block.color}` : '',
+          p.colSpan > 1 ? 'is-wide' : '',
+          p.clipPath ? 'is-shaped' : '',
+          tappable ? 'is-tappable' : '',
+          role,
+        ].filter(Boolean).join(' ')}
+        data-testid={`pillar-layer-block-${p.idx}`}
+        {...pick(block)}
+        style={{
+          ...(simpleStack ? { gridColumn: autoFlow ? `span ${p.colSpan}` : `${p.colStart + 1} / span ${p.colSpan}`, gridRow: 'auto' } : {}),
+          '--row': p.layerIdx + 1,
+          '--row-span': p.rowSpan,
+          '--col': p.colStart + 2,
+          '--col-span': p.colSpan,
+          ...(p.clipPath ? { '--clip': p.clipPath } : {}),
+        } as CSSProperties}
+        {...(tappable && {
+          role: 'button',
+          tabIndex: 0,
+          'aria-pressed': isSelected,
+          onClick: () => select(p.key),
+          onKeyDown: (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              select(p.key)
+            }
+          },
+        })}
+      >
+        <span className="pillar-block-title" {...pick(block, 'title')}>{block.title}</span>
+        {block.description && <span className="pillar-block-desc" {...pick(block, 'description')}>{block.description}</span>}
+        {blockUses.length > 0 && !isSelected && (
+          <span className="pillar-block-uses" data-testid={`pillar-block-uses-${p.idx}`}>
+            Uses: {blockUses.map((k) => titles.get(k)).join(', ')}
+          </span>
+        )}
+        {role === 'is-needed' && <span className="pillar-block-tag">Needed</span>}
+        {role === 'is-affected' && <span className="pillar-block-tag">Affected</span>}
+        {isSelected && (
+          <div className="pillar-trace" data-testid="pillar-trace">
+            <p><span className="pillar-trace-label">Needs</span>{nameList(needs)}</p>
+            <p><span className="pillar-trace-label">If it changes, it affects</span>{nameList(affects)}</p>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="pillar-layer-section" data-testid="pillar-layer-section">
       <SectionTitleBar
@@ -120,6 +181,25 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
         </p>
       )}
 
+      {simpleStack ? <div className="pillar-stack" data-testid="pillar-layer-grid">
+        {layers.map((layer, lIdx) => {
+          const items = placed.filter((p) => p.layerIdx === lIdx)
+          return <section key={layer.id} aria-label={layer.title} {...pick(layer)}>
+            {layer.description && <p className="pillar-layer-description" {...pick(layer, 'description')}>{layer.description}</p>}
+            <div className="pillar-stack-level">
+              {pillarLayerBands(items, layer.title, maxCols).map(({ name, members, grouped, cols }) => {
+                return <div key={name} className={`pillar-stack-band${selectedLayerIdx === lIdx ? ' is-highlighted' : ''}`} data-testid={!grouped ? `layer-row-${layer.id}` : undefined}
+                  style={{ flex: cols, '--layer-accent': `var(--ctp-${members[0]?.block.color ?? 'blue'})` } as CSSProperties}>
+                  <h3 className="pillar-stack-name" {...(!grouped ? pick(layer, 'title') : pick(members[0].block, 'group'))}>{name}</h3>
+                  <div className="pillar-stack-items" style={{ '--layer-cols': cols } as CSSProperties}>
+                    {members.map((p) => renderBlock(p, grouped))}
+                  </div>
+                </div>
+              })}
+            </div>
+          </section>
+        })}
+      </div> : (
       <div
         className="pillar-layer-matrix"
         data-testid="pillar-layer-grid"
@@ -137,66 +217,11 @@ export const PillarLayerSection: React.FC<PillarLayerSectionProps> = ({
               {layer.description && <span className="pillar-layer-header-desc" {...pick(layer, 'description')}>{layer.description}</span>}
             </div>
 
-            {placed.filter((p) => p.layerIdx === lIdx).map((p) => {
-              const { block } = p
-              const isSelected = p.key === selectedKey
-              const role = isSelected ? 'is-selected' : needs.has(p.key) ? 'is-needed' : affects.has(p.key) ? 'is-affected' : selectedKey ? 'is-dimmed' : ''
-              const blockUses = uses.get(p.key) ?? []
-              const tappable = hasLinks
-              return (
-                <div
-                  key={p.key}
-                  className={[
-                    'pillar-block',
-                    block.color ? `color-${block.color}` : '',
-                    p.colSpan > 1 ? 'is-wide' : '',
-                    p.clipPath ? 'is-shaped' : '',
-                    tappable ? 'is-tappable' : '',
-                    role,
-                  ].filter(Boolean).join(' ')}
-                  data-testid={`pillar-layer-block-${p.idx}`}
-                  {...pick(block)}
-                  style={{
-                    '--row': p.layerIdx + 1,
-                    '--row-span': p.rowSpan,
-                    '--col': p.colStart + 2,
-                    '--col-span': p.colSpan,
-                    ...(p.clipPath ? { '--clip': p.clipPath } : {}),
-                  } as CSSProperties}
-                  {...(tappable && {
-                    role: 'button',
-                    tabIndex: 0,
-                    'aria-pressed': isSelected,
-                    onClick: () => select(p.key),
-                    onKeyDown: (e: KeyboardEvent) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        select(p.key)
-                      }
-                    },
-                  })}
-                >
-                  <span className="pillar-block-title" {...pick(block, 'title')}>{block.title}</span>
-                  {block.description && <span className="pillar-block-desc" {...pick(block, 'description')}>{block.description}</span>}
-                  {blockUses.length > 0 && !isSelected && (
-                    <span className="pillar-block-uses" data-testid={`pillar-block-uses-${p.idx}`}>
-                      Uses: {blockUses.map((k) => titles.get(k)).join(', ')}
-                    </span>
-                  )}
-                  {role === 'is-needed' && <span className="pillar-block-tag">Needed</span>}
-                  {role === 'is-affected' && <span className="pillar-block-tag">Affected</span>}
-                  {isSelected && (
-                    <div className="pillar-trace" data-testid="pillar-trace">
-                      <p><span className="pillar-trace-label">Needs</span>{nameList(needs)}</p>
-                      <p><span className="pillar-trace-label">If it changes, it affects</span>{nameList(affects)}</p>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+            {placed.filter((p) => p.layerIdx === lIdx).map((p) => renderBlock(p))}
           </React.Fragment>
         ))}
       </div>
+      )}
     </div>
   )
 }

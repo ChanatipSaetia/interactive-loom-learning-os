@@ -1,0 +1,4 @@
+root = UserJourney("04 · User journey — From question to trusted summary", "Sam", "Share an answer supported by source evidence", [ask, review, save])
+ask = JourneyStage("Ask", "Set a useful scope", "Sam asks why support volume increased.", "The assistant asks which dates and channels to examine.")
+review = JourneyStage("Review evidence", "Check the answer before relying on it", "Sam reads the findings and opens the cited sources.", "The assistant connects each claim to the available evidence.", "One claim has no supporting source.", "Remove the unsupported claim and ask for more evidence.", "Sam keeps only supported findings.")
+save = JourneyStage("Save the result", "Share a traceable summary", "Sam edits the summary and confirms the final version.", "The assistant exports the approved summary with its sources.")

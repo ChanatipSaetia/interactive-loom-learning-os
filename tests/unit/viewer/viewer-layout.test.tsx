@@ -22,6 +22,39 @@ const compact = () => {
 }
 
 describe('Viewer toolbar and composer clearance', () => {
+  it('lets each presentation bar hide and restore independently without changing the beat', async () => {
+    compact()
+    render(<ViewerApp />)
+    await open()
+    fireEvent.click(screen.getByTestId('viewer-more'))
+    fireEvent.click(screen.getByTestId('viewer-mode-present'))
+    await screen.findByTestId('present-mode')
+    expect(document.querySelector('.viewer')).toHaveClass('viewer-is-presenting')
+    const header = document.querySelector('.topnav')!
+    const where = screen.getByTestId('present-where').textContent
+    fireEvent.click(screen.getByTestId('viewer-hide-header'))
+    expect(header).not.toBeVisible()
+    expect(screen.getByTestId('present-controls')).toBeVisible()
+    fireEvent.click(screen.getByTestId('present-hide-controls'))
+    expect(screen.getByTestId('present-controls')).not.toBeVisible()
+    expect(screen.getByTestId('present-mini-play')).toBeVisible()
+    expect(screen.getByTestId('present-mini-prev')).toBeVisible()
+    expect(screen.getByTestId('present-mini-prev')).toBeDisabled()
+    expect(screen.getByTestId('present-mini-next')).toBeVisible()
+    expect(screen.getByTestId('present-mini-play')).toHaveAttribute('aria-pressed', screen.getByTestId('present-play').getAttribute('aria-pressed'))
+    expect(screen.getByTestId('present-stage')).toBeVisible()
+    fireEvent.click(screen.getByTestId('viewer-show-header'))
+    expect(header).toBeVisible()
+    expect(screen.getByTestId('present-controls')).not.toBeVisible()
+    fireEvent.click(screen.getByTestId('present-show-controls'))
+    expect(screen.getByTestId('present-controls')).toBeVisible()
+    expect(screen.queryByTestId('present-mini-controls')).not.toBeInTheDocument()
+    expect(screen.getByTestId('present-where')).toHaveTextContent(where!)
+    fireEvent.click(screen.getByTestId('present-exit'))
+    expect(header).toBeVisible()
+    expect(document.querySelector('.viewer')).not.toHaveClass('viewer-is-presenting')
+  })
+
   it('moves Read and Present into More on compact screens and closes the menu after selection', async () => {
     compact()
     render(<ViewerApp />)

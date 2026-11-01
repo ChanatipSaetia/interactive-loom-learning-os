@@ -1,0 +1,3 @@
+root = Flashcards("12 · Flashcards — Words worth checking", [source, claim])
+source = Flashcard("source", "Source", "/sɔːrs/", "Evidence", "The material a claim is based on.", "A support report, release note or interview can be a source. Its relevance depends on the question and date range.", "A source lets the reader inspect the basis of the answer.")
+claim = Flashcard("claim", "Claim", "/kleɪm/", "Reasoning", "A statement that can be checked.", "Support volume rose after the release is a claim. The report must support the dates and comparison being made.", "Checking each claim helps catch confident but unsupported conclusions.")

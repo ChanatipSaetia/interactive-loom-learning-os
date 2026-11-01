@@ -371,3 +371,9 @@ body {
 .viewer .topic-content .journey-goal-banner { border-inline-start-width:2px; background:color-mix(in srgb,var(--primary) 3%,transparent); }
 .viewer .topic-content .journey-goal-statement { font-size:clamp(20px,2.3vw,26px); font-weight:550; line-height:1.4; color:color-mix(in srgb,var(--foreground) 85%,var(--background)); }
 .viewer .topic-content .journey-detail p { color:color-mix(in srgb,var(--foreground) 88%,var(--background)); }
+
+/* Present fills the viewport; the header and playback controls float over the slide. */
+.viewer-is-presenting { height:100dvh; min-height:0; overflow:hidden; }
+.viewer-is-presenting>.main-content { position:fixed; inset:0; z-index:40; padding:0; }
+.viewer .topnav[hidden] { display:none; }
+.viewer-show-header { position:fixed; z-index:51; top:max(12px,env(safe-area-inset-top,0px)); right:max(16px,env(safe-area-inset-right,0px)); min-height:40px; }

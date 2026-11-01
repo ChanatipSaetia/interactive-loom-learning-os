@@ -1,0 +1,2 @@
+root = ReflectionTemplate("19 · Reflection template — Explain why the answer is trustworthy", [reason])
+reason = TemplateChallenge("Complete the reasoning", "A useful summary connects each {claim} to its {source} and states its {limits}.", [Chip("claim-chip", "claim"), Chip("source-chip", "source"), Chip("limits-chip", "limitations"), Chip("style-chip", "confident tone")], {claim: "claim-chip", source: "source-chip", limits: "limits-chip"}, "Traceability and limits help the reader judge the answer.")

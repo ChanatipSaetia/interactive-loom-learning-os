@@ -81,12 +81,12 @@ describe('TradeoffSandbox Section', () => {
     expect(screen.getByText('Trade-off Sandbox')).toBeInTheDocument()
   })
 
-  it('renders scenario banner with description', () => {
+  it('keeps the scenario context in Compare options', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
-    expect(screen.getByTestId('scenario-banner')).not.toBeVisible()
-    fireEvent.click(screen.getByTestId('tradeoff-tab-sandbox'))
-    expect(screen.getByTestId('scenario-banner')).toBeInTheDocument()
+    expect(screen.getByTestId('scenario-banner').closest('[hidden]')).toBeNull()
     expect(screen.getByText('Build an enterprise web application.')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('tradeoff-tab-sandbox'))
+    expect(screen.getByTestId('scenario-banner')).not.toBeVisible()
   })
 
   // ─── Metric Dashboard ─────────────────────────────────
@@ -387,6 +387,8 @@ describe('TradeoffSandbox Section', () => {
     expect(screen.getByTestId('tradeoff-tab-sandbox')).toHaveAttribute('aria-selected', 'true')
     expect(isShown('metric-dashboard')).toBe(true)
     expect(isShown('compare-scenarios')).toBe(false)
+    expect(isShown('scenario-banner')).toBe(false)
+    expect(isShown('tradeoff-conclusion')).toBe(false)
   })
 
   it('keeps the choices made in Try it across tab switches, and marks them in Compare options', () => {
@@ -439,12 +441,12 @@ describe('TradeoffSandbox Section', () => {
     expect(con).toHaveTextContent('Requires SSR for search indexing')
   })
 
-  it('recommendation context appears in the sandbox instead of comparison', () => {
+  it('keeps the recommendation conclusion in Compare options instead of the sandbox', () => {
     render(<TradeoffSandboxSection {...defaultProps} />)
     expect(screen.queryByTestId('compare-recommended-badge-0-ssr')).not.toBeInTheDocument()
-    expect(screen.queryByRole('region', { name: 'Recommended options' })).not.toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Recommended options' })).toHaveTextContent('SSR')
     fireEvent.click(screen.getByTestId('tradeoff-tab-sandbox'))
-    expect(screen.getByLabelText('Recommended options')).toHaveTextContent('SSR')
+    expect(screen.queryByRole('region', { name: 'Recommended options' })).not.toBeInTheDocument()
     expect(screen.queryByTestId('compare-recommended-badge-0-spa')).not.toBeInTheDocument()
   })
 

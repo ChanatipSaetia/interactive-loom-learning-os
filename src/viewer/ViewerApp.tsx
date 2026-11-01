@@ -6,7 +6,7 @@
  * again, so changes made by an AI show up without reopening anything.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import { AlertTriangle, ArrowLeft, BookOpen, Check, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MessageSquareShare, MoreHorizontal, Play, RefreshCw, Save, Sparkles, Upload } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, ChevronUp, ClipboardPaste, Copy, Download, FileUp, FolderOpen, MessageSquareShare, MoreHorizontal, Play, RefreshCw, Save, Sparkles, Upload } from 'lucide-react'
 import { UISystemProvider } from '../core/ui-system'
 import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
@@ -158,6 +158,7 @@ export function ViewerApp() {
   const [refreshing, setRefreshing] = useState(false)
   const [picking, setPicking] = useState(false)
   const [mode, setMode] = useState<'read' | 'present'>('read')
+  const [headerHidden, setHeaderHidden] = useState(false)
   const [presentStart, setPresentStart] = useState(0)
   /** Where the learner is in Present (topic section index and beat), for Read and Refresh to return to. */
   const presentAt = useRef({ sectionIndex: 0, beat: 0 })
@@ -369,6 +370,7 @@ export function ViewerApp() {
   useEffect(() => { if (!compact) setMenuOpen(false) }, [compact])
 
   const startPresent = useCallback(() => {
+    setHeaderHidden(false)
     unlockSpeech()
     setPresentStart(sectionInView(presentSections))
     setPresentBeat(0)
@@ -389,6 +391,7 @@ export function ViewerApp() {
     }
   }, [memory, topic])
   const exitPresent = useCallback((sectionIndex: number) => {
+    setHeaderHidden(false)
     setMode('read')
     const name = topic?.sections[sectionIndex]?.name
     // Back where the learner was in Present, once Read has laid out
@@ -454,8 +457,8 @@ export function ViewerApp() {
 
   return (
     <UISystemProvider>
-      <div className={`app-layout viewer${topic && !presenting ? ' viewer-has-ai-bar' : ''}`}>
-        <header className="topnav">
+      <div className={`app-layout viewer${presenting ? ' viewer-is-presenting' : topic ? ' viewer-has-ai-bar' : ''}`}>
+        <header className="topnav" hidden={presenting && headerHidden}>
           <button type="button" className="topnav-title viewer-brand" onClick={() => setLoaded(null)} title="Open another topic">
             <Sparkles size={16} /> <span className="viewer-brand-label">Loom&nbsp;Viewer</span>
           </button>
@@ -493,6 +496,7 @@ export function ViewerApp() {
             )}
             {!compact && <LoomToolsNav current="viewer" />}
             {!compact && modeControls}
+            {presenting && <button type="button" className="viewer-pill" onClick={() => { setMenuOpen(false); setHeaderHidden(true) }} aria-label="Hide Viewer header" title="Hide Viewer header" data-testid="viewer-hide-header"><ChevronUp size={16} /></button>}
             {topic && !presenting && <AssistantToggle assistant={assistant} className="viewer-pill" />}
             {compact ? (
               <div className="viewer-menu-wrap" ref={menuRef}>
@@ -509,6 +513,7 @@ export function ViewerApp() {
             ) : secondary}
           </div>
         </header>
+        {presenting && headerHidden && <button type="button" className="viewer-pill viewer-show-header" onClick={() => setHeaderHidden(false)} aria-label="Show Viewer header" title="Show Viewer header" data-testid="viewer-show-header" autoFocus><ChevronDown size={16} /></button>}
         <main className="main-content">
           {topic && presenting
             ? (

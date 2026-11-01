@@ -171,8 +171,11 @@ export function FormulaSandbox({ title, variables = [], metrics = [], sectionInd
     const val = computedMetrics[metric.id] || 0
     const { display } = getMetricUnitAndFormat(metric, val)
 
+    const formula = `${metric.label.replace(/\s*\([^)]*\)\s*$/, '')} = ${humanizeFormula(metric.formula, variables)}`
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     const bodyContent = `
       <strong>Current Value:</strong> <span class="hud-highlight">${display}</span><br/><br/>
+      <strong>Formula:</strong> <code>${formula}</code><br/><br/>
       <strong>Definition:</strong> ${metric.description}<br/><br/>
       ${metric.analogy ? `<strong>Analogy:</strong><div class="hud-card">${metric.analogy}</div><br/>` : ''}
       ${metric.inScope && metric.inScope.length > 0 ? `<strong>In Scope:</strong><ul>${metric.inScope.map(i => `<li>${i}</li>`).join('')}</ul><br/>` : ''}
@@ -187,18 +190,6 @@ export function FormulaSandbox({ title, variables = [], metrics = [], sectionInd
 
       <div className="sandbox-layout">
         <div className="controls-panel">
-          <div className="formula-explanation">
-            <strong>System Formulas:</strong><br />
-            {metrics.map((m, idx) => {
-              const cleanLabel = m.label.replace(/\s*\([^)]*\)\s*$/, '')
-              return (
-                <span key={m.id} {...pick(m, 'formula')}>
-                  • {cleanLabel} = <code>{humanizeFormula(m.formula, variables)}</code>
-                  {idx < metrics.length - 1 && <br />}
-                </span>
-              )
-            })}
-          </div>
 
           {variables.map((v) => (
             <div key={v.id} className="slider-group" {...pick(v)}>
@@ -240,16 +231,12 @@ export function FormulaSandbox({ title, variables = [], metrics = [], sectionInd
 
             return (
               <div key={m.id} className="sim-metric-row" {...pick(m)}>
-                <div className="sim-metric-meta">
+                <button type="button" className="sim-metric-meta sim-metric-trigger" onClick={() => handleMetricClick(m)} title="View formula and metric details">
                   <span className="sim-metric-name" {...pick(m, 'label')}>{m.label}</span>
-                  <button
-                    className="sim-metric-val sky"
-                    onClick={() => handleMetricClick(m)}
-                    title="Click to view HUD details"
-                  >
+                  <span className="sim-metric-val sky">
                     {display}
-                  </button>
-                </div>
+                  </span>
+                </button>
                 <div className="gauge-bg">
                   <div
                     className="gauge-fill sky"

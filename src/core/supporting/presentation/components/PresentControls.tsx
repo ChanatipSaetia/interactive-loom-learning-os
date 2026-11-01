@@ -1,4 +1,4 @@
-import { BookOpen, ChevronLeft, ChevronRight, LayoutGrid, Pause, Play, Volume2, VolumeX } from 'lucide-react'
+import { BookOpen, ChevronDown, ChevronLeft, ChevronRight, LayoutGrid, Pause, Play, Volume2, VolumeX } from 'lucide-react'
 import type { Beat } from '../../../learning-engine/sub-contexts/present-kernel'
 
 export interface PresentControlsProps {
@@ -23,6 +23,7 @@ export interface PresentControlsProps {
   onNarrate: () => void
   onJump: (section: number) => void
   onExit: () => void
+  onHide?: () => void
 }
 
 /** Prev / play / next, the progress rail (one tick per beat; performed answers marked red or green), overview and exit. */
@@ -64,6 +65,7 @@ export function PresentControls(p: PresentControlsProps) {
       <button type="button" className="present-ctl present-ctl--text" onClick={p.onExit} data-testid="present-exit">
         <BookOpen size={15} /> <span>Read</span>
       </button>
+      {p.onHide && <button type="button" className="present-ctl" onClick={p.onHide} aria-label="Hide presentation controls" title="Hide presentation controls" data-testid="present-hide-controls"><ChevronDown size={18} /></button>}
       <div className="present-rail" data-testid="present-rail">
         {p.beats.map((beats, s) => (
           <button

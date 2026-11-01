@@ -995,15 +995,15 @@ function TradeoffSandboxSection({
         </TabsList>
 
         <TabsContent value="compare" className="tradeoff-tab-panel">
+          <div className="scenario-banner" data-testid={getTestId("scenario-banner")} {...pick(scenario)}>
+            <h3 className="scenario-context-title" {...pick(scenario, 'title')}>{scenario.title}</h3>
+            <p className="scenario-description" {...pick(scenario, 'description')}>{scenario.description}</p>
+          </div>
           <CompareAllPanel key={scenario.id} scenario={scenario} chosenIds={chosenIds} />
+          <TradeoffConclusion scenario={scenario} />
         </TabsContent>
 
         <TabsContent value="sandbox" className="tradeoff-tab-panel">
-      <div className="scenario-banner" data-testid={getTestId("scenario-banner")} {...pick(scenario)}>
-        <h3 className="scenario-context-title" {...pick(scenario, 'title')}>{scenario.title}</h3>
-        <p className="scenario-description" {...pick(scenario, 'description')}>{scenario.description}</p>
-      </div>
-          <TradeoffConclusion scenario={scenario} />
           <div className="tradeoff-layout">
             <div className="metric-dashboard" data-testid={getTestId("metric-dashboard")}>
               <div className="dashboard-header">

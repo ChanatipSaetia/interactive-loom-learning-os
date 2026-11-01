@@ -1,0 +1,4 @@
+root = ReflectionSequence("18 · Reflection sequence — Put the review in order", [SequenceChallenge("From question to shared answer", [scope, inspect, share], [scope, inspect, share])])
+scope = SequenceItem("scope", "Confirm the question and date range", "1")
+inspect = SequenceItem("inspect", "Inspect the sources behind each claim", "2")
+share = SequenceItem("share", "Share supported findings with citations", "3")

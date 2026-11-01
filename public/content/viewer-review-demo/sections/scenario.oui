@@ -1,0 +1,4 @@
+root = Scenario("14 · Scenario — A missing source before the meeting", "missing-source", [start, checked, rushed], "Sam has five minutes before a review meeting. One claim is missing its source.")
+start = ScenarioNode("start", "What should Sam do?", [ScenarioChoice("check", "Remove the claim and flag the evidence gap", "checked"), ScenarioChoice("send", "Send the summary without checking", "rushed")])
+checked = ScenarioNode("checked", null, null, Outcome("A defensible summary", "The team sees the supported findings and the open question.", "a"))
+rushed = ScenarioNode("rushed", null, null, Outcome("A weak basis for a decision", "The team cannot verify the unsupported claim. Revise it before relying on it.", "c"))
