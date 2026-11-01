@@ -1,3 +1,4 @@
+import { journeyScenes, type UserJourneySectionData } from './user-journey'
 import { breakdownModel, type BreakdownTreeSectionData } from './breakdown-tree'
 import { timelineGroups } from './timeline-layout'
 import type { TimelineSectionData } from './timeline'
@@ -181,4 +182,13 @@ export function breakdownTreeBeats(data: BreakdownTreePresentData): Beat[] {
 export const breakdownTreePresenter: SectionPresenter<BreakdownTreePresentData> = {
   toBeats: breakdownTreeBeats,
   load: () => import('./components/breakdown-tree/PresentBreakdownTree'),
+}
+
+export type UserJourneyPresentData = { section?: UserJourneySectionData }
+export function userJourneyBeats(data: UserJourneyPresentData): Beat[] {
+  return [show('overview', 'The person, overall goal and journey stages'), ...(data.section ? journeyScenes(data.section).map((scene) => show(scene.id, `${data.section!.stages[scene.stage].name}: ${scene.moment}`)) : [])]
+}
+export const userJourneyPresenter: SectionPresenter<UserJourneyPresentData> = {
+  toBeats: userJourneyBeats,
+  load: () => import('./components/user-journey/PresentUserJourney'),
 }

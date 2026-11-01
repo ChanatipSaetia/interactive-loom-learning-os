@@ -85,3 +85,9 @@ export { default as BreakdownTreeSection } from './components/breakdown-tree'
 export type { BreakdownTreeSectionProps } from './components/breakdown-tree'
 
 export { BreakdownTreeFormEditor } from './components/breakdown-tree/BreakdownTreeFormEditor'
+
+export { UserJourneySectionSchema } from './user-journey'
+export type { UserJourneySectionData, JourneyStageData } from './user-journey'
+export { default as UserJourneySection } from './components/user-journey'
+export { UserJourneyFormEditor } from './components/user-journey/UserJourneyFormEditor'
+export type { JourneyStageSelected } from './events'

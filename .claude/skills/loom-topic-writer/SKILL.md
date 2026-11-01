@@ -30,6 +30,7 @@ Paths below are relative to this skill folder. Read the linked files, not only t
 | Relationships between concepts | [concept-map](references/sections/concept-map.md) |
 | Layered dependency and foundation | [pillar-layer](references/sections/pillar-layer.md) |
 | Process, responsibility and interaction | [flowchart](references/sections/flowchart.md) |
+| A person’s experience with a product or service | [user-journey](references/sections/user-journey.md) |
 | Measured time, duration, overlap and waiting | [timeline](references/sections/timeline.md) |
 | Parts of a measurable whole and conditional probability | [breakdown-tree](references/sections/breakdown-tree.md) |
 | Presenting options, comparing alternatives and trade-offs | [tradeoff-sandbox](references/sections/tradeoff-sandbox.md) |

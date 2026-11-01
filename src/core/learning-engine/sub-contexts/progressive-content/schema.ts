@@ -353,3 +353,6 @@ export type { TimelineSectionData, TimelineActivity, TimelineLane, TimelineGroup
 
 export { BreakdownTreeSectionSchema } from './breakdown-tree'
 export type { BreakdownTreeSectionData, BreakdownNode } from './breakdown-tree'
+
+export { UserJourneySectionSchema } from './user-journey'
+export type { UserJourneySectionData, JourneyStageData } from './user-journey'

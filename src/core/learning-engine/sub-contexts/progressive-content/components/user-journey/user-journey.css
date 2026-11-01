@@ -1,0 +1,97 @@
+.user-journey { color:var(--foreground); font-family:var(--font-ui); }
+.journey-person { color:var(--primary); font-weight:600; margin:0 0 6px; }
+.journey-overall-goal { font-size:1.15rem; line-height:1.6; margin:0 0 20px; }
+.journey-stage { padding:8px 0 20px; border:0; border-radius:0; background:transparent; }
+.journey-stage h3 { margin:0 0 18px; font-size:1.35rem; line-height:1.4; }
+.journey-details { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:20px; row-gap:16px; }
+.journey-detail { --journey-accent:var(--ctp-blue); min-width:0; overflow-wrap:anywhere; padding:20px; border:1px solid color-mix(in srgb,var(--foreground) 14%,transparent); border-radius:var(--radius-md); background:linear-gradient(135deg,color-mix(in srgb,var(--foreground) 7%,transparent),color-mix(in srgb,var(--foreground) 2%,transparent)),color-mix(in srgb,var(--card) 62%,transparent); box-shadow:inset 0 1px 0 color-mix(in srgb,var(--foreground) 9%,transparent),0 8px 24px color-mix(in srgb,var(--ctp-crust) 10%,transparent); -webkit-backdrop-filter:blur(18px) saturate(115%); backdrop-filter:blur(18px) saturate(115%); }
+.journey-detail--goal { --journey-accent:var(--ctp-mauve); }
+.journey-detail--action { --journey-accent:var(--ctp-blue); }
+.journey-detail--response { --journey-accent:var(--ctp-teal); }
+.journey-detail--friction { --journey-accent:var(--ctp-peach); }
+.journey-detail--outcome { --journey-accent:var(--ctp-green); }
+.user-journey .journey-detail h4 { display:flex; align-items:center; gap:8px; margin:0 0 12px; color:color-mix(in srgb,var(--journey-accent) 80%,var(--foreground)); font-size:.72em; font-weight:650; line-height:1.5; letter-spacing:.09em; text-transform:uppercase; }
+.journey-detail h4 svg { flex:none; width:1.15em; height:1.15em; }
+.user-journey .journey-stage>h3 { font-weight:600; padding-bottom:8px; border:0; font-size:1.65rem; letter-spacing:-.025em; }
+.journey-detail p { margin:0; line-height:1.65; }
+.journey-detail--goal { grid-column:1/-1; }
+.journey-recovery { --journey-accent:var(--ctp-green); margin-top:18px; padding:2px 0 2px 16px; border:0; border-inline-start:2px solid var(--journey-accent); border-radius:0; background:transparent; }
+.journey-recovery h4 { margin-bottom:8px; }
+.journey-navigation { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; }
+.journey-navigation button,.journey-form button { border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 12px; background:transparent; color:var(--foreground); cursor:pointer; font:inherit; }
+.user-journey button:focus-visible,.journey-form button:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.user-journey button:disabled,.journey-form button:disabled { opacity:.45; cursor:default; }
+.journey-form { display:flex; flex-direction:column; gap:16px; }
+.journey-form fieldset { display:flex; flex-direction:column; gap:12px; border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; }
+.journey-form-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.present-user-journey .journey-stage h3 { font-size:var(--present-fs-card); }
+.present-user-journey .journey-detail p,.present-user-journey .journey-stage>div>p { font-size:var(--present-fs-body); }
+.user-journey.present-user-journey .journey-detail h4 { font-size:calc(var(--present-fs-body) * .72); }
+@media(max-width:640px) { .journey-details { grid-template-columns:1fr; } .journey-stage { padding:4px 0 16px; } .journey-detail { padding:18px; } }
+
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .journey-detail { background:var(--card); } }
+@media(prefers-reduced-transparency:reduce) { .journey-detail { background:var(--card); -webkit-backdrop-filter:none; backdrop-filter:none; } }
+
+/* Keep the purpose visible above the stage detail, rather than among body paragraphs. */
+.journey-goal-banner { margin:20px 0; padding:18px 22px; border-inline-start:3px solid var(--primary); background:color-mix(in srgb,var(--primary) 6%,transparent); border-radius:0 var(--radius-sm) var(--radius-sm) 0; }
+.journey-goal-label { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:0 0 10px; color:var(--primary); font-size:12px; font-weight:650; letter-spacing:.07em; text-transform:uppercase; }
+.user-journey .journey-goal-statement { margin:0; font:600 clamp(24px,3vw,32px)/1.3 var(--font-ui); letter-spacing:-.025em; text-wrap:balance; overflow-wrap:anywhere; color:var(--foreground); }
+.user-journey .journey-detail--goal p { font-weight:550; font-size:1.15em; }
+.present-user-journey .journey-goal-banner { margin:6px 0 12px; padding:14px 16px; }
+.present-user-journey .journey-goal-statement { font-size:var(--present-fs-body); line-height:1.3; }
+.present-user-journey .journey-goal-label { font-size:13px; margin-bottom:8px; }
+
+/* Present keeps one stage on one page; moments accumulate inside its single glass surface. */
+.present-user-journey .journey-step-page { padding:20px; border:1px solid color-mix(in srgb,var(--foreground) 14%,transparent); border-radius:var(--radius-md); background:linear-gradient(135deg,color-mix(in srgb,var(--foreground) 7%,transparent),color-mix(in srgb,var(--foreground) 2%,transparent)),color-mix(in srgb,var(--card) 62%,transparent); box-shadow:inset 0 1px 0 color-mix(in srgb,var(--foreground) 9%,transparent); -webkit-backdrop-filter:blur(18px) saturate(115%); backdrop-filter:blur(18px) saturate(115%); }
+.present-user-journey .journey-step-page .journey-detail { padding:14px 0; border:0; border-top:1px solid var(--border); border-radius:0; background:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+.journey-step-moments .journey-beat:first-child .journey-detail { border-top:0; padding-top:0; }
+.present-user-journey .journey-step-page h3 { margin-bottom:12px; padding-bottom:0; }
+.present-user-journey .journey-step-page .journey-detail h4 { margin-bottom:6px; }
+.present-user-journey .journey-step-page .journey-detail p { font-size:var(--present-fs-card); line-height:1.45; }
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .present-user-journey .journey-step-page { background:var(--card); } }
+@media(prefers-reduced-transparency:reduce) { .present-user-journey .journey-step-page { background:var(--card); -webkit-backdrop-filter:none; backdrop-filter:none; } }
+
+.present-user-journey { display:flex; flex-direction:column; flex:1; min-height:0; }
+.present-user-journey>.journey-step-page { display:flex; flex-direction:column; flex:1; min-height:0; }
+.present-user-journey>.journey-step-page>h3 { flex:none; }
+.present-user-journey .journey-step-moments { position:relative; min-height:0; overflow:auto; scrollbar-width:thin; padding:4px 8px; margin:0 -8px; }
+
+.present-user-journey .journey-step-page .journey-detail { padding:10px 0; }
+.present-user-journey .journey-step-page .journey-detail p { font-size:var(--present-fs-small); }
+.present-user-journey .journey-step-page .journey-detail h4 { margin-bottom:4px; }
+.present-user-journey .journey-goal-banner { padding:10px 14px; }
+/* The title already has its own opening beat; give the stage page its vertical space. */
+.present-region:has(.present-user-journey)>.present-region-head { display:none; }
+
+/* The active stage is the page heading, not a second title inside the glass panel. */
+.present-user-journey .journey-page-count { margin:0 0 8px; flex:none; color:var(--muted-foreground); font-size:12px; }
+.present-user-journey .journey-step-page .journey-detail p { font-size:var(--present-fs-body); line-height:1.5; }
+.present-region .present-user-journey .journey-beat.present-focus { outline:none; box-shadow:none; animation:none; }
+.present-user-journey .journey-beat.present-focus .journey-detail>h4 { color:var(--journey-accent); }
+
+/* A single current-stage heading, with only its immediate neighbors in the slider. */
+.journey-selector { margin:24px 0; }
+.user-journey .journey-current-stage { grid-column:2; grid-row:1; margin:0; padding:10px 4px; min-width:0; text-align:center; overflow-wrap:anywhere; text-wrap:balance; border-bottom:2px solid var(--primary); color:var(--foreground); font:650 clamp(22px,3vw,28px)/1.25 var(--font-ui); letter-spacing:-.025em; }
+.journey-current-stage>span { color:var(--primary); }
+.journey-slider { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.8fr) minmax(0,1fr); align-items:center; gap:10px; touch-action:pan-y; }
+.journey-slide { display:flex; align-items:center; gap:6px; min-width:0; min-height:48px; padding:6px 0; border:0; background:transparent; color:var(--muted-foreground); text-align:left; font:inherit; cursor:pointer; }
+.journey-slide>span { display:flex; flex-direction:column; min-width:0; }
+.journey-slide small { font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--primary); }
+.journey-slide-name { font-size:13px; line-height:1.4; overflow-wrap:anywhere; }
+.journey-slide svg { flex:none; }
+.journey-slide--previous,.journey-slide-empty--previous { grid-column:1; grid-row:1; }
+.journey-slide--next,.journey-slide-empty--next { grid-column:3; grid-row:1; }
+.journey-slide--next { justify-content:flex-end; text-align:right; }
+.journey-slide:hover:not(:disabled) { color:var(--foreground); }
+.user-journey .journey-slide:disabled { opacity:1; cursor:default; }
+.present-user-journey .journey-selector { margin:16px 0 12px; pointer-events:auto; }
+.present-user-journey .journey-current-stage { font-size:26px; }
+
+/* Measure page content at its actual canvas size, then grow type into unused room. */
+.present-user-journey .journey-step-moments { flex:1; }
+.present-user-journey .journey-page-content { display:flow-root; }
+.present-user-journey .journey-step-page .journey-detail p { font-size:var(--journey-page-font-size,var(--present-fs-body)); }
+.present-user-journey .journey-step-page .journey-detail h4 { font-size:max(13px,calc(var(--journey-page-font-size,var(--present-fs-body)) * .62)); }
+
+/* Keep breathing room around enlarged text; compact screens retain their reading area. */
+@media(min-width:700px) { .present-user-journey .journey-step-page { padding:28px 32px; } }

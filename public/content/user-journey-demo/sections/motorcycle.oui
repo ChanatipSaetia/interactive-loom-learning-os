@@ -1,0 +1,28 @@
+root = UserJourney("Choosing a motorcycle", "Maya", "Find a motorcycle for a daily commute", [compare, visit, decide])
+
+compare = JourneyStage(
+  "Compare options",
+  "Find models that fit everyday needs",
+  "Maya compares riding position, parking needs, and ownership costs.",
+  "The comparison page explains the practical differences between models."
+)
+
+visit = JourneyStage(
+  "Visit the dealer",
+  "Check whether the motorcycle feels manageable",
+  "With the dealer supporting a stationary motorcycle, Maya checks the riding position.",
+  "The dealer explains the controls and suitable alternatives.",
+  "The first model feels uncomfortable.",
+  "Try another model before deciding.",
+  "Maya identifies a model worth considering further."
+)
+
+decide = JourneyStage(
+  "Make a decision",
+  "Understand the full commitment",
+  "Maya reviews the itemized offer, ongoing costs, and support arrangements.",
+  "The dealer answers her questions and gives her time to decide.",
+  "An unexpected charge changes the total.",
+  "Explain the charge and update the offer before asking for a decision.",
+  "Maya buys only if the fit and terms work for her. Postponing is valid too."
+)

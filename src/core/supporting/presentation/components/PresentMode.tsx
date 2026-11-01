@@ -69,7 +69,7 @@ export interface PresentModeProps {
 }
 
 const KIND_LABELS: Record<string, string> = {
-  intro: 'Intro', text: 'Text', bullets: 'Bullets', openui: 'OpenUI', flowchart: 'Flowchart',
+  'user-journey': 'User journey', intro: 'Intro', text: 'Text', bullets: 'Bullets', openui: 'OpenUI', flowchart: 'Flowchart',
   'tradeoff-sandbox': 'Trade-offs', 'taxonomy-browser': 'Taxonomy', flashcards: 'Flashcards', quiz: 'Quiz',
   'concept-map': 'Concept map', scenario: 'Scenario', 'decision-tree': 'Decision tree', 'image-gallery': 'Gallery',
   'breakdown-tree': 'Breakdown', 'timeline': 'Timeline', 'pillar-layer': 'Layers', 'formula-sandbox': 'Formula', 'reflection-sequence': 'Sequence', 'reflection-template': 'Template',
@@ -141,12 +141,12 @@ function SectionTitleCard({ section, beat }: { section: PresentSection; beat: nu
   )
 }
 
-function SectionBody({ section, view, beat, active, narrationStep }: { section: PresentSection; view: SectionView; beat: number; active: boolean; narrationStep?: NarrationStepData }) {
+function SectionBody({ section, view, beat, active, narrationStep, onBeatChange }: { section: PresentSection; view: SectionView; beat: number; active: boolean; narrationStep?: NarrationStepData; onBeatChange?: (beat: number) => void }) {
   const beats = useMemo(() => beatsOf(section.config).slice(titleBeatCount(section.config.type)), [section.config])
   let body: ReactNode
   if (view.kind === 'present') {
     const Renderer = view.Component
-    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} active={active} narrationStep={narrationStep} />
+    body = <Renderer data={section.config.props} beats={beats} beat={beat} sectionIndex={section.sectionIndex} active={active} narrationStep={narrationStep} onBeatChange={onBeatChange} />
   } else {
     // No Present renderer yet: the Read section, entering as one beat
     const Read = view.kind === 'read' ? view.Component : null
@@ -509,11 +509,11 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
     setOverview(false)
     dispatch({ type: 'prev' })
   }, [])
-  const jump = useCallback((section: number) => {
+  const jump = useCallback((section: number, beat = 0) => {
     finishCamera()
     finishEntrance()
     setOverview(false)
-    dispatch({ type: 'jump', section })
+    dispatch({ type: 'jump', section, beat })
   }, [])
   const replay = useCallback(() => {
     finishCamera()
@@ -631,7 +631,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
                     )}
                     {lead[i] > 0 && <SectionTitleCard section={section} beat={beat} />}
                     <div className={`present-region-body${PresentRegistry.get(section.config.type) ? '' : ' is-fallback'}`}>
-                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} active={i === state.section && !complete && !overview} narrationStep={i === state.section ? step : undefined} />}
+                      {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} onBeatChange={(bodyBeat) => jump(i, bodyBeat + lead[i])} active={i === state.section && !complete && !overview} narrationStep={i === state.section ? step : undefined} />}
                       {mounted && !viewReady(i) && i === state.section && <p className="present-loading" role="status">Loading…</p>}
                     </div>
                     {i === state.section && step && landed === beatKey && !overview && !complete && regionRefs.current[i] && (

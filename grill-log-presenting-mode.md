@@ -529,3 +529,23 @@ Read shares the clearer node typography and softer architecture cards. Its swiml
 ### Readable autoplay pacing
 
 Beats and authored narration steps get at least five seconds, with longer text budgeted at 180 words per minute plus 1.5 seconds to orient. Reading time has no nine-second ceiling. A narrated beat waits for both its reading budget and its voice, with at least 700 ms after speech; authored steps also respect their reading budget before changing captions or effects. Animation time is additional for ordinary beats. Pause and manual Next remain available for learners who want more time or want to move ahead.
+
+### Native user journey section
+
+`UserJourney` and `JourneyStage` describe a person's product or service experience in progressive-content. No system nodes or Event Storming cycle is required. Read selects a stage; Present opens with a journey overview and keeps the stage rail while showing goal, action, response, optional friction/recovery and optional outcome in distinct scenes. No user events fire from Present; Read stage selection emits `JourneyStageSelected`. Stage objects and their fields retain Pick anchors, so narration can target the experience being discussed. All timing and audio use the shared Present stage. Stage-number beat IDs follow authored order; Studio warns that reordering requires updating narration. The standalone HTML prototypes are design artifacts; the native demo is `public/content/user-journey-demo`.
+
+### Journey stages as pages
+
+A Present journey stage is one frosted page. Goal, action, response, friction/recovery and outcome accumulate across its existing beats. Earlier moments stay in place while only the current one is marked for focus and narration. A new stage replaces the page; going back removes moments that have not yet been revealed. The overall goal and stage rail remain above the page. Beat IDs and authoring syntax are unchanged.
+
+### Readable journey pages and a single stage heading
+
+Journey stages now split into pages grouping at most two moments with a 42-word target, keeping Present body text at its normal size. Beats reveal details within the current page; page changes replace details without changing beat IDs. The active stage is a prominent heading in the rail and is no longer repeated inside the page. Panel focus emphasizes its subheading instead of drawing another box. This supersedes the single-page-per-stage layout.
+
+### Journey neighbor slider
+
+Read and Present show the current stage once as a heading and only its immediate neighbors in a two-sided slider. At either end only the existing neighbor is shown; there is no wraparound. Neighbor buttons, horizontal swipes and arrow keys on the slider navigate stages. Present uses an optional body-beat navigation callback from its host, so stage changes reset to the goal beat while preserving the shared title offset and narration state. Vertical swipes remain scrolling. Overview has no selected stage.
+
+### Journey text grows into available space
+
+Present measures the current journey page in canvas coordinates and increases its text size until it fills the available detail area, up to 36 px, reserving about 15% of the detail area as breathing room. Larger viewports use extra inner padding. ResizeObserver and font readiness refresh the measurement after resizing or font loading. The normal Present text size is the floor; dense content scrolls rather than shrinking below that floor. Subheadings scale with the text. Read typography is unchanged.

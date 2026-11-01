@@ -1,0 +1,1 @@
+root = Topic("User Journeys: Motorcycle and AI", "Product experience", "Two illustrative proposed experiences, not customer research. Explore stages in Read, then watch goals, actions, responses and recovery in Present.", [SectionRef("motorcycle"), SectionRef("ai-product")], ["demo", "user-journey", "product"], "beginner")

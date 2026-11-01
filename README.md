@@ -64,6 +64,7 @@ A whole topic can also be one `.loom.oui` file (a `// @loom-topic <id>` line, th
 
 | Type | Component | What it is |
 |---|---|---|
+| `user-journey` | `UserJourney` | A person’s goals, actions, product responses and friction/recovery across stages |
 | `intro` | `Intro` | Topic opener: what it is, why it matters, a roadmap |
 | `text` | `Text` | Paragraphs with inline markdown |
 | `bullets` | `Bullets` | Bulleted or numbered checklist |

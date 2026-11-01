@@ -1,3 +1,4 @@
+import { USER_JOURNEY_EXAMPLE } from '../../../learning-engine/composition/oui/user-journey-authoring'
 import { BREAKDOWN_TREE_EXAMPLE } from '../../../learning-engine/composition/oui/breakdown-tree-authoring'
 import { TIMELINE_EXAMPLE } from '../../../learning-engine/composition/oui/timeline-authoring'
 /**
@@ -19,6 +20,7 @@ export interface SectionTemplate {
 const q = (text: string) => JSON.stringify(text)
 
 export const SECTION_TEMPLATES: SectionTemplate[] = [
+  { type: 'user-journey', component: 'UserJourney', label: 'User Journey', description: 'A person’s goals, actions and experience across product or service stages', source: (title) => USER_JOURNEY_EXAMPLE.replace('"Choosing a motorcycle"', q(title)) },
   { type: 'breakdown-tree', component: 'BreakdownTree', label: 'Breakdown Tree', description: 'A measurable whole divided into quantities, shares or conditional probabilities', source: (title) => BREAKDOWN_TREE_EXAMPLE.replace('"Where does the meal budget go?"', q(title)) },
   {
     type: 'timeline', component: 'Timeline', label: 'Timeline',

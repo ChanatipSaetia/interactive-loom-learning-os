@@ -1,3 +1,4 @@
+import { USER_JOURNEY_AUTHORING_GUIDE } from './user-journey-authoring'
 import { MENTAL_MODEL_GUIDE } from './mental-model-guide'
 import { BREAKDOWN_TREE_AUTHORING_GUIDE } from './breakdown-tree-authoring'
 import { TIMELINE_AUTHORING_GUIDE } from './timeline-authoring'
@@ -419,5 +420,5 @@ export function getLoomAuthoringPrompt(): string {
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)
   prompt = dropStreamingNotes(prompt)
-  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${LAYOUTS}\n\n${DRAWINGS}\n\n${TIME_USAGE_AUTHORING_GUIDE}\n\n${timeUsageExamplesGuide()}\n\n${NARRATION}\n\n${BULLET_AUTHORING_GUIDE}\n\n${LAYER_AUTHORING_GUIDE}\n\n${TIMELINE_AUTHORING_GUIDE}\n\n${BREAKDOWN_TREE_AUTHORING_GUIDE}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
+  return `${prompt.trimEnd()}\n\n${STANDARD_OPENUI}\n\n${TABLES_AND_CHARTS}\n\n${LAYOUTS}\n\n${DRAWINGS}\n\n${TIME_USAGE_AUTHORING_GUIDE}\n\n${timeUsageExamplesGuide()}\n\n${NARRATION}\n\n${BULLET_AUTHORING_GUIDE}\n\n${LAYER_AUTHORING_GUIDE}\n\n${USER_JOURNEY_AUTHORING_GUIDE}\n\n${TIMELINE_AUTHORING_GUIDE}\n\n${BREAKDOWN_TREE_AUTHORING_GUIDE}\n\n## Loom Authoring Rules\n\n${AUTHORING_RULES.map((r) => `- ${r}`).join('\n')}\n`
 }

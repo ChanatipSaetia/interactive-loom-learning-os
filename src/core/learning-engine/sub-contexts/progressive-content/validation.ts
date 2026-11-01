@@ -1,3 +1,4 @@
+import { validateUserJourney, type UserJourneySectionData } from './user-journey'
 import { validateBreakdownTree, type BreakdownTreeSectionData } from './breakdown-tree'
 import { validateTimeline, type TimelineSectionData } from './timeline'
 import type { ValidationDiagnostic, ValidationContext } from '../../validation/types'
@@ -38,6 +39,7 @@ export function validateProgressiveContentTier3(
 
   if (sectionType === 'breakdown-tree') return validateBreakdownTree(payload as BreakdownTreeSectionData).map((d) => ({ ...d, file: ctx?.file }))
 
+  if (sectionType === 'user-journey') return validateUserJourney(payload as UserJourneySectionData).map((d) => ({ ...d, file: ctx?.file }))
   if (sectionType === 'timeline') return validateTimeline(payload as TimelineSectionData).map((d) => ({ ...d, file: ctx?.file }))
 
   if (sectionType === 'taxonomy-browser') {

@@ -1,3 +1,5 @@
+import { userJourneyOUIComponents } from './user-journey-openui'
+export { UserJourney, JourneyStage } from './user-journey-openui'
 import { breakdownTreeOUIComponents } from './breakdown-tree-openui'
 export { BreakdownTree, BreakdownNode } from './breakdown-tree-openui'
 import { timelineOUIComponents } from './timeline-openui'
@@ -448,6 +450,7 @@ export const progressiveContentOUIComponents = [
   TaxonomyBrowser, TaxonomyCategory,
   ImageGallery, GalleryImage,
   PillarLayer, Layer, LayerItem, MatrixBlock,
+  ...userJourneyOUIComponents,
   ...timelineOUIComponents,
   ...breakdownTreeOUIComponents,
 ]
