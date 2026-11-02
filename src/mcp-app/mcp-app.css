@@ -447,3 +447,29 @@ body {
 .mcp-page-flow .perspective-1000,
 .mcp-page-flow .bullets-card { break-inside: avoid; }
 .mcp-page-flow .bullets-card { transform: none !important; }
+
+/* Equal primary choices; supporting tools stay quiet beneath the topic outline. */
+.mcp-mode-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.mcp-mode-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 14%, var(--card));
+  color: var(--foreground);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.mcp-mode-choice > svg { color: var(--primary); }
+.mcp-mode-choice strong { font-size: 17px; line-height: 1.2; }
+.mcp-mode-choice span { font-size: 12px; line-height: 1.4; color: var(--muted-foreground); }
+.mcp-mode-choice:hover:not(:disabled) { background: color-mix(in srgb, var(--primary) 23%, var(--card)); }
+.mcp-mode-choice:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.mcp-mode-choice:disabled { opacity: .5; cursor: default; }
+.mcp-secondary-actions { align-items: center; padding-top: 10px; border-top: 1px solid var(--border); }
+.mcp-secondary-actions .mcp-button { padding: 6px 10px; font-size: 12px; }
+.mcp-secondary-actions .mcp-theme select { font-size: 12px; }

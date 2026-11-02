@@ -551,6 +551,20 @@ export function McpApp({ app }: { app: App }) {
         <h1>{topic?.manifest?.title ?? topic?.topicId ?? 'This topic could not be opened'}</h1>
         {topic?.manifest?.description && <p>{topic.manifest.description}</p>}
       </div>
+      {topic && (
+        <div className="mcp-mode-actions" role="group" aria-label="Choose how to learn">
+          <button type="button" className="mcp-mode-choice" onClick={() => open('present')} disabled={presentSections.length === 0} data-testid={startMode === 'present' ? 'mcp-play' : 'mcp-other-mode'}>
+            <Play size={24} aria-hidden />
+            <strong>Present</strong>
+            <span>Play with narration</span>
+          </button>
+          <button type="button" className="mcp-mode-choice" onClick={() => open('read')} data-testid={startMode === 'read' ? 'mcp-play' : 'mcp-other-mode'}>
+            <BookOpen size={24} aria-hidden />
+            <strong>Read</strong>
+            <span>Read page by page</span>
+          </button>
+        </div>
+      )}
       {topic && topic.sections.length > 0 && (
         <ol className="mcp-sections">
           {topic.sections.map((s) => (
@@ -571,23 +585,13 @@ export function McpApp({ app }: { app: App }) {
         </div>
       )}
       {topic && (
-        <div className="mcp-actions">
-          {presentSections.length > 0 && (
-            <button type="button" className="mcp-button mcp-play" onClick={() => open(startMode)} data-testid="mcp-play">
-              {startMode === 'read' ? <><BookOpen size={16} /> Read</> : <><Play size={16} /> Play</>}
-            </button>
-          )}
-          {presentSections.length > 0 && (
-            <button type="button" className="mcp-button mcp-quiet" onClick={() => open(startMode === 'read' ? 'present' : 'read')} data-testid="mcp-other-mode">
-              {startMode === 'read' ? <><Play size={14} /> Present</> : <><BookOpen size={14} /> Read</>}
-            </button>
-          )}
-          <button type="button" className="mcp-button mcp-quiet" onClick={() => void continueInViewer()} data-testid="mcp-viewer">
+        <div className="mcp-actions mcp-secondary-actions">
+          <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void continueInViewer()} data-testid="mcp-viewer">
             <ExternalLink size={14} /> Open in Viewer
           </button>
           <ThemePicker themeId={themeId} onPick={pickTheme} />
           {shelf && (
-            <button type="button" className="mcp-button mcp-quiet" onClick={() => setView('shelf')} data-testid="mcp-back-to-shelf">
+            <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => setView('shelf')} data-testid="mcp-back-to-shelf">
               <ArrowLeft size={14} /> {shelfDomain?.title ?? 'Library'}
             </button>
           )}
