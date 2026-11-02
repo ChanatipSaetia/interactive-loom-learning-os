@@ -22,6 +22,27 @@ const fs = require('node:fs')
     const scroll = app.locator('[data-testid=mcp-read-scroll]')
     const dimensions = await scroll.evaluate((el) => ({ height: el.clientHeight, content: el.scrollHeight }))
     if (dimensions.content <= dimensions.height) throw Error('Full reading content did not load')
+    // Mimic a host cancelling native nested scrolling; delivered gestures still move the reader.
+    await app.locator('body').evaluate(() => {
+      window.addEventListener('wheel', (event) => event.preventDefault(), { capture: true, passive: false })
+      window.addEventListener('touchmove', (event) => event.preventDefault(), { capture: true, passive: false })
+    })
+    const box = await scroll.boundingBox()
+    const x = box.x + box.width * .7, y = box.y + Math.min(250, box.height * .5)
+    if (!touch) {
+      await page.mouse.move(x, y)
+      await page.mouse.wheel(0, 250)
+    } else {
+      const input = await page.context().newCDPSession(page)
+      await input.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: y + 80 }] })
+      for (let n = 1; n <= 6; n++) {
+        await input.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y + 80 - n * 25 }] })
+        await page.waitForTimeout(20)
+      }
+      await input.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    }
+    await page.waitForTimeout(200)
+    if (await scroll.evaluate((el) => el.scrollTop) <= 0) throw Error('Wheel or touch input did not scroll')
     await scroll.evaluate((el) => { el.scrollTop = 300 })
     if (await scroll.evaluate((el) => el.scrollTop) <= 0) throw Error('Reading does not scroll')
     const choice = app.locator('[data-testid^=quiz-choice-0-]').first()

@@ -149,3 +149,4 @@
 .journey-wide-stage .journey-beat:has(.journey-detail--goal) { grid-column:1/-1; }
 .present-user-journey.journey-wide-stage .journey-step-page .journey-detail { padding:8px 0; }
 .journey-wide-stage .journey-page-count { display:none; }
+.present-user-journey.journey-whole-stage .journey-step-page .journey-detail { padding:8px 0; }

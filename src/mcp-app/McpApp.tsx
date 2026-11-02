@@ -23,6 +23,7 @@ import { PresentMode, kindLabel, preloadPresenters, unlockSpeech, type PresentSe
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
 import { TopicView } from '../viewer/ViewerApp'
+import { useReadingScroll } from './reading-scroll'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/themes'
 import { copyText } from '../core/ui-system/clipboard'
@@ -161,6 +162,8 @@ export function McpApp({ app }: { app: App }) {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [writing, setWriting] = useState(false)
   const [view, setView] = useState<View>('card')
+  const readingScroll = useRef<HTMLElement>(null)
+  useReadingScroll(readingScroll, view === 'read')
   const [asked, setAsked] = useState(false)
   const [startMode, setStartMode] = useState<'present' | 'read'>('present')
   /** The chat is showing the app fullscreen. */
@@ -539,7 +542,7 @@ export function McpApp({ app }: { app: App }) {
       <UISystemProvider>
         <div className={`mcp-read${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
           {top}
-          <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
+          <main ref={readingScroll} className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
             <LearnerMemoryProvider port={memory} device={DEVICE}>
               <TopicView topic={topic} />
             </LearnerMemoryProvider>
