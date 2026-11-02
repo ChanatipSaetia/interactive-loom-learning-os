@@ -22,8 +22,8 @@ export interface ThemeOption {
 }
 
 export const THEMES: ThemeOption[] = [
-  { id: 'liquid-glass', label: 'Liquid Glass', icon: '💧' },
-  { id: 'liquid-glass-light', label: 'Liquid Glass Light', icon: '🫧' },
+  { id: 'liquid-glass', label: 'Frosted Glass', icon: '💧' },
+  { id: 'liquid-glass-light', label: 'Frosted Glass Light', icon: '🫧' },
   { id: '', label: 'Catppuccin Frappé' },
   { id: 'medicare', label: 'MediCare+' },
   { id: 'recipebook', label: 'RecipeBook' },

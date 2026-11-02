@@ -13,7 +13,7 @@
  * does (decision 216): Open plays a topic, Next topic asks the chat.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, Crosshair, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, ChevronUp, Crosshair, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
@@ -23,6 +23,7 @@ import { PresentMode, kindLabel, preloadPresenters, unlockSpeech, type PresentSe
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
 import { TopicView } from '../viewer/ViewerApp'
+import { PaginatedRead } from './PaginatedRead'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/themes'
 import { copyText } from '../core/ui-system/clipboard'
@@ -69,7 +70,7 @@ const DEVICE = 'mcp-app'
 const VIEWER_URL = document.querySelector<HTMLMetaElement>('meta[name="loom-viewer-url"]')?.content
   || import.meta.url.replace(/mcp-app\/v\d+\/[^/]*$/, 'viewer.html')
 
-/** Decision 196: Liquid Glass when the chat is dark, Liquid Glass Light when it is light. */
+/** Follow the host scheme with the MCP app's own defaults. */
 export function themeForHost(theme: McpUiHostContext['theme']): string {
   if (theme === 'light') return SYSTEM_THEMES.light
   if (theme === 'dark') return SYSTEM_THEMES.dark
@@ -82,9 +83,8 @@ function applyTheme(id: string) {
 }
 
 /**
- * Touch screens: the chat's own scrolling takes the swipes a scroll box inside
- * the app would need, so Read opens full screen there, or grows to its full
- * height where the chat has no full screen.
+ * Touch screens: use the host's full screen for Reading pages when available.
+ * The library still uses its natural height where full screen is unavailable.
  */
 const TOUCH = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true
 
@@ -184,6 +184,7 @@ export function McpApp({ app }: { app: App }) {
   /** The chat's light or dark mode (decision 196) until the learner picks a theme, which lasts the session. */
   const [themeId, setThemeId] = useState(() => document.documentElement.dataset.theme ?? '')
   const picked = useRef(false)
+  const [navCollapsed, setNavCollapsed] = useState(true)
   const showTheme = useCallback((id: string) => {
     applyTheme(id)
     setThemeId(id)
@@ -456,8 +457,9 @@ export function McpApp({ app }: { app: App }) {
   }
 
   const bar = topic && (view === 'present' || view === 'read') && (
-    <div className="mcp-bar">
+    <div className={`mcp-bar${navCollapsed ? ' mcp-bar-collapsed' : ''}`}>
       <span className="mcp-bar-title">{topic.manifest?.title ?? topic.topicId}</span>
+      <div className="mcp-bar-actions" hidden={navCollapsed} role="toolbar" aria-label="Topic navigation">
       {view === 'read' && presentSections.length > 0 && (
         <button type="button" className="mcp-button mcp-small" onClick={() => open('present')}><Play size={14} /> Present</button>
       )}
@@ -492,6 +494,10 @@ export function McpApp({ app }: { app: App }) {
         </button>
       )}
       <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void close()} aria-label="Close" title="Close" data-testid="mcp-close"><X size={14} /></button>
+      </div>
+      <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => setNavCollapsed((value) => !value)} aria-expanded={!navCollapsed} aria-label={navCollapsed ? 'Expand navigation' : 'Minimize navigation'} title={navCollapsed ? 'Expand navigation' : 'Minimize navigation'} data-testid="mcp-nav-toggle">
+        {navCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+      </button>
     </div>
   )
   const top = <>{bar}{linkStrip}</>
@@ -516,13 +522,13 @@ export function McpApp({ app }: { app: App }) {
   if (topic && view === 'read') {
     return (
       <UISystemProvider>
-        <div className={`mcp-read${full ? ' mcp-full' : TOUCH ? ' mcp-read-natural' : ''}`} data-testid="mcp-read">
+        <div className={`mcp-read mcp-read-paginated${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
           {top}
-          {/* Read scrolls inside a frame of fixed height, so the chat's frame stays that size and
-              the sections' modals (taxonomy details, help) open where the learner is looking */}
-          <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
+          <main className="main-content mcp-read-book">
             <LearnerMemoryProvider port={memory} device={DEVICE}>
+              <PaginatedRead key={topic.topicId}>
               <TopicView topic={topic} />
+              </PaginatedRead>
             </LearnerMemoryProvider>
           </main>
           <PickMode
@@ -545,6 +551,20 @@ export function McpApp({ app }: { app: App }) {
         <h1>{topic?.manifest?.title ?? topic?.topicId ?? 'This topic could not be opened'}</h1>
         {topic?.manifest?.description && <p>{topic.manifest.description}</p>}
       </div>
+      {topic && (
+        <div className="mcp-mode-actions" role="group" aria-label="Choose how to learn">
+          <button type="button" className="mcp-mode-choice" onClick={() => open('present')} disabled={presentSections.length === 0} data-testid={startMode === 'present' ? 'mcp-play' : 'mcp-other-mode'}>
+            <Play size={24} aria-hidden />
+            <strong>Present</strong>
+            <span>Play with narration</span>
+          </button>
+          <button type="button" className="mcp-mode-choice" onClick={() => open('read')} data-testid={startMode === 'read' ? 'mcp-play' : 'mcp-other-mode'}>
+            <BookOpen size={24} aria-hidden />
+            <strong>Read</strong>
+            <span>Read page by page</span>
+          </button>
+        </div>
+      )}
       {topic && topic.sections.length > 0 && (
         <ol className="mcp-sections">
           {topic.sections.map((s) => (
@@ -565,23 +585,13 @@ export function McpApp({ app }: { app: App }) {
         </div>
       )}
       {topic && (
-        <div className="mcp-actions">
-          {presentSections.length > 0 && (
-            <button type="button" className="mcp-button mcp-play" onClick={() => open(startMode)} data-testid="mcp-play">
-              {startMode === 'read' ? <><BookOpen size={16} /> Read</> : <><Play size={16} /> Play</>}
-            </button>
-          )}
-          {presentSections.length > 0 && (
-            <button type="button" className="mcp-button mcp-quiet" onClick={() => open(startMode === 'read' ? 'present' : 'read')} data-testid="mcp-other-mode">
-              {startMode === 'read' ? <><Play size={14} /> Present</> : <><BookOpen size={14} /> Read</>}
-            </button>
-          )}
-          <button type="button" className="mcp-button mcp-quiet" onClick={() => void continueInViewer()} data-testid="mcp-viewer">
+        <div className="mcp-actions mcp-secondary-actions">
+          <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void continueInViewer()} data-testid="mcp-viewer">
             <ExternalLink size={14} /> Open in Viewer
           </button>
           <ThemePicker themeId={themeId} onPick={pickTheme} />
           {shelf && (
-            <button type="button" className="mcp-button mcp-quiet" onClick={() => setView('shelf')} data-testid="mcp-back-to-shelf">
+            <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => setView('shelf')} data-testid="mcp-back-to-shelf">
               <ArrowLeft size={14} /> {shelfDomain?.title ?? 'Library'}
             </button>
           )}

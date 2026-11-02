@@ -350,7 +350,7 @@ Loom Viewer (`/viewer.html` on the Loom site) opens topics without any chat:
 | The player stays blank | Remove `LOOM_APP_URL` to use the local server's bundled player, or the hosted endpoint's default assets. Rebuild or download the local server again if its embedded player is outdated. |
 | "Where am I in …" finds nothing | Your folder is still in the old flat layout: ask the chat to reorganise it into domains |
 | No narration | On iPhone, check the silent switch and press Play (speech starts from the tap); on Android, use Open in Viewer in Chrome |
-| Read does not scroll on a phone | Read opens full screen on touch screens; use Full screen if it did not |
+| Moving through Read | Use Previous/Next or the arrow keys in the reading area; swipe horizontally on touch screens. Read opens full screen on touch screens when the host supports it. |
 | dsh: *"declares no dsh.bundle"* | See [DeepSeek Harness](#deepseek-harness-dsh) |
 | YAML path errors on Windows | Write `G:/My Drive/Loom`, not `"G:\My Drive\Loom"` |
 | `node` not found after installing it | Open a new terminal window |
@@ -366,3 +366,5 @@ Loom Viewer (`/viewer.html` on the Loom site) opens topics without any chat:
 | `npm run worker:dev` | Runs the Worker locally (Wrangler, port 8787) |
 
 The whole site and hosted server deploy together to Cloudflare Workers on pushes to `master`, or manually through `.github/workflows/deploy-mcp-worker.yml`. The workflow uses the `cloudflare` GitHub environment and its `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets. Allow `master` in that environment's deployment branch rules. For deployment without a manual approval, configure the environment without required reviewers; repository files cannot change those settings. The deployment summary links to the site root and `/mcp`. GitHub Pages deployment is retired. Code: `src/mcp/` (server, Worker, memory folder), `src/mcp-app/` (the app), `src/viewer/library.ts` and `LibraryView.tsx` (library and domain pages). After changing a component, the authoring prompt or a skill, run `npm run oui:schema`.
+
+Reading in the MCP app uses pages that fit the frame, with Previous/Next and a page counter. Paragraphs flow onto additional pages at their reading font size. Answers and section state stay mounted across page changes. Interactive diagrams and pop-up details retain their own controls.

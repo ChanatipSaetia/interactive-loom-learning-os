@@ -5,12 +5,10 @@ import { registerCorePresenters } from '../core/learning-engine/registry/registe
 import { ViewerApp } from './ViewerApp'
 import { LearnerMemoryProvider, deviceId, indexedDbAdapter, memoryAdapter, migrateProgressOnce } from '../core/supporting/learner-progress'
 import { applyStoredTheme } from '../core/ui-system/theme/useTheme'
-import { installGlassLens } from '../core/ui-system/theme/glass-lens'
 import '../styles/app.css'
 import './viewer.css'
 
 applyStoredTheme()
-installGlassLens()
 
 registerCoreSections()
 registerCorePresenters()
