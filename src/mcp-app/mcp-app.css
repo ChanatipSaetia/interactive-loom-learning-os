@@ -15,8 +15,8 @@ body {
   color: var(--ctp-text);
   background: color-mix(in srgb, var(--ctp-base) 72%, transparent);
   border: 1px solid var(--glass-edge, var(--ctp-surface1));
-  backdrop-filter: var(--glass-filter, blur(18px) saturate(1.6));
-  -webkit-backdrop-filter: var(--glass-filter, blur(18px) saturate(1.6));
+  backdrop-filter: var(--glass-filter, none);
+  -webkit-backdrop-filter: var(--glass-filter, none);
   box-shadow: 0 10px 30px -18px var(--glass-drop, rgba(0, 0, 0, 0.5));
   font-family: Inter, 'Noto Sans Thai', system-ui, sans-serif;
   display: flex;
@@ -235,8 +235,8 @@ body {
   padding: 8px 12px;
   color: var(--ctp-text);
   background: color-mix(in srgb, var(--ctp-base) 80%, transparent);
-  backdrop-filter: var(--glass-filter, blur(18px));
-  -webkit-backdrop-filter: var(--glass-filter, blur(18px));
+  backdrop-filter: var(--glass-filter, none);
+  -webkit-backdrop-filter: var(--glass-filter, none);
 }
 
 .mcp-bar-title {
@@ -473,3 +473,13 @@ body {
 .mcp-secondary-actions { align-items: center; padding-top: 10px; border-top: 1px solid var(--border); }
 .mcp-secondary-actions .mcp-button { padding: 6px 10px; font-size: 12px; }
 .mcp-secondary-actions .mcp-theme select { font-size: 12px; }
+
+/* The camera transforms a large, multi-slide canvas. Backdrop sampling within
+   that moving layer can produce clipped tiles in Android chat webviews.
+   Keep the frosted tints here, with blur only on stationary UI outside it. */
+.mcp-player .present-world { will-change: auto; }
+.mcp-player .present-world,
+.mcp-player .present-world * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
