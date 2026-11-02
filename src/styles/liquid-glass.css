@@ -1,5 +1,5 @@
 /* ============================================================
-   Liquid Glass themes — container styles
+   Frosted Glass themes — container styles
 
    Shared by the dark (Midnight Mist) and light (Morning Mist)
    variants through [data-theme^='liquid-glass']; their tokens live
@@ -23,17 +23,6 @@
   inset: 0;
   z-index: -1;
   background: var(--glass-backdrop);
-  pointer-events: none;
-}
-
-:root[data-theme^='liquid-glass'] body::after {
-  /* Fine grain over the backdrop: keeps the dark gradients from banding */
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   pointer-events: none;
 }
 
@@ -105,14 +94,6 @@
 :root[data-theme^='liquid-glass'] .viewer-drop.is-dragging {
   border-color: var(--primary);
   background: var(--glass-sheen), color-mix(in srgb, var(--primary) 18%, var(--glass-tint-dark));
-}
-
-/* Liquid lens (Chromium, src/core/ui-system/theme/glass-lens.ts): bars and dialogs that float over content bend
-   what passes under their rim, then soften it. Elsewhere, and on the ⋯ menu, panes keep the blur. */
-:root[data-theme^='liquid-glass'][data-glass-lens] :is(.pick-bar, .present-caption, .present-controls, .ui-modal),
-:root[data-theme^='liquid-glass'][data-glass-lens] .topnav::before {
-  backdrop-filter: url(#liquid-lens) var(--glass-lens-blur) var(--glass-lens-tone);
-  -webkit-backdrop-filter: url(#liquid-lens) var(--glass-lens-blur) var(--glass-lens-tone);
 }
 
 /* The header's ⋯ menu: frosted glass over the page */
@@ -587,7 +568,6 @@
     --glass-menu: var(--glass-solid);
     --glass-sheen: linear-gradient(transparent, transparent);
     --glass-filter: none;
-    --glass-lens-blur: none; /* makes the lens declaration invalid, so no lens either */
   }
   :root[data-theme^='liquid-glass'] body::before,
   :root[data-theme^='liquid-glass'] body::after {

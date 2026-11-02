@@ -183,7 +183,7 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
   const [epoch, setEpoch] = useState(0)
   const [playing, setPlaying] = useState(autoplay)
   const [overview, setOverview] = useState(false)
-  const [controlsHidden, setControlsHidden] = useState(false)
+  const [controlsHidden, setControlsHidden] = useState(fillParent)
   const [holding, setHolding] = useState<number | null>(null)
   const [views, setViews] = useState<Record<string, SectionView>>({})
   const [box, setBox] = useState({ w: 0, h: 0 })
@@ -285,13 +285,15 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
       window.removeEventListener('resize', measure)
     }
   }, [fillParent])
-  // Landscape lays out on a fixed 1200×675 stage scaled to fit; on a phone the stage is the space
-  // itself at scale 1, so sections lay out (and read) as Read mode does on a phone
+  // Landscape uses a fixed 1200×675 canvas; portrait follows the available space,
+  // with a minimum layout size. Both scale to fit when the host constrains their height.
   const portrait = box.w > 0 && box.w < PORTRAIT_BELOW
   const portraitW = Math.round(Math.max(STAGE_PORTRAIT.w, box.w))
   const portraitH = Math.round(Math.max(STAGE_PORTRAIT.h, box.h))
   const stage: Size = useMemo(() => (portrait ? { w: portraitW, h: portraitH } : STAGE_LANDSCAPE), [portrait, portraitW, portraitH])
-  const scale = portrait ? 1 : box.w > 0 ? Math.min(box.w / stage.w, box.h / stage.h) : 1
+  // Scale the whole slide, including its type, against both available dimensions.
+  // Embedded portrait stages can be shorter than their minimum layout height.
+  const scale = box.w > 0 && box.h > 0 ? Math.min(box.w / stage.w, box.h / stage.h) : 1
 
   // The stage never scrolls: focusing a button near a region's edge would otherwise scroll these
   // overflow-hidden boxes and shift the camera off its section

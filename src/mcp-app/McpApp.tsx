@@ -13,7 +13,7 @@
  * does (decision 216): Open plays a topic, Next topic asks the chat.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, Crosshair, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, ChevronUp, Crosshair, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
@@ -69,7 +69,7 @@ const DEVICE = 'mcp-app'
 const VIEWER_URL = document.querySelector<HTMLMetaElement>('meta[name="loom-viewer-url"]')?.content
   || import.meta.url.replace(/mcp-app\/v\d+\/[^/]*$/, 'viewer.html')
 
-/** Decision 196: Liquid Glass when the chat is dark, Liquid Glass Light when it is light. */
+/** Follow the host scheme with the MCP app's own defaults. */
 export function themeForHost(theme: McpUiHostContext['theme']): string {
   if (theme === 'light') return SYSTEM_THEMES.light
   if (theme === 'dark') return SYSTEM_THEMES.dark
@@ -184,6 +184,7 @@ export function McpApp({ app }: { app: App }) {
   /** The chat's light or dark mode (decision 196) until the learner picks a theme, which lasts the session. */
   const [themeId, setThemeId] = useState(() => document.documentElement.dataset.theme ?? '')
   const picked = useRef(false)
+  const [navCollapsed, setNavCollapsed] = useState(true)
   const showTheme = useCallback((id: string) => {
     applyTheme(id)
     setThemeId(id)
@@ -456,8 +457,9 @@ export function McpApp({ app }: { app: App }) {
   }
 
   const bar = topic && (view === 'present' || view === 'read') && (
-    <div className="mcp-bar">
+    <div className={`mcp-bar${navCollapsed ? ' mcp-bar-collapsed' : ''}`}>
       <span className="mcp-bar-title">{topic.manifest?.title ?? topic.topicId}</span>
+      <div className="mcp-bar-actions" hidden={navCollapsed} role="toolbar" aria-label="Topic navigation">
       {view === 'read' && presentSections.length > 0 && (
         <button type="button" className="mcp-button mcp-small" onClick={() => open('present')}><Play size={14} /> Present</button>
       )}
@@ -492,6 +494,10 @@ export function McpApp({ app }: { app: App }) {
         </button>
       )}
       <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void close()} aria-label="Close" title="Close" data-testid="mcp-close"><X size={14} /></button>
+      </div>
+      <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => setNavCollapsed((value) => !value)} aria-expanded={!navCollapsed} aria-label={navCollapsed ? 'Expand navigation' : 'Minimize navigation'} title={navCollapsed ? 'Expand navigation' : 'Minimize navigation'} data-testid="mcp-nav-toggle">
+        {navCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+      </button>
     </div>
   )
   const top = <>{bar}{linkStrip}</>

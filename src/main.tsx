@@ -4,11 +4,9 @@ import { HashRouter } from 'react-router-dom'
 import { App } from './App'
 import { registerCoreSections } from './core/learning-engine/registry/register-core-sections'
 import { applyStoredTheme } from './core/ui-system/theme/useTheme'
-import { installGlassLens } from './core/ui-system/theme/glass-lens'
 import './styles/app.css'
 
 applyStoredTheme()
-installGlassLens()
 
 registerCoreSections()
 

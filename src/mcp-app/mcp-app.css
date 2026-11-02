@@ -166,9 +166,9 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Present in the conversation: the 16:9 stage at the card's width less its padding, plus Present's
-   caption bar and controls below it (about 210px), so the stage is never held back by the height */
+/* Bound inline slides independently of the host iframe's auto-resized height. */
 .mcp-player {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   border-radius: 18px;
@@ -177,7 +177,8 @@ body {
 }
 
 .mcp-stage {
-  height: calc((100vw - 32px) * 9 / 16 + 210px);
+  height: clamp(480px, 56.25cqw, 600px);
+  max-height: 600px;
   min-height: 320px;
 }
 
@@ -219,6 +220,7 @@ body {
   flex: 1;
   min-height: 0;
   height: auto;
+  max-height: none;
 }
 
 .mcp-bar {
@@ -245,6 +247,17 @@ body {
   white-space: nowrap;
   font: 600 14px Inter, 'Noto Sans Thai', system-ui, sans-serif;
 }
+
+.mcp-bar-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.mcp-bar-actions[hidden] { display: none; }
+.mcp-bar-collapsed { min-height: 40px; }
 
 .mcp-small {
   padding: 6px 12px;
@@ -343,9 +356,9 @@ body {
   padding: 6px 16px;
 }
 
-/* Mobile chat webviews repaint backdrop blur and SVG refraction while the host scrolls or
+/* Mobile chat webviews repaint backdrop blur while the host scrolls or
    Present moves its camera. Keep the glass palette and highlights without those extra layers.
-   This stylesheet belongs only to the embedded app; desktop and standalone Viewer keep glass. */
+   This stylesheet belongs only to the embedded app; desktop and standalone Viewer keep the frosted blur. */
 @media (hover: none) and (pointer: coarse) {
   :root[data-theme^='liquid-glass'] {
     --glass-filter: none;
@@ -358,8 +371,6 @@ body {
     display: none;
   }
 
-  :root[data-theme^='liquid-glass'][data-glass-lens] :is(.pick-bar, .present-caption, .present-controls, .ui-modal),
-  :root[data-theme^='liquid-glass'][data-glass-lens] .topnav::before,
   :root[data-theme^='liquid-glass'] .present-title-card {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -379,4 +390,9 @@ body {
   flex-direction: row;
   align-items: center;
   gap: 6px;
+}
+
+/* Give stacked portrait sections the bounded height they need for readable content. */
+@container (max-width: 639px) {
+  .mcp-player:not(.mcp-full) .mcp-stage { height: 600px; }
 }

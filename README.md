@@ -141,3 +141,5 @@ The standalone CDN library (`loom-learning-sections`, [docs/cdn-library.md](docs
 ## License
 
 MIT
+
+The Frosted Glass themes use tinted surfaces and a modest CSS blur on floating panels, without SVG refraction or noise filters. Existing theme IDs remain compatible with saved preferences.
