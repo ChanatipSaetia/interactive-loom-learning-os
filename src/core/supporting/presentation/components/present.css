@@ -270,6 +270,7 @@
 /* Scenes share one cell: each beat's scene replaces the last instead of piling up below it */
 .present-scenes { display: grid; align-items: start; }
 .present-scenes > * { grid-area: 1 / 1; min-width: 0; }
+.present-scenes > [data-beat]:not([data-shown]):not([data-leaving]) { display: none; }
 
 /* A beat's key statement, large */
 .present-headline { margin: 0; color: var(--foreground); font: 600 calc(var(--present-fs-body) + 7px) / 1.3 var(--font-display); text-wrap: balance; }

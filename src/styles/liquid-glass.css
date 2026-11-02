@@ -584,3 +584,9 @@
 
 /* Motion helpers may still emit inline blur values; keep their fades and movement. */
 :root[data-theme^='liquid-glass'] [style*="blur("] { filter: none !important; }
+
+/* Without backdrop blur, floating controls need their own legible surface. */
+:root[data-theme^='liquid-glass'] :is(.mcp-bar, .mcp-card, .present-mini-controls, .present-title-card) {
+  background: var(--glass-sheen), var(--glass-face);
+  border-color: var(--glass-edge-strong);
+}

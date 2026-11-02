@@ -105,3 +105,47 @@
 
 /* Keep breathing room around enlarged text; compact screens retain their reading area. */
 @media(min-width:700px) { .present-user-journey .journey-step-page { padding:28px 32px; } }
+
+/* Fit the journey to its own column, including narrow columns on a wide screen. */
+.user-journey { container-type:inline-size; min-width:0; }
+.user-journey .section-title-bar { margin-block:0 16px; }
+.journey-goal-banner { margin:12px 0 16px; padding:12px 16px; }
+.user-journey .journey-goal-statement { font-size:clamp(20px,3.6cqw,28px); line-height:1.35; }
+.journey-goal-label { margin-bottom:6px; font-size:11px; }
+.journey-selector { margin:16px 0; }
+.journey-details { grid-template-columns:1fr; gap:12px; }
+.journey-detail { padding:14px 16px; border-inline-start:3px solid var(--journey-accent); background:var(--card); box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
+.user-journey .journey-detail h4 { font-size:11px; margin-bottom:8px; letter-spacing:.06em; }
+.journey-detail p { font-size:16px; line-height:1.55; }
+.journey-recovery { margin-top:12px; padding-inline-start:12px; }
+.journey-navigation { padding-top:8px; border-top:1px solid var(--border); font-size:13px; }
+.journey-navigation button { min-height:40px; padding:8px 10px; background:var(--card); }
+@container (min-width:560px) {
+  .journey-details { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@container (max-width:480px) {
+  .journey-slider { grid-template-columns:40px minmax(0,1fr) 40px; gap:8px; }
+  .journey-slide { min-height:40px; justify-content:center; border:1px solid var(--border); border-radius:var(--radius-full); background:var(--card); }
+  .journey-slide>span { display:none; }
+  .user-journey .journey-current-stage { font-size:18px; padding:8px 0; }
+}
+
+/* Present keeps its stage-sized type stable, reserving the space for the current moments. */
+.present-user-journey { --journey-page-font-size:var(--present-fs-body); }
+.present-user-journey .journey-stage-context { flex:none; }
+.present-user-journey .journey-stage-context .journey-goal-banner { margin:0 0 6px; padding:0 0 6px; border:0; border-bottom:1px solid var(--border); background:none; }
+.present-user-journey .journey-stage-context .journey-goal-label { display:none; }
+.user-journey.present-user-journey .journey-stage-context .journey-goal-statement { font-size:var(--present-fs-small); font-weight:450; line-height:1.35; color:var(--muted-foreground); text-wrap:pretty; }
+.present-user-journey .journey-stage-context .journey-selector { margin:4px 0 8px; }
+.present-user-journey>.journey-step-page { padding:14px 18px; background:var(--card); backdrop-filter:none; -webkit-backdrop-filter:none; }
+.present-user-journey .journey-page-count { margin:0 0 6px; }
+.present-user-journey .journey-step-page .journey-detail { border-inline-start:0; padding:12px 0; }
+.user-journey.present-user-journey .journey-step-page .journey-detail h4 { font-size:max(11px,calc(var(--journey-page-font-size) * .62)); margin-bottom:6px; }
+.present-user-journey .journey-step-page .journey-detail p { font-size:var(--journey-page-font-size); line-height:1.5; }
+
+/* A roomy slide keeps the entire stage together while its beats reveal each detail. */
+.present-user-journey.journey-wide-stage { --journey-page-font-size:calc(var(--present-fs-body) * .8); }
+.journey-wide-stage .journey-page-content { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:24px; row-gap:8px; align-items:start; }
+.journey-wide-stage .journey-beat:has(.journey-detail--goal) { grid-column:1/-1; }
+.present-user-journey.journey-wide-stage .journey-step-page .journey-detail { padding:8px 0; }
+.journey-wide-stage .journey-page-count { display:none; }

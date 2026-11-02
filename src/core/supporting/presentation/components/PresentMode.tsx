@@ -616,14 +616,14 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
               {sections.map((section, i) => {
                 const o = regionOrigin(i, stage)
                 const beat = (complete ? beats[i].length - 1 : beatToDraw(state, beats, i)) - lead[i]
-                const mounted = Math.abs(i - Math.min(state.section, sections.length - 1)) <= 1
+                const mounted = i === state.section || overview || complete
                 const title = section.config.props.title as string | undefined
                 return (
                   <section
                     key={section.name}
                     ref={(el) => { regionRefs.current[i] = el }}
                     className={`present-region${i < state.section || complete ? ' is-done' : ''}${i === state.section && !complete ? ' is-current' : ''}`}
-                    style={{ left: o.x, top: o.y, width: stage.w, height: stage.h }}
+                    style={{ left: o.x, top: o.y, width: stage.w, height: stage.h, visibility: !mounted ? 'hidden' : undefined }}
                     data-present-region={i}
                     data-testid={`present-region-${i}`}
                     aria-hidden={i !== state.section || overview || complete ? true : undefined}
@@ -634,8 +634,8 @@ export function PresentMode({ sections, start = 0, startBeat = 0, onExit, onSect
                         {title && <h2>{title}</h2>}
                       </header>
                     )}
-                    {lead[i] > 0 && <SectionTitleCard section={section} beat={beat} />}
-                    <div className={`present-region-body${PresentRegistry.get(section.config.type) ? '' : ' is-fallback'}`}>
+                    {mounted && lead[i] > 0 && <SectionTitleCard section={section} beat={beat} />}
+                    <div className={`present-region-body${PresentRegistry.get(section.config.type) ? '' : ' is-fallback'}`} style={{ visibility: i === state.section && bodyBeat < 0 ? 'hidden' : undefined }}>
                       {mounted && viewReady(i) && <SectionBody section={section} view={views[section.config.type]} beat={beat} onBeatChange={(bodyBeat) => jump(i, bodyBeat + lead[i])} active={i === state.section && !complete && !overview} narrationStep={i === state.section ? step : undefined} />}
                       {mounted && !viewReady(i) && i === state.section && <p className="present-loading" role="status">Loading…</p>}
                     </div>

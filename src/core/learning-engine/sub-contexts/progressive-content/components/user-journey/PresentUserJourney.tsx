@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { beatMarks, focus, QUIET, type PresentRendererProps } from '../../../present-kernel'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
 import { journeyPages, journeyScenes, type UserJourneySectionData } from '../../user-journey'
@@ -9,6 +9,20 @@ export default function PresentUserJourney({ data, beat, onBeatChange }: Present
   const pick = usePickAnchors()
   const section = data.section
   const momentsRef = useRef<HTMLDivElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [roomy, setRoomy] = useState(false)
+  useLayoutEffect(() => {
+    const stage = rootRef.current?.closest('.present-stage')
+    if (!stage) return
+    const measure = () => {
+      const box = stage.getBoundingClientRect()
+      setRoomy(box.width >= 1000 && box.height >= 500)
+    }
+    measure()
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
+    observer?.observe(stage)
+    return () => observer?.disconnect()
+  }, [])
   // Keep typography stable between beats; scroll longer content into view instead of shrinking it.
   useLayoutEffect(() => {
     const scroller = momentsRef.current
@@ -34,13 +48,15 @@ export default function PresentUserJourney({ data, beat, onBeatChange }: Present
   const scenes = journeyScenes(section)
   const scene = beat > 0 ? scenes[beat - 1] : undefined
   const stage = scene ? section.stages[scene.stage] : undefined
-  const pages = journeyPages(section)
+  const pages = roomy
+    ? section.stages.map((_, stage) => ({ stage, scenes: scenes.flatMap((scene, index) => scene.stage === stage ? [index] : []) }))
+    : journeyPages(section)
   const page = pages.find((p) => p.scenes.includes(beat - 1))
   const stagePages = pages.filter((p) => p.stage === scene?.stage)
   const pageIndex = page ? stagePages.indexOf(page) : 0
   const mark = beatMarks(beat)
-  return <div className="user-journey present-user-journey" data-testid="present-user-journey">
-    <div {...(beat === 0 ? mark(0, { motion: 'fade' }) : QUIET)}><JourneyGoal section={section} /><div {...QUIET}><JourneyRail section={section} selected={scene?.stage} onSelect={onBeatChange ? (index) => { const target = scenes.findIndex((s) => s.stage === index); if (target >= 0) onBeatChange(target + 1) } : undefined} /></div></div>
+  return <div ref={rootRef} className={`user-journey present-user-journey${roomy ? ' journey-wide-stage' : ''}`} data-testid="present-user-journey">
+    <div className={scene ? 'journey-stage-context' : undefined} {...(beat === 0 ? mark(0, { motion: 'fade' }) : QUIET)}><JourneyGoal section={section} /><div {...QUIET}><JourneyRail section={section} selected={scene?.stage} onSelect={onBeatChange ? (index) => { const target = scenes.findIndex((s) => s.stage === index); if (target >= 0) onBeatChange(target + 1) } : undefined} /></div></div>
     {scene && page && <p className="journey-page-count" {...QUIET}>Page {pageIndex + 1} of {stagePages.length}</p>}
     {scene && stage && page ? <section key={`${scene.stage}:${pageIndex}`} className="journey-stage journey-step-page" data-journey-page={`${scene.stage}:${pageIndex}`} {...pick(stage)}>
       <div className="journey-step-moments" ref={momentsRef}><div className="journey-page-content">
