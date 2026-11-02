@@ -108,6 +108,8 @@ Run `npm run typecheck` and `npm run test` before considering any section, valid
 
 ## E2E Testing
 
+The local MCP build embeds the browser player in `loom-mcp.mjs`; build the app before the server (`npm run build:mcp`). Only an explicit `LOOM_APP_URL` opts the local server into hosted assets. The Worker retains its hosted shell. Run `node --test tests/build/local-mcp.test.mjs` for the standalone HTML packaging checks.
+
 Use the **Playwright MCP** tools (`playwright_browser_*`) for E2E testing instead of `npm run test:e2e`. Navigate to the running dev server and verify behavior interactively:
 
 1. Check if the dev server is already running; if not, start it with `npm run dev`

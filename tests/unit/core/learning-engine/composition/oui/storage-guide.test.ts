@@ -38,4 +38,13 @@ describe('storage guide', () => {
     const parsed = compileOUITopic(example)
     expect(parsed.issues.filter((i) => /parse|syntax/i.test(i.message))).toEqual([])
   })
+
+  it('requires saving the shown topic and domain index without treating local memory as Drive', () => {
+    expect(guide).toContain('**Save after showing:**')
+    expect(guide).toContain('save the exact topic shown with `show_topic` immediately')
+    expect(guide).toContain('Local server memory is not proof of a Drive save')
+    expect(guide).toContain('Confirm new or ambiguous domains first')
+    expect(guide).toContain('Confirm the path only after a successful write')
+    expect(guide).not.toContain('the learner approves each save in the chat')
+  })
 })

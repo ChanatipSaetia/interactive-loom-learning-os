@@ -33,7 +33,7 @@ Loom/
 - These paths are a contract that Loom reads: use them exactly and never invent other folders.
 - Look for `Loom/` at the start of a session. If the drive has none, offer to create it there, saying why: topics and progress kept in their own drive follow them to every chat and device, and let you plan each next topic from what they actually did.
 - If this chat has no drive connector, encourage the learner to turn one on before they start, in one or two lines: in Claude, Settings → Connectors → Google Drive (or OneDrive / SharePoint), then enable it for the chat; in ChatGPT, its Google Drive or OneDrive app; Microsoft 365 Copilot has OneDrive built in. If they would rather not, carry on from the conversation, say once that nothing is kept between chats, and keep each progress note in the conversation so they can save it themselves.
-- Ask before saving anything; the learner approves each save in the chat. Offer each save rather than wait to be asked: a topic you have just shown, and a progress note as soon as one arrives.
+- After showing a topic in an established domain, save it to the learner's drive immediately unless they opted out; do not wait for another request or ask for the same permission again. Confirm a new or ambiguous domain first. Offer each save rather than wait to be asked for progress notes, asking before saving unless already authorized. If the connector cannot write, say the topic is not saved and provide the exact file for manual saving. Never claim a save succeeded without a successful write.
 
 ## Progress notes
 
@@ -227,7 +227,7 @@ then plain lists: the sections played, every answer in order, and what to review
 2. **Create what is missing:** the `Loom/` folder, `index.oui`, the domain folder with its `domain.oui`, `topics/` and `progress/`. Add a new domain's `DomainRef` to `index.oui`, and a new topic's `TopicRef` to its `domain.oui` (where it fits in the learning order, usually at the end).
 3. **Replace, never duplicate:** a topic with the same topic ID, or a progress note for the same topic and date, replaces the file that is there.
 4. **Plain text:** save `.oui`, `.loom.oui` and `.md` files as plain text with exactly these names, with no conversion to Google Docs or Word.
-5. Ask before saving; the learner approves each save in the chat. Offer each save rather than wait to be asked: a topic you have just shown, and a progress note as soon as one arrives.
+5. **Save after showing:** when a topic belongs to an established domain, save the exact topic shown with `show_topic` immediately to `Loom/<domain-id>/topics/<topic-id>.loom.oui` and add its `TopicRef` to `domain.oui` once. Include the domain marker before showing, and save revisions after fixes or edits. Unless the learner opted out, do not wait for another request or repeat permission already given for that domain. Confirm new or ambiguous domains first. Local server memory is not proof of a Drive save: skip duplicate writes only after confirming the intended synced Drive file and domain index. Offer each save rather than wait to be asked for progress notes; ask unless already authorized. Confirm the path only after a successful write; if a write fails or no writable connector is available, say the topic is not saved and provide the exact file for manual saving.
 
 ### Planning what comes next in a domain
 

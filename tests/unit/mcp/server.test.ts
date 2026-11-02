@@ -84,6 +84,8 @@ describe('Loom MCP server', () => {
     expect(text).toContain('6 sections')
     expect(text).toContain('Play')
     expect(text).toContain('http://localhost:5180/viewer.html#present&oui=')
+    expect(text).toContain('save the exact topic to the learner\'s Drive and update domain.oui')
+    expect(text).toContain('If the connector cannot write, say it is not saved')
   })
 
   it('leaves the link out for a chat that shows MCP Apps', async () => {
@@ -129,6 +131,22 @@ describe('Loom MCP server, hosted (slice 5)', () => {
 })
 
 describe('appShell', () => {
+  it('serves the local bundled resource without granting hosted asset access', async () => {
+    const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
+    const html = '<html><style>body{color:red}</style><script type="module">window.ready=true</script></html>'
+    await createLoomServer({ appHtml: html }).connect(serverSide)
+    const client = new Client({ name: 'local-resource-test', version: '0' })
+    await client.connect(clientSide)
+    try {
+      const { contents } = await client.readResource({ uri: APP_URI })
+      const resource = contents[0] as unknown as { text: string; _meta: { ui: { csp: { resourceDomains: string[]; connectDomains: string[] } } } }
+      expect(resource.text).toBe(html)
+      expect(resource._meta.ui.csp).toEqual({ resourceDomains: ['data:'], connectDomains: [] })
+    } finally {
+      await client.close()
+    }
+  })
+
   it('loads the published app by default, under its versioned path', () => {
     expect(DEFAULT_APP_URL).toMatch(/\/mcp-app\/v1\/$/)
     expect(appShell(DEFAULT_APP_URL)).toContain(`${DEFAULT_APP_URL}app.js`)

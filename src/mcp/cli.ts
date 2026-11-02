@@ -5,7 +5,7 @@
  *   --memory <folder>           where the learner's events and topics are kept (default ~/.loom);
  *                               point it at the drive's synced Loom/ folder to share progress notes
  *   --no-memory                 keep nothing
- * LOOM_APP_URL overrides where the app is loaded from (default: GitHub Pages); LOOM_MEMORY_DIR the memory folder.
+ * The player is bundled; LOOM_APP_URL opts into hosted assets. LOOM_MEMORY_DIR sets the memory folder.
  */
 // @ts-expect-error Node's http has no types in this project (see tests/unit/sections/present/helpers.ts)
 import { createServer } from 'node:http'
@@ -16,6 +16,7 @@ import { createLoomServer } from './server'
 import { checkTopic } from './check'
 import { registerEditTool } from './edit-topic'
 import { defaultMemoryDir, folderStore } from './memory-folder'
+import localAppHtml from 'virtual:loom-local-app'
 
 /** The part of Node's `process` this file uses (Node's types are not part of this project). */
 declare const process: { argv: string[]; env: Record<string, string | undefined> }
@@ -26,6 +27,7 @@ const args = process.argv.slice(2)
 const memoryDir = args.includes('--memory') ? args[args.indexOf('--memory') + 1] : process.env.LOOM_MEMORY_DIR || defaultMemoryDir()
 const options = {
   appUrl: process.env.LOOM_APP_URL || undefined,
+  appHtml: process.env.LOOM_APP_URL ? undefined : localAppHtml,
   store: args.includes('--no-memory') ? undefined : folderStore(memoryDir),
   check: checkTopic,
 }

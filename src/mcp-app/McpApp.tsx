@@ -66,7 +66,8 @@ const DEVICE = 'mcp-app'
 
 /** Loom Viewer on the site the app was loaded from (`<site>/mcp-app/v1/app.js` → `<site>/viewer.html`). */
 // (not `new URL('../../viewer.html', import.meta.url)`, which Vite would bundle as an asset)
-const VIEWER_URL = import.meta.url.replace(/mcp-app\/v\d+\/[^/]*$/, 'viewer.html')
+const VIEWER_URL = document.querySelector<HTMLMetaElement>('meta[name="loom-viewer-url"]')?.content
+  || import.meta.url.replace(/mcp-app\/v\d+\/[^/]*$/, 'viewer.html')
 
 /** Decision 196: Liquid Glass when the chat is dark, Liquid Glass Light when it is light. */
 export function themeForHost(theme: McpUiHostContext['theme']): string {

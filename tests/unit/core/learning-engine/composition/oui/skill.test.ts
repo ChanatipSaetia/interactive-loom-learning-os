@@ -162,6 +162,20 @@ describe('Loom learner skills (slice 6)', () => {
     }
   })
 
+  it('saves established-domain topics after showing and reports unavailable Drive writes', () => {
+    const app = getTutorAppSkill()
+    expect(app).toContain('**Save immediately after showing.**')
+    expect(app).toContain('save the exact topic passed to `show_topic`')
+    expect(app).toContain('without duplicating an existing reference')
+    expect(app).toContain('Local server memory alone does not confirm a Drive save')
+    expect(app).toContain('say it is not saved')
+    expect(app).not.toContain('unless the server says it keeps topics itself')
+    for (const skill of Object.values(skills)) {
+      expect(skill).toContain('unless they opted out')
+      expect(skill).not.toContain('the learner approves each save in the chat')
+    }
+  })
+
   it('publish fresh zips (npm run oui:schema)', () => {
     for (const name of [LOOM_TUTOR_APP_SKILL, LOOM_TUTOR_VIEWER_SKILL]) {
       const zipped = unzipSync(readFileSync(`public/${skillZipPath(name)}`))

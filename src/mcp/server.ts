@@ -61,6 +61,8 @@ export interface ProgressNoteFile {
 export interface LoomServerOptions {
   /** Base URL of the app's `app.js` and `app.css`, ending in `/`. */
   appUrl?: string
+  /** Self-contained player HTML, supplied only by the local server build. */
+  appHtml?: string
   /** Where the learner's events and topics are kept; none on a hosted endpoint without sign-in. */
   store?: LearnerStore
   /** The full topic check, which adds `validate_topic`; left out on the hosted endpoint. */
@@ -82,7 +84,7 @@ export function appShell(appUrl: string): string {
 
 const GUIDE_TOOL_DESCRIPTION = `How to write a Loom learning topic (.loom.oui text) for show_topic. Call it before writing a topic: first with no section types to get the rules and the list of section types, then again with the section types the topic will use (e.g. ["flowchart"] or ["flashcards", "scenario"]) to get their components. ["all"] returns everything. In a chat, keep topics short by default: one idea in 1–3 sections, no intro or quiz unless a check is the point; write a full lesson (intro, several sections, a closing quiz) only when the learner asks for one.`
 
-const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). Write it with get_authoring_guide, and check it with validate_topic first when that tool is available. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. To save it to the learner's drive, follow get_storage_guide.`
+const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). Write it with get_authoring_guide, and check it with validate_topic first when that tool is available. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. After showing a topic in an established domain, save the exact topic to the learner's drive and update domain.oui following get_storage_guide unless the learner opted out. Showing the app is not a Drive save.`
 
 const VALIDATE_TOOL_DESCRIPTION = `Check a Loom topic (.loom.oui text) the way Loom Viewer does, before showing it. Answers "valid" or the errors to fix; fix only what they point at and check again.`
 
@@ -99,8 +101,10 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     contents: [{
       uri: APP_URI,
       mimeType: RESOURCE_MIME_TYPE,
-      text: appShell(appUrl),
-      _meta: { ui: { csp: { resourceDomains: [appOrigin, ...FONT_ORIGINS], connectDomains: [appOrigin] }, prefersBorder: true } },
+      text: options.appHtml ?? appShell(appUrl),
+      _meta: { ui: { csp: options.appHtml
+        ? { resourceDomains: ['data:'], connectDomains: [] }
+        : { resourceDomains: [appOrigin, ...FONT_ORIGINS], connectDomains: [appOrigin] }, prefersBorder: true } },
     }],
   }))
 
@@ -170,6 +174,7 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
         ? `\n\nThis chat may not show Loom's player. Give the learner this link, which opens the topic in Loom Viewer, ready to play: ${link}`
         : '\n\nThis chat may not show Loom\'s player, and the topic is too long for a link: the learner can paste it into Loom Viewer.'
     }
+    if (!check || check.ok) text += '\n\nNext: if this topic belongs to an established domain, save the exact topic to the learner\'s Drive and update domain.oui following get_storage_guide, unless the learner opted out. Local server memory does not by itself confirm a Drive save. If the connector cannot write, say it is not saved and provide the file.'
     return { content: [{ type: 'text', text }] }
   })
 

@@ -104,6 +104,8 @@ Section design intent and recommended order: [docs/sections-reference.md](docs/s
 
 ## Project structure
 
+The downloadable local MCP server embeds its player CSS and JavaScript and uses system fonts. It needs no Cloudflare asset requests to render the player; `LOOM_APP_URL` explicitly opts into hosted assets. The optional **Open in Viewer** link still opens the hosted site, and topic images or other external content may need network access. The Cloudflare MCP endpoint continues loading its hosted player assets.
+
 ```
 src/
   core/                     learning engine, section sub-contexts, OUI compiler, validation, UI system

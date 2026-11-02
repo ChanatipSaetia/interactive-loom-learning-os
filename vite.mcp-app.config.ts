@@ -16,6 +16,7 @@ export default defineConfig({
     outDir: 'dist/mcp-app/v1',
     emptyOutDir: true,
     cssCodeSplit: false,
+    assetsInlineLimit: Number.MAX_SAFE_INTEGER,
     chunkSizeWarningLimit: 8000,
     rollupOptions: {
       input: path.resolve(process.cwd(), 'src/mcp-app/main.tsx'),
