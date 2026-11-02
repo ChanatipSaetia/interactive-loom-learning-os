@@ -23,6 +23,7 @@ import { PresentMode, kindLabel, preloadPresenters, unlockSpeech, type PresentSe
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
 import { TopicView } from '../viewer/ViewerApp'
+import { PaginatedRead } from './PaginatedRead'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/themes'
 import { copyText } from '../core/ui-system/clipboard'
@@ -82,9 +83,8 @@ function applyTheme(id: string) {
 }
 
 /**
- * Touch screens: the chat's own scrolling takes the swipes a scroll box inside
- * the app would need, so Read opens full screen there, or grows to its full
- * height where the chat has no full screen.
+ * Touch screens: use the host's full screen for Reading pages when available.
+ * The library still uses its natural height where full screen is unavailable.
  */
 const TOUCH = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true
 
@@ -522,13 +522,13 @@ export function McpApp({ app }: { app: App }) {
   if (topic && view === 'read') {
     return (
       <UISystemProvider>
-        <div className={`mcp-read${full ? ' mcp-full' : TOUCH ? ' mcp-read-natural' : ''}`} data-testid="mcp-read">
+        <div className={`mcp-read mcp-read-paginated${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
           {top}
-          {/* Read scrolls inside a frame of fixed height, so the chat's frame stays that size and
-              the sections' modals (taxonomy details, help) open where the learner is looking */}
-          <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
+          <main className="main-content mcp-read-book">
             <LearnerMemoryProvider port={memory} device={DEVICE}>
+              <PaginatedRead key={topic.topicId}>
               <TopicView topic={topic} />
+              </PaginatedRead>
             </LearnerMemoryProvider>
           </main>
           <PickMode
