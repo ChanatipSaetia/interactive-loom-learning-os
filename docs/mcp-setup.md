@@ -109,7 +109,7 @@ Chat apps start it themselves with `--stdio`, as in the configurations below.
 | `--http [port]` | Streamable HTTP on localhost (default 3001), for testing and for tunnels |
 | `--memory <folder>` | Where topics and progress are kept; point it at your synced `Loom` folder. Default `~/.loom` (or `LOOM_MEMORY_DIR`) |
 | `--no-memory` | Keep nothing |
-| `LOOM_APP_URL` (environment) | Where the player is loaded from; default the hosted server's `https://loom-mcp.loom-learning.workers.dev/mcp-app/v1/` |
+| `LOOM_APP_URL` (environment) | Optional hosted-player override. By default the local server embeds its matching player CSS and JavaScript and uses system fonts, without fetching player assets from Cloudflare or Google Fonts. |
 
 Memory folder paths:
 
@@ -329,7 +329,7 @@ Loom/
     progress/<topic-id>-YYYY-MM-DD.md
 ```
 
-The chat follows the rules in `get_storage_guide` (the same text is in [storage-guide.ts](../src/core/learning-engine/composition/oui/storage-guide.ts)): it confirms a new domain with you, replaces rather than duplicates, saves plain text, and plans each domain from its own progress. Topics and notes saved before domains existed (flat `Loom/topics/` and `Loom/progress/`) are moved into domains once you agree: ask *"Reorganise my Loom folder into domains following get_storage_guide."*
+The chat follows the rules in `get_storage_guide` (the same text is in [storage-guide.ts](../src/core/learning-engine/composition/oui/storage-guide.ts)): after showing a topic in an established domain, it saves the exact topic to Drive and updates `domain.oui` unless you opted out. Local MCP memory alone does not count as a Drive save. It confirms new domains, replaces rather than duplicates, saves plain text, and reports when a connector cannot write. Topics and notes saved before domains existed (flat `Loom/topics/` and `Loom/progress/`) are moved into domains once you agree: ask *"Reorganise my Loom folder into domains following get_storage_guide."*
 
 ## Loom Viewer
 
@@ -347,7 +347,7 @@ Loom Viewer (`/viewer.html` on the Loom site) opens topics without any chat:
 | The chat answers in text instead of showing a card | Mention Loom ("show it with Loom"); check the connector is on for this chat |
 | New tools (such as `show_domain`) are missing | Start a new chat, or turn the connector off and on |
 | No player, only a link | The chat does not support MCP Apps: open the link in Loom Viewer |
-| The player stays blank | `LOOM_APP_URL` points somewhere without the app; remove it to use the default |
+| The player stays blank | Remove `LOOM_APP_URL` to use the local server's bundled player, or the hosted endpoint's default assets. Rebuild or download the local server again if its embedded player is outdated. |
 | "Where am I in …" finds nothing | Your folder is still in the old flat layout: ask the chat to reorganise it into domains |
 | No narration | On iPhone, check the silent switch and press Play (speech starts from the tap); on Android, use Open in Viewer in Chrome |
 | Read does not scroll on a phone | Read opens full screen on touch screens; use Full screen if it did not |

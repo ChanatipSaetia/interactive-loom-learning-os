@@ -617,6 +617,8 @@ repository secrets or the cloud environment's settings, never into a chat.
 
 ## Open Questions
 
+Local MCP packaging update: the downloadable Node server now embeds its matching player JavaScript and CSS in the MCP HTML resource, with system fonts instead of Google Fonts. `LOOM_APP_URL` remains an explicit hosted-assets override. The Worker keeps its hosted resource shell; Open in Viewer remains an optional hosted link. Build the browser app before the local server so the embedded assets match the release.
+
 - Whether each host honours `_meta.ui.csp.resourceDomains` the same way, so the shell can load
   Loom from GitHub Pages (decision 182). Test on MCPJam and Claude first.
 - What GitHub Pages entry the shell loads: the Viewer page as it is, or a slimmer page for one topic.
