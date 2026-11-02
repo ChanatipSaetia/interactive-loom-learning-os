@@ -397,57 +397,6 @@ body {
   .mcp-player:not(.mcp-full) .mcp-stage { height: 600px; }
 }
 
-/* Reading pages use native column fragmentation: paragraphs flow between pages,
-   while the live React sections remain mounted for quizzes, picks and progress. */
-.mcp-read-book { min-height: 0; overflow: hidden; display: flex; }
-.mcp-pages { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
-.mcp-page-viewport { flex: 1; min-height: 0; overflow: hidden; touch-action: pan-y; }
-.mcp-page-flow {
-  height: 100%;
-  width: 100%;
-  column-width: var(--read-page-width);
-  column-gap: 32px;
-  column-fill: auto;
-}
-.mcp-page-flow [data-testid="viewer-topic"] {
-  display: block;
-  max-width: none;
-  margin: 0;
-  padding: 16px 20px;
-}
-.mcp-page-flow .topic-content { padding: 0; }
-.mcp-page-flow .section-wrapper { break-inside: auto; }
-.mcp-page-flow :is(h2, h3, h4) { break-after: avoid; }
-.mcp-page-flow :is(p, li) { orphans: 2; widows: 2; }
-.mcp-page-flow :is(button, input, figure, pre, tr) { break-inside: avoid; }
-.mcp-page-controls {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 8px 12px calc(var(--pick-bar-height, 56px) + 20px);
-  font-size: 14px;
-}
-/* Rounded lists otherwise become indivisible blocks taller than a reading page. */
-.mcp-page-flow .tradeoff-conclusion-decisions { overflow: visible; }
-
-/* Interactive canvases fit on a page and retain their zoom/pan controls. */
-.mcp-page-flow .flowchart-section:not(.is-presenting) .flowchart-svg {
-  height: min(360px, calc(var(--read-page-height) - 180px));
-}
-.mcp-page-flow .concept-map-layout {
-  height: min(360px, calc(var(--read-page-height) - 140px));
-}
-.mcp-page-flow .perspective-1000 {
-  height: min(320px, calc(var(--read-page-height) - 180px));
-  flex: none;
-}
-.mcp-page-flow .section-wrapper:has(.perspective-1000),
-.mcp-page-flow .perspective-1000,
-.mcp-page-flow .bullets-card { break-inside: avoid; }
-.mcp-page-flow .bullets-card { transform: none !important; }
-
 /* Equal primary choices; supporting tools stay quiet beneath the topic outline. */
 .mcp-mode-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .mcp-mode-choice {
@@ -483,3 +432,6 @@ body {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+/* The page heading already identifies the question's position in the full quiz. */
+.mcp-reading-section :is(.quiz-score-bar, .quiz-question-header) { display: none; }
+.mcp-reading-section .quiz-question-card { padding: 16px; gap: 12px; }

@@ -23,7 +23,6 @@ import { PresentMode, kindLabel, preloadPresenters, unlockSpeech, type PresentSe
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
 import { TopicView } from '../viewer/ViewerApp'
-import { PaginatedRead } from './PaginatedRead'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/themes'
 import { copyText } from '../core/ui-system/clipboard'
@@ -83,8 +82,7 @@ function applyTheme(id: string) {
 }
 
 /**
- * Touch screens: use the host's full screen for Reading pages when available.
- * The library still uses its natural height where full screen is unavailable.
+ * Touch screens: the library uses natural height when full screen is unavailable.
  */
 const TOUCH = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true
 
@@ -172,10 +170,6 @@ export function McpApp({ app }: { app: App }) {
   const memory = useMemo(() => appMemoryAdapter(app, () => setKept(false)), [app])
   const lastSeen = useRef('')
   const told = useRef(false)
-  const viewRef = useRef(view)
-  useEffect(() => {
-    viewRef.current = view
-  }, [view])
   // The pick bar is fixed to the frame: in full screen it keeps above the chat's own bars
   useEffect(() => {
     document.documentElement.classList.toggle('mcp-is-full', full)
@@ -231,21 +225,44 @@ export function McpApp({ app }: { app: App }) {
     const followHost = (theme: McpUiHostContext['theme']) => {
       if (!picked.current) showTheme(themeForHost(theme))
     }
+    type OpenAIWindow = Window & { openai?: { theme?: string } }
+    const openAITheme = () => {
+      const value = (window as OpenAIWindow).openai?.theme
+      return value === 'light' || value === 'dark' ? value : undefined
+    }
+    let explicitTheme = app.getHostContext()?.theme ?? openAITheme()
+    const onOpenAIGlobals = (event: Event) => {
+      const value = (event as CustomEvent<{ globals?: { theme?: string } }>).detail?.globals?.theme ?? openAITheme()
+      if (value === 'light' || value === 'dark') {
+        explicitTheme = value
+        followHost(value)
+      }
+    }
+    window.addEventListener('openai:set_globals', onOpenAIGlobals)
+    const scheme = window.matchMedia?.('(prefers-color-scheme: light)')
+    const onSystemScheme = () => { if (!explicitTheme) followHost(undefined) }
+    scheme?.addEventListener('change', onSystemScheme)
     app.onhostcontextchanged = (context) => {
-      if (context.theme) followHost(context.theme)
+      if (context.theme) {
+        explicitTheme = context.theme
+        followHost(context.theme)
+      }
       if (context.safeAreaInsets) applyInsets(context.safeAreaInsets)
-      // The learner may leave fullscreen with the chat's own control; on a touch screen Read
-      // cannot scroll inside the conversation, so it goes back to the card
+      // Respect explicit host display changes without discarding the reading page.
       if (context.displayMode) {
         setFull(context.displayMode === 'fullscreen')
-        if (context.displayMode === 'inline' && TOUCH && viewRef.current === 'read') setView('card')
       }
     }
     applyInsets(undefined)
     void app.connect().then(() => {
-      followHost(app.getHostContext()?.theme)
+      explicitTheme = app.getHostContext()?.theme ?? openAITheme()
+      followHost(explicitTheme)
       applyInsets(app.getHostContext()?.safeAreaInsets)
     })
+    return () => {
+      window.removeEventListener('openai:set_globals', onOpenAIGlobals)
+      scheme?.removeEventListener('change', onSystemScheme)
+    }
   }, [app, showTheme])
 
   // The chat's model learns about errors at once, without the learner pressing anything (decision 184)
@@ -273,8 +290,7 @@ export function McpApp({ app }: { app: App }) {
     if (next === 'present') unlockSpeech()
     setView(next)
     window.scrollTo(0, 0)
-    if (next === 'read' && TOUCH && canFullscreen && !full) void displayMode('fullscreen')
-  }, [canFullscreen, displayMode, full])
+  }, [])
 
   const close = useCallback(async () => {
     setView('card')
@@ -357,11 +373,10 @@ export function McpApp({ app }: { app: App }) {
     if (pick) setPicking(true)
     const name = topic?.sections[sectionIndex]?.name
     if (!name) return
-    // Once Read has laid out
     requestAnimationFrame(() => requestAnimationFrame(() => {
       const file = `sections/${name}.oui`
-      const el = document.querySelector(`[data-oui-file="${file}"][data-oui-anchor="root"]`) ?? document.querySelector(`[data-oui-file="${file}"]`)
-      el?.scrollIntoView({ block: 'start' })
+      const target = document.querySelector(`[data-oui-file="${file}"][data-oui-anchor="root"]`) ?? document.querySelector(`[data-oui-file="${file}"]`)
+      target?.scrollIntoView({ block: 'start' })
     }))
   }, [open, topic])
 
@@ -522,13 +537,11 @@ export function McpApp({ app }: { app: App }) {
   if (topic && view === 'read') {
     return (
       <UISystemProvider>
-        <div className={`mcp-read mcp-read-paginated${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
+        <div className={`mcp-read${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
           {top}
-          <main className="main-content mcp-read-book">
+          <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
             <LearnerMemoryProvider port={memory} device={DEVICE}>
-              <PaginatedRead key={topic.topicId}>
               <TopicView topic={topic} />
-              </PaginatedRead>
             </LearnerMemoryProvider>
           </main>
           <PickMode
@@ -561,7 +574,7 @@ export function McpApp({ app }: { app: App }) {
           <button type="button" className="mcp-mode-choice" onClick={() => open('read')} data-testid={startMode === 'read' ? 'mcp-play' : 'mcp-other-mode'}>
             <BookOpen size={24} aria-hidden />
             <strong>Read</strong>
-            <span>Read page by page</span>
+            <span>Read at your own pace</span>
           </button>
         </div>
       )}
