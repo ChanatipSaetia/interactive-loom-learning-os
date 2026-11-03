@@ -55,7 +55,7 @@ export default function PresentFlashcards({ data, beat }: PresentRendererProps<F
                   <span className="present-card-back-word font-light tracking-tight text-foreground font-display">{term.word}</span>
                   <span className="present-card-quote" {...mark(2 * i + 1, { motion: 'fade', delay: 300, sound: 'flip' })} {...focus(isTop && beat === 2 * i + 1)}>
                     <span className="present-card-quote-bar bg-primary/50" aria-hidden />
-                    <p className="text-muted-foreground italic font-serif leading-relaxed" {...pick(term, 'shortDefinition')}>“{term.shortDefinition}”</p>
+                    <p className="text-muted-foreground leading-relaxed" {...pick(term, 'shortDefinition')}>“{term.shortDefinition}”</p>
                   </span>
                 </div>
               </div>
