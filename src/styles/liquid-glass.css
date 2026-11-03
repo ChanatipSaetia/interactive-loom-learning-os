@@ -198,6 +198,32 @@
   -webkit-backdrop-filter: none;
 }
 
+/* Opening cards use the shared frost instead of a decorative circular glow. */
+:root[data-theme^='liquid-glass'] :is(.scenario-intro-card, .dt-intro-card)::before {
+  content: none;
+}
+
+:root[data-theme^='liquid-glass'] :is(.scenario-intro-icon, .dt-intro-icon) {
+  background: var(--glass-node-glare), var(--glass-tint);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--learning-card-radius);
+  box-shadow: var(--glass-highlight);
+}
+
+:root[data-theme^='liquid-glass'] :is(.scenario-start-btn, .dt-start-btn) {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--glass-edge));
+  border-radius: var(--learning-card-radius);
+  background: var(--glass-node-glare), color-mix(in srgb, var(--primary) 12%, var(--glass-tint));
+  color: var(--foreground);
+  box-shadow: var(--glass-highlight);
+}
+:root[data-theme^='liquid-glass'] :is(.scenario-start-btn, .dt-start-btn):hover:not(:disabled) {
+  background: var(--glass-node-glare), color-mix(in srgb, var(--primary) 20%, var(--glass-tint-strong));
+  border-color: var(--primary);
+}
+
 /* The trade-off question frame is the card; its option cards sit inside it */
 :root[data-theme^='liquid-glass'] .compare-step:not(.present-tradeoff .compare-step) {
   border-radius: var(--learning-card-radius);
@@ -350,6 +376,72 @@
 }
 
 /* ---- controls ---- */
+
+/* Shared meter material: neutral tracks, semantic tints, no neon glow. */
+:root[data-theme^='liquid-glass'] :is(.metric-track, .gauge-bg) {
+  height: 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--foreground) 8%, var(--glass-tint-inset));
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+:root[data-theme^='liquid-glass'] :is(.metric-fill, .gauge-fill) {
+  border-radius: 4px;
+  background: linear-gradient(105deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.38) 28%, rgba(255, 255, 255, 0.08) 65%, transparent 100%), var(--metric-color, var(--primary));
+  opacity: var(--glass-node-opacity);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+:root[data-theme^='liquid-glass'] .gauge-fill.green { --metric-color: var(--ctp-green); }
+:root[data-theme^='liquid-glass'] .gauge-fill.peach { --metric-color: var(--ctp-peach); }
+:root[data-theme^='liquid-glass'] .gauge-fill.red { --metric-color: var(--ctp-red); }
+
+/* A native range input with a larger hit area and matching glass handle.
+   Chromium uses the explicit percentage; Firefox has a native progress track. */
+:root[data-theme^='liquid-glass'] .range-input {
+  appearance: none;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+:root[data-theme^='liquid-glass'] .range-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 4px;
+}
+:root[data-theme^='liquid-glass'] .range-input::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, color-mix(in srgb, var(--primary) 55%, var(--glass-tint)) 0 var(--range-progress, 0%), color-mix(in srgb, var(--foreground) 8%, var(--glass-tint-inset)) var(--range-progress, 0%) 100%);
+}
+:root[data-theme^='liquid-glass'] .range-input::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -6px;
+  border: 1px solid var(--primary);
+  border-radius: var(--learning-card-radius);
+  background: var(--glass-node-glare), var(--glass-face);
+  box-shadow: var(--glass-highlight);
+  transform: none;
+  opacity: 1;
+}
+:root[data-theme^='liquid-glass'] .range-input::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--foreground) 8%, var(--glass-tint-inset));
+}
+:root[data-theme^='liquid-glass'] .range-input::-moz-range-progress {
+  height: 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--primary) 55%, var(--glass-tint));
+}
+:root[data-theme^='liquid-glass'] .range-input::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--primary);
+  border-radius: var(--learning-card-radius);
+  background: var(--glass-node-glare), var(--glass-face);
+  box-shadow: var(--glass-highlight);
+}
 
 :root[data-theme^='liquid-glass'] .viewer-pill,
 :root[data-theme^='liquid-glass'] .viewer-button:not(.viewer-button--primary),

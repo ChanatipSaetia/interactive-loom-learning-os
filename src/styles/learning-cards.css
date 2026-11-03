@@ -1,11 +1,17 @@
 /* One reading face across section renderers, including Studio previews and MCP.
    Keep code/notation monospace and Present's own scaled text sizes. */
-:root :is(.section-wrapper, .topic-container, .present-region) {
+:root :is(.section-wrapper, .topic-container, .present-region, [role='dialog'], [role='alertdialog']) {
   --font-body: var(--font-ui);
   --font-display: var(--font-ui);
   --font-sans: var(--font-ui);
   font-family: var(--font-ui);
   letter-spacing: normal;
+}
+
+/* Metric labels and values are reading text; only the formula/code itself
+   needs monospace. This also keeps the formula detail drawer consistent. */
+:root :is(.tradeoff-sandbox, .tradeoff-conclusion, .hud-drawer) :is(.metric-label, .metric-value, .metric-delta, .hud-highlight) {
+  font-family: var(--font-ui);
 }
 
 /* Match the flowchart node's 8px corner and light edge. Do not change layout,

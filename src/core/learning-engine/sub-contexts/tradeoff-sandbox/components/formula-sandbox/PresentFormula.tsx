@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useState, type CSSProperties } from 'react'
 import { useReducedMotion } from 'motion/react'
 import { Pointer, TrendingDown, TrendingUp } from 'lucide-react'
 import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
@@ -113,6 +113,7 @@ export default function PresentFormula({ data, beat, active }: PresentRendererPr
                   <input
                     type="range"
                     className="range-input"
+                    style={{ '--range-progress': `${pct(values[v.id] ?? v.defaultValue, v.min, v.max)}%` } as CSSProperties}
                     min={v.min}
                     max={v.max}
                     step={v.step}
