@@ -1,12 +1,12 @@
 import { fireEvent, render } from '@testing-library/react'
 import { useRef } from 'react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { useReadingScroll } from '../../../src/mcp-app/reading-scroll'
 
 function Reader({ active = true }: { active?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   useReadingScroll(ref, active)
-  return <div ref={ref} data-testid="scroll"><p>Ordinary reading text</p><input aria-label="Value" /><svg><rect /></svg></div>
+  return <><div data-testid="outside">Outside the app</div><div data-testid="mcp-read"><header>Reading toolbar</header><div ref={ref} data-testid="scroll"><p>Ordinary reading text</p><input aria-label="Value" /><svg><rect /></svg></div></div></>
 }
 function dimensions(element: HTMLElement) {
   Object.defineProperty(element, 'clientHeight', { value: 400 })
@@ -49,6 +49,53 @@ describe('embedded reading input', () => {
     expect(element.scrollTop).toBe(0)
     view.rerender(<Reader active={false} />)
     fireEvent.wheel(element, { deltaY: 100, cancelable: true })
+    expect(element.scrollTop).toBe(0)
+  })
+})
+
+
+describe('reading gesture boundary', () => {
+  it('consumes wheel events at both edges but does not cancel outside events', () => {
+    const view = render(<Reader />)
+    const element = view.getByTestId('scroll')
+    dimensions(element)
+    const outsideListener = vi.fn()
+    document.addEventListener('wheel', outsideListener)
+    try {
+      const top = new WheelEvent('wheel', { deltaY: -100, bubbles: true, cancelable: true })
+      element.dispatchEvent(top)
+      expect(top.defaultPrevented).toBe(true)
+      expect(element.scrollTop).toBe(0)
+      element.scrollTop = 1000
+      const bottom = new WheelEvent('wheel', { deltaY: 100, bubbles: true, cancelable: true })
+      element.dispatchEvent(bottom)
+      expect(bottom.defaultPrevented).toBe(true)
+      expect(element.scrollTop).toBe(1000)
+      expect(outsideListener).not.toHaveBeenCalled()
+      const outside = new WheelEvent('wheel', { deltaY: 100, bubbles: true, cancelable: true })
+      view.getByTestId('outside').dispatchEvent(outside)
+      expect(outside.defaultPrevented).toBe(false)
+      expect(outsideListener).toHaveBeenCalledOnce()
+    } finally { document.removeEventListener('wheel', outsideListener) }
+  })
+
+  it('routes toolbar wheel input to the reader without moving the surrounding page', () => {
+    const view = render(<Reader />)
+    const element = view.getByTestId('scroll')
+    dimensions(element)
+    fireEvent.wheel(view.getByText('Reading toolbar'), { deltaY: 90, cancelable: true })
+    expect(element.scrollTop).toBe(90)
+  })
+
+  it('consumes a touch drag at an edge even when the reader cannot move further', () => {
+    const view = render(<Reader />)
+    const element = view.getByTestId('scroll')
+    dimensions(element)
+    fireEvent.touchStart(element, { touches: [{ clientX: 50, clientY: 100 }] })
+    const drag = new Event('touchmove', { bubbles: true, cancelable: true })
+    Object.defineProperty(drag, 'touches', { value: [{ clientX: 50, clientY: 160 }] })
+    element.dispatchEvent(drag)
+    expect(drag.defaultPrevented).toBe(true)
     expect(element.scrollTop).toBe(0)
   })
 })

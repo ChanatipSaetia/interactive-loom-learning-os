@@ -6,6 +6,7 @@ export function useReadingScroll(ref: RefObject<HTMLElement>, active: boolean) {
   useEffect(() => {
     const element = ref.current
     if (!active || !element) return
+    const boundary = element.closest<HTMLElement>('[data-testid="mcp-read"]') ?? element
     const ownsGesture = (target: EventTarget | null) => target instanceof Element && !!target.closest('input, textarea, select, [contenteditable="true"], [role="slider"], [role="dialog"], svg, canvas')
     const move = (delta: number) => {
       const before = element.scrollTop
@@ -15,10 +16,10 @@ export function useReadingScroll(ref: RefObject<HTMLElement>, active: boolean) {
     const wheel = (event: WheelEvent) => {
       if (!event.cancelable || event.ctrlKey || event.metaKey || ownsGesture(event.target) || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return
       const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? element.clientHeight : 1
-      if (move(event.deltaY * unit)) {
-        event.preventDefault()
-        event.stopPropagation()
-      }
+      move(event.deltaY * unit)
+      // At either edge, consume the gesture instead of handing it to the chat.
+      event.preventDefault()
+      event.stopPropagation()
     }
     let touch: { x: number; y: number; last: number } | null = null
     const start = (event: TouchEvent) => {
@@ -30,24 +31,23 @@ export function useReadingScroll(ref: RefObject<HTMLElement>, active: boolean) {
       if (!touch || !point || event.touches.length !== 1 || !event.cancelable) return
       const dy = point.clientY - touch.y
       if (Math.abs(dy) < 8 || Math.abs(dy) < Math.abs(point.clientX - touch.x)) return
-      if (move(touch.last - point.clientY)) {
-        event.preventDefault()
-        event.stopPropagation()
-      }
+      move(touch.last - point.clientY)
+      event.preventDefault()
+      event.stopPropagation()
       touch.last = point.clientY
     }
     const end = () => { touch = null }
-    element.addEventListener('wheel', wheel, { capture: true, passive: false })
-    element.addEventListener('touchstart', start, { passive: true })
-    element.addEventListener('touchmove', drag, { capture: true, passive: false })
-    element.addEventListener('touchend', end)
-    element.addEventListener('touchcancel', end)
+    boundary.addEventListener('wheel', wheel, { capture: true, passive: false })
+    boundary.addEventListener('touchstart', start, { passive: true })
+    boundary.addEventListener('touchmove', drag, { capture: true, passive: false })
+    boundary.addEventListener('touchend', end)
+    boundary.addEventListener('touchcancel', end)
     return () => {
-      element.removeEventListener('wheel', wheel, true)
-      element.removeEventListener('touchstart', start)
-      element.removeEventListener('touchmove', drag, true)
-      element.removeEventListener('touchend', end)
-      element.removeEventListener('touchcancel', end)
+      boundary.removeEventListener('wheel', wheel, true)
+      boundary.removeEventListener('touchstart', start)
+      boundary.removeEventListener('touchmove', drag, true)
+      boundary.removeEventListener('touchend', end)
+      boundary.removeEventListener('touchcancel', end)
     }
   }, [ref, active])
 }
