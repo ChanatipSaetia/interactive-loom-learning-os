@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo, useId } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo, useId, type CSSProperties } from 'react'
 import { ZoomIn, ZoomOut, Maximize2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ConceptMapHelpModal } from './ConceptMapHelpModal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
@@ -530,7 +530,7 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
             onMouseUp={handlePointerUp}
             onMouseLeave={handlePointerUp}
           >
-            <defs><marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
+            <defs><linearGradient id={`${arrowId}-frost`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="white" stopOpacity="var(--glass-node-glare-start, 0.1)" /><stop offset="0.45" stopColor="white" stopOpacity="0.02" /><stop offset="1" stopColor="white" stopOpacity="0" /></linearGradient><marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
             <g
               transform={`translate(${transform.translateX}, ${transform. translateY}) scale(${transform.scale})`}
             >
@@ -596,11 +596,13 @@ function ConceptMapSection({ title, nodes, edges, sectionIndex = 0 }: ConceptMap
                       height={nodeH}
                       rx={16}
                       className="cm-node-surface"
+                      style={{ '--cm-node-tint': fill } as CSSProperties}
                       fill={fill}
                       stroke={color}
                       strokeWidth={isHov ? 3 : 2}
                       data-testid={`concept-map-node-circle-${id}`}
                     />
+                    <rect className="cm-node-frost" x={nodeX} y={nodeY} width={nodeW} height={nodeH} rx={16} fill={`url(#${arrowId}-frost)`} aria-hidden="true" />
                     <text
                       x={node.x}
                       y={node.y - 10}

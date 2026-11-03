@@ -125,6 +125,9 @@
   /* Learning cards follow the flowchart nodes: quiet edges and compact corners. */
   --learning-card-radius: 8px;
   --learning-card-shadow: 0 1px 3px color-mix(in srgb, var(--foreground) 8%, transparent);
+  --weight-body: 400;
+  --weight-label: 500;
+  --weight-heading: 600;
 
   --text-hero:             96px / 1.0 -1.92px var(--font-display);
   --text-product-display:  72px / 1.0 -1.44px var(--font-display);
@@ -590,6 +593,7 @@
   --glass-solid:       #252629;                  /* surfaces when transparency is reduced */
   --glass-solid-edge:  #393a3e;
   --glass-base:        #17181a;
+  --glass-node-glare-start: 0.10;
   --glass-node-opacity: 0.72;                    /* flowchart node fills */
   --glass-node-glare:  linear-gradient(160deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 60%);
   --glass-backdrop:
@@ -691,6 +695,7 @@
   --glass-solid:       #ffffff;
   --glass-solid-edge:  #e1e2df;
   --glass-base:        #dce2e3;
+  --glass-node-glare-start: 0.75;
   --glass-node-opacity: 0.6;
   --glass-node-glare:  linear-gradient(160deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.15) 35%, rgba(255, 255, 255, 0) 60%);
   --glass-backdrop:

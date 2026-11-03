@@ -515,3 +515,6 @@
   filter: drop-shadow(0 3px 4px color-mix(in srgb, var(--foreground) 10%, transparent));
 }
 .cm-node-highlight .cm-node-surface { stroke-width: 3; }
+
+/* The SVG sheen is enabled by the frosted themes; it never intercepts node gestures. */
+.cm-node-frost { display: none; pointer-events: none; }

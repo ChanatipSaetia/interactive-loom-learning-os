@@ -1,0 +1,97 @@
+/* Shared weight contract for authored learning content and its chrome.
+   Component styles (including lazy-loaded presenters and inline SVG labels)
+   still control size and layout. These important declarations deliberately
+   own weight so a legacy utility or font shorthand cannot reintroduce bold
+   body text. Descendants inherit, so headings keep their weight through spans. */
+:root :is(
+  .topic-container, .section-wrapper, .present-mode, .present-region,
+  .topnav, .viewer-menu, .mcp-card, .mcp-bar, .pick-bar,
+  .present-controls, .present-mini-controls, .present-caption,
+  .ai-panel, .loom-shelf, .ui-modal, .section-help-modal, [role='dialog'], [role='alertdialog']
+) {
+  font-weight: var(--weight-body) !important;
+}
+:root :is(
+  .topic-container, .section-wrapper, .present-mode, .present-region,
+  .topnav, .viewer-menu, .mcp-card, .mcp-bar, .pick-bar,
+  .present-controls, .present-mini-controls, .present-caption,
+  .ai-panel, .loom-shelf, .ui-modal, .section-help-modal, [role='dialog'], [role='alertdialog']
+) :where(*) {
+  font-weight: inherit !important;
+}
+
+/* Page/section headings and authored emphasis. Present keeps these same
+   weights; its larger text sizes provide the extra presentation hierarchy. */
+:root :is(
+  .topic-container, .section-wrapper, .present-mode, .present-region,
+  .topnav, .viewer-menu, .mcp-card, .mcp-bar, .pick-bar,
+  .present-controls, .present-mini-controls, .present-caption,
+  .ai-panel, .loom-shelf, .ui-modal, .section-help-modal, [role='dialog'], [role='alertdialog']
+) :is(h1, h2, strong, b),
+:root :is(.topic-page-title, .section-title-bar-title, .present-title-heading, .present-headline) {
+  font-weight: var(--weight-heading) !important;
+}
+
+/* Card/detail headings, active controls and primary actions. */
+:root :is(
+  .topic-container, .section-wrapper, .present-mode, .present-region,
+  .viewer-menu, .mcp-card, .ai-panel, .loom-shelf, .ui-modal, .section-help-modal, [role='dialog'], [role='alertdialog']
+) :is(h3, h4, h5, h6, th, [role='columnheader']),
+:root :is(.topic-container, .section-wrapper, .present-region, .topnav, .viewer-menu, .mcp-card, .mcp-bar, .pick-bar, .present-controls, .present-mini-controls) :is(
+  .topnav-title, .mcp-bar-title, .pillar-title, .step-title,
+  .taxonomy-browser-card-title, .taxonomy-modal-title,
+  .pillar-stack-name, .pillar-layer-header-title,
+  .compare-step-title, .compare-block-title,
+  .scenario-intro-title, .scenario-outcome-title, .dt-intro-title, .dt-leaf-heading,
+  .breakdown-details h3, .timeline-details h3,
+  .sequence-verify-btn, .template-verify-btn,
+  .sequence-feedback-msg, .template-feedback-msg,
+  .viewer-button--primary, .present-ctl--main, .pick-bar-send,
+  .viewer-mode button[aria-pressed='true'], .viewer-pill[aria-pressed='true'],
+  .flowchart-view-tab-btn.active
+) {
+  font-weight: var(--weight-label) !important;
+}
+
+/* These heading elements contain the exercise itself, not a UI heading. */
+:root :is(.topic-container, .section-wrapper, .present-region) :is(
+  .quiz-question-text, .scenario-decision-prompt, .dt-decision-prompt,
+  .pillar-block-title, .cm-node-title, .present-card-back-word,
+  .present-cm-group-names, .present-cm-verb,
+  .present-tradeoff .compare-card-label
+) {
+  font-weight: var(--weight-body) !important;
+}
+
+/* Deliberate conclusions rather than whole bold paragraphs or option lists. */
+:root :is(.impact-text, .quiz-score-text, .dt-leaf-rec-text, .details-rec-title) {
+  font-weight: var(--weight-heading) !important;
+}
+
+/* SectionTitleBar uses h3; its role takes precedence over generic card h3s. */
+:root :is(.topic-container, .section-wrapper, .present-region) :is(
+  .section-title-bar-title, .topic-page-title, .topic-intro-title,
+  .taxonomy-browser-section-title, .formula-sandbox-section-title,
+  .reflection-template-title, .present-headline
+) {
+  font-weight: var(--weight-heading) !important;
+}
+
+:root :is(.topnav, .section-wrapper, .present-controls) :is(
+  [role='tab'][aria-selected='true'], .loom-tools-item.is-current
+) {
+  font-weight: var(--weight-label) !important;
+}
+
+/* Portaled dialogs sit outside the section wrapper. Their titles are small
+   UI headings rather than another page title. */
+:root :is([role='dialog'], [role='alertdialog']) :is(h1, h2) {
+  font-weight: var(--weight-label) !important;
+}
+
+/* Active toolbar choices and the embedded app's two mode choices. */
+:root :is(.topnav, .present-controls, .present-mini-controls) button[aria-pressed='true'],
+:root .present-mode .present-button--primary,
+:root .mcp-card .mcp-mode-choice strong {
+  font-weight: var(--weight-label) !important;
+}

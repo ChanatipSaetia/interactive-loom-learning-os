@@ -285,6 +285,40 @@
   fill-opacity: var(--glass-node-opacity);
 }
 
+/* Concept maps share the flowchart's type tint and SVG translucency.
+   Only the surface is translucent: labels and interaction rings stay crisp. */
+:root[data-theme^='liquid-glass'] .cm-node-surface {
+  fill: var(--cm-node-tint, var(--glass-face));
+  fill-opacity: var(--glass-node-opacity);
+  stroke-opacity: 0.75;
+  filter: none;
+}
+:root[data-theme^='liquid-glass'] .cm-node-frost { display: inline; }
+:root[data-theme^='liquid-glass'] .cm-node-highlight .cm-node-surface {
+  fill-opacity: 1;
+}
+
+/* Stacked layers use the same sheen, with each layer's own category colour. */
+:root[data-theme^='liquid-glass'] :is(.pillar-stack-band, .pillar-stack-item, .pillar-block) {
+  background: var(--glass-node-glare), color-mix(in srgb, var(--block-accent, var(--layer-accent, var(--primary))) 12%, var(--glass-tint));
+  border-color: color-mix(in srgb, var(--block-accent, var(--layer-accent, var(--primary))) 35%, var(--glass-edge));
+  box-shadow: var(--glass-highlight);
+}
+:root[data-theme^='liquid-glass'] .pillar-stack-band:is(.is-current, .is-highlighted),
+:root[data-theme^='liquid-glass'] .pillar-block:is(.is-selected, .is-highlighted) {
+  border-color: var(--block-accent, var(--layer-accent, var(--primary)));
+}
+:root[data-theme^='liquid-glass'] .pillar-block.is-selected {
+  box-shadow: 0 0 0 2px var(--block-accent), var(--glass-highlight);
+}
+:root[data-theme^='liquid-glass'] .pillar-block.is-needed { border-color: var(--secondary); }
+:root[data-theme^='liquid-glass'] .pillar-block.is-affected { border-color: var(--coral); }
+
+/* The layer carries the tint; its inner items are plain white in light mode. */
+:root[data-theme='liquid-glass-light'] .pillar-stack-item {
+  background: #ffffff;
+}
+
 :root[data-theme^='liquid-glass'] .flowchart-step-caption {
   background: var(--glass-sheen), var(--glass-pane);
   box-shadow: var(--glass-highlight), 0 18px 40px -16px var(--glass-drop);
@@ -294,7 +328,6 @@
 
 :root[data-theme^='liquid-glass'] .quiz-choice,
 :root[data-theme^='liquid-glass'] .roadmap-step-card,
-:root[data-theme^='liquid-glass'] .pillar-block,
 :root[data-theme^='liquid-glass'] .dt-choice,
 :root[data-theme^='liquid-glass'] .dt-leaf-tradeoffs,
 :root[data-theme^='liquid-glass'] .dt-breadcrumb,

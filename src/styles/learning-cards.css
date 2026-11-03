@@ -38,7 +38,6 @@
   .reflection-template-title, .formula-sandbox-section-title
 ) {
   font-family: var(--font-ui);
-  font-weight: 500;
   letter-spacing: normal;
 }
 
@@ -58,6 +57,5 @@
 
 :root :is(.topnav-title, .viewer-pill, .viewer-mode button, .present-ctl, .present-where, .mcp-bar-title, .mcp-button) {
   font-family: var(--font-ui);
-  font-weight: 500;
   letter-spacing: normal;
 }
