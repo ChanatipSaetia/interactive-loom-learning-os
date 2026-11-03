@@ -275,7 +275,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                     
                     <div className="relative">
                       <div className="absolute top-0 left-0 w-[3px] h-full bg-primary/50"></div>
-                      <p className="text-muted-foreground italic font-serif text-lg md:text-xl leading-relaxed pl-6 py-1" {...pick(currentTerm, 'shortDefinition')}>
+                      <p className="text-muted-foreground text-lg md:text-xl leading-relaxed pl-6 py-1" {...pick(currentTerm, 'shortDefinition')}>
                         “{currentTerm.shortDefinition}”
                       </p>
                     </div>

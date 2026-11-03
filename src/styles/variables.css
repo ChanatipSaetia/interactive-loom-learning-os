@@ -122,6 +122,10 @@
   --font-ui:      'Noto Sans Thai', 'Inter', ui-sans-serif, system-ui, sans-serif; /* dense UI text: cards, lists, chips */
   --font-mono:    'CohereMono', 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
+  /* Learning cards follow the flowchart nodes: quiet edges and compact corners. */
+  --learning-card-radius: 8px;
+  --learning-card-shadow: 0 1px 3px color-mix(in srgb, var(--foreground) 8%, transparent);
+
   --text-hero:             96px / 1.0 -1.92px var(--font-display);
   --text-product-display:  72px / 1.0 -1.44px var(--font-display);
   --text-section-display:  60px / 1.0 -1.2px  var(--font-body);
@@ -494,48 +498,44 @@
 }
 
 /* ============================================================
-   Theme: Liquid Glass — Midnight Mist (dark, translucent, calm)
+   Theme: Liquid Glass — Neutral Graphite (dark, translucent, calm)
 
-   A hushed blue-slate: Catppuccin roles with muted accents (hues
-   kept, so diagram node types stay distinct) on a deep slate, with
-   translucent surfaces over two soft glows and fine grain. The raw
-   --ctp-* surfaces stay opaque (SVG node fills and inline styles
-   rely on them); only the semantic card / border tokens turn
-   translucent, and src/styles/liquid-glass.css restyles the main
-   containers.
+   Neutral charcoal surfaces and soft gray text with a restrained blue
+   accent. Diagram/status hues stay distinct; glass comes from fine
+   edges and highlights rather than coloured backdrop glows.
 ============================================================ */
 [data-theme='liquid-glass'] {
   /* shadcn semantic tokens — translucent surfaces */
-  --background:             #141824;
-  --foreground:             #e2e6ef;
+  --background:             #1b1c1e;
+  --foreground:             #e8e8e9;
   --card:                   rgba(255, 255, 255, 0.05);
-  --card-foreground:        #e2e6ef;
-  --primary-foreground:     #141824;
-  --secondary-foreground:   #141824;
+  --card-foreground:        #e8e8e9;
+  --primary-foreground:     #1b1c1e;
+  --secondary-foreground:   #1b1c1e;
   --accent:                 rgba(255, 255, 255, 0.08);
-  --accent-foreground:      #e2e6ef;
+  --accent-foreground:      #e8e8e9;
   --border:                 rgba(255, 255, 255, 0.09);
   --input:                  rgba(255, 255, 255, 0.08);
-  --destructive-foreground: #141824;
+  --destructive-foreground: #1b1c1e;
 
-  /* Surfaces — deep slate so glass reads against the backdrop */
-  --ctp-crust:     #0f121b;
-  --ctp-mantle:    #13161f;
-  --ctp-base:      #171b27;
-  --ctp-surface0:  #222736;
-  --ctp-surface1:  #303646;
-  --ctp-surface2:  #414859;
+  /* Surfaces — neutral charcoal so coloured nodes stay distinct */
+  --ctp-crust:     #141517;
+  --ctp-mantle:    #191a1c;
+  --ctp-base:      #1e1f22;
+  --ctp-surface0:  #292a2d;
+  --ctp-surface1:  #393a3e;
+  --ctp-surface2:  #4b4d51;
 
   /* Text — soft white, never pure */
-  --ctp-text:      #e2e6ef;
-  --ctp-subtext1:  #c2c8d6;
-  --ctp-subtext0:  #a8afc0;
-  --ctp-overlay2:  #9198a9;
-  --ctp-overlay1:  #7f8698;
-  --ctp-overlay0:  #6c7385;
+  --ctp-text:      #e8e8e9;
+  --ctp-subtext1:  #c7c8ca;
+  --ctp-subtext0:  #adafb3;
+  --ctp-overlay2:  #a0a2a7;
+  --ctp-overlay1:  #878a90;
+  --ctp-overlay0:  #70737a;
 
-  /* Accents — the Catppuccin hues, muted toward slate */
-  --ctp-blue:      #a3b4dd;
+  /* Accents — blue for actions; other hues retain their semantic roles */
+  --ctp-blue:      #91b5e3;
   --ctp-lavender:  #b7bce2;
   --ctp-sapphire:  #9cb9cf;
   --ctp-sky:       #a5c4cf;
@@ -552,7 +552,7 @@
 
   /* Selection / highlight tints */
   --pale-green:    rgba(171, 197, 156, 0.10);
-  --pale-blue:     rgba(163, 180, 221, 0.12);
+  --pale-blue:     rgba(145, 181, 227, 0.12);
   --pale-pink:     rgba(211, 179, 200, 0.10);
 
   /* Typography inherits the shared font families from :root. */
@@ -571,7 +571,7 @@
   --glass-tint:        rgba(255, 255, 255, 0.05);
   --glass-tint-strong: rgba(255, 255, 255, 0.08);
   --glass-tint-inset:  rgba(255, 255, 255, 0.03);
-  --glass-tint-dark:   rgba(16, 19, 29, 0.97);
+  --glass-tint-dark:   rgba(25, 26, 28, 0.97);
   --glass-edge:        rgba(255, 255, 255, 0.09);
   --glass-edge-strong: rgba(255, 255, 255, 0.16);
   --glass-sheen:       linear-gradient(170deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 40%, rgba(255, 255, 255, 0) 65%);
@@ -579,69 +579,65 @@
   --glass-shadow:      0 18px 50px -24px rgba(0, 0, 0, 0.55);
   --glass-filter:      none;
   --glass-rim:         inset 0 1px 1px rgba(255, 255, 255, 0.28), inset 0 -10px 18px -14px rgba(255, 255, 255, 0.22), inset 10px 0 18px -16px rgba(255, 255, 255, 0.14), inset -10px 0 18px -16px rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --glass-menu:        rgba(20, 24, 36, 0.98);   /* the header's ⋯ menu: thicker, so its labels stay easy to read */
-  --glass-pane:        rgba(20, 24, 36, 0.98);   /* modals, callouts, Present title card */
-  --glass-face:        #1f2433;                  /* flashcard faces: solid, so a deck never shows through */
+  --glass-menu:        rgba(27, 28, 30, 0.98);   /* the header's ⋯ menu: thicker, so its labels stay easy to read */
+  --glass-pane:        rgba(27, 28, 30, 0.98);   /* modals, callouts, Present title card */
+  --glass-face:        #252629;                  /* flashcard faces: solid, so a deck never shows through */
   --glass-region:      var(--glass-face); /* a Present slide */
-  --glass-sticky:      rgba(18, 21, 32, 0.98);    /* sticky section titles */
-  --glass-well:        rgba(8, 10, 16, 0.45);    /* text inputs */
+  --glass-sticky:      rgba(27, 28, 30, 0.98);    /* sticky section titles */
+  --glass-well:        rgba(12, 13, 14, 0.45);    /* text inputs */
   --glass-drop:        rgba(0, 0, 0, 0.6);       /* drop shadows */
-  --glass-selection:   rgba(163, 180, 221, 0.28);
-  --glass-solid:       #1e2230;                  /* surfaces when transparency is reduced */
-  --glass-solid-edge:  #303646;
-  --glass-base:        #0d1018;
+  --glass-selection:   rgba(145, 181, 227, 0.28);
+  --glass-solid:       #252629;                  /* surfaces when transparency is reduced */
+  --glass-solid-edge:  #393a3e;
+  --glass-base:        #17181a;
   --glass-node-opacity: 0.72;                    /* flowchart node fills */
   --glass-node-glare:  linear-gradient(160deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 60%);
   --glass-backdrop:
-    radial-gradient(70% 55% at 18% -5%, rgba(122, 142, 196, 0.20), transparent 70%),
-    radial-gradient(55% 50% at 90% 105%, rgba(104, 124, 168, 0.13), transparent 70%),
-    linear-gradient(180deg, #131722 0%, #0d1018 100%);
+    radial-gradient(80% 60% at 20% 0%, rgba(255, 255, 255, 0.035), transparent 70%),
+    linear-gradient(180deg, #1e1f22 0%, #17181a 100%);
 }
 
 /* ============================================================
-   Theme: Liquid Glass Light — Morning Mist (light, translucent, calm)
+   Theme: Liquid Glass Light — Neutral Cloud (light, translucent, calm)
 
-   The light twin of Midnight Mist: frosted white glass over a pale
-   cool backdrop with soft periwinkle, lilac and aqua glows and the
-   same grain, a glare from the top left and a faint reflection from
-   the bottom right on every pane.
-   Accents are the Catppuccin hues deepened for contrast on white.
-   Surface roles follow the other light themes (crust = lightest).
+   The light twin of Neutral Graphite: off-white and pale gray surfaces,
+   neutral shadows, and a restrained blue accent. Diagram/status hues
+   stay distinct, deepened for contrast on white.
    Shares src/styles/liquid-glass.css with the dark variant.
 ============================================================ */
 [data-theme='liquid-glass-light'] {
   /* shadcn semantic tokens — frosted white surfaces */
-  --background:             #eef1f6;
-  --foreground:             #1e2432;
+  --background:             #e4e8e9;
+  --foreground:             #252629;
   --card:                   rgba(255, 255, 255, 0.42);
-  --card-foreground:        #1e2432;
+  --card-foreground:        #252629;
   --primary-foreground:     #ffffff;
   --secondary-foreground:   #ffffff;
-  --muted-foreground:       #5d6578;
+  --muted-foreground:       #60636a;
   --accent:                 rgba(255, 255, 255, 0.7);
-  --accent-foreground:      #1e2432;
-  --border:                 rgba(30, 40, 70, 0.10);
-  --input:                  rgba(30, 40, 70, 0.10);
+  --accent-foreground:      #252629;
+  --border:                 rgba(37, 38, 41, 0.10);
+  --input:                  rgba(37, 38, 41, 0.10);
   --destructive-foreground: #ffffff;
 
-  /* Surfaces — white and pale slate (opaque: SVG fills and nodes use them) */
+  /* Surfaces — off-white and pale gray (opaque for SVG fills and nodes) */
   --ctp-crust:     #ffffff;
-  --ctp-mantle:    #f4f6fa;
-  --ctp-base:      #f8f9fc;
+  --ctp-mantle:    #f3f3f1;
+  --ctp-base:      #fafaf8;
   --ctp-surface0:  #ffffff;
-  --ctp-surface1:  #dfe3eb;
-  --ctp-surface2:  #c6ccd8;
+  --ctp-surface1:  #e1e2df;
+  --ctp-surface2:  #c9cbc7;
 
-  /* Text — deep slate, never pure black */
-  --ctp-text:      #1e2432;
-  --ctp-subtext1:  #353c4d;
-  --ctp-subtext0:  #4a5265;
-  --ctp-overlay2:  #5d6578;
-  --ctp-overlay1:  #737b8d;
-  --ctp-overlay0:  #9097a7;
+  /* Text — neutral charcoal, never pure black */
+  --ctp-text:      #252629;
+  --ctp-subtext1:  #3d3f43;
+  --ctp-subtext0:  #53565c;
+  --ctp-overlay2:  #60636a;
+  --ctp-overlay1:  #777a80;
+  --ctp-overlay0:  #909398;
 
   /* Accents — the same hues, deepened for contrast on white */
-  --ctp-blue:      #4a62a6;
+  --ctp-blue:      #35689c;
   --ctp-lavender:  #6268ae;
   --ctp-sapphire:  #3d7293;
   --ctp-sky:       #3a7c8d;
@@ -658,7 +654,7 @@
 
   /* Selection / highlight tints */
   --pale-green:    rgba(76, 129, 57, 0.10);
-  --pale-blue:     rgba(74, 98, 166, 0.10);
+  --pale-blue:     rgba(53, 104, 156, 0.10);
   --pale-pink:     rgba(163, 82, 133, 0.08);
 
   /* Shared typography; corners match the dark variant. */
@@ -670,36 +666,35 @@
   --present-enter-blur: 0px;
 
   /* Glass material — frosted white, a hairline of shade for definition */
-  --glass-tint:        rgba(255, 255, 255, 0.42);
+  --glass-tint:        rgba(255, 255, 255, 0.38);
   --glass-tint-strong: rgba(255, 255, 255, 0.62);
-  --glass-tint-inset:  rgba(255, 255, 255, 0.34);
-  --glass-tint-dark:   rgba(250, 251, 254, 0.97);
-  --glass-edge:        rgba(30, 40, 70, 0.09);
-  --glass-edge-strong: rgba(30, 40, 70, 0.16);
+  --glass-tint-inset:  rgba(255, 255, 255, 0.28);
+  --glass-tint-dark:   rgba(247, 250, 250, 0.88);
+  --glass-edge:        rgba(37, 38, 41, 0.09);
+  --glass-edge-strong: rgba(37, 38, 41, 0.16);
   /* A glare from the top left and a faint reflection rising from the bottom right */
   --glass-sheen:
     linear-gradient(160deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.28) 24%, rgba(255, 255, 255, 0) 52%),
     linear-gradient(340deg, rgba(255, 255, 255, 0.40) 0%, rgba(255, 255, 255, 0) 28%);
-  --glass-highlight:   inset 0 1px 0 #ffffff, inset 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(30, 40, 70, 0.05);
-  --glass-shadow:      0 22px 50px -24px rgba(40, 55, 95, 0.34), 0 2px 6px -2px rgba(40, 55, 95, 0.10);
+  --glass-highlight:   inset 0 1px 0 #ffffff, inset 0 0 0 1px rgba(255, 255, 255, 0.62), inset 0 -1px 0 rgba(37, 38, 41, 0.07), 0 5px 16px -10px rgba(37, 38, 41, 0.22);
+  --glass-shadow:      0 22px 50px -24px rgba(37, 38, 41, 0.34), 0 2px 6px -2px rgba(37, 38, 41, 0.10);
   --glass-filter:      none;
   --glass-rim:         inset 0 1px 1px #ffffff, inset 0 -10px 18px -14px rgba(255, 255, 255, 0.9), inset 10px 0 18px -16px rgba(255, 255, 255, 0.7), inset -10px 0 18px -16px rgba(255, 255, 255, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-  --glass-menu:        rgba(250, 251, 254, 0.98);
-  --glass-pane:        rgba(250, 251, 254, 0.98);
+  --glass-menu:        rgba(252, 252, 250, 0.98);
+  --glass-pane:        rgba(247, 250, 250, 0.86);
   --glass-face:        #ffffff;
-  --glass-region:      var(--glass-face);
-  --glass-sticky:      rgba(240, 243, 248, 0.98);
+  --glass-region:      rgba(242, 247, 248, 0.82);
+  --glass-sticky:      rgba(228, 232, 233, 0.98);
   --glass-well:        rgba(255, 255, 255, 0.7);
-  --glass-drop:        rgba(40, 55, 95, 0.22);
-  --glass-selection:   rgba(74, 98, 166, 0.20);
+  --glass-drop:        rgba(37, 38, 41, 0.22);
+  --glass-selection:   rgba(53, 104, 156, 0.20);
   --glass-solid:       #ffffff;
-  --glass-solid-edge:  #dfe3eb;
-  --glass-base:        #e9edf3;
+  --glass-solid-edge:  #e1e2df;
+  --glass-base:        #dce2e3;
   --glass-node-opacity: 0.6;
   --glass-node-glare:  linear-gradient(160deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.15) 35%, rgba(255, 255, 255, 0) 60%);
   --glass-backdrop:
-    radial-gradient(70% 55% at 15% -5%, rgba(140, 160, 225, 0.55), transparent 70%),
-    radial-gradient(50% 45% at 95% 40%, rgba(196, 178, 232, 0.32), transparent 70%),
-    radial-gradient(60% 55% at 85% 108%, rgba(150, 196, 214, 0.50), transparent 70%),
-    linear-gradient(180deg, #eef1f7 0%, #e3e8f0 100%);
+    radial-gradient(75% 65% at 12% 0%, rgba(255, 255, 255, 0.72), transparent 70%),
+    radial-gradient(65% 65% at 100% 45%, rgba(184, 198, 201, 0.30), transparent 70%),
+    linear-gradient(155deg, #e6ebec 0%, #dce2e3 60%, #e7eae8 100%);
 }

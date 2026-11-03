@@ -67,8 +67,9 @@
 
 /* Panes that float over content: the rim catches light like the edge of thick glass */
 :root[data-theme^='liquid-glass'] :is(.topnav, .pick-bar, .viewer-menu, .present-caption, .present-controls) {
-  box-shadow: var(--glass-rim), var(--glass-shadow);
+  box-shadow: var(--glass-highlight), var(--learning-card-shadow);
 }
+
 
 :root[data-theme^='liquid-glass'] .pick-bar,
 :root[data-theme^='liquid-glass'] .pick-menu,
@@ -165,6 +166,11 @@
 
 :root[data-theme^='liquid-glass'] .topic-intro-block,
 :root[data-theme^='liquid-glass'] .topic-intro-roadmap,
+:root[data-theme^='liquid-glass'] .roadmap-step-card,
+:root[data-theme^='liquid-glass'] .journey-detail,
+:root[data-theme^='liquid-glass'] .breakdown-scene-caption,
+:root[data-theme^='liquid-glass'] .present-taxonomy-overview-card,
+:root[data-theme^='liquid-glass'] .present-taxonomy-analogy,
 :root[data-theme^='liquid-glass'] .quiz-question-card,
 :root[data-theme^='liquid-glass'] .quiz-score-bar,
 :root[data-theme^='liquid-glass'] .compare-card,
@@ -183,17 +189,21 @@
 :root[data-theme^='liquid-glass'] .template-sentence-container,
 :root[data-theme^='liquid-glass'] .sequence-pool,
 :root[data-theme^='liquid-glass'] .loom-openui-scope .openui-card-card {
-  background: var(--glass-sheen), var(--glass-tint);
+  background: var(--glass-node-glare), var(--glass-tint);
   border-color: var(--glass-edge);
-  box-shadow: var(--glass-highlight), var(--glass-shadow);
+  border-radius: var(--learning-card-radius);
+  border-width: 1px;
+  box-shadow: var(--glass-highlight);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* The trade-off question frame is the card; its option cards sit inside it */
 :root[data-theme^='liquid-glass'] .compare-step:not(.present-tradeoff .compare-step) {
-  border-radius: var(--radius-md);
-  background: var(--glass-sheen), var(--glass-tint);
+  border-radius: var(--learning-card-radius);
+  background: var(--glass-node-glare), var(--glass-tint);
   border-color: var(--glass-edge);
-  box-shadow: var(--glass-highlight), var(--glass-shadow);
+  box-shadow: var(--glass-highlight);
 }
 :root[data-theme^='liquid-glass'] .compare-step .compare-card {
   background: var(--glass-tint-inset);
@@ -227,9 +237,10 @@
    a deck stacks cards, and a see-through face shows the words underneath */
 :root[data-theme^='liquid-glass'] .backface-hidden.bg-card,
 :root[data-theme^='liquid-glass'] .present-region .present-card-face {
-  background: var(--glass-sheen), var(--glass-face);
+  background: var(--glass-node-glare), var(--glass-face);
   border-color: var(--glass-edge);
-  box-shadow: var(--glass-highlight), var(--glass-shadow);
+  border-radius: var(--learning-card-radius);
+  box-shadow: var(--glass-highlight);
 }
 
 /* Full-stage presenter cards need only a soft edge, without multiplying deck shadows. */
@@ -265,7 +276,7 @@
 }
 
 :root[data-theme^='liquid-glass'] .flowchart-node-card {
-  border-radius: 8px;
+  border-radius: var(--learning-card-radius);
   background: var(--glass-node-glare);
   box-shadow: var(--glass-highlight);
 }
@@ -528,7 +539,7 @@
 }
 
 :root[data-theme^='liquid-glass'] .present-ctl {
-  border-radius: var(--radius-full);
+  border-radius: var(--learning-card-radius);
 }
 
 :root[data-theme^='liquid-glass'] .present-region {
@@ -589,4 +600,14 @@
 :root[data-theme^='liquid-glass'] :is(.mcp-bar, .mcp-card, .present-mini-controls, .present-title-card) {
   background: var(--glass-sheen), var(--glass-face);
   border-color: var(--glass-edge-strong);
+}
+
+/* Shared bars use the node surface, including narrow layouts. */
+:root[data-theme^='liquid-glass'] :is(.topnav, .pick-bar, .present-controls, .present-mini-controls, .mcp-bar) {
+  background: var(--glass-node-glare), var(--glass-pane);
+  box-shadow: var(--glass-highlight), var(--learning-card-shadow);
+  border-color: var(--glass-edge);
+  border-radius: var(--learning-card-radius);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }

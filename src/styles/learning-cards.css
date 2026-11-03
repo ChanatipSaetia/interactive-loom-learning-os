@@ -1,0 +1,63 @@
+/* One reading face across section renderers, including Studio previews and MCP.
+   Keep code/notation monospace and Present's own scaled text sizes. */
+:root :is(.section-wrapper, .topic-container, .present-region) {
+  --font-body: var(--font-ui);
+  --font-display: var(--font-ui);
+  --font-sans: var(--font-ui);
+  font-family: var(--font-ui);
+  letter-spacing: normal;
+}
+
+/* Match the flowchart node's 8px corner and light edge. Do not change layout,
+   transforms (flashcard flips), or the coloured answer/selection states. */
+:root :is(
+  .topic-intro-block, .topic-intro-roadmap, .roadmap-step-card,
+  .bullets-card, .taxonomy-browser-card, .pillar-layer-header,
+  .pillar-stack-band, .pillar-stack-item, .breakdown-node, .breakdown-scene-caption,
+  .journey-detail,
+  .present-taxonomy-overview-card, .present-taxonomy-analogy,
+  .timeline-details, .timeline-scene-caption,
+  .quiz-question-card, .quiz-score-bar,
+  .dt-intro-card, .dt-decision, .dt-leaf-card,
+  .scenario-intro-card, .scenario-decision,
+  .compare-step, .compare-card, .controls-panel, .sandbox-metrics,
+  .template-sentence-container, .template-chips-bank,
+  .sequence-pool, .sequence-item, .template-chip-item,
+  .backface-hidden.bg-card, .present-card-face,
+  .loom-openui-scope .openui-card-card
+) {
+  border-radius: var(--learning-card-radius);
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: var(--learning-card-shadow);
+}
+
+:root :is(
+  .topic-intro-title, .pillar-title, .taxonomy-browser-section-title,
+  .taxonomy-browser-card-title, .quiz-question-text,
+  .reflection-template-title, .formula-sandbox-section-title
+) {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+/* Navigation and the Read/Present docks belong to the same UI as the cards. */
+:root :is(.topnav, .viewer-menu, .mcp-bar, .pick-bar, .present-controls, .present-mini-controls, .present-caption) {
+  --font-body: var(--font-ui);
+  --font-display: var(--font-ui);
+  font-family: var(--font-ui);
+  letter-spacing: normal;
+  border-radius: var(--learning-card-radius);
+  box-shadow: var(--learning-card-shadow);
+}
+
+:root :is(.viewer-pill, .viewer-mode, .viewer-mode button, .present-ctl, .pick-bar-input, .pick-bar-icon, .pick-bar-send, .mcp-button) {
+  border-radius: var(--learning-card-radius);
+}
+
+:root :is(.topnav-title, .viewer-pill, .viewer-mode button, .present-ctl, .present-where, .mcp-bar-title, .mcp-button) {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: normal;
+}
