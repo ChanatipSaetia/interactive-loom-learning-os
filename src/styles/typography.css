@@ -37,15 +37,20 @@
   .topic-container, .section-wrapper, .present-mode, .present-region,
   .viewer-menu, .mcp-card, .ai-panel, .loom-shelf, .ui-modal, .section-help-modal, [role='dialog'], [role='alertdialog']
 ) :is(h3, h4, h5, h6, th, [role='columnheader']),
-:root :is(.topic-container, .section-wrapper, .present-region, .topnav, .viewer-menu, .mcp-card, .mcp-bar, .pick-bar, .present-controls, .present-mini-controls) :is(
+:root :is(.topic-container, .section-wrapper, .present-region, .topnav, .viewer-menu, .mcp-card, .mcp-bar, .pick-bar, .present-controls, .present-mini-controls, [role='dialog'], [role='alertdialog']) :is(
   .topnav-title, .mcp-bar-title, .pillar-title, .step-title,
   .taxonomy-browser-card-title, .taxonomy-modal-title,
   .pillar-stack-name, .pillar-layer-header-title,
   .compare-step-title, .compare-block-title,
+  .tradeoff-conclusion-label,
   .scenario-intro-title, .scenario-outcome-title, .dt-intro-title, .dt-leaf-heading,
+  .dt-start-btn, .scenario-start-btn, .scenario-context-title,
+  .scenario-option-active, .dropdown-option-selected,
+  .compare-card-chosen .compare-card-label, .compare-card-focused .compare-card-label,
   .breakdown-details h3, .timeline-details h3,
   .sequence-verify-btn, .template-verify-btn,
   .sequence-feedback-msg, .template-feedback-msg,
+  .quiz-explanation-result, .scenario-outcome-block-label, .dt-leaf-block-label,
   .viewer-button--primary, .present-ctl--main, .pick-bar-send,
   .viewer-mode button[aria-pressed='true'], .viewer-pill[aria-pressed='true'],
   .flowchart-view-tab-btn.active
@@ -57,6 +62,9 @@
 :root :is(.topic-container, .section-wrapper, .present-region) :is(
   .quiz-question-text, .scenario-decision-prompt, .dt-decision-prompt,
   .pillar-block-title, .cm-node-title, .present-card-back-word,
+  .flashcard-word, .present-card-word,
+  .tradeoff-conclusion-overall h4 > span,
+  .read-tradeoff-table tbody th, .present-tradeoff-table tbody th,
   .present-cm-group-names, .present-cm-verb,
   .present-tradeoff .compare-card-label
 ) {
@@ -93,5 +101,21 @@
 :root :is(.topnav, .present-controls, .present-mini-controls) button[aria-pressed='true'],
 :root .present-mode .present-button--primary,
 :root .mcp-card .mcp-mode-choice strong {
+  font-weight: var(--weight-label) !important;
+}
+
+:root :is([role='dialog'], [role='alertdialog']) .taxonomy-modal-focus-label {
+  font-weight: var(--weight-label) !important;
+}
+
+/* The chosen recommendation is the conclusion's deliberate emphasis;
+   rationale, compromises and metric values retain the regular body weight. */
+:root .tradeoff-conclusion .tradeoff-conclusion-explanation > h4 {
+  font-weight: var(--weight-heading) !important;
+}
+
+/* HUD metric details are generated UI labels, not authored bold prose. */
+:root .hud-drawer .hud-title,
+:root .hud-drawer .hud-body > strong {
   font-weight: var(--weight-label) !important;
 }

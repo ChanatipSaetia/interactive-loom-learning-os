@@ -619,7 +619,7 @@
 
 .metric-fill {
   @apply h-full rounded-full;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 40%, var(--secondary)), var(--primary));
+  background: linear-gradient(90deg, color-mix(in srgb, var(--metric-color, var(--primary)) 65%, var(--card)), var(--metric-color, var(--primary)));
   transition: width 0.4s ease;
 }
 

@@ -18,7 +18,7 @@ body {
   backdrop-filter: var(--glass-filter, none);
   -webkit-backdrop-filter: var(--glass-filter, none);
   box-shadow: 0 10px 30px -18px var(--glass-drop, rgba(0, 0, 0, 0.5));
-  font-family: Inter, 'Noto Sans Thai', system-ui, sans-serif;
+  font-family: var(--font-ui);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -113,7 +113,7 @@ body {
   padding: 6px 28px 6px 30px;
   border: 1px solid color-mix(in srgb, var(--ctp-text) 14%, transparent);
   border-radius: 999px;
-  font: 600 13px Inter, system-ui, sans-serif;
+  font: 600 13px var(--font-ui);
   color: var(--ctp-text);
   background: color-mix(in srgb, var(--ctp-text) 8%, transparent);
   cursor: pointer;
@@ -137,7 +137,7 @@ body {
   padding: 8px 16px;
   border: 0;
   border-radius: 999px;
-  font: 600 14px Inter, system-ui, sans-serif;
+  font: 600 14px var(--font-ui);
   color: var(--ctp-base);
   background: var(--ctp-blue);
   cursor: pointer;
@@ -245,7 +245,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: 600 14px Inter, 'Noto Sans Thai', system-ui, sans-serif;
+  font: 600 14px var(--font-ui);
 }
 
 .mcp-bar-actions {
@@ -315,7 +315,7 @@ body {
   align-items: center;
   gap: 6px 8px;
   padding: 8px 12px;
-  font: 13px Inter, system-ui, sans-serif;
+  font: 13px var(--font-ui);
   color: var(--ctp-subtext0);
   background: color-mix(in srgb, var(--ctp-base) 80%, transparent);
 }

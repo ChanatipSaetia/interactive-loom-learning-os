@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, type CSSProperties } from 'react'
 import { useHUD } from '../../../../composition/context/HUDContext'
 import type { OKFFormulaVariable, OKFFormulaMetric } from '../../../../composition/okf/types'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
@@ -203,6 +203,8 @@ export function FormulaSandbox({ title, variables = [], metrics = [], sectionInd
               <input
                 type="range"
                 className="range-input"
+                aria-label={v.label}
+                style={{ '--range-progress': `${v.max > v.min ? Math.max(0, Math.min(100, ((variablesState[v.id] - v.min) / (v.max - v.min)) * 100)) : 0}%` } as CSSProperties}
                 min={v.min}
                 max={v.max}
                 step={v.step}

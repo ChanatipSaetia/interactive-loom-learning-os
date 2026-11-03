@@ -369,7 +369,7 @@ body {
 
 /* Contrast and type scale establish the section hierarchy; accent color is a structural cue. */
 .viewer .topic-content .journey-goal-banner { border-inline-start-width:2px; background:color-mix(in srgb,var(--primary) 3%,transparent); }
-.viewer .topic-content .journey-goal-statement { font-size:clamp(20px,2.3vw,26px); font-weight:550; line-height:1.4; color:color-mix(in srgb,var(--foreground) 85%,var(--background)); }
+.viewer .topic-content .journey-goal-statement { line-height:1.4; color:color-mix(in srgb,var(--foreground) 85%,var(--background)); }
 .viewer .topic-content .journey-detail p { color:color-mix(in srgb,var(--foreground) 88%,var(--background)); }
 
 /* Present fills the viewport; the header and playback controls float over the slide. */

@@ -1,7 +1,7 @@
 # Learning typography
 
-Learning sections use the flowchart's `--font-ui` family: Noto Sans Thai,
-Inter, then system sans-serif fallbacks. Code and notation can remain monospace.
+Learning sections and controls use the shared `--font-ui` family: Noto Serif Thai,
+Inter, then system serif fallbacks. Code and notation remain monospace.
 
 The shared weight tokens in `src/styles/variables.css` are:
 

@@ -263,7 +263,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
 
                   {/* Large Word Display */}
                   <div className="my-auto text-left">
-                    <h2 className="text-3xl md:text-5xl font-light tracking-tight text-foreground font-display leading-[1.15] mb-3 md:mb-4" {...pick(currentTerm, 'word')}>
+                    <h2 className="flashcard-word text-3xl md:text-5xl font-light tracking-tight text-foreground font-display leading-[1.15] mb-3 md:mb-4" {...pick(currentTerm, 'word')}>
                       {currentTerm.word}
                     </h2>
                     
@@ -332,10 +332,10 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
 
                       {/* Tab Body Contents */}
                       <div className="flex-1 overflow-y-auto scrollbar-thin py-2" onClick={(e) => e.stopPropagation()}>
-                        <TabsContent value="guidelines" className="space-y-6 text-left font-sans mt-0">
+                        <TabsContent value="guidelines" className="space-y-6 text-left mt-0">
                           <div>
                             <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest block mb-2">Standard Concept</span>
-                            <h4 className="text-3xl font-light tracking-tight text-foreground font-display">
+                            <h4 className="flashcard-word text-3xl font-light tracking-tight text-foreground font-display">
                               {currentTerm.word}
                             </h4>
                           </div>
@@ -355,9 +355,9 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                         </TabsContent>
 
                         {simulatedChat && (
-                          <TabsContent value="dialogue" className="space-y-6 text-left font-sans mt-0">
+                          <TabsContent value="dialogue" className="space-y-6 text-left mt-0">
                             {/* Dialogue Simulation (User + AI Alignment) */}
-                            <div className="border border-border bg-muted/10 p-5 rounded-md space-y-6 font-mono text-sm">
+                            <div className="border border-border bg-muted/10 p-5 rounded-md space-y-6 text-sm">
                               <div className="flex items-center space-x-3 border-b border-border pb-3 mb-2">
                                 <MessageSquare className="w-5 h-5 text-primary" />
                                 <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Interactive Dialogue Simulation</span>
@@ -385,7 +385,7 @@ export default function FlashcardDeck({ title, terms = [], sectionIndex = 0 }: F
                                   <HelpCircle className="w-4 h-4 mr-2 text-primary" />
                                   AI Alignment Inquiry (Asks back):
                                 </span>
-                                <p className="text-foreground leading-relaxed font-sans text-base font-medium" {...pick(simulatedChat, 'aiQuestion')}>
+                                <p className="text-foreground leading-relaxed text-base font-medium" {...pick(simulatedChat, 'aiQuestion')}>
                                   "{simulatedChat.aiQuestion}"
                                 </p>
                               </div>

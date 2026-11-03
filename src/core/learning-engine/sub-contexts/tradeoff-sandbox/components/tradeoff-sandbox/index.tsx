@@ -104,7 +104,7 @@ export function MetricBar({ metric, value, max, instanceId }: { metric: MetricDe
         <div
           className="metric-fill"
           data-testid={getTestId(`metric-fill-${metric.id}`)}
-          style={{ width: `${pct}%`, backgroundColor: fillColor }}
+          style={{ width: `${pct}%`, backgroundColor: fillColor, '--metric-color': fillColor } as CSSProperties}
         />
       </div>
     </div>
