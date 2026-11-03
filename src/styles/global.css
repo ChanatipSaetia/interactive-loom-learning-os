@@ -2,6 +2,7 @@
 @import './variables.css';
 @import './liquid-glass.css';
 @import './learning-cards.css';
+@import './typography.css';
 
 html {
   font-size: 16px;

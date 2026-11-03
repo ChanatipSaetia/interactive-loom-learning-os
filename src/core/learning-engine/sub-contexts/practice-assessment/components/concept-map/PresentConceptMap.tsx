@@ -54,7 +54,7 @@ export default function PresentConceptMap({ data, beat }: PresentRendererProps<C
     <div className="present-cm" data-testid="present-concept-map">
       <div className="concept-map-canvas-wrapper present-cm-canvas" {...QUIET}>
         <motion.svg ref={svgRef} className="present-cm-svg" viewBox={viewBox} initial={false} animate={{ viewBox }} transition={{ duration: 0 }} preserveAspectRatio="xMidYMid meet" role="img" aria-label={data.title ?? 'Concept map'}>
-          <defs><marker id={markerId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
+          <defs><linearGradient id={`${markerId}-frost`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="white" stopOpacity="var(--glass-node-glare-start, 0.1)" /><stop offset="0.45" stopColor="white" stopOpacity="0.02" /><stop offset="1" stopColor="white" stopOpacity="0" /></linearGradient><marker id={markerId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
           {[...edges].sort((a, b) => Number(a.index === (step?.kind === 'relation' ? step.edge : -1)) - Number(b.index === (step?.kind === 'relation' ? step.edge : -1))).map(({ edge, index }) => {
             const route = routes[index]
             if (!route) return null
@@ -71,7 +71,8 @@ export default function PresentConceptMap({ data, beat }: PresentRendererProps<C
             const target = relation?.to === node.id
             return <g key={node.id} className={`cm-node-group present-cm-node${!whole && !focused.has(node.id) ? ' is-context' : ''}`} data-testid={`present-cm-node-${node.id}`} {...mark(at, { motion: 'fade' })} data-shown="" {...pick(nodes[node.id])}>
               <title>{node.title}</title>
-              <rect className="cm-node-surface" x={x} y={y} width={width} height={NODE_HEIGHT} rx={16} fill={fillOf(node.category)} stroke={colorOf(node.category)} strokeWidth={2} />
+              <rect className="cm-node-surface" style={{ '--cm-node-tint': fillOf(node.category) } as CSSProperties} x={x} y={y} width={width} height={NODE_HEIGHT} rx={16} fill={fillOf(node.category)} stroke={colorOf(node.category)} strokeWidth={2} />
+              <rect className="cm-node-frost" x={x} y={y} width={width} height={NODE_HEIGHT} rx={16} fill={`url(#${markerId}-frost)`} aria-hidden="true" />
               {source && <rect className="present-cm-source-ring" x={x - 5} y={y - 5} width={width + 10} height={NODE_HEIGHT + 10} rx={16} fill="none" stroke={colorOf(node.category)} strokeWidth={3} {...mark(beat, { motion: 'fade', delay: 0 })} />}
               {target && <rect className="present-cm-target-ring" x={x - 8} y={y - 8} width={width + 16} height={NODE_HEIGHT + 16} rx={18} fill="none" stroke={colorOf(node.category)} strokeWidth={3} {...mark(beat, { motion: 'fade', delay: 1100 })} />}
               <text x={node.x} y={(node.y ?? 0) - 10 - (lines.length - 1) * 12} dominantBaseline="middle" textAnchor="middle" className="cm-node-title" fill="var(--ctp-text)" {...pick(nodes[node.id], 'title')}>
