@@ -435,3 +435,10 @@ body {
 /* The page heading already identifies the question's position in the full quiz. */
 .mcp-reading-section :is(.quiz-score-bar, .quiz-question-header) { display: none; }
 .mcp-reading-section .quiz-question-card { padding: 16px; gap: 12px; }
+
+/* Contain reading gestures at the iframe boundary, including the scroll edges.
+   These rules affect the embedded document only, never the surrounding chat. */
+html:has([data-testid='mcp-read']),
+body:has([data-testid='mcp-read']),
+[data-testid='mcp-read'],
+[data-testid='mcp-read-scroll'] { overscroll-behavior: none; }

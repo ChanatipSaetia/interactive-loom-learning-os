@@ -369,3 +369,5 @@ The whole site and hosted server deploy together to Cloudflare Workers on pushes
 
 
 Reading mode in the MCP app displays the whole topic in a continuous scrolling view. Full screen is optional on phones and desktops; returning to inline keeps the topic open.
+
+Reading scroll gestures stay inside the MCP app, including at the top and bottom of the topic; gestures outside its frame can scroll the surrounding chat normally. Diagrams and form controls retain their own gestures.
