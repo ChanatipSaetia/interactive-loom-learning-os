@@ -293,9 +293,8 @@ body {
 .mcp-read-scroll {
   flex: 1;
   min-height: 0;
+  /* Let the browser handle wheel, touch momentum and scrolling at the edges. */
   overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Touch screens without the chat's full screen: Read at its full height, so the chat's own
