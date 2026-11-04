@@ -4,7 +4,7 @@
  * `SectionRenderer`'s `onEvent`, Present through the section it shows.
  */
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react'
-import { learnerEventOf, stampEvent, type LearnerEvent, type NewLearnerEvent } from './events'
+import { createEngagementGate, learnerEventOf, stampEvent, type LearnerEvent, type NewLearnerEvent } from './events'
 import type { LearnerMemoryPort } from './port'
 import { loadProgress } from '../storage'
 
@@ -23,9 +23,11 @@ export function LearnerMemoryProvider({ port, device, onError, children }: {
   onError?: (error: unknown) => void
   children: ReactNode
 }) {
+  const accept = useMemo(() => createEngagementGate(), [port, device])
   const record = useCallback((event: NewLearnerEvent) => {
+    if (!accept(event, Date.now())) return
     port.append([stampEvent(event, device)]).catch((e) => onError?.(e))
-  }, [port, device, onError])
+  }, [port, device, onError, accept])
   const value = useMemo(() => ({ record, port, device }), [record, port, device])
   return <LearnerMemoryContext.Provider value={value}>{children}</LearnerMemoryContext.Provider>
 }

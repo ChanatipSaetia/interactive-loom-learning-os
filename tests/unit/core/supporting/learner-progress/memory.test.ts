@@ -36,7 +36,8 @@ describe('learner event log (decisions 145–146)', () => {
     expect(learnerEventOf('tea', 'order', { type: 'ReflectionAnswered', challengeId: 'c1', isCorrect: false })?.result).toBe('wrong')
     expect(learnerEventOf('tea', 'words', { type: 'FlashcardFlipped', termId: 'cha', isFront: false })?.item).toBe('sections/words.oui#cha')
     expect(learnerEventOf('tea', 'quiz', { type: 'QuizCompleted' })).toEqual({ topic: 'tea', item: 'sections/quiz.oui', kind: 'completed' })
-    expect(learnerEventOf('tea', 'flow', { type: 'StepChanged' })).toBeNull()
+    expect(learnerEventOf('tea', 'flow', { type: 'StepChanged' })).toEqual({ topic: 'tea', item: 'sections/flow.oui', kind: 'seen' })
+    expect(learnerEventOf('tea', 'flow', { type: 'MetricRecalculated' })).toBeNull()
   })
 
   it('summarizes each topic, with the items last answered wrong', () => {
