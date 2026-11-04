@@ -51,3 +51,11 @@ Added `npm run evaluate:offline`, fixed create/edit/validate/continue fixtures, 
 The MCP runner now asserts behavior and writes a result artifact. It exposed stale runner expectations: current documented behavior starts Read inline and preserves Read after exiting full screen. Updated the runner to request full screen explicitly and verify return to Read, rather than change product behavior. Resource/font warnings are retained separately from fatal page errors.
 
 Added non-deploying PR CI for typecheck, full tests, offline evaluation, generated artifacts, Worker/local packaging and MCP Chromium checks. Final verification results follow after all gates finish.
+
+## Runtime audit correction
+
+A real local Wrangler/workerd startup found a failure that bundling and Node request tests missed: the newly reused assistant reference module created an OpenUI library at module load, and that library generates a random ID. Moved spec initialization into request-time signature access. No learner/session state is cached. Added a bundle-import regression that forbids module-scope random, timer and fetch operations, plus `npm run check:worker` to repeat real workerd startup/HTTP checks locally and in CI.
+
+Verified after the fix in actual workerd: public tool discovery, exact QuizQuestion/QuizChoice contracts (926 characters), malformed plan diagnostics, and focused source context all passed. The public Worker exposed neither learner storage nor full compiler tools. Review also tightened read permission for writes that merge existing evidence, rejected cross-topic backend records, used the scanner rather than regex to identify manifest SectionRefs (excluding comments), and marked diagnostic truncation explicitly.
+
+The initial full suite overlapped audit edits and used cached old modules with some new tests; its 11 failed / 2068 passed / 14 skipped result is not a pristine baseline. The subsequent clean full run passed 2096 tests across 200 files with 14 skipped. The final clean rerun after the runtime/boundary corrections is recorded below; no earlier mixed run is used as readiness evidence.

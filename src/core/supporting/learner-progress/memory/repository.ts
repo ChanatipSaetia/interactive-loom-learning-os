@@ -59,9 +59,12 @@ export function createLearningRepository(port: LearningRecordPort, learner: Veri
     async write(input: unknown, expectedVersion: string | null) {
       const record = LearningRecordSchema.parse(input)
       const key = keyFor(record.topicId, 'learning:write')
+      // A merge returns existing events, so write-only scope cannot disclose them.
+      keyFor(record.topicId, 'learning:read')
       const saved = await port.read(key)
       if ((saved?.version ?? null) !== expectedVersion) throw new LearningRepositoryError('VERSION_CONFLICT')
       const existing = saved ? LearningRecordSchema.parse(saved.record) : null
+      if (existing && existing.topicId !== record.topicId) throw new LearningRepositoryError('FORBIDDEN')
       const ids = new Map<string, LearnerEvent>()
       for (const event of [...(existing?.events ?? []), ...record.events]) {
         const prior = ids.get(event.id)

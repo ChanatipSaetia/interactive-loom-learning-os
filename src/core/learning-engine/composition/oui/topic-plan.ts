@@ -69,5 +69,10 @@ export function validateTopicPlan(input: unknown, supportedSections: ReadonlySet
   for (const diagnostic of validateEvidenceReferences(plan.sources ?? [], plan.sections.flatMap((section) => section.evidenceRefs ?? []), new Set(objectives.keys()))) {
     add('INVALID_EVIDENCE', `sources.${diagnostic.reference}`, diagnostic.code)
   }
+  for (const [index, section] of plan.sections.entries()) for (const ref of section.evidenceRefs ?? []) {
+    const source = plan.sources?.find((entry) => entry.id === ref)
+    if (source && !source.supports.some((id) => section.objectiveRefs.includes(id))) add('INVALID_EVIDENCE', `sections[${index}].evidenceRefs`, `Source ${ref} supports none of this section's objectives`)
+  }
   return errors
 }
+

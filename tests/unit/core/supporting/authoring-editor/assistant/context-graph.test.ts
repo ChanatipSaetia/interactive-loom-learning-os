@@ -34,3 +34,8 @@ it('rejects arbitrary paths and oversized sources', () => {
   expect(() => resolveTopicContext({ files: { '../secret': 'x' } })).toThrow()
   expect(() => resolveTopicContext({ files: { 'topic.oui': 'x'.repeat(32769) } })).toThrow()
 })
+
+it('does not treat comments or quoted prose as manifest section references', () => {
+  const result = resolveTopicContext({ files: { 'topic.oui': '// SectionRef("missing")\nroot = Topic("T", "C", "D", [])' }, roots: ['topic.oui'] })
+  expect(result.diagnostics).toEqual([])
+})

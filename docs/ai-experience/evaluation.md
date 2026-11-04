@@ -11,3 +11,5 @@ Use the same fixture tasks and log actual provider-reported input/output/repair 
 Human review must separately assess factual grounding against retrieved sources, teaching quality, objective achievement, narration clarity and cross-assistant continuity in real clients. Offline success does not establish these. Costs, live host research, source availability, real OAuth/Drive authorization and real learners remain outside the deterministic suite.
 
 `src/evaluation/metrics.ts` summarizes externally supplied measurements; missing token counts remain explicitly unobserved via token observation metadata. No expensive evaluation executes inside the Worker.
+
+After `npm run build:worker`, run `npm run check:worker` for a real local workerd startup and HTTP smoke check using the repository-pinned Wrangler. It never deploys. The packaging test also simulates forbidden module-scope random/timer/fetch operations before importing the Worker.

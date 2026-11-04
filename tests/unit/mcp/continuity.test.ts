@@ -56,6 +56,7 @@ describe('authenticated cross-client continuity', () => {
     await expect(createLearningRepository(port, { subject: learner.subject, scopes: [] }).read('demo')).rejects.toMatchObject({ code: 'FORBIDDEN' })
     await expect(createLearningRepository(port, { subject: learner.subject, scopes: ['learning:read'] }).write(record, saved.version)).rejects.toMatchObject({ code: 'FORBIDDEN' })
     await expect(repository.write({ ...record, events: [{ ...record.events[0], result: 'correct' }] }, saved.version)).rejects.toMatchObject({ code: 'EVENT_CONFLICT' })
+    await expect(createLearningRepository(port, { subject: learner.subject, scopes: ['learning:write'] }).write(record, saved.version)).rejects.toMatchObject({ code: 'FORBIDDEN' })
     const outcomes = await Promise.allSettled([repository.write(record, saved.version), repository.write(record, saved.version)])
     expect(outcomes.filter((outcome) => outcome.status === 'fulfilled')).toHaveLength(1)
     expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toHaveLength(1)

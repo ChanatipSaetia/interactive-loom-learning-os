@@ -21,6 +21,7 @@ jobs:
       - run: npm run oui:schema -- --check
       - run: npm run build:worker
       - run: node --test tests/build/local-mcp.test.mjs tests/build/worker-runtime.test.mjs
+      - run: npm run check:worker
       - run: npx playwright install --with-deps chromium
       - name: MCP integration and browser checks
         run: |

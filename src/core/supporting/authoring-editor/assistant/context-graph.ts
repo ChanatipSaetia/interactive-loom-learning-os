@@ -42,6 +42,7 @@ export function dependencyClosure(graph: ContextGraph, roots: readonly string[],
 
 import { z } from 'zod'
 import { textHash } from './statements'
+import { scan } from '../oui-language/scanner'
 
 /** Sources must be explicitly obtained by the assistant using its authorized connector. */
 export const TopicContextInput = z.object({
@@ -72,9 +73,13 @@ export function resolveTopicContext(input: TopicContextRequest) {
   }
   const graph = buildContextGraph(files)
   // SectionRef uses string IDs, not expression references; connect those explicit topic edges.
-  for (const match of (files['topic.oui'] ?? '').matchAll(/\bSectionRef\("([\w-]+)"\)/g)) {
-    graph.edges.push({ from: 'topic.oui#root', to: `sections/${match[1]}.oui#root`, kind: 'references' })
-  }
+  const tokens = scan(files['topic.oui'] ?? '').filter((token) => !['comment', 'newline'].includes(token.type))
+  tokens.forEach((token, index) => {
+    if (token.type !== 'ident' || token.text !== 'SectionRef' || tokens[index + 1]?.text !== '(' || tokens[index + 2]?.type !== 'string') return
+    let name: unknown
+    try { name = JSON.parse(tokens[index + 2].text) } catch { return }
+    if (typeof name === 'string' && /^[\w-]+$/.test(name)) graph.edges.push({ from: 'topic.oui#root', to: `sections/${name}.oui#root`, kind: 'references' })
+  })
   const ids = new Set(graph.nodes.map((n) => n.id))
   const pending = roots.map((root) => root.includes('#') ? root : `${root}#root`)
   const visited = new Set<string>()
@@ -92,6 +97,7 @@ export function resolveTopicContext(input: TopicContextRequest) {
     pending.push(...(links.get(id) ?? []).filter((next) => !visited.has(next)))
   }
   if (pending.some((id) => !visited.has(id))) result.truncated = true
+  if (result.diagnostics.length > 20) result.truncated = true
   result.diagnostics = result.diagnostics.slice(0, 20)
   // Budget the complete JSON response, never cut a statement in half.
   while (JSON.stringify(result).length > maxChars && (result.sources.length || result.overview.length || result.components.length || result.diagnostics.length)) {

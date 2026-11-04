@@ -8,7 +8,24 @@ test('Worker bundle imports no Node runtime and lists only stateless public cont
   const source = await readFile(path, 'utf8')
   assert.doesNotMatch(source, /(?:from\s*|import\s*\(|require\s*\()["']node:/)
   assert.doesNotMatch(source, /from\s*["'](?:fs|path|os|http|https|crypto)["']/)
-  const { default: worker } = await import(path.href)
+  const randomUUID = globalThis.crypto.randomUUID
+  const random = Math.random
+  const timeout = globalThis.setTimeout
+  const fetch = globalThis.fetch
+  let worker
+  const forbidden = () => { throw new Error('Forbidden module-scope runtime operation') }
+  try {
+    globalThis.crypto.randomUUID = forbidden
+    Math.random = forbidden
+    globalThis.setTimeout = forbidden
+    globalThis.fetch = forbidden
+    worker = (await import(path.href)).default
+  } finally {
+    globalThis.crypto.randomUUID = randomUUID
+    Math.random = random
+    globalThis.setTimeout = timeout
+    globalThis.fetch = fetch
+  }
   const response = await worker.fetch(new Request('https://loom.example/mcp', {
     method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json, text/event-stream', 'mcp-protocol-version': '2025-06-18' },
     body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }),
