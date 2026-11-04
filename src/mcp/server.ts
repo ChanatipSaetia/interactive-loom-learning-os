@@ -13,6 +13,7 @@ import { McpServer } from '@modelcontextprotocol/server'
 import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
+import { TopicContextInput, resolveTopicContext } from '../core/supporting/authoring-editor/assistant/context-graph'
 import { getCapabilityCatalog } from '../core/learning-engine/composition/oui/capability-catalog'
 import { validateTopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
 import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
@@ -135,6 +136,13 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     }),
     annotations: { readOnlyHint: true },
   }, async ({ sections, components }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections, components) }] }))
+
+  server.registerTool('get_topic_context', {
+    title: 'Focused topic context',
+    description: 'Resolve bounded statement dependencies from current source files explicitly supplied by your authorized connector or editor buffers. No fetching, filesystem access or conversation state. roots are file#statement addresses; omit for an overview. Hash is a change hint, not an authorization or concurrency token.',
+    inputSchema: TopicContextInput,
+    annotations: { readOnlyHint: true },
+  }, async (input) => ({ content: [{ type: 'text', text: JSON.stringify(resolveTopicContext(input)) }] }))
 
   // Stateless contracts: no filesystem, session state, or long-running process required.
   server.registerTool('get_loom_capabilities', {

@@ -19,3 +19,7 @@ GitHub API access is blocked by the environment policy (`api.github.com`, HTTP C
 ## Phase 1 — focused discovery
 
 Reused `componentClosure`/`componentEntries` and canonical mental-model definitions. `get_authoring_guide` accepts optional exact `components`, preserving the existing `sections` and `all` forms. Unknown components are explicit. The existing schema generator now publishes `public/llm/loom-capabilities.json` and indexes it in llms.txt; existing prompt/skill outputs remain synchronized and unchanged. Verification: 17 tests in authoring guide, canonical generated prompt and capability catalog passed. Baseline Worker bundle: 526.49 kB (uncompressed; not a latency measurement).
+
+## Phase 2 — request-scoped context
+
+Extracted shared statement indexing/hash utilities from existing assistant context (existing exports preserved). Added bounded caller-supplied file contracts and transitive dependency retrieval with section references, missing references, cycles, complete-statement output budgets, stale hash rejection, and current-buffer version keys. Hashes are change hints, never authorization or write-concurrency tokens. `get_topic_context` does no I/O and keeps no session state. Validation: 36 context and MCP integration tests passed, including existing assistant context tests.
