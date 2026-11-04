@@ -29,6 +29,44 @@ Answer in the format the user asks for. If they do not say, use the single .oui 
 
 The user opens the result in Loom Viewer (https://chanatipsaetia.github.io/interactive-loom-learning-os/viewer.html) or imports it into Loom Studio. Outside the code block(s), say nothing or at most one short sentence.
 
+## General-Purpose Learning Experience Planning
+
+Before choosing a section, decompose the source material into **learning moves**, not paragraphs or subject-specific templates. A single paragraph may combine a definition, causal mechanism, quantity, comparison, example and decision; do not automatically turn that paragraph into one Text section.
+
+1. Identify the learning objective: what should the learner be able to explain, recognize, calculate, compare, decide or perform?
+2. Extract the content structure: concepts, ordered steps, parts, measurements, relationships, alternatives, misconceptions and evidence. Preserve factual meaning and provenance.
+3. Select the most informative representation for each structure. Prefer a native Loom section for learning behavior (Flowchart, Scenario, Quiz, Reflection, Sandbox); prefer standard OpenUI for composed static explanations (chart + callout, labelled SVG + explanation, side-by-side cards, table + interpretation).
+4. Combine compatible moves into a coherent visual scene, but split unrelated ideas into distinct sections. Avoid using Text as a catch-all for steps, data or comparisons.
+5. Author Present-mode narration that reveals and focuses each meaningful visual element. Ensure Read mode still makes sense without narration.
+6. Add an application or retrieval activity when it genuinely advances the objective, not merely to fill a quota.
+7. Validate every component name, positional argument, data length, file root and narration beat against the current catalog. Never invent a component to satisfy a learning goal.
+
+### Reusable OpenUI composition recipes
+
+| Content structure | Preferred composition | Learner takeaway |
+|---|---|---|
+| Proportion or part-to-whole | SingleStackedBarChart or PieChart + Callout; use Table for exact values | Relative share and absolute quantity |
+| Change over time | LineChart or AreaChart + short interpretation | Direction, magnitude and turning points |
+| Categories with measured values | BarChart or HorizontalBarChart + meaningful axis labels | Differences without misleading scales |
+| Comparison of alternatives | Table or side-by-side Cards; use TradeoffSandbox for choices with consequences | Similarities, differences and suitability |
+| Physical or conceptual parts | Labelled Svg or ImageGallery + concise explanatory text | Spatial arrangement and function |
+| Procedure | Steps for simple instructions; Flowchart for branches and interactions | Correct order and dependencies |
+| Cause and effect | Diagram or Steps with explicit causal labels; do not mistake correlation for causation | Mechanism and limits |
+| Worked example | Input facts + intermediate steps + result + explanation | How to reproduce the reasoning |
+| Reference or definition | Short TextContent, Card or Accordion when detail is optional | Clear meaning without excess prose |
+| Decision and practice | DecisionTree, Scenario, Quiz or Reflection | Active application and feedback |
+
+**Composition principles:** Use real sourced values for factual charts; mark invented numbers as illustrative. Avoid redundant chart-plus-table duplication unless exact values matter. Do not force a visualization where connected prose is the clearest representation. Reuse supported OpenUI components rather than creating domain-specific Loom types. Standard OpenUI sections are currently static: use native Loom sections for interactive behavior unless the runtime explicitly supports additional OpenUI interactions.
+
+### Preflight quality check
+
+- Can a learner state the main takeaway from each scene?
+- Are long Text sections actually hiding processes, quantities, relationships or comparisons?
+- Are the visual encodings accurate, labelled and legible?
+- Does the narration explain and focus rather than read a chart verbatim?
+- Is the learning experience transferable to unrelated domains?
+- Do all referenced components and root statements match the supported schema?
+
 ## Start Here: Mental Model and Section Selection
 
 Use this table as the agent's table of contents before planning or writing a topic. Identify what the learner should be able to define, picture, compare, explain or do; then select the section that teaches that mental model. Each row names a supported section type to request from the authoring guide. Read its exact component signatures before writing.
