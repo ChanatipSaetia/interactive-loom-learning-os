@@ -21,7 +21,9 @@ export function summarizeMeasurements(runs: readonly WorkflowMeasurement[]) {
     successRate: total ? successful.length / total : 0,
     firstPassValidityRate: total ? runs.filter((run) => run.valid && run.repairCount === 0).length / total : 0,
     observedTokens: tokens,
-    tokensPerSuccess: successful.length ? tokens / successful.length : null,
+    tokenObservedRuns: runs.filter((run) => [run.inputTokens, run.outputTokens, run.repairInputTokens, run.repairOutputTokens].some((value) => value !== undefined)).length,
+    completeTokenRuns: runs.filter((run) => run.inputTokens !== undefined && run.outputTokens !== undefined && (run.repairCount === 0 || (run.repairInputTokens !== undefined && run.repairOutputTokens !== undefined))).length,
+    tokensPerSuccess: successful.length && runs.some((run) => run.inputTokens !== undefined || run.outputTokens !== undefined || run.repairInputTokens !== undefined || run.repairOutputTokens !== undefined) ? tokens / successful.length : null,
     averageRepairs: total ? sum((run) => run.repairCount) / total : 0,
   }
 }

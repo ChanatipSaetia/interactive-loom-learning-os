@@ -41,3 +41,13 @@ Verification: 76 progress, checkpoint, MCP and pick-anchor tests passed. Fixed t
 Reused existing Drive layout/progress-note workflow and event merge/checkpoint derivation. Added an opt-in request-scoped repository over an explicitly atomic durable `LearningRecordPort`, with versioned OUI/provenance/event records. Verified auth middleware supplies identity/scopes; MCP schemas have no learnerId. Conditional read/write tools enforce scope, topic boundaries, expected versions, atomic compare-and-swap, deduplication and event-ID conflict rejection. Public Worker still has no storage tools or authentication claims.
 
 Verification: 25 MCP, Worker and synthetic two-client continuity tests passed. ChatGPT and another client are test client names, not live external assistants. No real durable provider or auth middleware is configured in this environment; integration requires a backend implementing atomic CAS (or an authorized Drive connector revision API). Existing Drive handoff works without this adapter. No production storage deployment or live multi-assistant continuity is claimed.
+
+## Phase 6 — reproducible evaluation and verification
+
+Plan: use fixed synthetic fixtures outside the Worker; assert real compilation/render/answer/repair behavior; measure context variants without inventing tokens or model-quality scores; run two-client storage handoff independently; make browser checks fail on incorrect behavior; add PR CI without deploying.
+
+Added `npm run evaluate:offline`, fixed create/edit/validate/continue fixtures, actual Viewer quiz rendering and answer recording, provenance/coverage/narration assertions, dependency recall and payload/latency report, and separate two-client MCP continuity tests. Initial run passed 4 tests: guide characters full 126907, section-filtered 33820, dependency-aware 926; dependency recall 1.0; context 719 characters; one targeted repair. Latency is a single local observation, not production performance. Tokens, external models, source truth and human judgment are explicitly unobserved/not run.
+
+The MCP runner now asserts behavior and writes a result artifact. It exposed stale runner expectations: current documented behavior starts Read inline and preserves Read after exiting full screen. Updated the runner to request full screen explicitly and verify return to Read, rather than change product behavior. Resource/font warnings are retained separately from fatal page errors.
+
+Added non-deploying PR CI for typecheck, full tests, offline evaluation, generated artifacts, Worker/local packaging and MCP Chromium checks. Final verification results follow after all gates finish.

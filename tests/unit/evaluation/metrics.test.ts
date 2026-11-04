@@ -9,3 +9,10 @@ describe('evaluation metrics', () => {
     expect(summary.firstPassValidityRate).toBe(0)
   })
 })
+
+it('keeps absent token measurements distinct from observed zero usage', () => {
+  const summary = summarizeMeasurements([{ caseId: 'offline', variant: 'fixture', valid: true, rendered: true, repairCount: 0 }])
+  expect(summary.tokenObservedRuns).toBe(0)
+  expect(summary.completeTokenRuns).toBe(0)
+  expect(summary.tokensPerSuccess).toBeNull()
+})

@@ -63,3 +63,6 @@ dist-mcp/
 dist-worker/
 .wrangler/
 tests/mcp-host/results/
+
+# Offline synthetic evaluation output
+/artifacts/ai-experience-evaluation.json

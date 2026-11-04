@@ -80,7 +80,7 @@ export function resolveTopicContext(input: TopicContextRequest) {
   const visited = new Set<string>()
   const links = new Map<string, string[]>()
   for (const edge of graph.edges) if (edge.kind !== 'contains') links.set(edge.from, [...(links.get(edge.from) ?? []), edge.to])
-  const statements = new Map(entries.flatMap(([file, source]) => fileStatements(source).map((s) => [`${file}#${s.name}`, { file, statement: s.name, line: s.line, text: s.text }] as const)))
+  const statements = new Map<string, { file: string; statement: string; line: number; text: string }>(entries.flatMap(([file, source]) => fileStatements(source).map((s) => [`${file}#${s.name}`, { file, statement: s.name, line: s.line, text: s.text }] as const)))
   while (pending.length && visited.size < maxNodes) {
     const id = pending.shift()!
     if (visited.has(id)) continue
