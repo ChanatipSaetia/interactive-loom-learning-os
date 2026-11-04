@@ -54,9 +54,15 @@ describe('Loom MCP server', () => {
 
   it('offers the guide, validation and show_topic with its app', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_storage_guide', 'get_tutor_guide', 'show_domain', 'show_library', 'show_topic', 'validate_topic'])
+    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_loom_capabilities', 'get_storage_guide', 'get_tutor_guide', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'])
     const show = tools.find((t) => t.name === 'show_topic')!
     expect((show._meta as { ui?: { resourceUri?: string } }).ui?.resourceUri).toBe(APP_URI)
+  })
+
+  it('rejects malformed plans without throwing and exposes no storage tool without a store', async () => {
+    const result = await client.callTool({ name: 'validate_topic_plan', arguments: { plan: null } })
+    expect(JSON.parse(textOf(result))).toMatchObject({ valid: false, diagnostics: [{ code: 'INVALID_INPUT' }] })
+    expect((await client.listTools()).tools.map((t) => t.name)).not.toContain('get_learning_checkpoint')
   })
 
   it('returns the guide for the section types asked for', async () => {
@@ -122,7 +128,7 @@ describe('Loom MCP server, hosted (slice 5)', () => {
 
   it('offers only the guide and show_topic, and leaves checking to the app', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_storage_guide', 'get_tutor_guide', 'show_domain', 'show_library', 'show_topic'])
+    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_loom_capabilities', 'get_storage_guide', 'get_tutor_guide', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'])
     const text = textOf(await client.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1').replace('root = Quiz(', 'root = Quizz(') } }))
     expect(text).toContain('The app checks the topic')
     expect(text).not.toContain('Quizz')
@@ -189,7 +195,7 @@ describe('Loom MCP server with a memory folder (slice 4)', () => {
 
   it('adds the memory tools, record_events for the app only', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_storage_guide', 'get_tutor_guide', 'learner_summary', 'list_topics', 'open_topic', 'record_events', 'show_domain', 'show_library', 'show_topic', 'validate_topic'])
+    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_learning_checkpoint', 'get_loom_capabilities', 'get_storage_guide', 'get_tutor_guide', 'learner_summary', 'list_topics', 'open_topic', 'record_events', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'])
     const record = tools.find((t) => t.name === 'record_events')!
     expect((record._meta as { ui?: { visibility?: string[] } }).ui?.visibility).toEqual(['app'])
   })

@@ -21,3 +21,7 @@ describe('validateTopicPlan', () => {
     expect(validateTopicPlan(plan, supported).some((e) => e.code === 'PREREQUISITE_CYCLE')).toBe(true)
   })
 })
+
+it.each([null, {}, { schemaVersion: 2 }, { ...base, objectives: null }, { ...base, sections: [{ id: 'x' }] }])('returns diagnostics for malformed plans: %j', (input) => {
+  expect(validateTopicPlan(input, supported)[0].code).toBe('INVALID_INPUT')
+})

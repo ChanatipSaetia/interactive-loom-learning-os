@@ -1,0 +1,17 @@
+# Issue #193 implementation record
+
+Branch: `feat/serverless-ai-experience-foundations`; existing draft PR #192. No merge.
+
+## Phase 0 — audit and baseline
+
+Inspected all 12 files introduced by the 13 existing commits, canonical OUI library/authoring guide, assistant statement indexing, validation gateway, Viewer compiler, MCP registration/Worker and learner-folder tests. Existing abstractions remain authoritative.
+
+Plan: validate untrusted plans before semantic traversal; test storage-less registration; retain request-scoped Worker transport; make the existing browser runner usable with system Chromium.
+
+Initial commands: `npm ci` passed; `npm run typecheck` passed. Full tests and Worker build started before edits; final results are recorded below when complete. Initial `npm run mcp:check` failed before app execution because the cached Playwright Chromium executable was absent. Runner now accepts `LOOM_CHROMIUM_PATH` or installed system Chromium. A mistaken evaluation-test import edit during audit was reverted after its focused test failed; the original import was correct.
+
+Changes: bounded runtime TopicPlan schema, structured malformed-input diagnostics, updated tool-registration assertions, conditional checkpoint regression, request-scoped Worker handler, Chromium selection. No hosted storage or model orchestration added.
+
+Focused verification: MCP suites and TopicPlan checks: 52 tests passed; evaluation metrics: 2 tests passed after reverting the mistaken import edit. Typecheck rerun pending completion.
+
+GitHub API access is blocked by the environment policy (`api.github.com`, HTTP CONNECT 403). Git fetch and public issue/PR page reads work. The domain addition is saved to the environment draft, not applied; issue/PR updates must be retried after runtime network changes.

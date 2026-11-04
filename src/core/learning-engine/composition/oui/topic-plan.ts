@@ -1,26 +1,35 @@
 /** Portable AI-authored planning contract. AI authors plans; Loom checks structure. */
-export interface TopicPlan {
-  schemaVersion: 1
-  topicId: string
-  goal: string
-  objectives: Array<{ id: string; description: string; prerequisiteIds?: string[] }>
-  sections: Array<{
-    id: string
-    title: string
-    objectiveRefs: string[]
-    representation: string
-    activity: string
-    evidenceRefs?: string[]
-  }>
-}
+import { z } from 'zod'
+
+export const TopicPlanSchema = z.object({
+  schemaVersion: z.literal(1),
+  topicId: z.string().min(1).max(120),
+  goal: z.string().min(1).max(4000),
+  objectives: z.array(z.object({
+    id: z.string().min(1).max(120), description: z.string().min(1).max(4000),
+    prerequisiteIds: z.array(z.string().max(120)).max(100).optional(),
+  }).strict()).min(1).max(100),
+  sections: z.array(z.object({
+    id: z.string().min(1).max(120), title: z.string().min(1).max(1000),
+    objectiveRefs: z.array(z.string().max(120)).min(1).max(100),
+    representation: z.string().min(1).max(120), activity: z.string().min(1).max(4000),
+    evidenceRefs: z.array(z.string().max(120)).max(100).optional(),
+  }).strict()).min(1).max(100),
+}).strict()
+export type TopicPlan = z.infer<typeof TopicPlanSchema>
 
 export interface PlanDiagnostic {
-  code: 'INVALID_ID' | 'DUPLICATE_ID' | 'MISSING_OBJECTIVE' | 'MISSING_PREREQUISITE' | 'PREREQUISITE_CYCLE' | 'UNKNOWN_SECTION_TYPE' | 'UNCOVERED_OBJECTIVE'
+  code: 'INVALID_INPUT' | 'INVALID_ID' | 'DUPLICATE_ID' | 'MISSING_OBJECTIVE' | 'MISSING_PREREQUISITE' | 'PREREQUISITE_CYCLE' | 'UNKNOWN_SECTION_TYPE' | 'UNCOVERED_OBJECTIVE'
   path: string
   message: string
 }
 
-export function validateTopicPlan(plan: TopicPlan, supportedSections: ReadonlySet<string>): PlanDiagnostic[] {
+export function validateTopicPlan(input: unknown, supportedSections: ReadonlySet<string>): PlanDiagnostic[] {
+  const parsed = TopicPlanSchema.safeParse(input)
+  if (!parsed.success) return parsed.error.issues.map((issue) => ({
+    code: 'INVALID_INPUT' as const, path: issue.path.join('.'), message: issue.message,
+  }))
+  const plan = parsed.data
   const errors: PlanDiagnostic[] = []
   const objectives = new Map<string, TopicPlan['objectives'][number]>()
   const sections = new Set<string>()

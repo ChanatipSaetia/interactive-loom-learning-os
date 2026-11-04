@@ -14,7 +14,7 @@ import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TY
 import { z } from 'zod'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
 import { getCapabilityCatalog } from '../core/learning-engine/composition/oui/capability-catalog'
-import { validateTopicPlan, type TopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
+import { validateTopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
 import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
 import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
 import { LOOM_SERVER_INSTRUCTIONS, getTutorGuide } from '../core/learning-engine/composition/oui/tutor-skills'
@@ -146,7 +146,7 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   server.registerTool('validate_topic_plan', {
     title: 'Validate a Loom topic plan',
     description: 'Check objective coverage, IDs, prerequisites, and supported representations before generating OUI.',
-    inputSchema: z.object({ plan: z.custom<TopicPlan>() }),
+    inputSchema: z.object({ plan: z.unknown().describe("Version 1 TopicPlan; malformed inputs return structured diagnostics.") }),
     annotations: { readOnlyHint: true },
   }, async ({ plan }) => {
     const diagnostics = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type)))

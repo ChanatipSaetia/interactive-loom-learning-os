@@ -10,7 +10,7 @@
  * in decision 182). `LOOM_APP_URL` points at another copy of the app, such as
  * GitHub Pages, instead.
  */
-import { createMcpHandler, type McpHttpHandler } from '@modelcontextprotocol/server'
+import { createMcpHandler } from '@modelcontextprotocol/server'
 import { createLoomServer } from './server'
 
 interface Env {
@@ -26,18 +26,6 @@ const CORS = {
   'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
 }
 
-/** One handler per app URL, kept for as long as the isolate lives. */
-const handlers = new Map<string, McpHttpHandler>()
-
-function handlerFor(appUrl: string): McpHttpHandler {
-  let handler = handlers.get(appUrl)
-  if (!handler) {
-    handler = createMcpHandler(() => createLoomServer({ appUrl }))
-    handlers.set(appUrl, handler)
-  }
-  return handler
-}
-
 function withCors(response: Response): Response {
   const out = new Response(response.body, response)
   for (const [name, value] of Object.entries(CORS)) out.headers.set(name, value)
@@ -51,6 +39,6 @@ export default {
     if (url.pathname !== '/mcp') return new Response('Not found. The Loom MCP endpoint is /mcp.', { status: 404 })
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS })
     const appUrl = env.LOOM_APP_URL || `${url.origin}/mcp-app/v1/`
-    return withCors(await handlerFor(appUrl).fetch(request))
+    return withCors(await createMcpHandler(() => createLoomServer({ appUrl })).fetch(request))
   },
 }
