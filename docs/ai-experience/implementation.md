@@ -59,3 +59,25 @@ A real local Wrangler/workerd startup found a failure that bundling and Node req
 Verified after the fix in actual workerd: public tool discovery, exact QuizQuestion/QuizChoice contracts (926 characters), malformed plan diagnostics, and focused source context all passed. The public Worker exposed neither learner storage nor full compiler tools. Review also tightened read permission for writes that merge existing evidence, rejected cross-topic backend records, used the scanner rather than regex to identify manifest SectionRefs (excluding comments), and marked diagnostic truncation explicitly.
 
 The initial full suite overlapped audit edits and used cached old modules with some new tests; its 11 failed / 2068 passed / 14 skipped result is not a pristine baseline. The subsequent clean full run passed 2096 tests across 200 files with 14 skipped. The final clean rerun after the runtime/boundary corrections is recorded below; no earlier mixed run is used as readiness evidence.
+
+## Scope and remaining external prerequisites
+
+All seven tracked implementation phases (0–6) have implementation and deterministic checks. The authenticated durable port is opt-in and not backed by a configured production database/auth provider here. Learner-owned Drive is the existing supported persistence path; real connector permissions and atomic revision support depend on the assistant's connector. Real ChatGPT/other-assistant UI/OAuth/Drive continuity, live research truth, model quality, token usage and human learning outcomes are not measured by synthetic tests.
+
+Git push succeeded to the existing branch. Updating Issue #193 comments/checklist or PR #192 description through GitHub API remains blocked by the enforced network policy, not by Git credentials. `api.github.com` is saved in the environment draft but is not in the running allowlist. No duplicate branch/PR was created; no merge, deployment, or ready-for-review transition was performed.
+
+
+## Final clean verification
+
+- `npm ci`: passed; dependency lockfile unchanged.
+- `npm run typecheck`: passed after final changes.
+- `npm test`: 200 files passed; 2097 tests passed; 14 skipped, no failed tests.
+- `npm run build:worker`: passed; Worker 583.61 kB uncompressed; site, app and standalone MCP built.
+- `npm run oui:schema -- --check`: passed.
+- `npm run evaluate:offline`: 4 tests passed (fixed render/answer/repair/context fixture plus 3 synthetic two-client continuity tests).
+- Packaging and forbidden-global Worker import checks: 5 tests passed with individual test execution confirmed.
+- `npm run check:worker`: passed in actual local Cloudflare workerd.
+- `LOOM_WORKER_URL=http://localhost:8787/mcp npm run mcp:check`: passed with explicit behavior assertions for local and actual Worker browser workflows. The stand-in voice test verifies narration dispatch, not native speech quality. Optional resource/protocol warnings remain recorded; no fatal page error in asserted flows.
+- Draft status verified from PR #192's current public page. GitHub API retry still returned Forbidden. No issue comment or PR-description API update is claimed.
+
+See [delivery.md](delivery.md) for phase commits, modules, API compatibility, measurements and external prerequisites. No remote CI, production deployment, real model-quality test or live OAuth/Drive handoff is claimed. Final runner/report-only edits do not change application behavior.

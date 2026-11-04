@@ -8,6 +8,7 @@ const path = require('node:path')
 
 const out = process.argv[2] ?? 'tests/mcp-host/results'
 fs.mkdirSync(out, { recursive: true })
+fs.rmSync(path.join(out, 'results.json'), { force: true })
 const shot = (page, name) => page.screenshot({ path: path.join(out, `${name}.png`) })
 const results = {}
 async function expandNavigation(app) {
@@ -299,6 +300,12 @@ async function open(browser, query) {
   assert.equal(results.library.toldModel, true)
   assert.ok(results.library.cards.length > 0 && results.library.rows.length > 0)
   assert.equal(results.library.backToDomain, 1)
+  assert.ok(results.voice.first.some((text) => text.trim().length > 0))
+  if (results.hosted) {
+    assert.equal(results.hosted.plays, true)
+    assert.ok(!results.hosted.tools.includes('read_learning_record'))
+    assert.ok(!results.hosted.errors.some((error) => error.startsWith('pageerror:')))
+  }
   fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify(results, null, 2) + '\n')
   console.log(JSON.stringify(results, null, 2))
   await browser.close()

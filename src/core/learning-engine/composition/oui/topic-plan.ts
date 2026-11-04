@@ -75,4 +75,3 @@ export function validateTopicPlan(input: unknown, supportedSections: ReadonlySet
   }
   return errors
 }
-

@@ -66,4 +66,3 @@ export function textHash(text: string): string {
   }
   return (hash >>> 0).toString(36)
 }
-
