@@ -13,6 +13,9 @@ import { McpServer } from '@modelcontextprotocol/server'
 import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
+import { getCapabilityCatalog } from '../core/learning-engine/composition/oui/capability-catalog'
+import { validateTopicPlan, type TopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
+import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
 import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
 import { LOOM_SERVER_INSTRUCTIONS, getTutorGuide } from '../core/learning-engine/composition/oui/tutor-skills'
 import { topicLinkUrl } from '../viewer/topic-link'
@@ -131,6 +134,24 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     }),
     annotations: { readOnlyHint: true },
   }, async ({ sections }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections) }] }))
+
+  // Stateless contracts: no filesystem, session state, or long-running process required.
+  server.registerTool('get_loom_capabilities', {
+    title: 'Loom section capabilities',
+    description: 'Versioned, compact catalog of supported learning representations and their teaching purposes. Use before choosing section types.',
+    inputSchema: z.object({}),
+    annotations: { readOnlyHint: true },
+  }, async () => ({ content: [{ type: 'text', text: JSON.stringify(getCapabilityCatalog()) }] }))
+
+  server.registerTool('validate_topic_plan', {
+    title: 'Validate a Loom topic plan',
+    description: 'Check objective coverage, IDs, prerequisites, and supported representations before generating OUI.',
+    inputSchema: z.object({ plan: z.custom<TopicPlan>() }),
+    annotations: { readOnlyHint: true },
+  }, async ({ plan }) => {
+    const diagnostics = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type)))
+    return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics }) }] }
+  })
 
   if (checkTopic) server.registerTool('validate_topic', {
     title: 'Check a Loom topic',
@@ -308,6 +329,16 @@ function registerMemoryTools(server: McpServer, store: LearnerStore) {
     const oui = await store.readTopic(id)
     if (!oui) return { content: [{ type: 'text', text: `No saved topic "${id}". Call list_topics for the IDs.` }], isError: true }
     return { content: [{ type: 'text', text: `Showing the saved topic "${id}". The learner can press Play.` }], structuredContent: { oui } }
+  })
+
+  server.registerTool('get_learning_checkpoint', {
+    title: 'Portable learning checkpoint',
+    description: 'Get a deterministic compact progress checkpoint for a saved topic. Available when learner storage is connected.',
+    inputSchema: z.object({ topic: z.string() }),
+    annotations: { readOnlyHint: true },
+  }, async ({ topic }) => {
+    const events = await store.readEvents()
+    return { content: [{ type: 'text', text: JSON.stringify(createLearningCheckpoint(topic, events)) }] }
   })
 
   server.registerTool('learner_summary', {
