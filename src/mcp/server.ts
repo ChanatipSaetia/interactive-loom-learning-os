@@ -16,6 +16,7 @@ import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/co
 import { TopicContextInput, resolveTopicContext } from '../core/supporting/authoring-editor/assistant/context-graph'
 import { getCapabilityCatalog } from '../core/learning-engine/composition/oui/capability-catalog'
 import { validateTopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
+import { LearningRecordSchema, LearningRepositoryError, type LearningRepository } from '../core/supporting/learner-progress/memory/repository'
 import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
 import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
 import { LOOM_SERVER_INSTRUCTIONS, getTutorGuide } from '../core/learning-engine/composition/oui/tutor-skills'
@@ -69,6 +70,8 @@ export interface LoomServerOptions {
   appHtml?: string
   /** Where the learner's events and topics are kept; none on a hosted endpoint without sign-in. */
   store?: LearnerStore
+  /** Request-scoped repository built from verified authentication; never configured on the public Worker. */
+  repository?: LearningRepository
   /** The full topic check, which adds `validate_topic`; left out on the hosted endpoint. */
   check?: (oui: string) => TopicCheck
   checkSection?: typeof checkSection
@@ -215,6 +218,26 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     if (!check || check.ok) text += '\n\nNext: if this topic belongs to an established domain, save the exact topic to the learner\'s Drive and update domain.oui following get_storage_guide, unless the learner opted out. Local server memory does not by itself confirm a Drive save. If the connector cannot write, say it is not saved and provide the file.'
     return { content: [{ type: 'text', text }] }
   })
+
+  if (options.repository) {
+    const repository = options.repository
+    const answer = async (operation: () => Promise<unknown>) => {
+      try { return { content: [{ type: 'text' as const, text: JSON.stringify(await operation()) }] } }
+      catch (error) {
+        const code = error instanceof LearningRepositoryError ? error.code : 'STORAGE_ERROR'
+        return { isError: true, content: [{ type: 'text' as const, text: JSON.stringify({ code }) }] }
+      }
+    }
+    server.registerTool('read_learning_record', {
+      description: 'Read the authenticated learner’s durable OUI, provenance, events and derived checkpoint. Available only with an explicitly authenticated storage adapter.',
+      inputSchema: z.object({ topicId: z.string().regex(/^[\w-]+$/).max(120) }).strict(),
+      annotations: { readOnlyHint: true },
+    }, async ({ topicId }) => answer(() => repository.read(topicId)))
+    server.registerTool('write_learning_record', {
+      description: 'Versioned write for the authenticated learner. Use the version returned by read_learning_record, or null to create. Conflicts require rereading; never silently overwrite.',
+      inputSchema: z.object({ record: LearningRecordSchema, expectedVersion: z.string().max(200).nullable() }).strict(),
+    }, async ({ record, expectedVersion }) => answer(() => repository.write(record, expectedVersion)))
+  }
 
   registerLibraryTools(server, store)
   if (store) registerMemoryTools(server, store)
