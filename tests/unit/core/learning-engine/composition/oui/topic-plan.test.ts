@@ -25,3 +25,9 @@ describe('validateTopicPlan', () => {
 it.each([null, {}, { schemaVersion: 2 }, { ...base, objectives: null }, { ...base, sections: [{ id: 'x' }] }])('returns diagnostics for malformed plans: %j', (input) => {
   expect(validateTopicPlan(input, supported)[0].code).toBe('INVALID_INPUT')
 })
+
+it('requires declared, objective-linked evidence when a section cites it', () => {
+  const plan = { ...base, sections: [{ ...base.sections[0], evidenceRefs: ['doc'] }] }
+  expect(validateTopicPlan(plan, supported).map((d) => d.code)).toContain('INVALID_EVIDENCE')
+  expect(validateTopicPlan({ ...plan, sources: [{ id: 'doc', kind: 'web', uri: 'https://example.com/reference', revision: 'v1', supports: ['calculate-profit'] }] }, supported)).toEqual([])
+})

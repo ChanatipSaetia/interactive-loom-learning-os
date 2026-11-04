@@ -21,7 +21,7 @@ import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-eng
 import { LOOM_SERVER_INSTRUCTIONS, getTutorGuide } from '../core/learning-engine/composition/oui/tutor-skills'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { isLearnerEvent, summarize, summaryText, type LearnerEvent } from '../core/supporting/learner-progress/memory/events'
-import type { TopicCheck } from './check'
+import type { TopicCheck, checkSection } from './check'
 
 /** Where the published app lives; each server release names the app version it was built for. */
 // The hosted endpoint serves the app with each release (decision 219); GitHub Pages builds only `master`
@@ -71,6 +71,7 @@ export interface LoomServerOptions {
   store?: LearnerStore
   /** The full topic check, which adds `validate_topic`; left out on the hosted endpoint. */
   check?: (oui: string) => TopicCheck
+  checkSection?: typeof checkSection
 }
 
 /** Loom Viewer, next to the app on the same site (`<site>/mcp-app/v1/` → `<site>/viewer.html`). */
@@ -161,6 +162,13 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     const diagnostics = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type)))
     return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics }) }] }
   })
+
+  if (options.checkSection) server.registerTool('validate_section', {
+    title: 'Validate one section or narration file',
+    description: 'Full local/browser compiler diagnostics for targeted repair. Hosted MCP leaves compilation to the app. Narration checks need the current sectionSource.',
+    inputSchema: z.object({ source: z.string().max(131072), file: z.string().regex(/^sections\/[\w-]+(?:\.narrate)?\.oui$/), sectionSource: z.string().max(131072).optional() }),
+    annotations: { readOnlyHint: true },
+  }, async ({ source, file, sectionSource }) => ({ content: [{ type: 'text', text: JSON.stringify(options.checkSection!(source, file, sectionSource)) }] }))
 
   if (checkTopic) server.registerTool('validate_topic', {
     title: 'Check a Loom topic',

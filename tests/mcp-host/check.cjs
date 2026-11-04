@@ -9,6 +9,10 @@ const out = process.argv[2] ?? 'tests/mcp-host/results'
 fs.mkdirSync(out, { recursive: true })
 const shot = (page, name) => page.screenshot({ path: path.join(out, `${name}.png`) })
 const results = {}
+async function expandNavigation(app) {
+  const toggle = app.locator('[data-testid=mcp-nav-toggle]')
+  if (await toggle.count() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click()
+}
 
 async function open(browser, query) {
   const page = await browser.newPage({ viewport: { width: 960, height: 720 } })
@@ -34,10 +38,12 @@ async function open(browser, query) {
     const inChat = !(await page.evaluate(() => document.body.classList.contains('fullscreen')))
     const frameHeight = await page.locator('#app').evaluate((f) => f.getBoundingClientRect().height)
     await shot(page, 'present-in-chat')
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-fullscreen]').click()
     await page.waitForTimeout(1500)
     const full = await page.evaluate(() => document.body.classList.contains('fullscreen'))
     await shot(page, 'present-fullscreen')
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-fullscreen]').click()
     await page.waitForTimeout(800)
     const backInChat = !(await page.evaluate(() => document.body.classList.contains('fullscreen')))
@@ -116,6 +122,7 @@ async function open(browser, query) {
     const { page, app } = await open(browser, '')
     await app.locator('[data-testid=mcp-play]').click()
     await page.waitForTimeout(3000)
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-close]').click()
     await app.locator('[data-testid=mcp-other-mode]').click()
     const choice = app.locator('[data-testid^=quiz-choice-0-]').first()
@@ -149,6 +156,7 @@ async function open(browser, query) {
     await choice.scrollIntoViewIfNeeded()
     await choice.click()
     await page.waitForTimeout(500)
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-save-progress]').click()
     await page.waitForTimeout(800)
     const message = await page.evaluate(() => window.lastMessage ?? '')
@@ -166,6 +174,7 @@ async function open(browser, query) {
     await app.locator('[data-testid=mcp-play]').click()
     await app.locator('[data-testid=mcp-present]').waitFor({ timeout: 10000 })
     await page.waitForTimeout(1500)
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-ask]').click()
     await app.locator('[data-testid=mcp-read]').waitFor({ timeout: 10000 })
     await page.waitForTimeout(1200)

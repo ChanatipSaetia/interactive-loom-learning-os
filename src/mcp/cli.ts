@@ -13,7 +13,7 @@ import { createMcpHandler } from '@modelcontextprotocol/server'
 import { serveStdio } from '@modelcontextprotocol/server/stdio'
 import { toNodeHandler, type NodeIncomingMessageLike, type NodeServerResponseLike } from '@modelcontextprotocol/node'
 import { createLoomServer } from './server'
-import { checkTopic } from './check'
+import { checkTopic, checkSection } from './check'
 import { registerEditTool } from './edit-topic'
 import { defaultMemoryDir, folderStore } from './memory-folder'
 import localAppHtml from 'virtual:loom-local-app'
@@ -30,6 +30,7 @@ const options = {
   appHtml: process.env.LOOM_APP_URL ? undefined : localAppHtml,
   store: args.includes('--no-memory') ? undefined : folderStore(memoryDir),
   check: checkTopic,
+  checkSection,
 }
 
 /** The server, with edit_topic when there is a memory folder to keep topics in. */

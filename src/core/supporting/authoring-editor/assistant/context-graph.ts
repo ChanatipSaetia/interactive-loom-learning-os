@@ -66,6 +66,7 @@ export function resolveTopicContext(input: TopicContextRequest) {
     diagnostics: [] as Array<{ code: string; reference: string }>,
   }
   if (expectedHash && expectedHash !== hash) {
+    result.overview = []
     result.diagnostics.push({ code: 'STALE_CONTEXT', reference: expectedHash })
     return result
   }

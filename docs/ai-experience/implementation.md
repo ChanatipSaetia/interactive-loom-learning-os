@@ -23,3 +23,9 @@ Reused `componentClosure`/`componentEntries` and canonical mental-model definiti
 ## Phase 2 — request-scoped context
 
 Extracted shared statement indexing/hash utilities from existing assistant context (existing exports preserved). Added bounded caller-supplied file contracts and transitive dependency retrieval with section references, missing references, cycles, complete-statement output budgets, stale hash rejection, and current-buffer version keys. Hashes are change hints, never authorization or write-concurrency tokens. `get_topic_context` does no I/O and keeps no session state. Validation: 36 context and MCP integration tests passed, including existing assistant context tests.
+
+## Phase 3 — planning, provenance and targeted validation
+
+Reused the Zod contract, canonical section catalog, OUI gateway and narration validator. Evidence records are bounded version-1 plan metadata with revision/locator fields; malformed references, missing/duplicate sources, unknown objectives and credential-bearing URL fields are rejected. This checks declared linkage, not factual truth or source quality. Assistants research with authorized host tools; Loom never retrieves private sources.
+
+Added `validate_section` only when the full checker is injected (local CLI); it returns existing diagnostic tiers plus file, section, line and statement where attributable. Hosted MCP keeps full compilation in the app and does not bundle the compiler. Existing `validate_topic`/`show_topic` behavior remains intact. Focused provenance/plan/section/narration tests: 14 passed. The existing pick-anchor suite passed on a focused rerun after its baseline timing-sensitive concept-map failure.

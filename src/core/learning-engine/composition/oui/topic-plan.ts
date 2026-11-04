@@ -1,8 +1,10 @@
 /** Portable AI-authored planning contract. AI authors plans; Loom checks structure. */
 import { z } from 'zod'
+import { EvidenceReferenceSchema, validateEvidenceReferences } from './source-provenance'
 
 export const TopicPlanSchema = z.object({
   schemaVersion: z.literal(1),
+  sources: z.array(EvidenceReferenceSchema).max(100).optional(),
   topicId: z.string().min(1).max(120),
   goal: z.string().min(1).max(4000),
   objectives: z.array(z.object({
@@ -19,7 +21,7 @@ export const TopicPlanSchema = z.object({
 export type TopicPlan = z.infer<typeof TopicPlanSchema>
 
 export interface PlanDiagnostic {
-  code: 'INVALID_INPUT' | 'INVALID_ID' | 'DUPLICATE_ID' | 'MISSING_OBJECTIVE' | 'MISSING_PREREQUISITE' | 'PREREQUISITE_CYCLE' | 'UNKNOWN_SECTION_TYPE' | 'UNCOVERED_OBJECTIVE'
+  code: 'INVALID_EVIDENCE' | 'INVALID_INPUT' | 'INVALID_ID' | 'DUPLICATE_ID' | 'MISSING_OBJECTIVE' | 'MISSING_PREREQUISITE' | 'PREREQUISITE_CYCLE' | 'UNKNOWN_SECTION_TYPE' | 'UNCOVERED_OBJECTIVE'
   path: string
   message: string
 }
@@ -64,5 +66,8 @@ export function validateTopicPlan(input: unknown, supportedSections: ReadonlySet
     visited.add(id)
   }
   for (const id of objectives.keys()) visit(id)
+  for (const diagnostic of validateEvidenceReferences(plan.sources ?? [], plan.sections.flatMap((section) => section.evidenceRefs ?? []), new Set(objectives.keys()))) {
+    add('INVALID_EVIDENCE', `sources.${diagnostic.reference}`, diagnostic.code)
+  }
   return errors
 }
