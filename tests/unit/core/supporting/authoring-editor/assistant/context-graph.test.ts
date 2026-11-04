@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildContextGraph, dependencyClosure } from '../../../../../../../src/core/supporting/authoring-editor/assistant/context-graph'
+import { buildContextGraph, dependencyClosure } from '../../../../../../src/core/supporting/authoring-editor/assistant/context-graph'
 
 describe('context graph', () => {
   it('indexes statements and references without server state', () => {
