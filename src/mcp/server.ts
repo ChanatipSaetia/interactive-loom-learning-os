@@ -130,10 +130,11 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     title: 'Loom authoring guide',
     description: GUIDE_TOOL_DESCRIPTION,
     inputSchema: z.object({
+      components: z.array(z.string().max(120)).max(100).optional().describe("Exact component names and their signature dependencies. Omit to preserve the section-filtered guide."),
       sections: z.array(z.string()).optional().describe(`Section types the topic will use: ${guideSectionTypes().map((t) => t.type).join(', ')}, or "all".`),
     }),
     annotations: { readOnlyHint: true },
-  }, async ({ sections }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections) }] }))
+  }, async ({ sections, components }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections, components) }] }))
 
   // Stateless contracts: no filesystem, session state, or long-running process required.
   server.registerTool('get_loom_capabilities', {

@@ -15,3 +15,7 @@ Changes: bounded runtime TopicPlan schema, structured malformed-input diagnostic
 Focused verification: MCP suites and TopicPlan checks: 52 tests passed; evaluation metrics: 2 tests passed after reverting the mistaken import edit. Typecheck rerun pending completion.
 
 GitHub API access is blocked by the environment policy (`api.github.com`, HTTP CONNECT 403). Git fetch and public issue/PR page reads work. The domain addition is saved to the environment draft, not applied; issue/PR updates must be retried after runtime network changes.
+
+## Phase 1 — focused discovery
+
+Reused `componentClosure`/`componentEntries` and canonical mental-model definitions. `get_authoring_guide` accepts optional exact `components`, preserving the existing `sections` and `all` forms. Unknown components are explicit. The existing schema generator now publishes `public/llm/loom-capabilities.json` and indexes it in llms.txt; existing prompt/skill outputs remain synchronized and unchanged. Verification: 17 tests in authoring guide, canonical generated prompt and capability catalog passed. Baseline Worker bundle: 526.49 kB (uncompressed; not a latency measurement).
