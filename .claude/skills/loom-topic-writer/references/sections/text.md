@@ -1,6 +1,6 @@
 # text
 
-Connected explanation and narrative. Why does this happen, or how should I understand the explanation? Use for connected prose, reasoning or context beyond a concise definition.
+Connected explanation and narrative. Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal.
 
 Read [shared components](../core/components.md) and [narration](../core/narration.md) before writing.
 

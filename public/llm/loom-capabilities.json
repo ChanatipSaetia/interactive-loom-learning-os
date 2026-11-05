@@ -1,5 +1,52 @@
 {
   "schemaVersion": 1,
+  "selectionGuidance": "Before choosing Text, consider whether a native Loom section or an OpenUI visual composition would explain the idea more clearly. Native Loom sections and OpenUI are first-class choices; choose by the learner's goal, not a preference for one library. Use Text when connected prose or narrative is the best teaching format, and combine concise explanations with visuals when useful.\n\nUse OpenUI cards for side-by-side examples, tables for factual attribute comparisons, charts for quantities and trends, and labelled Svg drawings for spatial structure or mechanisms. Charts must use supplied or verified data; clearly label illustrative data and never invent benchmark results. Keep native Flowchart for processes, Quiz and Flashcards for assessment/recall, Scenario for consequences, Tradeoff Sandbox for evaluating options, Formula Sandbox for input-driven calculations, and the other native sections where their interactions teach the goal. No OpenUI quota or mandatory section sequence.\n\nFor example, explain isolated versus distributed retrieval evidence with two annotated document diagrams and a short explanation, then use a native Quiz to check understanding. A chart is appropriate only when actual measurements are available. Request the openui section guide for its syntax and presentation rules before writing a composition, then retrieve only the component families needed.",
+  "openuiVisuals": [
+    {
+      "learningGoal": "Compare concrete examples or evidence layouts side by side",
+      "components": "Card / Stack with concise explanations or labelled Svg drawings"
+    },
+    {
+      "learningGoal": "Compare amounts or rank categories",
+      "components": "BarChart / HorizontalBarChart"
+    },
+    {
+      "learningGoal": "Follow a measurement over time",
+      "components": "LineChart"
+    },
+    {
+      "learningGoal": "Show an amount developing over time",
+      "components": "AreaChart; use cumulative data when teaching accumulation"
+    },
+    {
+      "learningGoal": "Show flat shares of one whole",
+      "components": "PieChart / donut variant / SingleStackedBarChart"
+    },
+    {
+      "learningGoal": "Compare used and remaining capacity",
+      "components": "Stacked HorizontalBarChart"
+    },
+    {
+      "learningGoal": "Examine two numeric variables",
+      "components": "ScatterChart; an association alone does not establish causation"
+    },
+    {
+      "learningGoal": "Compare profiles across comparable criteria",
+      "components": "RadarChart"
+    },
+    {
+      "learningGoal": "Look up or compare factual attributes",
+      "components": "Table"
+    },
+    {
+      "learningGoal": "Explain spatial structure, anatomy, a mechanism or a concrete analogy",
+      "components": "Labelled Svg drawing"
+    },
+    {
+      "learningGoal": "Explain a straightforward procedure",
+      "components": "Steps"
+    }
+  ],
   "sections": [
     {
       "type": "intro",
@@ -13,7 +60,7 @@
       "component": "Text",
       "summary": "Prose section: one string per paragraph.",
       "mentalModel": "Connected explanation and narrative",
-      "selectionQuestion": "Why does this happen, or how should I understand the explanation? Use for connected prose, reasoning or context beyond a concise definition."
+      "selectionQuestion": "Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal."
     },
     {
       "type": "bullets",

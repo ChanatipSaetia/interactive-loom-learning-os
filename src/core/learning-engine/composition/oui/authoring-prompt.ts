@@ -95,13 +95,13 @@ ${NARRATION_EXAMPLE}\`\`\``
 
 const STANDARD_OPENUI = `## Standard OpenUI Sections
 
-When no Loom section fits, a section file can instead be a standard OpenUI program:
+OpenUI compositions are first-class teaching formats alongside native Loom sections. Choose them proactively when a visual layout teaches the idea best; Text is not the default for every explanation:
 
 - Its first line is \`// @openui "<Section title>" "<optional heading>"\`.
 - The rest is openui-lang written with the standard OpenUI component library (\`@openuidev/react-ui\`), not the Loom components above. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: ${OPENUI_REACT_UI_DOCS_URL}. Language specification: ${OPENUI_LANG_DOCS_URL}.
 - Content is static: no Query(), Mutation(), tools, actions, forms or buttons (there is no backend).
-- List it in topic.oui with \`SectionRef\` like any other section. Prefer a Loom section when one teaches the content (a process, a quiz, a trade-off); use standard OpenUI for content whose natural form is a layout: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
+- List it in topic.oui with \`SectionRef\` like any other section. Choose a native Loom section when its interaction teaches the goal (a process, a quiz, a trade-off); choose standard OpenUI when a visual composition teaches it better: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
 
 Shape each section to its content. Do not reuse one skeleton (a header, Tabs with a chart and a table, a Callout) for every section: pick the root and the components from what this content is (see the list under Layouts for Other Content), and two standard OpenUI sections in one topic should rarely look alike.
 
@@ -299,7 +299,7 @@ why = NarrationStep("part3", "So two leaves and a bud is a recipe for flavour.",
 
 const DRAWINGS = `### Drawings
 
-When a picture explains it better than words or boxes and arrows, draw it with \`Svg\` in a standard OpenUI section: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Prefer a Loom section when one fits: a process with actors is a Flowchart, figures are a chart, categories are a TaxonomyBrowser.
+When a picture explains it better than words or boxes and arrows, draw it with \`Svg\` in a standard OpenUI section: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Match the representation to what it teaches: use native Flowchart for a process with actors, an OpenUI chart for measured quantities, native TaxonomyBrowser for categories, and Svg for a spatial or annotated explanation. Combine them when each adds something useful.
 
 Plan the picture before the prose: what should the learner be able to picture or explain afterward? Include a labelled concept drawing whenever it makes the idea clearer, without waiting for a request for a picture. For an abstract idea, use a concrete visual analogy and explicitly label where the analogy or schematic simplifies reality. A drawing should explain a relationship, structure or change, not decorate the page. Pair it with a short explanation of what to notice and why it matters, and use narration to connect its parts to the idea one at a time.
 

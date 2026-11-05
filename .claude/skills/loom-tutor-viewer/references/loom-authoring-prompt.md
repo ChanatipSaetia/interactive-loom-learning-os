@@ -33,11 +33,17 @@ The user opens the result in Loom Viewer (https://chanatipsaetia.github.io/inter
 
 Use this table as the agent's table of contents before planning or writing a topic. Identify what the learner should be able to define, picture, compare, explain or do; then select the section that teaches that mental model. Each row names a supported section type to request from the authoring guide. Read its exact component signatures before writing.
 
+Before choosing Text, consider whether a native Loom section or an OpenUI visual composition would explain the idea more clearly. Native Loom sections and OpenUI are first-class choices; choose by the learner's goal, not a preference for one library. Use Text when connected prose or narrative is the best teaching format, and combine concise explanations with visuals when useful.
+
+Use OpenUI cards for side-by-side examples, tables for factual attribute comparisons, charts for quantities and trends, and labelled Svg drawings for spatial structure or mechanisms. Charts must use supplied or verified data; clearly label illustrative data and never invent benchmark results. Keep native Flowchart for processes, Quiz and Flashcards for assessment/recall, Scenario for consequences, Tradeoff Sandbox for evaluating options, Formula Sandbox for input-driven calculations, and the other native sections where their interactions teach the goal. No OpenUI quota or mandatory section sequence.
+
+For example, explain isolated versus distributed retrieval evidence with two annotated document diagrams and a short explanation, then use a native Quiz to check understanding. A chart is appropriate only when actual measurements are available. Request the openui section guide for its syntax and presentation rules before writing a composition, then retrieve only the component families needed.
+
 | Mental model / learning goal | Section type | Learner question and selection cue |
 |---|---|---|
 | Orientation, purpose and roadmap | `intro` | What will I learn, why does it matter, and where are we going? |
 | Definitions, meaning, vocabulary and recall | `flashcards` | What does this term or concept mean? Teach its meaning on the back of a card, then use it for recall; flashcards introduce concepts as well as practise them. |
-| Connected explanation and narrative | `text` | Why does this happen, or how should I understand the explanation? Use for connected prose, reasoning or context beyond a concise definition. |
+| Connected explanation and narrative | `text` | Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal. |
 | Key points, supporting details and checklists | `bullets` | What are the important points, requirements or supporting subpoints? |
 | Visual recognition and concrete references | `image-gallery` | What does it look like? Compare examples, textures, objects or screenshots. |
 | Classification and distinctions | `taxonomy-browser` | What kinds exist, what defines them, and how do I recognise their differences? |
@@ -71,6 +77,7 @@ Use this table as the agent's table of contents before planning or writing a top
 
 | Mental model / learning goal | Visual |
 |---|---|
+| Compare concrete examples or evidence layouts side by side | Card / Stack with concise explanations or labelled Svg drawings |
 | Compare amounts or rank categories | BarChart / HorizontalBarChart |
 | Follow a measurement over time | LineChart |
 | Show an amount developing over time | AreaChart; use cumulative data when teaching accumulation |
@@ -622,13 +629,13 @@ Before finishing, walk your output and verify:
 
 ## Standard OpenUI Sections
 
-When no Loom section fits, a section file can instead be a standard OpenUI program:
+OpenUI compositions are first-class teaching formats alongside native Loom sections. Choose them proactively when a visual layout teaches the idea best; Text is not the default for every explanation:
 
 - Its first line is `// @openui "<Section title>" "<optional heading>"`.
 - The rest is openui-lang written with the standard OpenUI component library (`@openuidev/react-ui`), not the Loom components above. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: https://openui.com/docs/api-reference/react-ui. Language specification: https://openui.com/docs/openui-lang.
 - Content is static: no Query(), Mutation(), tools, actions, forms or buttons (there is no backend).
-- List it in topic.oui with `SectionRef` like any other section. Prefer a Loom section when one teaches the content (a process, a quiz, a trade-off); use standard OpenUI for content whose natural form is a layout: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
+- List it in topic.oui with `SectionRef` like any other section. Choose a native Loom section when its interaction teaches the goal (a process, a quiz, a trade-off); choose standard OpenUI when a visual composition teaches it better: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
 
 Shape each section to its content. Do not reuse one skeleton (a header, Tabs with a chart and a table, a Callout) for every section: pick the root and the components from what this content is (see the list under Layouts for Other Content), and two standard OpenUI sections in one topic should rarely look alike.
 
@@ -764,7 +771,7 @@ warning = NarrationStep("part4", "One rule you cannot skip.", [Callout("warning"
 
 ### Drawings
 
-When a picture explains it better than words or boxes and arrows, draw it with `Svg` in a standard OpenUI section: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Prefer a Loom section when one fits: a process with actors is a Flowchart, figures are a chart, categories are a TaxonomyBrowser.
+When a picture explains it better than words or boxes and arrows, draw it with `Svg` in a standard OpenUI section: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Match the representation to what it teaches: use native Flowchart for a process with actors, an OpenUI chart for measured quantities, native TaxonomyBrowser for categories, and Svg for a spatial or annotated explanation. Combine them when each adds something useful.
 
 Plan the picture before the prose: what should the learner be able to picture or explain afterward? Include a labelled concept drawing whenever it makes the idea clearer, without waiting for a request for a picture. For an abstract idea, use a concrete visual analogy and explicitly label where the analogy or schematic simplifies reality. A drawing should explain a relationship, structure or change, not decorate the page. Pair it with a short explanation of what to notice and why it matters, and use narration to connect its parts to the idea one at a time.
 

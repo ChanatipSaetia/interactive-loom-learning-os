@@ -1,12 +1,12 @@
 ## Standard OpenUI Sections
 
-When no Loom section fits, a section file can instead be a standard OpenUI program:
+OpenUI compositions are first-class teaching formats alongside native Loom sections. Choose them proactively when a visual layout teaches the idea best; Text is not the default for every explanation:
 
 - Its first line is `// @openui "<Section title>" "<optional heading>"`.
 - The rest is openui-lang written with the standard OpenUI component library (`@openuidev/react-ui`), not the Loom components above. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: https://openui.com/docs/api-reference/react-ui. Language specification: https://openui.com/docs/openui-lang.
 - Content is static: no Query(), Mutation(), tools, actions, forms or buttons (there is no backend).
-- List it in topic.oui with `SectionRef` like any other section. Prefer a Loom section when one teaches the content (a process, a quiz, a trade-off); use standard OpenUI for content whose natural form is a layout: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
+- List it in topic.oui with `SectionRef` like any other section. Choose a native Loom section when its interaction teaches the goal (a process, a quiz, a trade-off); choose standard OpenUI when a visual composition teaches it better: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
 
 Shape each section to its content. Do not reuse one skeleton (a header, Tabs with a chart and a table, a Callout) for every section: pick the root and the components from what this content is (see the list under Layouts for Other Content), and two standard OpenUI sections in one topic should rarely look alike.
 

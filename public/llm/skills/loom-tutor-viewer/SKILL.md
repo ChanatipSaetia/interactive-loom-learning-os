@@ -71,7 +71,7 @@ Items are named by file and ID inside the topic (`sections/quiz.oui#q5` is the s
 2. Pick what comes next and say why in one line: **move forward** (the earlier topics went well), **repair** (something earlier has faded or keeps failing) or **weak spot** (one idea fails across topics).
 3. Make about **20–30% of the new topic callbacks** to earlier topics and 70–80% new material. Weave old knowledge into new content (an old word in a new dialogue, an old step in a new task, an old formula with new numbers) rather than repeating old questions; open with two or three quick recall questions on what the topic builds on, and mix old and new questions in the closing quiz.
 4. Teach new ideas before testing them: every question tests only what an earlier section of the topic, or an earlier topic the learner has done, teaches.
-5. Keep it to one sitting: about 5–8 sections, mixing section types (flashcards, scenarios, sandboxes, quizzes), never walls of text.
+5. Keep it to one sitting: about 5–8 sections, mixing the formats that teach the goal (native sections, OpenUI comparisons, diagrams, tables or charts), never walls of text.
 6. When a drawing makes the concept easier to understand, include one without waiting for the learner to ask: a labelled Svg schematic for parts, space, a mechanism or a concrete analogy; use a Flowchart for a process, a chart for quantities or a ConceptMap for relationships. Pair it with a short explanation and narration that highlights the important parts one at a time. Label analogies and simplifications, keep labels readable on a phone, and prefer static shapes over decorative animation or filters. For Svg, request the `openui` section type from get_authoring_guide (or read Drawings in the reference). A picture should teach the idea, not decorate it.
 7. Proactively visualize time and quantities when they are central to the explanation; do not wait for the learner to request a chart. Use Timeline for measured start times, duration, parallel work and waiting; a custom Svg can show a qualitative event timeline, LineChart for change over time, HorizontalBarChart for comparing amounts, PieChart or SingleStackedBarChart for a flat share of one whole, BreakdownTree for a hierarchy of quantities or conditional probabilities, and stacked bars for used versus remaining capacity. Request the timeline guide for measured timelines, the breakdown-tree guide for hierarchical shares, and the openui guide for charts and custom Svg. Use source-backed figures for factual claims; clearly label intentional teaching examples as illustrative data. In Present, keep the whole visual visible while several narration steps highlight its phases, points, bars or slices, then explain the takeaway.
 
@@ -79,11 +79,17 @@ Items are named by file and ID inside the topic (`sections/quiz.oui#q5` is the s
 
 Use this table as the agent's table of contents before planning or writing a topic. Identify what the learner should be able to define, picture, compare, explain or do; then select the section that teaches that mental model. Each row names a supported section type to request from the authoring guide. Read its exact component signatures before writing.
 
+Before choosing Text, consider whether a native Loom section or an OpenUI visual composition would explain the idea more clearly. Native Loom sections and OpenUI are first-class choices; choose by the learner's goal, not a preference for one library. Use Text when connected prose or narrative is the best teaching format, and combine concise explanations with visuals when useful.
+
+Use OpenUI cards for side-by-side examples, tables for factual attribute comparisons, charts for quantities and trends, and labelled Svg drawings for spatial structure or mechanisms. Charts must use supplied or verified data; clearly label illustrative data and never invent benchmark results. Keep native Flowchart for processes, Quiz and Flashcards for assessment/recall, Scenario for consequences, Tradeoff Sandbox for evaluating options, Formula Sandbox for input-driven calculations, and the other native sections where their interactions teach the goal. No OpenUI quota or mandatory section sequence.
+
+For example, explain isolated versus distributed retrieval evidence with two annotated document diagrams and a short explanation, then use a native Quiz to check understanding. A chart is appropriate only when actual measurements are available. Request the openui section guide for its syntax and presentation rules before writing a composition, then retrieve only the component families needed.
+
 | Mental model / learning goal | Section type | Learner question and selection cue |
 |---|---|---|
 | Orientation, purpose and roadmap | `intro` | What will I learn, why does it matter, and where are we going? |
 | Definitions, meaning, vocabulary and recall | `flashcards` | What does this term or concept mean? Teach its meaning on the back of a card, then use it for recall; flashcards introduce concepts as well as practise them. |
-| Connected explanation and narrative | `text` | Why does this happen, or how should I understand the explanation? Use for connected prose, reasoning or context beyond a concise definition. |
+| Connected explanation and narrative | `text` | Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal. |
 | Key points, supporting details and checklists | `bullets` | What are the important points, requirements or supporting subpoints? |
 | Visual recognition and concrete references | `image-gallery` | What does it look like? Compare examples, textures, objects or screenshots. |
 | Classification and distinctions | `taxonomy-browser` | What kinds exist, what defines them, and how do I recognise their differences? |
@@ -117,6 +123,7 @@ Use this table as the agent's table of contents before planning or writing a top
 
 | Mental model / learning goal | Visual |
 |---|---|
+| Compare concrete examples or evidence layouts side by side | Card / Stack with concise explanations or labelled Svg drawings |
 | Compare amounts or rank categories | BarChart / HorizontalBarChart |
 | Follow a measurement over time | LineChart |
 | Show an amount developing over time | AreaChart; use cumulative data when teaching accumulation |

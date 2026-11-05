@@ -33,3 +33,19 @@ describe('mental model table of contents', () => {
     expect(MENTAL_MODEL_GUIDE).toContain('### Choosing an OpenUI visual')
   })
 })
+
+it('considers visuals before Text without demoting native sections', async () => {
+  const { REPRESENTATION_SELECTION_GUIDE } = await import('../../../../../../src/core/learning-engine/composition/oui/mental-model-guide')
+  const { getCapabilityCatalog } = await import('../../../../../../src/core/learning-engine/composition/oui/capability-catalog')
+  for (const guide of [getLoomSkill(), getTutorAppSkill(), getTutorViewerSkill(), getAuthoringGuide(), getAuthoringGuide(['text'])]) {
+    expect(guide).toContain(REPRESENTATION_SELECTION_GUIDE)
+    expect(guide).toContain('No OpenUI quota')
+    expect(guide).toContain('never invent benchmark results')
+  }
+  const catalog = getCapabilityCatalog()
+  expect(catalog.selectionGuidance).toBe(REPRESENTATION_SELECTION_GUIDE)
+  expect(catalog.openuiVisuals.some((visual) => visual.components.includes('Table'))).toBe(true)
+  for (const type of ['text', 'flowchart', 'quiz', 'flashcards', 'scenario', 'tradeoff-sandbox', 'formula-sandbox', 'openui']) expect(catalog.sections.some((section) => section.type === type)).toBe(true)
+  expect(getAuthoringGuide(['openui'])).not.toContain('When no Loom section fits')
+  expect(getAuthoringGuide(['openui'])).not.toContain('Prefer a Loom section when')
+})
