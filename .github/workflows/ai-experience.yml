@@ -39,4 +39,5 @@ jobs:
           name: ai-experience-results
           path: |
             artifacts/ai-experience-evaluation.json
+            artifacts/ai-representation-review.json
             tests/mcp-host/results/results.json
