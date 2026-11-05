@@ -255,140 +255,240 @@
       "component": "Intro",
       "summary": "Topic opener: what it is, why it matters, and a roadmap of the sections ahead. `displayTitle` overrides the title shown inside the card.",
       "mentalModel": "Orientation, purpose and roadmap",
-      "selectionQuestion": "What will I learn, why does it matter, and where are we going?"
+      "selectionQuestion": "What will I learn, why does it matter, and where are we going?",
+      "learningBehavior": {
+        "learnerAction": "Read the purpose and roadmap.",
+        "presentationConstraint": "Orient attention; keep the opening focused.",
+        "evidenceBoundary": "Reading is engagement, not demonstrated understanding."
+      }
     },
     {
       "type": "text",
       "component": "Text",
       "summary": "Prose section: one string per paragraph.",
       "mentalModel": "Connected explanation and narrative",
-      "selectionQuestion": "Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal."
+      "selectionQuestion": "Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal.",
+      "learningBehavior": {
+        "learnerAction": "Read a connected explanation or argument.",
+        "presentationConstraint": "Keep prose readable in Read and Present; check long paragraphs at phone width.",
+        "evidenceBoundary": "Prose can be the right representation; viewing it is not assessment."
+      }
     },
     {
       "type": "bullets",
       "component": "Bullets",
       "summary": "Bulleted (or numbered, when `ordered` is true) checklist.",
       "mentalModel": "Key points, supporting details and checklists",
-      "selectionQuestion": "What are the important points, requirements or supporting subpoints?"
+      "selectionQuestion": "What are the important points, requirements or supporting subpoints?",
+      "learningBehavior": {
+        "learnerAction": "Inspect key points and supporting details.",
+        "presentationConstraint": "Use documented item beats; avoid turning every item into a paragraph wall.",
+        "evidenceBoundary": "A checklist presentation does not demonstrate procedural skill."
+      }
     },
     {
       "type": "taxonomy-browser",
       "component": "TaxonomyBrowser",
       "summary": "Browsable taxonomy of categories with scope, analogy and details.",
       "mentalModel": "Classification and distinctions",
-      "selectionQuestion": "What kinds exist, what defines them, and how do I recognise their differences?"
+      "selectionQuestion": "What kinds exist, what defines them, and how do I recognise their differences?",
+      "learningBehavior": {
+        "learnerAction": "Select categories and inspect their distinctions.",
+        "presentationConstraint": "Use focused category beats instead of a dense classification dump.",
+        "evidenceBoundary": "Category exploration is engagement, not a classification test."
+      }
     },
     {
       "type": "image-gallery",
       "component": "ImageGallery",
       "summary": "Gallery of captioned images.",
       "mentalModel": "Visual recognition and concrete references",
-      "selectionQuestion": "What does it look like? Compare examples, textures, objects or screenshots."
+      "selectionQuestion": "What does it look like? Compare examples, textures, objects or screenshots.",
+      "learningBehavior": {
+        "learnerAction": "Inspect and compare visual examples.",
+        "presentationConstraint": "Check image labels and legibility at the actual viewport.",
+        "evidenceBoundary": "Visual inspection alone does not establish recognition accuracy."
+      }
     },
     {
       "type": "pillar-layer",
       "component": "PillarLayer",
       "summary": "Layer-stack map: layers as rows (foundation last), blocks placed on a gap-free grid. Give blocks `dependsOn` so readers can tap a block to trace what it needs and what it affects. `displayTitle` overrides the title shown inside the map.",
       "mentalModel": "Layered dependency and foundation",
-      "selectionQuestion": "What builds on or is supported by what? Examples include network layers or cloud foundation → agent runtime → application."
+      "selectionQuestion": "What builds on or is supported by what? Examples include network layers or cloud foundation → agent runtime → application.",
+      "learningBehavior": {
+        "learnerAction": "Inspect layers and what each foundation supports.",
+        "presentationConstraint": "Keep layer labels short and inspect the complete stack in Read.",
+        "evidenceBoundary": "Layer inspection alone does not demonstrate dependency reasoning."
+      }
     },
     {
       "type": "user-journey",
       "component": "UserJourney",
       "summary": "A person’s experience across product or service stages. Read explores stages; Present walks goals, actions, responses and optional friction and outcomes without an Event Storming diagram.",
       "mentalModel": "A person’s experience with a product or service",
-      "selectionQuestion": "What does the person want, do and experience at each stage, and how can friction be resolved?"
+      "selectionQuestion": "What does the person want, do and experience at each stage, and how can friction be resolved?",
+      "learningBehavior": {
+        "learnerAction": "Inspect stages, goals, friction and improvements in a person’s journey.",
+        "presentationConstraint": "Focus on one stage at a time; check horizontal content remains reachable.",
+        "evidenceBoundary": "Stage selection is exploration, not evidence of diagnosing friction."
+      }
     },
     {
       "type": "timeline",
       "component": "Timeline",
       "summary": "Measured task timeline: one row per activity, sorted by start time, with duration-scaled bars, parallel work and finish-to-start dependencies. Present keeps the whole diagram visible while focusing authored groups.",
       "mentalModel": "Measured time, duration, overlap and waiting",
-      "selectionQuestion": "When does each task start and finish, what runs together, and what must wait?"
+      "selectionQuestion": "When does each task start and finish, what runs together, and what must wait?",
+      "learningBehavior": {
+        "learnerAction": "Inspect start times, durations, overlap and waiting.",
+        "presentationConstraint": "Time geometry must use authored measurements; verify labels and scale.",
+        "evidenceBoundary": "Selection is exploration; interpretation needs a learner response."
+      }
     },
     {
       "type": "breakdown-tree",
       "component": "BreakdownTree",
       "summary": "A whole divided into measurable parts: costs, counts, time allocation or conditional probability. Calculates each part’s share of its parent and the whole, validates totals, and explains one split per presentation beat.",
       "mentalModel": "Parts of a measurable whole and conditional probability",
-      "selectionQuestion": "How does a total divide through a hierarchy? Use quantity mode for costs/counts and probability mode for conditional branches and path probabilities."
+      "selectionQuestion": "How does a total divide through a hierarchy? Use quantity mode for costs/counts and probability mode for conditional branches and path probabilities.",
+      "learningBehavior": {
+        "learnerAction": "Explore how a quantity or probability divides through branches.",
+        "presentationConstraint": "Preserve visible totals and branch labels; inspect deep trees in Read.",
+        "evidenceBoundary": "Expansion is engagement; it does not establish quantitative reasoning."
+      }
     },
     {
       "type": "flowchart",
       "component": "Flowchart",
       "summary": "Animated Event Storming flowchart. Every actor and system must be used by at least one step.",
       "mentalModel": "Process, responsibility and interaction",
-      "selectionQuestion": "What happens, what triggers it, who handles it, and how do participants interact? Choose the view from the table below."
+      "selectionQuestion": "What happens, what triggers it, who handles it, and how do participants interact? Choose the view from the table below.",
+      "learningBehavior": {
+        "learnerAction": "Step through events, responsibilities and handoffs in the appropriate view.",
+        "presentationConstraint": "Select the documented process view and inspect graph labels at the viewport.",
+        "evidenceBoundary": "Stepping through a process is engagement; test application separately."
+      }
     },
     {
       "type": "scenario",
       "component": "Scenario",
       "summary": "Branching \"what would you do?\" scenario. `startNode` defaults to \"start\". `displayTitle` overrides the title shown inside the scenario.",
       "mentalModel": "Consequences across decisions",
-      "selectionQuestion": "What happens if I choose this, then make another decision? Explore authored paths and outcomes."
+      "selectionQuestion": "What happens if I choose this, then make another decision? Explore authored paths and outcomes.",
+      "learningBehavior": {
+        "learnerAction": "Choose authored decisions and inspect consequences.",
+        "presentationConstraint": "Present demonstrates paths; Read permits learner decisions.",
+        "evidenceBoundary": "An explored consequence is not independently verified mastery."
+      }
     },
     {
       "type": "tradeoff-sandbox",
       "component": "TradeoffSandbox",
       "summary": "Interactive sandbox where learners make design choices and watch metrics move.",
       "mentalModel": "Presenting options, comparing alternatives and trade-offs",
-      "selectionQuestion": "What are my options, how do they compare, and when should I choose each? Show strengths, limitations, gains, costs and suitability; a recommendation can explain why an option fits. Use this for option comparison even without formal mathematical optimisation."
+      "selectionQuestion": "What are my options, how do they compare, and when should I choose each? Show strengths, limitations, gains, costs and suitability; a recommendation can explain why an option fits. Use this for option comparison even without formal mathematical optimisation.",
+      "learningBehavior": {
+        "learnerAction": "Compare options, strengths, costs and suitability for a situation.",
+        "presentationConstraint": "Present guides option comparisons; Read supports learner exploration.",
+        "evidenceBoundary": "Exploring options does not prove a justified decision."
+      }
     },
     {
       "type": "formula-sandbox",
       "component": "FormulaSandbox",
       "summary": "Parameter sandbox: sliders drive live formula-based metrics.",
       "mentalModel": "Input–output relationships and sensitivity",
-      "selectionQuestion": "How does changing an input change a calculated result? Let the learner vary inputs to an authored formula."
+      "selectionQuestion": "How does changing an input change a calculated result? Let the learner vary inputs to an authored formula.",
+      "learningBehavior": {
+        "learnerAction": "Vary inputs and observe authored calculated outputs.",
+        "presentationConstraint": "Present demonstrates chosen inputs; Read is needed for learner experiments.",
+        "evidenceBoundary": "Slider movement is engagement, not correctness or causal understanding."
+      }
     },
     {
       "type": "decision-tree",
       "component": "DecisionTree",
       "summary": "Interactive decision guide. `root` is the ID of the first node. `displayTitle` overrides the title shown inside the guide.",
       "mentalModel": "Rule-based diagnosis and selection",
-      "selectionQuestion": "Which option fits my situation after answering a sequence of questions?"
+      "selectionQuestion": "Which option fits my situation after answering a sequence of questions?",
+      "learningBehavior": {
+        "learnerAction": "Answer branching questions to inspect a rule-based recommendation.",
+        "presentationConstraint": "Present demonstrates a path; Read lets the learner choose branches.",
+        "evidenceBoundary": "A reached recommendation is not an assessment score."
+      }
     },
     {
       "type": "reflection-sequence",
       "component": "ReflectionSequence",
       "summary": "Sequence-builder reflection: learners put steps in the right order.",
       "mentalModel": "Reconstructing order and procedure",
-      "selectionQuestion": "Can I arrange the supplied steps into the correct sequence?"
+      "selectionQuestion": "Can I arrange the supplied steps into the correct sequence?",
+      "learningBehavior": {
+        "learnerAction": "Reconstruct the order of supplied steps and check the answer.",
+        "presentationConstraint": "Present demonstrates reconstruction; Read supports learner attempts.",
+        "evidenceBoundary": "Correctness concerns this authored sequence, not general mastery."
+      }
     },
     {
       "type": "reflection-template",
       "component": "ReflectionTemplate",
       "summary": "Self-explanation reflection: learners complete sentence templates with chips.",
       "mentalModel": "Structured reasoning and explanation",
-      "selectionQuestion": "Can I complete a sound explanation using the supplied concepts and sentence blanks?"
+      "selectionQuestion": "Can I complete a sound explanation using the supplied concepts and sentence blanks?",
+      "learningBehavior": {
+        "learnerAction": "Complete an explanation from supplied concepts and sentence blanks.",
+        "presentationConstraint": "Present demonstrates a completed explanation; use Read for attempts.",
+        "evidenceBoundary": "Explicit results concern this exercise, not independent free-text reasoning."
+      }
     },
     {
       "type": "quiz",
       "component": "Quiz",
       "summary": "Knowledge-check section of multiple-choice questions.",
       "mentalModel": "Checking understanding and applying knowledge",
-      "selectionQuestion": "Can I answer or apply what has already been taught?"
+      "selectionQuestion": "Can I answer or apply what has already been taught?",
+      "learningBehavior": {
+        "learnerAction": "Submit an answer and inspect authored feedback.",
+        "presentationConstraint": "Present demonstrates answers; Read captures learner attempts.",
+        "evidenceBoundary": "Explicit correct/wrong attempts are evidence; views and stage demonstrations are not mastery."
+      }
     },
     {
       "type": "flashcards",
       "component": "Flashcards",
       "summary": "Deck of flip cards for key vocabulary.",
       "mentalModel": "Definitions, meaning, vocabulary and recall",
-      "selectionQuestion": "What does this term or concept mean? Teach its meaning on the back of a card, then use it for recall; flashcards introduce concepts as well as practise them."
+      "selectionQuestion": "What does this term or concept mean? Teach its meaning on the back of a card, then use it for recall; flashcards introduce concepts as well as practise them.",
+      "learningBehavior": {
+        "learnerAction": "Try recall, then flip to inspect a definition or example.",
+        "presentationConstraint": "Present demonstrates front/back; use Read for learner-controlled recall.",
+        "evidenceBoundary": "A flip records exposure, not correctness of unauthored recall."
+      }
     },
     {
       "type": "concept-map",
       "component": "ConceptMap",
       "summary": "Knowledge graph of concepts and the relations between them.",
       "mentalModel": "Relationships between concepts",
-      "selectionQuestion": "How do ideas connect, depend on, support or differ from each other? Label the relationship explicitly."
+      "selectionQuestion": "How do ideas connect, depend on, support or differ from each other? Label the relationship explicitly.",
+      "learningBehavior": {
+        "learnerAction": "Inspect concepts and their labelled relationships.",
+        "presentationConstraint": "Check that labels and connections remain readable at phone width.",
+        "evidenceBoundary": "A displayed relationship does not show the learner can explain it."
+      }
     },
     {
       "type": "openui",
       "component": "// @openui",
       "summary": "Free-form layout from the standard OpenUI library: cards, tabs, tables, charts and Svg drawings.",
       "mentalModel": "Composed visual explanation, comparison and data",
-      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below."
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
     }
   ]
 }

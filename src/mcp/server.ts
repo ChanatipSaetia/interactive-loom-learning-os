@@ -15,7 +15,7 @@ import { z } from 'zod'
 import { COMPONENT_LIBRARIES } from '../core/learning-engine/composition/oui/library'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
 import { TopicContextInput, resolveTopicContext } from '../core/supporting/authoring-editor/assistant/context-graph'
-import { getCapabilityCatalog } from '../core/learning-engine/composition/oui/capability-catalog'
+import { getCapabilityCatalog, getCapabilityIndex } from '../core/learning-engine/composition/oui/capability-catalog'
 import { validateTopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
 import { LearningRecordSchema, LearningRepositoryError, type LearningRepository } from '../core/supporting/learner-progress/memory/repository'
 import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
@@ -153,10 +153,13 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   // Stateless contracts: no filesystem, session state, or long-running process required.
   server.registerTool('get_loom_capabilities', {
     title: 'Loom section capabilities',
-    description: 'Versioned, compact catalog of supported learning representations and their teaching purposes. Use before choosing section types.',
-    inputSchema: z.object({}),
+    description: 'Versioned catalog of supported learning representations and their teaching purposes. Use detail: index for compact orientation, full for learner actions, Read/Present constraints, evidence limits and the plan schema. Choose by learning task, not a section quota.',
+    inputSchema: z.object({ detail: z.enum(['index', 'full']).optional().describe('index is compact initial discovery; omission preserves the full legacy catalog.') }),
     annotations: { readOnlyHint: true },
-  }, async () => ({ content: [{ type: 'text', text: JSON.stringify(getCapabilityCatalog()) }] }))
+  }, async ({ detail }) => ({ content: [{ type: 'text', text: JSON.stringify({
+    ...(detail === 'index' ? getCapabilityIndex() : getCapabilityCatalog()),
+    deployment: { storageAvailable: Boolean(store || options.repository), serverValidationAvailable: Boolean(checkTopic) },
+  }) }] }))
 
   server.registerTool('validate_topic_plan', {
     title: 'Validate a Loom topic plan',
