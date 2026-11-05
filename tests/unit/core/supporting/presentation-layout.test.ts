@@ -27,3 +27,13 @@ it('does not claim geometry in jsdom without layout and bounds traversal', () =>
   expect(reviewRenderedLayout(root).measured).toBe(false)
   expect(reviewRenderedLayout(root, { maxElements: 1 }).truncated).toBe(true)
 })
+it('accounts for transformed presentation text rather than accepting its unscaled CSS size', () => {
+  const root = document.createElement('main')
+  root.innerHTML = '<p style="font-size:24px" data-oui-anchor="caption">Scaled text</p>'
+  const text = root.firstElementChild as HTMLElement
+  document.body.append(root)
+  vi.spyOn(root, 'getBoundingClientRect').mockReturnValue(box(300, 300) as DOMRect)
+  vi.spyOn(text, 'getBoundingClientRect').mockReturnValue(box(100, 30) as DOMRect)
+  Object.defineProperty(text, 'offsetHeight', { value: 100 })
+  expect(reviewRenderedLayout(root).diagnostics).toContainEqual(expect.objectContaining({ code: 'SMALL_TEXT', target: 'caption', fontPixels: 7.2 }))
+})

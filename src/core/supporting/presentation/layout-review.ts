@@ -60,7 +60,13 @@ export function reviewRenderedLayout(root: HTMLElement, options: { maxElements?:
     if (element.hasAttribute('data-focus') && (rect.bottom < 0 || rect.top > view.innerHeight || rect.right < 0 || rect.left > view.innerWidth)) add('FOCUS_OUTSIDE_VIEWPORT', element)
     const hasOwnText = Array.from(element.childNodes).some((node) => node.nodeType === 3 && Boolean(node.textContent?.trim()))
     const font = Number.parseFloat(style.fontSize)
-    if (hasOwnText && Number.isFinite(font) && font < (options.minFontPixels ?? 12)) add('SMALL_TEXT', element, Math.round(font * 100) / 100)
+    // Present scales a design canvas. Computed CSS pixels alone would incorrectly
+    // call 24px text readable when an ancestor paints it at 0.3x. Compare the
+    // rendered line-box height with its untransformed layout height.
+    const svgMatrix = (element as unknown as SVGGraphicsElement).getScreenCTM?.()
+    const scaleY = element.offsetHeight > 0 ? rect.height / element.offsetHeight : svgMatrix ? Math.hypot(svgMatrix.c, svgMatrix.d) : 1
+    const paintedFont = font * scaleY
+    if (hasOwnText && Number.isFinite(paintedFont) && paintedFont < (options.minFontPixels ?? 12)) add('SMALL_TEXT', element, Math.round(paintedFont * 100) / 100)
   }
   if (elements.length > maxElements) result.truncated = true
   return result
