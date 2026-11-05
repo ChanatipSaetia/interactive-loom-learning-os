@@ -8,8 +8,11 @@ export const TopicPlanSchema = z.object({
   sources: z.array(EvidenceReferenceSchema).max(100).optional(),
   topicId: z.string().min(1).max(120),
   goal: z.string().min(1).max(4000),
+  audience: z.string().max(2000).optional(),
+  durationMinutes: z.number().positive().max(10080).optional(),
   objectives: z.array(z.object({
     id: z.string().min(1).max(120), description: z.string().min(1).max(4000),
+    evidenceOfLearning: z.string().min(1).max(2000).optional(),
     prerequisiteIds: z.array(z.string().max(120)).max(100).optional(),
   }).strict()).min(1).max(100),
   sections: z.array(z.object({
@@ -17,6 +20,11 @@ export const TopicPlanSchema = z.object({
     objectiveRefs: z.array(z.string().max(120)).min(1).max(100),
     representation: z.string().min(1).max(120), activity: z.string().min(1).max(4000),
     rationale: z.string().min(1).max(4000).optional(),
+    presentation: z.object({ target: z.enum(['read', 'present', 'both']), strategy: z.string().min(1).max(2000) }).strict().optional(),
+    assessment: z.object({
+      itemRefs: z.array(z.string().regex(/^sections\/[\w-]+\.oui#[\w-]+$/).max(240)).min(1).max(100),
+      successCriterion: z.string().min(1).max(2000),
+    }).strict().optional(),
     library: z.enum(COMPONENT_LIBRARIES).optional(),
     evidenceRefs: z.array(z.string().max(120)).max(100).optional(),
   }).strict()).min(1).max(100),
@@ -24,7 +32,7 @@ export const TopicPlanSchema = z.object({
 export type TopicPlan = z.infer<typeof TopicPlanSchema>
 
 export interface PlanDiagnostic {
-  code: 'INVALID_LIBRARY' | 'INVALID_EVIDENCE' | 'INVALID_INPUT' | 'INVALID_ID' | 'DUPLICATE_ID' | 'MISSING_OBJECTIVE' | 'MISSING_PREREQUISITE' | 'PREREQUISITE_CYCLE' | 'UNKNOWN_SECTION_TYPE' | 'UNCOVERED_OBJECTIVE'
+  code: 'INVALID_ASSESSMENT' | 'INVALID_LIBRARY' | 'INVALID_EVIDENCE' | 'INVALID_INPUT' | 'INVALID_ID' | 'DUPLICATE_ID' | 'MISSING_OBJECTIVE' | 'MISSING_PREREQUISITE' | 'PREREQUISITE_CYCLE' | 'UNKNOWN_SECTION_TYPE' | 'UNCOVERED_OBJECTIVE'
   path: string
   message: string
 }
@@ -52,6 +60,9 @@ export function validateTopicPlan(input: unknown, supportedSections: ReadonlySet
     if (!validId.test(section.id)) add('INVALID_ID', `${path}.id`, 'Use a lowercase ID with digits, - or _')
     if (sections.has(section.id)) add('DUPLICATE_ID', `${path}.id`, `Duplicate section ${section.id}`)
     sections.add(section.id)
+    for (const reference of section.assessment?.itemRefs ?? []) {
+      if (!reference.startsWith(`sections/${section.id}.oui#`)) add('INVALID_ASSESSMENT', `${path}.assessment.itemRefs`, 'Assessment items must belong to the planned section')
+    }
     if (section.library && section.library !== (section.representation === 'openui' ? 'openui' : 'loom')) add('INVALID_LIBRARY', `${path}.library`, 'Library must match the selected representation')
     if (!supportedSections.has(section.representation)) add('UNKNOWN_SECTION_TYPE', `${path}.representation`, `Unsupported representation ${section.representation}`)
     for (const id of section.objectiveRefs) if (!objectives.has(id)) add('MISSING_OBJECTIVE', `${path}.objectiveRefs`, `Unknown objective ${id}`)
@@ -97,6 +108,8 @@ export interface StudioPlanItem {
   rationale?: string
   library?: 'loom' | 'openui'
   objectiveRefs?: string[]
+  presentation?: TopicPlan['sections'][number]['presentation']
+  assessment?: TopicPlan['sections'][number]['assessment']
 }
 export interface StudioPlan {
   goal: string
@@ -126,6 +139,7 @@ export function readStudioPlan(args: string): StudioPlan | null {
           activity: section.activity, rationale: section.rationale,
           library: section.library ?? (section.representation === 'openui' ? 'openui' : 'loom'),
           objectiveRefs: section.objectiveRefs,
+          presentation: section.presentation, assessment: section.assessment,
         })),
       }
     }
@@ -153,8 +167,25 @@ export function buildStudioPlanMessage(plan: StudioPlan, ticked: readonly number
       ...(item.rationale ? [`   Representation rationale: ${item.rationale}`] : []),
       ...(item.library ? [`   Component library: ${item.library}`] : []),
       ...(item.objectiveRefs ? [`   Objectives: ${item.objectiveRefs.join(', ')}`] : []),
+      ...(item.presentation ? [`   Presentation (${item.presentation.target}): ${item.presentation.strategy}`] : []),
+      ...(item.assessment ? [`   Assessment: ${item.assessment.itemRefs.join(', ')}; ${item.assessment.successCriterion}`] : []),
     ].join('\n')),
     ...(plan.topicPlan && items.length !== plan.items.length ? ['The selection changed: adapt and revalidate objective coverage for these selected sections before generating.'] : []),
     '', 'Stage them all with the edit tools in this turn, then sum up what you staged.',
   ].join('\n')
+}
+
+/** Advisory omissions guide host review without invalidating legacy v1 plans. */
+export function reviewTopicPlan(input: unknown) {
+  const parsed = TopicPlanSchema.safeParse(input)
+  if (!parsed.success) return []
+  const diagnostics: Array<{ code: string; severity: 'warning'; path: string; message: string }> = []
+  parsed.data.sections.forEach((section, index) => {
+    if (!section.rationale) diagnostics.push({ code: 'MISSING_RATIONALE', severity: 'warning', path: `sections[${index}].rationale`, message: 'Explain why this representation fits the learner action.' })
+    if (!section.presentation) diagnostics.push({ code: 'MISSING_PRESENTATION_STRATEGY', severity: 'warning', path: `sections[${index}].presentation`, message: 'State the intended Read/Present strategy and inspect its layout.' })
+  })
+  parsed.data.objectives.forEach((objective, index) => {
+    if (!objective.evidenceOfLearning) diagnostics.push({ code: 'MISSING_LEARNING_EVIDENCE', severity: 'warning', path: `objectives[${index}].evidenceOfLearning`, message: 'Describe an observable response; viewing alone does not demonstrate understanding.' })
+  })
+  return diagnostics
 }

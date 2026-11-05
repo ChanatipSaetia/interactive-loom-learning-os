@@ -79,6 +79,15 @@
         "minLength": 1,
         "maxLength": 4000
       },
+      "audience": {
+        "type": "string",
+        "maxLength": 2000
+      },
+      "durationMinutes": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 10080
+      },
       "objectives": {
         "minItems": 1,
         "maxItems": 100,
@@ -95,6 +104,11 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4000
+            },
+            "evidenceOfLearning": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
             },
             "prerequisiteIds": {
               "maxItems": 100,
@@ -153,6 +167,54 @@
               "minLength": 1,
               "maxLength": 4000
             },
+            "presentation": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "enum": [
+                    "read",
+                    "present",
+                    "both"
+                  ]
+                },
+                "strategy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              },
+              "required": [
+                "target",
+                "strategy"
+              ],
+              "additionalProperties": false
+            },
+            "assessment": {
+              "type": "object",
+              "properties": {
+                "itemRefs": {
+                  "minItems": 1,
+                  "maxItems": 100,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 240,
+                    "pattern": "^sections\\/[\\w-]+\\.oui#[\\w-]+$"
+                  }
+                },
+                "successCriterion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              },
+              "required": [
+                "itemRefs",
+                "successCriterion"
+              ],
+              "additionalProperties": false
+            },
             "library": {
               "type": "string",
               "enum": [
@@ -190,7 +252,7 @@
     "additionalProperties": false
   },
   "workflow": {
-    "version": 1,
+    "version": 2,
     "stages": [
       "understand",
       "discover",
