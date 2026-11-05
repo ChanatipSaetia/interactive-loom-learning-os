@@ -35,6 +35,13 @@ transitive closure. Whole statements and omission metadata share the JSON budget
 
 ## Plan-to-artifact review
 
+Checkpoint `currentSectionId` and `resume.item` are derived from the latest
+recognized section-addressed event in deterministic replay order. They identify
+an observed location, not a next recommendation. `resume.sourceVerified: false`
+requires the next assistant to read current authorized source and confirm that
+the section still exists; legacy events have no topic revision. Empty histories
+return `resume: null`. No objective mastery or current content version is inferred.
+
 Local `validate_topic({oui, plan})` optionally compares a runtime-validated
 TopicPlan with the actual Viewer compiler output. It returns JSON with `valid`
 (OUI/narration validity), `validation`, and a separate versioned `planAlignment`.

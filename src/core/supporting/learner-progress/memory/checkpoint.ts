@@ -10,13 +10,22 @@ export interface LearningCheckpoint {
   completed: number
   missed: string[]
   lastActivity: string | null
+  /** Last observed section, not a completion recommendation or source-version claim. */
+  currentSectionId?: string
+  resume: { item: string; basis: 'latest-section-event'; sourceVerified: false } | null
   assessment: { attempts: number; correctAttempts: number; latestCorrectItems: string[]; mastery: 'not-inferred' }
 }
 
 export function createLearningCheckpoint(topicId: string, events: LearnerEvent[]): LearningCheckpoint {
-  const summary = summarize(mergeEvents(events)).find((item) => item.topic === topicId)
+  const ordered = mergeEvents(events).filter((event) => event.topic === topicId)
+  const summary = summarize(ordered).find((item) => item.topic === topicId)
   const latest = new Map<string, LearnerEvent>()
-  for (const event of mergeEvents(events)) if (event.topic === topicId && event.kind === 'answered') latest.set(event.item, event)
+  let location: { sectionId: string; item: string } | undefined
+  for (const event of ordered) {
+    if (event.kind === 'answered') latest.set(event.item, event)
+    const sectionId = /^sections\/([\w-]+)\.oui(?:#[^\s#]+)?$/.exec(event.item)?.[1]
+    if (sectionId) location = { sectionId, item: event.item }
+  }
   return {
     schemaVersion: 1,
     topicId,
@@ -26,6 +35,8 @@ export function createLearningCheckpoint(topicId: string, events: LearnerEvent[]
     completed: summary?.completed ?? 0,
     missed: summary?.missed ?? [],
     lastActivity: summary?.last ?? null,
+    ...(location ? { currentSectionId: location.sectionId } : {}),
+    resume: location ? { item: location.item, basis: 'latest-section-event', sourceVerified: false } : null,
     assessment: { attempts: summary?.answered ?? 0, correctAttempts: summary?.correct ?? 0, latestCorrectItems: [...latest].filter(([, event]) => event.result === 'correct').map(([item]) => item).sort(), mastery: 'not-inferred' },
   }
 }

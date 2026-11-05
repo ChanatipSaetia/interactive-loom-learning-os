@@ -25,3 +25,16 @@ it('rejects invalid timestamps and assessment events without evidence', () => {
   expect(isLearnerEvent({ ...event, t: 'no' })).toBe(false)
   expect(isLearnerEvent({ ...event, result: undefined })).toBe(false)
 })
+
+it('derives a stable resume location from section evidence without claiming source freshness', () => {
+  const seen: LearnerEvent = { ...event, id: 'next', t: '2026-01-03T00:00:00Z', item: 'sections/explore_more.oui', kind: 'seen', result: undefined }
+  const unknown = { ...seen, id: 'unknown', t: '2026-01-04T00:00:00Z', item: '../private.oui' }
+  const other = { ...seen, id: 'other', topic: 'other', item: 'sections/other.oui' }
+  const checkpoint = createLearningCheckpoint('demo', [seen, event, unknown, other, seen])
+  expect(checkpoint.currentSectionId).toBe('explore_more')
+  expect(checkpoint.resume).toEqual({ item: seen.item, basis: 'latest-section-event', sourceVerified: false })
+  expect(createLearningCheckpoint('demo', [event, unknown, seen])).toEqual(checkpoint)
+  expect(checkpoint.assessment.mastery).toBe('not-inferred')
+  expect(createLearningCheckpoint('empty', []).resume).toBeNull()
+  expect(createLearningCheckpoint('empty', []).currentSectionId).toBeUndefined()
+})

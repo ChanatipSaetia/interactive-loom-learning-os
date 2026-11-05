@@ -39,6 +39,8 @@ describe('authenticated cross-client continuity', () => {
       const restored = textOf(await second.callTool({ name: 'read_learning_record', arguments: { topicId: 'demo' } }))
       expect(restored.record).toEqual(record)
       expect(restored.checkpoint.missed).toEqual(['sections/quiz.oui#q1'])
+      expect(restored.checkpoint.currentSectionId).toBe('quiz')
+      expect(restored.checkpoint.resume).toEqual({ item: 'sections/quiz.oui#q1', basis: 'latest-section-event', sourceVerified: false })
       const duplicate = textOf(await second.callTool({ name: 'write_learning_record', arguments: { record, expectedVersion: saved.version } }))
       expect(duplicate.checkpoint.answered).toBe(1)
       const stale = await second.callTool({ name: 'write_learning_record', arguments: { record, expectedVersion: saved.version } })
