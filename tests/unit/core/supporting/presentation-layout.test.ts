@@ -5,7 +5,7 @@ afterEach(() => { document.body.innerHTML = ''; vi.restoreAllMocks(); vi.unstubA
 const box = (width: number, height: number, left = 0, top = 0) => ({ width, height, left, top, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) })
 it('reports real geometry limits while excluding text and retaining intentional scrolling', () => {
   const root = document.createElement('main')
-  root.innerHTML = '<div style="overflow-x:auto"><p style="font-size:9px" data-oui-anchor="argument">private prose</p></div>'
+  root.innerHTML = '<div style="overflow-x:auto"><p style="font-size:9px" data-oui-file="sections/argument.oui" data-oui-anchor="argument">private prose</p></div>'
   document.body.append(root)
   const scroll = root.firstElementChild as HTMLElement, text = scroll.firstElementChild as HTMLElement
   vi.spyOn(root, 'getBoundingClientRect').mockReturnValue(box(500, 500) as DOMRect)
@@ -17,6 +17,7 @@ it('reports real geometry limits while excluding text and retaining intentional 
   expect(result.measured).toBe(true)
   expect(result.intentionalScrollRegions).toBe(1)
   expect(result.diagnostics.map((d) => d.code)).toEqual(['SMALL_TEXT'])
+  expect(result.diagnostics[0]).toMatchObject({ file: 'sections/argument.oui', sectionId: 'argument', repairTarget: 'sections/argument.oui#argument' })
   expect(JSON.stringify(result)).not.toContain('private prose')
   scroll.style.overflowX = 'hidden'
   expect(reviewRenderedLayout(root).diagnostics.some((d) => d.code === 'CLIPPED_CONTENT')).toBe(true)

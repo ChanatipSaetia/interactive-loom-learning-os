@@ -3,6 +3,8 @@ export interface LayoutDiagnostic {
   code: 'SMALL_TEXT' | 'CLIPPED_CONTENT' | 'HORIZONTAL_OVERFLOW' | 'FOCUS_OUTSIDE_VIEWPORT'
   severity: 'warning'
   target: string
+  file?: string
+  sectionId?: string
   fontPixels?: number
   repairTarget: string
 }
@@ -28,11 +30,14 @@ export function reviewRenderedLayout(root: HTMLElement, options: { maxElements?:
   const add = (code: LayoutDiagnostic['code'], element: HTMLElement, fontPixels?: number) => {
     const raw = element.closest('[data-oui-anchor]')?.getAttribute('data-oui-anchor') ?? element.tagName.toLowerCase()
     const target = /^[\w.[\]-]{1,120}$/.test(raw) ? raw : 'section'
-    const key = `${code}:${target}`
+    const sourceFile = element.closest('[data-oui-file]')?.getAttribute('data-oui-file') ?? ''
+    const file = /^(topic\.oui|sections\/[\w-]{1,120}\.oui)$/.test(sourceFile) ? sourceFile : undefined
+    const sectionId = file ? /^sections\/(.+)\.oui$/.exec(file)?.[1] : undefined
+    const key = `${file ?? ''}:${code}:${target}`
     if (emitted.has(key)) return
     emitted.add(key)
     if (result.diagnostics.length >= maxDiagnostics) { result.truncated = true; return }
-    result.diagnostics.push({ code, severity: 'warning', target, repairTarget: target, ...(fontPixels ? { fontPixels } : {}) })
+    result.diagnostics.push({ code, severity: 'warning', target, ...(file ? { file, sectionId } : {}), repairTarget: file ? `${file}#${target}` : target, ...(fontPixels ? { fontPixels } : {}) })
   }
   for (const element of elements.slice(0, maxElements)) {
     const rect = element.getBoundingClientRect()
