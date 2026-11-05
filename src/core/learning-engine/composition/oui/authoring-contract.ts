@@ -5,6 +5,8 @@ import { getAuthoringGuide, guideSectionTypes } from './authoring-guide'
 import { COMPONENT_LIBRARIES } from './library'
 import { textHash } from '../../../supporting/authoring-editor/assistant/statements'
 import { BEAT_IDS } from './narration'
+import { getAuthoringWorkflow } from './authoring-workflow'
+import { TopicPlanSchema } from './topic-plan'
 
 export const AuthoringContractInput = z.object({
   detail: z.enum(['index', 'focused', 'full']),
@@ -17,7 +19,7 @@ export const AuthoringContractInput = z.object({
 
 /** Content revision covers canonical signatures, rules, narration and workflow text. */
 export function authoringContractVersion() {
-  return `oui-core-v1:${textHash(AUTHORING_CORE + getLoomAuthoringPrompt())}`
+  return `oui-core-v1:${textHash(AUTHORING_CORE + getLoomAuthoringPrompt() + getAuthoringWorkflow('mcp') + JSON.stringify(z.toJSONSchema(TopicPlanSchema)))}`
 }
 
 export function getAuthoringContract(input: z.input<typeof AuthoringContractInput>) {
