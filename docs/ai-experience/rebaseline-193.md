@@ -40,6 +40,10 @@ and final increment results are recorded below when complete.
   assertions ran. This is not a passing E2E result. Playwright MCP is unavailable.
 
 - Baseline `npm run typecheck`: passed after installation.
+- The first long unit run overlapped implementation edits: its new checkpoint
+  test saw a cached pre-change module. That mixed run is not baseline evidence.
+  The original commit was archived to `/tmp/loom-baseline-193` and its complete
+  suite restarted against immutable sources and the same locked dependencies.
 
 ## Selected next increment
 
@@ -49,3 +53,39 @@ compiler out of the Worker. Report unverified plan alignment explicitly when no
 plan is supplied. Extend bounded context truncation with actionable omitted
 references and add fixed positive/negative offline alignment cases. Runtime
 pedagogy and DOM layout judgments remain separate from these deterministic checks.
+
+## Implemented continuation increment
+
+- `composition/oui/plan-artifact.ts` compares the canonical validated plan with
+  Viewer compiler output. Existing local `validate_topic` accepts optional `plan`;
+  legacy calls retain exact text responses. Seven focused tests cover legitimate
+  prose, representation drift, missing/unplanned sections, topic identity,
+  failed compilation and injected checkers without alignment support.
+- Context truncation returns bounded omission addresses, a count, and an explicit
+  frontier/incomplete-list contract. Nine context tests cover expansion, stale
+  hashes, cycles, source budgets and metadata budgets.
+- Checkpoints include the last observed section/item with source freshness
+  explicitly unverified. Deterministic replay, topic isolation, unknown addresses
+  and two-client restoration pass focused tests. No default provider, topic
+  revision or objective mastery is invented.
+- Full discovery describes learner actions, Present constraints and evidence
+  boundaries for all twenty representations. Optional index discovery preserves
+  legacy full responses and reports actual injected deployment capabilities.
+  The generated catalog was refreshed with the existing generator. Twenty-three
+  focused catalog/MCP tests pass.
+- Offline evaluation adds ten authored representation cases plus mixed-lesson
+  and substitution checks. All seven offline tests pass (including existing
+  create/edit/validate/continue and two-client fixtures). Connected prose and
+  factual tables are positive cases. A dense table compiles but explicitly has
+  no measured layout or teaching-quality score.
+- Discovery measurement: index 2,472 characters / 618 estimated tokens; full
+  catalog 17,851 characters / 4,463 estimated tokens. Estimates use characters/4,
+  not provider billing. This measures discovery only, not a reduction in total
+  successful-task cost. Existing fixture guide sizes: full 128,746 characters,
+  section-filtered 35,386, component-focused 926; these are synthetic retrieval
+  measurements, not evidence of model quality or production latency.
+
+Deferred: browser geometry/layout audit, objective-level checkpoints with verified
+topic revisions, optional design context in retrieval, versioned core contract
+deduplication, real authenticated provider deployment, and external model/human
+learning evaluation. Hosted full compilation remains intentionally unavailable.
