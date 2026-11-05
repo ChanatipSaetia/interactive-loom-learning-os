@@ -6,6 +6,10 @@
 import { z } from 'zod'
 import { isLearnerEvent, mergeEvents, type LearnerEvent } from './events'
 import { createLearningCheckpoint } from './checkpoint'
+import { TopicPlanSchema, validateTopicPlan } from '../../../learning-engine/composition/oui/topic-plan'
+import { OUI_SECTION_TYPES } from '../../../learning-engine/composition/oui/library'
+import { topicSourceVersion } from '../../../learning-engine/composition/oui/topic-version'
+import { readTopicText } from '../../authoring-editor/workspace/archive'
 import { EvidenceReferenceSchema, validateEvidenceReferences } from '../../../learning-engine/composition/oui/source-provenance'
 
 export const LearningRecordSchema = z.object({
@@ -13,10 +17,12 @@ export const LearningRecordSchema = z.object({
   topicId: z.string().regex(/^[\w-]+$/).max(120),
   oui: z.string().min(1).max(524288),
   sources: z.array(EvidenceReferenceSchema).max(100),
-  events: z.array(z.object({ id: z.string(), t: z.string(), device: z.string(), topic: z.string(), item: z.string(), kind: z.enum(['seen', 'answered', 'completed']), result: z.enum(['correct', 'wrong']).optional() }).strict().refine(isLearnerEvent, 'Invalid learner event')).max(10000),
+  plan: TopicPlanSchema.optional(),
+  events: z.array(z.object({ id: z.string(), t: z.string(), device: z.string(), topic: z.string(), topicVersion: z.string().min(1).max(200).optional(), item: z.string(), kind: z.enum(['seen', 'answered', 'completed']), result: z.enum(['correct', 'wrong']).optional() }).strict().refine(isLearnerEvent, 'Invalid learner event')).max(10000),
 }).strict().superRefine((record, context) => {
   const id = /^\/\/\s*@loom-topic\s+([\w-]+)\s*$/m.exec(record.oui)?.[1]
   if (id !== record.topicId) context.addIssue({ code: 'custom', path: ['oui'], message: 'Topic header must match topicId' })
+  if (record.plan && (record.plan.topicId !== record.topicId || validateTopicPlan(record.plan, new Set([...OUI_SECTION_TYPES.values(), 'openui'])).length)) context.addIssue({ code: 'custom', path: ['plan'], message: 'Plan must be valid and belong to this topic' })
   if (record.events.some((event) => event.topic !== record.topicId)) context.addIssue({ code: 'custom', path: ['events'], message: 'Events must belong to this topic' })
   if (validateEvidenceReferences(record.sources, []).length) context.addIssue({ code: 'custom', path: ['sources'], message: 'Invalid provenance locators' })
 })
@@ -46,10 +52,15 @@ export function createLearningRepository(port: LearningRecordPort, learner: Veri
     if (!subject || !scopes.has(scope)) throw new LearningRepositoryError('FORBIDDEN')
     return `learners/${encodeURIComponent(subject)}/topics/${z.string().regex(/^[\w-]+$/).max(120).parse(topicId)}`
   }
-  const responseOf = (saved: VersionedLearningRecord) => ({
-    version: saved.version, record: LearningRecordSchema.parse(saved.record),
-    checkpoint: createLearningCheckpoint(saved.record.topicId, saved.record.events),
-  })
+  const responseOf = (saved: VersionedLearningRecord) => {
+    const record = LearningRecordSchema.parse(saved.record)
+    // Legacy records without versioned evidence retain their historical location
+    // with sourceVerified=false; they cannot establish current objective progress.
+    const source = readTopicText(record.oui)[0]
+    const topicVersion = topicSourceVersion(source)
+    const context = record.plan || record.events.some((event) => event.topicVersion) ? { topicVersion, files: source.files, plan: record.plan } : undefined
+    return { version: saved.version, topicVersion, record, checkpoint: createLearningCheckpoint(record.topicId, record.events, context) }
+  }
   return {
     async read(topicId: string) {
       const saved = await port.read(keyFor(topicId, 'learning:read'))
@@ -68,7 +79,7 @@ export function createLearningRepository(port: LearningRecordPort, learner: Veri
       const ids = new Map<string, LearnerEvent>()
       for (const event of [...(existing?.events ?? []), ...record.events]) {
         const prior = ids.get(event.id)
-        if (prior && (['t', 'device', 'topic', 'item', 'kind', 'result'] as const).some((field) => prior[field] !== event[field])) throw new LearningRepositoryError('EVENT_CONFLICT')
+        if (prior && (['t', 'device', 'topic', 'topicVersion', 'item', 'kind', 'result'] as const).some((field) => prior[field] !== event[field])) throw new LearningRepositoryError('EVENT_CONFLICT')
         ids.set(event.id, event)
       }
       const merged = LearningRecordSchema.parse({ ...record, events: mergeEvents(existing?.events ?? [], record.events) })

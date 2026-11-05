@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client'
 import { createLoomServer } from '../../../src/mcp/server'
 import { createLearningRepository, type LearningRecordPort, type LearningRecord, type VersionedLearningRecord } from '../../../src/core/supporting/learner-progress/memory/repository'
+import { topicSourceVersion } from '../../../src/core/learning-engine/composition/oui/topic-version'
+import { readTopicText } from '../../../src/core/supporting/authoring-editor/workspace/archive'
 
 // Synthetic durable-port fixture shared by separate client/server instances, never production storage.
 function durableFixture(): LearningRecordPort {
@@ -29,6 +31,25 @@ async function clientFor(port: LearningRecordPort, name: string) {
 }
 
 describe('authenticated cross-client continuity', () => {
+  it('preserves plan/source revisions and invalidates old objective evidence after an edit', async () => {
+    const port = durableFixture()
+    const repository = createLearningRepository(port, learner)
+    const oui = '// @loom-topic demo\n// === topic.oui ===\nroot = Topic("T", "C", "D", [SectionRef("quiz")])\n// === sections/quiz.oui ===\nroot = Quiz("T", [q1])\nq1 = QuizQuestion("q1", "Why?", [])\n'
+    const topicVersion = topicSourceVersion(readTopicText(oui)[0])
+    const plan = { schemaVersion: 1 as const, topicId: 'demo', goal: 'Apply', objectives: [{ id: 'apply', description: 'Apply the rule' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', objectiveRefs: ['apply'], activity: 'Submit an answer', assessment: { itemRefs: ['sections/quiz.oui#q1'], successCriterion: 'Correct answer' } }] }
+    const current = { ...record, oui, plan, events: [{ ...record.events[0], topicVersion, result: 'correct' as const }] }
+    const first = await repository.write(current, null)
+    expect(first.checkpoint.completedObjectives).toEqual(['apply'])
+    expect(first.checkpoint.resume?.sourceVerified).toBe(true)
+    const second = await createLearningRepository(port, learner).read('demo')
+    expect(second?.topicVersion).toBe(topicVersion)
+    expect(second?.record.plan).toEqual(plan)
+    const edited = await repository.write({ ...current, oui: oui.replace('Why?', 'Why now?') }, first.version)
+    expect(edited.topicVersion).not.toBe(topicVersion)
+    expect(edited.checkpoint.completedObjectives).toEqual([])
+    expect(edited.checkpoint.resume).toBeNull()
+    expect(edited.checkpoint.currentRevisionEvidence?.excludedStaleAttempts).toBe(1)
+  })
   it('continues through a new server and different assistant without process-local state', async () => {
     const port = durableFixture()
     const first = await clientFor(port, 'ChatGPT-fixture')

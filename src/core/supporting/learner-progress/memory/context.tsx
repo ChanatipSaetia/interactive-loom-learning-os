@@ -37,15 +37,15 @@ export function useLearnerMemory(): LearnerMemoryValue | null {
 }
 
 /** `onEvent` for a section's component: its events, kept when they matter. Undefined without a provider. */
-export function useSectionEventRecorder(topic: string, section: string): ((event: { type: string; [key: string]: unknown }) => void) | undefined {
+export function useSectionEventRecorder(topic: string, section: string, topicVersion?: string): ((event: { type: string; [key: string]: unknown }) => void) | undefined {
   const memory = useLearnerMemory()
   return useMemo(() => {
     if (!memory) return undefined
     return (event) => {
       const learnerEvent = learnerEventOf(topic, section, event)
-      if (learnerEvent) memory.record(learnerEvent)
+      if (learnerEvent) memory.record({ ...learnerEvent, ...(topicVersion ? { topicVersion } : {}) })
     }
-  }, [memory, topic, section])
+  }, [memory, topic, section, topicVersion])
 }
 
 const MIGRATED_KEY = 'loom-memory-migrated'
