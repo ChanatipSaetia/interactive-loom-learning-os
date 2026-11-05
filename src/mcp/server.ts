@@ -14,9 +14,11 @@ import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TY
 import { z } from 'zod'
 import { COMPONENT_LIBRARIES } from '../core/learning-engine/composition/oui/library'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
+import { getAuthoringContract, authoringContractVersion } from '../core/learning-engine/composition/oui/authoring-contract'
+import { measureTool, type AuthoringStage, type ToolMeasurement } from './measurement'
 import { TopicContextInput, resolveTopicContext } from '../core/supporting/authoring-editor/assistant/context-graph'
-import { getCapabilityCatalog } from '../core/learning-engine/composition/oui/capability-catalog'
-import { validateTopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
+import { getCapabilityCatalog, getCapabilityIndex } from '../core/learning-engine/composition/oui/capability-catalog'
+import { validateTopicPlan, reviewTopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
 import { LearningRecordSchema, LearningRepositoryError, type LearningRepository } from '../core/supporting/learner-progress/memory/repository'
 import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
 import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
@@ -74,8 +76,10 @@ export interface LoomServerOptions {
   /** Request-scoped repository built from verified authentication; never configured on the public Worker. */
   repository?: LearningRepository
   /** The full topic check, which adds `validate_topic`; left out on the hosted endpoint. */
-  check?: (oui: string) => TopicCheck
+  check?: (oui: string, plan?: unknown) => TopicCheck
   checkSection?: typeof checkSection
+  /** Safe aggregate observer only; never log model arguments/results. */
+  onMeasurement?: (measurement: ToolMeasurement) => void
 }
 
 /** Loom Viewer, next to the app on the same site (`<site>/mcp-app/v1/` → `<site>/viewer.html`). */
@@ -100,6 +104,7 @@ const VALIDATE_TOOL_DESCRIPTION = `Check a Loom topic (.loom.oui text) the way L
 export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   const appUrl = options.appUrl ?? DEFAULT_APP_URL
   const { store, check: checkTopic } = options
+  const measured = <T>(tool: string, stage: AuthoringStage, input: unknown, run: () => Promise<T>) => measureTool(tool, stage, input, run, options.onMeasurement)
   const appOrigin = new URL(appUrl).origin
   // The routine reaches every chat that connects, with or without the loom-tutor-app skill (decision 218)
   const server = new McpServer({ name: 'loom', version: '0.1.0' }, { capabilities: { tools: {}, resources: {} }, instructions: LOOM_SERVER_INSTRUCTIONS })
@@ -122,7 +127,7 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     description: 'The tutoring routine for learning with Loom in this chat: planning short topics from the learner\'s progress, writing and showing them, saving topics and progress notes to their drive, and showing where they are. Call it once when the learner wants to learn or continue a subject with Loom, asks what to learn next, or sends a progress note.',
     inputSchema: z.object({}),
     annotations: { readOnlyHint: true },
-  }, async () => ({ content: [{ type: 'text', text: getTutorGuide() }] }))
+  }, async () => measured('get_tutor_guide', 'discovery', {}, async () => ({ content: [{ type: 'text', text: getTutorGuide() }] })))
 
   // Where topics and progress notes go in the learner's drive (the Loom/<domain-id>/ layout)
   server.registerTool('get_storage_guide', {
@@ -130,60 +135,77 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     description: STORAGE_GUIDE_DESCRIPTION,
     inputSchema: z.object({}),
     annotations: { readOnlyHint: true },
-  }, async () => ({ content: [{ type: 'text', text: getStorageGuide() }] }))
+  }, async () => measured('get_storage_guide', 'discovery', {}, async () => ({ content: [{ type: 'text', text: getStorageGuide() }] })))
 
   server.registerTool('get_authoring_guide', {
     title: 'Loom authoring guide',
     description: GUIDE_TOOL_DESCRIPTION,
     inputSchema: z.object({
+      detail: z.enum(['index', 'focused', 'full']).optional().describe('Structured progressive contracts; omit to preserve legacy text responses.'),
+      knownContractVersion: z.string().max(120).optional(),
+      forceRefresh: z.boolean().optional(),
       library: z.enum(COMPONENT_LIBRARIES).optional().describe("Library for focused components. Use openui for standard components, loom for native components. Requires components; omission preserves legacy Loom-first lookup."),
       components: z.array(z.string().max(120)).max(100).optional().describe("Exact component names and their signature dependencies. Omit to preserve the section-filtered guide."),
       sections: z.array(z.string()).optional().describe(`Section types the topic will use: ${guideSectionTypes().map((t) => t.type).join(', ')}, or "all".`),
     }),
     annotations: { readOnlyHint: true },
-  }, async ({ sections, components, library }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections, components, library) }] }))
+  }, async ({ sections, components, library, detail, knownContractVersion, forceRefresh }) => measured('get_authoring_guide', 'discovery', { sections, components, library, detail, knownContractVersion, forceRefresh }, async () => ({ content: [{ type: 'text', text: detail
+    ? JSON.stringify(getAuthoringContract({ detail, sections, components, library, knownContractVersion, forceRefresh }))
+    : getAuthoringGuide(sections, components, library) }] })))
 
   server.registerTool('get_topic_context', {
     title: 'Focused topic context',
     description: 'Resolve bounded statement dependencies from current source files explicitly supplied by your authorized connector or editor buffers. No fetching, filesystem access or conversation state. roots are file#statement addresses; omit for an overview. Hash is a change hint, not an authorization or concurrency token.',
     inputSchema: TopicContextInput,
     annotations: { readOnlyHint: true },
-  }, async (input) => ({ content: [{ type: 'text', text: JSON.stringify(resolveTopicContext(input)) }] }))
+  }, async (input) => measured('get_topic_context', 'context', input, async () => ({ content: [{ type: 'text', text: JSON.stringify(resolveTopicContext(input)) }] })))
 
   // Stateless contracts: no filesystem, session state, or long-running process required.
   server.registerTool('get_loom_capabilities', {
     title: 'Loom section capabilities',
-    description: 'Versioned, compact catalog of supported learning representations and their teaching purposes. Use before choosing section types.',
-    inputSchema: z.object({}),
+    description: 'Versioned catalog of supported learning representations and their teaching purposes. Use detail: index for compact orientation, full for learner actions, Read/Present constraints, evidence limits and the plan schema. Choose by learning task, not a section quota.',
+    inputSchema: z.object({ detail: z.enum(['index', 'full']).optional().describe('index is compact initial discovery; omission preserves the full legacy catalog.') }),
     annotations: { readOnlyHint: true },
-  }, async () => ({ content: [{ type: 'text', text: JSON.stringify(getCapabilityCatalog()) }] }))
+  }, async ({ detail }) => measured('get_loom_capabilities', 'discovery', { detail }, async () => ({ content: [{ type: 'text', text: JSON.stringify({
+    ...(detail === 'index' ? getCapabilityIndex() : getCapabilityCatalog()),
+    contractVersion: authoringContractVersion(),
+    deployment: { storageAvailable: Boolean(store || options.repository), serverValidationAvailable: Boolean(checkTopic) },
+  }) }] })))
 
   server.registerTool('validate_topic_plan', {
     title: 'Validate a Loom topic plan',
     description: 'Check objective coverage, IDs, prerequisites, and supported representations before generating OUI.',
     inputSchema: z.object({ plan: z.unknown().describe("Version 1 TopicPlan; malformed inputs return structured diagnostics.") }),
     annotations: { readOnlyHint: true },
-  }, async ({ plan }) => {
+  }, async ({ plan }) => measured('validate_topic_plan', 'planning', { plan }, async () => {
     const diagnostics = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type)))
-    return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics }) }] }
-  })
+    return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics, advisoryDiagnostics: reviewTopicPlan(plan) }) }] }
+  }))
 
   if (options.checkSection) server.registerTool('validate_section', {
     title: 'Validate one section or narration file',
     description: 'Full local/browser compiler diagnostics for targeted repair. Hosted MCP leaves compilation to the app. Narration checks need the current sectionSource.',
     inputSchema: z.object({ source: z.string().max(131072), file: z.string().regex(/^sections\/[\w-]+(?:\.narrate)?\.oui$/), sectionSource: z.string().max(131072).optional() }),
     annotations: { readOnlyHint: true },
-  }, async ({ source, file, sectionSource }) => ({ content: [{ type: 'text', text: JSON.stringify(options.checkSection!(source, file, sectionSource)) }] }))
+  }, async ({ source, file, sectionSource }) => measured('validate_section', 'validation', { source, file, sectionSource }, async () => ({ content: [{ type: 'text', text: JSON.stringify(options.checkSection!(source, file, sectionSource)) }] })))
 
   if (checkTopic) server.registerTool('validate_topic', {
     title: 'Check a Loom topic',
     description: VALIDATE_TOOL_DESCRIPTION,
-    inputSchema: z.object({ oui: z.string().describe('The whole topic as .loom.oui text.') }),
+    inputSchema: z.object({
+      oui: z.string().describe('The whole topic as .loom.oui text.'),
+      plan: z.unknown().optional().describe('Optional TopicPlan for advisory comparison with compiled representations; separate from OUI validity and layout.'),
+    }),
     annotations: { readOnlyHint: true },
-  }, async ({ oui }) => {
-    const check = checkTopic(oui)
-    return { content: [{ type: 'text', text: check.ok ? `valid: "${check.title}" with ${check.sections.length} sections` : check.report! }] }
-  })
+  }, async ({ oui, plan }) => measured('validate_topic', 'validation', { oui, plan }, async () => {
+    const check = checkTopic(oui, plan)
+    const text = check.ok ? `valid: "${check.title}" with ${check.sections.length} sections` : check.report!
+    // Preserve the exact legacy text response when no plan was requested. An injected
+    // legacy checker may ignore the new argument; never claim that it ran alignment.
+    if (plan === undefined) return { content: [{ type: 'text', text }] }
+    const planAlignment = check.planAlignment ?? { schemaVersion: 1, status: 'unverified', diagnostics: [], teachingQuality: 'not-evaluated', layout: 'not-measured' }
+    return { content: [{ type: 'text', text: JSON.stringify({ valid: check.ok, validation: text, planAlignment }) }] }
+  }))
 
   registerAppTool(server, 'show_topic', {
     title: 'Show a Loom topic',
@@ -191,11 +213,12 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     inputSchema: z.object({
       oui: z.string().describe('The whole topic as .loom.oui text.'),
       mode: z.enum(['present', 'read']).optional().describe('Open in Present (default) or Read.'),
+      plan: z.unknown().optional().describe('Optional TopicPlan forwarded to the browser for advisory artifact review. Hosted MCP does not compile it.'),
       viewerLink: z.boolean().optional().describe('Also answer with a link that opens the topic in Loom Viewer, for a chat that shows no Loom player.'),
     }),
     _meta: { ui: { resourceUri: APP_URI } },
-  }, async ({ oui, viewerLink }) => {
-    const check = checkTopic?.(oui)
+  }, async ({ oui, viewerLink, plan, mode }) => measured('show_topic', 'delivery', { oui, viewerLink, plan, mode }, async () => {
+    const check = checkTopic?.(oui, plan)
     // Topics shown are kept, so a later chat can open them again (story T3)
     if (store && check?.topicId && check.topicId !== 'pasted') await store.saveTopic({ id: check.topicId, oui }).catch(() => {})
     let text: string
@@ -219,7 +242,7 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     }
     if (!check || check.ok) text += '\n\nNext: if this topic belongs to an established domain, save the exact topic to the learner\'s Drive and update domain.oui following get_storage_guide, unless the learner opted out. Local server memory does not by itself confirm a Drive save. If the connector cannot write, say it is not saved and provide the file.'
     return { content: [{ type: 'text', text }] }
-  })
+  }))
 
   if (options.repository) {
     const repository = options.repository
@@ -234,11 +257,11 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
       description: 'Read the authenticated learner’s durable OUI, provenance, events and derived checkpoint. Available only with an explicitly authenticated storage adapter.',
       inputSchema: z.object({ topicId: z.string().regex(/^[\w-]+$/).max(120) }).strict(),
       annotations: { readOnlyHint: true },
-    }, async ({ topicId }) => answer(() => repository.read(topicId)))
+    }, async ({ topicId }) => measured('read_learning_record', 'persistence', { topicId }, () => answer(() => repository.read(topicId))))
     server.registerTool('write_learning_record', {
       description: 'Versioned write for the authenticated learner. Use the version returned by read_learning_record, or null to create. Conflicts require rereading; never silently overwrite.',
       inputSchema: z.object({ record: LearningRecordSchema, expectedVersion: z.string().max(200).nullable() }).strict(),
-    }, async ({ record, expectedVersion }) => answer(() => repository.write(record, expectedVersion)))
+    }, async ({ record, expectedVersion }) => measured('write_learning_record', 'persistence', { record, expectedVersion }, () => answer(() => repository.write(record, expectedVersion))))
   }
 
   registerLibraryTools(server, store)

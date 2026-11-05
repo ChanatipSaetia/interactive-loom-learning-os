@@ -9,7 +9,7 @@
 import { z } from 'zod'
 import { COMPONENT_LIBRARIES, type ComponentLibrary } from '../../../learning-engine/composition/oui/library'
 import { getCapabilityCatalog } from '../../../learning-engine/composition/oui/capability-catalog'
-import { TopicPlanSchema, validateTopicPlan, readStudioPlan as readPlan, buildStudioPlanMessage as buildMessage } from '../../../learning-engine/composition/oui/topic-plan'
+import { TopicPlanSchema, validateTopicPlan, reviewTopicPlan, readStudioPlan as readPlan, buildStudioPlanMessage as buildMessage } from '../../../learning-engine/composition/oui/topic-plan'
 export { readPlan, buildMessage }
 export type { StudioPlan as Plan, StudioPlanItem as PlanItem } from '../../../learning-engine/composition/oui/topic-plan'
 import { ambiguousComponents, componentClosure, componentEntries } from '../../../learning-engine/composition/oui/assistant-prompt'
@@ -173,7 +173,7 @@ export class EditToolRunner {
     if (name === 'get_loom_capabilities') return { content: JSON.stringify(getCapabilityCatalog()), label: 'Loom capabilities', changeset: this.changeset }
     if (name === 'validate_topic_plan') {
       const diagnostics = validateTopicPlan(parsed.plan, new Set(getCapabilityCatalog().sections.map((section) => section.type)))
-      return { content: JSON.stringify({ valid: diagnostics.length === 0, diagnostics }), label: 'Plan validation', changeset: this.changeset }
+      return { content: JSON.stringify({ valid: diagnostics.length === 0, diagnostics, advisoryDiagnostics: reviewTopicPlan(parsed.plan) }), label: 'Plan validation', changeset: this.changeset }
     }
     if (name === 'describe_components') {
       if (parsed.library !== undefined && !COMPONENT_LIBRARIES.includes(parsed.library as ComponentLibrary)) return { content: 'Error: library must be loom or openui.', label: 'Components (bad library)', changeset: this.changeset }

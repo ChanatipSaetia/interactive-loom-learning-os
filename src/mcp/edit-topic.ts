@@ -17,6 +17,7 @@ import { applyEditBlock, applyOrder, checkProposal, parseEditBlock } from '../co
 import { createTopicSource, parseTopicSource } from '../core/supporting/authoring-editor/workspace/archive'
 import { APP_URI, type LearnerStore } from './server'
 import type { TopicCheck } from './check'
+import { measureTool, type ToolMeasurement } from './measurement'
 
 const DESCRIPTION = `Change a Loom topic shown before (by its topic ID) by sending only what changes, instead of the whole topic again. Each edit names one file (topic.oui, sections/<name>.oui or sections/<name>.narrate.oui) and holds whole statements in that file's syntax: a statement whose name exists replaces it, a new name is added, \`name = DELETE\` removes one. Set create to add a new section file, and add its SectionRef to topic.oui in another edit. Shows the edited topic and answers with any errors to fix.`
 
@@ -49,7 +50,7 @@ export function editTopicSource(topicId: string, oui: string, edits: TopicEdit[]
   return { ok: true, oui: createTopicSource([{ topicId, files, domainId: parsed.domainId }]), changed }
 }
 
-export function registerEditTool(server: McpServer, store: LearnerStore, check: (oui: string) => TopicCheck) {
+export function registerEditTool(server: McpServer, store: LearnerStore, check: (oui: string) => TopicCheck, observe?: (measurement: ToolMeasurement) => void) {
   registerAppTool(server, 'edit_topic', {
     title: 'Edit a Loom topic',
     description: DESCRIPTION,
@@ -62,7 +63,7 @@ export function registerEditTool(server: McpServer, store: LearnerStore, check: 
       })).min(1),
     }),
     _meta: { ui: { resourceUri: APP_URI } },
-  }, async ({ id, edits }) => {
+  }, async ({ id, edits }) => measureTool('edit_topic', 'repair', { id, edits }, async () => {
     const saved = await store.readTopic(id)
     if (!saved) return { content: [{ type: 'text', text: `No saved topic "${id}". Call list_topics for the IDs, or show_topic with the whole topic.` }], isError: true }
     const outcome = editTopicSource(id, saved, edits)
@@ -74,5 +75,5 @@ export function registerEditTool(server: McpServer, store: LearnerStore, check: 
       ...(result.ok ? [] : ['', 'It has errors; the learner sees them in the app. Fix them with edit_topic:', '', result.report!]),
     ].join('\n')
     return { content: [{ type: 'text', text }], structuredContent: { oui: outcome.oui } }
-  })
+  }, observe))
 }

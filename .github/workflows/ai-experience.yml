@@ -7,7 +7,8 @@ permissions:
   contents: read
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    # Playwright's pinned browser build supports Ubuntu 24.04, not 26.04.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,7 +23,9 @@ jobs:
       - run: npm run build:worker
       - run: node --test tests/build/local-mcp.test.mjs tests/build/worker-runtime.test.mjs
       - run: npm run check:worker
-      - run: npx playwright install --with-deps chromium
+      # The supported GitHub image ships Chrome's runtime libraries. Download the
+      # pinned test browser without a redundant, potentially stalled apt upgrade.
+      - run: npx playwright install chromium
       - name: MCP integration and browser checks
         run: |
           npm run mcp:host > /tmp/loom-mcp-host.log 2>&1 &
@@ -39,4 +42,9 @@ jobs:
           name: ai-experience-results
           path: |
             artifacts/ai-experience-evaluation.json
+            artifacts/ai-representation-review.json
+            artifacts/ai-workflow-benchmark.json
+            tests/mcp-host/results/layout-review.json
+            tests/mcp-host/results/layout-failure.json
+            tests/mcp-host/results/layout-*.png
             tests/mcp-host/results/results.json

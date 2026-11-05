@@ -1,4 +1,5 @@
 import { USER_JOURNEY_AUTHORING_GUIDE } from './user-journey-authoring'
+import { AUTHORING_CORE } from './authoring-core'
 import { MENTAL_MODEL_GUIDE } from './mental-model-guide'
 import { BREAKDOWN_TREE_AUTHORING_GUIDE } from './breakdown-tree-authoring'
 import { TIMELINE_AUTHORING_GUIDE } from './timeline-authoring'
@@ -415,7 +416,7 @@ function dropStreamingNotes(text: string): string {
  */
 export function getLoomAuthoringPrompt(): string {
   let prompt = getLoomOUIPrompt({
-    preamble: PREAMBLE + '\n\n' + MENTAL_MODEL_GUIDE,
+    preamble: PREAMBLE + '\n\n' + AUTHORING_CORE + '\n\n' + MENTAL_MODEL_GUIDE,
     examples: [`A complete topic in the single .oui file format:\n\n\`\`\`\n${AUTHORING_EXAMPLE}\`\`\``],
   })
   for (const [from, to] of REWRITES) prompt = replaceOnce(prompt, from, to)

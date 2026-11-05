@@ -13,6 +13,7 @@
     "test": "vitest run",
     "check:worker": "node scripts/check-worker-runtime.mjs",
     "evaluate:offline": "vitest run --config vitest.evaluation.config.ts",
+    "evaluate:workflow": "vite-node --config vitest.evaluation.config.ts scripts/evaluate-workflow.ts",
     "test:e2e": "playwright test",
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",

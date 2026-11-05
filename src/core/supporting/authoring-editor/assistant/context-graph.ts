@@ -45,6 +45,8 @@ export function dependencyClosure(graph: ContextGraph, roots: readonly string[],
 import { z } from 'zod'
 import { textHash } from './statements'
 import { scan } from '../oui-language/scanner'
+import { TopicPlanSchema, validateTopicPlan, type TopicPlan } from '../../../learning-engine/composition/oui/topic-plan'
+import { OUI_SECTION_TYPES } from '../../../learning-engine/composition/oui/library'
 
 /** Sources must be explicitly obtained by the assistant using its authorized connector. */
 export const TopicContextInput = z.object({
@@ -54,11 +56,13 @@ export const TopicContextInput = z.object({
   maxNodes: z.number().int().min(1).max(200).default(100),
   maxChars: z.number().int().min(2048).max(32768).default(16384),
   expectedHash: z.string().max(120).optional(),
+  plan: TopicPlanSchema.refine((plan) => JSON.stringify(plan).length <= 32768, 'Plan context limited to 32 KiB').optional(),
+  expectedPlanRevision: z.string().max(120).optional(),
 }).strict()
 export type TopicContextRequest = z.input<typeof TopicContextInput>
 
 export function resolveTopicContext(input: TopicContextRequest) {
-  const { files, roots, maxNodes, maxChars, expectedHash } = TopicContextInput.parse(input)
+  const { files, roots, maxNodes, maxChars, expectedHash, plan, expectedPlanRevision } = TopicContextInput.parse(input)
   const entries = Object.entries(files).sort(([a], [b]) => a.localeCompare(b))
   const hash = `context-v1:${textHash(JSON.stringify(entries))}`
   const result = {
@@ -67,6 +71,12 @@ export function resolveTopicContext(input: TopicContextRequest) {
     sources: [] as Array<{ id: string; file: string; statement: string; line: number; text: string }>,
     components: [] as string[],
     componentReferences: [] as Array<{ library: ComponentLibrary; name: string }>,
+    designContext: null as null | { planRevision: string; sourceHash: string; goal: string; sections: TopicPlan['sections']; objectives: TopicPlan['objectives']; sources: TopicPlan['sources'] },
+    /** Bounded expansion addresses, not an exhaustive unvisited transitive closure. */
+    omittedReferences: [] as string[],
+    omittedReferenceCount: 0,
+    omittedReferencesTruncated: false,
+    omissionScope: 'dependency-frontier' as const,
     diagnostics: [] as Array<{ code: string; reference: string }>,
   }
   if (expectedHash && expectedHash !== hash) {
@@ -104,16 +114,54 @@ export function resolveTopicContext(input: TopicContextRequest) {
     pending.push(...(links.get(id) ?? []).filter((next) => !visited.has(next)))
   }
   if (pending.some((id) => !visited.has(id))) result.truncated = true
+  const omitted = new Set(pending.filter((id) => !visited.has(id)))
+  const updateOmissions = () => {
+    result.omittedReferenceCount = omitted.size
+    result.omittedReferences = [...omitted].slice(0, 20)
+    result.omittedReferencesTruncated = omitted.size > result.omittedReferences.length
+  }
+  updateOmissions()
+  if (plan) {
+    const planRevision = `plan-v1:${textHash(JSON.stringify(plan))}`
+    if (validateTopicPlan(plan, new Set([...OUI_SECTION_TYPES.values(), 'openui'])).length) result.diagnostics.push({ code: 'INVALID_PLAN', reference: 'Validate the supplied plan first' })
+    else if (expectedPlanRevision && expectedPlanRevision !== planRevision) result.diagnostics.push({ code: 'STALE_PLAN', reference: expectedPlanRevision })
+    else {
+      const selectedFiles = new Set([...roots.map((root) => root.split('#')[0]), ...result.sources.map((source) => source.file)])
+      const sections = plan.sections.filter((section) => selectedFiles.has(`sections/${section.id}.oui`) || selectedFiles.has(`sections/${section.id}.narrate.oui`))
+      const objectiveIds = new Set(sections.flatMap((section) => section.objectiveRefs))
+      const evidenceIds = new Set(sections.flatMap((section) => section.evidenceRefs ?? []))
+      result.designContext = { planRevision, sourceHash: hash, goal: plan.goal, sections, objectives: plan.objectives.filter((objective) => objectiveIds.has(objective.id)), sources: plan.sources?.filter((source) => evidenceIds.has(source.id)) }
+    }
+  }
+  if (JSON.stringify(result).length > maxChars && result.designContext) {
+    result.designContext = null
+    result.truncated = true
+    result.diagnostics.push({ code: 'DESIGN_CONTEXT_OMITTED', reference: 'Increase maxChars or narrow the plan/source selection' })
+  }
   if (result.diagnostics.length > 20) result.truncated = true
   result.diagnostics = result.diagnostics.slice(0, 20)
   // Budget the complete JSON response, never cut a statement in half.
   while (JSON.stringify(result).length > maxChars && (result.sources.length || result.overview.length || result.components.length || result.componentReferences.length || result.diagnostics.length)) {
     result.truncated = true
-    if (result.sources.length) result.sources.pop()
+    if (result.sources.length) {
+      omitted.add(result.sources.pop()!.id)
+      updateOmissions()
+    }
     else if (result.overview.length) result.overview.pop()
     else if (result.components.length) result.components.pop()
-    else if (result.componentReferences.length) result.componentReferences.pop()
+    else if (result.componentReferences.length) {
+      const ref = result.componentReferences.pop()!
+      omitted.add(`component:${ref.library}:${ref.name}`)
+      updateOmissions()
+    }
     else result.diagnostics.pop()
+  }
+  // Omission metadata itself is budgeted; count remains explicit when addresses
+  // cannot all fit. Expand source addresses with the same current files and hash;
+  // component addresses identify library-scoped authoring-guide requests.
+  while (JSON.stringify(result).length > maxChars && result.omittedReferences.length) {
+    result.omittedReferences.pop()
+    result.omittedReferencesTruncated = true
   }
   if (result.truncated) {
     const diagnostic = { code: 'CONTEXT_TRUNCATED', reference: 'Increase budget or request fewer roots' }

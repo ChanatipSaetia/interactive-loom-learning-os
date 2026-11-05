@@ -17,6 +17,7 @@ import { checkTopic, checkSection } from './check'
 import { registerEditTool } from './edit-topic'
 import { defaultMemoryDir, folderStore } from './memory-folder'
 import localAppHtml from 'virtual:loom-local-app'
+import type { ToolMeasurement } from './measurement'
 
 /** The part of Node's `process` this file uses (Node's types are not part of this project). */
 declare const process: { argv: string[]; env: Record<string, string | undefined> }
@@ -31,12 +32,13 @@ const options = {
   store: args.includes('--no-memory') ? undefined : folderStore(memoryDir),
   check: checkTopic,
   checkSection,
+  onMeasurement: process.env.LOOM_MEASURE_TOOLS === '1' ? (measurement: ToolMeasurement) => console.error(JSON.stringify(measurement)) : undefined,
 }
 
 /** The server, with edit_topic when there is a memory folder to keep topics in. */
 function loomServer() {
   const server = createLoomServer(options)
-  if (options.store) registerEditTool(server, options.store, checkTopic)
+  if (options.store) registerEditTool(server, options.store, checkTopic, options.onMeasurement)
   return server
 }
 

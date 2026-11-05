@@ -2,6 +2,11 @@
 
 AI clients own research, reasoning, planning, generation, tutoring and repair. Loom offers deterministic contracts, focused context, validation, rendering and durable progress. No intent-classifier service or server-hosted model orchestration is needed.
 
+The [Issue 193 continuation guide](completion-193.md) describes progressive core
+contracts, selected plan context, revision-aware evidence, browser layout review
+and provider-neutral evaluation. Verification notes at the end of this document
+describe the earlier merged increment, not the latest CI run.
+
 | Intent | Deterministic workflow |
 | --- | --- |
 | learn | Read tutor guide and learner-authorized progress; discover capabilities; let the assistant plan a short lesson; validate and show it. |
@@ -14,8 +19,8 @@ AI clients own research, reasoning, planning, generation, tutoring and repair. L
 
 ## MCP additions and compatibility
 
-- `get_loom_capabilities`: schemaVersion 1 section/mental-model catalog; also generated at `/llm/loom-capabilities.json`.
-- `get_authoring_guide`: existing `sections` behavior preserved. Optional `components` requests exact canonical contracts and signature dependencies; this mode takes precedence if both are supplied. Unknown names are reported. Ask for core authoring rules separately.
+- `get_loom_capabilities`: schemaVersion 1 section/mental-model catalog; also generated at `/llm/loom-capabilities.json`. Optional `detail: "index"` returns compact initial discovery; omitted detail preserves the full catalog/plan schema. Full entries include learner actions, Read/Present constraints and evidence boundaries from shared mental-model metadata. MCP adds deployment flags from actual injected storage/compiler adapters; these flags do not verify external connector permissions.
+- `get_authoring_guide`: existing text/`sections`/`components` behavior preserved. Optional `detail` returns structured index/focused/full contracts with compact core rules and `contractVersion`; `knownContractVersion` deduplicates unchanged core guidance and `forceRefresh` restores it explicitly. Unknown/stale versions refresh without session memory. Library-scoped components include signature dependencies.
 - `validate_topic_plan`: runtime-validated version-1 plans, objective coverage/prerequisites/representations and optional `sources` with evidence references. A valid linkage does not establish factual correctness.
 - `get_topic_context`: source files supplied explicitly from the assistant's authorized connector or latest editor buffers; no URL or path fetching. Roots are `file#statement`, or file for root. Empty roots give overview. Responses include version/hash, complete source statements, component names and truncation/missing-reference diagnostics. Limits: 100 files, 32 KiB per file, 128 KiB total, 200 dependency nodes, 32 KiB JSON output. These are JS character budgets, not token counts. Hashes are noncryptographic change hints, not security or write tokens. No automatic cross-host cache.
 - `validate_section`: local CLI only, or an explicitly injected browser/compiler implementation. Accepts `source`, a section `file` and current `sectionSource` for narration. Uses the existing gateway; warnings are distinct from errors. Full-topic validation remains available locally.
@@ -23,6 +28,43 @@ AI clients own research, reasoning, planning, generation, tutoring and repair. L
 - `read_learning_record` / `write_learning_record`: only with an explicitly supplied authenticated repository. Absent from public hosted MCP. Input cannot choose a learner identity.
 
 Existing topic formats, show_topic, Viewer, Studio and local learner-folder APIs remain compatible. Existing local topic writes retain their legacy semantics; atomic version guarantees apply only to the opt-in record API.
+
+When context is truncated, `omittedReferences` gives bounded expansion addresses
+and `omittedReferenceCount` counts known omitted addresses. Source addresses can
+be requested as new roots with the same current files and `expectedHash`;
+`component:<library>:<name>` addresses call for scoped `get_authoring_guide`
+retrieval. `omissionScope: "dependency-frontier"` means deeper dependencies may
+be discovered during expansion. `omittedReferencesTruncated` discloses when the
+address list itself could not fit. Counts do not claim to enumerate an unvisited
+transitive closure. Whole statements and omission metadata share the JSON budget.
+
+## Plan-to-artifact review
+
+Checkpoint `currentSectionId` and `resume.item` identify the latest observed
+location, not a next recommendation. Legacy events without source revisions keep
+`resume.sourceVerified:false`. Versioned record checkpoints require matching
+`topicVersion` and an existing source target; stale/unknown events are explicitly
+excluded from current objective evidence. Optional plan assessment bindings expose
+observed objective progress without changing historical aggregate counts or
+claiming general mastery. Empty/current-evidence-free histories return no verified
+resume location. See the continuation guide for completion semantics.
+
+Local `validate_topic({oui, plan})` optionally compares a runtime-validated
+TopicPlan with the actual Viewer compiler output. It returns JSON with `valid`
+(OUI/narration validity), `validation`, and a separate versioned `planAlignment`.
+The latter reports topic identity, missing/unplanned sections and representation
+drift with section/file repair targets and an exact-source change hash. Correct
+connected prose and OpenUI remain valid choices; there is no section quota.
+`aligned` means those explicit structural claims match, not that the activity,
+objective learning, evidence truth or teaching quality has been established.
+Layout remains `not-measured` until a browser actually measures it.
+
+Calls without `plan` preserve the existing text response. Missing/invalid plans,
+failed compilation or an injected legacy checker cannot establish alignment.
+`checkTopic` and `reviewPlanArtifact` are reusable in local/browser validation;
+the hosted Worker still omits full compilation and `validate_topic`. App delivery
+optionally accepts a plan and now measures real browser geometry separately;
+neither mechanism grades pedagogy or changes legacy `show_topic` requests.
 
 ## Source of truth and trust
 

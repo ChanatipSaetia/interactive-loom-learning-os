@@ -1,6 +1,19 @@
 # AI experience pipeline review: representation choice
 
+Latest implementation details and remaining runtime/evaluation boundaries are in
+the [Issue 193 completion guide](completion-193.md). The original findings below
+remain useful design history, not a current missing-feature checklist.
+
 Implementation status: the first increment now adds a shared host-routed workflow/TopicPlan and library-scoped retrieval, including Studio adapters and automatic context references. See [workflow contracts](workflows.md). The gaps below describe the reviewed baseline; later artifact-layout review and external-model evaluations remain future work.
+
+Issue 193 continuation adds explicit learner-action/presentation/evidence discovery,
+an optional compact index, local/browser plan-to-compiled-representation review,
+bounded context omission addresses, observed resume locations and a synthetic
+representation review corpus. See [verified rebaseline and limits](rebaseline-193.md).
+The original gap table below is historical: orchestration and namespace gaps
+were already merged before this continuation. Plan review now detects structural
+representation drift; browser layout and external teaching-quality evaluation
+remain unimplemented. No deterministic test claims to choose the best renderer.
 
 ## Finding
 

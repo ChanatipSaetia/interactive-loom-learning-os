@@ -21,6 +21,9 @@ import { LearnerMemoryProvider, ProgressProvider, progressNote, progressNoteMess
 import { appMemoryAdapter } from './memory'
 import { PresentMode, kindLabel, preloadPresenters, unlockSpeech, type PresentSection } from '../core/supporting/presentation'
 import { readTopicText } from '../core/supporting/authoring-editor/workspace/archive'
+import { topicSourceVersion } from '../core/learning-engine/composition/oui/topic-version'
+import { reviewPlanArtifact, type PlanAlignment } from '../core/learning-engine/composition/oui/plan-artifact'
+import { reviewRenderedLayout } from '../core/supporting/presentation/layout-review'
 import { compileViewerTopic, loadErrorReport, noteTopicOf, topicErrorReport, type ViewerTopic } from '../viewer/compileTopic'
 import { TopicView } from '../viewer/ViewerApp'
 import { topicLinkUrl } from '../viewer/topic-link'
@@ -59,7 +62,7 @@ const loomOf = (result: { structuredContent?: unknown } | null | undefined): Loo
 }
 
 /** What the tool input holds once it has been read, with its source for Continue in Viewer. */
-type Loaded = ({ topic: ViewerTopic; report: string | null } | { topic: null; report: string }) & { oui?: string }
+type Loaded = ({ topic: ViewerTopic; report: string | null; planAlignment?: PlanAlignment } | { topic: null; report: string }) & { oui?: string }
 
 /** Events from the app carry this device name; the local server stamps its own when it keeps them. */
 const DEVICE = 'mcp-app'
@@ -134,10 +137,10 @@ function ThemePicker({ themeId, onPick }: { themeId: string; onPick: (id: string
 }
 
 /** Read `.loom.oui` text as Loom Viewer does (decision 184). */
-export function loadTopic(oui: string): Loaded {
+export function loadTopic(oui: string, plan?: unknown): Loaded {
   try {
     const topic = compileViewerTopic(readTopicText(oui)[0])
-    return { topic, report: topicErrorReport(topic) }
+    return { topic, report: topicErrorReport(topic), planAlignment: reviewPlanArtifact(topic, plan) }
   } catch (e) {
     return { topic: null, report: loadErrorReport(e instanceof Error ? e.message : String(e)) }
   }
@@ -191,7 +194,7 @@ export function McpApp({ app }: { app: App }) {
   useEffect(() => {
     app.ontoolinputpartial = () => setWriting(true)
     app.ontoolinput = (params) => {
-      const args = (params.arguments ?? {}) as { oui?: unknown; mode?: unknown }
+      const args = (params.arguments ?? {}) as { oui?: unknown; mode?: unknown; plan?: unknown }
       // open_topic and edit_topic send the topic in their result, not their input
       if (typeof args.oui !== 'string') {
         setWriting(true)
@@ -199,7 +202,7 @@ export function McpApp({ app }: { app: App }) {
       }
       setWriting(false)
       const oui = args.oui
-      setLoaded({ ...loadTopic(oui), oui })
+      setLoaded({ ...loadTopic(oui, args.plan), oui })
       setStartMode(args.mode === 'read' ? 'read' : 'present')
       setView('card')
       setAsked(false)
@@ -267,10 +270,42 @@ export function McpApp({ app }: { app: App }) {
 
   // The chat's model learns about errors at once, without the learner pressing anything (decision 184)
   useEffect(() => {
-    if (!loaded?.report || told.current) return
+    if (!loaded || told.current) return
+    const report = loaded.report ?? (loaded.topic && loaded.planAlignment?.diagnostics.length ? JSON.stringify({ schemaVersion: 1, type: 'plan.review', planAlignment: loaded.planAlignment }) : null)
+    if (!report) return
     told.current = true
-    void app.updateModelContext(textOf(loaded.report)).catch(() => {})
+    void app.updateModelContext(textOf(report)).catch(() => {})
   }, [app, loaded])
+
+  // One bounded advisory update per topic/view/viewport signature. This updates
+  // host context only; it never sends a user message or starts an agent turn.
+  const layoutReports = useRef(new Set<string>())
+  useEffect(() => {
+    if (!loaded?.topic || (view !== 'read' && view !== 'present')) return
+    const topic = loaded.topic
+    let cancelled = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const inspect = () => {
+      const root = document.querySelector<HTMLElement>(view === 'read' ? '[data-testid="mcp-read-scroll"]' : '[data-testid="mcp-present"] .mcp-stage')
+      if (!root || cancelled) return
+      const review = reviewRenderedLayout(root)
+      const scene = Array.from(root.querySelectorAll('[data-focus], [data-beat][data-shown]')).slice(0, 20).map((el) => [el.getAttribute('data-oui-anchor'), el.getAttribute('data-beat'), el.getAttribute('data-focus')])
+      const signature = `${topicSourceVersion(topic)}:${view}:${review.viewport.width}:${review.viewport.height}:${JSON.stringify(scene)}`
+      if (layoutReports.current.has(signature)) return
+      if (layoutReports.current.size >= 12) layoutReports.current.delete(layoutReports.current.values().next().value!)
+      layoutReports.current.add(signature)
+      root.dataset.loomLayoutReview = JSON.stringify(review)
+      const alignment = loaded.planAlignment
+      if (review.diagnostics.length || alignment?.diagnostics.length) void app.updateModelContext(textOf(JSON.stringify({ schemaVersion: 1, type: 'presentation.review', topicVersion: topicSourceVersion(topic), view, layout: review, planAlignment: alignment }))).catch(() => {})
+    }
+    const schedule = () => { if (timer) clearTimeout(timer); timer = setTimeout(inspect, 250) }
+    const root = document.querySelector<HTMLElement>(view === 'read' ? '[data-testid="mcp-read-scroll"]' : '[data-testid="mcp-present"] .mcp-stage')
+    const observer = typeof MutationObserver === 'undefined' ? null : new MutationObserver(schedule)
+    if (root) observer?.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-focus', 'data-shown', 'aria-hidden'] })
+    void (document.fonts?.ready ?? Promise.resolve()).then(schedule)
+    window.addEventListener('resize', schedule)
+    return () => { cancelled = true; observer?.disconnect(); if (timer) clearTimeout(timer); window.removeEventListener('resize', schedule) }
+  }, [app, loaded, view])
 
   const topic = loaded?.topic ?? null
   const presentSections = useMemo(() => (topic ? presentSectionsOf(topic) : []), [topic])
@@ -321,7 +356,7 @@ export function McpApp({ app }: { app: App }) {
     const key = `${topic?.topicId}/${name}`
     if (!topic || !name || key === lastSeen.current) return
     lastSeen.current = key
-    void memory.append([stampEvent({ topic: topic.topicId, item: `sections/${name}.oui`, kind: 'seen' }, DEVICE)])
+    void memory.append([stampEvent({ topic: topic.topicId, topicVersion: topicSourceVersion(topic), item: `sections/${name}.oui`, kind: 'seen' }, DEVICE)])
   }, [memory, topic])
 
   /** Save my progress (decision 199): the chat saves the note with its drive connector, the learner approves it there. */

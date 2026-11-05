@@ -83,6 +83,15 @@ describe('Loom MCP server', () => {
     expect(quiz).not.toMatch(/^Flowchart\(/m)
   })
 
+  it('supports compact discovery and truthfully reports injected deployment capabilities', async () => {
+    const index = JSON.parse(textOf(await client.callTool({ name: 'get_loom_capabilities', arguments: { detail: 'index' } })))
+    expect(index).not.toHaveProperty('planSchema')
+    expect(index.deployment).toEqual({ storageAvailable: false, serverValidationAvailable: true })
+    const full = JSON.parse(textOf(await client.callTool({ name: 'get_loom_capabilities', arguments: {} })))
+    expect(full.planSchema).toBeTruthy()
+    expect(full.sections.find((s: { type: string }) => s.type === 'text').learningBehavior.learnerAction).toContain('connected explanation')
+  })
+
   it('lets a chat write short topics: no Intro or quiz required, a full lesson when asked', async () => {
     const guide = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { sections: ['flowchart'] } }))
     expect(guide).toContain('Size the topic to the request. A short topic')

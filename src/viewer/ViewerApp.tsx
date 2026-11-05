@@ -12,6 +12,7 @@ import { ThemeToggle } from '../core/ui-system/motion/theme-toggle'
 import { AudioToggle } from '../core/delivery/web-app-shell/AudioToggle'
 import { LoomToolsNav } from '../core/delivery/web-app-shell/LoomToolsNav'
 import { HUDDrawer, SectionRenderer } from '../core/delivery/web-app-shell/TopicShell'
+import { topicSourceVersion } from '../core/learning-engine/composition/oui/topic-version'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
 import { ProgressProvider, mergeEvents, parseJSONL, progressNote, progressNoteMessage, toJSONL, useLearnerMemory, useSectionEventRecorder, type LearnerEvent } from '../core/supporting/learner-progress'
 import type { SectionConfig } from '../core/learning-engine/registry'
@@ -387,7 +388,7 @@ export function ViewerApp() {
     const key = `${topic?.topicId}/${name}`
     if (memory && topic && name && key !== lastSeen.current) {
       lastSeen.current = key
-      memory.record({ topic: topic.topicId, item: `sections/${name}.oui`, kind: 'seen' })
+      memory.record({ topic: topic.topicId, topicVersion: topicSourceVersion(topic), item: `sections/${name}.oui`, kind: 'seen' })
     }
   }, [memory, topic])
   const exitPresent = useCallback((sectionIndex: number) => {
@@ -832,7 +833,7 @@ export function TopicView({ topic }: { topic: ViewerTopic }) {
             {topic.sections.map((section, idx) => section.config && (
               <SectionErrorBoundary key={section.name} sectionName={String(section.config.props.title ?? section.name)}>
                 <PickSection file={`sections/${section.name}.oui`} label={String(section.config.props.title ?? section.name)} sourceMap={section.sourceMap}>
-                  <RecordedSection topicId={topic.topicId} name={section.name} config={section.config} sectionIndex={idx} />
+                  <RecordedSection topicId={topic.topicId} topicVersion={topicSourceVersion(topic)} name={section.name} config={section.config} sectionIndex={idx} />
                 </PickSection>
               </SectionErrorBoundary>
             ))}
@@ -846,8 +847,8 @@ export function TopicView({ topic }: { topic: ViewerTopic }) {
 }
 
 /** A section in Read mode whose answers go to learner memory. */
-function RecordedSection({ topicId, name, config, sectionIndex }: { topicId: string; name: string; config: SectionConfig; sectionIndex: number }) {
-  const onEvent = useSectionEventRecorder(topicId, name)
+function RecordedSection({ topicId, topicVersion, name, config, sectionIndex }: { topicId: string; topicVersion: string; name: string; config: SectionConfig; sectionIndex: number }) {
+  const onEvent = useSectionEventRecorder(topicId, name, topicVersion)
   return <SectionRenderer config={config} sectionIndex={sectionIndex} onEvent={onEvent} />
 }
 

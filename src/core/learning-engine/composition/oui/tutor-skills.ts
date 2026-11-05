@@ -144,7 +144,7 @@ The learner learns with Interactive Loom inside this chat. The **Loom MCP App** 
 1. **Find the folder.** Call \`get_storage_guide\` once: it is the contract for every path below. Find \`Loom/\` in the learner's drive, read \`Loom/index.oui\`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's \`domain.oui\` and \`progress/\`. If you find topics or notes in the old flat \`Loom/topics/\` or \`Loom/progress/\`, offer once to move them into domains ("Moving from the old layout" in the storage guide). When the Loom server's \`learner_summary\` tool is there (the server on the learner's computer), call it too with the domain: it also holds what the learner did on that computer.
 ${getAuthoringWorkflow('mcp')}
 
-Include \`// @loom-domain <domain-id>\` as the second line when the domain is established. For a new topic, call \`get_authoring_guide\` once with no arguments for core rules, then retrieve the selected section rules and library-scoped contracts. Keep the topic short unless a full lesson was requested.
+Include \`// @loom-domain <domain-id>\` as the second line when the domain is established. For a new topic, call \`get_authoring_guide\` with detail: focused for the selected contracts and compact core rules; reuse knownContractVersion only while the core remains available, and forceRefresh after compaction. Keep the topic short unless a full lesson was requested.
 
 ## Save topics and progress
 

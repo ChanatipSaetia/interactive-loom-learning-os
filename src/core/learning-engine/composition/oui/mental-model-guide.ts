@@ -29,6 +29,32 @@ export const SECTION_MENTAL_MODELS = [
   { type: 'openui', model: 'Composed visual explanation, comparison and data', question: 'Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.' },
 ] as const
 
+/** Discovery evidence, not a renderer ranking or proof of learning. */
+export const SECTION_LEARNING_BEHAVIORS: Record<typeof SECTION_MENTAL_MODELS[number]['type'], {
+  learnerAction: string; presentationConstraint: string; evidenceBoundary: string
+}> = {
+  intro: { learnerAction: 'Read the purpose and roadmap.', presentationConstraint: 'Orient attention; keep the opening focused.', evidenceBoundary: 'Reading is engagement, not demonstrated understanding.' },
+  text: { learnerAction: 'Read a connected explanation or argument.', presentationConstraint: 'Keep prose readable in Read and Present; check long paragraphs at phone width.', evidenceBoundary: 'Prose can be the right representation; viewing it is not assessment.' },
+  bullets: { learnerAction: 'Inspect key points and supporting details.', presentationConstraint: 'Use documented item beats; avoid turning every item into a paragraph wall.', evidenceBoundary: 'A checklist presentation does not demonstrate procedural skill.' },
+  flashcards: { learnerAction: 'Try recall, then flip to inspect a definition or example.', presentationConstraint: 'Present demonstrates front/back; use Read for learner-controlled recall.', evidenceBoundary: 'A flip records exposure, not correctness of unauthored recall.' },
+  'image-gallery': { learnerAction: 'Inspect and compare visual examples.', presentationConstraint: 'Check image labels and legibility at the actual viewport.', evidenceBoundary: 'Visual inspection alone does not establish recognition accuracy.' },
+  'taxonomy-browser': { learnerAction: 'Select categories and inspect their distinctions.', presentationConstraint: 'Use focused category beats instead of a dense classification dump.', evidenceBoundary: 'Category exploration is engagement, not a classification test.' },
+  'concept-map': { learnerAction: 'Inspect concepts and their labelled relationships.', presentationConstraint: 'Check that labels and connections remain readable at phone width.', evidenceBoundary: 'A displayed relationship does not show the learner can explain it.' },
+  'pillar-layer': { learnerAction: 'Inspect layers and what each foundation supports.', presentationConstraint: 'Keep layer labels short and inspect the complete stack in Read.', evidenceBoundary: 'Layer inspection alone does not demonstrate dependency reasoning.' },
+  flowchart: { learnerAction: 'Step through events, responsibilities and handoffs in the appropriate view.', presentationConstraint: 'Select the documented process view and inspect graph labels at the viewport.', evidenceBoundary: 'Stepping through a process is engagement; test application separately.' },
+  'user-journey': { learnerAction: 'Inspect stages, goals, friction and improvements in a person’s journey.', presentationConstraint: 'Focus on one stage at a time; check horizontal content remains reachable.', evidenceBoundary: 'Stage selection is exploration, not evidence of diagnosing friction.' },
+  timeline: { learnerAction: 'Inspect start times, durations, overlap and waiting.', presentationConstraint: 'Time geometry must use authored measurements; verify labels and scale.', evidenceBoundary: 'Selection is exploration; interpretation needs a learner response.' },
+  'breakdown-tree': { learnerAction: 'Explore how a quantity or probability divides through branches.', presentationConstraint: 'Preserve visible totals and branch labels; inspect deep trees in Read.', evidenceBoundary: 'Expansion is engagement; it does not establish quantitative reasoning.' },
+  'tradeoff-sandbox': { learnerAction: 'Compare options, strengths, costs and suitability for a situation.', presentationConstraint: 'Present guides option comparisons; Read supports learner exploration.', evidenceBoundary: 'Exploring options does not prove a justified decision.' },
+  'formula-sandbox': { learnerAction: 'Vary inputs and observe authored calculated outputs.', presentationConstraint: 'Present demonstrates chosen inputs; Read is needed for learner experiments.', evidenceBoundary: 'Slider movement is engagement, not correctness or causal understanding.' },
+  'decision-tree': { learnerAction: 'Answer branching questions to inspect a rule-based recommendation.', presentationConstraint: 'Present demonstrates a path; Read lets the learner choose branches.', evidenceBoundary: 'A reached recommendation is not an assessment score.' },
+  scenario: { learnerAction: 'Choose authored decisions and inspect consequences.', presentationConstraint: 'Present demonstrates paths; Read permits learner decisions.', evidenceBoundary: 'An explored consequence is not independently verified mastery.' },
+  quiz: { learnerAction: 'Submit an answer and inspect authored feedback.', presentationConstraint: 'Present demonstrates answers; Read captures learner attempts.', evidenceBoundary: 'Explicit correct/wrong attempts are evidence; views and stage demonstrations are not mastery.' },
+  'reflection-sequence': { learnerAction: 'Reconstruct the order of supplied steps and check the answer.', presentationConstraint: 'Present demonstrates reconstruction; Read supports learner attempts.', evidenceBoundary: 'Correctness concerns this authored sequence, not general mastery.' },
+  'reflection-template': { learnerAction: 'Complete an explanation from supplied concepts and sentence blanks.', presentationConstraint: 'Present demonstrates a completed explanation; use Read for attempts.', evidenceBoundary: 'Explicit results concern this exercise, not independent free-text reasoning.' },
+  openui: { learnerAction: 'Inspect or interact with an authored composition of cards, diagrams, tables or charts.', presentationConstraint: 'Use supported child beats and narration targets; measure dense tables/charts at phone width.', evidenceBoundary: 'Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison.' },
+}
+
 const FLOWCHART_MODELS = [
   ['Event Storming', 'Event → policy → command → system → resulting event; explain triggers and rules.'],
   ['System Architecture', 'Components, their responsibilities and their connections.'],

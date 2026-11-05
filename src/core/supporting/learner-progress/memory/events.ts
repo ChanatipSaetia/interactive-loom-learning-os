@@ -16,6 +16,7 @@ export interface LearnerEvent {
   device: string
   /** Topic ID. */
   topic: string
+  topicVersion?: string
   /** What it is about: a section file (`sections/quiz.oui`), or an item in one (`sections/quiz.oui#q2`). */
   item: string
   kind: LearnerEventKind
@@ -43,6 +44,7 @@ export function isLearnerEvent(value: unknown): value is LearnerEvent {
     && typeof e.topic === 'string' && typeof e.item === 'string' && KINDS.has(e.kind)
     && e.id.length > 0 && e.id.length <= 200 && e.topic.length > 0 && e.topic.length <= 120 && e.item.length > 0 && e.item.length <= 500
     && e.device.length > 0 && e.device.length <= 200 && Number.isFinite(Date.parse(e.t))
+    && (e.topicVersion === undefined || (typeof e.topicVersion === 'string' && e.topicVersion.length > 0 && e.topicVersion.length <= 200))
     && (e.kind === 'answered' ? e.result === 'correct' || e.result === 'wrong' : e.result === undefined)
 }
 
