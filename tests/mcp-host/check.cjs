@@ -271,6 +271,30 @@ async function open(browser, query) {
     await shot(page, 'hosted-present')
   }
 
+  // Geometry comes from the production browser auditor, never jsdom/compiler guesses.
+  results.layout = []
+  for (const width of [380, 768, 1024]) {
+    for (const mode of ['present', 'read']) {
+      const { page, app } = await open(browser, '')
+      await page.setViewportSize({ width, height: 800 })
+      await app.locator(`[data-testid=${mode === 'present' ? 'mcp-play' : 'mcp-other-mode'}]`).click()
+      const root = app.locator(mode === 'present' ? '[data-testid=mcp-present] .mcp-stage' : '[data-testid=mcp-read-scroll]')
+      await root.waitFor({ timeout: 15000 })
+      let review
+      for (let attempt = 0; attempt < 40 && !review; attempt++) {
+        const value = await root.getAttribute('data-loom-layout-review')
+        if (value) review = JSON.parse(value)
+        else await page.waitForTimeout(250)
+      }
+      assert.ok(review?.measured, `Missing real layout measurement at ${width}/${mode}`)
+      assert.ok(review.checkedElements > 0)
+      assert.equal(review.teachingQuality, 'not-evaluated')
+      results.layout.push({ width, mode, ...review })
+      await shot(page, `layout-${width}-${mode}`)
+      await page.close()
+    }
+  }
+  fs.writeFileSync(path.join(out, 'layout-review.json'), JSON.stringify({ schemaVersion: 1, kind: 'browser-geometry', snapshots: results.layout }, null, 2) + '\n')
   fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify(results, null, 2) + '\n')
   // Fail on broken behavior rather than treating logged observations as a passing check.
   assert.ok(!results.present.errors.some((error) => error.startsWith('pageerror:')))
