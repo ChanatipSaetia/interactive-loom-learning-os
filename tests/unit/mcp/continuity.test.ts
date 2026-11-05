@@ -90,6 +90,8 @@ describe('authenticated cross-client continuity', () => {
       { ...record, topicId: 'other' },
       { ...record, events: [{ ...record.events[0], topic: 'other' }] },
       { ...record, events: [{ ...record.events[0], privateTranscript: 'must not store' }] },
+      { ...record, oui: '// @loom-topic demo\n' },
+      { ...record, oui: record.oui + '\n// @loom-topic second\n// === topic.oui ===\nroot = Topic("Other", "C", "D", [])' },
     ]) await expect(repository.write(invalid, null)).rejects.toThrow()
   })
 })

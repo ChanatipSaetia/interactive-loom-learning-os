@@ -22,6 +22,12 @@ export const LearningRecordSchema = z.object({
 }).strict().superRefine((record, context) => {
   const id = /^\/\/\s*@loom-topic\s+([\w-]+)\s*$/m.exec(record.oui)?.[1]
   if (id !== record.topicId) context.addIssue({ code: 'custom', path: ['oui'], message: 'Topic header must match topicId' })
+  try {
+    const topics = readTopicText(record.oui)
+    if (topics.length !== 1 || topics[0].topicId !== record.topicId || !topics[0].files['topic.oui']) context.addIssue({ code: 'custom', path: ['oui'], message: 'Store exactly one canonical topic bundle with topic.oui' })
+  } catch {
+    context.addIssue({ code: 'custom', path: ['oui'], message: 'Topic bundle could not be read; repair it before saving' })
+  }
   if (record.plan && (record.plan.topicId !== record.topicId || validateTopicPlan(record.plan, new Set([...OUI_SECTION_TYPES.values(), 'openui'])).length)) context.addIssue({ code: 'custom', path: ['plan'], message: 'Plan must be valid and belong to this topic' })
   if (record.events.some((event) => event.topic !== record.topicId)) context.addIssue({ code: 'custom', path: ['events'], message: 'Events must belong to this topic' })
   if (validateEvidenceReferences(record.sources, []).length) context.addIssue({ code: 'custom', path: ['sources'], message: 'Invalid provenance locators' })
