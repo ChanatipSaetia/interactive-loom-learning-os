@@ -1,5 +1,6 @@
 import { validateOUISection, validateOUINarration } from '../core/learning-engine/validation/oui-gateway'
 import { fileStatements } from '../core/supporting/authoring-editor/assistant/statements'
+import { reviewPlanArtifact, type PlanAlignment } from '../core/learning-engine/composition/oui/plan-artifact'
 /**
  * The full topic check behind `validate_topic` (decision 184): the same steps
  * as Loom Viewer. Kept apart from `server.ts` so the hosted endpoint, which
@@ -16,10 +17,12 @@ export interface TopicCheck {
   sections: string[]
   /** The fix request for the model, or null when the topic has no errors. */
   report: string | null
+  /** Advisory design evidence, separate from OUI validity. */
+  planAlignment?: PlanAlignment
 }
 
 /** Read and validate `.loom.oui` text with the same steps as Loom Viewer (decision 184). */
-export function checkTopic(oui: string): TopicCheck {
+export function checkTopic(oui: string, plan?: unknown): TopicCheck {
   let topics
   try {
     topics = readTopicText(oui)
@@ -34,6 +37,7 @@ export function checkTopic(oui: string): TopicCheck {
     title: topic.manifest?.title,
     sections: topic.sections.map((s) => s.name),
     report,
+    planAlignment: reviewPlanArtifact(topic, plan),
   }
 }
 

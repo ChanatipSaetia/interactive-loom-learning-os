@@ -74,7 +74,7 @@ export interface LoomServerOptions {
   /** Request-scoped repository built from verified authentication; never configured on the public Worker. */
   repository?: LearningRepository
   /** The full topic check, which adds `validate_topic`; left out on the hosted endpoint. */
-  check?: (oui: string) => TopicCheck
+  check?: (oui: string, plan?: unknown) => TopicCheck
   checkSection?: typeof checkSection
 }
 
@@ -178,11 +178,19 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   if (checkTopic) server.registerTool('validate_topic', {
     title: 'Check a Loom topic',
     description: VALIDATE_TOOL_DESCRIPTION,
-    inputSchema: z.object({ oui: z.string().describe('The whole topic as .loom.oui text.') }),
+    inputSchema: z.object({
+      oui: z.string().describe('The whole topic as .loom.oui text.'),
+      plan: z.unknown().optional().describe('Optional TopicPlan for advisory comparison with compiled representations; separate from OUI validity and layout.'),
+    }),
     annotations: { readOnlyHint: true },
-  }, async ({ oui }) => {
-    const check = checkTopic(oui)
-    return { content: [{ type: 'text', text: check.ok ? `valid: "${check.title}" with ${check.sections.length} sections` : check.report! }] }
+  }, async ({ oui, plan }) => {
+    const check = checkTopic(oui, plan)
+    const text = check.ok ? `valid: "${check.title}" with ${check.sections.length} sections` : check.report!
+    // Preserve the exact legacy text response when no plan was requested. An injected
+    // legacy checker may ignore the new argument; never claim that it ran alignment.
+    if (plan === undefined) return { content: [{ type: 'text', text }] }
+    const planAlignment = check.planAlignment ?? { schemaVersion: 1, status: 'unverified', diagnostics: [], teachingQuality: 'not-evaluated', layout: 'not-measured' }
+    return { content: [{ type: 'text', text: JSON.stringify({ valid: check.ok, validation: text, planAlignment }) }] }
   })
 
   registerAppTool(server, 'show_topic', {

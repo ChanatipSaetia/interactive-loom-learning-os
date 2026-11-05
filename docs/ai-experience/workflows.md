@@ -24,6 +24,24 @@ AI clients own research, reasoning, planning, generation, tutoring and repair. L
 
 Existing topic formats, show_topic, Viewer, Studio and local learner-folder APIs remain compatible. Existing local topic writes retain their legacy semantics; atomic version guarantees apply only to the opt-in record API.
 
+## Plan-to-artifact review
+
+Local `validate_topic({oui, plan})` optionally compares a runtime-validated
+TopicPlan with the actual Viewer compiler output. It returns JSON with `valid`
+(OUI/narration validity), `validation`, and a separate versioned `planAlignment`.
+The latter reports topic identity, missing/unplanned sections and representation
+drift with section/file repair targets and an exact-source change hash. Correct
+connected prose and OpenUI remain valid choices; there is no section quota.
+`aligned` means those explicit structural claims match, not that the activity,
+objective learning, evidence truth or teaching quality has been established.
+Layout remains `not-measured` until a browser actually measures it.
+
+Calls without `plan` preserve the existing text response. Missing/invalid plans,
+failed compilation or an injected legacy checker cannot establish alignment.
+`checkTopic` and `reviewPlanArtifact` are reusable in local/browser validation;
+the hosted Worker still omits full compilation and `validate_topic`. This
+increment does not add an App layout judge or change `show_topic` delivery.
+
 ## Source of truth and trust
 
 The learner's authorized Drive folder remains the default durable source of truth (`get_storage_guide`). Save exact `.loom.oui` plus versioned provenance sidecars and append-only event logs/progress notes under the learner's own domain. Checkpoints are derived from events; they do not replace evidence. Assistants use their connector's permissions and revision preconditions. Where the connector cannot condition writes, avoid competing writers and report the lack of atomicity; do not advertise concurrency safety.
