@@ -13,11 +13,16 @@ import { McpServer } from '@modelcontextprotocol/server'
 import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
+import { TopicContextInput, resolveTopicContext } from '../core/supporting/authoring-editor/assistant/context-graph'
+import { getCapabilityCatalog } from '../core/learning-engine/composition/oui/capability-catalog'
+import { validateTopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
+import { LearningRecordSchema, LearningRepositoryError, type LearningRepository } from '../core/supporting/learner-progress/memory/repository'
+import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
 import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
 import { LOOM_SERVER_INSTRUCTIONS, getTutorGuide } from '../core/learning-engine/composition/oui/tutor-skills'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { isLearnerEvent, summarize, summaryText, type LearnerEvent } from '../core/supporting/learner-progress/memory/events'
-import type { TopicCheck } from './check'
+import type { TopicCheck, checkSection } from './check'
 
 /** Where the published app lives; each server release names the app version it was built for. */
 // The hosted endpoint serves the app with each release (decision 219); GitHub Pages builds only `master`
@@ -65,8 +70,11 @@ export interface LoomServerOptions {
   appHtml?: string
   /** Where the learner's events and topics are kept; none on a hosted endpoint without sign-in. */
   store?: LearnerStore
+  /** Request-scoped repository built from verified authentication; never configured on the public Worker. */
+  repository?: LearningRepository
   /** The full topic check, which adds `validate_topic`; left out on the hosted endpoint. */
   check?: (oui: string) => TopicCheck
+  checkSection?: typeof checkSection
 }
 
 /** Loom Viewer, next to the app on the same site (`<site>/mcp-app/v1/` → `<site>/viewer.html`). */
@@ -127,10 +135,43 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     title: 'Loom authoring guide',
     description: GUIDE_TOOL_DESCRIPTION,
     inputSchema: z.object({
+      components: z.array(z.string().max(120)).max(100).optional().describe("Exact component names and their signature dependencies. Omit to preserve the section-filtered guide."),
       sections: z.array(z.string()).optional().describe(`Section types the topic will use: ${guideSectionTypes().map((t) => t.type).join(', ')}, or "all".`),
     }),
     annotations: { readOnlyHint: true },
-  }, async ({ sections }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections) }] }))
+  }, async ({ sections, components }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections, components) }] }))
+
+  server.registerTool('get_topic_context', {
+    title: 'Focused topic context',
+    description: 'Resolve bounded statement dependencies from current source files explicitly supplied by your authorized connector or editor buffers. No fetching, filesystem access or conversation state. roots are file#statement addresses; omit for an overview. Hash is a change hint, not an authorization or concurrency token.',
+    inputSchema: TopicContextInput,
+    annotations: { readOnlyHint: true },
+  }, async (input) => ({ content: [{ type: 'text', text: JSON.stringify(resolveTopicContext(input)) }] }))
+
+  // Stateless contracts: no filesystem, session state, or long-running process required.
+  server.registerTool('get_loom_capabilities', {
+    title: 'Loom section capabilities',
+    description: 'Versioned, compact catalog of supported learning representations and their teaching purposes. Use before choosing section types.',
+    inputSchema: z.object({}),
+    annotations: { readOnlyHint: true },
+  }, async () => ({ content: [{ type: 'text', text: JSON.stringify(getCapabilityCatalog()) }] }))
+
+  server.registerTool('validate_topic_plan', {
+    title: 'Validate a Loom topic plan',
+    description: 'Check objective coverage, IDs, prerequisites, and supported representations before generating OUI.',
+    inputSchema: z.object({ plan: z.unknown().describe("Version 1 TopicPlan; malformed inputs return structured diagnostics.") }),
+    annotations: { readOnlyHint: true },
+  }, async ({ plan }) => {
+    const diagnostics = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type)))
+    return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics }) }] }
+  })
+
+  if (options.checkSection) server.registerTool('validate_section', {
+    title: 'Validate one section or narration file',
+    description: 'Full local/browser compiler diagnostics for targeted repair. Hosted MCP leaves compilation to the app. Narration checks need the current sectionSource.',
+    inputSchema: z.object({ source: z.string().max(131072), file: z.string().regex(/^sections\/[\w-]+(?:\.narrate)?\.oui$/), sectionSource: z.string().max(131072).optional() }),
+    annotations: { readOnlyHint: true },
+  }, async ({ source, file, sectionSource }) => ({ content: [{ type: 'text', text: JSON.stringify(options.checkSection!(source, file, sectionSource)) }] }))
 
   if (checkTopic) server.registerTool('validate_topic', {
     title: 'Check a Loom topic',
@@ -177,6 +218,26 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     if (!check || check.ok) text += '\n\nNext: if this topic belongs to an established domain, save the exact topic to the learner\'s Drive and update domain.oui following get_storage_guide, unless the learner opted out. Local server memory does not by itself confirm a Drive save. If the connector cannot write, say it is not saved and provide the file.'
     return { content: [{ type: 'text', text }] }
   })
+
+  if (options.repository) {
+    const repository = options.repository
+    const answer = async (operation: () => Promise<unknown>) => {
+      try { return { content: [{ type: 'text' as const, text: JSON.stringify(await operation()) }] } }
+      catch (error) {
+        const code = error instanceof LearningRepositoryError ? error.code : 'STORAGE_ERROR'
+        return { isError: true, content: [{ type: 'text' as const, text: JSON.stringify({ code }) }] }
+      }
+    }
+    server.registerTool('read_learning_record', {
+      description: 'Read the authenticated learner’s durable OUI, provenance, events and derived checkpoint. Available only with an explicitly authenticated storage adapter.',
+      inputSchema: z.object({ topicId: z.string().regex(/^[\w-]+$/).max(120) }).strict(),
+      annotations: { readOnlyHint: true },
+    }, async ({ topicId }) => answer(() => repository.read(topicId)))
+    server.registerTool('write_learning_record', {
+      description: 'Versioned write for the authenticated learner. Use the version returned by read_learning_record, or null to create. Conflicts require rereading; never silently overwrite.',
+      inputSchema: z.object({ record: LearningRecordSchema, expectedVersion: z.string().max(200).nullable() }).strict(),
+    }, async ({ record, expectedVersion }) => answer(() => repository.write(record, expectedVersion)))
+  }
 
   registerLibraryTools(server, store)
   if (store) registerMemoryTools(server, store)
@@ -308,6 +369,16 @@ function registerMemoryTools(server: McpServer, store: LearnerStore) {
     const oui = await store.readTopic(id)
     if (!oui) return { content: [{ type: 'text', text: `No saved topic "${id}". Call list_topics for the IDs.` }], isError: true }
     return { content: [{ type: 'text', text: `Showing the saved topic "${id}". The learner can press Play.` }], structuredContent: { oui } }
+  })
+
+  server.registerTool('get_learning_checkpoint', {
+    title: 'Portable learning checkpoint',
+    description: 'Get a deterministic compact progress checkpoint for a saved topic. Available when learner storage is connected.',
+    inputSchema: z.object({ topic: z.string() }),
+    annotations: { readOnlyHint: true },
+  }, async ({ topic }) => {
+    const events = await store.readEvents()
+    return { content: [{ type: 'text', text: JSON.stringify(createLearningCheckpoint(topic, events)) }] }
   })
 
   server.registerTool('learner_summary', {

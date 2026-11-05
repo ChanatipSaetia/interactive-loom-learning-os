@@ -11,6 +11,8 @@
     "build:all": "tsc -b && BUILD_MODE=lib vite build && vite build",
     "publish:lib": "npm run build:lib && cp -r docs dist-lib/docs && cp libs/package.lib.json dist-lib/package.json && npm publish dist-lib/ --access public",
     "test": "vitest run",
+    "check:worker": "node scripts/check-worker-runtime.mjs",
+    "evaluate:offline": "vitest run --config vitest.evaluation.config.ts",
     "test:e2e": "playwright test",
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",

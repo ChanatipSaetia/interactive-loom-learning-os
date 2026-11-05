@@ -41,7 +41,9 @@ export function isLearnerEvent(value: unknown): value is LearnerEvent {
   const e = value as LearnerEvent
   return !!e && typeof e === 'object' && typeof e.id === 'string' && typeof e.t === 'string' && typeof e.device === 'string'
     && typeof e.topic === 'string' && typeof e.item === 'string' && KINDS.has(e.kind)
-    && (e.result === undefined || e.result === 'correct' || e.result === 'wrong')
+    && e.id.length > 0 && e.id.length <= 200 && e.topic.length > 0 && e.topic.length <= 120 && e.item.length > 0 && e.item.length <= 500
+    && e.device.length > 0 && e.device.length <= 200 && Number.isFinite(Date.parse(e.t))
+    && (e.kind === 'answered' ? e.result === 'correct' || e.result === 'wrong' : e.result === undefined)
 }
 
 /** Union of event logs by ID, oldest first (decision 146). */
@@ -79,12 +81,23 @@ export function learnerEventOf(topic: string, section: string, event: { type: st
   switch (event.type) {
     case 'QuizOptionSelected':
       // An Evasion dodge is a retry, not an answer
-      if (event.dodged) return null
+      if (event.dodged || typeof event.questionId !== 'string' || typeof event.isCorrect !== 'boolean') return null
       return { topic, item: `${file}#${String(event.questionId)}`, kind: 'answered', result: event.isCorrect ? 'correct' : 'wrong' }
     case 'ReflectionAnswered':
+      if (typeof event.challengeId !== 'string' || typeof event.isCorrect !== 'boolean') return null
       return { topic, item: `${file}#${String(event.challengeId)}`, kind: 'answered', result: event.isCorrect ? 'correct' : 'wrong' }
     case 'FlashcardFlipped':
       return event.isFront ? null : { topic, item: `${file}#${String(event.termId)}`, kind: 'seen' }
+    case 'StepChanged':
+    case 'CategorySelected':
+    case 'GalleryItemViewed':
+    case 'TimelineActivitySelected':
+    case 'BreakdownNodeSelected':
+    case 'JourneyStageSelected':
+    case 'SliderValueChanged':
+    case 'DecisionNodeSelected':
+      // Exploration is engagement, never an assessment score. Do not retain slider values or free text.
+      return { topic, item: file, kind: 'seen' }
     case 'QuizCompleted':
     case 'ReflectionCompleted':
       return { topic, item: file, kind: 'completed' }
@@ -141,4 +154,19 @@ export function summaryText(summaries: TopicSummary[]): string {
     `${s.topic}: ${s.seen} parts seen, ${s.correct} of ${s.answered} answers right, ${s.completed} sections completed, last on ${s.last.slice(0, 10)}.`,
     ...(s.missed.length ? [`  Latest answer wrong: ${s.missed.join(', ')}`] : []),
   ].join('\n')).join('\n')
+}
+
+/** UI-scoped throttle for engagement only; assessment attempts are never dropped. */
+export function createEngagementGate(intervalMs = 1000, maxKeys = 256): (event: NewLearnerEvent, now: number) => boolean {
+  const last = new Map<string, number>()
+  return (event, now) => {
+    if (event.kind !== 'seen') return true
+    const key = JSON.stringify([event.topic, event.item])
+    const prior = last.get(key)
+    if (prior !== undefined && now >= prior && now - prior < intervalMs) return false
+    last.delete(key)
+    last.set(key, now)
+    if (last.size > maxKeys) last.delete(last.keys().next().value!)
+    return true
+  }
 }

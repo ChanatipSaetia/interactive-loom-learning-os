@@ -4,6 +4,7 @@
  * build serves them next to the app. Shared with the unit test that keeps the
  * committed files fresh.
  */
+import { getCapabilityCatalog } from './capability-catalog'
 import { LOOM_PAGES_URL, OPENUI_LANG_DOCS_URL, OPENUI_REACT_UI_DOCS_URL, getLoomAuthoringPrompt } from './authoring-prompt'
 import {
   LOOM_PROMPT_PATH,
@@ -32,6 +33,8 @@ function llmsTxt(): string {
 > Interactive learning app. A topic is a folder of OpenUI Lang (\`.oui\`) files: \`topic.oui\` plus one \`sections/<name>.oui\` per section, and optionally \`sections/<name>.narrate.oui\` narration for Present mode. An LLM can write a whole topic as one \`.loom.oui\` file or a folder of \`.oui\` files, and the user opens it in Loom Viewer.
 
 ## Authoring
+
+- [Versioned Loom capabilities](${LOOM_PAGES_URL}llm/loom-capabilities.json): section types, canonical root components and mental-model selection questions.
 
 - [Loom authoring prompt](${LOOM_PAGES_URL}${PROMPT_PATH}): system prompt for writing a topic: layout, output formats, every component and prop, rules and an example.
 - [Loom OpenUI JSON Schema](${LOOM_PAGES_URL}${SCHEMA_PATH}): JSON Schema of every component's props, with descriptions.
@@ -82,6 +85,7 @@ export function ouiSchemaFiles(): Record<string, string> {
     [`public/${PROMPT_PATH}`]: prompt,
     [`public/${SCHEMA_PATH}`]: `${JSON.stringify(getLoomOUIJSONSchema(), null, 2)}\n`,
     'public/llms.txt': llmsTxt(),
+    'public/llm/loom-capabilities.json': `${JSON.stringify(getCapabilityCatalog(), null, 2)}\n`,
   }
   // Published for download, and the repo's own copy for agents working here.
   for (const skill of LOOM_SKILL_NAMES) {

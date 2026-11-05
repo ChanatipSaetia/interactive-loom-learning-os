@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "sections": [
+    {
+      "type": "intro",
+      "component": "Intro",
+      "summary": "Topic opener: what it is, why it matters, and a roadmap of the sections ahead. `displayTitle` overrides the title shown inside the card.",
+      "mentalModel": "Orientation, purpose and roadmap",
+      "selectionQuestion": "What will I learn, why does it matter, and where are we going?"
+    },
+    {
+      "type": "text",
+      "component": "Text",
+      "summary": "Prose section: one string per paragraph.",
+      "mentalModel": "Connected explanation and narrative",
+      "selectionQuestion": "Why does this happen, or how should I understand the explanation? Use for connected prose, reasoning or context beyond a concise definition."
+    },
+    {
+      "type": "bullets",
+      "component": "Bullets",
+      "summary": "Bulleted (or numbered, when `ordered` is true) checklist.",
+      "mentalModel": "Key points, supporting details and checklists",
+      "selectionQuestion": "What are the important points, requirements or supporting subpoints?"
+    },
+    {
+      "type": "taxonomy-browser",
+      "component": "TaxonomyBrowser",
+      "summary": "Browsable taxonomy of categories with scope, analogy and details.",
+      "mentalModel": "Classification and distinctions",
+      "selectionQuestion": "What kinds exist, what defines them, and how do I recognise their differences?"
+    },
+    {
+      "type": "image-gallery",
+      "component": "ImageGallery",
+      "summary": "Gallery of captioned images.",
+      "mentalModel": "Visual recognition and concrete references",
+      "selectionQuestion": "What does it look like? Compare examples, textures, objects or screenshots."
+    },
+    {
+      "type": "pillar-layer",
+      "component": "PillarLayer",
+      "summary": "Layer-stack map: layers as rows (foundation last), blocks placed on a gap-free grid. Give blocks `dependsOn` so readers can tap a block to trace what it needs and what it affects. `displayTitle` overrides the title shown inside the map.",
+      "mentalModel": "Layered dependency and foundation",
+      "selectionQuestion": "What builds on or is supported by what? Examples include network layers or cloud foundation → agent runtime → application."
+    },
+    {
+      "type": "user-journey",
+      "component": "UserJourney",
+      "summary": "A person’s experience across product or service stages. Read explores stages; Present walks goals, actions, responses and optional friction and outcomes without an Event Storming diagram.",
+      "mentalModel": "A person’s experience with a product or service",
+      "selectionQuestion": "What does the person want, do and experience at each stage, and how can friction be resolved?"
+    },
+    {
+      "type": "timeline",
+      "component": "Timeline",
+      "summary": "Measured task timeline: one row per activity, sorted by start time, with duration-scaled bars, parallel work and finish-to-start dependencies. Present keeps the whole diagram visible while focusing authored groups.",
+      "mentalModel": "Measured time, duration, overlap and waiting",
+      "selectionQuestion": "When does each task start and finish, what runs together, and what must wait?"
+    },
+    {
+      "type": "breakdown-tree",
+      "component": "BreakdownTree",
+      "summary": "A whole divided into measurable parts: costs, counts, time allocation or conditional probability. Calculates each part’s share of its parent and the whole, validates totals, and explains one split per presentation beat.",
+      "mentalModel": "Parts of a measurable whole and conditional probability",
+      "selectionQuestion": "How does a total divide through a hierarchy? Use quantity mode for costs/counts and probability mode for conditional branches and path probabilities."
+    },
+    {
+      "type": "flowchart",
+      "component": "Flowchart",
+      "summary": "Animated Event Storming flowchart. Every actor and system must be used by at least one step.",
+      "mentalModel": "Process, responsibility and interaction",
+      "selectionQuestion": "What happens, what triggers it, who handles it, and how do participants interact? Choose the view from the table below."
+    },
+    {
+      "type": "scenario",
+      "component": "Scenario",
+      "summary": "Branching \"what would you do?\" scenario. `startNode` defaults to \"start\". `displayTitle` overrides the title shown inside the scenario.",
+      "mentalModel": "Consequences across decisions",
+      "selectionQuestion": "What happens if I choose this, then make another decision? Explore authored paths and outcomes."
+    },
+    {
+      "type": "tradeoff-sandbox",
+      "component": "TradeoffSandbox",
+      "summary": "Interactive sandbox where learners make design choices and watch metrics move.",
+      "mentalModel": "Presenting options, comparing alternatives and trade-offs",
+      "selectionQuestion": "What are my options, how do they compare, and when should I choose each? Show strengths, limitations, gains, costs and suitability; a recommendation can explain why an option fits. Use this for option comparison even without formal mathematical optimisation."
+    },
+    {
+      "type": "formula-sandbox",
+      "component": "FormulaSandbox",
+      "summary": "Parameter sandbox: sliders drive live formula-based metrics.",
+      "mentalModel": "Input–output relationships and sensitivity",
+      "selectionQuestion": "How does changing an input change a calculated result? Let the learner vary inputs to an authored formula."
+    },
+    {
+      "type": "decision-tree",
+      "component": "DecisionTree",
+      "summary": "Interactive decision guide. `root` is the ID of the first node. `displayTitle` overrides the title shown inside the guide.",
+      "mentalModel": "Rule-based diagnosis and selection",
+      "selectionQuestion": "Which option fits my situation after answering a sequence of questions?"
+    },
+    {
+      "type": "reflection-sequence",
+      "component": "ReflectionSequence",
+      "summary": "Sequence-builder reflection: learners put steps in the right order.",
+      "mentalModel": "Reconstructing order and procedure",
+      "selectionQuestion": "Can I arrange the supplied steps into the correct sequence?"
+    },
+    {
+      "type": "reflection-template",
+      "component": "ReflectionTemplate",
+      "summary": "Self-explanation reflection: learners complete sentence templates with chips.",
+      "mentalModel": "Structured reasoning and explanation",
+      "selectionQuestion": "Can I complete a sound explanation using the supplied concepts and sentence blanks?"
+    },
+    {
+      "type": "quiz",
+      "component": "Quiz",
+      "summary": "Knowledge-check section of multiple-choice questions.",
+      "mentalModel": "Checking understanding and applying knowledge",
+      "selectionQuestion": "Can I answer or apply what has already been taught?"
+    },
+    {
+      "type": "flashcards",
+      "component": "Flashcards",
+      "summary": "Deck of flip cards for key vocabulary.",
+      "mentalModel": "Definitions, meaning, vocabulary and recall",
+      "selectionQuestion": "What does this term or concept mean? Teach its meaning on the back of a card, then use it for recall; flashcards introduce concepts as well as practise them."
+    },
+    {
+      "type": "concept-map",
+      "component": "ConceptMap",
+      "summary": "Knowledge graph of concepts and the relations between them.",
+      "mentalModel": "Relationships between concepts",
+      "selectionQuestion": "How do ideas connect, depend on, support or differ from each other? Label the relationship explicitly."
+    },
+    {
+      "type": "openui",
+      "component": "// @openui",
+      "summary": "Free-form layout from the standard OpenUI library: cards, tabs, tables, charts and Svg drawings.",
+      "mentalModel": "Composed visual explanation, comparison and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+name: AI experience contracts
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run evaluate:offline
+      - run: npm run oui:schema -- --check
+      - run: npm run build:worker
+      - run: node --test tests/build/local-mcp.test.mjs tests/build/worker-runtime.test.mjs
+      - run: npm run check:worker
+      - run: npx playwright install --with-deps chromium
+      - name: MCP integration and browser checks
+        run: |
+          npm run mcp:host > /tmp/loom-mcp-host.log 2>&1 &
+          host_pid=$!
+          trap 'kill "$host_pid"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://localhost:8090/ > /dev/null; then break; fi
+            sleep 1
+          done
+          npm run mcp:check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ai-experience-results
+          path: |
+            artifacts/ai-experience-evaluation.json
+            tests/mcp-host/results/results.json

@@ -57,3 +57,12 @@ describe('getAuthoringGuide', () => {
     expect(getAuthoringGuide(['quiz', 'karaoke'])).toContain('Unknown section types ignored: karaoke.')
   })
 })
+
+it('returns exact canonical signatures and dependencies without unrelated sections', () => {
+  const guide = getAuthoringGuide([], ['QuizQuestion'])
+  expect(guide).toMatch(/^QuizQuestion\(/m)
+  expect(guide).toMatch(/^QuizChoice\(/m)
+  expect(guide).not.toMatch(/^Flowchart\(/m)
+  expect(guide.length).toBeLessThan(getAuthoringGuide(['quiz']).length)
+  expect(getAuthoringGuide([], ['MissingComponent'])).toContain('Unknown components: MissingComponent')
+})

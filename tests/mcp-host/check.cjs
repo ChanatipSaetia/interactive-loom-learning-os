@@ -1,3 +1,4 @@
+const assert = require('node:assert/strict')
 // Drives the test host in Chromium and saves screenshots: the card inline, Present after Play, Read,
 // the chat's light mode, and a broken topic sent back to the chat. Run `node tests/mcp-host/run.mjs`
 // first.   node tests/mcp-host/check.cjs [outDir]
@@ -7,14 +8,19 @@ const path = require('node:path')
 
 const out = process.argv[2] ?? 'tests/mcp-host/results'
 fs.mkdirSync(out, { recursive: true })
+fs.rmSync(path.join(out, 'results.json'), { force: true })
 const shot = (page, name) => page.screenshot({ path: path.join(out, `${name}.png`) })
 const results = {}
+async function expandNavigation(app) {
+  const toggle = app.locator('[data-testid=mcp-nav-toggle]')
+  if (await toggle.count() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click()
+}
 
 async function open(browser, query) {
   const page = await browser.newPage({ viewport: { width: 960, height: 720 } })
   const errors = []
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text().slice(0, 200)))
-  page.on('pageerror', (e) => errors.push(String(e).slice(0, 200)))
+  page.on('pageerror', (e) => errors.push('pageerror: ' + String(e).slice(0, 200)))
   await page.goto(`http://localhost:8090/${query}`)
   const app = page.frameLocator('#app')
   await app.locator('[data-testid=mcp-card]').waitFor({ timeout: 20000 })
@@ -23,7 +29,7 @@ async function open(browser, query) {
 }
 
 ;(async () => {
-  const browser = await chromium.launch(fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {})
+  const browser = await chromium.launch(process.env.LOOM_CHROMIUM_PATH ? { executablePath: process.env.LOOM_CHROMIUM_PATH } : fs.existsSync('/usr/bin/chromium') ? { executablePath: '/usr/bin/chromium' } : fs.existsSync('/opt/pw-browsers/chromium') ? { executablePath: '/opt/pw-browsers/chromium' } : {})
 
   {
     const { page, app, errors } = await open(browser, '')
@@ -34,10 +40,12 @@ async function open(browser, query) {
     const inChat = !(await page.evaluate(() => document.body.classList.contains('fullscreen')))
     const frameHeight = await page.locator('#app').evaluate((f) => f.getBoundingClientRect().height)
     await shot(page, 'present-in-chat')
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-fullscreen]').click()
     await page.waitForTimeout(1500)
     const full = await page.evaluate(() => document.body.classList.contains('fullscreen'))
     await shot(page, 'present-fullscreen')
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-fullscreen]').click()
     await page.waitForTimeout(800)
     const backInChat = !(await page.evaluate(() => document.body.classList.contains('fullscreen')))
@@ -116,6 +124,7 @@ async function open(browser, query) {
     const { page, app } = await open(browser, '')
     await app.locator('[data-testid=mcp-play]').click()
     await page.waitForTimeout(3000)
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-close]').click()
     await app.locator('[data-testid=mcp-other-mode]').click()
     const choice = app.locator('[data-testid^=quiz-choice-0-]').first()
@@ -149,12 +158,13 @@ async function open(browser, query) {
     await choice.scrollIntoViewIfNeeded()
     await choice.click()
     await page.waitForTimeout(500)
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-save-progress]').click()
     await page.waitForTimeout(800)
     const message = await page.evaluate(() => window.lastMessage ?? '')
     results.saveProgress = {
       label: await app.locator('[data-testid=mcp-save-progress]').getAttribute('aria-label'),
-      path: /Loom\/progress\/chinese101-day1-\d{4}-\d{2}-\d{2}\.md/.exec(message)?.[0] ?? null,
+      path: /Loom\/(?:<domain-id>|[\w-]+)\/progress\/chinese101-day1-\d{4}-\d{2}-\d{2}\.md/.exec(message)?.[0] ?? null,
       note: message.slice(message.indexOf('---'), message.indexOf('---') + 200),
     }
     await shot(page, 'save-progress')
@@ -166,6 +176,7 @@ async function open(browser, query) {
     await app.locator('[data-testid=mcp-play]').click()
     await app.locator('[data-testid=mcp-present]').waitFor({ timeout: 10000 })
     await page.waitForTimeout(1500)
+    await expandNavigation(app)
     await app.locator('[data-testid=mcp-ask]').click()
     await app.locator('[data-testid=mcp-read]').waitFor({ timeout: 10000 })
     await page.waitForTimeout(1200)
@@ -195,7 +206,7 @@ async function open(browser, query) {
   }
 
   {
-    // A touch screen: Read opens full screen, where it scrolls inside, and the chat's exit goes back to the card
+    // A touch screen: Read starts inline; the learner explicitly requests full screen and can return.
     const context = await browser.newContext({ viewport: { width: 390, height: 760 }, hasTouch: true, isMobile: true })
     const page = await context.newPage()
     await page.goto('http://localhost:8090/')
@@ -203,6 +214,9 @@ async function open(browser, query) {
     await app.locator('[data-testid=mcp-other-mode]').click()
     await app.locator('[data-testid=mcp-read]').waitFor({ timeout: 10000 })
     await page.waitForTimeout(1000)
+    const initiallyInline = !(await page.evaluate(() => document.body.classList.contains('fullscreen')))
+    await expandNavigation(app)
+    await app.locator('[data-testid=mcp-fullscreen]').click()
     const full = await page.evaluate(() => document.body.classList.contains('fullscreen'))
     const scroller = app.locator('[data-testid=mcp-read-scroll]')
     const scroll = await scroller.evaluate((el) => ({ canScroll: el.scrollHeight > el.clientHeight + 10 }))
@@ -211,7 +225,7 @@ async function open(browser, query) {
     await shot(page, 'touch-read-fullscreen')
     await page.evaluate(() => document.querySelector('#app') && window.setHostDisplayMode?.('inline'))
     await page.waitForTimeout(500)
-    results.touch = { fullscreen: full, ...scroll, scrolled, backToCard: await app.locator('[data-testid=mcp-card]').count() }
+    results.touch = { initiallyInline, fullscreen: full, ...scroll, scrolled, backToRead: await app.locator('[data-testid=mcp-read]').count() }
     await context.close()
   }
 
@@ -257,6 +271,42 @@ async function open(browser, query) {
     await shot(page, 'hosted-present')
   }
 
+  fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify(results, null, 2) + '\n')
+  // Fail on broken behavior rather than treating logged observations as a passing check.
+  assert.ok(!results.present.errors.some((error) => error.startsWith('pageerror:')))
+  assert.equal(results.present.inChat, true)
+  assert.equal(results.present.fullscreenOnRequest, true)
+  assert.equal(results.present.backInChat, true)
+  assert.ok(results.voice.utterances > 0)
+  assert.ok(results.read.sections > 0)
+  assert.equal(results.broken.errorsShown, 1)
+  assert.equal(results.broken.modelToldAtOnce, true)
+  assert.equal(results.broken.askedToFix, true)
+  assert.equal(results.viewerLink.opensInPresent, true)
+  assert.equal(results.viewerLink.offeredToCopy, true)
+  assert.equal(results.memory.topicSaved, true)
+  assert.ok(results.memory.seen > 0 && results.memory.answered.length > 0)
+  assert.ok(results.saveProgress.path)
+  assert.match(results.saveProgress.note, /loom-progress: 1/)
+  assert.equal(results.pick.pickOnFromAsk, 'true')
+  assert.match(results.pick.message, /Why is this the answer/)
+  assert.equal(results.theme.picked, 'bedtime')
+  assert.equal(results.theme.afterChatChange, 'bedtime')
+  assert.equal(results.touch.initiallyInline, true)
+  assert.equal(results.touch.fullscreen, true)
+  assert.equal(results.touch.canScroll, true)
+  assert.ok(results.touch.scrolled > 0)
+  assert.equal(results.touch.backToRead, 1)
+  assert.equal(results.library.toldModel, true)
+  assert.ok(results.library.cards.length > 0 && results.library.rows.length > 0)
+  assert.equal(results.library.backToDomain, 1)
+  assert.ok(results.voice.first.some((text) => text.trim().length > 0))
+  if (results.hosted) {
+    assert.equal(results.hosted.plays, true)
+    assert.ok(!results.hosted.tools.includes('read_learning_record'))
+    assert.ok(!results.hosted.errors.some((error) => error.startsWith('pageerror:')))
+  }
+  fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify(results, null, 2) + '\n')
   console.log(JSON.stringify(results, null, 2))
   await browser.close()
-})()
+})().catch((error) => { console.error(error); process.exit(1) })

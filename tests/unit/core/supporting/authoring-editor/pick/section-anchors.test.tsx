@@ -29,6 +29,8 @@ async function anchorsOf(source: string): Promise<string[]> {
     </ProgressProvider>,
   )
   await waitFor(() => expect(container.textContent).not.toContain('loading'))
+  // Graph layouts attach item anchors after their first measured render.
+  await waitFor(() => expect(container.querySelector('[data-oui-anchor]:not([data-oui-anchor="root"])')).not.toBeNull())
   return [...container.querySelectorAll('[data-oui-anchor]')].map((el) => el.getAttribute('data-oui-anchor')!)
 }
 

@@ -6,6 +6,7 @@
  * plans to use.
  */
 import { getLoomAuthoringPrompt } from './authoring-prompt'
+import { componentClosure, componentEntries } from './assistant-prompt'
 import { OUI_SECTION_TYPES, getLoomOUIComponent } from './library'
 
 /** The standard OpenUI section (`// @openui`), which has no Loom component of its own. */
@@ -87,7 +88,12 @@ let prompt: string | undefined
  * core rules and a list of the section types to choose from, so the model can
  * ask again with the ones it will use. `['all']` returns the whole prompt.
  */
-export function getAuthoringGuide(sections: string[] = []): string {
+export function getAuthoringGuide(sections: string[] = [], components?: string[]): string {
+  if (components !== undefined) {
+    const known = components.filter((name) => componentClosure([name]).includes(name))
+    const unknown = components.filter((name) => !known.includes(name))
+    return ['## Focused component contracts', 'Arguments are positional; ? marks optional arguments. This is a reference, not the full authoring workflow.', componentEntries(componentClosure(known)), ...(unknown.length ? [`Unknown components: ${unknown.join(', ')}.`] : [])].join('\n\n')
+  }
   prompt ??= getLoomAuthoringPrompt()
   if (sections.includes('all')) return prompt
   const known = new Set(guideSectionTypes().map((t) => t.type))
