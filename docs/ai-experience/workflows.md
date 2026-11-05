@@ -24,6 +24,15 @@ AI clients own research, reasoning, planning, generation, tutoring and repair. L
 
 Existing topic formats, show_topic, Viewer, Studio and local learner-folder APIs remain compatible. Existing local topic writes retain their legacy semantics; atomic version guarantees apply only to the opt-in record API.
 
+When context is truncated, `omittedReferences` gives bounded expansion addresses
+and `omittedReferenceCount` counts known omitted addresses. Source addresses can
+be requested as new roots with the same current files and `expectedHash`;
+`component:<library>:<name>` addresses call for scoped `get_authoring_guide`
+retrieval. `omissionScope: "dependency-frontier"` means deeper dependencies may
+be discovered during expansion. `omittedReferencesTruncated` discloses when the
+address list itself could not fit. Counts do not claim to enumerate an unvisited
+transitive closure. Whole statements and omission metadata share the JSON budget.
+
 ## Plan-to-artifact review
 
 Local `validate_topic({oui, plan})` optionally compares a runtime-validated

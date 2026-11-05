@@ -67,6 +67,11 @@ export function resolveTopicContext(input: TopicContextRequest) {
     sources: [] as Array<{ id: string; file: string; statement: string; line: number; text: string }>,
     components: [] as string[],
     componentReferences: [] as Array<{ library: ComponentLibrary; name: string }>,
+    /** Bounded expansion addresses, not an exhaustive unvisited transitive closure. */
+    omittedReferences: [] as string[],
+    omittedReferenceCount: 0,
+    omittedReferencesTruncated: false,
+    omissionScope: 'dependency-frontier' as const,
     diagnostics: [] as Array<{ code: string; reference: string }>,
   }
   if (expectedHash && expectedHash !== hash) {
@@ -104,16 +109,37 @@ export function resolveTopicContext(input: TopicContextRequest) {
     pending.push(...(links.get(id) ?? []).filter((next) => !visited.has(next)))
   }
   if (pending.some((id) => !visited.has(id))) result.truncated = true
+  const omitted = new Set(pending.filter((id) => !visited.has(id)))
+  const updateOmissions = () => {
+    result.omittedReferenceCount = omitted.size
+    result.omittedReferences = [...omitted].slice(0, 20)
+    result.omittedReferencesTruncated = omitted.size > result.omittedReferences.length
+  }
+  updateOmissions()
   if (result.diagnostics.length > 20) result.truncated = true
   result.diagnostics = result.diagnostics.slice(0, 20)
   // Budget the complete JSON response, never cut a statement in half.
   while (JSON.stringify(result).length > maxChars && (result.sources.length || result.overview.length || result.components.length || result.componentReferences.length || result.diagnostics.length)) {
     result.truncated = true
-    if (result.sources.length) result.sources.pop()
+    if (result.sources.length) {
+      omitted.add(result.sources.pop()!.id)
+      updateOmissions()
+    }
     else if (result.overview.length) result.overview.pop()
     else if (result.components.length) result.components.pop()
-    else if (result.componentReferences.length) result.componentReferences.pop()
+    else if (result.componentReferences.length) {
+      const ref = result.componentReferences.pop()!
+      omitted.add(`component:${ref.library}:${ref.name}`)
+      updateOmissions()
+    }
     else result.diagnostics.pop()
+  }
+  // Omission metadata itself is budgeted; count remains explicit when addresses
+  // cannot all fit. Expand source addresses with the same current files and hash;
+  // component addresses identify library-scoped authoring-guide requests.
+  while (JSON.stringify(result).length > maxChars && result.omittedReferences.length) {
+    result.omittedReferences.pop()
+    result.omittedReferencesTruncated = true
   }
   if (result.truncated) {
     const diagnostic = { code: 'CONTEXT_TRUNCATED', reference: 'Increase budget or request fewer roots' }

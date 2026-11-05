@@ -40,6 +40,36 @@ it('does not treat comments or quoted prose as manifest section references', () 
   expect(result.diagnostics).toEqual([])
 })
 
+it('returns actionable frontier addresses when a node budget omits dependencies', () => {
+  const partial = resolveTopicContext({ files, roots: ['sections/quiz.oui#q'], maxNodes: 1 })
+  expect(partial.truncated).toBe(true)
+  expect(partial.omittedReferences).toContain('sections/quiz.oui#label')
+  expect(partial.omittedReferenceCount).toBe(partial.omittedReferences.length)
+  expect(partial.omissionScope).toBe('dependency-frontier')
+  const expanded = resolveTopicContext({ files, roots: ['sections/quiz.oui#label'], expectedHash: partial.hash })
+  expect(expanded.sources[0].text).toBe('label = "Why?"')
+  expect(expanded.omittedReferences).toEqual([])
+})
+
+it('accounts for whole statements removed by the character budget', () => {
+  const result = resolveTopicContext({
+    files: { 'sections/prose.oui': `root = Text("Argument", ["${'x'.repeat(5000)}"])` },
+    roots: ['sections/prose.oui'], maxChars: 2048,
+  })
+  expect(result.omittedReferences).toContain('sections/prose.oui#root')
+  expect(result.omittedReferenceCount).toBeGreaterThan(0)
+  expect(JSON.stringify(result).length).toBeLessThanOrEqual(2048)
+})
+
+it('bounds omission metadata and discloses when expansion addresses cannot all fit', () => {
+  const names = Array.from({ length: 100 }, (_, i) => `missing_${i}_${'x'.repeat(80)}`)
+  const result = resolveTopicContext({ files: { 'sections/many.oui': `root = Text("T", [${names.join(', ')}])` }, roots: ['sections/many.oui'], maxNodes: 1, maxChars: 2048 })
+  expect(result.truncated).toBe(true)
+  expect(result.omittedReferenceCount).toBeGreaterThan(100)
+  expect(result.omittedReferencesTruncated).toBe(true)
+  expect(JSON.stringify(result).length).toBeLessThanOrEqual(2048)
+})
+
 
 it('returns distinct component library metadata for mixed source files', () => {
   const result = resolveTopicContext({ files: {
