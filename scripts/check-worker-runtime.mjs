@@ -44,6 +44,14 @@ try {
   const guide = (await call('get_authoring_guide', { components: ['QuizQuestion'] })).content[0].text
   assert.match(guide, /^QuizQuestion\(/m)
   assert.match(guide, /^QuizChoice\(/m)
+  const nativeText = (await call('get_authoring_guide', { components: ['Text'], library: 'loom' })).content[0].text
+  const openuiText = (await call('get_authoring_guide', { components: ['Text'], library: 'openui' })).content[0].text
+  assert.match(nativeText, /^Text\(title: string, paragraphs:/m)
+  assert.match(openuiText, /^Text\(variant\?/m)
+  assert.ok(!openuiText.includes('paragraphs: string[]'))
+  const capabilities = JSON.parse((await call('get_loom_capabilities')).content[0].text)
+  assert.equal(capabilities.workflow.version, 1)
+  assert.ok(capabilities.planSchema)
   assert.equal(JSON.parse((await call('validate_topic_plan', { plan: null })).content[0].text).valid, false)
   const context = JSON.parse((await call('get_topic_context', { files: { 'sections/text.oui': 'root = Text("T", ["One"])' }, roots: ['sections/text.oui'] })).content[0].text)
   assert.equal(context.sources.length, 1)

@@ -1,5 +1,6 @@
 /** Bounded structural index derived from OUI source. No persistent server state. */
 import { fileStatements } from './statements'
+import type { ComponentLibrary } from '../../../learning-engine/composition/oui/library'
 
 export interface ContextGraphNode { id: string; kind: 'file' | 'statement' | 'component' }
 export interface ContextGraphEdge { from: string; to: string; kind: 'contains' | 'references' | 'calls-component' }
@@ -17,7 +18,8 @@ export function buildContextGraph(files: Record<string, string>): ContextGraph {
       edges.push({ from: file, to: id, kind: 'contains' })
       for (const ref of statement.refs) edges.push({ from: id, to: `${file}#${ref}`, kind: 'references' })
       for (const component of statement.calls) {
-        const target = `component:${component}`
+        const library = /^\s*\/\/\s*@openui\b/.test(source) ? 'openui' : 'loom'
+        const target = `component:${library}:${component}`
         if (!componentIds.has(target)) { componentIds.add(target); nodes.push({ id: target, kind: 'component' }) }
         edges.push({ from: id, to: target, kind: 'calls-component' })
       }
@@ -64,6 +66,7 @@ export function resolveTopicContext(input: TopicContextRequest) {
     overview: entries.map(([file]) => file),
     sources: [] as Array<{ id: string; file: string; statement: string; line: number; text: string }>,
     components: [] as string[],
+    componentReferences: [] as Array<{ library: ComponentLibrary; name: string }>,
     diagnostics: [] as Array<{ code: string; reference: string }>,
   }
   if (expectedHash && expectedHash !== hash) {
@@ -93,20 +96,28 @@ export function resolveTopicContext(input: TopicContextRequest) {
     if (!ids.has(id)) result.diagnostics.push({ code: 'MISSING_REFERENCE', reference: id })
     const source = statements.get(id)
     if (source) result.sources.push({ id, ...source })
-    else if (id.startsWith('component:')) result.components.push(id.slice(10))
+    else if (id.startsWith('component:')) {
+      const [, library, name] = id.split(':')
+      if (!result.components.includes(name)) result.components.push(name)
+      result.componentReferences.push({ library: library as ComponentLibrary, name })
+    }
     pending.push(...(links.get(id) ?? []).filter((next) => !visited.has(next)))
   }
   if (pending.some((id) => !visited.has(id))) result.truncated = true
   if (result.diagnostics.length > 20) result.truncated = true
   result.diagnostics = result.diagnostics.slice(0, 20)
   // Budget the complete JSON response, never cut a statement in half.
-  while (JSON.stringify(result).length > maxChars && (result.sources.length || result.overview.length || result.components.length || result.diagnostics.length)) {
+  while (JSON.stringify(result).length > maxChars && (result.sources.length || result.overview.length || result.components.length || result.componentReferences.length || result.diagnostics.length)) {
     result.truncated = true
     if (result.sources.length) result.sources.pop()
     else if (result.overview.length) result.overview.pop()
     else if (result.components.length) result.components.pop()
+    else if (result.componentReferences.length) result.componentReferences.pop()
     else result.diagnostics.pop()
   }
-  if (result.truncated && JSON.stringify(result).length + 80 < maxChars) result.diagnostics.push({ code: 'CONTEXT_TRUNCATED', reference: 'Increase budget or request fewer roots' })
+  if (result.truncated) {
+    const diagnostic = { code: 'CONTEXT_TRUNCATED', reference: 'Increase budget or request fewer roots' }
+    if (JSON.stringify({ ...result, diagnostics: [...result.diagnostics, diagnostic] }).length <= maxChars) result.diagnostics.push(diagnostic)
+  }
   return result
 }

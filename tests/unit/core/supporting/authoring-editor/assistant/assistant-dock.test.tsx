@@ -428,7 +428,7 @@ describe('Tools and staged edits in Studio (decisions 129–136)', () => {
     fireEvent.click(screen.getByTestId('pick-send'))
     await waitFor(() => expect(screen.getByTestId('ai-reply')).toHaveAttribute('data-status', 'done'))
     const bodies = chatBodies(fetchImpl)
-    expect(bodies[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read', 'edit_section', 'create_section', 'edit_topic', 'describe_components', 'propose_plan'])
+    expect(bodies[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read', 'edit_section', 'create_section', 'edit_topic', 'describe_components', 'get_loom_capabilities', 'validate_topic_plan', 'propose_plan'])
     expect(bodies[0].messages[0].content).toContain('## Changing the Topic')
     expect(bodies[0].messages[0].content).not.toContain('```oui-edit file=')
     expect(bodies[1].messages.at(-1).content).toContain('QuizQuestion("q1", "Why?"')
@@ -489,10 +489,21 @@ describe('Plan card in Studio (decisions 138–139)', () => {
     ],
   }
 
-  it('shows the plan, lets the model say a word, and Build these sends the ticked items', async () => {
+  const shared = {
+    schemaVersion: 1, topicId: 'demo', goal: plan.goal,
+    objectives: [{ id: 'policy', description: 'Choose a cache policy' }],
+    sections: [
+      { id: 'words', title: 'Key terms', objectiveRefs: ['policy'], representation: 'flashcards', library: 'loom', activity: 'Recall the meaning of each directive', rationale: 'Flip cards support recall' },
+      { id: 'quiz', title: 'Knowledge Check', objectiveRefs: ['policy'], representation: 'quiz', library: 'loom', activity: 'Choose a policy for a response', rationale: 'A quiz records the answer evidence' },
+    ],
+  }
+  it.each([
+    { kind: 'legacy', payload: plan, type: 'Flashcards', activity: undefined, rationale: undefined },
+    { kind: 'shared', payload: { plan: shared, actions: { quiz: 'edit' } }, type: 'flashcards', activity: shared.sections[0].activity, rationale: shared.sections[0].rationale },
+  ])('shows the $kind plan and Build these sends the selected design', async (testCase) => {
     seed('http://localhost:11434/v1')
     const buffers: Record<string, string> = { ...files }
-    const answers = [toolCall('p1', 'propose_plan', plan), streamOf('Tick what to build.'), streamOf('Building.')]
+    const answers = [toolCall('p1', 'propose_plan', testCase.payload), streamOf('Tick what to build.'), streamOf('Building.')]
     const fetchImpl = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
     function Studio() {
       const assistant = useAssistant({
@@ -516,6 +527,8 @@ describe('Plan card in Studio (decisions 138–139)', () => {
     expect(bodies[1].tool_choice).toBe('none')
     expect(screen.getByTestId('ai-activity')).toHaveTextContent('Proposed a plan')
     expect(screen.getAllByTestId('ai-plan-item')).toHaveLength(2)
+    if (testCase.activity) expect(screen.getByTestId('ai-plan')).toHaveTextContent(testCase.activity)
+    if (testCase.rationale) expect(screen.getByTestId('ai-plan')).toHaveTextContent(testCase.rationale)
 
     fireEvent.click(screen.getAllByTestId('ai-plan-tick')[1])
     fireEvent.click(screen.getByTestId('ai-plan-build'))
@@ -524,7 +537,9 @@ describe('Plan card in Studio (decisions 138–139)', () => {
     const sent = fetchImpl.mock.calls.filter(([u]) => String(u).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
     const message = sent[sent.length - 1].messages.at(-1).content as string
     expect(message).toContain('Build this section from the plan (goal: Choose a cache policy')
-    expect(message).toContain('1. Create sections/words.oui (Flashcards) "Key terms"')
+    expect(message).toContain(`1. Create sections/words.oui (${testCase.type}) "Key terms"`)
+    if (testCase.activity) expect(message).toContain(testCase.activity)
+    if (testCase.rationale) expect(message).toContain(testCase.rationale)
     expect(message).not.toContain('Knowledge Check')
     expect(screen.getByTestId('ai-plan')).toHaveAttribute('data-state', 'built')
   })

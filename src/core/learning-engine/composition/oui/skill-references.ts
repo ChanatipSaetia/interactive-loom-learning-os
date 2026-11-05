@@ -1,3 +1,4 @@
+import { getAuthoringWorkflow } from './authoring-workflow'
 /** Split the canonical prompt into focused, non-overlapping installed-skill references. */
 import { getLoomAuthoringPrompt } from './authoring-prompt'
 import { OUI_SECTION_TYPES } from './library'
@@ -27,6 +28,7 @@ export function getWriterSkillReferences(): Record<string, string> {
   const files: Record<string, string> = {}
   const put = (path: string, ...text: string[]) => { files[`references/${path}.md`] = text.join('\n\n').trim() + '\n' }
 
+  put('planning/workflow', getAuthoringWorkflow('files'))
   put('planning/mental-models', take('Start Here: Mental Model and Section Selection'))
   put('planning/visuals', WRITER_VISUAL_PLANNING)
   put('core/formats', take('Topic Layout'), take('Output Formats'))
