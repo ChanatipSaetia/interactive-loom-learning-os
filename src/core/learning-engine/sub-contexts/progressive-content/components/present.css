@@ -38,9 +38,42 @@
 /* ---- text: the Read paragraph, at reading size for the stage ---- */
 
 .present-region .text-section { margin: 0; }
-.present-region .present-text-scenes { max-width: 32em; }
+.present-region .present-text { padding-block-start: 24px; }
+.present-stage.is-portrait .present-text { padding-block-start: 16px; }
+/* Use the stage's available width rather than em units inherited from the page. */
+.present-region .present-text-scenes { width: 100%; max-width: 860px; min-width: 0; }
 .present-text-scene { display: flex; flex-direction: column; gap: 14px; }
-.present-region .present-text .text-paragraph { font-size: calc(var(--present-fs-body) + 4px); line-height: 1.55; text-wrap: pretty; }
+.present-region .present-text .text-paragraph {
+  box-sizing: border-box;
+  margin: 0;
+  padding-inline-start: 20px;
+  border-inline-start: 3px solid transparent;
+  font: 400 var(--present-fs-body) / 1.65 var(--font-body);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.present-region .present-text .present-paragraph > :first-child { margin-block-start: 0; }
+.present-region .present-text .present-paragraph > :last-child { margin-block-end: 0; }
+/* Prose is a reading surface, so automatic beat focus should not draw a box around it.
+   Keyboard focus-visible styles remain untouched. Keep the marker's space reserved between beats. */
+.present-region .present-text :is(.present-paragraph, .present-headline).present-focus {
+  outline: none;
+  box-shadow: none;
+  animation: none;
+}
+.present-region .present-text .present-paragraph.present-focus {
+  border-inline-start-color: color-mix(in srgb, var(--present-accent, var(--primary)) 35%, transparent);
+}
+.present-stage.is-portrait .present-text .text-paragraph { padding-inline-start: 12px; }
+
+/* Narration passages flow together as one complete paragraph instead of separate sentence slides. */
+.present-text-fragment { display: contents; }
+.present-text-fragment > p { display: inline; margin: 0; }
+.present-text-fragment.is-current > p {
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
 
 /* ---- bullets ---- */
 

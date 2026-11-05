@@ -19,8 +19,8 @@ const readHtml = (p: string) => (marked.parse(p) as string)
 export { leadTerm } from '../../text-scenes'
 
 /**
- * Text in Present mode, styled as the Read section: short prose scenes (textBeats), each replacing
- * the last at presentation size, its words arriving phrase by phrase (decision 109). A paragraph that opens
+ * Text in Present mode keeps the whole paragraph visible and highlights the passage being narrated.
+ * Existing short narration beats still advance phrase by phrase without hiding the surrounding text. A paragraph that opens
  * with a bold term shows the term as its headline; when every paragraph does, an agenda of the terms
  * shows where the section is (decision 111).
  */
@@ -29,10 +29,21 @@ export default function PresentText({ data, beat }: PresentRendererProps<TextPre
   const pick = usePickAnchors()
   const paragraphs = data.paragraphs
   const terms = useMemo(() => (paragraphs ?? []).map(leadTerm), [paragraphs])
-  const parts = useMemo(() => textScenes(data).map((scene) => {
-    const { term, rest } = leadTerm(scene.source)
-    return { ...scene, term: terms[scene.paragraph]?.term, html: wordsHtml(readHtml(scene.part === 0 && term ? rest : scene.source)) }
-  }), [data, terms])
+  const parts = useMemo(() => {
+    const scenes = textScenes(data)
+    return scenes.map((scene) => ({
+      ...scene,
+      term: terms[scene.paragraph]?.term,
+      // Keep the complete paragraph visible while only the current passage is narrated.
+      // Existing pN / pN.partK beats and authored narration remain unchanged.
+      html: scenes.filter((part) => part.paragraph === scene.paragraph).map((part) => {
+        const { term, rest } = leadTerm(part.source)
+        const html = readHtml(part.part === 0 && term ? rest : part.source)
+        const current = part.part === scene.part
+        return `<div class="present-text-fragment${current ? ' is-current' : ''}"${current ? '' : ' data-quiet'}>${current ? wordsHtml(html) : html}</div>`
+      }).join(' '),
+    }))
+  }, [data, terms])
   const agenda = terms.length > 1 && terms.every((p) => p.term)
   // The region header already shows the section title
   const heading = data.heading && data.heading !== data.title ? data.heading : undefined

@@ -30,7 +30,7 @@ describe('short text presentation scenes', () => {
     expect(scenes[scenes.length - 1]?.source).toBe(code)
   })
 
-  it('shows one chunk, retains the paragraph agenda, and does not repeat the headline in continuation speech', () => {
+  it('shows the complete paragraph, retains the agenda, and narrates only the current passage', () => {
     const draw = (beat: number) => <PresentText data={data} beats={textBeats(data)} beat={beat} sectionIndex={0} active />
     const { container, rerender } = render(draw(1))
     const shown = () => container.querySelectorAll('.present-text-scene[data-shown]')
@@ -40,7 +40,11 @@ describe('short text presentation scenes', () => {
     expect(beatSpeech(container, 1).map((p) => p.text).join(' ')).not.toContain('Caching')
     rerender(draw(0))
     expect(shown()).toHaveLength(1)
-    expect(shown()[0].textContent).not.toContain('Sentence 8')
+    expect(shown()[0].textContent).toContain('Sentence 8')
+    const spoken = beatSpeech(container, 0).map((part) => part.text).join(' ')
+    expect(spoken).toContain('Sentence')
+    expect(spoken).not.toContain('8')
+    expect(shown()[0].querySelectorAll('.present-text-fragment.is-current')).toHaveLength(1)
     rerender(draw(-1))
     expect(shown()).toHaveLength(0)
   })
