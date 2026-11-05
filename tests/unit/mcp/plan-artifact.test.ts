@@ -42,6 +42,10 @@ describe('compiled plan/artifact review', () => {
     expect(checkTopic(bundle(), plan).planAlignment?.contentHash).toBe(hash)
     expect(checkTopic(bundle() + '// unsaved revision', plan).planAlignment?.contentHash).not.toBe(hash)
   })
+  it('reports declared assessment targets that were not generated', () => {
+    const planned = { ...plan, sections: [{ ...plan.sections[0], assessment: { itemRefs: ['sections/argument.oui#missing'], successCriterion: 'Explicit correct answer' } }] }
+    expect(checkTopic(bundle(), planned).planAlignment?.diagnostics.map((d) => d.code)).toContain('ASSESSMENT_REFERENCE_MISSING')
+  })
   it('exposes advisory review through existing local MCP validation and preserves legacy output', async () => {
     const [a, b] = InMemoryTransport.createLinkedPair()
     await createLoomServer({ check: checkTopic }).connect(b)

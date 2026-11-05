@@ -11,6 +11,19 @@ describe('context graph', () => {
 
 import { resolveTopicContext } from '../../../../../../src/core/supporting/authoring-editor/assistant/context-graph'
 const files = { 'topic.oui': 'root = Topic("T", "C", "D", [SectionRef("quiz")])', 'sections/quiz.oui': 'root = Quiz("T", [q])\nq = QuizQuestion("q", label, [c])\nlabel = "Why?"\nc = QuizChoice("a", "A", true, "Yes")' }
+const design = { schemaVersion: 1 as const, topicId: 'demo', goal: 'Explain why', objectives: [{ id: 'explain', description: 'Explain why' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', activity: 'Submit an answer', rationale: 'Observe an explicit answer', presentation: { target: 'both' as const, strategy: 'Read for attempts; Present demonstrates' }, objectiveRefs: ['explain'] }] }
+it('includes only relevant versioned design decisions and reports stale or budget-omitted plans', () => {
+  const current = resolveTopicContext({ files, roots: ['sections/quiz.oui#q'], plan: design })
+  expect(current.designContext?.sections[0].activity).toBe('Submit an answer')
+  expect(current.designContext?.sections[0].presentation?.target).toBe('both')
+  expect(current.designContext?.sourceHash).toBe(current.hash)
+  expect(resolveTopicContext({ files, roots: ['sections/quiz.oui'], plan: design, expectedPlanRevision: 'old' }).diagnostics.some((d) => d.code === 'STALE_PLAN')).toBe(true)
+  const bounded = resolveTopicContext({ files, roots: ['sections/quiz.oui'], maxChars: 2048, plan: { ...design, goal: 'x'.repeat(4000) } })
+  expect(bounded.designContext).toBeNull()
+  expect(bounded.truncated).toBe(true)
+  expect(bounded.diagnostics.some((d) => d.code === 'DESIGN_CONTEXT_OMITTED')).toBe(true)
+  expect(JSON.stringify(bounded).length).toBeLessThanOrEqual(2048)
+})
 it('resolves transitive dependencies including topic section references', () => {
   const result = resolveTopicContext({ files, roots: ['topic.oui#root'] })
   expect(result.sources.map((s) => s.statement)).toEqual(expect.arrayContaining(['root', 'q', 'label', 'c']))

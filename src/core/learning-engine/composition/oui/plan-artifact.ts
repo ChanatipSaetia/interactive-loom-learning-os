@@ -2,6 +2,7 @@
 import { OUI_SECTION_TYPES } from './library'
 import { TopicPlanSchema, validateTopicPlan } from './topic-plan'
 import { textHash } from '../../../supporting/authoring-editor/assistant/statements'
+import { fileStatements } from '../../../supporting/authoring-editor/assistant/statements'
 
 export interface CompiledPlanArtifact {
   topicId: string
@@ -10,7 +11,7 @@ export interface CompiledPlanArtifact {
   sections: Array<{ name: string; config: { type: string } | null }>
 }
 export interface AlignmentDiagnostic {
-  code: 'INVALID_PLAN' | 'TOPIC_MISMATCH' | 'MISSING_SECTION' | 'UNPLANNED_SECTION' | 'REPRESENTATION_MISMATCH' | 'UNCOMPILED_ARTIFACT'
+  code: 'ASSESSMENT_REFERENCE_MISSING' | 'INVALID_PLAN' | 'TOPIC_MISMATCH' | 'MISSING_SECTION' | 'UNPLANNED_SECTION' | 'REPRESENTATION_MISMATCH' | 'UNCOMPILED_ARTIFACT'
   severity: 'warning'
   file: string
   sectionId?: string
@@ -60,6 +61,8 @@ export function reviewPlanArtifact(artifact: CompiledPlanArtifact, input?: unkno
     if (!compiled) add('MISSING_SECTION', 'This planned section is absent from the compiled topic outline.', section.id)
     else if (!compiled.config) add('UNCOMPILED_ARTIFACT', 'This section did not compile; its representation cannot be verified.', section.id)
     else if (compiled.config.type !== section.representation) add('REPRESENTATION_MISMATCH', `Plan specifies ${section.representation}; compiled artifact is ${compiled.config.type}. Repair the section or explicitly revise the plan.`, section.id)
+    const names = new Set(fileStatements(artifact.files[`sections/${section.id}.oui`] ?? '').map((statement) => statement.name))
+    for (const ref of section.assessment?.itemRefs ?? []) if (!names.has(ref.split('#')[1])) add('ASSESSMENT_REFERENCE_MISSING', `The planned assessment target ${ref} is absent from the section source.`, section.id)
   }
   for (const section of artifact.sections) if (!planned.has(section.name)) add('UNPLANNED_SECTION', 'This compiled section is absent from the supplied plan. Reconcile the plan before claiming alignment.', section.name)
   result.status = result.diagnostics.some((d) => d.code !== 'UNCOMPILED_ARTIFACT') ? 'mismatch'
