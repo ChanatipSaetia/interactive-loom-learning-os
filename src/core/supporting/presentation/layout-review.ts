@@ -39,12 +39,16 @@ export function reviewRenderedLayout(root: HTMLElement, options: { maxElements?:
     const style = view.getComputedStyle(element)
     if (rect.width <= 0 || rect.height <= 0 || style.display === 'none' || style.visibility === 'hidden') continue
     let parent: HTMLElement | null = element
-    let hidden = false, scrollX = false, clipped = false
+    let hidden = false, scrollX = false, clipped = false, paintedScaleY = 1
     for (let depth = 0; parent && depth < 24; depth++, parent = parent.parentElement) {
       const css = view.getComputedStyle(parent)
       if (css.display === 'none' || css.visibility === 'hidden' || css.opacity === '0' || parent.getAttribute('aria-hidden') === 'true') { hidden = true; break }
       const box = parent.getBoundingClientRect()
       const scrollableX = /^(auto|scroll)$/.test(css.overflowX)
+      if (css.transform && css.transform !== 'none' && typeof DOMMatrixReadOnly !== 'undefined') {
+        const matrix = new DOMMatrixReadOnly(css.transform)
+        paintedScaleY *= Math.hypot(matrix.m21, matrix.m22, matrix.m23)
+      }
       if (scrollableX) scrollX = true
       // Compare descendants with clipping ancestors; auto/scroll are reachable,
       // even when their contents are deliberately outside the visible region.
@@ -55,18 +59,20 @@ export function reviewRenderedLayout(root: HTMLElement, options: { maxElements?:
     result.checkedElements++
     result.measured = true
     if ((/^(auto|scroll)$/.test(style.overflowX) && element.scrollWidth > element.clientWidth + 2) || (/^(auto|scroll)$/.test(style.overflowY) && element.scrollHeight > element.clientHeight + 2)) result.intentionalScrollRegions++
-    if (clipped || (/^(hidden|clip)$/.test(style.overflowX) && element.scrollWidth > element.clientWidth + 2) || (/^(hidden|clip)$/.test(style.overflowY) && element.scrollHeight > element.clientHeight + 2)) add('CLIPPED_CONTENT', element)
-    if (!scrollX && (rect.right > view.innerWidth + 2 || rect.left < -2)) add('HORIZONTAL_OVERFLOW', element)
-    if (element.hasAttribute('data-focus') && (rect.bottom < 0 || rect.top > view.innerHeight || rect.right < 0 || rect.left > view.innerWidth)) add('FOCUS_OUTSIDE_VIEWPORT', element)
     const hasOwnText = Array.from(element.childNodes).some((node) => node.nodeType === 3 && Boolean(node.textContent?.trim()))
+    const meaningful = hasOwnText || /^(IMG|TABLE|SVG|CANVAS|BUTTON|INPUT|SELECT|TEXTAREA)$/i.test(element.tagName) || element.hasAttribute('data-oui-anchor') || element.hasAttribute('data-focus')
+    if (meaningful && (clipped || (/^(hidden|clip)$/.test(style.overflowX) && element.scrollWidth > element.clientWidth + 2) || (/^(hidden|clip)$/.test(style.overflowY) && element.scrollHeight > element.clientHeight + 2))) add('CLIPPED_CONTENT', element)
+    if (meaningful && !scrollX && (rect.right > view.innerWidth + 2 || rect.left < -2)) add('HORIZONTAL_OVERFLOW', element)
+    if (element.hasAttribute('data-focus') && (rect.bottom < 0 || rect.top > view.innerHeight || rect.right < 0 || rect.left > view.innerWidth)) add('FOCUS_OUTSIDE_VIEWPORT', element)
     const font = Number.parseFloat(style.fontSize)
     // Present scales a design canvas. Computed CSS pixels alone would incorrectly
     // call 24px text readable when an ancestor paints it at 0.3x. Compare the
-    // rendered line-box height with its untransformed layout height.
+    // ancestor transform chain. offsetHeight is rounded to integer pixels and
+    // creates false small-text warnings for fractional, unscaled line boxes.
     const svgMatrix = (element as unknown as SVGGraphicsElement).getScreenCTM?.()
-    const scaleY = element.offsetHeight > 0 ? rect.height / element.offsetHeight : svgMatrix ? Math.hypot(svgMatrix.c, svgMatrix.d) : 1
+    const scaleY = svgMatrix ? Math.hypot(svgMatrix.c, svgMatrix.d) : paintedScaleY
     const paintedFont = font * scaleY
-    if (hasOwnText && Number.isFinite(paintedFont) && paintedFont < (options.minFontPixels ?? 12)) add('SMALL_TEXT', element, Math.round(paintedFont * 100) / 100)
+    if (hasOwnText && Number.isFinite(paintedFont) && paintedFont + 0.1 < (options.minFontPixels ?? 12)) add('SMALL_TEXT', element, Math.round(paintedFont * 100) / 100)
   }
   if (elements.length > maxElements) result.truncated = true
   return result
