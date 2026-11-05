@@ -135,3 +135,24 @@ describe('buildTopicContext in Viewer', () => {
     expect(moved.text).toContain('### sections/intro.oui (whole file)')
   })
 })
+
+it('keeps native and OpenUI Text references separate, including cached history', () => {
+  const c = context({ files: { 'topic.oui': 'root = Topic("T", "C", "D", [])', 'sections/native.oui': 'root = Text("T", ["Native prose"])', 'sections/standard.oui': '// @openui "Standard"\nroot = Text("text", "OpenUI value")' }, fileOrder: ['topic.oui', 'sections/native.oui', 'sections/standard.oui'] })
+  const native = buildTopicContext(c, [{ file: 'sections/native.oui', anchor: 'root' }], { reference: true })
+  const standard = buildTopicContext(c, [{ file: 'sections/standard.oui', anchor: 'root' }], { reference: true, known: new Set(native.keys) })
+  expect(native.text).toContain('Text(title: string, paragraphs:')
+  expect(standard.text).toContain('Text(variant?')
+  expect(standard.text).not.toContain('Text(title: string, paragraphs:')
+  expect(native.keys).toContain('component:Text:loom')
+  expect(standard.keys).toContain('component:Text:openui')
+})
+
+it('refreshes a statement reference when only its library directive changes', () => {
+  const files = { 'sections/value.oui': 'root = label\nlabel = Text("text", "Value")' }
+  const c = context({ files, fileOrder: ['sections/value.oui'] })
+  const pointers = [{ file: 'sections/value.oui', anchor: 'label' }]
+  const prior = buildTopicContext(c, pointers, { reference: true })
+  const next = buildTopicContext({ ...c, files: { 'sections/value.oui': '// @openui "Value"\n' + files['sections/value.oui'] } }, pointers, { reference: true, known: new Set(prior.keys) })
+  expect(next.text).toContain('Text(variant?')
+  expect(next.files).toEqual(['sections/value.oui'])
+})

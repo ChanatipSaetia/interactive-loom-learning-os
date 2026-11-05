@@ -12,6 +12,7 @@
 import { McpServer } from '@modelcontextprotocol/server'
 import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
+import { COMPONENT_LIBRARIES } from '../core/learning-engine/composition/oui/library'
 import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
 import { TopicContextInput, resolveTopicContext } from '../core/supporting/authoring-editor/assistant/context-graph'
 import { getCapabilityCatalog } from '../core/learning-engine/composition/oui/capability-catalog'
@@ -135,11 +136,12 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     title: 'Loom authoring guide',
     description: GUIDE_TOOL_DESCRIPTION,
     inputSchema: z.object({
+      library: z.enum(COMPONENT_LIBRARIES).optional().describe("Library for focused components. Use openui for standard components, loom for native components. Requires components; omission preserves legacy Loom-first lookup."),
       components: z.array(z.string().max(120)).max(100).optional().describe("Exact component names and their signature dependencies. Omit to preserve the section-filtered guide."),
       sections: z.array(z.string()).optional().describe(`Section types the topic will use: ${guideSectionTypes().map((t) => t.type).join(', ')}, or "all".`),
     }),
     annotations: { readOnlyHint: true },
-  }, async ({ sections, components }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections, components) }] }))
+  }, async ({ sections, components, library }) => ({ content: [{ type: 'text', text: getAuthoringGuide(sections, components, library) }] }))
 
   server.registerTool('get_topic_context', {
     title: 'Focused topic context',

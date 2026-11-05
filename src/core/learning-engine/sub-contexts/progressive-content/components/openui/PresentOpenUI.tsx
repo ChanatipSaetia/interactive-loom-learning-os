@@ -38,7 +38,14 @@ export default function PresentOpenUI({ data, beats, beat }: PresentRendererProp
   // Marks set on the rendered elements before the stage enters the beat (its effects run after ours)
   useLayoutEffect(() => {
     const root = scope.current
-    if (!parts || !root) return
+    if (!root) return
+    // Upstream inserts anonymous wrappers. Identify a single enclosing Card by
+    // its content rather than assuming it is a direct child of the scope.
+    const cards = [...root.querySelectorAll<HTMLElement>('.openui-card-card')]
+    cards.forEach((card) => card.classList.remove('present-openui-shell'))
+    const outer = cards.filter((card) => !card.parentElement?.closest('.openui-card-card'))
+    if (outer.length === 1 && outer[0].textContent?.trim() === root.textContent?.trim()) outer[0].classList.add('present-openui-shell')
+    if (!parts) return
     const set = (el: HTMLElement, attrs: Record<string, string | number | undefined>) => {
       el.toggleAttribute('data-shown', 'data-shown' in attrs)
       for (const [k, v] of Object.entries(attrs)) if (k !== 'data-shown' && v !== undefined) el.setAttribute(k, String(v))

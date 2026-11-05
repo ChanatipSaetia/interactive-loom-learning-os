@@ -39,3 +39,13 @@ it('does not treat comments or quoted prose as manifest section references', () 
   const result = resolveTopicContext({ files: { 'topic.oui': '// SectionRef("missing")\nroot = Topic("T", "C", "D", [])' }, roots: ['topic.oui'] })
   expect(result.diagnostics).toEqual([])
 })
+
+
+it('returns distinct component library metadata for mixed source files', () => {
+  const result = resolveTopicContext({ files: {
+    'sections/native.oui': 'root = Text("T", ["Native prose"])',
+    'sections/standard.oui': '// @openui "Standard"\nroot = Text("text", "Standard value")',
+  }, roots: ['sections/native.oui', 'sections/standard.oui'] })
+  expect(result.componentReferences).toEqual(expect.arrayContaining([{ library: 'loom', name: 'Text' }, { library: 'openui', name: 'Text' }]))
+  expect(result.components).toEqual(['Text'])
+})

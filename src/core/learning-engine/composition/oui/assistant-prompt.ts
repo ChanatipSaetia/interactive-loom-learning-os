@@ -1,3 +1,4 @@
+import { getAuthoringWorkflow } from './authoring-workflow'
 /**
  * System prompt for the AI assistant in Loom Studio and Loom Viewer
  * (grill-log-ai-assistant.md, decision 59).
@@ -17,7 +18,7 @@
  */
 import { standardOpenUISpec } from '../../sub-contexts/progressive-content/openui-standard'
 import { getLoomAuthoringPrompt } from './authoring-prompt'
-import { LOOM_OUI_COMPONENTS, getLoomOUIComponent, getLoomOUILibrary, promptDescription } from './library'
+import { LOOM_OUI_COMPONENTS, getLoomOUIComponent, getLoomOUILibrary, promptDescription, type ComponentLibrary } from './library'
 
 export type AssistantApp = 'studio' | 'viewer'
 
@@ -26,6 +27,8 @@ export interface AssistantPromptOptions {
   app: AssistantApp
   /** Component names whose reference entries go in the system prompt (the assistant sends them in the topic context instead). */
   components?: Iterable<string>
+  /** Explicit namespace for supplied component references; omission preserves legacy lookup. */
+  library?: ComponentLibrary
   /** Send the full authoring prompt instead of the selected entries. */
   fullReference?: boolean
   /** The request offers the tools: in Viewer `navigate` and `read` (decision 120), in Studio those and the edit tools (decisions 129–131). */
@@ -99,7 +102,7 @@ q2 = QuizQuestion("q2", "Why do consumers commit offsets?", [c1, c2], "Think abo
 const STUDIO_TOOL_RULES = `## Tools
 
 - \`navigate\` lists the topic's sections, or the parts inside one place; \`read\` gives a place's source. Both show the topic as the editor buffers and your staged changes leave it. Places are addressed like the picks, e.g. \`sections/quiz.oui #q2\`; a file alone means the whole file.
-- \`edit_section\` stages changes to one file (a section, or its \`.narrate.oui\` narration script); \`create_section\` stages a new section and lists it in topic.oui; \`edit_topic\` stages the topic's title, category, description or tags. \`describe_components\` gives the reference entries of components you are about to write.
+- \`edit_section\` stages changes to one file (a section, or its \`.narrate.oui\` narration script); \`create_section\` stages a new section and lists it in topic.oui; \`edit_topic\` stages the topic's title, category, description or tags. \`describe_components\` gives library-scoped reference entries; pass library "loom" or "openui". \`get_loom_capabilities\` and \`validate_topic_plan\` discover formats and check the shared plan contract.
 - Staged changes do not touch the editor: the author reviews them, statement by statement, and applies or rejects them. Later messages tell you what they decided. Never write \`oui-edit\` blocks; use the tools.
 
 ## Changing the Topic
@@ -116,7 +119,7 @@ const STUDIO_TOOL_RULES = `## Tools
 
 - When asked to write a new topic, add several sections or help with ideas, plan before you edit. If you do not know who the learners are and what they should be able to do afterwards, ask (briefly, then end your turn).
 - Suggest contents from your own knowledge too: angles, examples, analogies, common mistakes, questions worth asking.
-- A plan is a list of sections in order, each with its section type, a title and the key idea it teaches. Spread the knowledge over interactive types (flowcharts, scenarios, sandboxes, flashcards, quizzes, decision trees…) instead of walls of text, and make every quiz or reflection test only what an earlier section teaches. Note where narration for Present mode would help.
+- Use the shared TopicPlan contract for new plans, with objective references, a concrete learner activity, the selected representation and a brief rationale. Spread the knowledge over interactive types (flowcharts, scenarios, sandboxes, flashcards, quizzes, decision trees…) instead of walls of text, and make every quiz or reflection test only what an earlier section teaches. Note where narration for Present mode would help.
 - Show the plan with \`propose_plan\`: the author ticks the items they want and presses Build these. Do not stage edits for a plan until they do; when they ask for changes instead, propose a new plan.
 - Build these sends you the ticked items: build them all in that turn (create_section and edit_section, narration where it helps), check each call's errors, then sum up what you staged.`
 
@@ -163,48 +166,55 @@ User messages can start with a <topic-context> block: the topic outline, the sou
 let spec: ReturnType<ReturnType<typeof getLoomOUILibrary>['toSpec']> | undefined
 
 /** Signature of a Loom or standard OpenUI component, if the name is one. */
-function signatureOf(name: string): string | undefined {
+function signatureOf(name: string, library?: ComponentLibrary): string | undefined {
+  if (library === 'openui') return standardOpenUISpec.components[name]?.signature
   spec ??= getLoomOUILibrary().toSpec()
-  return spec.components[name]?.signature ?? standardOpenUISpec.components[name]?.signature
+  return spec.components[name]?.signature ?? (library === 'loom' ? undefined : standardOpenUISpec.components[name]?.signature)
+}
+
+/** Bare names keep their historical Loom-first resolution, but callers can detect collisions. */
+export function ambiguousComponents(names: Iterable<string>): string[] {
+  return [...new Set(names)].filter((name) => !!getLoomOUIComponent(name) && !!standardOpenUISpec.components[name])
 }
 
 /** Component names a signature's parameters mention (`Quiz` → `QuizQuestion`, `Lead`). */
-function childTypes(signature: string): string[] {
+function childTypes(signature: string, library?: ComponentLibrary): string[] {
   const params = signature.slice(signature.indexOf('(') + 1)
-  return [...new Set(params.match(/\b[A-Z]\w*\b/g) ?? [])].filter((name) => signatureOf(name) !== undefined)
+  return [...new Set(params.match(/\b[A-Z]\w*\b/g) ?? [])].filter((name) => signatureOf(name, library) !== undefined)
 }
 
 /**
  * The given components and every component their signatures can contain,
  * in a stable order (Loom components in library order, then standard ones).
  */
-export function componentClosure(names: Iterable<string>): string[] {
+export function componentClosure(names: Iterable<string>, library?: ComponentLibrary): string[] {
   const seen = new Set<string>()
-  const queue = [...names].filter((name) => signatureOf(name) !== undefined)
+  const queue = [...names].filter((name) => signatureOf(name, library) !== undefined)
   while (queue.length) {
     const name = queue.shift()!
     if (seen.has(name)) continue
     seen.add(name)
-    queue.push(...childTypes(signatureOf(name)!))
+    queue.push(...childTypes(signatureOf(name, library)!, library))
   }
+  if (library === 'openui') return [...seen].sort()
   const loom = LOOM_OUI_COMPONENTS.map((c) => c.name).filter((name) => seen.has(name))
   const standard = [...seen].filter((name) => !getLoomOUIComponent(name)).sort()
   return [...loom, ...standard]
 }
 
 /** Signature, description and one line per prop, as in the authoring prompt, for the given components and what they can contain. */
-export function componentReference(names: Iterable<string>): string {
-  return componentEntries(componentClosure(names))
+export function componentReference(names: Iterable<string>, library?: ComponentLibrary): string {
+  return componentEntries(componentClosure(names, library), library)
 }
 
 /** Reference entries for exactly these components, in the given order. */
-export function componentEntries(names: readonly string[]): string {
+export function componentEntries(names: readonly string[], library?: ComponentLibrary): string {
   return names
-    .filter((name) => signatureOf(name) !== undefined)
+    .filter((name) => signatureOf(name, library) !== undefined)
     .map((name) => {
-      const loom = getLoomOUIComponent(name)
+      const loom = library === 'openui' ? undefined : getLoomOUIComponent(name)
       const description = loom ? promptDescription(loom) : standardOpenUISpec.components[name]?.description ?? ''
-      return `${signatureOf(name)}${description ? ` — ${description}` : ''}`
+      return `${signatureOf(name, library)}${description ? ` — ${description}` : ''}`
     })
     .join('\n')
 }
@@ -230,22 +240,23 @@ export function componentIndex(): string {
 }
 
 /** The system prompt for one assistant request (without the topic context). */
-export function getLoomAssistantPrompt({ app, components = [], fullReference = false, tools = false, web = false }: AssistantPromptOptions): string {
+export function getLoomAssistantPrompt({ app, components = [], library, fullReference = false, tools = false, web = false }: AssistantPromptOptions): string {
   const parts = [ROLE[app], ANSWER_RULES[app], ...(app === 'studio' ? [tools ? STUDIO_TOOL_RULES : STUDIO_BLOCK_RULES] : []), ...(tools && web ? [WEB_RULES[app]] : []), DATA_RULE]
   if (app === 'viewer') {
     if (tools) parts.push(VIEWER_TOOL_RULES)
     // A learner's tutor: how to read the source, and the entries for what is in the topic context; no authoring reference or index.
     parts.push(VIEWER_SOURCE_RULES)
-    const reference = componentReference(components)
+    const reference = componentReference(components, library)
     if (reference) parts.push(`## Components in the Picked Source\n\nArguments marked with ? are optional.\n\n${reference}`)
     return parts.join('\n\n')
   }
+  if (tools) parts.push(getAuthoringWorkflow('studio'))
   if (fullReference) {
     parts.push(`## Authoring Reference\n\n${getLoomAuthoringPrompt()}`)
     return parts.join('\n\n')
   }
   parts.push(TOPIC_RULES)
-  const reference = componentReference(components)
+  const reference = componentReference(components, library)
   if (reference) parts.push(`## Components in the Picked Source\n\nArguments marked with ? are optional.\n\n${reference}`)
   parts.push(`## All Loom Components\n\n${componentIndex()}`)
   return parts.join('\n\n')

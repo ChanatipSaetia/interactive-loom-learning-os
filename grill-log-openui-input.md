@@ -210,3 +210,7 @@ Code: `src/core/supporting/authoring-editor/workspace/archive.ts` (bundle + zip 
 ## Open Questions
 
 _None._
+
+### Shared authoring plans and explicit reference libraries
+
+Authoring uses one host-adapted workflow definition for server instructions, tutor/writer skills and Studio. Studio now discovers capabilities, validates the shared TopicPlan and accepts it through propose_plan, while legacy goal/items remain supported. TopicPlan v1 adds optional library/rationale fields and keeps existing objectives/activity/evidence semantics. Build these preserves learner actions and representation decisions; subset selection requires coverage revalidation. Focused MCP/Studio reference requests can select loom or openui explicitly, resolving Text and other collisions within that library. Bare names remain Loom-first with ambiguity notices. Automatic references infer the file library and scope cache keys accordingly. Existing OUI syntax, renderers and hosted statelessness remain unchanged.

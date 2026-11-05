@@ -6,7 +6,13 @@
  * round. `describe_components` gives reference entries for writing new
  * statements.
  */
-import { componentClosure, componentEntries } from '../../../learning-engine/composition/oui/assistant-prompt'
+import { z } from 'zod'
+import { COMPONENT_LIBRARIES, type ComponentLibrary } from '../../../learning-engine/composition/oui/library'
+import { getCapabilityCatalog } from '../../../learning-engine/composition/oui/capability-catalog'
+import { TopicPlanSchema, validateTopicPlan, readStudioPlan as readPlan, buildStudioPlanMessage as buildMessage } from '../../../learning-engine/composition/oui/topic-plan'
+export { readPlan, buildMessage }
+export type { StudioPlan as Plan, StudioPlanItem as PlanItem } from '../../../learning-engine/composition/oui/topic-plan'
+import { ambiguousComponents, componentClosure, componentEntries } from '../../../learning-engine/composition/oui/assistant-prompt'
 import {
   newErrors,
   parseStatements,
@@ -81,15 +87,25 @@ export const EDIT_TOOLS: ToolDefinition[] = [
     type: 'function',
     function: {
       name: 'describe_components',
-      description: 'Reference entries (signature, what each argument is for, an example) for Loom components, with the components they contain. Use before writing a component you have not seen in the topic.',
+      description: 'Reference entries (signature, what each argument is for, an example) for the selected library, with dependencies resolved within that library. Use before writing a component you have not seen in the topic.',
       parameters: {
         type: 'object',
-        properties: { names: { type: 'array', items: { type: 'string' }, description: 'Component names, e.g. ["Quiz", "Flashcards"].' } },
+        properties: { names: { type: 'array', maxItems: 100, items: { type: 'string' }, description: 'Exact component names in the selected library.' }, library: { type: 'string', enum: [...COMPONENT_LIBRARIES], description: 'loom for native components, openui for standard components. Omission keeps legacy Loom-first lookup.' } },
         required: ['names'],
         additionalProperties: false,
       },
     },
   },
+  { type: 'function', function: {
+    name: 'get_loom_capabilities',
+    description: 'Discover canonical learning representations before selecting a section type.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false },
+  } },
+  { type: 'function', function: {
+    name: 'validate_topic_plan',
+    description: 'Validate the same TopicPlan contract used by Loom MCP: objectives, prerequisites, representations, library and evidence references.',
+    parameters: { type: 'object', properties: { plan: z.toJSONSchema(TopicPlanSchema) }, required: ['plan'], additionalProperties: false },
+  } },
 ]
 
 /** A plan the author ticks and builds (decision 139). */
@@ -102,7 +118,9 @@ export const PLAN_TOOL: ToolDefinition = {
     parameters: {
       type: 'object',
       properties: {
-        goal: { type: 'string', description: 'What the learner should be able to do afterwards, in one sentence.' },
+        plan: { ...z.toJSONSchema(TopicPlanSchema), description: 'Preferred shared TopicPlan, after validate_topic_plan. Legacy goal/items remain accepted.' },
+        actions: { type: 'object', additionalProperties: { type: 'string', enum: ['create', 'edit'] }, description: 'Optional create/edit actions keyed by section ID; create is the default.' },
+        goal: { type: 'string', description: 'Legacy plan goal; prefer plan.' },
         items: {
           type: 'array',
           description: 'The sections in reading order.',
@@ -120,53 +138,10 @@ export const PLAN_TOOL: ToolDefinition = {
           },
         },
       },
-      required: ['goal', 'items'],
+      anyOf: [{ required: ['plan'] }, { required: ['goal', 'items'] }],
       additionalProperties: false,
     },
   },
-}
-
-export interface PlanItem {
-  action: 'create' | 'edit'
-  name: string
-  type: string
-  title: string
-  idea: string
-}
-
-export interface Plan {
-  goal: string
-  items: PlanItem[]
-}
-
-/** The plan in a `propose_plan` call's arguments, or null when it is not one. */
-export function readPlan(args: string): Plan | null {
-  try {
-    const parsed = JSON.parse(args) as { goal?: unknown; items?: unknown }
-    if (!Array.isArray(parsed.items)) return null
-    const items = parsed.items.flatMap((raw): PlanItem[] => {
-      const item = raw as Record<string, unknown>
-      if (!item || typeof item !== 'object') return []
-      const text = (key: string) => (typeof item[key] === 'string' ? (item[key] as string).trim() : '')
-      const name = text('name').replace(/^sections\//, '').replace(/\.oui$/, '')
-      if (!name && !text('title')) return []
-      return [{ action: item.action === 'edit' ? 'edit' : 'create', name, type: text('type'), title: text('title') || name, idea: text('idea') }]
-    })
-    return items.length ? { goal: typeof parsed.goal === 'string' ? parsed.goal.trim() : '', items } : null
-  } catch {
-    return null
-  }
-}
-
-/** The message "Build these" sends with the ticked items. */
-export function buildMessage(plan: Plan, ticked: readonly number[]): string {
-  const items = ticked.map((i) => plan.items[i]).filter(Boolean)
-  return [
-    `Build ${items.length === 1 ? 'this section' : 'these sections'} from the plan${plan.goal ? ` (goal: ${plan.goal})` : ''}:`,
-    ...items.map((item, i) => `${i + 1}. ${item.action === 'edit' ? 'Change' : 'Create'} ${item.name ? `sections/${item.name}.oui` : 'a section'} (${item.type || 'section'}) "${item.title}": ${item.idea}`),
-    '',
-    'Stage them all with the edit tools in this turn, then sum up what you staged.',
-  ].join('\n')
 }
 
 export const EDIT_TOOL_NAMES = new Set(EDIT_TOOLS.map((t) => t.function.name))
@@ -193,11 +168,20 @@ export class EditToolRunner {
     } catch {
       return { content: 'Error: the arguments are not valid JSON.', label: `${name} (bad arguments)`, changeset: this.changeset }
     }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { content: 'Error: arguments must be an object.', label: `${name} (bad arguments)`, changeset: this.changeset }
     const summary = str(parsed.summary)?.trim() || name
-    if (name === 'describe_components') return this.describe(strings(parsed.names) ?? [])
+    if (name === 'get_loom_capabilities') return { content: JSON.stringify(getCapabilityCatalog()), label: 'Loom capabilities', changeset: this.changeset }
+    if (name === 'validate_topic_plan') {
+      const diagnostics = validateTopicPlan(parsed.plan, new Set(getCapabilityCatalog().sections.map((section) => section.type)))
+      return { content: JSON.stringify({ valid: diagnostics.length === 0, diagnostics }), label: 'Plan validation', changeset: this.changeset }
+    }
+    if (name === 'describe_components') {
+      if (parsed.library !== undefined && !COMPONENT_LIBRARIES.includes(parsed.library as ComponentLibrary)) return { content: 'Error: library must be loom or openui.', label: 'Components (bad library)', changeset: this.changeset }
+      return this.describe(strings(parsed.names) ?? [], parsed.library as ComponentLibrary | undefined)
+    }
     if (name === 'propose_plan') {
       const plan = readPlan(args)
-      if (!plan) return { content: 'Error: the plan needs items, each with action, name, type, title and idea.', label: 'Plan (not shown)', changeset: this.changeset }
+      if (!plan) return { content: 'Error: supply a valid shared TopicPlan as {plan}, or legacy goal/items. Check objective coverage, section types, library, actions and required fields with validate_topic_plan.', label: 'Plan (not shown)', changeset: this.changeset }
       return {
         content: `Shown to the author as a plan card with ${plan.items.length} items. Do not stage anything yet: say in a sentence that they can tick the items to build and press Build these, or ask for changes to the plan.`,
         label: `Plan: ${plan.items.length} ${plan.items.length === 1 ? 'section' : 'sections'}`,
@@ -252,11 +236,12 @@ export class EditToolRunner {
     return { content, label: summary, file, anchor: 'root', changeset: this.changeset }
   }
 
-  private describe(names: string[]): EditToolOutcome {
-    const closure = componentClosure(names)
+  private describe(names: string[], library?: ComponentLibrary): EditToolOutcome {
+    const closure = componentClosure(names, library)
     const unknown = names.filter((n) => !closure.includes(n))
-    const entries = closure.length ? componentEntries(closure) : ''
-    const content = [entries, unknown.length ? `Unknown components: ${unknown.join(', ')}. The component index in the system prompt lists them all.` : '']
+    const entries = closure.length ? componentEntries(closure, library) : ''
+    const ambiguous = library === undefined ? ambiguousComponents(names) : []
+    const content = [library ? `Library: ${library}.` : '', entries, ...(ambiguous.length ? [`Ambiguous component names: ${ambiguous.join(', ')}. Legacy calls resolve to Loom; specify library explicitly.`] : []), unknown.length ? `Unknown components: ${unknown.join(', ')}. The component index in the system prompt lists them all.` : '']
       .filter(Boolean)
       .join('\n\n') || 'Error: give component names, e.g. ["Quiz"].'
     return { content, label: `Components: ${names.join(', ')}`, changeset: this.changeset }

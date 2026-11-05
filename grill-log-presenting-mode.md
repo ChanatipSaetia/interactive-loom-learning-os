@@ -553,3 +553,7 @@ Present measures the current journey page in canvas coordinates and increases it
 ### Complete paragraphs during Text narration
 
 At the learner's request, Present Text now keeps the complete current paragraph visible instead of replacing it with individual narration passages. Existing `pN` and `pN.partK` beats remain unchanged. Only the current passage receives word animation and narration; surrounding passages stay readable and are marked quiet to prevent repetition. A soft passage highlight provides orientation. Tablet/phone reading widths and top padding remain responsive. This supersedes the visual truncation of Text prose in decision 109 without changing the authoring format or authored narration IDs.
+
+### OpenUI presentation typography and surfaces
+
+OpenUI presentations use a scoped type scale instead of upstream chat-sized font shorthands: 22–26px body text, 20–23px table text, larger headings/step markers and roomier spacing. Theme fonts/colors remain token-driven. Table cells wrap; dense content scrolls vertically inside the region and wide tables scroll horizontally inside their own container. Read retains its typography, with softer table headers, wrapped cells and shared learning-card corners. A single enclosing OpenUI Card loses its redundant frame; actual nested or sibling comparison cards keep their surfaces. Existing parts, narration IDs, source programs and data anchors are unchanged. This improves rendering; choosing native Taxonomy, Bullets, Flowchart or other sections remains an authoring decision.

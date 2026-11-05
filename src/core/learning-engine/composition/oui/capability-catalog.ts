@@ -1,3 +1,6 @@
+import { z } from 'zod'
+import { TopicPlanSchema } from './topic-plan'
+import { AUTHORING_WORKFLOW_VERSION, AUTHORING_WORKFLOW_STAGES } from './authoring-workflow'
 /** Small, serializable capability index for stateless MCP runtimes. */
 import { OPENUI_MODELS, REPRESENTATION_SELECTION_GUIDE, SECTION_MENTAL_MODELS } from './mental-model-guide'
 import { guideSectionTypes } from './authoring-guide'
@@ -11,6 +14,8 @@ export function getCapabilityCatalog() {
   )
   return {
     schemaVersion: CAPABILITY_CATALOG_VERSION,
+    planSchema: z.toJSONSchema(TopicPlanSchema),
+    workflow: { version: AUTHORING_WORKFLOW_VERSION, stages: AUTHORING_WORKFLOW_STAGES.map((stage) => stage.id) },
     selectionGuidance: REPRESENTATION_SELECTION_GUIDE,
     openuiVisuals: OPENUI_MODELS.map(([learningGoal, components]) => ({ learningGoal, components })),
     sections: sections.map((section) => ({

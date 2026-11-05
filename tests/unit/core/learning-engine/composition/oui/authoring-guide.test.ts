@@ -66,3 +66,16 @@ it('returns exact canonical signatures and dependencies without unrelated sectio
   expect(guide.length).toBeLessThan(getAuthoringGuide(['quiz']).length)
   expect(getAuthoringGuide([], ['MissingComponent'])).toContain('Unknown components: MissingComponent')
 })
+
+it('resolves focused contracts and dependencies in the selected library', () => {
+  const native = getAuthoringGuide([], ['Text'], 'loom')
+  const standard = getAuthoringGuide([], ['Text'], 'openui')
+  expect(native).toMatch(/^Text\(title: string, paragraphs:/m)
+  expect(standard).toMatch(/^Text\(variant\?/m)
+  expect(standard).not.toContain('paragraphs: string[]')
+  expect(getAuthoringGuide([], ['Quiz'], 'openui')).toContain('Unknown components: Quiz')
+  expect(getAuthoringGuide([], ['Table'], 'loom')).toContain('Unknown components: Table')
+  expect(getAuthoringGuide([], ['Table'], 'openui')).toMatch(/^Col\(/m)
+  expect(getAuthoringGuide([], ['Text'])).toContain('Ambiguous component names: Text')
+  expect(() => getAuthoringGuide(['openui'], undefined, 'openui')).toThrow('provide components')
+})

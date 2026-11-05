@@ -72,3 +72,9 @@ describe('assistant prompt', () => {
     expect(full).not.toContain('## All Loom Components')
   })
 })
+
+it('scopes explicitly supplied assistant references to the selected library', () => {
+  const prompt = getLoomAssistantPrompt({ app: 'viewer', components: ['Text'], library: 'openui' })
+  expect(prompt).toContain('Text(variant?')
+  expect(prompt).not.toContain('paragraphs: string[]')
+})

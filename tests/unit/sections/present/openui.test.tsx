@@ -56,3 +56,15 @@ describe('openui renderer (decision 116)', () => {
     },
   )
 })
+
+
+it('removes only a single enclosing card frame, keeping comparison cards distinct', () => {
+  const data = { source: 'root = Card([a, b])\na = Card([TextContent("First explanation")])\nb = Card([TextContent("Second explanation")])' }
+  const { container, rerender } = render(<PresentOpenUI data={data} beats={openuiBeats(data)} beat={1} sectionIndex={0} active />)
+  expect(container.querySelectorAll('.present-openui-shell')).toHaveLength(1)
+  expect(container.querySelector('.present-openui-shell')?.querySelectorAll('.openui-card-card')).toHaveLength(2)
+  const siblings = { source: 'root = Stack([a, b], "row")\na = Card([TextContent("First explanation")])\nb = Card([TextContent("Second explanation")])' }
+  rerender(<PresentOpenUI data={siblings} beats={openuiBeats(siblings)} beat={1} sectionIndex={0} active />)
+  expect(container.querySelectorAll('.present-openui-shell')).toHaveLength(0)
+  expect(container.querySelectorAll('.openui-card-card')).toHaveLength(2)
+})

@@ -6,8 +6,8 @@
  * plans to use.
  */
 import { getLoomAuthoringPrompt } from './authoring-prompt'
-import { componentClosure, componentEntries } from './assistant-prompt'
-import { OUI_SECTION_TYPES, getLoomOUIComponent } from './library'
+import { ambiguousComponents, componentClosure, componentEntries } from './assistant-prompt'
+import { OUI_SECTION_TYPES, getLoomOUIComponent, type ComponentLibrary } from './library'
 
 /** The standard OpenUI section (`// @openui`), which has no Loom component of its own. */
 export const OPENUI_SECTION_TYPE = 'openui'
@@ -88,11 +88,13 @@ let prompt: string | undefined
  * core rules and a list of the section types to choose from, so the model can
  * ask again with the ones it will use. `['all']` returns the whole prompt.
  */
-export function getAuthoringGuide(sections: string[] = [], components?: string[]): string {
+export function getAuthoringGuide(sections: string[] = [], components?: string[], library?: ComponentLibrary): string {
+  if (library !== undefined && components === undefined) throw new Error("library selects focused component contracts; provide components, or omit library for the section guide.")
   if (components !== undefined) {
-    const known = components.filter((name) => componentClosure([name]).includes(name))
+    const known = components.filter((name) => componentClosure([name], library).includes(name))
     const unknown = components.filter((name) => !known.includes(name))
-    return ['## Focused component contracts', 'Arguments are positional; ? marks optional arguments. This is a reference, not the full authoring workflow.', componentEntries(componentClosure(known)), ...(unknown.length ? [`Unknown components: ${unknown.join(', ')}.`] : [])].join('\n\n')
+    const ambiguous = library === undefined ? ambiguousComponents(components) : []
+    return ['## Focused component contracts', ...(library ? [`Library: ${library}.`] : []), 'Arguments are positional; ? marks optional arguments. This is a reference, not the full authoring workflow.', componentEntries(componentClosure(known, library), library), ...(ambiguous.length ? [`Ambiguous component names: ${ambiguous.join(', ')}. Legacy calls resolve to Loom; pass library: "loom" or "openui" explicitly.`] : []), ...(unknown.length ? [`Unknown components: ${unknown.join(', ')}.`] : [])].join('\n\n')
   }
   prompt ??= getLoomAuthoringPrompt()
   if (sections.includes('all')) return prompt

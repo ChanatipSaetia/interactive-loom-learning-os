@@ -21,6 +21,10 @@ import { reflectionSynthesisOUIComponents } from '../../sub-contexts/reflection-
 import { tradeoffSandboxOUIComponents } from '../../sub-contexts/tradeoff-sandbox/openui'
 import { NARRATION_COMPONENTS } from './narration'
 
+/** Component names are local to these libraries (both define Text, for example). */
+export const COMPONENT_LIBRARIES = ['loom', 'openui'] as const
+export type ComponentLibrary = typeof COMPONENT_LIBRARIES[number]
+
 // ============================================================================
 // Topic & catalog manifest components
 // ============================================================================

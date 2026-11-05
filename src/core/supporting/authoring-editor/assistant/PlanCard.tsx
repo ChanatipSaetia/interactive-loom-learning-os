@@ -41,6 +41,8 @@ export function PlanCard({ assistant, messageId, call, built, stale }: { assista
                   <code>{item.type}{item.name ? ` · ${item.name}` : ''}</code>
                 </span>
                 {item.idea && <span className="ai-note">{item.idea}</span>}
+                {item.activity && <span className="ai-note">Learner action: {item.activity}</span>}
+                {item.rationale && <span className="ai-note">Why this format: {item.rationale}</span>}
               </span>
             </label>
           </li>

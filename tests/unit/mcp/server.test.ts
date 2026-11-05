@@ -65,6 +65,18 @@ describe('Loom MCP server', () => {
     expect((await client.listTools()).tools.map((t) => t.name)).not.toContain('get_learning_checkpoint')
   })
 
+  it('retrieves library-scoped contracts over MCP and rejects invalid namespaces', async () => {
+    const standard = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Text'], library: 'openui' } }))
+    expect(standard).toContain('Text(variant?')
+    expect(standard).not.toContain('paragraphs: string[]')
+    const native = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Text'], library: 'loom' } }))
+    expect(native).toContain('Text(title: string, paragraphs:')
+    expect((await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Text'], library: 'unknown' } })).isError).toBe(true)
+    expect((await client.callTool({ name: 'get_authoring_guide', arguments: { sections: ['openui'], library: 'openui' } })).isError).toBe(true)
+    const catalog = JSON.parse(textOf(await client.callTool({ name: 'get_loom_capabilities', arguments: {} })))
+    expect(catalog.planSchema.properties.sections.items.properties.activity.type).toBe('string')
+  })
+
   it('returns the guide for the section types asked for', async () => {
     const quiz = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { sections: ['quiz'] } }))
     expect(quiz).toMatch(/^Quiz\(/m)

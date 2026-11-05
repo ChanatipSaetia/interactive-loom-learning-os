@@ -23,7 +23,9 @@
 /* Upstream's default "card" variant is unstyled (it relies on a surrounding
    chat bubble); give it a Loom card surface. Nested cards stay flat. */
 .loom-openui-scope .openui-card-card {
-  @apply rounded-2xl border p-5;
+  @apply border p-5;
+  border-radius: var(--learning-card-radius);
+  box-shadow: var(--learning-card-shadow);
   background-color: var(--card);
   border-color: var(--border);
 }
@@ -89,3 +91,136 @@
 .present-openui .loom-svg-canvas > svg {
   max-height: 20rem;
 }
+
+/* Match the native learning surfaces instead of using nested chat-bubble frames. */
+.loom-openui-scope .openui-table-container {
+  border-radius: var(--learning-card-radius);
+  background: var(--card);
+}
+.loom-openui-scope :is(.openui-table-cell, .openui-table-head) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+.loom-openui-scope .openui-table-head {
+  background: color-mix(in srgb, var(--primary) 6%, var(--card));
+}
+.loom-openui-scope .openui-table-head .openui-table-head-label {
+  color: var(--foreground);
+  font-weight: var(--weight-heading);
+}
+.loom-openui-scope .openui-table-row:nth-child(even) {
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+
+/* OpenUI's composite font tokens contain fixed chat-sized fonts. Override them at
+   the presentation boundary, leaving Read sizing and native section tokens intact. */
+.present-region .present-openui {
+  padding-block-start: 20px;
+  min-width: 0;
+  --openui-present-body-size: max(22px, calc(var(--present-fs-body) + 3px));
+  --openui-present-small-size: max(20px, var(--present-fs-body));
+  --openui-present-caption-size: max(18px, var(--present-fs-small));
+}
+.present-openui .loom-openui-scope {
+  --openui-text-body-xs: 400 var(--openui-present-caption-size) / 1.55 var(--font-body);
+  --openui-text-body-xs-heavy: 600 var(--openui-present-caption-size) / 1.55 var(--font-body);
+  --openui-text-body-sm: 400 var(--openui-present-small-size) / 1.55 var(--font-body);
+  --openui-text-body-sm-heavy: 600 var(--openui-present-small-size) / 1.55 var(--font-body);
+  --openui-text-body-default: 400 var(--openui-present-body-size) / 1.6 var(--font-body);
+  --openui-text-body-default-heavy: 600 var(--openui-present-body-size) / 1.6 var(--font-body);
+  --openui-text-body-lg: 400 calc(var(--openui-present-body-size) + 2px) / 1.55 var(--font-body);
+  --openui-text-body-lg-heavy: 600 calc(var(--openui-present-body-size) + 2px) / 1.55 var(--font-body);
+  --openui-text-label-xs: 500 var(--openui-present-caption-size) / 1.4 var(--font-ui);
+  --openui-text-label-xs-heavy: 600 var(--openui-present-caption-size) / 1.4 var(--font-ui);
+  --openui-text-label-sm: 500 var(--openui-present-small-size) / 1.4 var(--font-ui);
+  --openui-text-label-sm-heavy: 600 var(--openui-present-small-size) / 1.4 var(--font-ui);
+  --openui-text-label-default: 500 var(--openui-present-body-size) / 1.4 var(--font-ui);
+  --openui-text-label-default-heavy: 600 var(--openui-present-body-size) / 1.4 var(--font-ui);
+  --openui-text-label-lg: 500 calc(var(--openui-present-body-size) + 2px) / 1.4 var(--font-ui);
+  --openui-text-label-lg-heavy: 600 calc(var(--openui-present-body-size) + 2px) / 1.4 var(--font-ui);
+  --openui-text-heading-xs: 600 calc(var(--openui-present-body-size) + 2px) / 1.3 var(--font-display);
+  --openui-text-heading-sm: 600 calc(var(--openui-present-body-size) + 4px) / 1.25 var(--font-display);
+  --openui-text-heading-md: 600 calc(var(--openui-present-body-size) + 8px) / 1.25 var(--font-display);
+  --openui-text-heading-lg: 600 calc(var(--openui-present-body-size) + 10px) / 1.2 var(--font-display);
+  --openui-text-heading-xl: 700 calc(var(--openui-present-body-size) + 12px) / 1.2 var(--font-display);
+  --openui-text-numbers-xs: var(--openui-text-label-xs);
+  --openui-text-numbers-xs-heavy: var(--openui-text-label-xs-heavy);
+  --openui-text-numbers-sm: var(--openui-text-label-sm);
+  --openui-text-numbers-sm-heavy: var(--openui-text-label-sm-heavy);
+  --openui-text-numbers-default: var(--openui-text-label-default);
+  --openui-text-numbers-default-heavy: var(--openui-text-label-default-heavy);
+  --openui-text-numbers-lg: var(--openui-text-label-lg);
+  --openui-text-numbers-lg-heavy: var(--openui-text-label-lg-heavy);
+  --openui-text-numbers-heading-sm: var(--openui-text-heading-sm);
+  --openui-text-numbers-heading-md: var(--openui-text-heading-md);
+  --openui-text-numbers-heading-lg: var(--openui-text-heading-lg);
+  --openui-text-numbers-heading-xl: var(--openui-text-heading-xl);
+  --openui-text-code-sm: 400 var(--openui-present-caption-size) / 1.55 var(--font-mono);
+  --openui-text-code-sm-heavy: 600 var(--openui-present-caption-size) / 1.55 var(--font-mono);
+  --openui-text-code-default: 400 var(--openui-present-small-size) / 1.55 var(--font-mono);
+  --openui-text-code-default-heavy: 600 var(--openui-present-small-size) / 1.55 var(--font-mono);
+  --openui-space-m: 20px;
+  --openui-space-l: 28px;
+  --openui-space-xl: 32px;
+  gap: 28px;
+  font: var(--openui-text-body-default);
+}
+.present-region .present-openui .loom-openui-scope .openui-card-card.present-openui-shell {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+/* Inner comparison cards still have their own surfaces after removing the shell. */
+.present-openui .loom-openui-scope .present-openui-shell .openui-card-card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--learning-card-radius);
+  background: var(--card);
+}
+.present-openui .openui-table { font: var(--openui-text-body-sm); }
+.present-openui :is(.openui-table-cell, .openui-table-head) {
+  min-width: 12ch;
+  max-width: 32ch;
+  padding: 16px 20px;
+}
+.present-openui .openui-step-item { gap: 18px; }
+.present-openui .openui-step-title {
+  color: var(--foreground);
+  font: var(--openui-text-body-default-heavy);
+}
+.present-openui .openui-step-number-inner {
+  width: 36px;
+  height: 36px;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, var(--card));
+}
+.present-openui .openui-step-details { align-items: flex-start; }
+.present-openui :is(.openui-header-bottom, .openui-step-details, .openui-markdown-renderer) {
+  overflow-wrap: anywhere;
+}
+.present-openui :is(.present-focus, .present-narr-hl):not(svg *) {
+  outline: none;
+  outline-offset: 0;
+  border-radius: var(--learning-card-radius);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--present-accent, var(--primary)) 30%, transparent);
+}
+.present-openui .loom-svg figcaption { font: var(--openui-text-body-xs); }
+
+/* Large tables and long reference content remain readable and reachable rather
+   than being shrunk to fit a slide. Keep horizontal scrolling inside the table. */
+.present-region-body:has(.present-openui) {
+  pointer-events: auto;
+  scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+.present-region-body:has(.present-openui)::-webkit-scrollbar { display: block; width: 6px; }
+.present-openui .openui-table-container {
+  pointer-events: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+.present-stage.is-portrait .present-openui { padding-block-start: 16px; }
+.present-stage.is-portrait .present-openui .loom-openui-scope { gap: 22px; }
+.present-stage.is-portrait .present-openui :is(.openui-table-cell, .openui-table-head) { padding: 12px 14px; }
