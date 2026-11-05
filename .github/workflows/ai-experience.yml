@@ -43,5 +43,6 @@ jobs:
             artifacts/ai-representation-review.json
             artifacts/ai-workflow-benchmark.json
             tests/mcp-host/results/layout-review.json
+            tests/mcp-host/results/layout-failure.json
             tests/mcp-host/results/layout-*.png
             tests/mcp-host/results/results.json

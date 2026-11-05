@@ -16,8 +16,8 @@ async function expandNavigation(app) {
   if (await toggle.count() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click()
 }
 
-async function open(browser, query) {
-  const page = await browser.newPage({ viewport: { width: 960, height: 720 } })
+async function open(browser, query, viewport = { width: 960, height: 720 }) {
+  const page = await browser.newPage({ viewport })
   const errors = []
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text().slice(0, 200)))
   page.on('pageerror', (e) => errors.push('pageerror: ' + String(e).slice(0, 200)))
@@ -272,14 +272,24 @@ async function open(browser, query) {
   }
 
   // Geometry comes from the production browser auditor, never jsdom/compiler guesses.
+  // Prior voice/animation fixtures no longer need live pages. Release their
+  // contexts before collecting independent viewport snapshots.
+  for (const context of browser.contexts()) await context.close()
+  fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify(results, null, 2) + '\n')
   results.layout = []
   for (const width of [380, 768, 1024]) {
     for (const mode of ['present', 'read']) {
-      const { page, app } = await open(browser, '')
-      await page.setViewportSize({ width, height: 800 })
-      await app.locator(`[data-testid=${mode === 'present' ? 'mcp-play' : 'mcp-other-mode'}]`).click()
+      const { page, app, errors } = await open(browser, '', { width, height: 800 })
+      await app.getByRole('button', { name: mode === 'present' ? /^Present Play with narration$/ : /^Read Read at your own pace$/ }).click()
       const root = app.locator(mode === 'present' ? '[data-testid=mcp-present] .mcp-stage' : '[data-testid=mcp-read-scroll]')
-      await root.waitFor({ timeout: 15000 })
+      try {
+        await root.waitFor({ timeout: 15000 })
+      } catch (error) {
+        await shot(page, 'layout-failure')
+        const markers = await app.locator('[data-testid]').evaluateAll((elements) => elements.slice(0, 50).map((el) => ({ testid: el.getAttribute('data-testid'), width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height })))
+        fs.writeFileSync(path.join(out, 'layout-failure.json'), JSON.stringify({ width, mode, errors, markers }, null, 2))
+        throw error
+      }
       let review
       for (let attempt = 0; attempt < 40 && !review; attempt++) {
         const value = await root.getAttribute('data-loom-layout-review')
@@ -290,6 +300,7 @@ async function open(browser, query) {
       assert.ok(review.checkedElements > 0)
       assert.equal(review.teachingQuality, 'not-evaluated')
       results.layout.push({ width, mode, ...review })
+      fs.writeFileSync(path.join(out, 'layout-review.json'), JSON.stringify({ schemaVersion: 1, kind: 'browser-geometry', snapshots: results.layout }, null, 2) + '\n')
       await shot(page, `layout-${width}-${mode}`)
       await page.close()
     }
