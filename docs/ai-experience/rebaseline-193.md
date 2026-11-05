@@ -89,3 +89,24 @@ Deferred: browser geometry/layout audit, objective-level checkpoints with verifi
 topic revisions, optional design context in retrieval, versioned core contract
 deduplication, real authenticated provider deployment, and external model/human
 learning evaluation. Hosted full compilation remains intentionally unavailable.
+
+## Final verification of this increment
+
+| Check | Current result |
+| --- | --- |
+| Immutable baseline full suite (`7d5416ad`) | 202 files passed; 2,112 tests passed, 14 skipped |
+| Continuation full suite | 203 files passed; 2,126 tests passed, 14 skipped |
+| `npm run typecheck` | Passed |
+| `npm run build:worker` | Passed; Worker bundle 599.85 kB uncompressed (baseline build: 592.42 kB) |
+| `node --test tests/build/worker-runtime.test.mjs tests/build/local-mcp.test.mjs` | Both passed; Node runtime/module-init guard, stateless tool registration and local packaging |
+| `npm run evaluate:offline` | 3 files / 7 tests passed; synthetic, no external model or human participants |
+| Generated-artifact consistency | Passed using the existing generator through installed `vite-node` with `--check`; `npm run oui:schema` itself could not resolve uncached `tsx` without network |
+| `npm run mcp:check` / browser E2E | Blocked: Chromium SIGTRAP / `setsockopt: Operation not permitted` before any assertion; Playwright MCP unavailable |
+| Actual workerd / deployed endpoint / live connector continuity | Not run; bundle guards do not establish these |
+
+Existing React test warnings, jsdom canvas/WebGL limitations and Vite chunk-size
+warnings remain. They did not fail the completed checks. No dependencies changed,
+no Worker compiler/session/LLM orchestration was added, and no deployed storage
+or browser layout success is claimed. GitHub publication uses the connector
+because shell network access could not reach the configured proxy; each published
+commit tree is checked against its local counterpart.
