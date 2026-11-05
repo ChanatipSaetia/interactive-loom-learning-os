@@ -1,5 +1,12 @@
 # Issue 193 rebaseline — 2026-11-05
 
+This matrix records the initial baseline and first increment. The subsequent
+[completion guide](completion-193.md) supersedes its deferred code-work list:
+progressive contracts, plan context, revision-aware objective evidence, browser
+layout instrumentation and provider-neutral evaluation are now implemented.
+Hosted storage/auth deployment was explicitly excluded from the follow-up scope;
+live model/human results must not be inferred from synthetic checks.
+
 Baseline: `7d5416ade8b5be07d0e8e6637af5f36b03236eb4` on
 `feat/serverless-ai-experience-next`. GitHub compare reports this branch and
 `master` identical (0 ahead / 0 behind). PR 192 is already in the ancestry;

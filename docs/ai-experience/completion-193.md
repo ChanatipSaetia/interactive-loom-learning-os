@@ -51,7 +51,7 @@ deployment, live model call or human learning study is implied by this document.
 `LoomServerOptions.onMeasurement` receives content-free byte counts, character/4
 token estimates, tool/stage, latency and success only. No source, learner identity,
 provenance, arguments, credentials or results enter telemetry. It is opt-in;
-without an observer, no measurement serialization occurs. Local CLI opt-in:
+without an observer, no extra boundary measurement serialization occurs. Local CLI opt-in:
 `LOOM_MEASURE_TOOLS=1`. Research/generation/private reasoning remain host-visible
 boundaries; the Worker cannot measure them or provider billing by itself.
 
@@ -129,3 +129,6 @@ provider-specific model execution remain outside the user-selected scope.
   its four focused refresh/compatibility/measurement tests passed afterward.
 - Real workerd and browser evidence is tracked by PR 197's GitHub Actions run;
   a passing local build is not a substitute for those runtime results.
+- Canonical record bundles are checked before any conditional write; malformed or
+  multi-topic inputs cannot be saved and then fail during checkpoint derivation.
+  All four continuity tests pass with these negative cases included.
