@@ -4,8 +4,38 @@ import { getAuthoringContract, authoringContractVersion } from '../../../src/cor
 import { getAuthoringGuide } from '../../../src/core/learning-engine/composition/oui/authoring-guide'
 import { createLoomServer } from '../../../src/mcp/server'
 import { measureTool, type ToolMeasurement } from '../../../src/mcp/measurement'
+import { checkTopic } from '../../../src/mcp/check'
+import { loadTopic } from '../../../src/mcp-app/McpApp'
 
 describe('stateless progressive authoring contracts', () => {
+  it('runs a fresh-client plan, focused retrieval, context, validation and presentation journey', async () => {
+    const observations: ToolMeasurement[] = []
+    const [a, b] = InMemoryTransport.createLinkedPair()
+    await createLoomServer({ check: checkTopic, onMeasurement: (m) => observations.push(m) }).connect(b)
+    const client = new Client({ name: 'fresh-author-fixture', version: '1' }, { capabilities: { extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: ['text/html;profile=mcp-app'] } } } })
+    await client.connect(a)
+    const text = (r: unknown) => (r as { content: Array<{ text: string }> }).content.map((c) => c.text).join('')
+    const plan = { schemaVersion: 1, topicId: 'loop', goal: 'Recognise a loop', objectives: [{ id: 'recognise', description: 'Recognise a loop', evidenceOfLearning: 'Submit a correct authored answer' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', activity: 'Submit an answer', rationale: 'Collect explicit evidence', objectiveRefs: ['recognise'], assessment: { itemRefs: ['sections/quiz.oui#q1'], successCriterion: 'Correct answer' } }] }
+    const files = { 'topic.oui': 'root = Topic("Loops", "Practice", "Recognise a loop", [SectionRef("quiz")])', 'sections/quiz.oui': 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Which repeats?", [QuizChoice("a", "A loop", true, "Correct")])' }
+    const oui = '// @loom-topic loop\n' + Object.entries(files).map(([file, source]) => `// === ${file} ===\n${source}\n`).join('')
+    try {
+      expect(JSON.parse(text(await client.callTool({ name: 'get_loom_capabilities', arguments: { detail: 'index' } }))).sections.some((s: { type: string }) => s.type === 'quiz')).toBe(true)
+      expect(JSON.parse(text(await client.callTool({ name: 'validate_topic_plan', arguments: { plan } }))).valid).toBe(true)
+      const guide = JSON.parse(text(await client.callTool({ name: 'get_authoring_guide', arguments: { detail: 'focused', sections: ['quiz'], library: 'loom' } })))
+      expect(guide.coreContracts).toContain('Topic(')
+      expect(guide.contracts).toContain('QuizQuestion(')
+      const context = JSON.parse(text(await client.callTool({ name: 'get_topic_context', arguments: { files, roots: ['sections/quiz.oui#q1'], plan } })))
+      expect(context.designContext.sections[0].activity).toBe('Submit an answer')
+      expect(context.truncated).toBe(false)
+      const validation = JSON.parse(text(await client.callTool({ name: 'validate_topic', arguments: { oui, plan } })))
+      expect(validation).toMatchObject({ valid: true, planAlignment: { status: 'aligned' } })
+      expect(text(await client.callTool({ name: 'show_topic', arguments: { oui, plan } }))).not.toContain('oui=')
+      const browser = loadTopic(oui, plan)
+      expect(browser.report).toBeNull()
+      expect(browser.topic?.sections[0].config?.type).toBe('quiz')
+      expect(observations.map((m) => m.tool)).toEqual(['get_loom_capabilities', 'validate_topic_plan', 'get_authoring_guide', 'get_topic_context', 'validate_topic', 'show_topic'])
+    } finally { await client.close() }
+  })
   it('refreshes stale/unknown contracts and allows explicit refresh after compaction', () => {
     const first = getAuthoringContract({ detail: 'focused', library: 'loom', components: ['Text'] })
     expect(first.coreIncluded).toBe(true)
