@@ -26,6 +26,9 @@ export function getAuthoringContract(input: z.input<typeof AuthoringContractInpu
   const args = AuthoringContractInput.parse(input)
   const version = authoringContractVersion()
   const coreIncluded = args.forceRefresh || args.knownContractVersion !== version
+  // A fresh host also needs exact manifest/narration signatures, even when its
+  // selected section closure never calls Topic. Derive them from the same library.
+  const coreContracts = coreIncluded ? getAuthoringGuide([], ['Topic', 'Narration'], 'loom').split('\n').filter((line) => /^[A-Z][A-Za-z0-9]*\(/.test(line)).join('\n') : null
   const types = guideSectionTypes()
   const selected = types.filter((section) => args.sections.includes(section.type))
   const components = args.components.length ? args.components : selected.filter((s) => s.type !== 'openui').map((s) => s.component)
@@ -35,7 +38,7 @@ export function getAuthoringContract(input: z.input<typeof AuthoringContractInpu
   const beats = Object.fromEntries(args.sections.map((type) => [type, BEAT_IDS[type as keyof typeof BEAT_IDS] ?? 'Retrieve the section guide for its supported beats.']))
   const result = {
     schemaVersion: 1, contractVersion: version,
-    coreIncluded, core: coreIncluded ? AUTHORING_CORE : null,
+    coreIncluded, core: coreIncluded ? AUTHORING_CORE : null, coreContracts,
     refresh: args.forceRefresh ? 'forced' : args.knownContractVersion === version ? 'current' : args.knownContractVersion ? 'stale' : 'initial',
     contracts, beats,
     ...(args.detail === 'index' ? { sections: types.map(({ type, component }) => ({ type, component })) } : {}),

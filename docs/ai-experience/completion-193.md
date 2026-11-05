@@ -14,7 +14,7 @@ deployment, live model call or human learning study is implied by this document.
    preserve review decisions. Missing rationale, presentation strategy or observable
    evidence produces advisory feedback, separate from structural validity.
 3. Retrieve `get_authoring_guide({detail:"focused",sections,components,library})`.
-   The initial response includes canonical compact core rules and a content
+   The initial response includes canonical compact core rules, exact manifest/narration signatures and a content
    revision. Reuse `knownContractVersion` only while those rules remain available.
    `forceRefresh:true` restores them after context compaction or host changes.
    Stale revisions refresh without relying on a server session. Omit `detail` for
@@ -57,10 +57,10 @@ boundaries; the Worker cannot measure them or provider billing by itself.
 
 The fixed three-case short-topic corpus measures full-guide, section-filtered
 and progressive retrieval using the same artifacts and actual DOM answer actions.
-Initial focused-contract p50/p95: 1,628/1,741 estimated tokens. Documentation
-p50/p95: full 32,708/32,708; section-filtered 9,890/9,959; progressive 2,259/2,372.
+Initial focused-contract p50/p95: 1,883/1,996 estimated tokens. Documentation
+p50/p95: full 32,656/32,656; section-filtered 9,838/9,907; progressive 2,514/2,627.
 CI gates this measured corpus at 2,000 focused and 5,000 total documentation
-estimated tokens. These cover the measured p95 with headroom; they are not
+estimated tokens. The focused gate is close to the measured p95 and must be revisited if canonical requirements grow; these are not
 universal limits. Complex authored graphs/tables may need an explicit
 `budgetExemption`. Required contracts/source must never be silently truncated.
 Discovery retains its 1,000-token index regression guard. App-aware delivery has

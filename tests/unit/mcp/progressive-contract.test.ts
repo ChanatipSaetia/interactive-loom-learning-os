@@ -9,9 +9,13 @@ describe('stateless progressive authoring contracts', () => {
   it('refreshes stale/unknown contracts and allows explicit refresh after compaction', () => {
     const first = getAuthoringContract({ detail: 'focused', library: 'loom', components: ['Text'] })
     expect(first.coreIncluded).toBe(true)
+    expect(first.coreContracts).toContain('Topic(')
+    expect(first.coreContracts).toContain('SectionRef(')
+    expect(first.coreContracts).toContain('NarrationStep(')
     expect(first.contractVersion).toBe(authoringContractVersion())
     const cached = getAuthoringContract({ detail: 'focused', library: 'loom', components: ['Quiz'], knownContractVersion: first.contractVersion })
     expect(cached.core).toBeNull()
+    expect(cached.coreContracts).toBeNull()
     expect(cached.coreIncluded).toBe(false)
     expect(cached.contracts).toContain('Quiz(')
     expect(getAuthoringContract({ detail: 'focused', knownContractVersion: 'old' }).refresh).toBe('stale')
