@@ -549,3 +549,7 @@ Read and Present show the current stage once as a heading and only its immediate
 ### Journey text grows into available space
 
 Present measures the current journey page in canvas coordinates and increases its text size until it fills the available detail area, up to 36 px, reserving about 15% of the detail area as breathing room. Larger viewports use extra inner padding. ResizeObserver and font readiness refresh the measurement after resizing or font loading. The normal Present text size is the floor; dense content scrolls rather than shrinking below that floor. Subheadings scale with the text. Read typography is unchanged.
+
+### Complete paragraphs during Text narration
+
+At the learner's request, Present Text now keeps the complete current paragraph visible instead of replacing it with individual narration passages. Existing `pN` and `pN.partK` beats remain unchanged. Only the current passage receives word animation and narration; surrounding passages stay readable and are marked quiet to prevent repetition. A soft passage highlight provides orientation. Tablet/phone reading widths and top padding remain responsive. This supersedes the visual truncation of Text prose in decision 109 without changing the authoring format or authored narration IDs.
