@@ -19,7 +19,7 @@ Paths below are relative to this skill folder. Read the linked files, not only t
 
 ## Choose the mental model
 
-Learning-first, representation-aware: objective → knowledge structure → learner action → candidate capabilities → simplest faithful representation/configuration. Compare knowledge fidelity, learner action, perspective coverage, cognitive clarity, assessment suitability and authoring feasibility. Native sections and OpenUI are first-class; no section ranking, visual quota or mandatory sequence. Bullets teach numbered linear procedures and checklists; Flashcards introduce definitions. Text can teach connected prose and nuance. OpenUI tables compare facts, cards compare examples, diagrams explain space and charts require supplied/verified or labelled illustrative data; never invent benchmark results. Record rationale and presentation strategy, resolve relevant readiness warnings, then retrieve focused contracts. See planning references for views, evidence boundaries and safe retrieval fallback.
+Learning-first, representation-aware: objective → knowledge structure → learner action → candidate capabilities → simplest faithful representation/configuration. Compare knowledge fidelity, learner action, perspective coverage, cognitive clarity, assessment suitability and authoring feasibility. Native sections and OpenUI are first-class; no section ranking, visual quota or mandatory sequence. Bullets teach numbered linear procedures and checklists; a list is not a universal replacement for prose. Consider OpenUI tables for attributes, cards for examples and Svg for spatial mechanisms. Flashcards introduce definitions. Text can teach connected prose and nuance. OpenUI tables compare facts, cards compare examples, diagrams explain space and charts require supplied/verified or labelled illustrative data; never invent benchmark results. Record rationale and presentation strategy, resolve relevant readiness warnings, then retrieve focused contracts. See planning references for views, evidence boundaries and safe retrieval fallback.
 
 | Learning goal | Section reference |
 |---|---|
@@ -42,7 +42,7 @@ Learning-first, representation-aware: objective → knowledge structure → lear
 | Checking understanding and applying knowledge | [quiz](references/sections/quiz.md) |
 | Reconstructing order and procedure | [reflection-sequence](references/sections/reflection-sequence.md) |
 | Structured reasoning and explanation | [reflection-template](references/sections/reflection-template.md) |
-| Composed visual explanation, comparison and data | [openui](references/sections/openui.md) |
+| Factual comparisons, visual examples, spatial diagrams and data | [openui](references/sections/openui.md) |
 
 Flashcards teach definitions and meaning as well as recall. Tradeoff Sandbox presents options and compares their suitability as well as gains and costs. Select only what helps this topic; the table is not a mandatory sequence.
 

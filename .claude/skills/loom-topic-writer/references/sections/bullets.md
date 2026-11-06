@@ -1,6 +1,6 @@
 # bullets
 
-Linear procedures, prerequisites, checklists and key points. Can concise numbered steps, a checklist, supporting details or a summary teach this clearly?
+Linear procedures, prerequisites, checklists and key points. Is the task a linear procedure, checklist, key points or summary? Preserve comparative, spatial and relational structure when a table or diagram teaches it better.
 
 Read [shared components](../core/components.md) and [narration](../core/narration.md) before writing.
 

@@ -46,6 +46,7 @@ jobs:
             artifacts/ai-workflow-benchmark.json
             artifacts/ai-capability-selection.json
             artifacts/ai-text-selection-regression.json
+            artifacts/ai-openui-selection-regression.json
             tests/mcp-host/results/capability-*.json
             tests/mcp-host/results/capability-*.png
             tests/mcp-host/results/layout-review.json

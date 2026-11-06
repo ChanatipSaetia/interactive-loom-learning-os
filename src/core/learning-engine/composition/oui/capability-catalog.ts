@@ -41,7 +41,7 @@ export function getCapabilityIndex() {
     workflow: { version: AUTHORING_WORKFLOW_VERSION, stages: AUTHORING_WORKFLOW_STAGES.map((stage) => stage.id) },
     sections: guideSectionTypes().map(({ type, component }) => ({ type, component, mentalModel: models.get(type) ?? '' })),
     flowchart: { views: FLOWCHART_MODELS.map(([id]) => id), configuration: 'initialView; NarrationStep.view; Journey/JourneyStep; Branch/BranchOption; Event.data; StateMachine/Event.enters' },
-    openui: 'cards/stacks, tables, labelled Svg, Steps, bar/horizontal, line/area, pie/donut/stacked, scatter, radar; verified or labelled illustrative data',
+    openui: 'tables (Table/Col) for factual attributes; cards/stacks (Card/Stack) for examples; labelled Svg for spatial mechanisms; Steps for visual stages; bar/horizontal, line/area, pie/donut/stacked, scatter, radar charts for supplied/verified or labelled illustrative data',
     selection: 'Objective → structure → learner action → capabilities → simplest faithful configuration; no rankings or quotas.',
     next: 'Use detail: full for learner actions, presentation constraints, evidence boundaries and the exact TopicPlan schema; fetch library-scoped authoring contracts after choosing representations.',
   }

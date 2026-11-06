@@ -178,23 +178,27 @@ export function ambiguousComponents(names: Iterable<string>): string[] {
 }
 
 /** Component names a signature's parameters mention (`Quiz` → `QuizQuestion`, `Lead`). */
-function childTypes(signature: string, library?: ComponentLibrary): string[] {
-  const params = signature.slice(signature.indexOf('(') + 1)
+function childTypes(signature: string, library?: ComponentLibrary, genericChildren: 'all' | 'selected' = 'all'): string[] {
+  let params = signature.slice(signature.indexOf('(') + 1)
+  // Layout child unions are alternatives, not mandatory model dependencies.
+  // Change only the search copy; emitted canonical signatures stay exact.
+  if (library === 'openui' && genericChildren === 'selected') params = params.replace(/\bchildren:\s*\(([^()]*)\)\[\]/g, (match, choices: string) => choices.includes('|') ? 'children: any[]' : match)
   return [...new Set(params.match(/\b[A-Z]\w*\b/g) ?? [])].filter((name) => signatureOf(name, library) !== undefined)
 }
 
 /**
- * The given components and every component their signatures can contain,
- * in a stable order (Loom components in library order, then standard ones).
+ * The given components and their model dependencies, in stable order.
+ * By default include every permitted content child too; selected OpenUI
+ * retrieval leaves generic child alternatives for the author to choose.
  */
-export function componentClosure(names: Iterable<string>, library?: ComponentLibrary): string[] {
+export function componentClosure(names: Iterable<string>, library?: ComponentLibrary, genericChildren: 'all' | 'selected' = 'all'): string[] {
   const seen = new Set<string>()
   const queue = [...names].filter((name) => signatureOf(name, library) !== undefined)
   while (queue.length) {
     const name = queue.shift()!
     if (seen.has(name)) continue
     seen.add(name)
-    queue.push(...childTypes(signatureOf(name, library)!, library))
+    queue.push(...childTypes(signatureOf(name, library)!, library, genericChildren))
   }
   if (library === 'openui') return [...seen].sort()
   const loom = LOOM_OUI_COMPONENTS.map((c) => c.name).filter((name) => seen.has(name))

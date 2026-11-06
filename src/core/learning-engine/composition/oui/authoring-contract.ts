@@ -36,8 +36,9 @@ export function getAuthoringContract(input: z.input<typeof AuthoringContractInpu
   const components = args.components.length ? args.components : selected.filter((s) => s.type !== 'openui').map((s) => s.component)
   const unknownSections = args.sections.filter((type) => !types.some((s) => s.type === type))
   const contracts = args.detail === 'index' ? '' : args.detail === 'full'
-    ? getAuthoringGuide(['all']).replace(AUTHORING_CORE, '') : getAuthoringGuide([], components, args.library)
-  const beats = Object.fromEntries(args.sections.map((type) => [type, BEAT_IDS[type as keyof typeof BEAT_IDS] ?? 'Retrieve the section guide for its supported beats.']))
+    ? getAuthoringGuide(['all']).replace(AUTHORING_CORE, '') : getAuthoringGuide([], components, args.library, 'selected')
+  const beatSections = args.library === 'openui' ? [...new Set([...args.sections, 'openui'])] : args.sections
+  const beats = Object.fromEntries(beatSections.map((type) => [type, BEAT_IDS[type as keyof typeof BEAT_IDS] ?? 'Retrieve the section guide for its supported beats.']))
   const result = {
     schemaVersion: 1, contractVersion: version,
     coreIncluded, core: coreIncluded ? AUTHORING_CORE : null, coreContracts,
@@ -47,7 +48,7 @@ export function getAuthoringContract(input: z.input<typeof AuthoringContractInpu
     diagnostics: [
       ...components.filter((name) => !componentClosure([name], args.library).includes(name)).map((name) => ({ code: 'UNKNOWN_COMPONENT', reference: name, recovery: 'Check the library and component name, retry with forceRefresh, then retrieve the selected legacy section guide without library/components. If unavailable, report the blocker and revalidate any changed representation; never silently substitute Text.' })),
       ...unknownSections.map((type) => ({ code: 'UNKNOWN_SECTION_TYPE', reference: type })),
-      ...(args.sections.includes('openui') && !args.components.length ? [{ code: 'OPENUI_COMPONENTS_REQUIRED', reference: 'Retrieve the openui section guide, then request its selected library-scoped components.' }] : []),
+      ...(args.sections.includes('openui') && !args.components.length ? [{ code: 'OPENUI_COMPONENTS_REQUIRED', reference: 'Choose an OpenUI composition from the capability index, then request its actual components with library: openui (e.g. Table; or Stack, Card, CardHeader, TextContent). Focused retrieval includes section rules, beats and required model dependencies; use the full section guide for additional examples.' }] : []),
     ],
     estimateMethod: 'utf8-bytes and characters/4; estimated tokens are not billing counts',
   }

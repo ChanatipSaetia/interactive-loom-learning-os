@@ -21,11 +21,16 @@ const launch = process.env.LOOM_CHROMIUM_PATH ? { executablePath: process.env.LO
       await app.getByRole('button', { name: mode === 'present' ? /^Present Play with narration$/ : /^Read Read at your own pace$/ }).click()
       const root = app.locator(mode === 'present' ? '[data-testid=mcp-present] .mcp-stage' : '[data-testid=mcp-read-scroll]')
       await root.waitFor({ timeout: 15000 })
+      const sectionIds = await page.evaluate(() => window.fixtureSectionIds)
+      assert.ok(Array.isArray(sectionIds) && sectionIds.length > 0)
       if (mode === 'read') {
-        for (const id of ['terms', 'comparison', 'pipeline', 'layers', 'examples', 'setup', 'choices', 'experience', 'failure', 'assessment']) {
+        for (const id of sectionIds) {
           const section = app.locator(`[data-oui-file="sections/${id}.oui"]`).first()
           await section.scrollIntoViewIfNeeded()
           assert.ok(await section.isVisible(), `Missing Read section ${id}/${width}`)
+          if (id === 'spatial') {
+            for (const target of ['inside', 'outside']) assert.ok(await section.locator(`[data-svg-id="${target}"]`).isVisible(), `Missing Read SVG target ${target}/${width}`)
+          }
         }
         const answer = app.locator('[data-testid^=quiz-choice-]').first()
         await answer.scrollIntoViewIfNeeded()
@@ -38,9 +43,15 @@ const launch = process.env.LOOM_CHROMIUM_PATH ? { executablePath: process.env.LO
         if (await narration.isEnabled() && await narration.getAttribute('aria-pressed') === 'true') await narration.click()
         const play = app.locator('[data-testid=present-play]')
         if (await play.getAttribute('aria-label') === 'Pause autoplay') await play.click()
-        for (let section = 1; section <= 10; section++) {
+        for (let section = 1; section <= sectionIds.length; section++) {
           await app.getByRole('button', { name: new RegExp(`^Go to section ${section}:`) }).click()
           await app.locator('[data-testid=present-next]').click()
+          if (sectionIds[section - 1] === 'spatial') {
+            // Advance past the heading to the diagram with its two narration
+            // targets, rather than checking only title markup.
+            await app.locator('[data-testid=present-next]').click()
+            for (const target of ['inside', 'outside']) await root.locator(`[data-svg-id="${target}"]`).waitFor({ state: 'visible', timeout: 5000 })
+          }
           await page.waitForTimeout(500)
           assert.ok(await root.isVisible(), `Missing Present stage ${section}/${width}`)
         }

@@ -5,6 +5,7 @@
  * returns the core rules plus the components of the section types the model
  * plans to use.
  */
+import { OPENUI_FOCUSED_RULES } from './openui-focused-rules'
 import { getLoomAuthoringPrompt } from './authoring-prompt'
 import { ambiguousComponents, componentClosure, componentEntries } from './assistant-prompt'
 import { OUI_SECTION_TYPES, getLoomOUIComponent, type ComponentLibrary } from './library'
@@ -88,13 +89,13 @@ let prompt: string | undefined
  * core rules and a list of the section types to choose from, so the model can
  * ask again with the ones it will use. `['all']` returns the whole prompt.
  */
-export function getAuthoringGuide(sections: string[] = [], components?: string[], library?: ComponentLibrary): string {
+export function getAuthoringGuide(sections: string[] = [], components?: string[], library?: ComponentLibrary, genericChildren: 'all' | 'selected' = 'all'): string {
   if (library !== undefined && components === undefined) throw new Error("library selects focused component contracts; provide components, or omit library for the section guide.")
   if (components !== undefined) {
-    const known = components.filter((name) => componentClosure([name], library).includes(name))
+    const known = components.filter((name) => componentClosure([name], library, genericChildren).includes(name))
     const unknown = components.filter((name) => !known.includes(name))
     const ambiguous = library === undefined ? ambiguousComponents(components) : []
-    return ['## Focused component contracts', ...(library ? [`Library: ${library}.`] : []), 'Arguments are positional; ? marks optional arguments. This is a reference, not the full authoring workflow.', componentEntries(componentClosure(known, library), library), ...(ambiguous.length ? [`Ambiguous component names: ${ambiguous.join(', ')}. Legacy calls resolve to Loom; pass library: "loom" or "openui" explicitly.`] : []), ...(unknown.length ? [`Unknown components: ${unknown.join(', ')}.`] : [])].join('\n\n')
+    return ['## Focused component contracts', ...(library ? [`Library: ${library}.`] : []), 'Arguments are positional; ? marks optional arguments. This is a reference, not the full authoring workflow.', ...(library === 'openui' && genericChildren === 'selected' ? [OPENUI_FOCUSED_RULES] : []), componentEntries(componentClosure(known, library, genericChildren), library), ...(ambiguous.length ? [`Ambiguous component names: ${ambiguous.join(', ')}. Legacy calls resolve to Loom; pass library: "loom" or "openui" explicitly.`] : []), ...(unknown.length ? [`Unknown components: ${unknown.join(', ')}.`] : [])].join('\n\n')
   }
   prompt ??= getLoomAuthoringPrompt()
   if (sections.includes('all')) return prompt
