@@ -19,18 +19,14 @@ Paths below are relative to this skill folder. Read the linked files, not only t
 
 ## Choose the mental model
 
-Before choosing Text, consider whether a native Loom section or an OpenUI visual composition would explain the idea more clearly. Native Loom sections and OpenUI are first-class choices; choose by the learner's goal, not a preference for one library. Use Text when connected prose or narrative is the best teaching format, and combine concise explanations with visuals when useful.
-
-Use OpenUI cards for side-by-side examples, tables for factual attribute comparisons, charts for quantities and trends, and labelled Svg drawings for spatial structure or mechanisms. Charts must use supplied or verified data; clearly label illustrative data and never invent benchmark results. Keep native Flowchart for processes, Quiz and Flashcards for assessment/recall, Scenario for consequences, Tradeoff Sandbox for evaluating options, Formula Sandbox for input-driven calculations, and the other native sections where their interactions teach the goal. No OpenUI quota or mandatory section sequence.
-
-For example, explain isolated versus distributed retrieval evidence with two annotated document diagrams and a short explanation, then use a native Quiz to check understanding. A chart is appropriate only when actual measurements are available. Request the openui section guide for its syntax and presentation rules before writing a composition, then retrieve only the component families needed.
+Learning-first, representation-aware: objective → knowledge structure → learner action → candidate capabilities → simplest faithful representation/configuration. Compare knowledge fidelity, learner action, perspective coverage, cognitive clarity, assessment suitability and authoring feasibility. Native sections and OpenUI are first-class; no section ranking, visual quota or mandatory sequence. Bullets teach numbered linear procedures and checklists; Flashcards introduce definitions. Text can teach connected prose and nuance. OpenUI tables compare facts, cards compare examples, diagrams explain space and charts require supplied/verified or labelled illustrative data; never invent benchmark results. Record rationale and presentation strategy, resolve relevant readiness warnings, then retrieve focused contracts. See planning references for views, evidence boundaries and safe retrieval fallback.
 
 | Learning goal | Section reference |
 |---|---|
 | Orientation, purpose and roadmap | [intro](references/sections/intro.md) |
 | Definitions, meaning, vocabulary and recall | [flashcards](references/sections/flashcards.md) |
 | Connected explanation and narrative | [text](references/sections/text.md) |
-| Key points, supporting details and checklists | [bullets](references/sections/bullets.md) |
+| Linear procedures, prerequisites, checklists and key points | [bullets](references/sections/bullets.md) |
 | Visual recognition and concrete references | [image-gallery](references/sections/image-gallery.md) |
 | Classification and distinctions | [taxonomy-browser](references/sections/taxonomy-browser.md) |
 | Relationships between concepts | [concept-map](references/sections/concept-map.md) |

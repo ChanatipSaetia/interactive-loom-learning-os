@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MENTAL_MODEL_GUIDE, SECTION_MENTAL_MODELS } from '../../../../../../src/core/learning-engine/composition/oui/mental-model-guide'
+import { MENTAL_MODEL_GUIDE, REPRESENTATION_SELECTION_OVERVIEW, SECTION_MENTAL_MODELS } from '../../../../../../src/core/learning-engine/composition/oui/mental-model-guide'
 import { getWriterSkillReferences } from '../../../../../../src/core/learning-engine/composition/oui/skill-references'
 import { getLoomSkill } from '../../../../../../src/core/learning-engine/composition/oui/skill'
 import { getTutorAppSkill, getTutorViewerSkill } from '../../../../../../src/core/learning-engine/composition/oui/tutor-skills'
@@ -34,14 +34,17 @@ describe('mental model table of contents', () => {
   })
 })
 
-it('considers visuals before Text without demoting native sections', async () => {
+it('selects by learning value and capabilities without ranking representations', async () => {
   const { REPRESENTATION_SELECTION_GUIDE } = await import('../../../../../../src/core/learning-engine/composition/oui/mental-model-guide')
   const { getCapabilityCatalog } = await import('../../../../../../src/core/learning-engine/composition/oui/capability-catalog')
-  for (const guide of [getLoomSkill(), getTutorAppSkill(), getTutorViewerSkill(), getAuthoringGuide(), getAuthoringGuide(['text'])]) {
+  for (const guide of [getTutorAppSkill(), getTutorViewerSkill(), getAuthoringGuide(), getAuthoringGuide(['text'])]) {
     expect(guide).toContain(REPRESENTATION_SELECTION_GUIDE)
-    expect(guide).toContain('No OpenUI quota')
+    expect(guide).toContain('no section ranking, visual quota or mandatory sequence')
+    expect(guide).toContain('knowledge fidelity')
+    expect(guide).toContain('Bullets teach numbered linear procedures')
     expect(guide).toContain('never invent benchmark results')
   }
+  expect(getLoomSkill()).toContain(REPRESENTATION_SELECTION_OVERVIEW)
   const catalog = getCapabilityCatalog()
   expect(catalog.selectionGuidance).toBe(REPRESENTATION_SELECTION_GUIDE)
   expect(catalog.openuiVisuals.some((visual) => visual.components.includes('Table'))).toBe(true)

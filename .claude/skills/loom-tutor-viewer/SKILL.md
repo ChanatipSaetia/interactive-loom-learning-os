@@ -65,14 +65,14 @@ Played 4 of 6 sections; 5 of 7 questions right in the end.
 
 Items are named by file and ID inside the topic (`sections/quiz.oui#q5` is the statement `q5 = …` in that section of `Loom/chinese/topics/chinese101-day1.loom.oui`): open the topic to see what was asked. Save a note exactly as it came, at the path its message names (`Loom/<domain-id>/progress/<topic>-<date>.md`), replacing a note of the same name; when the message leaves the domain to you, put it in the topic's domain and add its `domain:` line.
 
-## Shared authoring workflow (v2)
+## Shared authoring workflow (v3)
 
 For a new topic or substantial redesign:
 
 1. Identify the learner, goal, relevant source evidence and prior progress.
-2. Choose the learning task and learner action before the renderer. Compare native interactions and OpenUI compositions; no mandatory mix or quota. Read the shared mental-model and visual-planning references; call get_loom_capabilities if connected to MCP.
-3. Use a schemaVersion 1 TopicPlan: topicId, goal, objectives (id, description, optional prerequisiteIds/evidenceOfLearning), and sections (id, title, objectiveRefs, representation, activity, optional rationale/library/evidenceRefs/presentation/assessment). activity is the concrete learner action; explain the representation choice in rationale for new plans. representation is a section type such as quiz or openui; library is loom or openui. presentation names target read/present/both and strategy; assessment binds itemRefs to a successCriterion. Keep objective and evidence references consistent.
-4. Check objective coverage, prerequisites, supported representations, library compatibility and declared evidence links before writing OUI. Structural validity is not a judgment of teaching quality. Use validate_topic_plan if available; otherwise check the same contract locally and state which checks ran.
+2. Discover compact capabilities. Map objective → knowledge structure → learner action → candidate views/interactions → representation and configuration; compare fidelity, perspective coverage, clarity, assessment fit and modeling feasibility. Choose the simplest faithful combination; no ranking or quota. Read the shared mental-model and visual-planning references; call get_loom_capabilities if connected to MCP.
+3. Use a schemaVersion 1 TopicPlan: topicId, goal, objectives (id, description, optional prerequisiteIds/evidenceOfLearning), and sections (id, title, objectiveRefs, representation, activity, optional rationale/library/evidenceRefs/presentation/assessment). activity is the concrete learner action; explain the representation choice in rationale for new plans. representation is a section type such as quiz or openui; library is loom or openui. presentation names target read/present/both and strategy; assessment binds itemRefs to a successCriterion. Record a primary Flowchart view and any narration view transitions in presentation.strategy; for OpenUI name its intended table, cards, chart, Steps or diagram. Keep objective and evidence references consistent; each section needs a distinct contribution.
+4. Check objective coverage, prerequisites, supported representations, library compatibility and declared evidence links before writing OUI. Inspect advisory experience-readiness diagnostics too; resolve them or explicitly justify proceeding. Structural validity is not a judgment of teaching quality. Use validate_topic_plan if available; otherwise check the same contract locally and state which checks ran.
 5. Load the selected section rules, then only the component contracts needed. Always specify the library for focused retrieval; native Text and OpenUI Text have different signatures. Read selected section references and only the relevant OpenUI families. With MCP, use get_authoring_guide with components and explicit library.
 6. Write OUI and narration from the checked plan, preserving IDs and exact signatures. Use current buffers and targeted dependencies for edits.
 7. Use the existing OUI/narration checks, compare the artifact with the plan, and measure Read/Present at phone/tablet widths when possible. Inspect clipping, fonts, reachable scroll content and narration focus. Repair only affected statements; report checks not run. Compiler validity and section variety are not teaching-quality scores.
@@ -84,9 +84,9 @@ For a small edit, read affected current source, preserve the existing learning d
 
 1. Work in one domain: read its `domain.oui` (the learner's goal and the topics in order) and its `progress/` notes, the latest one per topic. Other domains' progress does not count unless the learner asks to connect them.
 2. Pick what comes next and say why in one line: **move forward** (the earlier topics went well), **repair** (something earlier has faded or keeps failing) or **weak spot** (one idea fails across topics).
-3. Make about **20–30% of the new topic callbacks** to earlier topics and 70–80% new material. Weave old knowledge into new content (an old word in a new dialogue, an old step in a new task, an old formula with new numbers) rather than repeating old questions; open with two or three quick recall questions on what the topic builds on, and mix old and new questions in the closing quiz.
+3. Connect earlier knowledge when it supports this goal, rather than assigning a fixed share of callbacks. Weave an earlier word, step or formula into a new application instead of repeating the same explanation. Include recall or application questions when they provide useful evidence of learning.
 4. Teach new ideas before testing them: every question tests only what an earlier section of the topic, or an earlier topic the learner has done, teaches.
-5. Keep it to one sitting: about 5–8 sections, mixing the formats that teach the goal (native sections, OpenUI comparisons, diagrams, tables or charts), never walls of text.
+5. Keep it to one sitting, with no fixed section count or order. Select native sections and OpenUI by the learner action; use connected prose when it is the clearest explanation.
 6. When a drawing makes the concept easier to understand, include one without waiting for the learner to ask: a labelled Svg schematic for parts, space, a mechanism or a concrete analogy; use a Flowchart for a process, a chart for quantities or a ConceptMap for relationships. Pair it with a short explanation and narration that highlights the important parts one at a time. Label analogies and simplifications, keep labels readable on a phone, and prefer static shapes over decorative animation or filters. For Svg, request the `openui` section type from get_authoring_guide (or read Drawings in the reference). A picture should teach the idea, not decorate it.
 7. Proactively visualize time and quantities when they are central to the explanation; do not wait for the learner to request a chart. Use Timeline for measured start times, duration, parallel work and waiting; a custom Svg can show a qualitative event timeline, LineChart for change over time, HorizontalBarChart for comparing amounts, PieChart or SingleStackedBarChart for a flat share of one whole, BreakdownTree for a hierarchy of quantities or conditional probabilities, and stacked bars for used versus remaining capacity. Request the timeline guide for measured timelines, the breakdown-tree guide for hierarchical shares, and the openui guide for charts and custom Svg. Use source-backed figures for factual claims; clearly label intentional teaching examples as illustrative data. In Present, keep the whole visual visible while several narration steps highlight its phases, points, bars or slices, then explain the takeaway.
 
@@ -94,18 +94,24 @@ For a small edit, read affected current source, preserve the existing learning d
 
 Use this table as the agent's table of contents before planning or writing a topic. Identify what the learner should be able to define, picture, compare, explain or do; then select the section that teaches that mental model. Each row names a supported section type to request from the authoring guide. Read its exact component signatures before writing.
 
-Before choosing Text, consider whether a native Loom section or an OpenUI visual composition would explain the idea more clearly. Native Loom sections and OpenUI are first-class choices; choose by the learner's goal, not a preference for one library. Use Text when connected prose or narrative is the best teaching format, and combine concise explanations with visuals when useful.
+Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Native Loom sections and OpenUI are first-class choices; there is no section ranking, visual quota or mandatory sequence.
 
-Use OpenUI cards for side-by-side examples, tables for factual attribute comparisons, charts for quantities and trends, and labelled Svg drawings for spatial structure or mechanisms. Charts must use supplied or verified data; clearly label illustrative data and never invent benchmark results. Keep native Flowchart for processes, Quiz and Flashcards for assessment/recall, Scenario for consequences, Tradeoff Sandbox for evaluating options, Formula Sandbox for input-driven calculations, and the other native sections where their interactions teach the goal. No OpenUI quota or mandatory section sequence.
+Compare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.
 
-For example, explain isolated versus distributed retrieval evidence with two annotated document diagrams and a short explanation, then use a native Quiz to check understanding. A chart is appropriate only when actual measurements are available. Request the openui section guide for its syntax and presentation rules before writing a composition, then retrieve only the component families needed.
+Bullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. They are distinct from Text. OpenUI Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.
+
+Flashcards introduce definitions and meanings as well as practise recall. OpenUI cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox evaluates options and decisions; Formula Sandbox explores parameter sensitivity. Select the other native sections by their learning purpose below.
+
+For full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.
+
+Retrieve selected section rules, then library-scoped component contracts and dependencies. If focused retrieval fails, retry with the correct library and forceRefresh; then use the selected legacy section guide (omit library/components). For OpenUI, retrieve its section guide and selected component families. If contracts remain unavailable, report the blocker and revise/revalidate the plan only to an equally faithful supported representation; never silently downgrade to Text or invent signatures.
 
 | Mental model / learning goal | Section type | Learner question and selection cue |
 |---|---|---|
 | Orientation, purpose and roadmap | `intro` | What will I learn, why does it matter, and where are we going? |
 | Definitions, meaning, vocabulary and recall | `flashcards` | What does this term or concept mean? Teach its meaning on the back of a card, then use it for recall; flashcards introduce concepts as well as practise them. |
 | Connected explanation and narrative | `text` | Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal. |
-| Key points, supporting details and checklists | `bullets` | What are the important points, requirements or supporting subpoints? |
+| Linear procedures, prerequisites, checklists and key points | `bullets` | Can concise numbered steps, a checklist, supporting details or a summary teach this clearly? |
 | Visual recognition and concrete references | `image-gallery` | What does it look like? Compare examples, textures, objects or screenshots. |
 | Classification and distinctions | `taxonomy-browser` | What kinds exist, what defines them, and how do I recognise their differences? |
 | Relationships between concepts | `concept-map` | How do ideas connect, depend on, support or differ from each other? Label the relationship explicitly. |
@@ -125,14 +131,16 @@ For example, explain isolated versus distributed retrieval evidence with two ann
 
 ### Choosing views within a Flowchart
 
+Choose one meaningful primary view with Flowchart.initialView. In presentation.strategy record that view, the guided Journey/JourneyStep path and any purposeful NarrationStep.view transitions. Multiple narration steps can use the same beat to reveal different perspectives. Do not require all six views or invent actors, interactions, event data or states to enable them. Use Branch/BranchOption only for real alternatives, async for fire-and-forget commands, sendsTo for declared messages, Event.data for meaningful payloads, and StateMachine plus Event.enters for genuine lifecycle transitions. Sequence spacing is not measured duration. A linear process can still justify several perspectives when each teaches something distinct.
+
 | View | Mental model it teaches |
 |---|---|
-| Event Storming | Event → policy → command → system → resulting event; explain triggers and rules. |
-| System Architecture | Components, their responsibilities and their connections. |
-| Swimlanes | Ownership and handoffs between participants. |
-| Sequence | Who sends what to whom, and in what order; vertical spacing is not measured duration. |
-| Data Flow | What information moves between components. |
-| State Machine | How events change the state of something. |
+| event-storming | Event → policy → command → system → resulting event; explain triggers and rules. |
+| architecture | Components, their responsibilities and their connections. |
+| swimlanes | Ownership and handoffs between participants. |
+| sequence | Who sends what to whom, and in what order; vertical spacing is not measured duration. |
+| data-flow | What information moves between components. |
+| state-machine | How events change the state of something. |
 
 ### Choosing an OpenUI visual
 

@@ -521,7 +521,7 @@
         },
         "ordered": {
           "type": "boolean",
-          "description": "Optional: true numbers the list."
+          "description": "Optional: true numbers a linear procedure or ordered instructions; false keeps bullet points."
         },
         "heading": {
           "type": "string",
@@ -537,7 +537,7 @@
         "items"
       ],
       "additionalProperties": false,
-      "description": "Bulleted (or numbered, when `ordered` is true) checklist."
+      "description": "Linear instructions, prerequisites, checklists, key points and summaries; set `ordered` true for numbered procedures."
     },
     "Bullet": {
       "type": "object",

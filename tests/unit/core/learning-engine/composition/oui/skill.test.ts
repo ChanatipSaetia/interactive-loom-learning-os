@@ -116,7 +116,7 @@ describe('Loom learner skills (slice 6)', () => {
       expect(skill).toContain('Loom/<domain-id>/progress/<topic>-<date>.md')
       expect(skill).toContain('<domain-id>/\n    domain.oui')
       expect(skill).toContain('topics/<topic-id>.loom.oui')
-      expect(skill).toContain('20–30% of the new topic callbacks')
+      expect(skill).toContain('Connect earlier knowledge when it supports this goal')
     }
   })
 
@@ -147,10 +147,10 @@ describe('Loom learner skills (slice 6)', () => {
   it('write short topics in the app by default, and full lessons when asked (Viewer keeps full lessons)', () => {
     const app = getTutorAppSkill()
     expect(app).toContain('By default write a **short topic**')
-    expect(app).toContain('**1–3 sections**')
+    expect(app).toContain('no fixed section count or order')
     expect(app).toContain('**Write a full lesson only when the learner asks for one**')
     expect(getTutorViewerSkill()).not.toContain('short topic')
-    expect(getTutorViewerSkill()).toContain('about 5–8 sections')
+    expect(getTutorViewerSkill()).toContain('no fixed section count or order')
   })
 
   it('encourage keeping progress in the learner\'s drive, and say how to connect one', () => {

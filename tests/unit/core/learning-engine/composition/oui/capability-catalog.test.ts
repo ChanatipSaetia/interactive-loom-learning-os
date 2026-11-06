@@ -29,3 +29,18 @@ describe('capability catalog', () => {
     expect(Math.ceil(JSON.stringify(index).length / 4)).toBeLessThanOrEqual(1000)
   })
 })
+
+it('surfaces view configurations and OpenUI families before signatures', async () => {
+  const { FLOWCHART_VIEW_NAMES } = await import('../../../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/types')
+  const { getAuthoringContract } = await import('../../../../../../src/core/learning-engine/composition/oui/authoring-contract')
+  const index = getCapabilityIndex()
+  expect(index.sections).toHaveLength(20)
+  expect(index.flowchart.views).toEqual(FLOWCHART_VIEW_NAMES)
+  expect(index.openui).toMatch(/tables.*Svg.*Steps.*scatter.*radar/)
+  const flow = getCapabilityCatalog().sections.find((section) => section.type === 'flowchart')!
+  expect(flow.capabilities?.views.map((view) => view.id)).toEqual(FLOWCHART_VIEW_NAMES)
+  const contracts = getAuthoringContract({ detail: 'focused', sections: ['flowchart'], library: 'loom' })
+  for (const name of ['Flowchart', 'Journey', 'JourneyStep', 'Branch', 'BranchOption', 'Event', 'StateMachine']) expect(contracts.contracts).toContain(`${name}(`)
+  expect(contracts.coreContracts).toContain('NarrationStep(')
+  expect(contracts.contracts).toContain('initialView')
+})

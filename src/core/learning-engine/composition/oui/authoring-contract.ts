@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { AUTHORING_CORE } from './authoring-core'
 import { getLoomAuthoringPrompt } from './authoring-prompt'
 import { getAuthoringGuide, guideSectionTypes } from './authoring-guide'
+import { componentClosure } from './assistant-prompt'
 import { COMPONENT_LIBRARIES } from './library'
 import { textHash } from '../../../supporting/authoring-editor/assistant/statements'
 import { BEAT_IDS } from './narration'
@@ -43,6 +44,7 @@ export function getAuthoringContract(input: z.input<typeof AuthoringContractInpu
     contracts, beats,
     ...(args.detail === 'index' ? { sections: types.map(({ type, component }) => ({ type, component })) } : {}),
     diagnostics: [
+      ...components.filter((name) => !componentClosure([name], args.library).includes(name)).map((name) => ({ code: 'UNKNOWN_COMPONENT', reference: name, recovery: 'Check the library and component name, retry with forceRefresh, then retrieve the selected legacy section guide without library/components. If unavailable, report the blocker and revalidate any changed representation; never silently substitute Text.' })),
       ...unknownSections.map((type) => ({ code: 'UNKNOWN_SECTION_TYPE', reference: type })),
       ...(args.sections.includes('openui') && !args.components.length ? [{ code: 'OPENUI_COMPONENTS_REQUIRED', reference: 'Retrieve the openui section guide, then request its selected library-scoped components.' }] : []),
     ],

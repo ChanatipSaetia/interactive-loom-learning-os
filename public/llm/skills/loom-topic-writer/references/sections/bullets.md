@@ -1,15 +1,15 @@
 # bullets
 
-Key points, supporting details and checklists. What are the important points, requirements or supporting subpoints?
+Linear procedures, prerequisites, checklists and key points. Can concise numbered steps, a checklist, supporting details or a summary teach this clearly?
 
 Read [shared components](../core/components.md) and [narration](../core/narration.md) before writing.
 
 ## Component signatures
 
-Bullets(title: string, items: Bullet[], ordered?: boolean, heading?: string, lead?: Lead) — Bulleted (or numbered, when `ordered` is true) checklist.
+Bullets(title: string, items: Bullet[], ordered?: boolean, heading?: string, lead?: Lead) — Linear instructions, prerequisites, checklists, key points and summaries; set `ordered` true for numbered procedures.
   - title: Section title, shown in the topic outline and as the section header.
   - items: The bullets, as Bullet references.
-  - ordered: Optional: true numbers the list.
+  - ordered: Optional: true numbers a linear procedure or ordered instructions; false keeps bullet points.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
 Bullet(text: string, children?: Bullet[], icon?: "list" | "check" | "shield" | "clock" | "key" | "lightbulb" | "target" | "users" | "chart" | "code") — A bullet point, optionally with nested child bullets.

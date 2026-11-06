@@ -77,7 +77,7 @@ const PLAN_START = `1. Work in one domain: read its \`domain.oui\` (the learner'
 2. Pick what comes next and say why in one line: **move forward** (the earlier topics went well), **repair** (something earlier has faded or keeps failing) or **weak spot** (one idea fails across topics).`
 
 /** A full lesson: the shape `loom-topic-writer` and the authoring guide describe. */
-const FULL_LESSON = `Make about **20–30% of the new topic callbacks** to earlier topics and 70–80% new material. Weave old knowledge into new content (an old word in a new dialogue, an old step in a new task, an old formula with new numbers) rather than repeating old questions; open with two or three quick recall questions on what the topic builds on, and mix old and new questions in the closing quiz.`
+const FULL_LESSON = `Connect earlier knowledge when it supports this goal, rather than assigning a fixed share of callbacks. Weave an earlier word, step or formula into a new application instead of repeating the same explanation. Include recall or application questions when they provide useful evidence of learning.`
 
 const TEACH_FIRST = 'Teach new ideas before testing them: every question tests only what an earlier section of the topic, or an earlier topic the learner has done, teaches.'
 
@@ -88,7 +88,7 @@ const NEXT_TOPIC = `## Planning the next topic
 ${PLAN_START}
 3. ${FULL_LESSON}
 4. ${TEACH_FIRST}
-5. Keep it to one sitting: about 5–8 sections, mixing the formats that teach the goal (native sections, OpenUI comparisons, diagrams, tables or charts), never walls of text.
+5. Keep it to one sitting, with no fixed section count or order. Select native sections and OpenUI by the learner action; use connected prose when it is the clearest explanation.
 6. ${SHOW_CONCEPT}
 7. ${TIME_USAGE_PLANNING_RULE}
 
@@ -101,10 +101,10 @@ ${MENTAL_MODEL_GUIDE}`
 const NEXT_TOPIC_SHORT = `## Planning the next topic
 
 ${PLAN_START}
-3. **Size it to the moment.** By default write a **short topic**: one idea the learner can take in within a few minutes, in **1–3 sections** that show it best (a flowchart or a sandbox for how something works, flashcards for words, a scenario for a decision, an OpenUI comparison, table, chart or picture drawn with \`Svg\`). No \`Intro\` section and no closing quiz unless a quick check is the point; the authoring guide's intro-first section order is for full lessons, and a short topic is what it calls one. Weave in one thing from an earlier topic when it fits, rather than a set share of callbacks. Then talk with the learner in the chat and offer the next short topic.
-4. **Write a full lesson only when the learner asks for one** ("a full lesson", "the whole topic", "teach me everything about …", a course or a chapter): then follow the authoring guide's order, with an \`Intro\`, about 5–8 sections mixing types and a closing quiz. ${FULL_LESSON}
+3. **Size it to the moment.** By default write a **short topic**: one idea the learner can take in within a few minutes. Choose the simplest faithful representation or complementary combination, with no fixed section count or order. Bullets can teach linear instructions; Flashcards can introduce definitions; use the other native sections or OpenUI when their capabilities add understanding. Include orientation or an assessment only when it serves this learning goal. Weave in one thing from an earlier topic when it fits, rather than a set share of callbacks. Then talk with the learner in the chat and offer the next short topic.
+4. **Write a full lesson only when the learner asks for one** ("a full lesson", "the whole topic", "teach me everything about …", a course or a chapter): then plan complementary sections according to prerequisites, distinct learning contributions and assessment needs. ${FULL_LESSON}
 5. ${TEACH_FIRST}
-6. Never walls of text: each section shows its idea, it does not lecture.
+6. Keep each section focused and readable; complexity and interactivity need a learning purpose.
 7. ${SHOW_CONCEPT}
 8. ${TIME_USAGE_PLANNING_RULE}
 
