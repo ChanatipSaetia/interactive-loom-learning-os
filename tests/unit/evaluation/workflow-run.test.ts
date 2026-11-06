@@ -18,3 +18,20 @@ it('counts complete provider repair usage only when supplied by the host', () =>
   expect(groups[1].providerTokensPerSuccess).toBe(120)
   expect(groups[1].repairs).toBe(1)
 })
+
+it('reports offline Supported Objective Rate separately from coverage and engagement', () => {
+  const objectiveReviews = [
+    { objectiveId: 'define', sectionIds: ['cards', 'explanation'], reviewerAlias: 'reviewer-a', rubricVersion: 1, representationFit: 5, grounding: 4, implementationQuality: 4 },
+    { objectiveId: 'apply', sectionIds: ['explanation', 'practice'], reviewerAlias: 'reviewer-a', rubricVersion: 1, representationFit: 5, grounding: 2, implementationQuality: 5 },
+  ]
+  const input = { ...run, objectiveIds: ['define', 'apply'], objectiveReviews, toolCalls: 7, outcome: { ...run.outcome, objectiveCoverage: 1 } }
+  const group = evaluateWorkflowRuns([input]).groups[0]
+  expect(group.objectiveCoverage.mean).toBe(1)
+  expect(group.objectiveSupport).toMatchObject({ supportedObjectiveRate: 0.5, reviewedObjectives: 2, learnerMastery: 'not-inferred' })
+  expect(group.objectiveSupport.meanAlignmentScore).toBeCloseTo(25 / 30)
+  expect(group.toolCalls.totalObserved).toBe(7)
+  expect(evaluateWorkflowRuns([{ ...input, objectiveIds: ['define', 'apply', 'unreviewed'] }]).groups[0].objectiveSupport.supportedObjectiveRate).toBeNull()
+  expect(evaluateWorkflowRuns([run]).groups[0].objectiveSupport.meanAlignmentScore).toBeNull()
+  expect(() => evaluateWorkflowRuns([{ ...input, objectiveReviews: [...objectiveReviews, objectiveReviews[0]] }])).toThrow('Duplicate objective review')
+  expect(() => evaluateWorkflowRuns([{ ...input, objectiveIds: ['define'] }])).toThrow('inventory')
+})

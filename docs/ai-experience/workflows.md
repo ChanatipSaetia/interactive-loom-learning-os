@@ -95,3 +95,6 @@ Automatic Studio context infers the library from the file's `// @openui` directi
 - Five local MCP/Worker bundle guards passed. Real local workerd passed startup, conditional tool registration, runtime input validation, shared capability/plan discovery, distinct native/OpenUI Text contracts and focused source context.
 - `mcp:check` passed against the repository's local MCP host in Chromium, exercising presentation, reading, repair reporting, progress, selection, touch scrolling and library flows. This is local integration evidence, not a deployed-service test.
 - No external AI model or human teaching-quality evaluation ran. These checks establish shared contracts and routing, not that assistants consistently choose the best representation.
+
+
+Capability-aware selection, readiness diagnostics, example TopicPlan, objective-support rubric and current Issue #198 verification are documented in [capability-selection-198.md](capability-selection-198.md).

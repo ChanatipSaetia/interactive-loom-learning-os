@@ -329,10 +329,24 @@ export function validateProcessSimulationTier3(
             tier: 3,
             field: 'initialView',
             message: 'initialView is "state-machine", but no system declares a stateMachine, so the flowchart opens on Event Storming.',
-            fixHint: 'Add a StateMachine to a system, or pick another initialView.',
+            fixHint: 'Pick another initialView, or add a source-supported StateMachine and Event.enters transitions; never invent states to enable this view.',
             ...ctx,
           })
         }
+        const flowEvents = rawSteps.flatMap((step: any) => step?.type === 'branch'
+          ? (step.branches ?? []).flatMap((option: any) => option.resultEvents ?? []) : step?.resultEvents ?? [])
+        if (rawFlow?.initialView === 'data-flow' && !flowEvents.some((event: any) => typeof event?.data === 'string' && event.data.trim())) diagnostics.push({
+          tier: 3, field: 'initialView',
+          message: 'The data-flow primary view has no meaningful Event.data payload descriptions.',
+          fixHint: 'Describe source-supported event data when information movement matters, or choose a view that teaches the available model. Do not invent data to enable a view.',
+          ...ctx,
+        })
+        if (rawFlow?.initialView === 'state-machine' && machineStates.size > 0 && !flowEvents.some((event: any) => event?.enters)) diagnostics.push({
+          tier: 3, field: 'initialView',
+          message: 'The state-machine primary view declares states but no Event.enters transitions.',
+          fixHint: 'Model source-supported transitions with Event.enters, or choose a view that explains the available model.',
+          ...ctx,
+        })
         const checkStepRefs = (s: any, kind: 'Step' | 'Branch option') => {
           const where = `${kind} "${s.id}" command "${s.command}"`
           for (const evt of Array.isArray(s.resultEvents) ? s.resultEvents : []) {

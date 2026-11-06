@@ -94,7 +94,7 @@ describe('Loom MCP server', () => {
 
   it('lets a chat write short topics: no Intro or quiz required, a full lesson when asked', async () => {
     const guide = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { sections: ['flowchart'] } }))
-    expect(guide).toContain('Size the topic to the request. A short topic')
+    expect(guide).toContain('Size the topic to the learner goal.')
     expect(guide).not.toMatch(/'?Start with an `Intro` section/)
     const { tools } = await client.listTools()
     expect(tools.find((t) => t.name === 'get_authoring_guide')!.description).toContain('keep topics short by default')

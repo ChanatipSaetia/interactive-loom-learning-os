@@ -69,3 +69,17 @@ describe('compiled plan/artifact review', () => {
     } finally { await client.close() }
   })
 })
+
+
+it('checks explicit OpenUI composition claims through reachable dependencies without grading teaching quality', () => {
+  const designed: TopicPlan = { ...plan, sections: [{ ...plan.sections[0], representation: 'openui', presentation: { target: 'both', strategy: 'composition: Table; compare attributes in Read and narrate the relationship in Present' } }] }
+  const source = '// @openui "Attributes"\nroot = Card([table])\ntable = Table([Col("Attribute", ["Value"])])'
+  expect(checkTopic(bundle(source), designed).planAlignment?.status).toBe('aligned')
+  const wrong = '// @openui "Attributes"\nroot = Card([TextContent("Table([Col(…)]), in prose")])\ntable = Table([Col("Unused", ["Decoy"])])'
+  expect(checkTopic(bundle(wrong), designed).planAlignment?.diagnostics[0]).toMatchObject({ code: 'COMPOSITION_MISMATCH', sectionId: 'argument' })
+  const interactiveClaim = { ...designed, sections: [{ ...designed.sections[0], presentation: { target: 'read' as const, strategy: 'composition: Tabs; explore alternatives' } }] }
+  expect(checkTopic(bundle(source), interactiveClaim).planAlignment?.diagnostics[0].code).toBe('COMPOSITION_MISMATCH')
+  const tabs = '// @openui "Choices"\nroot = Tabs([TabItem("one", "One", [TextContent("First")])])'
+  expect(checkTopic(bundle(tabs), interactiveClaim).planAlignment?.status).toBe('aligned')
+  expect(checkTopic(bundle(source), designed).planAlignment?.teachingQuality).toBe('not-evaluated')
+})

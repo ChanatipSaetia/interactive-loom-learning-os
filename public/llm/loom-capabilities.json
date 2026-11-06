@@ -252,7 +252,7 @@
     "additionalProperties": false
   },
   "workflow": {
-    "version": 2,
+    "version": 3,
     "stages": [
       "understand",
       "discover",
@@ -264,7 +264,7 @@
       "deliver"
     ]
   },
-  "selectionGuidance": "Before choosing Text, consider whether a native Loom section or an OpenUI visual composition would explain the idea more clearly. Native Loom sections and OpenUI are first-class choices; choose by the learner's goal, not a preference for one library. Use Text when connected prose or narrative is the best teaching format, and combine concise explanations with visuals when useful.\n\nUse OpenUI cards for side-by-side examples, tables for factual attribute comparisons, charts for quantities and trends, and labelled Svg drawings for spatial structure or mechanisms. Charts must use supplied or verified data; clearly label illustrative data and never invent benchmark results. Keep native Flowchart for processes, Quiz and Flashcards for assessment/recall, Scenario for consequences, Tradeoff Sandbox for evaluating options, Formula Sandbox for input-driven calculations, and the other native sections where their interactions teach the goal. No OpenUI quota or mandatory section sequence.\n\nFor example, explain isolated versus distributed retrieval evidence with two annotated document diagrams and a short explanation, then use a native Quiz to check understanding. A chart is appropriate only when actual measurements are available. Request the openui section guide for its syntax and presentation rules before writing a composition, then retrieve only the component families needed.",
+  "selectionGuidance": "Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Native Loom sections and OpenUI are first-class choices; there is no section ranking, visual quota or mandatory sequence.\n\nCompare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.\n\nBullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. They are distinct from Text. OpenUI Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.\n\nFlashcards introduce definitions and meanings as well as practise recall. OpenUI cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox evaluates options and decisions; Formula Sandbox explores parameter sensitivity. Select the other native sections by their learning purpose below.\n\nFor full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.\n\nRetrieve selected section rules, then library-scoped component contracts and dependencies. If focused retrieval fails, retry with the correct library and forceRefresh; then use the selected legacy section guide (omit library/components). For OpenUI, retrieve its section guide and selected component families. If contracts remain unavailable, report the blocker and revise/revalidate the plan only to an equally faithful supported representation; never silently downgrade to Text or invent signatures.",
   "openuiVisuals": [
     {
       "learningGoal": "Compare concrete examples or evidence layouts side by side",
@@ -339,11 +339,11 @@
     {
       "type": "bullets",
       "component": "Bullets",
-      "summary": "Bulleted (or numbered, when `ordered` is true) checklist.",
-      "mentalModel": "Key points, supporting details and checklists",
-      "selectionQuestion": "What are the important points, requirements or supporting subpoints?",
+      "summary": "Linear instructions, prerequisites, checklists, key points and summaries; set `ordered` true for numbered procedures.",
+      "mentalModel": "Linear procedures, prerequisites, checklists and key points",
+      "selectionQuestion": "Can concise numbered steps, a checklist, supporting details or a summary teach this clearly?",
       "learningBehavior": {
-        "learnerAction": "Inspect key points and supporting details.",
+        "learnerAction": "Follow numbered instructions, check prerequisites or inspect key points and supporting details.",
         "presentationConstraint": "Use documented item beats; avoid turning every item into a paragraph wall.",
         "evidenceBoundary": "A checklist presentation does not demonstrate procedural skill."
       }
@@ -430,6 +430,41 @@
         "learnerAction": "Step through events, responsibilities and handoffs in the appropriate view.",
         "presentationConstraint": "Select the documented process view and inspect graph labels at the viewport.",
         "evidenceBoundary": "Stepping through a process is engagement; test application separately."
+      },
+      "capabilities": {
+        "views": [
+          {
+            "id": "event-storming",
+            "purpose": "Event → policy → command → system → resulting event; explain triggers and rules."
+          },
+          {
+            "id": "architecture",
+            "purpose": "Components, their responsibilities and their connections."
+          },
+          {
+            "id": "swimlanes",
+            "purpose": "Ownership and handoffs between participants."
+          },
+          {
+            "id": "sequence",
+            "purpose": "Who sends what to whom, and in what order; vertical spacing is not measured duration."
+          },
+          {
+            "id": "data-flow",
+            "purpose": "What information moves between components."
+          },
+          {
+            "id": "state-machine",
+            "purpose": "How events change the state of something."
+          }
+        ],
+        "interactions": [
+          "Journey/JourneyStep guided paths",
+          "Branch/BranchOption alternatives",
+          "async commands and sendsTo messages"
+        ],
+        "narration": "Flowchart.initialView selects the primary view; NarrationStep.view may change views on the same beat for a distinct teaching purpose.",
+        "modelingConstraints": "Use real participants and event → policy → command → handler → event cycles. Data Flow uses Event.data; State Machine requires StateMachine and Event.enters. JourneyStep.processGroup is a phase label, not a state. Never invent model detail to activate views."
       }
     },
     {

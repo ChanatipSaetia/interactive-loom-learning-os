@@ -1,16 +1,25 @@
 /** Shared selection policy: native sections and OpenUI remain first-class choices. */
-export const REPRESENTATION_SELECTION_GUIDE = `Before choosing Text, consider whether a native Loom section or an OpenUI visual composition would explain the idea more clearly. Native Loom sections and OpenUI are first-class choices; choose by the learner's goal, not a preference for one library. Use Text when connected prose or narrative is the best teaching format, and combine concise explanations with visuals when useful.
+export const REPRESENTATION_SELECTION_GUIDE = `Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Native Loom sections and OpenUI are first-class choices; there is no section ranking, visual quota or mandatory sequence.
 
-Use OpenUI cards for side-by-side examples, tables for factual attribute comparisons, charts for quantities and trends, and labelled Svg drawings for spatial structure or mechanisms. Charts must use supplied or verified data; clearly label illustrative data and never invent benchmark results. Keep native Flowchart for processes, Quiz and Flashcards for assessment/recall, Scenario for consequences, Tradeoff Sandbox for evaluating options, Formula Sandbox for input-driven calculations, and the other native sections where their interactions teach the goal. No OpenUI quota or mandatory section sequence.
+Compare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.
 
-For example, explain isolated versus distributed retrieval evidence with two annotated document diagrams and a short explanation, then use a native Quiz to check understanding. A chart is appropriate only when actual measurements are available. Request the openui section guide for its syntax and presentation rules before writing a composition, then retrieve only the component families needed.`
+Bullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. They are distinct from Text. OpenUI Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.
+
+Flashcards introduce definitions and meanings as well as practise recall. OpenUI cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox evaluates options and decisions; Formula Sandbox explores parameter sensitivity. Select the other native sections by their learning purpose below.
+
+For full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.
+
+Retrieve selected section rules, then library-scoped component contracts and dependencies. If focused retrieval fails, retry with the correct library and forceRefresh; then use the selected legacy section guide (omit library/components). For OpenUI, retrieve its section guide and selected component families. If contracts remain unavailable, report the blocker and revise/revalidate the plan only to an equally faithful supported representation; never silently downgrade to Text or invent signatures.`
+
+/** Compact skill entry point; detailed policy stays in planning references. */
+export const REPRESENTATION_SELECTION_OVERVIEW = `Learning-first, representation-aware: objective → knowledge structure → learner action → candidate capabilities → simplest faithful representation/configuration. Compare knowledge fidelity, learner action, perspective coverage, cognitive clarity, assessment suitability and authoring feasibility. Native sections and OpenUI are first-class; no section ranking, visual quota or mandatory sequence. Bullets teach numbered linear procedures and checklists; Flashcards introduce definitions. Text can teach connected prose and nuance. OpenUI tables compare facts, cards compare examples, diagrams explain space and charts require supplied/verified or labelled illustrative data; never invent benchmark results. Record rationale and presentation strategy, resolve relevant readiness warnings, then retrieve focused contracts. See planning references for views, evidence boundaries and safe retrieval fallback.`
 
 /** Shared table of contents for the writer, tutor skills and scoped authoring guides. */
 export const SECTION_MENTAL_MODELS = [
   { type: 'intro', model: 'Orientation, purpose and roadmap', question: 'What will I learn, why does it matter, and where are we going?' },
   { type: 'flashcards', model: 'Definitions, meaning, vocabulary and recall', question: 'What does this term or concept mean? Teach its meaning on the back of a card, then use it for recall; flashcards introduce concepts as well as practise them.' },
   { type: 'text', model: 'Connected explanation and narrative', question: 'Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal.' },
-  { type: 'bullets', model: 'Key points, supporting details and checklists', question: 'What are the important points, requirements or supporting subpoints?' },
+  { type: 'bullets', model: 'Linear procedures, prerequisites, checklists and key points', question: 'Can concise numbered steps, a checklist, supporting details or a summary teach this clearly?' },
   { type: 'image-gallery', model: 'Visual recognition and concrete references', question: 'What does it look like? Compare examples, textures, objects or screenshots.' },
   { type: 'taxonomy-browser', model: 'Classification and distinctions', question: 'What kinds exist, what defines them, and how do I recognise their differences?' },
   { type: 'concept-map', model: 'Relationships between concepts', question: 'How do ideas connect, depend on, support or differ from each other? Label the relationship explicitly.' },
@@ -35,7 +44,7 @@ export const SECTION_LEARNING_BEHAVIORS: Record<typeof SECTION_MENTAL_MODELS[num
 }> = {
   intro: { learnerAction: 'Read the purpose and roadmap.', presentationConstraint: 'Orient attention; keep the opening focused.', evidenceBoundary: 'Reading is engagement, not demonstrated understanding.' },
   text: { learnerAction: 'Read a connected explanation or argument.', presentationConstraint: 'Keep prose readable in Read and Present; check long paragraphs at phone width.', evidenceBoundary: 'Prose can be the right representation; viewing it is not assessment.' },
-  bullets: { learnerAction: 'Inspect key points and supporting details.', presentationConstraint: 'Use documented item beats; avoid turning every item into a paragraph wall.', evidenceBoundary: 'A checklist presentation does not demonstrate procedural skill.' },
+  bullets: { learnerAction: 'Follow numbered instructions, check prerequisites or inspect key points and supporting details.', presentationConstraint: 'Use documented item beats; avoid turning every item into a paragraph wall.', evidenceBoundary: 'A checklist presentation does not demonstrate procedural skill.' },
   flashcards: { learnerAction: 'Try recall, then flip to inspect a definition or example.', presentationConstraint: 'Present demonstrates front/back; use Read for learner-controlled recall.', evidenceBoundary: 'A flip records exposure, not correctness of unauthored recall.' },
   'image-gallery': { learnerAction: 'Inspect and compare visual examples.', presentationConstraint: 'Check image labels and legibility at the actual viewport.', evidenceBoundary: 'Visual inspection alone does not establish recognition accuracy.' },
   'taxonomy-browser': { learnerAction: 'Select categories and inspect their distinctions.', presentationConstraint: 'Use focused category beats instead of a dense classification dump.', evidenceBoundary: 'Category exploration is engagement, not a classification test.' },
@@ -55,13 +64,13 @@ export const SECTION_LEARNING_BEHAVIORS: Record<typeof SECTION_MENTAL_MODELS[num
   openui: { learnerAction: 'Inspect or interact with an authored composition of cards, diagrams, tables or charts.', presentationConstraint: 'Use supported child beats and narration targets; measure dense tables/charts at phone width.', evidenceBoundary: 'Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison.' },
 }
 
-const FLOWCHART_MODELS = [
-  ['Event Storming', 'Event → policy → command → system → resulting event; explain triggers and rules.'],
-  ['System Architecture', 'Components, their responsibilities and their connections.'],
-  ['Swimlanes', 'Ownership and handoffs between participants.'],
-  ['Sequence', 'Who sends what to whom, and in what order; vertical spacing is not measured duration.'],
-  ['Data Flow', 'What information moves between components.'],
-  ['State Machine', 'How events change the state of something.'],
+export const FLOWCHART_MODELS = [
+  ['event-storming', 'Event → policy → command → system → resulting event; explain triggers and rules.'],
+  ['architecture', 'Components, their responsibilities and their connections.'],
+  ['swimlanes', 'Ownership and handoffs between participants.'],
+  ['sequence', 'Who sends what to whom, and in what order; vertical spacing is not measured duration.'],
+  ['data-flow', 'What information moves between components.'],
+  ['state-machine', 'How events change the state of something.'],
 ] as const
 
 export const OPENUI_MODELS = [
@@ -89,6 +98,8 @@ ${REPRESENTATION_SELECTION_GUIDE}
 ${SECTION_MENTAL_MODELS.map(({ type, model, question }) => `| ${model} | \`${type}\` | ${question} |`).join('\n')}
 
 ### Choosing views within a Flowchart
+
+Choose one meaningful primary view with Flowchart.initialView. In presentation.strategy record that view, the guided Journey/JourneyStep path and any purposeful NarrationStep.view transitions. Multiple narration steps can use the same beat to reveal different perspectives. Do not require all six views or invent actors, interactions, event data or states to enable them. Use Branch/BranchOption only for real alternatives, async for fire-and-forget commands, sendsTo for declared messages, Event.data for meaningful payloads, and StateMachine plus Event.enters for genuine lifecycle transitions. Sequence spacing is not measured duration. A linear process can still justify several perspectives when each teaches something distinct.
 
 | View | Mental model it teaches |
 |---|---|

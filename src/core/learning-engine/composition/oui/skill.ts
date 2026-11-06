@@ -1,5 +1,5 @@
 /** Short entry point; detailed guidance is generated into references/ by skill-references.ts. */
-import { REPRESENTATION_SELECTION_GUIDE, SECTION_MENTAL_MODELS } from './mental-model-guide'
+import { REPRESENTATION_SELECTION_OVERVIEW, SECTION_MENTAL_MODELS } from './mental-model-guide'
 import { LOOM_SKILL_NAME } from './llm-guide'
 
 export const LOOM_SKILL_DESCRIPTION =
@@ -27,7 +27,7 @@ Paths below are relative to this skill folder. Read the linked files, not only t
 
 ## Choose the mental model
 
-${REPRESENTATION_SELECTION_GUIDE}
+${REPRESENTATION_SELECTION_OVERVIEW}
 
 | Learning goal | Section reference |
 |---|---|

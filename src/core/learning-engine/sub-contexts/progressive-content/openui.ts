@@ -181,7 +181,7 @@ export const Bullet = defineOUIComponent({
 export const Bullets: LoomOUIComponent = defineOUISection({
   name: 'Bullets',
   sectionType: 'bullets',
-  description: 'Bulleted (or numbered, when `ordered` is true) checklist.',
+  description: 'Linear instructions, prerequisites, checklists, key points and summaries; set `ordered` true for numbered procedures.',
   props: z.object({
     title: z.string(),
     items: z.array(Bullet.ref),
@@ -191,7 +191,7 @@ export const Bullets: LoomOUIComponent = defineOUISection({
   fields: {
     ...sectionFields,
     items: 'The bullets, as Bullet references.',
-    ordered: 'Optional: true numbers the list.',
+    ordered: 'Optional: true numbers a linear procedure or ordered instructions; false keeps bullet points.',
   },
   toData: (p) => ({ type: 'bullets', items: p.items as unknown as BulletItem[] }),
   fromData: (data: BulletsSectionData, meta) => call(Bullets, {

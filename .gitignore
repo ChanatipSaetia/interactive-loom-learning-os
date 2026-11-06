@@ -68,3 +68,5 @@ tests/mcp-host/results/
 /artifacts/ai-experience-evaluation.json
 /artifacts/ai-representation-review.json
 /artifacts/ai-workflow-benchmark.json
+
+/artifacts/ai-capability-selection.json

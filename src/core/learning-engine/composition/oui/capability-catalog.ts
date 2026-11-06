@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { TopicPlanSchema } from './topic-plan'
 import { AUTHORING_WORKFLOW_VERSION, AUTHORING_WORKFLOW_STAGES } from './authoring-workflow'
 /** Small, serializable capability index for stateless MCP runtimes. */
-import { OPENUI_MODELS, REPRESENTATION_SELECTION_GUIDE, SECTION_MENTAL_MODELS, SECTION_LEARNING_BEHAVIORS } from './mental-model-guide'
+import { FLOWCHART_MODELS, OPENUI_MODELS, REPRESENTATION_SELECTION_GUIDE, SECTION_MENTAL_MODELS, SECTION_LEARNING_BEHAVIORS } from './mental-model-guide'
 import { guideSectionTypes } from './authoring-guide'
 
 export const CAPABILITY_CATALOG_VERSION = 1
@@ -23,6 +23,12 @@ export function getCapabilityCatalog() {
       mentalModel: models.get(section.type)?.model ?? '',
       selectionQuestion: models.get(section.type)?.question ?? '',
       learningBehavior: SECTION_LEARNING_BEHAVIORS[section.type as keyof typeof SECTION_LEARNING_BEHAVIORS],
+      ...(section.type === 'flowchart' ? { capabilities: {
+        views: FLOWCHART_MODELS.map(([id, purpose]) => ({ id, purpose })),
+        interactions: ['Journey/JourneyStep guided paths', 'Branch/BranchOption alternatives', 'async commands and sendsTo messages'],
+        narration: 'Flowchart.initialView selects the primary view; NarrationStep.view may change views on the same beat for a distinct teaching purpose.',
+        modelingConstraints: 'Use real participants and event → policy → command → handler → event cycles. Data Flow uses Event.data; State Machine requires StateMachine and Event.enters. JourneyStep.processGroup is a phase label, not a state. Never invent model detail to activate views.',
+      } } : {}),
     })),
   }
 }
@@ -34,6 +40,9 @@ export function getCapabilityIndex() {
     schemaVersion: CAPABILITY_CATALOG_VERSION,
     workflow: { version: AUTHORING_WORKFLOW_VERSION, stages: AUTHORING_WORKFLOW_STAGES.map((stage) => stage.id) },
     sections: guideSectionTypes().map(({ type, component }) => ({ type, component, mentalModel: models.get(type) ?? '' })),
+    flowchart: { views: FLOWCHART_MODELS.map(([id]) => id), configuration: 'initialView; NarrationStep.view; Journey/JourneyStep; Branch/BranchOption; Event.data; StateMachine/Event.enters' },
+    openui: 'cards/stacks, tables, labelled Svg, Steps, bar/horizontal, line/area, pie/donut/stacked, scatter, radar; verified or labelled illustrative data',
+    selection: 'Objective → structure → learner action → capabilities → simplest faithful configuration; no rankings or quotas.',
     next: 'Use detail: full for learner actions, presentation constraints, evidence boundaries and the exact TopicPlan schema; fetch library-scoped authoring contracts after choosing representations.',
   }
 }
