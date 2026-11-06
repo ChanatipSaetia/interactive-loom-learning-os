@@ -8,6 +8,7 @@ import { textHash } from '../../../supporting/authoring-editor/assistant/stateme
 import { BEAT_IDS } from './narration'
 import { getAuthoringWorkflow } from './authoring-workflow'
 import { TopicPlanSchema } from './topic-plan'
+import { getCapabilityIndex } from './capability-catalog'
 
 export const AuthoringContractInput = z.object({
   detail: z.enum(['index', 'focused', 'full']),
@@ -42,7 +43,7 @@ export function getAuthoringContract(input: z.input<typeof AuthoringContractInpu
     coreIncluded, core: coreIncluded ? AUTHORING_CORE : null, coreContracts,
     refresh: args.forceRefresh ? 'forced' : args.knownContractVersion === version ? 'current' : args.knownContractVersion ? 'stale' : 'initial',
     contracts, beats,
-    ...(args.detail === 'index' ? { sections: types.map(({ type, component }) => ({ type, component })) } : {}),
+    ...(args.detail === 'index' ? getCapabilityIndex() : {}),
     diagnostics: [
       ...components.filter((name) => !componentClosure([name], args.library).includes(name)).map((name) => ({ code: 'UNKNOWN_COMPONENT', reference: name, recovery: 'Check the library and component name, retry with forceRefresh, then retrieve the selected legacy section guide without library/components. If unavailable, report the blocker and revalidate any changed representation; never silently substitute Text.' })),
       ...unknownSections.map((type) => ({ code: 'UNKNOWN_SECTION_TYPE', reference: type })),

@@ -70,3 +70,5 @@ tests/mcp-host/results/
 /artifacts/ai-workflow-benchmark.json
 
 /artifacts/ai-capability-selection.json
+
+/artifacts/ai-text-selection-regression.json
