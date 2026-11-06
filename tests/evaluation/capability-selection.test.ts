@@ -7,6 +7,7 @@ import { THREE_SPLINE_REQUEST, TEXT_HEAVY_REPRO_PLAN, TEXT_HEAVY_REPRO_OUI } fro
 import { THREE_SPLINE_PLAN, THREE_SPLINE_FILES, THREE_SPLINE_OUI, RENDER_FLOW } from '../fixtures/ai-experience/three-spline'
 import { getCapabilityCatalog, getCapabilityIndex } from '../../src/core/learning-engine/composition/oui/capability-catalog'
 import { reviewTopicPlan, validateTopicPlan } from '../../src/core/learning-engine/composition/oui/topic-plan'
+import { getAuthoringGuide } from '../../src/core/learning-engine/composition/oui/authoring-guide'
 import { getAuthoringContract } from '../../src/core/learning-engine/composition/oui/authoring-contract'
 import { createLoomServer } from '../../src/mcp/server'
 import { checkTopic, checkSection } from '../../src/mcp/check'
@@ -55,7 +56,7 @@ describe('capability-aware authored regression corpus', () => {
       discoveryEstimatedTokens: Math.ceil(JSON.stringify(getCapabilityIndex()).length / 4), focusedContractEstimatedTokens: guideSizes,
       estimateMethod: 'characters/4; not provider billing',
       semanticRepresentationFit: null, supportedObjectiveRate: null, learnerAssessment: 'not-measured',
-      budgetExemption: 'Comprehensive lesson: Flowchart dependency contracts and generic OpenUI Card/Stack child closure exceed short-topic focused budgets; all required contracts retained.',
+      budgetExemption: 'Comprehensive lesson: Flowchart dependency contracts can exceed short-topic focused budgets; all required model contracts retained. OpenUI generic content alternatives are selected separately, with compact section rules included.',
       externalModelSelection: 'not-run', mobileLayout: 'requires-browser-harness',
     }, null, 2) + '\n')
   })
@@ -134,5 +135,32 @@ it('exposes the user-request Text-selection loophole separately from OUI validit
     advisoryDiagnostics: diagnostics, complementaryPlanAdvisories: reviewTopicPlan(THREE_SPLINE_PLAN),
     externalModelRun: false, liveAssistantSelection: 'not-measured',
     caveat: 'This reproduces deterministic acceptance and review propagation, not the original assistant trace or autonomous model selection.',
+  }, null, 2) + '\n')
+})
+
+
+it('compares the same request with list-heavy and composition-aware plans and measures selected OpenUI contracts', () => {
+  const listPlan = { ...TEXT_HEAVY_REPRO_PLAN, sections: TEXT_HEAVY_REPRO_PLAN.sections.map((section) => ({ ...section, representation: 'bullets', rationale: 'Bullets are simple and clear.' })) }
+  const listReview = reviewTopicPlan(listPlan)
+  expect(listReview.filter((diagnostic) => diagnostic.code === 'LIST_STRUCTURE_REVIEW')).toHaveLength(2)
+  expect(reviewTopicPlan(THREE_SPLINE_PLAN)).toEqual([])
+  const source = THREE_SPLINE_FILES['sections/spatial.oui']
+  const narration = THREE_SPLINE_FILES['sections/spatial.narrate.oui']
+  expect(checkSection(source, 'sections/spatial.oui').diagnostics).toEqual([])
+  expect(checkSection(narration, 'sections/spatial.narrate.oui', source).diagnostics).toEqual([])
+  const names = ['Stack', 'Card', 'CardHeader', 'TextContent']
+  const focused = getAuthoringContract({ detail: 'focused', library: 'openui', components: names })
+  const legacy = getAuthoringGuide([], names, 'openui')
+  expect(focused.measurement.estimatedTokens).toBeLessThan(2000)
+  const selected = focused.contracts.split('\n').filter((line) => /^[A-Z]\w*\(/.test(line)).map((line) => line.split('(')[0])
+  expect(selected).toEqual(['Card', 'CardHeader', 'Stack', 'TextContent'])
+  mkdirSync('artifacts', { recursive: true })
+  writeFileSync('artifacts/ai-openui-selection-regression.json', JSON.stringify({
+    origin: 'authored-user-request-reproduction', request: THREE_SPLINE_REQUEST,
+    listReview, complementaryPlanReview: reviewTopicPlan(THREE_SPLINE_PLAN),
+    selectedComponents: selected, firstFocusedResponseEstimatedTokens: focused.measurement.estimatedTokens,
+    selectedContractBodyEstimatedTokens: Math.ceil(focused.contracts.length / 4), legacyAllAllowedBodyEstimatedTokens: Math.ceil(legacy.length / 4),
+    estimateMethod: 'characters/4, not provider billing', ouiAndNarrationValid: true,
+    externalModelRun: false, semanticSelectionQuality: 'not-measured',
   }, null, 2) + '\n')
 })

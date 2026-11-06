@@ -63,7 +63,7 @@ async function main() {
   await client.connect(new StreamableHTTPClientTransport(new URL(SERVER)))
   const { tools } = await client.listTools()
   const show = tools.find((t) => t.name === 'show_topic')!
-  Object.assign(window, { toolNames: tools.map((t) => t.name) })
+  Object.assign(window, { toolNames: tools.map((t) => t.name), fixtureSectionIds: params.get('fixture') === 'three-spline' ? THREE_SPLINE_PLAN.sections.map((section) => section.id) : [] })
   const uri = getToolUiResourceUri(show)!
 
   if (params.has('summary')) {

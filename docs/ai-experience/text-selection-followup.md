@@ -106,3 +106,6 @@ persists after the update.
 
 The follow-up PR records actual CI runtime/browser outcomes separately. No
 external model or learner study ran, and no server-side semantic judging was added.
+
+The subsequent [OpenUI selection follow-up](openui-selection-followup.md) addresses
+list overuse, positive composition discovery and focused OpenUI retrieval cost.

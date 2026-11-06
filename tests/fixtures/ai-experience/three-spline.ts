@@ -5,6 +5,7 @@ const rows = [
   ['terms', 'flashcards', 'Define scene, camera and renderer', 'Explain each term in a rendering pipeline', 'Read concise definitions, then attempt recall before flipping', 'Flashcards introduce definitions and meanings; flipping is exposure, not correctness.', 'Reveal each front and definition back; Read permits learner-paced recall.'],
   ['comparison', 'openui', 'Compare authoring approaches', 'Explain a factual difference without assuming measured performance', 'Look up matching authoring attributes across Three.js and Spline', 'A static factual table compares code-oriented Three.js and visual Spline authoring without invented benchmark data.', 'composition: Table; Read the table by attribute; Present narrates one column relationship at a time.'],
   ['pipeline', 'flowchart', 'Trace the rendering request', 'Explain which component handles a render request', 'Trace a render request and its result between application and renderer', 'Flowchart preserves component participation and message order; the same linear process has two useful perspectives.', 'initialView: architecture; follow Journey frame; NarrationStep.view sequence on step1 explains message ordering.'],
+  ['spatial', 'openui', 'Explain camera visibility', 'Identify which object is inside the authored camera view and explain why', 'Locate objects relative to a camera view volume in an annotated diagram', 'A labelled Svg preserves spatial relationships that a list of camera terms would flatten.', 'composition: Svg; present named heading, figure and explanation; highlight inside and outside objects.'],
   ['layers', 'pillar-layer', 'Explain layered dependencies', 'Identify which application layer depends on the rendering foundation', 'Inspect application above rendering infrastructure and explain the dependency', 'Pillar Layer shows what builds on the rendering foundation rather than repeating request ordering.', 'Reveal foundation before application layer, then overview.'],
   ['examples', 'openui', 'Recognize authoring examples', 'Identify the authoring approach used in each example', 'Inspect a code-driven object and a visually composed object side by side', 'OpenUI cards hold concise examples without pretending to run a live 3D configurator.', 'composition: Card; Present one named card per beat; keep both examples visible in Read.'],
   ['setup', 'bullets', 'Initialize a Three.js scene', 'Reconstruct the scene initialization sequence', 'Follow numbered instructions to create scene, camera, renderer, geometry/materials and animation loop', 'Ordered Bullets give concise linear implementation instructions; no extra interaction model is needed.', 'Reveal numbered instructions one at a time; Read retains the checklist.'],
@@ -41,6 +42,11 @@ root = Table([Col("Approach", ["Three.js", "Spline"]), Col("Authoring", ["JavaSc
 chart = NarrationStep("chart", "First identify the participating components.", null, "architecture")
 participants = NarrationStep("step1", "The application owns scene and camera; the renderer draws them.", null, "architecture")
 messages = NarrationStep("step1", "Now trace the request and returned frame in order.", null, "sequence")`,
+  'sections/spatial.oui': `// @openui "What the camera can see"
+root = Stack([heading, figure, explanation])
+heading = CardHeader("Objects need a viewpoint", "A conceptual slice of a 3D view")
+figure = Svg('<svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg"><path id="view" d="M 50 100 L 220 30 L 220 170 Z" fill="var(--ctp-surface0)" stroke="var(--ctp-blue)" stroke-width="2"/><rect id="camera" x="20" y="88" width="26" height="24" fill="var(--ctp-blue)"/><text x="8" y="140" font-size="18" fill="var(--ctp-text)">Camera</text><rect id="inside" x="150" y="86" width="28" height="28" fill="var(--ctp-green)"/><text x="132" y="140" font-size="18" fill="var(--ctp-text)">In view</text><rect id="outside" x="280" y="24" width="28" height="28" fill="var(--ctp-red)"/><text x="255" y="80" font-size="18" fill="var(--ctp-text)">Outside</text></svg>', "Illustrative slice, not a measured projection")
+explanation = TextContent("An object can belong to the scene and still lie outside the camera view. This spatial relationship differs from the order of render requests.")`,
   'sections/layers.oui': `root = PillarLayer("Rendering dependencies", [application, foundation], [product, engine])
 application = Layer("application", "Application", "Uses rendering")
 foundation = Layer("foundation", "Rendering foundation", "Supports application")
@@ -69,6 +75,7 @@ q1 = QuizQuestion("q1", "A project requires custom code-owned rendering behavior
 const narration: Record<string, Array<[string, string]>> = {
   terms: [['card1', 'What is a scene?'], ['card1.back', 'It groups the objects supplied to the renderer.'], ['card2', 'What does the camera contribute?'], ['card2.back', 'It defines the viewpoint.'], ['card3', 'What draws the frame?'], ['card3.back', 'The renderer draws the scene using the camera.']],
   comparison: [['all', 'Compare authoring workflows, not unmeasured performance. Three.js uses application code; Spline offers a visual editor.']],
+  spatial: [['part1', 'A scene can contain objects that the camera does not see.'], ['part2', 'Compare the object inside the view with the object outside it.'], ['part3', 'Spatial visibility is distinct from the rendering message sequence.']],
   layers: [['layer2', 'Rendering supports the application.'], ['layer1', 'Product behavior depends on that foundation.'], ['overview', 'A dependency is different from a message sequence.']],
   examples: [['part1', 'Application code constructs geometry and materials.'], ['part2', 'A visual editor arranges objects and materials. Neither static card is a running configurator.']],
   setup: [['item1', 'Create the container for objects.'], ['item2', 'Configure the viewpoint.'], ['item3', 'Initialize the renderer.'], ['item4', 'Add geometry and materials.'], ['item5', 'Start the loop that requests frames.']],
@@ -79,5 +86,7 @@ const narration: Record<string, Array<[string, string]>> = {
 }
 for (const [id, steps] of Object.entries(narration)) steps.unshift(['title', rows.find(([name]) => name === id)![2]])
 for (const [id, steps] of Object.entries(narration)) THREE_SPLINE_FILES[`sections/${id}.narrate.oui`] = `root = Narration([${steps.map(([beat, caption]) => `NarrationStep(${JSON.stringify(beat)}, ${JSON.stringify(caption)})`).join(', ')}])`
+
+THREE_SPLINE_FILES['sections/spatial.narrate.oui'] = `root = Narration([NarrationStep("title", "Connect scene objects to the camera viewpoint."), NarrationStep("part1", "A scene can contain objects the camera does not see."), NarrationStep("part2", "This object is inside the illustrated view.", [Highlight("figure.inside")]), NarrationStep("part2", "This one belongs to the scene but lies outside the view.", [Highlight("figure.outside")]), NarrationStep("part3", "Spatial visibility differs from the order of render requests.")])`
 
 export const THREE_SPLINE_OUI = '// @loom-topic three-spline\n' + Object.entries(THREE_SPLINE_FILES).map(([path, source]) => `// === ${path} ===\n${source}\n`).join('')

@@ -72,3 +72,5 @@ tests/mcp-host/results/
 /artifacts/ai-capability-selection.json
 
 /artifacts/ai-text-selection-regression.json
+
+/artifacts/ai-openui-selection-regression.json
