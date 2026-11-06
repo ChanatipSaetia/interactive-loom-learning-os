@@ -336,6 +336,10 @@ The chat follows the rules in `get_storage_guide` (the same text is in [storage-
 Loom Viewer (`/viewer.html` on the Loom site) opens topics without any chat:
 
 - **Open file** or **Paste text**: a `.loom.oui` topic, a single section, or a `.zip` from Loom Studio. A link from the chat opens straight into Present.
+
+**Keep the exact lesson:** the MCP player has **Download lesson** on its card and in expanded Read/Present navigation. Supporting chat hosts download `<topic-id>.loom.oui` through the MCP Apps file API. The file contains the exact source supplied to the player, including narration and domain markers. If the host lacks downloads or denies a request, use **Copy lesson source** and save it as a plain-text `.loom.oui` file. The host may ask you to confirm a download; the app reports a request, not a confirmed Drive save.
+
+To show it again, attach that file and ask the assistant to read it and pass its complete source unchanged to `show_topic`, or open it directly in Loom Viewer. The hosted Worker stores no topics. If the original file is unavailable, the assistant should ask for it instead of recreating the lesson from its title or summary. A chat without MCP Apps can provide the exact source using its own file-attachment feature; attachment reading and writing depend on that client.
 - **Open folder**: a topic folder, or your **`Loom` folder** (Google Drive for desktop on Chrome or Edge) for the library and domain pages, with status, Up next and **Copy request for your AI chat**. A topic opened from a domain gets **Save progress**, which writes the note into the folder.
 - **Read / Present**: use the header controls on wide screens, or open **… → Read / Present** on compact screens. Long domain breadcrumbs use an ellipsis while retaining the full name in their tooltip and accessible label.
 - **Copy progress** copies today's note to paste into your chat; **Back up** and **Restore** keep this browser's learning record.

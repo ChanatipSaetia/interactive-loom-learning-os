@@ -1,0 +1,4 @@
+/** Shared continuity guidance; a stateless renderer cannot recover lost source. */
+export const TOPIC_REPLAY_GUIDE = `## Reopen the same lesson
+
+"Show again", "reopen" or "resume this topic" means reuse the original complete .loom.oui source, not generate a replacement. Use open_topic when available, or read the exact file from an authorized attachment/drive and pass it unchanged to show_topic. Preserve section IDs, narration and domain markers. A title, summary or remembered outline is not the original source. If the complete source is unavailable, ask the learner to attach their saved .loom.oui file; create a replacement only if they explicitly request one. The hosted Worker stores no topics. The MCP player offers Download lesson through supporting hosts and Copy lesson source as a fallback. Keep that exact file for reopening in a later chat or Loom Viewer. A download request is not proof of a Drive save.`

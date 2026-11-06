@@ -1,3 +1,4 @@
+import { TOPIC_REPLAY_GUIDE } from './topic-replay'
 /**
  * Where Loom keeps a learner's topics and progress in their own drive: the
  * domain layout (`Loom/<domain-id>/`), its files and the rules a chat's model
@@ -102,6 +103,8 @@ then plain lists: the sections played, every answer in order, and what to review
 3. **Replace, never duplicate:** a topic with the same topic ID, or a progress note for the same topic and date, replaces the file that is there.
 4. **Plain text:** save \`.oui\`, \`.loom.oui\` and \`.md\` files as plain text with exactly these names, with no conversion to Google Docs or Word.
 5. **Save after showing:** when a topic belongs to an established domain, save the exact topic shown with \`show_topic\` immediately to \`Loom/<domain-id>/topics/<topic-id>.loom.oui\` and add its \`TopicRef\` to \`domain.oui\` once. Include the domain marker before showing, and save revisions after fixes or edits. Unless the learner opted out, do not wait for another request or repeat permission already given for that domain. Confirm new or ambiguous domains first. Local server memory is not proof of a Drive save: skip duplicate writes only after confirming the intended synced Drive file and domain index. Offer each save rather than wait to be asked for progress notes; ask unless already authorized. Confirm the path only after a successful write; if a write fails or no writable connector is available, say the topic is not saved and provide the exact file for manual saving.
+
+${TOPIC_REPLAY_GUIDE}
 
 ## Planning what comes next in a domain
 

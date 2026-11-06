@@ -34,6 +34,10 @@ Include `// @loom-domain <domain-id>` as the second line when the domain is esta
 
 When the learner asks where they are in one domain, show it with `show_domain`; when they ask for their library, `show_library` (see "Showing the learner where they are" in `get_storage_guide`). Never show them unasked. To play a topic again, read it from the domain's `topics/` and pass it to `show_topic` (or call `open_topic` when the server has it). Without the app (the chat shows no player), `show_topic` answers with a link that opens the topic in Loom Viewer: give the learner that link.
 
+## Reopen the same lesson
+
+"Show again", "reopen" or "resume this topic" means reuse the original complete .loom.oui source, not generate a replacement. Use open_topic when available, or read the exact file from an authorized attachment/drive and pass it unchanged to show_topic. Preserve section IDs, narration and domain markers. A title, summary or remembered outline is not the original source. If the complete source is unavailable, ask the learner to attach their saved .loom.oui file; create a replacement only if they explicitly request one. The hosted Worker stores no topics. The MCP player offers Download lesson through supporting hosts and Copy lesson source as a fallback. Keep that exact file for reopening in a later chat or Loom Viewer. A download request is not proof of a Drive save.
+
 ## The learner's Loom folder
 
 Everything the learner keeps lives in one folder, `Loom/`, at the top of the cloud drive they use (My Drive in Google Drive, not a shared drive; OneDrive or SharePoint), reached with this chat's own drive connector. It is grouped by **domain**, one subject area each (fight animation, home networking), so each domain is planned from its own progress:

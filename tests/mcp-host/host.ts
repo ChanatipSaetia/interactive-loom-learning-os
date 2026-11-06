@@ -86,7 +86,9 @@ async function main() {
     result = await client.callTool({ name: 'open_topic', arguments: args })
     say('model', `open_topic → ${textOf(result).slice(0, 160)}`)
   } else {
-    let oui = params.get('fixture') === 'three-spline' ? THREE_SPLINE_OUI : await (await fetch(`/topics/${topicId}.loom.oui`)).text()
+    const replaySource = (window as Window & { reopenedOui?: string }).reopenedOui
+    if (params.has('replay') && typeof replaySource !== 'string') throw new Error('Reopening requires the original file source')
+    let oui = params.has('replay') ? replaySource! : params.get('fixture') === 'three-spline' ? THREE_SPLINE_OUI : await (await fetch(`/topics/${topicId}.loom.oui`)).text()
     if (params.has('broken')) oui = oui.replace(/root = Quiz\(/, 'root = Quizz(')
     say('user', `Teach me: ${topicId}`)
 
@@ -113,7 +115,7 @@ async function main() {
   const bridge = new AppBridge(
     client,
     { name: 'loom-test-host', version: '0.1.0' },
-    { openLinks: {}, serverTools: {}, logging: {}, updateModelContext: { text: {} }, message: { text: {} } },
+    { openLinks: {}, serverTools: {}, logging: {}, updateModelContext: { text: {} }, message: { text: {} }, ...(!params.has('no-download') ? { downloadFile: {} } : {}) },
     { hostContext: { displayMode: 'inline', availableDisplayModes: ['inline', 'fullscreen'], theme } },
   )
   bridge.oninitialized = async () => {
@@ -138,12 +140,40 @@ async function main() {
     Object.assign(window, { lastOpenedLink: url })
     return {}
   }
+  bridge.ondownloadfile = async ({ contents }) => {
+    Object.assign(window, { downloadRequested: true })
+    if (params.has('deny-download')) return { isError: true }
+    // Real hosts may confirm downloads in their own UI. A fresh host-side
+    // gesture also avoids relying on activation crossing the opaque iframe.
+    return new Promise((resolve) => {
+      const confirm = document.createElement('button')
+      confirm.dataset.testid = 'host-confirm-download'
+      confirm.textContent = 'Save lesson file'
+      confirm.onclick = () => {
+        for (const item of contents) {
+          if (item.type !== 'resource' || !('text' in item.resource)) { confirm.remove(); resolve({ isError: true }); return }
+          const url = URL.createObjectURL(new Blob([item.resource.text], { type: item.resource.mimeType ?? 'text/plain' }))
+          const link = document.createElement('a')
+          link.href = url
+          link.download = new URL(item.resource.uri).pathname.split('/').pop() || 'lesson.loom.oui'
+          document.body.appendChild(link)
+          link.click()
+          link.remove()
+          setTimeout(() => URL.revokeObjectURL(url), 1000)
+        }
+        confirm.remove()
+        resolve({})
+      }
+      chat.appendChild(confirm)
+    })
+  }
   bridge.onsizechange = ({ height }) => {
     if (height && !document.body.classList.contains('fullscreen')) frame.style.height = `${Math.min(height, 900)}px`
   }
   await bridge.connect(new PostMessageTransport(frame.contentWindow!, frame.contentWindow!))
   frame.srcdoc = html
   Object.assign(window, {
+    shownOui: args.oui,
     setHostTheme: (t: 'light' | 'dark') => { document.body.classList.toggle('light', t === 'light'); void bridge.sendHostContextChange({ theme: t }) },
     // The chat's own control for leaving fullscreen
     setHostDisplayMode: (mode: 'inline' | 'fullscreen') => { document.body.classList.toggle('fullscreen', mode === 'fullscreen'); void bridge.sendHostContextChange({ displayMode: mode }) },

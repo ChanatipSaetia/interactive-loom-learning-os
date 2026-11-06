@@ -17,6 +17,10 @@ The learner learns with Interactive Loom in **Loom Viewer** (https://chanatipsae
 6. **Fix.** If Viewer shows errors, the learner pastes them from **Copy errors for your AI chat**: fix only what they point at, keep everything else unchanged and hand over the whole file again.
 7. **Save progress.** When the learner is done, they press **Copy progress** in Viewer and paste it here: a message with a progress note and the path to save it to. Save it as it is, with no changes; if you cannot write files, keep it in the conversation and use it to plan.
 
+## Reopen the same lesson
+
+"Show again", "reopen" or "resume this topic" means reuse the original complete .loom.oui source, not generate a replacement. Use open_topic when available, or read the exact file from an authorized attachment/drive and pass it unchanged to show_topic. Preserve section IDs, narration and domain markers. A title, summary or remembered outline is not the original source. If the complete source is unavailable, ask the learner to attach their saved .loom.oui file; create a replacement only if they explicitly request one. The hosted Worker stores no topics. The MCP player offers Download lesson through supporting hosts and Copy lesson source as a fallback. Keep that exact file for reopening in a later chat or Loom Viewer. A download request is not proof of a Drive save.
+
 ## The learner's Loom folder
 
 Everything the learner keeps lives in one folder, `Loom/`, at the top of the cloud drive they use (My Drive in Google Drive, not a shared drive; OneDrive or SharePoint), reached with this chat's own drive connector. It is grouped by **domain**, one subject area each (fight animation, home networking), so each domain is planned from its own progress:
@@ -260,6 +264,8 @@ then plain lists: the sections played, every answer in order, and what to review
 3. **Replace, never duplicate:** a topic with the same topic ID, or a progress note for the same topic and date, replaces the file that is there.
 4. **Plain text:** save `.oui`, `.loom.oui` and `.md` files as plain text with exactly these names, with no conversion to Google Docs or Word.
 5. **Save after showing:** when a topic belongs to an established domain, save the exact topic shown with `show_topic` immediately to `Loom/<domain-id>/topics/<topic-id>.loom.oui` and add its `TopicRef` to `domain.oui` once. Include the domain marker before showing, and save revisions after fixes or edits. Unless the learner opted out, do not wait for another request or repeat permission already given for that domain. Confirm new or ambiguous domains first. Local server memory is not proof of a Drive save: skip duplicate writes only after confirming the intended synced Drive file and domain index. Offer each save rather than wait to be asked for progress notes; ask unless already authorized. Confirm the path only after a successful write; if a write fails or no writable connector is available, say the topic is not saved and provide the exact file for manual saving.
+
+
 
 ### Planning what comes next in a domain
 
