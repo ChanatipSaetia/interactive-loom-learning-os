@@ -106,3 +106,8 @@ Local results before publication:
 - Both local MCP packaging and Worker bundle guards passed.
 - Chromium exited before assertions (sandbox operation denied); local workerd did
   not become ready. The PR's CI run supplies actual browser/runtime evidence.
+
+The initial CI browser assertion exposed a harness assumption: Next finishes an
+active entrance before advancing. The harness now observes the active progress
+rail tick and advances with a bounded loop before asserting diagram visibility.
+It retains the visibility assertions; the production player is unchanged.

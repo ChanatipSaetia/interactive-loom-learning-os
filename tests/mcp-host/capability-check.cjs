@@ -47,9 +47,14 @@ const launch = process.env.LOOM_CHROMIUM_PATH ? { executablePath: process.env.LO
           await app.getByRole('button', { name: new RegExp(`^Go to section ${section}:`) }).click()
           await app.locator('[data-testid=present-next]').click()
           if (sectionIds[section - 1] === 'spatial') {
-            // Advance past the heading to the diagram with its two narration
-            // targets, rather than checking only title markup.
-            await app.locator('[data-testid=present-next]').click()
+            // Next first finishes an entrance in progress. Observe the rail's
+            // active beat instead of assuming two quick clicks advanced twice.
+            const diagramBeat = app.getByRole('button', { name: new RegExp(`^Go to section ${section}:`) }).locator('.present-tick').nth(2)
+            for (let attempt = 0; attempt < 6 && !/\bis-now\b/.test(await diagramBeat.getAttribute('class') ?? ''); attempt++) {
+              await app.locator('[data-testid=present-next]').click()
+              await page.waitForTimeout(150)
+            }
+            assert.match(await diagramBeat.getAttribute('class') ?? '', /\bis-now\b/, 'Did not reach the diagram beat')
             for (const target of ['inside', 'outside']) await root.locator(`[data-svg-id="${target}"]`).waitFor({ state: 'visible', timeout: 5000 })
           }
           await page.waitForTimeout(500)
