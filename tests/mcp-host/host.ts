@@ -139,19 +139,31 @@ async function main() {
     return {}
   }
   bridge.ondownloadfile = async ({ contents }) => {
+    Object.assign(window, { downloadRequested: true })
     if (params.has('deny-download')) return { isError: true }
-    for (const item of contents) {
-      if (item.type !== 'resource' || !('text' in item.resource)) return { isError: true }
-      const url = URL.createObjectURL(new Blob([item.resource.text], { type: item.resource.mimeType ?? 'text/plain' }))
-      const link = document.createElement('a')
-      link.href = url
-      link.download = new URL(item.resource.uri).pathname.split('/').pop() || 'lesson.loom.oui'
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      setTimeout(() => URL.revokeObjectURL(url), 1000)
-    }
-    return {}
+    // Real hosts may confirm downloads in their own UI. A fresh host-side
+    // gesture also avoids relying on activation crossing the opaque iframe.
+    return new Promise((resolve) => {
+      const confirm = document.createElement('button')
+      confirm.dataset.testid = 'host-confirm-download'
+      confirm.textContent = 'Save lesson file'
+      confirm.onclick = () => {
+        for (const item of contents) {
+          if (item.type !== 'resource' || !('text' in item.resource)) { confirm.remove(); resolve({ isError: true }); return }
+          const url = URL.createObjectURL(new Blob([item.resource.text], { type: item.resource.mimeType ?? 'text/plain' }))
+          const link = document.createElement('a')
+          link.href = url
+          link.download = new URL(item.resource.uri).pathname.split('/').pop() || 'lesson.loom.oui'
+          document.body.appendChild(link)
+          link.click()
+          link.remove()
+          setTimeout(() => URL.revokeObjectURL(url), 1000)
+        }
+        confirm.remove()
+        resolve({})
+      }
+      chat.appendChild(confirm)
+    })
   }
   bridge.onsizechange = ({ height }) => {
     if (height && !document.body.classList.contains('fullscreen')) frame.style.height = `${Math.min(height, 900)}px`
