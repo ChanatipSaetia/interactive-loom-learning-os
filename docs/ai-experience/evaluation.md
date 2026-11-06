@@ -13,3 +13,6 @@ Human review must separately assess factual grounding against retrieved sources,
 `src/evaluation/metrics.ts` summarizes externally supplied measurements; missing token counts remain explicitly unobserved via token observation metadata. No expensive evaluation executes inside the Worker.
 
 After `npm run build:worker`, run `npm run check:worker` for a real local workerd startup and HTTP smoke check using the repository-pinned Wrangler. It never deploys. The packaging test also simulates forbidden module-scope random/timer/fetch operations before importing the Worker.
+
+
+Capability-aware selection, readiness diagnostics, example TopicPlan, objective-support rubric and current Issue #198 verification are documented in [capability-selection-198.md](capability-selection-198.md).
