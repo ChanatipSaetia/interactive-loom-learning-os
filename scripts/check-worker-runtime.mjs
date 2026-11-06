@@ -50,16 +50,25 @@ try {
   assert.match(openuiText, /^Text\(variant\?/m)
   assert.ok(!openuiText.includes('paragraphs: string[]'))
   const capabilities = JSON.parse((await call('get_loom_capabilities')).content[0].text)
-  assert.equal(capabilities.workflow.version, 3)
+  assert.equal(capabilities.workflow.version, 4)
   const index = JSON.parse((await call('get_loom_capabilities', { detail: 'index' })).content[0].text)
   assert.deepEqual(index.flowchart.views, ['event-storming', 'architecture', 'swimlanes', 'sequence', 'data-flow', 'state-machine'])
   assert.match(index.openui, /tables/)
+  const authoringIndex = JSON.parse((await call('get_authoring_guide', { detail: 'index' })).content[0].text)
+  assert.match(authoringIndex.sections.find((section) => section.type === 'flashcards').mentalModel, /Definitions/)
+  const plan = { schemaVersion: 1, topicId: 'selection-smoke', goal: 'Compare authoring capabilities', objectives: [{ id: 'compare', description: 'Compare authoring capabilities' }], sections: [{ id: 'comparison', title: 'Capabilities', objectiveRefs: ['compare'], representation: 'text', activity: 'Read the comparison', rationale: 'Text explains complex concepts clearly.' }] }
+  const review = JSON.parse((await call('validate_topic_plan', { plan })).content[0].text)
+  assert.equal(review.valid, true)
+  assert.ok(review.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'UNJUSTIFIED_TEXT_SELECTION'))
+  const shown = await call('show_topic', { oui: '// @loom-topic selection-smoke', plan })
+  assert.equal(shown.structuredContent.experienceReadiness.status, 'review-needed')
+  assert.ok(shown.structuredContent.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'UNJUSTIFIED_TEXT_SELECTION'))
   assert.ok(capabilities.planSchema)
   assert.equal(JSON.parse((await call('validate_topic_plan', { plan: null })).content[0].text).valid, false)
   const context = JSON.parse((await call('get_topic_context', { files: { 'sections/text.oui': 'root = Text("T", ["One"])' }, roots: ['sections/text.oui'] })).content[0].text)
   assert.equal(context.sources.length, 1)
   assert.equal(context.truncated, false)
-  console.log('Real workerd: startup, stateless tools, focused references, runtime input validation and source context passed.')
+  console.log('Real workerd: startup, stateless tools, focused references, runtime input validation, representation readiness and source context passed.')
 } finally {
   if (runtime.pid) {
     try { process.platform === 'win32' ? runtime.kill() : process.kill(-runtime.pid, 'SIGTERM') } catch { /* already stopped */ }

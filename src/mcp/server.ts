@@ -95,11 +95,16 @@ export function appShell(appUrl: string): string {
 <body><div id="root"></div><script type="module" src="${appUrl}app.js"></script></body></html>`
 }
 
-const GUIDE_TOOL_DESCRIPTION = `Before defaulting to Text, consider native Loom interactions and OpenUI compositions (cards, diagrams, tables, charts) by teaching goal. OpenUI is a first-class choice; native sections remain first-class too. How to write a Loom learning topic (.loom.oui text) for show_topic. Call it before writing a topic: first with no section types to get the rules and the list of section types, then again with the section types the topic will use (e.g. ["flowchart"] or ["flashcards", "scenario"]) to get their components. ["all"] returns everything. In a chat, keep topics short by default: one idea in 1–3 sections, no intro or quiz unless a check is the point; write a full lesson (intro, several sections, a closing quiz) only when the learner asks for one.`
+const GUIDE_TOOL_DESCRIPTION = `Retrieve exact OUI contracts after choosing representations. For a new lesson: discover learning purposes with get_loom_capabilities({detail:"index"}) or this tool's detail:"index"; plan objectives, learner actions and candidate capabilities; call validate_topic_plan and resolve relevant readiness warnings or justify proceeding. Then use detail:"focused" with selected sections/components and library; omit detail for legacy section-filtered guides, ["all"] for the full guide. Text needs a prose-specific rationale beyond clarity, simplicity or length. Native sections and OpenUI are first-class; no ranking or quota. In a chat, keep topics short by default for quick explanations; honor full-lesson requests with complementary learning contributions, without fixed section counts or order.`
 
-const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). Write it with get_authoring_guide, and check it with validate_topic first when that tool is available. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. After showing a topic in an established domain, save the exact topic to the learner's drive and update domain.oui following get_storage_guide unless the learner opted out. Showing the app is not a Drive save.`
+const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). For a new lesson, discover capabilities and validate_topic_plan before writing with get_authoring_guide. Resolve readiness warnings or explain proceeding; pass plan here and to validate_topic when available. Compilation alone does not establish representation readiness. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. After showing a topic in an established domain, save the exact topic to the learner's drive and update domain.oui following get_storage_guide unless the learner opted out. Showing the app is not a Drive save.`
 
 const VALIDATE_TOOL_DESCRIPTION = `Check a Loom topic (.loom.oui text) the way Loom Viewer does, before showing it. Answers "valid" or the errors to fix; fix only what they point at and check again.`
+
+function reviewSuppliedPlan(plan: unknown) {
+  const valid = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type))).length === 0
+  return topicPlanReview(plan, valid)
+}
 
 export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   const appUrl = options.appUrl ?? DEFAULT_APP_URL
@@ -204,7 +209,7 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     // legacy checker may ignore the new argument; never claim that it ran alignment.
     if (plan === undefined) return { content: [{ type: 'text', text }] }
     const planAlignment = check.planAlignment ?? { schemaVersion: 1, status: 'unverified', diagnostics: [], teachingQuality: 'not-evaluated', layout: 'not-measured' }
-    return { content: [{ type: 'text', text: JSON.stringify({ valid: check.ok, validation: text, planAlignment }) }] }
+    return { content: [{ type: 'text', text: JSON.stringify({ valid: check.ok, validation: text, planAlignment, ...reviewSuppliedPlan(plan) }) }] }
   }))
 
   registerAppTool(server, 'show_topic', {
@@ -241,7 +246,20 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
         : '\n\nThis chat may not show Loom\'s player, and the topic is too long for a link: the learner can paste it into Loom Viewer.'
     }
     if (!check || check.ok) text += '\n\nNext: if this topic belongs to an established domain, save the exact topic to the learner\'s Drive and update domain.oui following get_storage_guide, unless the learner opted out. Local server memory does not by itself confirm a Drive save. If the connector cannot write, say it is not saved and provide the file.'
-    return { content: [{ type: 'text', text }] }
+    if (plan === undefined) {
+      text += '\n\nRepresentation readiness not reviewed: no TopicPlan supplied. For new lessons, discover capabilities and call validate_topic_plan.'
+      return { content: [{ type: 'text', text }] }
+    }
+    const review = reviewSuppliedPlan(plan)
+    const count = review.advisoryDiagnostics.length
+    const references = review.advisoryDiagnostics.slice(0, 2).map((d) => `${d.code} at ${d.path}`).join('; ')
+    text += `\n\nPlan readiness: ${review.experienceReadiness.status}${count ? ` (${count} advisories): ${references}. Resolve relevant warnings with validate_topic_plan or justify proceeding.` : '. Teaching quality is not evaluated.'}`
+    // Bounded delivery context; the existing plan validator returns the full review.
+    return { content: [{ type: 'text', text }], structuredContent: {
+      experienceReadiness: review.experienceReadiness,
+      advisoryDiagnostics: review.advisoryDiagnostics.slice(0, 3), advisoryCount: count,
+      omittedAdvisoryCount: Math.max(0, count - 3),
+    } }
   }))
 
   if (options.repository) {

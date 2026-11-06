@@ -3,6 +3,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client'
+import { THREE_SPLINE_REQUEST, TEXT_HEAVY_REPRO_PLAN, TEXT_HEAVY_REPRO_OUI } from '../fixtures/ai-experience/text-selection'
 import { THREE_SPLINE_PLAN, THREE_SPLINE_FILES, THREE_SPLINE_OUI, RENDER_FLOW } from '../fixtures/ai-experience/three-spline'
 import { getCapabilityCatalog, getCapabilityIndex } from '../../src/core/learning-engine/composition/oui/capability-catalog'
 import { reviewTopicPlan, validateTopicPlan } from '../../src/core/learning-engine/composition/oui/topic-plan'
@@ -116,4 +117,22 @@ describe('capability-aware authored regression corpus', () => {
       expect(missing.diagnostics[0].code).toBe('OPENUI_COMPONENTS_REQUIRED')
     } finally { await client.close() }
   })
+})
+
+
+it('exposes the user-request Text-selection loophole separately from OUI validity', () => {
+  const check = checkTopic(TEXT_HEAVY_REPRO_OUI, TEXT_HEAVY_REPRO_PLAN)
+  expect(check.ok).toBe(true)
+  expect(check.planAlignment?.status).toBe('aligned')
+  const diagnostics = reviewTopicPlan(TEXT_HEAVY_REPRO_PLAN)
+  expect(diagnostics.filter((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toHaveLength(2)
+  expect(reviewTopicPlan(THREE_SPLINE_PLAN)).toEqual([])
+  mkdirSync('artifacts', { recursive: true })
+  writeFileSync('artifacts/ai-text-selection-regression.json', JSON.stringify({
+    request: THREE_SPLINE_REQUEST, origin: 'authored-reproduction-from-user-request',
+    ouiValid: check.ok, structuralAlignment: check.planAlignment?.status,
+    advisoryDiagnostics: diagnostics, complementaryPlanAdvisories: reviewTopicPlan(THREE_SPLINE_PLAN),
+    externalModelRun: false, liveAssistantSelection: 'not-measured',
+    caveat: 'This reproduces deterministic acceptance and review propagation, not the original assistant trace or autonomous model selection.',
+  }, null, 2) + '\n')
 })

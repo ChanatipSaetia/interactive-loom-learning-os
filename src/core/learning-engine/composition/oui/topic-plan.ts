@@ -198,9 +198,11 @@ export function reviewTopicPlan(input: unknown) {
     if (weak(section.activity)) add('WEAK_LEARNER_ACTION', `${path}.activity`, 'Name what the learner will inspect, follow, explain, compare, vary or answer and the subject of that action. Engagement alone is not assessment.')
     if (!section.presentation) add('MISSING_PRESENTATION_STRATEGY', `${path}.presentation`, 'State the intended Read/Present strategy and inspect its layout.')
     else if (weak(section.presentation.strategy)) add('WEAK_PRESENTATION_STRATEGY', `${path}.presentation.strategy`, 'Describe the focus, stage guidance or narration in Read/Present rather than naming only a mode.')
-    const task = [section.activity, ...plan.objectives.filter((o) => section.objectiveRefs.includes(o.id)).map((o) => o.description)].join(' ')
-    if (section.representation === 'text' && rationaleWeak && /\b(compar(?:e|ison)|process|spatial|classif\w*|relationship\w*|quantit\w*|recall|definitions?|architecture|handoffs?)\b/i.test(task)) {
-      add('UNJUSTIFIED_TEXT_SELECTION', `${path}.rationale`, 'This objective suggests structured knowledge. Compare native/OpenUI capabilities, then explain why connected prose is clearest or revise the representation. Justified Text remains valid.')
+    const task = [section.title, section.activity, ...plan.objectives.filter((o) => section.objectiveRefs.includes(o.id)).map((o) => o.description)].join(' ')
+    const structuredTask = /\b(compar\w*|capabilit\w*|differences?|process\w*|workflows?|spatial|classif\w*|relationship\w*|dependenc\w*|quantit\w*|recall|defin(?:e|ing|itions?)|terminolog\w*|vocabular\w*|architecture|interactions?|handoffs?|message ordering|state transitions?)\b/i.test(task) || /\bhow (?:\w+\s+){0,5}works\b/i.test(task)
+    const proseNeed = /\b(connected prose|nuanc\w*|narrativ\w*|arguments?|qualifications?|ambigu\w*|interpret\w*|close reading|wording|essays?|caveats?|verbatim|prose (?:was|is) (?:explicitly )?requested)\b/i.test(section.rationale ?? '')
+    if (section.representation === 'text' && structuredTask && (rationaleWeak || !proseNeed)) {
+      add('UNJUSTIFIED_TEXT_SELECTION', `${path}.rationale`, 'This objective involves structured knowledge. Compare feasible native/OpenUI capabilities, then state the prose-specific need (e.g. nuance, connected argument or careful wording) or revise the representation. Generic clarity, simplicity or length does not explain the fit. Justified Text remains valid.')
     }
     if (section.representation === 'openui') {
       if (!/\b(cards?|stacks?|tables?|charts?|diagrams?|svg|steps|barchart|horizontalbarchart|linechart|areachart|piechart|singlestackedbarchart|scatterchart|radarchart)\b/i.test(design)) add('MISSING_OPENUI_COMPOSITION', `${path}.rationale`, 'Name the intended OpenUI table, cards, Steps, labelled Svg diagram or chart and explain how it supports the learner action; retrieve those component contracts.')
@@ -233,7 +235,7 @@ export function topicPlanReview(input: unknown, structurallyValid: boolean) {
     experienceReadiness: {
       status: !structurallyValid ? 'unverified' : advisoryDiagnostics.length ? 'review-needed' : 'no-advisories',
       teachingQuality: 'not-evaluated',
-      next: advisoryDiagnostics.length ? 'Resolve relevant warnings or record why proceeding is appropriate; validate OUI/narration and preview Read/Present before delivery.' : 'Validate OUI/narration and preview Read/Present; absence of advisories does not establish teaching quality.',
+      next: !structurallyValid ? 'Repair structural plan diagnostics with validate_topic_plan before claiming representation readiness.' : advisoryDiagnostics.length ? 'Resolve relevant warnings or record why proceeding is appropriate; validate OUI/narration and preview Read/Present before delivery.' : 'Validate OUI/narration and preview Read/Present; absence of advisories does not establish teaching quality.',
     },
   }
 }

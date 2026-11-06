@@ -224,3 +224,6 @@ bundles and SDK protocol contracts pass. Nothing was deployed or merged.
 
 
 Follow-up: explicit OpenUI composition-to-artifact checks passed 15 focused MCP tests, all 17 offline tests, TypeScript, the production Worker/local build and both bundle guards. The complete CI suite is rerun for the final revision; local browser restrictions still apply. The browser fixture also expands initially compact Present controls before traversal.
+
+
+A later report of persistent Text preference is investigated in [text-selection-followup.md](text-selection-followup.md), including the exact supplied request, reproduced review loopholes, corrected discovery and delivery paths, and the limits of authored regressions.

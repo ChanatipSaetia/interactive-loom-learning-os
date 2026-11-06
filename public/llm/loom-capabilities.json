@@ -252,7 +252,7 @@
     "additionalProperties": false
   },
   "workflow": {
-    "version": 3,
+    "version": 4,
     "stages": [
       "understand",
       "discover",
