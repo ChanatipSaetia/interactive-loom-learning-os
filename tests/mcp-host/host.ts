@@ -17,6 +17,7 @@
  *   ?server=<url>    another Loom MCP endpoint, such as the Worker under `npm run worker:dev`
  *                    (http://127.0.0.1:8787/mcp), which offers no validate_topic
  */
+import { THREE_SPLINE_OUI, THREE_SPLINE_PLAN } from '../fixtures/ai-experience/three-spline'
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client'
 import { AppBridge, PostMessageTransport, getToolUiResourceUri } from '@modelcontextprotocol/ext-apps/app-bridge'
 
@@ -85,7 +86,7 @@ async function main() {
     result = await client.callTool({ name: 'open_topic', arguments: args })
     say('model', `open_topic → ${textOf(result).slice(0, 160)}`)
   } else {
-    let oui = await (await fetch(`/topics/${topicId}.loom.oui`)).text()
+    let oui = params.get('fixture') === 'three-spline' ? THREE_SPLINE_OUI : await (await fetch(`/topics/${topicId}.loom.oui`)).text()
     if (params.has('broken')) oui = oui.replace(/root = Quiz\(/, 'root = Quizz(')
     say('user', `Teach me: ${topicId}`)
 
@@ -94,7 +95,7 @@ async function main() {
       say('model', `validate_topic → ${textOf(check).slice(0, 160)}`)
     }
 
-    args = { oui }
+    args = { oui, ...(params.get('fixture') === 'three-spline' ? { plan: THREE_SPLINE_PLAN } : {}) }
     if (params.get('mode') === 'read') args.mode = 'read'
     result = await client.callTool({ name: 'show_topic', arguments: args })
     say('model', `show_topic → ${textOf(result).slice(0, 160)}`)

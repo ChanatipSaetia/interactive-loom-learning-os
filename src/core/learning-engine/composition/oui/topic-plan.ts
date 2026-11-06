@@ -1,6 +1,7 @@
 /** Portable AI-authored planning contract. AI authors plans; Loom checks structure. */
 import { z } from 'zod'
 import { COMPONENT_LIBRARIES, OUI_SECTION_TYPES } from './library'
+import { FLOWCHART_MODELS } from './mental-model-guide'
 import { EvidenceReferenceSchema, validateEvidenceReferences } from './source-provenance'
 
 export const TopicPlanSchema = z.object({
@@ -175,17 +176,64 @@ export function buildStudioPlanMessage(plan: StudioPlan, ticked: readonly number
   ].join('\n')
 }
 
-/** Advisory omissions guide host review without invalidating legacy v1 plans. */
+/** Conservative advisory heuristics, not a semantic teaching-quality verdict.
+ * Configuration stays in existing rationale/presentation prose in TopicPlan v1.
+ */
 export function reviewTopicPlan(input: unknown) {
   const parsed = TopicPlanSchema.safeParse(input)
   if (!parsed.success) return []
+  const plan = parsed.data
   const diagnostics: Array<{ code: string; severity: 'warning'; path: string; message: string }> = []
-  parsed.data.sections.forEach((section, index) => {
-    if (!section.rationale) diagnostics.push({ code: 'MISSING_RATIONALE', severity: 'warning', path: `sections[${index}].rationale`, message: 'Explain why this representation fits the learner action.' })
-    if (!section.presentation) diagnostics.push({ code: 'MISSING_PRESENTATION_STRATEGY', severity: 'warning', path: `sections[${index}].presentation`, message: 'State the intended Read/Present strategy and inspect its layout.' })
+  const add = (code: string, path: string, message: string) => diagnostics.push({ code, severity: 'warning', path, message })
+  const normalize = (value: string) => value.trim().toLowerCase().replace(/[.!?]+$/, '').replace(/\s+/g, ' ')
+  const weak = (value: string) => /^(?:|learn|understand|read|read and understand|read content|view section|understand the topic|learn about the topic|interact with content|view|watch|explore|interact|engage|study|review|tbd|n\/a|because|it fits|this is a good representation|best|good|appropriate|suitable|useful|clear|interactive|visual)$/.test(normalize(value))
+  const views = FLOWCHART_MODELS.map(([id]) => id)
+  const seen = new Map<string, string>()
+  plan.sections.forEach((section, index) => {
+    const path = `sections[${index}]`
+    const rationaleWeak = !section.rationale || weak(section.rationale)
+    const design = `${section.rationale ?? ''} ${section.presentation?.strategy ?? ''}`
+    if (!section.rationale) add('MISSING_RATIONALE', `${path}.rationale`, 'Explain why this representation preserves the knowledge structure and supports this learner action; compare feasible alternatives.')
+    else if (rationaleWeak) add('WEAK_RATIONALE', `${path}.rationale`, 'Replace the generic rationale with the relationship, perspective or learner task this representation makes clear.')
+    if (weak(section.activity)) add('WEAK_LEARNER_ACTION', `${path}.activity`, 'Name what the learner will inspect, follow, explain, compare, vary or answer and the subject of that action. Engagement alone is not assessment.')
+    if (!section.presentation) add('MISSING_PRESENTATION_STRATEGY', `${path}.presentation`, 'State the intended Read/Present strategy and inspect its layout.')
+    else if (weak(section.presentation.strategy)) add('WEAK_PRESENTATION_STRATEGY', `${path}.presentation.strategy`, 'Describe the focus, stage guidance or narration in Read/Present rather than naming only a mode.')
+    const task = [section.activity, ...plan.objectives.filter((o) => section.objectiveRefs.includes(o.id)).map((o) => o.description)].join(' ')
+    if (section.representation === 'text' && rationaleWeak && /\b(compar(?:e|ison)|process|spatial|classif\w*|relationship\w*|quantit\w*|recall|definitions?|architecture|handoffs?)\b/i.test(task)) {
+      add('UNJUSTIFIED_TEXT_SELECTION', `${path}.rationale`, 'This objective suggests structured knowledge. Compare native/OpenUI capabilities, then explain why connected prose is clearest or revise the representation. Justified Text remains valid.')
+    }
+    if (section.representation === 'openui') {
+      if (!/\b(cards?|stacks?|tables?|charts?|diagrams?|svg|steps|barchart|horizontalbarchart|linechart|areachart|piechart|singlestackedbarchart|scatterchart|radarchart)\b/i.test(design)) add('MISSING_OPENUI_COMPOSITION', `${path}.rationale`, 'Name the intended OpenUI table, cards, Steps, labelled Svg diagram or chart and explain how it supports the learner action; retrieve those component contracts.')
+      if (/\b(chart|barchart|horizontalbarchart|linechart|areachart|piechart|singlestackedbarchart|scatterchart|radarchart)s?\b/i.test(design) && !section.evidenceRefs?.length && !/\b(illustrative|supplied|verified)\b/i.test(design)) add('CHART_DATA_UNVERIFIED', `${path}.evidenceRefs`, 'Provide supplied/verified data and source references for empirical charts, or explicitly label illustrative data. If data is unavailable, use a faithful factual table or qualitative explanation. A declared reference does not verify truth.')
+    }
+    if (section.representation === 'flowchart') {
+      // Only check explicit initialView assignments; free prose cannot be parsed as a contract.
+      const explicit = /\binitialView\s*[:=]\s*["'`]?([a-z-]+)/i.exec(design)?.[1]
+      if (explicit && !views.includes(explicit as typeof views[number])) add('UNSUPPORTED_FLOWCHART_VIEW', `${path}.presentation.strategy`, `Use one documented primary view: ${views.join(', ')}. Retrieve Flowchart and NarrationStep contracts before configuring it.`)
+      else if (!views.some((view) => new RegExp(`\\b${view}\\b`, 'i').test(design))) add('MISSING_FLOWCHART_VIEW', `${path}.presentation.strategy`, 'Name one meaningful primary view (event-storming, architecture, swimlanes, sequence, data-flow or state-machine). Explain optional narration transitions; do not enable every view or invent model detail.')
+    }
+    // Exact duplicate declarations are review candidates, not proof of redundancy.
+    const signature = JSON.stringify([section.representation, [...new Set(section.objectiveRefs)].sort(), normalize(section.activity), normalize(section.rationale ?? ''), section.presentation, section.assessment, [...(section.evidenceRefs ?? [])].sort()])
+    const previous = seen.get(signature)
+    if (previous) add('POSSIBLE_REDUNDANT_SECTION', path, `This repeats the declared objectives, action and design of ${previous}. Give each section a distinct presentation, exploration or assessment contribution, or combine them; verify content before removing anything.`)
+    else seen.set(signature, section.id)
   })
-  parsed.data.objectives.forEach((objective, index) => {
-    if (!objective.evidenceOfLearning) diagnostics.push({ code: 'MISSING_LEARNING_EVIDENCE', severity: 'warning', path: `objectives[${index}].evidenceOfLearning`, message: 'Describe an observable response; viewing alone does not demonstrate understanding.' })
+  plan.objectives.forEach((objective, index) => {
+    if (!objective.evidenceOfLearning) add('MISSING_LEARNING_EVIDENCE', `objectives[${index}].evidenceOfLearning`, 'Describe an observable response; viewing alone does not demonstrate understanding.')
+    else if (/^(?:view|watch|click|flip|switch|visit|read)(?:\b|ing)/i.test(objective.evidenceOfLearning.trim()) && !/\b(answer|explain|justify|identify|correct|submit|reconstruct|demonstrate)\b/i.test(objective.evidenceOfLearning)) add('ENGAGEMENT_AS_LEARNING_EVIDENCE', `objectives[${index}].evidenceOfLearning`, 'Viewing, clicking, switching views and flipping cards show engagement. Describe an answer, explanation or applied task separately from exposure.')
   })
   return diagnostics
+}
+
+/** Explicit readiness is advisory and never changes structural validity. */
+export function topicPlanReview(input: unknown, structurallyValid: boolean) {
+  const advisoryDiagnostics = reviewTopicPlan(input)
+  return {
+    advisoryDiagnostics,
+    experienceReadiness: {
+      status: !structurallyValid ? 'unverified' : advisoryDiagnostics.length ? 'review-needed' : 'no-advisories',
+      teachingQuality: 'not-evaluated',
+      next: advisoryDiagnostics.length ? 'Resolve relevant warnings or record why proceeding is appropriate; validate OUI/narration and preview Read/Present before delivery.' : 'Validate OUI/narration and preview Read/Present; absence of advisories does not establish teaching quality.',
+    },
+  }
 }

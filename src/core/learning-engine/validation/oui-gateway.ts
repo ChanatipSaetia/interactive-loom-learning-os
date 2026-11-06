@@ -18,6 +18,7 @@ import { bundleToSections } from '../composition/okf/sections'
 import { isOpenUISource, openUIProgramOf } from '../sub-contexts/progressive-content/openui-standard'
 import { openuiParts } from '../sub-contexts/progressive-content/present'
 import { svgShapeIds } from '../sub-contexts/progressive-content/components/openui/svg-markup'
+import type { AbstractFlow } from '../sub-contexts/process-simulation/components/flowchart/abstract-flow/types'
 import { coreBeatsOf } from '../registry/register-core-presenters'
 import type { Beat } from '../sub-contexts/present-kernel'
 import { contextToDiagnostic } from './types'
@@ -188,7 +189,24 @@ export function validateOUINarration(
     const names = [...statements.keys()]
     const beats = sectionBeatsOf(sectionSource)?.map((b) => b.id)
     const pointable = openuiPointable(sectionSource)
+    const sectionPayload = narration.steps.some((step) => step.view) ? compileOUISection(sectionSource).value : null
+    const flow = sectionPayload?.meta.type === 'flowchart' ? (sectionPayload.data as { flow?: AbstractFlow }).flow : undefined
+    const events = flow?.steps.flatMap((step) => step.type === 'branch' ? step.branches.flatMap((option) => option.resultEvents) : step.resultEvents) ?? []
     for (const step of narration.steps ?? []) {
+      const unsupported = step.view && sectionPayload && !flow
+        ? 'View switching only applies to Flowchart sections.'
+        : step.view === 'state-machine' && flow && !Object.values(flow.systems).some((system) => system.stateMachine?.states.length)
+          ? 'This state-machine narration view has no authored StateMachine.'
+          : step.view === 'state-machine' && flow && !events.some((event) => event.enters)
+            ? 'This state-machine narration view has no Event.enters transitions.'
+            : step.view === 'data-flow' && flow && !events.some((event) => event.data?.trim())
+              ? 'This data-flow narration view has no meaningful Event.data payload descriptions.' : null
+      if (unsupported) diagnostics.push({
+        tier: 3, line: compiled.sourceMap.lineOf(compiled.sourceMap.statementOf(step) ?? 'root'),
+        field: 'view', message: unsupported,
+        fixHint: 'Choose a supported view that teaches the available model, or model only source-supported states/transitions/data. Do not invent details to enable a view.',
+        ...contextToDiagnostic(context),
+      })
       if (beats && !beats.includes(step.beat)) {
         diagnostics.push({
           tier: 3,

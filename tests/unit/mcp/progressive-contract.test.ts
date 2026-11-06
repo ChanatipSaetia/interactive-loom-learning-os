@@ -92,3 +92,17 @@ describe('stateless progressive authoring contracts', () => {
     } finally { await client.close() }
   })
 })
+
+it('separates structural validity from actionable experience-readiness feedback', async () => {
+  const [a, b] = InMemoryTransport.createLinkedPair()
+  await createLoomServer().connect(b)
+  const client = new Client({ name: 'readiness-fixture', version: '1' })
+  await client.connect(a)
+  const plan = { schemaVersion: 1, topicId: 'setup', goal: 'Initialize a renderer', objectives: [{ id: 'setup', description: 'Follow initialization steps', evidenceOfLearning: 'Explain each setup step' }], sections: [{ id: 'setup', title: 'Setup', representation: 'bullets', objectiveRefs: ['setup'], activity: 'Follow numbered setup instructions', rationale: 'Concise numbered instructions preserve the linear procedure', presentation: { target: 'both', strategy: 'Present each numbered item; Read keeps the checklist visible' } }] }
+  const call = async (input: unknown) => JSON.parse((await client.callTool({ name: 'validate_topic_plan', arguments: { plan: input } })).content!.map((part) => 'text' in part ? part.text : '').join(''))
+  try {
+    expect(await call(plan)).toMatchObject({ valid: true, advisoryDiagnostics: [], experienceReadiness: { status: 'no-advisories', teachingQuality: 'not-evaluated' } })
+    expect(await call({ ...plan, sections: [{ ...plan.sections[0], activity: 'Learn', rationale: undefined }] })).toMatchObject({ valid: true, experienceReadiness: { status: 'review-needed' } })
+    expect(await call(null)).toMatchObject({ valid: false, experienceReadiness: { status: 'unverified' } })
+  } finally { await client.close() }
+})

@@ -18,7 +18,7 @@ import { getAuthoringContract, authoringContractVersion } from '../core/learning
 import { measureTool, type AuthoringStage, type ToolMeasurement } from './measurement'
 import { TopicContextInput, resolveTopicContext } from '../core/supporting/authoring-editor/assistant/context-graph'
 import { getCapabilityCatalog, getCapabilityIndex } from '../core/learning-engine/composition/oui/capability-catalog'
-import { validateTopicPlan, reviewTopicPlan } from '../core/learning-engine/composition/oui/topic-plan'
+import { validateTopicPlan, topicPlanReview } from '../core/learning-engine/composition/oui/topic-plan'
 import { LearningRecordSchema, LearningRepositoryError, type LearningRepository } from '../core/supporting/learner-progress/memory/repository'
 import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
 import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
@@ -174,12 +174,12 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
 
   server.registerTool('validate_topic_plan', {
     title: 'Validate a Loom topic plan',
-    description: 'Check objective coverage, IDs, prerequisites, and supported representations before generating OUI.',
+    description: 'Check structural coverage and representations; inspect separate advisory experience readiness, resolve warnings or justify proceeding before generating OUI.',
     inputSchema: z.object({ plan: z.unknown().describe("Version 1 TopicPlan; malformed inputs return structured diagnostics.") }),
     annotations: { readOnlyHint: true },
   }, async ({ plan }) => measured('validate_topic_plan', 'planning', { plan }, async () => {
     const diagnostics = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type)))
-    return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics, advisoryDiagnostics: reviewTopicPlan(plan) }) }] }
+    return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics, ...topicPlanReview(plan, diagnostics.length === 0) }) }] }
   }))
 
   if (options.checkSection) server.registerTool('validate_section', {
