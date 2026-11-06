@@ -113,7 +113,7 @@ async function main() {
   const bridge = new AppBridge(
     client,
     { name: 'loom-test-host', version: '0.1.0' },
-    { openLinks: {}, serverTools: {}, logging: {}, updateModelContext: { text: {} }, message: { text: {} } },
+    { openLinks: {}, serverTools: {}, logging: {}, updateModelContext: { text: {} }, message: { text: {} }, ...(!params.has('no-download') ? { downloadFile: {} } : {}) },
     { hostContext: { displayMode: 'inline', availableDisplayModes: ['inline', 'fullscreen'], theme } },
   )
   bridge.oninitialized = async () => {
@@ -138,12 +138,34 @@ async function main() {
     Object.assign(window, { lastOpenedLink: url })
     return {}
   }
+  bridge.ondownloadfile = async ({ contents }) => {
+    if (params.has('deny-download')) return { isError: true }
+    for (const item of contents) {
+      if (item.type !== 'resource' || !('text' in item.resource)) return { isError: true }
+      const url = URL.createObjectURL(new Blob([item.resource.text], { type: item.resource.mimeType ?? 'text/plain' }))
+      const link = document.createElement('a')
+      link.href = url
+      link.download = new URL(item.resource.uri).pathname.split('/').pop() || 'lesson.loom.oui'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+    }
+    return {}
+  }
   bridge.onsizechange = ({ height }) => {
     if (height && !document.body.classList.contains('fullscreen')) frame.style.height = `${Math.min(height, 900)}px`
   }
   await bridge.connect(new PostMessageTransport(frame.contentWindow!, frame.contentWindow!))
   frame.srcdoc = html
   Object.assign(window, {
+    shownOui: args.oui,
+    showExactTopic: async (oui: string) => {
+      const arguments_ = { oui }
+      const reopened = await client.callTool({ name: 'show_topic', arguments: arguments_ })
+      await bridge.sendToolInput({ arguments: arguments_ })
+      await bridge.sendToolResult(reopened as Parameters<typeof bridge.sendToolResult>[0])
+    },
     setHostTheme: (t: 'light' | 'dark') => { document.body.classList.toggle('light', t === 'light'); void bridge.sendHostContextChange({ theme: t }) },
     // The chat's own control for leaving fullscreen
     setHostDisplayMode: (mode: 'inline' | 'fullscreen') => { document.body.classList.toggle('fullscreen', mode === 'fullscreen'); void bridge.sendHostContextChange({ displayMode: mode }) },

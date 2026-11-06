@@ -1,3 +1,4 @@
+import { TOPIC_REPLAY_GUIDE } from './topic-replay'
 import { getAuthoringWorkflow } from './authoring-workflow'
 import { MENTAL_MODEL_GUIDE } from './mental-model-guide'
 /**
@@ -25,7 +26,9 @@ export const TUTOR_APP_DESCRIPTION =
 export const TUTOR_VIEWER_DESCRIPTION =
   'Tutor a learner with Interactive Loom when the chat has no Loom MCP App: find their Loom folder in their cloud drive, read the progress notes they paste from Loom Viewer, plan the next topic with callbacks to earlier ones, and write it as one .loom.oui text for them to open in Loom Viewer. Use when the learner wants to learn or continue a subject with Loom, asks what to learn next, or pastes a Loom progress note.'
 
-const FOLDER = `## The learner's Loom folder
+const FOLDER = `${TOPIC_REPLAY_GUIDE}
+
+## The learner's Loom folder
 
 Everything the learner keeps lives in one folder, \`Loom/\`, at the top of the cloud drive they use (My Drive in Google Drive, not a shared drive; OneDrive or SharePoint), reached with this chat's own drive connector. It is grouped by **domain**, one subject area each (fight animation, home networking), so each domain is planned from its own progress:
 
@@ -122,6 +125,8 @@ const TUTOR = `## While the learner works
  */
 export const LOOM_SERVER_INSTRUCTIONS = `Loom turns learning goals into topics that play in the chat. Match scope to the request: a full lesson needs complementary learning contributions, while a quick explanation can stay focused. When the learner wants to learn or continue a subject with Loom, asks what to learn next, asks where they are in a subject, or sends a Loom progress note, call get_tutor_guide once and follow it: it is the tutoring routine (plan, write with get_authoring_guide, show with show_topic, keep topics and progress in their drive by get_storage_guide). After show_topic, save a topic in an established domain to the drive and update domain.oui unless the learner opted out; showing the app or keeping local memory does not by itself confirm a Drive save.
 
+Reopening a lesson means reusing its complete original source unchanged, not regenerating. If it is unavailable, ask for the saved .loom.oui file.
+
 ${getAuthoringWorkflow('mcp')}`
 
 /** The tutoring routine for chats with the Loom MCP App, served by get_tutor_guide: loom-tutor-app's own text. */
@@ -193,5 +198,5 @@ ${NEXT_TOPIC}
 
 ${TUTOR}
 
-${getStorageGuide().replace(/^#/gm, '##')}`
+${getStorageGuide().replace(TOPIC_REPLAY_GUIDE, '').replace(/^#/gm, '##')}`
 }

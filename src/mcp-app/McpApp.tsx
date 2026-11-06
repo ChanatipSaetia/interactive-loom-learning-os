@@ -13,7 +13,7 @@
  * does (decision 216): Open plays a topic, Next topic asks the chat.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, ChevronUp, Crosshair, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, BookOpen, Check, ChevronDown, ChevronUp, Crosshair, Download, Copy, ExternalLink, Loader2, Maximize2, Minimize2, Palette, Play, Save, Send, X } from 'lucide-react'
 import type { App, McpUiDisplayMode, McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import { UISystemProvider } from '../core/ui-system'
 import { HUDProvider } from '../core/learning-engine/composition/context/HUDContext'
@@ -31,6 +31,7 @@ import { SYSTEM_THEMES, THEMES, systemThemeId } from '../core/ui-system/theme/th
 import { copyText } from '../core/ui-system/clipboard'
 import { PickMode, findPickElement, sourceResolver, type PickAssistantBridge } from '../core/supporting/authoring-editor/pick'
 import { pickQuestion } from './ask'
+import { downloadLesson } from './lesson-download'
 import { domainStatusLines, readLoomFolder, topicStatus, upNext, type DomainTopic, type LoomLibrary } from '../viewer/library'
 import { DomainView, LibraryView } from '../viewer/LibraryView'
 
@@ -338,7 +339,7 @@ export function McpApp({ app }: { app: App }) {
   const continueInViewer = useCallback(async () => {
     const url = loaded?.oui ? await topicLinkUrl(VIEWER_URL, loaded.oui) : null
     if (!url) {
-      setLinkNote('This topic is too long for a link. Copy it from the chat and paste it into Loom Viewer.')
+      setLinkNote('This topic is too long for a link. Use Download lesson or Copy lesson source, then open the file or paste the source in Loom Viewer.')
       return
     }
     setViewerLink(url)
@@ -346,6 +347,31 @@ export function McpApp({ app }: { app: App }) {
     setLinkNote(result?.isError ? 'The chat did not open the link.' : null)
   }, [app, loaded])
   const linkStrip = viewerLink && <LinkStrip url={viewerLink} onClose={() => setViewerLink(null)} />
+
+  const [exportNote, setExportNote] = useState<string | null>(null)
+  const [downloading, setDownloading] = useState(false)
+  useEffect(() => setExportNote(null), [loaded?.oui])
+  const saveLesson = useCallback(async () => {
+    if (loaded?.oui === undefined) return
+    setDownloading(true)
+    const result = await downloadLesson(app, loaded.oui, topic?.topicId)
+    setDownloading(false)
+    setExportNote(result === 'requested'
+      ? 'Download requested. Keep the file to reopen this exact lesson in a later chat or Loom Viewer.'
+      : result === 'unsupported'
+        ? 'This chat does not support file downloads. Use Copy lesson source and save it as a .loom.oui text file.'
+        : 'Download was cancelled or could not complete. Try again, or use Copy lesson source.')
+  }, [app, loaded, topic])
+  const copyLesson = useCallback(async () => {
+    if (loaded?.oui === undefined) return
+    const copied = await copyText(loaded.oui)
+    setExportNote(copied ? 'Lesson source copied. Save it as a .loom.oui text file to reopen it later.' : 'The chat blocked copying. Open in Viewer or ask the chat to provide the original .loom.oui file.')
+  }, [loaded])
+  const exportActions = loaded?.oui !== undefined && <>
+    <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void saveLesson()} disabled={downloading} aria-label="Download lesson" data-testid="mcp-download"><Download size={14} /> Download lesson</button>
+    <button type="button" className="mcp-button mcp-quiet mcp-small" onClick={() => void copyLesson()} aria-label="Copy lesson source" data-testid="mcp-copy-source"><Copy size={14} /> Copy lesson source</button>
+  </>
+  const exportStatus = exportNote && <p className="mcp-note" role="status" data-testid="mcp-export-status">{exportNote}</p>
 
   /** The section Present is on, for Ask and for Read when Present ends. */
   const presentAt = useRef(0)
@@ -444,7 +470,7 @@ export function McpApp({ app }: { app: App }) {
       return
     }
     const domain = shelf?.domainId ?? topic.topic?.domainId ?? '<domain-id>'
-    const sent = await app.sendMessage({ role: 'user', content: [{ type: 'text', text: `Open my Loom topic "${topic.title}" (\`Loom/${domain}/topics/${topic.id}.loom.oui\`) and show it with show_topic.` }] })
+    const sent = await app.sendMessage({ role: 'user', content: [{ type: 'text', text: `Open my Loom topic "${topic.title}" (\`Loom/${domain}/topics/${topic.id}.loom.oui\`) and show its complete original source unchanged with show_topic. Do not regenerate it; if the file is unavailable, ask me to attach it.` }] })
       .catch(() => ({ isError: true }))
     setShelfNote(sent?.isError ? 'The chat did not take the message.' : `Asked the chat to open "${topic.title}".`)
   }, [app, shelf])
@@ -524,6 +550,7 @@ export function McpApp({ app }: { app: App }) {
           <Crosshair size={14} /> <span className="mcp-wide-only">Ask</span>
         </button>
       )}
+      {exportActions}
       <ThemePicker themeId={themeId} onPick={pickTheme} />
       <button
         type="button"
@@ -550,7 +577,7 @@ export function McpApp({ app }: { app: App }) {
       </button>
     </div>
   )
-  const top = <>{bar}{linkStrip}</>
+  const top = <>{bar}{linkStrip}{exportStatus}</>
 
   if (topic && view === 'present' && presentSections.length > 0) {
     return (
@@ -645,6 +672,8 @@ export function McpApp({ app }: { app: App }) {
           )}
         </div>
       )}
+      <div className="mcp-actions mcp-secondary-actions">{exportActions}</div>
+      {exportStatus}
       {linkStrip}
       {linkNote && <p className="mcp-note">{linkNote}</p>}
       {!kept && <p className="mcp-note" data-testid="mcp-not-kept">This chat does not keep your progress. Open the topic in Viewer to keep it.</p>}
