@@ -32,8 +32,10 @@ const launch = process.env.LOOM_CHROMIUM_PATH ? { executablePath: process.env.LO
         await answer.click()
       } else {
         // Visit every selected representation, beyond the title-only opening.
+        const showControls = app.locator('[data-testid=present-show-controls]')
+        if (await showControls.isVisible()) await showControls.click()
         const narration = app.locator('[data-testid=present-narration]')
-        if (await narration.getAttribute('aria-pressed') === 'true') await narration.click()
+        if (await narration.isEnabled() && await narration.getAttribute('aria-pressed') === 'true') await narration.click()
         const play = app.locator('[data-testid=present-play]')
         if (await play.getAttribute('aria-label') === 'Pause autoplay') await play.click()
         for (let section = 1; section <= 10; section++) {
