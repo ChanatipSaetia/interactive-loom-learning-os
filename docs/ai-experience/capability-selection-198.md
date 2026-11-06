@@ -131,7 +131,14 @@ There is no Text ratio, visual minimum, Bullets penalty or interaction count.
 These are conservative, primarily English-language heuristics over declarations.
 They do not parse arbitrary configuration prose, verify source truth, establish
 assessment validity or determine semantic redundancy. Different evidence links
-and different actions are preserved. Browser/local validation checks actual OUI,
+and different actions are preserved. For a checkable OpenUI composition claim, write e.g. `composition: Table` or
+`composition: Tabs` in rationale/presentation.strategy. Local/browser artifact
+review compares that exact component with the root's reachable statement calls;
+unused declarations and component names inside quoted prose cannot satisfy it.
+A mismatch remains advisory (`COMPOSITION_MISMATCH`). Arbitrary prose is not
+parsed as a component requirement, and presence is never an effectiveness score.
+
+Browser/local validation checks actual OUI,
 references, narration beat targets, and modeled state/data prerequisites. Schema
 checks reject unknown view IDs. Geometry checks separately measure rendered
 snapshots; they cannot prove comprehension.
@@ -214,3 +221,6 @@ The offline report deliberately leaves semantic fit, Supported Objective Rate,
 learner outcomes and provider usage unknown until actual reviews/observations
 are supplied. Local browser/runtime limitations remain explicit even though the
 bundles and SDK protocol contracts pass. Nothing was deployed or merged.
+
+
+Follow-up: explicit OpenUI composition-to-artifact checks passed 15 focused MCP tests, all 17 offline tests, TypeScript, the production Worker/local build and both bundle guards. The complete CI suite is rerun for the final revision; local browser restrictions still apply. The browser fixture also expands initially compact Present controls before traversal.
