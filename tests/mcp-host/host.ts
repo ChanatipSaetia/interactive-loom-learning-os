@@ -86,7 +86,9 @@ async function main() {
     result = await client.callTool({ name: 'open_topic', arguments: args })
     say('model', `open_topic → ${textOf(result).slice(0, 160)}`)
   } else {
-    let oui = params.get('fixture') === 'three-spline' ? THREE_SPLINE_OUI : await (await fetch(`/topics/${topicId}.loom.oui`)).text()
+    const replaySource = (window as Window & { reopenedOui?: string }).reopenedOui
+    if (params.has('replay') && typeof replaySource !== 'string') throw new Error('Reopening requires the original file source')
+    let oui = params.has('replay') ? replaySource! : params.get('fixture') === 'three-spline' ? THREE_SPLINE_OUI : await (await fetch(`/topics/${topicId}.loom.oui`)).text()
     if (params.has('broken')) oui = oui.replace(/root = Quiz\(/, 'root = Quizz(')
     say('user', `Teach me: ${topicId}`)
 
@@ -172,12 +174,6 @@ async function main() {
   frame.srcdoc = html
   Object.assign(window, {
     shownOui: args.oui,
-    showExactTopic: async (oui: string) => {
-      const arguments_ = { oui }
-      const reopened = await client.callTool({ name: 'show_topic', arguments: arguments_ })
-      await bridge.sendToolInput({ arguments: arguments_ })
-      await bridge.sendToolResult(reopened as Parameters<typeof bridge.sendToolResult>[0])
-    },
     setHostTheme: (t: 'light' | 'dark') => { document.body.classList.toggle('light', t === 'light'); void bridge.sendHostContextChange({ theme: t }) },
     // The chat's own control for leaving fullscreen
     setHostDisplayMode: (mode: 'inline' | 'fullscreen') => { document.body.classList.toggle('fullscreen', mode === 'fullscreen'); void bridge.sendHostContextChange({ displayMode: mode }) },

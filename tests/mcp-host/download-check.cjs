@@ -24,7 +24,7 @@ const launch = process.env.LOOM_CHROMIUM_PATH ? { executablePath: process.env.LO
     return fs.readFileSync(await file.path(), 'utf8')
   }
   try {
-    for (const width of [380, 768]) {
+    for (const width of [380, 768]) for (const mode of ['card', 'read', 'present']) {
       const page = await browser.newPage({ viewport: { width, height: 800 } })
       activePage = page
       page.on('console', (msg) => { if (msg.type() === 'error') consoleErrors.push(msg.text()) })
@@ -34,23 +34,30 @@ const launch = process.env.LOOM_CHROMIUM_PATH ? { executablePath: process.env.LO
       const app = page.frameLocator('#app')
       await app.locator('[data-testid=mcp-card]').waitFor()
       const original = await page.evaluate(() => window.shownOui)
-      assert.equal(await savedSource(page, app), original)
-      for (const mode of ['read', 'present']) {
+      if (mode !== 'card') {
         await app.getByRole('button', { name: mode === 'read' ? /^Read Read at your own pace$/ : /^Present Play with narration$/ }).click()
-        const expand = app.getByRole('button', { name: 'Expand navigation', exact: true })
-        if (await expand.isVisible()) await expand.click()
-        const source = await savedSource(page, app)
-        assert.equal(source, original, `Changed ${mode} source at ${width}px`)
-        // Simulate attaching the downloaded file and asking to show it again:
-        // the host calls the existing stateless tool with that exact file text.
-        await page.evaluate((oui) => window.showExactTopic(oui), source)
-        await app.locator('[data-testid=mcp-card]').waitFor()
-        assert.equal(await savedSource(page, app), source, `Changed reopened source at ${width}px`)
+        await app.getByRole('button', { name: 'Expand navigation', exact: true }).click()
       }
+      const source = await savedSource(page, app)
+      assert.equal(source, original, `Changed ${mode} source at ${width}px`)
       assert.deepEqual(errors, [])
-      checks.push({ width, cardReadPresentExport: true, exactFileReopen: true })
-      await page.screenshot({ path: path.join(out, `download-${width}.png`) })
       await page.close()
+
+      // A later chat/tool call creates a fresh player. Bootstrap that host from
+      // the downloaded file text, not the fixture or an old iframe's state.
+      const reopened = await browser.newPage({ viewport: { width, height: 800 } })
+      activePage = reopened
+      const reopenErrors = []
+      reopened.on('pageerror', (e) => reopenErrors.push(String(e)))
+      await reopened.addInitScript((oui) => { window.reopenedOui = oui }, source)
+      await reopened.goto('http://localhost:8090/?replay=1')
+      const replayApp = reopened.frameLocator('#app')
+      await replayApp.locator('[data-testid=mcp-card]').waitFor()
+      assert.equal(await savedSource(reopened, replayApp), source, `Changed reopened source at ${width}px`)
+      assert.deepEqual(reopenErrors, [])
+      checks.push({ width, mode, actualFileExport: true, freshHostExactFileReopen: true })
+      if (mode === 'card') await reopened.screenshot({ path: path.join(out, `download-${width}.png`) })
+      await reopened.close()
     }
     for (const flag of ['no-download', 'deny-download']) {
       const page = await browser.newPage({ viewport: { width: 380, height: 800 } })
