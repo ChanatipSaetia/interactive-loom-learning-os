@@ -1,4 +1,4 @@
-root = Quiz("Trial of the Narrative Arc", [q1, q2, q3, q4, q5])
+root = Page("Trial of the Narrative Arc", Quiz("Trial of the Narrative Arc", [q1, q2, q3, q4, q5]))
 
 q1 = QuizQuestion(
   "q1",

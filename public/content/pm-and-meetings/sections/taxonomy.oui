@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("Meetings & Sync Formats", TaxonomyBrowser(
   "Meetings & Sync Formats",
   [dailySyncStandup, sprintPlanning, retrospective, asynchronousUpdates, projectPlanning],
-)
+))
 
 dailySyncStandup = TaxonomyCategory(
   "Daily Sync (Standup)",

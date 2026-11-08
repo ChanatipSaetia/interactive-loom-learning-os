@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("The Five Onboarding Methods — Pros & Cons", TaxonomyBrowser(
   "The Five Onboarding Methods — Pros & Cons",
   [docsFirstHandbook, buddyApprenticeship, cohortAcademy, selfServeInAppTours, sandboxQuests],
-)
+))
 
 docsFirstHandbook = TaxonomyCategory(
   "Docs-First Handbook",

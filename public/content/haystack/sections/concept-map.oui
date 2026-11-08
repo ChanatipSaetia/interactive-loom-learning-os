@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Concept Map", ConceptMap(
   "Concept Map",
   [
     component,
@@ -42,7 +42,7 @@ root = ConceptMap(
     ConceptLink(hybridRetrieval, vectorSearch, "combines"),
     ConceptLink(asyncPipeline, pipeline, "extends"),
   ],
-)
+))
 
 component = Concept("component", "Component", "mechanism")
 pipeline = Concept("pipeline", "Pipeline", "mechanism")

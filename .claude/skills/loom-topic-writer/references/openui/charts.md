@@ -33,8 +33,7 @@ Point(x: number, y: number, z?: number) — One x/y point of a ScatterSeries.
 Example section file, and its narration pointing at single bars and cells:
 
 ```
-// @openui "Water Temperature" "How hot to brew each tea"
-root = Card([header, chart, table, tip])
+root = Page("Water Temperature", Card([header, chart, table, tip]), "How hot to brew each tea")
 header = CardHeader("Water temperature by tea", "Starting points for a 2-minute steep")
 chart = BarChart(["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"], [Series("Water (°C)", [60, 75, 80, 90, 95])], "grouped", "Tea", "°C")
 table = Table([Col("Tea", ["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"]), Col("Water (°C)", [60, 75, 80, 90, 95], "number"), Col("Why", ["Shaded leaf, sweet and delicate", "Balanced, grassy", "Whisked powder, scorches easily", "Partly oxidised, needs more heat", "Fully oxidised, robust"])])
@@ -46,7 +45,7 @@ root = Narration([title, head, low, high, why, tip])
 title = NarrationStep("title", "How hot should the water be? It depends on the leaf.")
 head = NarrationStep("part1", "Five teas, each at its usual starting point.", [Highlight("header")])
 low = NarrationStep("part2", "Gyokuro wants the coolest water of all.", [Highlight("chart.labels[0]")])
-high = NarrationStep("part2", "Black tea takes it almost boiling.", [Callout("chart.series[0].values[4]", "Fully oxidised leaf has little left to turn bitter.")])
+high = NarrationStep("part2", "Black tea takes it almost boiling.", [NarrationCallout("chart.series[0].values[4]", "Fully oxidised leaf has little left to turn bitter.")])
 why = NarrationStep("part3", "The last column says why: gyokuro is shaded, so it is sweet and delicate.", [Spotlight(["table.columns[0].data[0]", "table.columns[2].data[0]"])])
 tip = NarrationStep("part4", "No thermometer? Time does the job.", [Highlight("tip")])
 ```

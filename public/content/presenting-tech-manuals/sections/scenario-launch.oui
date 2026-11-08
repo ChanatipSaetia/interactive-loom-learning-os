@@ -1,11 +1,11 @@
-root = Scenario(
+root = Page("Scenario: The Release Webinar", Scenario(
   "Scenario: The Release Webinar",
   "release-webinar",
   [start, resultArchitecture, resultNotes, demoMoment, resultClip, resultDebug, resultSkip],
   "You are presenting the user manual of a new Web App to a mixed audience of end users and operators. Ten minutes to start; the staging environment looks 'mostly fine'. How do you run this?",
   null,
   "The Release Webinar",
-)
+))
 
 start = ScenarioNode(
   "start",

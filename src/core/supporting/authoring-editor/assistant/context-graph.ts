@@ -1,6 +1,5 @@
 /** Bounded structural index derived from OUI source. No persistent server state. */
 import { fileStatements } from './statements'
-import type { ComponentLibrary } from '../../../learning-engine/composition/oui/library'
 
 export interface ContextGraphNode { id: string; kind: 'file' | 'statement' | 'component' }
 export interface ContextGraphEdge { from: string; to: string; kind: 'contains' | 'references' | 'calls-component' }
@@ -18,8 +17,7 @@ export function buildContextGraph(files: Record<string, string>): ContextGraph {
       edges.push({ from: file, to: id, kind: 'contains' })
       for (const ref of statement.refs) edges.push({ from: id, to: `${file}#${ref}`, kind: 'references' })
       for (const component of statement.calls) {
-        const library = /^\s*\/\/\s*@openui\b/.test(source) ? 'openui' : 'loom'
-        const target = `component:${library}:${component}`
+        const target = `component:${component}`
         if (!componentIds.has(target)) { componentIds.add(target); nodes.push({ id: target, kind: 'component' }) }
         edges.push({ from: id, to: target, kind: 'calls-component' })
       }
@@ -70,7 +68,7 @@ export function resolveTopicContext(input: TopicContextRequest) {
     overview: entries.map(([file]) => file),
     sources: [] as Array<{ id: string; file: string; statement: string; line: number; text: string }>,
     components: [] as string[],
-    componentReferences: [] as Array<{ library: ComponentLibrary; name: string }>,
+    componentReferences: [] as Array<{ name: string }>,
     designContext: null as null | { planRevision: string; sourceHash: string; goal: string; sections: TopicPlan['sections']; objectives: TopicPlan['objectives']; sources: TopicPlan['sources'] },
     /** Bounded expansion addresses, not an exhaustive unvisited transitive closure. */
     omittedReferences: [] as string[],
@@ -107,9 +105,9 @@ export function resolveTopicContext(input: TopicContextRequest) {
     const source = statements.get(id)
     if (source) result.sources.push({ id, ...source })
     else if (id.startsWith('component:')) {
-      const [, library, name] = id.split(':')
+      const [, name] = id.split(':')
       if (!result.components.includes(name)) result.components.push(name)
-      result.componentReferences.push({ library: library as ComponentLibrary, name })
+      result.componentReferences.push({ name })
     }
     pending.push(...(links.get(id) ?? []).filter((next) => !visited.has(next)))
   }
@@ -151,7 +149,7 @@ export function resolveTopicContext(input: TopicContextRequest) {
     else if (result.components.length) result.components.pop()
     else if (result.componentReferences.length) {
       const ref = result.componentReferences.pop()!
-      omitted.add(`component:${ref.library}:${ref.name}`)
+      omitted.add(`component:${ref.name}`)
       updateOmissions()
     }
     else result.diagnostics.pop()

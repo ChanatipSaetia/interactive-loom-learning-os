@@ -10,7 +10,7 @@ describe('context graph', () => {
 })
 
 import { resolveTopicContext } from '../../../../../../src/core/supporting/authoring-editor/assistant/context-graph'
-const files = { 'topic.oui': 'root = Topic("T", "C", "D", [SectionRef("quiz")])', 'sections/quiz.oui': 'root = Quiz("T", [q])\nq = QuizQuestion("q", label, [c])\nlabel = "Why?"\nc = QuizChoice("a", "A", true, "Yes")' }
+const files = { 'topic.oui': 'root = Topic("T", "C", "D", [SectionRef("quiz")])', 'sections/quiz.oui': "root = Page(\"T\", Quiz(\"T\", [q]))\nq = QuizQuestion(\"q\", label, [c])\nlabel = \"Why?\"\nc = QuizChoice(\"a\", \"A\", true, \"Yes\")" }
 const design = { schemaVersion: 1 as const, topicId: 'demo', goal: 'Explain why', objectives: [{ id: 'explain', description: 'Explain why' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', activity: 'Submit an answer', rationale: 'Observe an explicit answer', presentation: { target: 'both' as const, strategy: 'Read for attempts; Present demonstrates' }, objectiveRefs: ['explain'] }] }
 it('includes only relevant versioned design decisions and reports stale or budget-omitted plans', () => {
   const current = resolveTopicContext({ files, roots: ['sections/quiz.oui#q'], plan: design })
@@ -30,7 +30,7 @@ it('resolves transitive dependencies including topic section references', () => 
   expect(result.truncated).toBe(false)
 })
 it('bounds cycles, missing references, output and stale sources', () => {
-  const cyclic = { 'sections/quiz.oui': 'root = Quiz("T", [a])\na = b\nb = a\nc = missing' }
+  const cyclic = { 'sections/quiz.oui': "root = Page(\"T\", Quiz(\"T\", [a]))\na = b\nb = a\nc = missing" }
   expect(resolveTopicContext({ files: cyclic, roots: ['sections/quiz.oui#a'] }).sources).toHaveLength(2)
   expect(resolveTopicContext({ files: cyclic, roots: ['sections/quiz.oui#c'] }).diagnostics[0].code).toBe('MISSING_REFERENCE')
   expect(resolveTopicContext({ files, roots: ['topic.oui#root'], maxNodes: 1 }).truncated).toBe(true)
@@ -38,7 +38,7 @@ it('bounds cycles, missing references, output and stale sources', () => {
   expect(result.sources).toEqual([])
   expect(result.diagnostics[0].code).toBe('STALE_CONTEXT')
   expect(resolveTopicContext({ files: { ...files, 'sections/quiz.oui': files['sections/quiz.oui'] + '\nextra = "Unsaved"' } }).hash).not.toBe(result.hash)
-  const large = { 'sections/quiz.oui': `root = Text("T", ["${'x'.repeat(5000)}"])` }
+  const large = { 'sections/quiz.oui': `root = Page("T", LessonText("T", ["${'x'.repeat(5000)}"]))` }
   const bounded = resolveTopicContext({ files: large, roots: ['sections/quiz.oui'], maxChars: 2048 })
   expect(JSON.stringify(bounded).length).toBeLessThanOrEqual(2048)
   expect(bounded.truncated).toBe(true)
@@ -66,7 +66,7 @@ it('returns actionable frontier addresses when a node budget omits dependencies'
 
 it('accounts for whole statements removed by the character budget', () => {
   const result = resolveTopicContext({
-    files: { 'sections/prose.oui': `root = Text("Argument", ["${'x'.repeat(5000)}"])` },
+    files: { 'sections/prose.oui': `root = Page("Argument", LessonText("Argument", ["${'x'.repeat(5000)}"]))` },
     roots: ['sections/prose.oui'], maxChars: 2048,
   })
   expect(result.omittedReferences).toContain('sections/prose.oui#root')
@@ -76,7 +76,7 @@ it('accounts for whole statements removed by the character budget', () => {
 
 it('bounds omission metadata and discloses when expansion addresses cannot all fit', () => {
   const names = Array.from({ length: 100 }, (_, i) => `missing_${i}_${'x'.repeat(80)}`)
-  const result = resolveTopicContext({ files: { 'sections/many.oui': `root = Text("T", [${names.join(', ')}])` }, roots: ['sections/many.oui'], maxNodes: 1, maxChars: 2048 })
+  const result = resolveTopicContext({ files: { 'sections/many.oui': `root = Page("T", LessonText("T", [${names.join(', ')}]))` }, roots: ['sections/many.oui'], maxNodes: 1, maxChars: 2048 })
   expect(result.truncated).toBe(true)
   expect(result.omittedReferenceCount).toBeGreaterThan(100)
   expect(result.omittedReferencesTruncated).toBe(true)
@@ -86,9 +86,9 @@ it('bounds omission metadata and discloses when expansion addresses cannot all f
 
 it('returns distinct component library metadata for mixed source files', () => {
   const result = resolveTopicContext({ files: {
-    'sections/native.oui': 'root = Text("T", ["Native prose"])',
-    'sections/standard.oui': '// @openui "Standard"\nroot = Text("text", "Standard value")',
+    'sections/native.oui': "root = Page(\"T\", LessonText(\"T\", [\"Native prose\"]))",
+    'sections/standard.oui': "root = Page(\"Standard\", Text(\"text\", \"Standard value\"))",
   }, roots: ['sections/native.oui', 'sections/standard.oui'] })
-  expect(result.componentReferences).toEqual(expect.arrayContaining([{ library: 'loom', name: 'Text' }, { library: 'openui', name: 'Text' }]))
-  expect(result.components).toEqual(['Text'])
+  expect(result.componentReferences).toEqual(expect.arrayContaining([{ name: 'LessonText' }, { name: 'Text' }]))
+  expect(result.components).toEqual(expect.arrayContaining(['Page', 'LessonText', 'Text']))
 })

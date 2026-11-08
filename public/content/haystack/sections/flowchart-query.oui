@@ -1,4 +1,4 @@
-root = Flowchart(
+root = Page("Query Pipeline (RAG)", Flowchart(
   "Query Pipeline (RAG)",
   [endUser],
   [
@@ -13,7 +13,7 @@ root = Flowchart(
   ],
   [submitQuery, embedQuery, retrieve, rank, buildPrompt, generateAnswer],
   [ragQuery, simpleRetrieval],
-)
+))
 
 endUser = Actor("end_user", "End User", "Submits a natural-language query to the search system.")
 

@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Essential Terminology", Flashcards(
   "Essential Terminology",
   [drivingPort, drivenPort, drivingAdapter, drivenAdapter, dependencyInversion],
   null,
@@ -7,7 +7,7 @@ root = Flashcards(
     "Pre-teaches essential vocabulary before exploring structural flowcharts and trade-off sandboxes.",
     "Next: Explore the Semantic Domain Map.",
   ),
-)
+))
 
 drivingPort = Flashcard(
   "driving-port",

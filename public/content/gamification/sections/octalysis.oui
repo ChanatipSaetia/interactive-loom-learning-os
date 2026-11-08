@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Octalysis: The 8 Core Drives", TaxonomyBrowser(
   "Octalysis: The 8 Core Drives",
   [
     epicMeaningPurpose,
@@ -10,7 +10,7 @@ root = TaxonomyBrowser(
     unpredictabilityCuriosity,
     lossAvoidance,
   ],
-)
+))
 
 epicMeaningPurpose = TaxonomyCategory(
   "Epic Meaning & Purpose",

@@ -1,4 +1,4 @@
-root = Quiz("Master Filter Architecture Assessment", [qBossCache, qBossDisplacement, qBossPooling])
+root = Page("Master Filter Architecture Assessment", Quiz("Master Filter Architecture Assessment", [qBossCache, qBossDisplacement, qBossPooling]))
 
 qBossCache = QuizQuestion(
   "q-boss-cache",

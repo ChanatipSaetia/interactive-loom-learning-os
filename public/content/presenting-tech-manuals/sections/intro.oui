@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Presenting IT System, Web App & Developer Experience Manuals", Intro(
   "Presenting IT System, Web App & Developer Experience Manuals",
   what,
   why,
@@ -91,7 +91,7 @@ root = Intro(
   "Turn documentation into presentations people actually finish — with markdown, code-based, and web-app presentation tools",
   "35 min",
   15,
-)
+))
 
 what = IntroWhat(
   "Most manual presentations fail the same way: someone reads release notes aloud over an architecture diagram while the real audience — the people who must click buttons at 2am — silently disengages. This realm teaches the opposite: analyze the audience first, walk one realistic scenario end-to-end in the real UI, keep a fallback for the live demo, and hand everyone a permanent permalink to a docs site.",

@@ -1,4 +1,4 @@
-root = ReflectionTemplate("Combat Stats & Defenses Evaluation", [challenge1, challenge2])
+root = Page("Combat Stats & Defenses Evaluation", ReflectionTemplate("Combat Stats & Defenses Evaluation", [challenge1, challenge2]))
 
 challenge1 = TemplateChallenge(
   "Complete the statement explaining Attack Speed vs Base Damage stats (Part 1):",

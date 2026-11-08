@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("Interactive Scenario: Slipping Schedule", Scenario(
   "Interactive Scenario: Slipping Schedule",
   "slipping_schedule",
   [
@@ -12,7 +12,7 @@ root = Scenario(
   "A critical release is scheduled in 2 weeks, but progress has slowed down. Features are piling up, and developers seem blocked. As the team lead, how do you handle this?",
   null,
   "Saving a Slipping Schedule",
-)
+))
 
 start = ScenarioNode(
   "start",

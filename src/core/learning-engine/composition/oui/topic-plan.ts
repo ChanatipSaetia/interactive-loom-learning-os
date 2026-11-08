@@ -1,6 +1,6 @@
 /** Portable AI-authored planning contract. AI authors plans; Loom checks structure. */
 import { z } from 'zod'
-import { COMPONENT_LIBRARIES, OUI_SECTION_TYPES } from './library'
+import { COMPONENT_LIBRARIES, OUI_SECTION_TYPES, getUnifiedOUISpec } from './library'
 import { FLOWCHART_MODELS } from './mental-model-guide'
 import { EvidenceReferenceSchema, validateEvidenceReferences } from './source-provenance'
 
@@ -19,7 +19,8 @@ export const TopicPlanSchema = z.object({
   sections: z.array(z.object({
     id: z.string().min(1).max(120), title: z.string().min(1).max(1000),
     objectiveRefs: z.array(z.string().max(120)).min(1).max(100),
-    representation: z.string().min(1).max(120), activity: z.string().min(1).max(4000),
+    representation: z.string().min(1).max(120).default('page'), activity: z.string().min(1).max(4000),
+    components: z.array(z.string().min(1).max(120)).min(1).max(100).optional(),
     rationale: z.string().min(1).max(4000).optional(),
     presentation: z.object({ target: z.enum(['read', 'present', 'both']), strategy: z.string().min(1).max(2000) }).strict().optional(),
     assessment: z.object({
@@ -64,8 +65,9 @@ export function validateTopicPlan(input: unknown, supportedSections: ReadonlySet
     for (const reference of section.assessment?.itemRefs ?? []) {
       if (!reference.startsWith(`sections/${section.id}.oui#`)) add('INVALID_ASSESSMENT', `${path}.assessment.itemRefs`, 'Assessment items must belong to the planned section')
     }
-    if (section.library && section.library !== (section.representation === 'openui' ? 'openui' : 'loom')) add('INVALID_LIBRARY', `${path}.library`, 'Library must match the selected representation')
-    if (!supportedSections.has(section.representation)) add('UNKNOWN_SECTION_TYPE', `${path}.representation`, `Unsupported representation ${section.representation}`)
+    if (section.representation !== 'page' && !supportedSections.has(section.representation)) add('UNKNOWN_SECTION_TYPE', `${path}.representation`, `Unsupported representation ${section.representation}`)
+    if (section.representation === 'page' && !section.components?.length) add('INVALID_INPUT', `${path}.components`, 'Name the main visual/activity and supporting components for this page')
+    for (const name of section.components ?? []) if (!getUnifiedOUISpec().components[name]) add('INVALID_INPUT', `${path}.components`, `Unknown component ${name}`)
     for (const id of section.objectiveRefs) if (!objectives.has(id)) add('MISSING_OBJECTIVE', `${path}.objectiveRefs`, `Unknown objective ${id}`)
   }
   for (const [i, obj] of plan.objectives.entries()) {
@@ -111,6 +113,7 @@ export interface StudioPlanItem {
   objectiveRefs?: string[]
   presentation?: TopicPlan['sections'][number]['presentation']
   assessment?: TopicPlan['sections'][number]['assessment']
+  components?: string[]
 }
 export interface StudioPlan {
   goal: string
@@ -138,7 +141,7 @@ export function readStudioPlan(args: string): StudioPlan | null {
           type: section.representation, representation: section.representation, title: section.title,
           idea: section.objectiveRefs.map((id) => objectives.get(id)).join('; '),
           activity: section.activity, rationale: section.rationale,
-          library: section.library ?? (section.representation === 'openui' ? 'openui' : 'loom'),
+          components: section.components,
           objectiveRefs: section.objectiveRefs,
           presentation: section.presentation, assessment: section.assessment,
         })),
@@ -166,7 +169,7 @@ export function buildStudioPlanMessage(plan: StudioPlan, ticked: readonly number
       `${i + 1}. ${item.action === 'edit' ? 'Change' : 'Create'} ${item.name ? `sections/${item.name}.oui` : 'a section'} (${item.type || 'section'}) "${item.title}": ${item.idea}`,
       ...(item.activity ? [`   Learner action: ${item.activity}`] : []),
       ...(item.rationale ? [`   Representation rationale: ${item.rationale}`] : []),
-      ...(item.library ? [`   Component library: ${item.library}`] : []),
+      ...(item.components ? [`   Components: ${item.components.join(', ')}`] : []),
       ...(item.objectiveRefs ? [`   Objectives: ${item.objectiveRefs.join(', ')}`] : []),
       ...(item.presentation ? [`   Presentation (${item.presentation.target}): ${item.presentation.strategy}`] : []),
       ...(item.assessment ? [`   Assessment: ${item.assessment.itemRefs.join(', ')}; ${item.assessment.successCriterion}`] : []),

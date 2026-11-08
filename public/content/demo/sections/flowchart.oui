@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("AI Agent Architecture", Flowchart(
   "AI Agent Architecture",
   [devUser, qaUser],
   [orchAgent, toolsRouter, llm, mcpServers, subagents],
   [runAgent, callLlm, reasonBranch, eval, notifyBranch, provideFeedback, qaBranch],
   [happyPath, feedbackLoop, directLlm],
-)
+))
 
 devUser = Actor(
   "dev_user",

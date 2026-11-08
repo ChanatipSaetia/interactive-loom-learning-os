@@ -1,47 +1,14 @@
-# Section Type: `openui`
+# OpenUI visual components in authored pages
 
-**Mental model**: Free-form composed layout. Use any standard OpenUI component (cards, tabs, tables, charts, accordions, steps, callouts, code blocks…), or an SVG drawing, when `text` or `bullets` can't express the shape of the content.
-
----
-
-## File Structure
-
-An `openui` section is one `.oui` file in the topic's `sections/` folder, like every other section:
-
-```
-public/content/<topic>/
-├── topic.oui                 # lists the section: SectionRef("plans")
-└── sections/
-    └── plans.oui             # starts with the // @openui directive
-```
-
-## The `// @openui` directive
-
-The **first non-blank line** of the file marks it as a standard OpenUI section and carries its title and optional heading:
-
-```oui
-// @openui "Choosing a plan" "Compare what you get"
-```
-
-| Argument | Type | Required | Description |
-|---|---|---|---|
-| 1st string | `string` | Yes | Section title shown in the section title bar |
-| 2nd string | `string` | No | Sub-heading displayed below the title |
-
-Everything after the directive is a plain **OpenUI Lang** program written against the standard
-[`@openuidev/react-ui`](https://www.npmjs.com/package/@openuidev/react-ui) component library
-(`openuiLibrary`), **not** the Loom section library. Output from any OpenUI-aware LLM prompt can be pasted in as-is.
-
-> [!NOTE]
-> Loom components (`Quiz`, `Text`, `Bullets`, …) are not available inside an `openui` section, and the standard
-> components are not available in other sections. Both libraries have a `Text` and an `ImageGallery`; the directive
-> decides which one a file uses.
+See [Authored pages](page.md) for the shared page envelope, migration and mode contracts.
+Every section uses `root = Page("Title", body, heading?)`. The body can use public
+OpenUI components or a Loom learning component; no section-type or library
+selection is required.
 
 ## Example
 
 ```oui
-// @openui "Choosing a plan" "Compare what you get"
-root = Card([header, tabs, note])
+root = Page("Choosing a plan", Card([header, tabs, note]), "Compare what you get")
 
 header = CardHeader("Plans", "Pick the one that fits your team")
 
@@ -72,8 +39,7 @@ explains better than words or boxes and arrows: the parts of an object, a layout
 It may go wherever an `Image` may (a Card, a Stack, a tab, …).
 
 ```oui
-// @openui "Two Leaves and a Bud"
-root = Card([header, shoot])
+root = Page("Two Leaves and a Bud", Card([header, shoot]))
 header = CardHeader("The fine pluck")
 shoot = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 250">
   <path id="leaf1" d="M180 96 C140 68 100 76 80 102 C112 122 152 120 180 96 Z" fill="green"/>
@@ -101,41 +67,14 @@ See decision 118 in [grill-log-presenting-mode.md](../../grill-log-presenting-mo
 
 - `Query()` / `Mutation()` are rejected: Loom content is static, so inline the data.
 - Unknown components, missing required arguments and unresolved references are reported as inline diagnostics with their line, like any other section. The preview keeps the last valid version.
-- Buttons only do something for the built-in **open URL** action. Other actions (for example "continue conversation") are ignored.
+- Local reactive controls and state actions work without a model call. Opening URLs is supported; host tool calls and assistant-conversation actions are not connected.
 - Colors come from the active Loom theme (Catppuccin palette tokens), so the components follow theme switches.
 
-## Legacy OKF folder format
+## Delivery
 
-The old Markdown/YAML loader also accepts `type: openui`. `resource` names the program file (default `view.oui`), which holds the OpenUI program **without** the directive:
-
-```yaml
----
-type: openui
-title: "Choosing a plan"
-heading: "Compare what you get"
-resource: view.oui
----
-```
-
-## CDN / inline equivalent
-
-> [!IMPORTANT]
-> The single-file embed library (`libs/loom-sections.tsx`, see [cdn-library.md](../cdn-library.md)) does **not**
-> include the `openui` renderer: the standard component library would roughly triple the bundle size. `openui` sections
-> render in the web app and Loom Studio, where they load lazily on first use.
-
-The section props look like this:
-
-```json
-{
-  "type": "openui",
-  "props": {
-    "title": "Choosing a plan",
-    "heading": "Compare what you get",
-    "source": "root = Card([CardHeader(\"Plans\"), TextContent(\"Hello\")])"
-  }
-}
-```
+Studio, Viewer, the main app and the MCP player read unified pages. Full OpenUI
+support in the lightweight single-file embed is deferred; use Viewer for those
+pages. Domain-specific Read and Present views share their content contract.
 
 ---
 

@@ -16,11 +16,11 @@ import { ContentToolRunner } from '../../../../../../src/core/supporting/authori
 
 const files: Record<string, string> = {
   'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz")])\n',
-  'sections/quiz.oui': 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "Yes", true, "Right.")])\n',
+  'sections/quiz.oui': "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"Yes\", true, \"Right.\")])\n",
 }
 const q1 = 'q1 = QuizQuestion("q1", "Why, exactly?", [QuizChoice("a", "Yes", true, "Right.")])'
 const q2 = 'q2 = QuizQuestion("q2", "And then?", [QuizChoice("a", "No", true, "Fine.")])'
-const root2 = 'root = Quiz("Check", [q1, q2])'
+const root2 = "root = Page(\"Check\", Quiz(\"Check\", [q1, q2]))"
 
 describe('stageStatements', () => {
   it('stages replaced and added statements without touching the files', () => {
@@ -35,7 +35,7 @@ describe('stageStatements', () => {
   })
 
   it('reports new errors of the staged file', () => {
-    const { changeset } = stageStatements([], files, 'sections/quiz.oui', [{ name: 'root', text: 'root = Quiz("Check", [q1, q9])' }], [], 'x')
+    const { changeset } = stageStatements([], files, 'sections/quiz.oui', [{ name: 'root', text: "root = Page(\"Check\", Quiz(\"Check\", [q1, q9]))" }], [], 'x')
     expect(newErrors('demo', 'sections/quiz.oui', files, changeset).join('\n')).toMatch(/q9/)
   })
 
@@ -84,7 +84,7 @@ describe('re-basing and conflicts', () => {
 })
 
 describe('stageSection and stageTopic', () => {
-  const section = 'root = Flashcards("Words", [f1])\nf1 = Flashcard("Term", ["Meaning"])'
+  const section = "root = Page(\"Words\", Flashcards(\"Words\", [f1]))\nf1 = Flashcard(\"Term\", [\"Meaning\"])"
 
   it('stages a new file and its SectionRef in place', () => {
     const { changeset, error } = stageSection([], files, 'words', section, undefined, 'Vocabulary')
@@ -133,10 +133,10 @@ describe('EditToolRunner and Studio reads', () => {
     const ok = runner.run('edit_section', JSON.stringify({ file: 'quiz', statements: `${q1}\n${q2}`, summary: 'Two questions' }))
     expect(ok.content).toMatch(/^Staged replace q1, add q2 in sections\/quiz.oui\. No new errors/)
     expect(ok.label).toBe('Two questions')
-    const bad = runner.run('edit_section', JSON.stringify({ file: 'sections/quiz.oui', statements: 'root = Quiz("Check", [q1, q9])', summary: 'x' }))
+    const bad = runner.run('edit_section', JSON.stringify({ file: 'sections/quiz.oui', statements: "root = Page(\"Check\", Quiz(\"Check\", [q1, q9]))", summary: 'x' }))
     expect(bad.content).toMatch(/new errors[\s\S]*q9/)
     expect(runner.run('edit_section', '{nope').content).toMatch(/not valid JSON/)
-    expect(runner.run('create_section', JSON.stringify({ name: 'quiz', source: 'root = Quiz("x", [])', summary: 'x' })).content).toMatch(/^Not staged: .*already exists/)
+    expect(runner.run('create_section', JSON.stringify({ name: 'quiz', source: "root = Page(\"x\", Quiz(\"x\", []))", summary: 'x' })).content).toMatch(/^Not staged: .*already exists/)
     expect(runner.run('describe_components', JSON.stringify({ names: ['Flashcards', 'Nope'] })).content).toMatch(/Flashcard\([\s\S]*Unknown components: Nope/)
   })
 

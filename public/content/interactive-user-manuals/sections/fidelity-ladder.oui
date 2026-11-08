@@ -1,9 +1,9 @@
-root = PillarLayer(
+root = Page("The Fidelity Ladder", PillarLayer(
   "The Fidelity Ladder",
   [lStatic, lWalkthrough, lInteractive, lSandbox],
   [block1, block2, block3, block4, block5],
   "How close to the real software a manual gets. Each rung up gives more realistic practice, and costs more to build and to maintain.",
-)
+))
 
 lStatic = Layer(
   "l-static",

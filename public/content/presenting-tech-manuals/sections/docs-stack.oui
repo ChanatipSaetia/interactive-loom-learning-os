@@ -1,4 +1,4 @@
-root = PillarLayer(
+root = Page("The Docs-as-Code Layer Stack", PillarLayer(
   "The Docs-as-Code Layer Stack",
   [lLive, lDelivery, lGenerators, lSource],
   [
@@ -14,7 +14,7 @@ root = PillarLayer(
     bTourfiles,
   ],
   "Write it once, show it everywhere: plain-text sources in Git (bottom) are compiled by generators into the docs web app and decks, which you then present live (top). Tap a source to see everything that changes when you edit it, so the talk never drifts from the docs.",
-)
+))
 
 lSource = Layer(
   "l-source",

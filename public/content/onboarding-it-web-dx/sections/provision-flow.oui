@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Day-1 Access Provisioning Flow", Flowchart(
   "Day-1 Access Provisioning Flow",
   [hiringManager, itOperator, newcomer],
   [joinerTicket, ssoDirectory, pamVault],
   [stepRequest, stepProvision, stepPrivileges, stepSmoke, stepOutcome],
   [journeyHappy, journeyRework],
-)
+))
 
 hiringManager = Actor(
   "hiring_manager",

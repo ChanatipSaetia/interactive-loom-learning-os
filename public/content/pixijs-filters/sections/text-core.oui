@@ -1,4 +1,4 @@
-root = Text(
+root = Page("The FilterSystem Architecture & Lifecycle", LessonText(
   "The FilterSystem Architecture & Lifecycle",
   [
     "PixiJS renders 2D scenes at 60 FPS by batching thousands of textured quads into combined GPU vertex buffers. However, post-processing effects such as blurs, displacement maps, glows, and custom shaders cannot be rendered within the standard batch stream because they require sampling previously rendered pixel regions. To solve this, PixiJS provides the FilterSystem architecture.",
@@ -8,4 +8,4 @@ root = Text(
     "The FilterSystem then renders a full-screen quad using the filter's fragment shader. If the filter is a single-pass effect (such as a ColorMatrixFilter or AlphaFilter), the shader samples the offscreen texture uSampler and writes directly to the destination framebuffer. If the filter is a multi-pass effect (such as a 2-pass separable Gaussian blur or Kawase blur), the FilterSystem allocates a second ping-pong RenderTarget from the pool, executes pass 1 (horizontal convolution), swaps the input/output buffers, and executes pass 2 (vertical convolution) before drawing to the destination.",
     "While filters provide immense visual power, they introduce significant GPU performance costs. Every filter pass breaks the continuous sprite batch, switches WebGL framebuffers, and increases GPU memory bandwidth consumption. Applying filters to hundreds of individual sprites can drop framerates from 60 FPS to under 20 FPS. To maintain optimal performance, developers should group related sprites under a single parent Container with one shared filter, utilize fast algorithms like KawaseBlurFilter at half resolution (filter.resolution = 0.5), or enable container.cacheAsBitmap = true for static elements.",
   ],
-)
+))

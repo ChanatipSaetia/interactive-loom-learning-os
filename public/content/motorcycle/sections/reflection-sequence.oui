@@ -1,4 +1,4 @@
-root = ReflectionSequence("4-Stroke Engine Combustion Cycle", [challenge1, challenge2])
+root = Page("4-Stroke Engine Combustion Cycle", ReflectionSequence("4-Stroke Engine Combustion Cycle", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Order the stages of a 4-Stroke internal combustion engine cycle chronologically (Part 1):",

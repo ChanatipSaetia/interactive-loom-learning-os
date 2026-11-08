@@ -1,4 +1,4 @@
-root = Quiz("Testing & Delivery Trial", [qVrt, qAcceptance, qPlay, qRunner, qAdvisor])
+root = Page("Testing & Delivery Trial", Quiz("Testing & Delivery Trial", [qVrt, qAcceptance, qPlay, qRunner, qAdvisor]))
 
 qVrt = QuizQuestion(
   "q-vrt",

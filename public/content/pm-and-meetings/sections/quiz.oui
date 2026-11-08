@@ -1,4 +1,4 @@
-root = Quiz("Knowledge Check", [qParkinsonsLaw, qAsyncFirst, qStandupRule])
+root = Page("Knowledge Check", Quiz("Knowledge Check", [qParkinsonsLaw, qAsyncFirst, qStandupRule]))
 
 qParkinsonsLaw = QuizQuestion(
   "q_parkinsons_law",

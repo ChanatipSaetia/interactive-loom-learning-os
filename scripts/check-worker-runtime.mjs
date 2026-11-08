@@ -75,7 +75,7 @@ try {
   assert.ok(shown.structuredContent.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'UNJUSTIFIED_TEXT_SELECTION'))
   assert.ok(capabilities.planSchema)
   assert.equal(JSON.parse((await call('validate_topic_plan', { plan: null })).content[0].text).valid, false)
-  const context = JSON.parse((await call('get_topic_context', { files: { 'sections/text.oui': 'root = Text("T", ["One"])' }, roots: ['sections/text.oui'] })).content[0].text)
+  const context = JSON.parse((await call('get_topic_context', { files: { 'sections/text.oui': "root = Page(\"T\", LessonText(\"T\", [\"One\"]))" }, roots: ['sections/text.oui'] })).content[0].text)
   assert.equal(context.sources.length, 1)
   assert.equal(context.truncated, false)
   console.log('Real workerd: startup, stateless tools, focused references, runtime input validation, representation readiness and source context passed.')

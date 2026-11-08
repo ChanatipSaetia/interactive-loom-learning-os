@@ -16,7 +16,7 @@ describe('stateless progressive authoring contracts', () => {
     await client.connect(a)
     const text = (r: unknown) => (r as { content: Array<{ text: string }> }).content.map((c) => c.text).join('')
     const plan = { schemaVersion: 1, topicId: 'loop', goal: 'Recognise a loop', objectives: [{ id: 'recognise', description: 'Recognise a loop', evidenceOfLearning: 'Submit a correct authored answer' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', activity: 'Submit an answer', rationale: 'Collect explicit evidence', objectiveRefs: ['recognise'], assessment: { itemRefs: ['sections/quiz.oui#q1'], successCriterion: 'Correct answer' } }] }
-    const files = { 'topic.oui': 'root = Topic("Loops", "Practice", "Recognise a loop", [SectionRef("quiz")])', 'sections/quiz.oui': 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Which repeats?", [QuizChoice("a", "A loop", true, "Correct")])' }
+    const files = { 'topic.oui': 'root = Topic("Loops", "Practice", "Recognise a loop", [SectionRef("quiz")])', 'sections/quiz.oui': "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Which repeats?\", [QuizChoice(\"a\", \"A loop\", true, \"Correct\")])" }
     const oui = '// @loom-topic loop\n' + Object.entries(files).map(([file, source]) => `// === ${file} ===\n${source}\n`).join('')
     try {
       expect(JSON.parse(text(await client.callTool({ name: 'get_loom_capabilities', arguments: { detail: 'index' } }))).sections.some((s: { type: string }) => s.type === 'quiz')).toBe(true)

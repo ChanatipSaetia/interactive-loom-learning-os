@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Glossary", Flashcards(
   "Glossary",
   [
     diataxis,
@@ -13,7 +13,7 @@ root = Flashcards(
     flesch,
     sme,
   ],
-)
+))
 
 diataxis = Flashcard(
   "diataxis",

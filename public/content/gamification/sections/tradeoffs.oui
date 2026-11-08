@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Reward Design Trade-offs", [learningApp, employeeTraining])
+root = Page("Reward Design Trade-offs", TradeoffSandbox("Reward Design Trade-offs", [learningApp, employeeTraining]))
 
 learningApp = TradeoffScenario(
   "learning-app",

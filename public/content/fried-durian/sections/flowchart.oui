@@ -1,4 +1,4 @@
-root = Flowchart(
+root = Page("ขั้นตอนการทำทุเรียนทอด", Flowchart(
   "ขั้นตอนการทำทุเรียนทอด",
   [cook, eater],
   [durianRaw, knife, panOil, sugarBowl],
@@ -10,7 +10,7 @@ root = Flowchart(
     "เห็นภาพกระบวนการทั้งหมดช่วยให้ทำตามได้ง่าย",
     "ถัดไป: ทดสอบความรู้กับ Quiz",
   ),
-)
+))
 
 cook = Actor("cook", "คนทำอาหาร", "เตรียมวัตถุดิบและทอดทุเรียน")
 eater = Actor("eater", "คนทาน", "ชิมทุเรียนทอด")

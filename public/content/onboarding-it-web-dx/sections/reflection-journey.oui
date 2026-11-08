@@ -1,4 +1,4 @@
-root = ReflectionSequence("Sequencing the First Week", [challenge1])
+root = Page("Sequencing the First Week", ReflectionSequence("Sequencing the First Week", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "Assemble the six onboarding principles in their correct order of operation:",

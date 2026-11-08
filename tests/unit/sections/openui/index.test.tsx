@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import OpenUISection from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui'
 import { OpenUIHelpModal } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/components/openui/OpenUIHelpModal'
 import { OpenUISectionSchema } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/schema'
+import { validateOUISection } from '../../../../src/core/learning-engine/validation/oui-gateway'
 import {
   LOOM_CHART_TOKENS,
   paletteForSeries,
@@ -14,7 +15,6 @@ import { loomOpenUIThemeCss } from '../../../../src/core/learning-engine/sub-con
 import {
   openUIProgramOf,
   printOpenUISection,
-  readOpenUIDirective,
 } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/openui-standard'
 
 const PROGRAM = `root = Card([header, body])
@@ -104,19 +104,14 @@ describe('Loom OpenUI charts', () => {
   })
 })
 
-describe('OpenUI directive', () => {
-  it('reads title and heading from the first non-blank line', () => {
-    expect(readOpenUIDirective('\n// @openui "A \\"quoted\\" title" "Sub"\nroot = Card([])')).toEqual({ title: 'A "quoted" title', heading: 'Sub', line: 2 })
-    expect(readOpenUIDirective('// @openui\nroot = Card([])')).toEqual({ title: '', heading: undefined, line: 1 })
-    expect(readOpenUIDirective('root = Card([])\n// @openui "late"')).toBeNull()
-    expect(readOpenUIDirective('// @openuix "no"')).toBeNull()
-  })
-
-  it('round-trips through print', () => {
+describe('unified visual pages', () => {
+  it('prints a Page envelope and recovers the visual body', () => {
     const file = printOpenUISection(PROGRAM, 'Pricing', 'Pick one')
-    expect(file.startsWith('// @openui "Pricing" "Pick one"\nroot = Card')).toBe(true)
-    expect(openUIProgramOf(file)).toBe(PROGRAM)
-    expect(readOpenUIDirective(file)).toMatchObject({ title: 'Pricing', heading: 'Pick one' })
+    expect(file.startsWith('root = Page("Pricing", Card(')).toBe(true)
+    expect(openUIProgramOf(file).trim()).toBe(PROGRAM.trim())
+    const checked = validateOUISection(file)
+    expect(checked.payload?.meta).toMatchObject({ title: 'Pricing', heading: 'Pick one' })
+    expect(checked.diagnostics.filter((d) => d.tier < 3)).toEqual([])
   })
 })
 

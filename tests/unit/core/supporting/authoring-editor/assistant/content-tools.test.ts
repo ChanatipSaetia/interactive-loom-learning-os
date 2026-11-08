@@ -3,8 +3,8 @@ import { ContentToolRunner, parseAddress, type AssistantTopicContext } from '../
 
 const files = {
   'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("intro"), SectionRef("quiz"), SectionRef("broken")])\n',
-  'sections/intro.oui': 'root = Text("Intro", ["Hello.", "World."])\n',
-  'sections/quiz.oui': `root = Quiz("Check", [q1])
+  'sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\", \"World.\"]))\n",
+  'sections/quiz.oui': `root = Page("Check", Quiz("Check", [q1]))
 q1 = QuizQuestion("q1", "First?", [QuizChoice("a", "Yes", true, "Right.")], "Think.")
 `,
   'sections/quiz.narrate.oui': 'root = Narration([NarrationStep("q1", "Here is the first question.")])\n',
@@ -33,8 +33,8 @@ describe('content tools (decisions 120–126)', () => {
     const outcome = run('navigate')
     expect(outcome.label).toBe('Topic outline')
     expect(outcome.content).toContain('Topic "Demo": 3 sections')
-    expect(outcome.content).toContain('1. sections/intro.oui Text "Intro"\n')
-    expect(outcome.content).toContain('2. sections/quiz.oui Quiz "Check" (1 questions)')
+    expect(outcome.content).toContain('1. sections/intro.oui Page "Intro"\n')
+    expect(outcome.content).toContain('2. sections/quiz.oui Page "Check"')
     expect(outcome.content).toContain('3. sections/broken.oui does not compile (has errors)')
   })
 
@@ -57,7 +57,7 @@ describe('content tools (decisions 120–126)', () => {
 
   it('read with source: true gives the statement or the file as written', () => {
     expect(run('read', { address: 'sections/quiz.oui #q1', source: true }).content).toContain('```oui\nq1 = QuizQuestion("q1"')
-    expect(run('read', { address: 'intro', source: true }).content).toContain('root = Text("Intro"')
+    expect(run('read', { address: 'intro', source: true }).content).toContain('root = Page("Intro", LessonText("Intro"')
   })
 
   it('explains what it cannot do', () => {

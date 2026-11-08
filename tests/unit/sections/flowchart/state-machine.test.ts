@@ -62,7 +62,7 @@ describe('state machine from enters', () => {
 
   it('rejects an enters that is not a declared state', () => {
     const source = `
-root = Flowchart("Orders", [buyer], [orders], [place], [j])
+root = Page("Orders", Flowchart("Orders", [buyer], [orders], [place], [j]))
 buyer = Actor("buyer", "Buyer", "Buys")
 orders = System("orders", "Orders", "Owns orders", "aggregate", StateMachine([MachineState("DRAFT", "Draft", "var(--ctp-blue)")], "DRAFT"))
 place = Step("place", "On checkout", "Place Order", orders, [Event("placed", "Order Placed", null, "SHIPPED")], buyer)

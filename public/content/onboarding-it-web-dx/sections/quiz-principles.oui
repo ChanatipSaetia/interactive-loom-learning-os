@@ -1,4 +1,4 @@
-root = Quiz("Trial of the Doctrine", [q1, q2, q3, q4, q5, q6])
+root = Page("Trial of the Doctrine", Quiz("Trial of the Doctrine", [q1, q2, q3, q4, q5, q6]))
 
 q1 = QuizQuestion(
   "q1",

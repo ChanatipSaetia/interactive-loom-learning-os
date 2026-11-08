@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Haystack Component Taxonomy", TaxonomyBrowser(
   "Haystack Component Taxonomy",
   [
     indexingPipeline,
@@ -10,7 +10,7 @@ root = TaxonomyBrowser(
     documentStore2,
     customComponents2,
   ],
-)
+))
 
 indexingPipeline = TaxonomyCategory(
   "Indexing Pipeline",

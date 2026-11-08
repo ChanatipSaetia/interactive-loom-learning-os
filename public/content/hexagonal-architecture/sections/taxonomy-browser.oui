@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Adapter Taxonomies & Patterns", TaxonomyBrowser(
   "Adapter Taxonomies & Patterns",
   [primaryDrivingAdapters, secondaryDrivenAdapters, testingMocksInMemoryAdapters],
   null,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     "Helps developers classify adapters by their role in driving execution or providing infrastructure services.",
     "Next: Read the Core Explanation of Dependency Inversion.",
   ),
-)
+))
 
 primaryDrivingAdapters = TaxonomyCategory(
   "Primary (Driving) Adapters",

@@ -10,7 +10,7 @@ import { validateTopicPlan, type TopicPlan } from '../../src/core/learning-engin
 import { resolveTopicContext } from '../../src/core/supporting/authoring-editor/assistant/context-graph'
 import { checkTopic } from '../../src/mcp/check'
 
-const table = '// @openui "Cache attributes"\nroot = Table([Col("Policy", ["private", "public"]), Col("Shared cache", ["Disallowed", "Allowed subject to other rules"])])'
+const table = "root = Page(\"Cache attributes\", Table([Col(\"Policy\", [\"private\", \"public\"]), Col(\"Shared cache\", [\"Disallowed\", \"Allowed subject to other rules\"])]))"
 const corpus = [
   { id: 'classification', request: 'Explore categories and distinguish them', type: 'taxonomy-browser', alternatives: ['openui'], source: SECTION_FIXTURES['taxonomy-browser'] },
   { id: 'procedure', request: 'Read an ordered checklist', type: 'bullets', alternatives: ['openui'], source: SECTION_FIXTURES.bullets },

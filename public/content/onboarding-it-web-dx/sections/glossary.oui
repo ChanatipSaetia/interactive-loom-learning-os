@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Lexicon of the Threshold", Flashcards(
   "Lexicon of the Threshold",
   [
     timeToFirstValue,
@@ -10,7 +10,7 @@ root = Flashcards(
     sandboxQuest,
     humanAnchor,
   ],
-)
+))
 
 timeToFirstValue = Flashcard(
   "time-to-first-value",

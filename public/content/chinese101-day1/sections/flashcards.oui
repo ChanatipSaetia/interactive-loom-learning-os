@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("คำศัพท์พื้นฐาน", Flashcards(
   "คำศัพท์พื้นฐาน",
   [
     greetingHello,
@@ -25,7 +25,7 @@ root = Flashcards(
     wordChina,
   ],
   "คลิกการ์ดเพื่อดูรายละเอียด",
-)
+))
 
 greetingHello = Flashcard(
   "greeting-hello",

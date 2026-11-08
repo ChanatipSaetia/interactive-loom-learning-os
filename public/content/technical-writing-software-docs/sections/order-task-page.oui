@@ -1,4 +1,4 @@
-root = ReflectionSequence("Assemble a Task Page", [challenge1, challenge2])
+root = Page("Assemble a Task Page", ReflectionSequence("Assemble a Task Page", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Assemble the parts of a task page in the right order.",

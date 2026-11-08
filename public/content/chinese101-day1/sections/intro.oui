@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("", Intro(
   "",
   what,
   why,
@@ -32,7 +32,7 @@ root = Intro(
   null,
   "5 min read",
   6,
-)
+))
 
 what = IntroWhat(
   "ปูพื้นฐานการเรียนภาษาจีนวันแรก เข้าใจระบบพินอิน วรรณยุกต์ และการทักทายพื้นฐาน",

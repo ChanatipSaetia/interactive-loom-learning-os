@@ -1,4 +1,4 @@
-root = ReflectionTemplate(
+root = Page("Synthesize Hexagonal Architecture Core Concepts", ReflectionTemplate(
   "Synthesize Hexagonal Architecture Core Concepts",
   [challenge1],
   null,
@@ -7,7 +7,7 @@ root = ReflectionTemplate(
     "Solidifies how Dependency Inversion protects domain logic.",
     "Next: Complete the final Knowledge Check Quiz.",
   ),
-)
+))
 
 challenge1 = TemplateChallenge(
   "Fill in the blank fields to complete the explanation of Hexagonal Architecture mechanics:",

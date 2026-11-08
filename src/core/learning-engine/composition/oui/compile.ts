@@ -28,13 +28,10 @@ import {
 import { getLoomOUIComponent, getLoomOUIJSONSchema, getLoomOUILibrary, OUI_SECTION_TYPES } from './library'
 import {
   OPENUI_SECTION_TYPE,
-  openUIProgramOf,
-  readOpenUIDirective,
-  standardOpenUISchema,
-  type OpenUIDirective,
 } from '../../sub-contexts/progressive-content/openui-standard'
 import type { OKFSectionData, OKFSectionMeta } from '../okf/types'
 import type { NarrationData } from './narration'
+import { pageBodySource } from './page-source'
 
 // ============================================================================
 // Types
@@ -192,16 +189,10 @@ export function indexStatementLines(source: string): Map<string, number> {
 // ============================================================================
 
 let parser: Parser | null = null
-let standardParser: Parser | null = null
 
 function getParser(): Parser {
   parser ??= createParser(getLoomOUIJSONSchema())
   return parser
-}
-
-function getStandardParser(): Parser {
-  standardParser ??= createParser(standardOpenUISchema)
-  return standardParser
 }
 
 const ERROR_TIERS: Record<string, 1 | 2> = {
@@ -442,42 +433,12 @@ function sectionMetaFrom(root: ElementNode, sectionType: string): OKFSectionMeta
  * Compile an evaluated section element (e.g. one handed to a `<Renderer>`
  * component) to section meta + data. Returns null for non-section elements.
  */
-export function compileSectionElement(root: ElementNode): OUISectionPayload | null {
+export function compileSectionElement(root: ElementNode, track?: Parameters<typeof compileElementTree>[1]): OUISectionPayload | null {
   const sectionType = OUI_SECTION_TYPES.get(root.typeName)
   if (!sectionType) return null
   return {
     meta: sectionMetaFrom(root, sectionType),
-    data: compileElementTree(root) as OKFSectionData,
-  }
-}
-
-/**
- * Compile a standard OpenUI section (`// @openui "Title"` directive). The
- * program is only parsed — to report syntax and schema issues against the
- * standard library — and kept verbatim; it is rendered by OpenUI itself.
- */
-function compileStandardOpenUISection(source: string, directive: OpenUIDirective): OUICompileResult<OUISectionPayload> {
-  const { result, issues, lines } = parseProgram(source, getStandardParser())
-  const sourceMap: OUISourceMap = {
-    lineOf: (id) => lines.get(id),
-    statementOf: () => undefined,
-    anchorOf: () => undefined,
-    anchorOfId: () => undefined,
-  }
-  for (const issue of issues) {
-    if (issue.code === 'unknown-component') {
-      issue.fixHint = 'Use a component from the standard OpenUI library (see the OpenUI section guide), or remove the `// @openui` line to write a Loom section.'
-    }
-  }
-  if (!result?.root) return { value: null, issues, sourceMap }
-
-  const meta: OKFSectionMeta = { type: OPENUI_SECTION_TYPE, title: directive.title, resource: '.' }
-  if (directive.heading) meta.heading = directive.heading
-  return {
-    value: { meta, data: { type: OPENUI_SECTION_TYPE, source: openUIProgramOf(source) } },
-    rootComponent: result.root.typeName,
-    issues,
-    sourceMap,
+    data: compileElementTree(root, track) as OKFSectionData,
   }
 }
 
@@ -503,25 +464,29 @@ export function compileOUISection(source: string): OUICompileResult<OUISectionPa
 }
 
 function compileOUISectionProgram(source: string): OUICompileResult<OUISectionPayload> {
-  const directive = readOpenUIDirective(source)
-  if (directive) return compileStandardOpenUISection(source, directive)
-
   const program = compileProgram(source)
   const { root, issues, sourceMap, rootComponent } = program
   if (!root) return { value: null, issues, sourceMap }
-
-  const sectionType = OUI_SECTION_TYPES.get(root.typeName)
-  if (!sectionType) {
-    const lineIssue = wrongRoot('a section component', root.typeName)
+  if (root.typeName !== 'Page') {
+    const lineIssue = wrongRoot('Page', root.typeName)
     lineIssue.line = sourceMap.lineOf('root')
-    lineIssue.fixHint = `Use one of: ${[...OUI_SECTION_TYPES.keys()].join(', ')}.`
+    lineIssue.fixHint = 'Use root = Page("Title", body). Convert old files with npm run oui:migrate -- <path>.'
     return { value: null, rootComponent, issues: [...issues, lineIssue], sourceMap }
   }
-
+  const body = root.props.body
+  if (!isElement(body)) return { value: null, rootComponent, issues: [...issues, wrongRoot('a Page with a component body', undefined)], sourceMap }
+  const native = compileSectionElement(body)
+  if (native) {
+    native.meta.title = String(root.props.title ?? '')
+    if (typeof root.props.heading === 'string') native.meta.heading = root.props.heading
+    // Compile again with tracking so native domain diagnostics retain their anchors.
+    const data = (program.value as { body: OKFSectionData }).body
+    return { value: { ...native, data }, rootComponent, issues, sourceMap }
+  }
   return {
     value: {
-      meta: sectionMetaFrom(root, sectionType),
-      data: program.value as OKFSectionData,
+      meta: { type: OPENUI_SECTION_TYPE, title: String(root.props.title ?? ''), resource: '.', ...(typeof root.props.heading === 'string' ? { heading: root.props.heading } : {}) },
+      data: { type: OPENUI_SECTION_TYPE, source: pageBodySource(source) },
     },
     rootComponent,
     issues,
@@ -536,7 +501,6 @@ function compileOUISectionProgram(source: string): OUICompileResult<OUISectionPa
  * Null when the file has no root.
  */
 export function parseOUIElements(source: string): ElementNode | null {
-  if (readOpenUIDirective(source)) return parseProgram(source, getStandardParser()).result?.root ?? null
   const { result, issues, lines } = parseProgram(source)
   if (!result?.root) return null
   return evaluateDynamicProps(result.root, (result.stateDeclarations ?? {}) as Record<string, unknown>, lines, issues)

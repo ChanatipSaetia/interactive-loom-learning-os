@@ -1,5 +1,5 @@
 /** Shared guidance for the writer skill and the authoring reference. */
-export const LAYER_AUTHORING_EXAMPLE = `root = PillarLayer("Actions and knowledge build on a foundation", [capabilities, foundation], [tools, connectors, retrieval, search, compute, storage])
+export const LAYER_AUTHORING_EXAMPLE = `root = Page("Actions and knowledge build on a foundation", PillarLayer("Actions and knowledge build on a foundation", [capabilities, foundation], [tools, connectors, retrieval, search, compute, storage]))
 capabilities = Layer("capabilities", "Tools & Knowledge")
 foundation = Layer("foundation", "Cloud Foundation")
 tools = MatrixBlock("tools", "Tool Execution", capabilities, 0, 1, 1, "Runs permitted actions.", "teal", ["compute"], null, null, "Tools")

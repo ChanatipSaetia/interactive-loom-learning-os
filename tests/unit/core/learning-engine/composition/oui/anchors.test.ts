@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { compileOUISection, sourceMapOf } from '../../../../../../src/core/learning-engine/composition/oui/compile'
 import { validateOUISection } from '../../../../../../src/core/learning-engine/validation/oui-gateway'
 
-const source = `root = Quiz("Check", [q2])
+const source = `root = Page("Check", Quiz("Check", [q2]))
 q2 = QuizQuestion("kafka-offsets", "Why?", [QuizChoice("a", "A", true, "Because"), c2])
 c2 = QuizChoice("b", "B", false, "No")
 `
@@ -14,7 +14,7 @@ describe('OpenUI anchors', () => {
     const { value, sourceMap } = compileOUISection(source)
     const data = value!.data as unknown as QuizData
     const question = data.questions[0]
-    expect(sourceMap.anchorOf(data)).toEqual({ statement: 'root', path: '' })
+    expect(sourceMap.anchorOf(data)).toEqual({ statement: 'root', path: '.body' })
     expect(sourceMap.anchorOf(question)).toEqual({ statement: 'q2', path: '' })
     expect(sourceMap.anchorOf(question.choices[0])).toEqual({ statement: 'q2', path: '.choices[0]' })
     expect(sourceMap.anchorOf(question.choices[1])).toEqual({ statement: 'c2', path: '' })

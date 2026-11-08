@@ -1,4 +1,4 @@
-root = ReflectionSequence("Search Query Pipeline Sequence", [challenge1, challenge2])
+root = Page("Search Query Pipeline Sequence", ReflectionSequence("Search Query Pipeline Sequence", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Arrange the components of a RAG query pipeline in the correct chronological execution order (Part 1):",

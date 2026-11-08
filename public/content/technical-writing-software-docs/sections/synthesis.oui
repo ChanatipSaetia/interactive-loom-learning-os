@@ -1,4 +1,4 @@
-root = ReflectionTemplate("Write It Right", [challenge1, challenge2, challenge3, challenge4])
+root = Page("Write It Right", ReflectionTemplate("Write It Right", [challenge1, challenge2, challenge3, challenge4]))
 
 challenge1 = TemplateChallenge(
   "Choose the page type (Track 1):",

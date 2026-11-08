@@ -36,12 +36,10 @@ export {
   OPENUI_SECTION_TYPE,
   standardOpenUISchema,
   standardOpenUISpec,
-  readOpenUIDirective,
-  isOpenUISource,
   openUIProgramOf,
   printOpenUISection,
 } from './openui-standard'
-export type { OpenUIDirective, StandardOpenUISpec } from './openui-standard'
+export type { StandardOpenUISpec } from './openui-standard'
 
 export { IntroSection, IntroHelpModal } from './components/IntroSection'
 export type { IntroSectionProps } from './components/IntroSection'

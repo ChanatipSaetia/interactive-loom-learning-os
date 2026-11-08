@@ -165,6 +165,7 @@ export function McpApp({ app }: { app: App }) {
   const [loaded, setLoaded] = useState<Loaded | null>(null)
   const [writing, setWriting] = useState(false)
   const [view, setView] = useState<View>('card')
+  const readTopic = useRef<ViewerTopic | null>(null)
   const [asked, setAsked] = useState(false)
   const [startMode, setStartMode] = useState<'present' | 'read'>('present')
   /** The chat is showing the app fullscreen. */
@@ -579,41 +580,27 @@ export function McpApp({ app }: { app: App }) {
   )
   const top = <>{bar}{linkStrip}{exportStatus}</>
 
-  if (topic && view === 'present' && presentSections.length > 0) {
+  if (topic && (view === 'present' || view === 'read')) {
+    const presenting = view === 'present' && presentSections.length > 0
+    if (!presenting) readTopic.current = topic
     return (
       <UISystemProvider>
-        <ProgressProvider>
-          <HUDProvider>
-            <div className={`mcp-player${full ? ' mcp-full' : ''}`} data-testid="mcp-present">
-              {top}
-              <div className="mcp-stage">
-                <PresentMode sections={presentSections} onExit={(sectionIndex) => readAt(sectionIndex, false)} onSectionChange={recordSeen} fillParent />
-              </div>
-            </div>
-          </HUDProvider>
-        </ProgressProvider>
-      </UISystemProvider>
-    )
-  }
-
-  if (topic && view === 'read') {
-    return (
-      <UISystemProvider>
-        <div className={`mcp-read${full ? ' mcp-full' : ''}`} data-testid="mcp-read">
+        <div className={`mcp-player${full ? ' mcp-full' : ''}`} data-testid={presenting ? 'mcp-present' : 'mcp-read'}>
           {top}
-          <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
-            <LearnerMemoryProvider port={memory} device={DEVICE}>
-              <TopicView topic={topic} />
-            </LearnerMemoryProvider>
-          </main>
-          <PickMode
-            topicId={topic.topicId}
-            active={picking}
-            onActiveChange={setPicking}
-            resolve={pickResolver}
-            fileOrder={pickFileOrder}
-            assistant={chatBridge}
-          />
+          {presenting && <ProgressProvider><HUDProvider>
+            <div className="mcp-stage">
+              <PresentMode sections={presentSections} onExit={(sectionIndex) => readAt(sectionIndex, false)} onSectionChange={recordSeen} fillParent />
+            </div>
+          </HUDProvider></ProgressProvider>}
+          <div hidden={presenting} className={`mcp-read${full ? ' mcp-full' : ''}`}>
+            <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
+              <LearnerMemoryProvider port={memory} device={DEVICE}>
+                {readTopic.current === topic && <TopicView key={`${topic.topicId}:${topicSourceVersion(topic)}`} topic={topic} />}
+              </LearnerMemoryProvider>
+            </main>
+            {!presenting && <PickMode topicId={topic.topicId} active={picking} onActiveChange={setPicking}
+              resolve={pickResolver} fileOrder={pickFileOrder} assistant={chatBridge} />}
+          </div>
         </div>
       </UISystemProvider>
     )

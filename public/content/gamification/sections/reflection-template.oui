@@ -1,4 +1,4 @@
-root = ReflectionTemplate("Motivation Self-Explanation", [challenge1, challenge2])
+root = Page("Motivation Self-Explanation", ReflectionTemplate("Motivation Self-Explanation", [challenge1, challenge2]))
 
 challenge1 = TemplateChallenge(
   "Complete the statement about the overjustification effect:",

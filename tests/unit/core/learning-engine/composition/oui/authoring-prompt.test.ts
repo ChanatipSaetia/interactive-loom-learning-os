@@ -46,7 +46,8 @@ describe('Loom authoring prompt', () => {
 
   it('has a valid table and chart example', () => {
     const result = validateOUISection(TABLE_CHART_EXAMPLE, { topicId: 'green-tea', sectionName: 'water-temperature', file: 'sections/water-temperature.oui' })
-    expect(result.diagnostics).toEqual([])
+    expect(result.diagnostics.filter((d) => d.tier < 3)).toEqual([])
+    expect(result.diagnostics.some((d) => d.message.startsWith('Page focus review:'))).toBe(true)
     expect(result.payload?.data.type).toBe('openui')
     const narration = validateOUINarration(TABLE_CHART_NARRATION_EXAMPLE, TABLE_CHART_EXAMPLE, { sectionName: 'water-temperature' })
     expect(narration.diagnostics).toEqual([])
@@ -82,11 +83,11 @@ describe('Loom authoring prompt', () => {
   it('explains the topic layout and the three output formats around the OpenUI Lang spec', () => {
     const prompt = getLoomAuthoringPrompt()
     for (const text of ['## Topic Layout', '## Output Formats', '// @loom-topic <topic-id>', '<topic-id>/sections/<name>.oui',
-      '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Standard OpenUI Sections', '// @openui "<Section title>"', 'https://openui.com/docs/api-reference/react-ui',
+      '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Standard OpenUI Sections', 'root = Page(', 'https://openui.com/docs/api-reference/react-ui',
       '### Tables and Charts', 'Table(columns: Col[])', '### Layouts for Other Content', 'Steps(items: StepsItem[])', HOWTO_EXAMPLE, FACTS_EXAMPLE, HOWTO_NARRATION_EXAMPLE, 'BarChart(labels: string[], series: Series[]', TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, '## Loom Authoring Rules',
       '### Drawings', 'Svg(markup: string, caption?: string)', DRAWING_EXAMPLE, DRAWING_NARRATION_EXAMPLE, '## Narration Files', 'sections/<name>.narrate.oui', NARRATION_EXAMPLE, 'Spotlight(targets: string[])']) {
       expect(prompt, text).toContain(text)
     }
-    expect(prompt).not.toMatch(/streaming|charts for trends|every program must define `root = Topic|\.loom\.json|JSON bundle/i)
+    expect(prompt).not.toMatch(/every program must define `root = Topic|\.loom\.json|JSON bundle/i)
   })
 })

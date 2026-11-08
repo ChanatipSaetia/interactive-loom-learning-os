@@ -4,6 +4,7 @@ import { AUTHORING_WORKFLOW_VERSION, AUTHORING_WORKFLOW_STAGES } from './authori
 /** Small, serializable capability index for stateless MCP runtimes. */
 import { FLOWCHART_MODELS, OPENUI_MODELS, REPRESENTATION_SELECTION_GUIDE, SECTION_MENTAL_MODELS, SECTION_LEARNING_BEHAVIORS } from './mental-model-guide'
 import { guideSectionTypes } from './authoring-guide'
+import { getUnifiedOUISpec } from './library'
 
 export const CAPABILITY_CATALOG_VERSION = 1
 
@@ -14,6 +15,8 @@ export function getCapabilityCatalog() {
   )
   return {
     schemaVersion: CAPABILITY_CATALOG_VERSION,
+    page: { root: 'Page', boundary: 'one section = one authored page', focus: 'one main visual/activity plus supporting text; advisory warnings', presentation: 'hands-free automatic scenes/beats; mode-specific views of shared content' },
+    componentGroups: getUnifiedOUISpec().componentGroups,
     planSchema: z.toJSONSchema(TopicPlanSchema),
     workflow: { version: AUTHORING_WORKFLOW_VERSION, stages: AUTHORING_WORKFLOW_STAGES.map((stage) => stage.id) },
     selectionGuidance: REPRESENTATION_SELECTION_GUIDE,
@@ -38,6 +41,7 @@ export function getCapabilityIndex() {
   const models = new Map(SECTION_MENTAL_MODELS.map(({ type, model }) => [type as string, model]))
   return {
     schemaVersion: CAPABILITY_CATALOG_VERSION,
+    page: 'Page(title, body, heading?): one section/page; one main activity; local state; automatic beats.',
     workflow: { version: AUTHORING_WORKFLOW_VERSION, stages: AUTHORING_WORKFLOW_STAGES.map((stage) => stage.id) },
     sections: guideSectionTypes().map(({ type, component }) => ({ type, component, mentalModel: models.get(type) ?? '' })),
     flowchart: { views: FLOWCHART_MODELS.map(([id]) => id), configuration: 'initialView; NarrationStep.view; Journey/JourneyStep; Branch/BranchOption; Event.data; StateMachine/Event.enters' },

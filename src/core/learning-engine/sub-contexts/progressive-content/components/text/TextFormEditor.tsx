@@ -174,7 +174,7 @@ export function TextFormEditor({ data, onChange }: TextFormEditorProps) {
               <div className="visual-form-field">
                 <label className="visual-form-label">
                   <span className="visual-form-key" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <OUIFieldKey of={OUI.Text} field="paragraphs">Markdown Prose Content</OUIFieldKey>
+                    <OUIFieldKey of={OUI.LessonText} field="paragraphs">Markdown Prose Content</OUIFieldKey>
                     <span style={{ textTransform: 'none', color: 'var(--ctp-subtext0)' }}>
                       {text.length} chars
                     </span>

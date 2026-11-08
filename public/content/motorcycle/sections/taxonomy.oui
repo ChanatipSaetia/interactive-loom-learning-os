@@ -1,4 +1,4 @@
-root = TaxonomyBrowser("ปัญหาและระบบมอเตอร์ไซค์", [engineSystem, drivetrain, taxonomyCategory])
+root = Page("ปัญหาและระบบมอเตอร์ไซค์", TaxonomyBrowser("ปัญหาและระบบมอเตอร์ไซค์", [engineSystem, drivetrain, taxonomyCategory]))
 
 engineSystem = TaxonomyCategory(
   "ระบบเครื่องยนต์ (Engine System)",

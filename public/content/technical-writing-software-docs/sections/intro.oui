@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Technical Writing for Software Docs", Intro(
   "Technical Writing for Software Docs",
   what,
   why,
@@ -103,7 +103,7 @@ root = Intro(
   ],
   "Write web app manuals that users can find, follow and trust",
   "40 min",
-)
+))
 
 what = IntroWhat(
   "Most bad manuals fail the same way: they describe the software instead of helping the reader. This topic covers choosing the right kind of page (Diátaxis), writing task pages whose steps actually work, plain language and style guides, and a review loop that proves the page is true before users see it.",

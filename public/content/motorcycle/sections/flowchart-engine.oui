@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("วัฏจักรเครื่องยนต์ 4 จังหวะ", Flowchart(
   "วัฏจักรเครื่องยนต์ 4 จังหวะ",
   [rider],
   [carburetor, engine, transmission],
   [throttle, intake, compression, combustion, exhaust, transmission2],
   [journey4StrokeCycle],
-)
+))
 
 rider = Actor("rider", "ผู้ขับขี่ (Rider)", "ผู้ใช้งานมอเตอร์ไซค์")
 

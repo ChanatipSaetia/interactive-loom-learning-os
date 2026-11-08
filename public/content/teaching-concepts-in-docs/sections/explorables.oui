@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("Kinds of Interactive Explanation", TaxonomyBrowser(
   "Kinds of Interactive Explanation",
   [explorableExplanations, conceptSimulator, clickableFlowDiagram, whatIfScenario],
-)
+))
 
 explorableExplanations = TaxonomyCategory(
   "Explorable Explanations",

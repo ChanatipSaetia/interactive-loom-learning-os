@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Architecture & Scene Graph Map", ConceptMap(
   "Architecture & Scene Graph Map",
   [
     app,
@@ -28,7 +28,7 @@ root = ConceptMap(
     ConceptLink(sprite, filters, "applies post-processing"),
     ConceptLink(batchRenderer, texture, "binds sampler units"),
   ],
-)
+))
 
 app = Concept("app", "PIXI.Application", "Core Entrypoint")
 renderer = Concept("renderer", "Renderer (WebGL / WebGPU)", "GPU Pipeline")

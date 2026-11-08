@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Onboarding Craft for IT Systems, Web Apps & Developer Experience", Intro(
   "Onboarding Craft for IT Systems, Web Apps & Developer Experience",
   what,
   why,
@@ -91,7 +91,7 @@ root = Intro(
   "Get newcomers to their first real win fast — with the right onboarding method for the right audience",
   "40 min",
   15,
-)
+))
 
 what = IntroWhat(
   "Most onboarding fails the same way: a firehose of documentation, a pile of passwords, and a week of 'ping me if you're stuck'. This realm teaches the opposite discipline — grant access before day one, drive every newcomer to one golden-path task that produces real value in the first week, reveal complexity progressively, and measure the friction instead of guessing. Then pick the method that fits the audience: docs-first handbooks, buddy apprenticeship, cohort academies, self-serve in-app tours, or sandbox quests.",

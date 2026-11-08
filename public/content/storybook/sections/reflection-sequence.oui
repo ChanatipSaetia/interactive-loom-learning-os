@@ -1,4 +1,4 @@
-root = ReflectionSequence("Pipeline Sequencing Challenge", [challenge1, challenge2])
+root = Page("Pipeline Sequencing Challenge", ReflectionSequence("Pipeline Sequencing Challenge", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Order the hot-reload pipeline from saving a story file to a rendered story (Part 1):",

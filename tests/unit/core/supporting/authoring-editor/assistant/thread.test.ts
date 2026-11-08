@@ -88,7 +88,7 @@ describe('assistant thread', () => {
   })
 
   it('sends proposed edits back as one line each with their outcome', () => {
-    const text = 'Two fixes.\n\n```oui-edit file=sections/quiz.oui\nq1 = QuizQuestion("q1", "?", [])\n```\n\n```oui-edit file=sections/new.oui mode=create\nroot = Text("New", [])\n```\n\n```oui-edit file=topic.oui\nroot = Topic()\n```'
+    const text = "Two fixes.\n\n```oui-edit file=sections/quiz.oui\nq1 = QuizQuestion(\"q1\", \"?\", [])\n```\n\n```oui-edit file=sections/new.oui mode=create\nroot = Page(\"New\", LessonText(\"New\", []))\n```\n\n```oui-edit file=topic.oui\nroot = Topic()\n```"
     const message = reply('2', text, { edits: [{ state: 'applied' }, { state: 'failed', error: 'nope' }] })
     const history = historyForRequest([user('1', 'Fix it'), message], 1000)
     expect(history.messages[1].content).toBe(

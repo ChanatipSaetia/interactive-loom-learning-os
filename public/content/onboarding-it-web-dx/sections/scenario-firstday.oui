@@ -1,11 +1,11 @@
-root = Scenario(
+root = Page("Scenario: Monday Without a Path", Scenario(
   "Scenario: Monday Without a Path",
   "monday-without-a-path",
   [start, resultFirehose, resultSlides, resultTriage, resultHero, resultQueue, resultWins],
   "It is 9:10 on Monday morning. Forty newcomers — end users, operators, and five platform developers — are logged in (most of them) to a Wi-Fi guest network, a wiki nobody has refreshed since last quarter, and a Slack channel called #newest-hires. As the onboarding lead, what do you do first?",
   null,
   "Monday Without a Path",
-)
+))
 
 start = ScenarioNode(
   "start",

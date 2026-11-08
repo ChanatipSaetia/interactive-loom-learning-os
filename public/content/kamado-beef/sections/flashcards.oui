@@ -1,7 +1,7 @@
-root = Flashcards(
+root = Page("คลังคำศัพท์สำคัญในการย่างเนื้อเตา Kamado", Flashcards(
   "คลังคำศัพท์สำคัญในการย่างเนื้อเตา Kamado",
   [maillardReaction, heatDeflector, blueSmoke, carryoverCooking, theStall, edgeToEdgePink],
-)
+))
 
 maillardReaction = Flashcard(
   "maillard-reaction",

@@ -1,8 +1,8 @@
-root = ReflectionSequence(
+root = Page("ถอดรหัสไทม์ไลน์: อารยธรรมลุ่มแม่น้ำโบราณ", ReflectionSequence(
   "ถอดรหัสไทม์ไลน์: อารยธรรมลุ่มแม่น้ำโบราณ",
   [challenge1, challenge2],
   "เรียงลำดับหมุดหมายสำคัญแห่งการก่อกำเนิดอารยธรรมแรกเริ่มของมนุษยชาติ",
-)
+))
 
 challenge1 = SequenceChallenge(
   "ถอดรหัสลำดับการกำเนิดอารยธรรมลุ่มแม่น้ำโบราณ (Ancient River Valleys):",

@@ -1,11 +1,11 @@
-root = Scenario(
+root = Page("สถานการณ์ตัดสินใจ", Scenario(
   "สถานการณ์ตัดสินใจ",
   "motorcycle-troubleshoot",
   [start, brakeFadeOutcome, engineBrakeOutcome, coastOutcome],
   "คุณกำลังขับรถมอเตอร์ไซค์แล้วเจอปัญหา คุณจะใช้วิธีไหนในการแก้ไข?",
   null,
   "รถมีปัญหา ต้องทำอย่างไร?",
-)
+))
 
 start = ScenarioNode(
   "start",

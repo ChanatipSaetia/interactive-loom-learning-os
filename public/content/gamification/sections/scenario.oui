@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("The Streak Dilemma", Scenario(
   "The Streak Dilemma",
   "streak-dilemma",
   [
@@ -16,7 +16,7 @@ root = Scenario(
     xpOnly,
   ],
   "You are the product manager of LingoLeap, a language app with 2M monthly users. Engagement dipped last quarter, and the team is debating the streak feature.",
-)
+))
 
 start = ScenarioNode(
   "start",

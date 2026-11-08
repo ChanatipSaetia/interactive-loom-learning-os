@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Explaining Techniques", TaxonomyBrowser(
   "Explaining Techniques",
   [
     analogyWithItsLimits,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     nonExamples,
     dualCodingWordsDiagram,
   ],
-)
+))
 
 analogyWithItsLimits = TaxonomyCategory(
   "Analogy (with Its Limits)",

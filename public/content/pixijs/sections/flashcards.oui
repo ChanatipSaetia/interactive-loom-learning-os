@@ -1,7 +1,7 @@
-root = Flashcards(
+root = Page("Essential PixiJS Terminology", Flashcards(
   "Essential PixiJS Terminology",
   [application, container, sprite, texture, batchRenderer, ticker, particleContainer, filter],
-)
+))
 
 application = Flashcard(
   "application",

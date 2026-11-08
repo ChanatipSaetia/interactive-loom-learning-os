@@ -1,7 +1,7 @@
-root = Flashcards(
+root = Page("คำศัพท์และมโนทัศน์สำคัญ", Flashcards(
   "คำศัพท์และมโนทัศน์สำคัญ",
   [cuneiform, feudalism, renaissance, industrialRev, coldWar, silkRoad],
-)
+))
 
 cuneiform = Flashcard(
   "cuneiform",

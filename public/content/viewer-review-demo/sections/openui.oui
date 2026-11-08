@@ -1,5 +1,4 @@
-// @openui "20 · OpenUI — A free-form review workspace" "Compare a composed layout with the dedicated learning sections"
-root = Card([header, tabs, note])
+root = Page("20 · OpenUI — A free-form review workspace", Card([header, tabs, note]), "Compare a composed layout with the dedicated learning sections")
 header = CardHeader("Review workspace", "A small example with tabs and a table")
 tabs = Tabs([TabItem("findings", "Findings", [TextContent("**Observed:** support volume increased in the selected period. Verify the report before sharing."), Table([Col("Check", ["Date range", "Channels", "Sources"]), Col("Status", ["Confirmed", "Confirmed", "Review required"])])]), TabItem("limits", "Limitations", [TextContent("This is an illustrative workspace. It contains no real customer data or measured results.")])])
 note = Callout("info", "Review tip", "Switch tabs, then inspect this section in Present.")

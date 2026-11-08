@@ -1,4 +1,4 @@
-root = ReflectionTemplate("RAG Synthesis Self-Explanation", [challenge1, challenge2])
+root = Page("RAG Synthesis Self-Explanation", ReflectionTemplate("RAG Synthesis Self-Explanation", [challenge1, challenge2]))
 
 challenge1 = TemplateChallenge(
   "Complete the statement explaining chunk size and overlap properties (Part 1):",

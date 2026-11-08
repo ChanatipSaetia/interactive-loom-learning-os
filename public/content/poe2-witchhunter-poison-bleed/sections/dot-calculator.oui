@@ -1,4 +1,4 @@
-root = FormulaSandbox(
+root = Page("DoT Damage Calculator", FormulaSandbox(
   "DoT Damage Calculator",
   [
     FormulaVariable("attack_speed", "Attacks per Second", 1, 8, 0.25, 3.5),
@@ -9,7 +9,7 @@ root = FormulaSandbox(
     FormulaVariable("dot_duration", "DoT Duration (seconds)", 3, 12, 0.5, 6),
   ],
   [bleedDps, poisonDps, totalDotDps, hitsToFill],
-)
+))
 
 bleedDps = FormulaMetric(
   "bleed_dps",

@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Deployment Trade-offs", [deployCloud, deployOnprem])
+root = Page("Deployment Trade-offs", TradeoffSandbox("Deployment Trade-offs", [deployCloud, deployOnprem]))
 
 deployCloud = TradeoffScenario(
   "deploy-cloud",

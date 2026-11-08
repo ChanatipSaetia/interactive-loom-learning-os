@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Key Vocabulary", Flashcards(
   "Key Vocabulary",
   [
     kiPoints,
@@ -14,7 +14,7 @@ root = Flashcards(
     dragonClawGloves,
     staffWoodlandRomance,
   ],
-)
+))
 
 kiPoints = Flashcard(
   "ki-points",

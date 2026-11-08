@@ -15,7 +15,7 @@ import {
 
 const files = {
   'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz")])\n',
-  'sections/quiz.oui': 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "Yes", true, "Right.")])\n',
+  'sections/quiz.oui': "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"Yes\", true, \"Right.\")])\n",
 }
 const resolve = sourceResolver(files)
 const context = (): AssistantTopicContext => ({ topicId: 'demo', files, fileOrder: ['topic.oui', 'sections/quiz.oui'], diagnostics: {} })
@@ -287,7 +287,7 @@ describe('Content tools in Viewer (decisions 120–125)', () => {
     expect(bodies[0].tools.map((t: { function: { name: string } }) => t.function.name)).toEqual(['navigate', 'read'])
     expect(bodies[0].messages[0].content).toContain('## Looking Things Up')
     // The section in view is not sent whole: the model reads it.
-    expect(bodies[0].messages[1].content).toContain('at sections/quiz.oui (Quiz "Check") (not included: read it when you need it).')
+    expect(bodies[0].messages[1].content).toContain('at sections/quiz.oui (Page "Check") (not included: read it when you need it).')
     expect(bodies[0].messages[1].content).not.toContain('(whole file)')
     const last = bodies[2].messages
     expect(last.slice(-4).map((m: { role: string }) => m.role)).toEqual(['assistant', 'tool', 'assistant', 'tool'])
@@ -385,7 +385,7 @@ describe('Tools and staged edits in Studio (decisions 129–136)', () => {
   const chatBodies = (fetchImpl: ReturnType<typeof vi.fn>) =>
     fetchImpl.mock.calls.filter(([url]) => String(url).endsWith('/chat/completions')).map(([, init]) => JSON.parse((init as RequestInit).body as string))
   const q1 = 'q1 = QuizQuestion("q1", "Why, exactly?", [QuizChoice("a", "Yes", true, "Right.")])'
-  const words = 'root = Flashcards("Words", [f1])\nf1 = Flashcard("Term", ["Meaning"])'
+  const words = "root = Page(\"Words\", Flashcards(\"Words\", [f1]))\nf1 = Flashcard(\"Term\", [\"Meaning\"])"
 
   function StudioHarness({ fetchImpl, buffers }: { fetchImpl: typeof fetch; buffers: Record<string, string> }) {
     const assistant = useAssistant({
@@ -459,7 +459,7 @@ describe('Tools and staged edits in Studio (decisions 129–136)', () => {
 
   it('applies a new section with its SectionRef where the model put it, and keeps the changeset after a reload', async () => {
     seed('http://localhost:11434/v1')
-    const buffers: Record<string, string> = { ...files, 'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz"), SectionRef("end")])\n', 'sections/end.oui': 'root = Text("End", ["Bye."])\n' }
+    const buffers: Record<string, string> = { ...files, 'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz"), SectionRef("end")])\n', 'sections/end.oui': "root = Page(\"End\", LessonText(\"End\", [\"Bye.\"]))\n" }
     const answers = [toolCalls(['c1', 'create_section', { name: 'words', source: words, after: 'quiz', summary: 'Vocabulary' }]), streamOf('Done.')]
     const fetchImpl = vi.fn(async (url: string) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
     const { unmount } = render(<StudioHarness fetchImpl={fetchImpl as unknown as typeof fetch} buffers={buffers} />)

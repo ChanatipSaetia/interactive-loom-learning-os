@@ -1,4 +1,4 @@
-root = TradeoffSandbox("UI Safety-Net Trade-offs", [storybookSafetyNet])
+root = Page("UI Safety-Net Trade-offs", TradeoffSandbox("UI Safety-Net Trade-offs", [storybookSafetyNet]))
 
 storybookSafetyNet = TradeoffScenario(
   "storybook-safety-net",

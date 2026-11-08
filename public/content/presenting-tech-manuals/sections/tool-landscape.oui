@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Presentation & Docs Tooling Landscape", TaxonomyBrowser(
   "Presentation & Docs Tooling Landscape",
   [
     markdownNativeSlideDecks,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     inAppInCodeGuidedTours,
     screenRecordingAsyncDemos,
   ],
-)
+))
 
 markdownNativeSlideDecks = TaxonomyCategory(
   "Markdown-Native Slide Decks",

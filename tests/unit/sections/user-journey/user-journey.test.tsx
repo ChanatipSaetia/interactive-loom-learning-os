@@ -43,7 +43,7 @@ describe('native user journey', () => {
   })
 
   it('supports an outcome without friction or recovery using positional nulls', () => {
-    const source = 'root = UserJourney("A", "B", "C", [JourneyStage("D", "E", "F", "G", null, null, "Done")])'
+    const source = "root = Page(\"A\", UserJourney(\"A\", \"B\", \"C\", [JourneyStage(\"D\", \"E\", \"F\", \"G\", null, null, \"Done\")]))"
     const result = validateOUISection(source)
     expect(result.diagnostics).toEqual([])
     expect(sectionBeatsOf(source)?.map((b) => b.id)).toEqual(['title', 'overview', 'stage1.goal', 'stage1.action', 'stage1.response', 'stage1.outcome'])
@@ -55,7 +55,7 @@ describe('native user journey', () => {
     expect(UserJourneySectionSchema.safeParse({ ...data, stages: [] }).success).toBe(false)
     expect(UserJourneySectionSchema.safeParse({ ...data, person: ' ' }).success).toBe(false)
     expect(UserJourneySectionSchema.safeParse({ ...data, stages: [{ ...data.stages[0], action: ' ' }] }).success).toBe(false)
-    const result = validateOUISection('root = UserJourney("A", "B", "C", [JourneyStage("D", "E", "F", "G", null, "Recovery")])')
+    const result = validateOUISection("root = Page(\"A\", UserJourney(\"A\", \"B\", \"C\", [JourneyStage(\"D\", \"E\", \"F\", \"G\", null, \"Recovery\")]))")
     expect(result.diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ tier: 3, field: 'stages[0].recovery' })]))
   })
 

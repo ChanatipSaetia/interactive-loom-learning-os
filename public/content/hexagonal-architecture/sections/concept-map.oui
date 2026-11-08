@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Hexagonal Architecture Domain Map", ConceptMap(
   "Hexagonal Architecture Domain Map",
   [
     actor,
@@ -25,7 +25,7 @@ root = ConceptMap(
     "Builds a spatial mental model of how Driving Adapters, Ports, Domain Aggregates, and Driven Adapters connect.",
     "Next: Categorize Primary vs Secondary Adapters.",
   ),
-)
+))
 
 actor = Concept("actor", "External Actor / Client", "External")
 drivingAdapter = Concept("driving-adapter", "Driving Adapter (REST / CLI / gRPC)", "Primary")

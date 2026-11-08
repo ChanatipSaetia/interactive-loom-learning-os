@@ -7,7 +7,7 @@ export { Timeline, TimelineLane, TimelineActivity, TimelineGroup } from './timel
 /**
  * OpenUI Lang vocabulary for the Progressive Content subdomain.
  *
- *   root = Text("Overview", ["First paragraph.", "Second paragraph."])
+ *   root = LessonText("Overview", ["First paragraph.", "Second paragraph."])
  *   root = Bullets("Capabilities", [Bullet("Tool use", [Bullet("Search")])], false)
  */
 import { BulletIconSchema } from './schema'
@@ -139,10 +139,10 @@ export const Intro: LoomOUIComponent = defineOUISection({
   }),
 })
 
-// --- Text & Bullets ---
+// --- LessonText & Bullets ---
 
-export const Text: LoomOUIComponent = defineOUISection({
-  name: 'Text',
+export const LessonText: LoomOUIComponent = defineOUISection({
+  name: 'LessonText',
   sectionType: 'text',
   description: 'Prose section: one string per paragraph.',
   props: z.object({
@@ -155,7 +155,7 @@ export const Text: LoomOUIComponent = defineOUISection({
     paragraphs: 'The paragraphs, one string each, in order.',
   },
   toData: (p) => ({ type: 'text', paragraphs: p.paragraphs }),
-  fromData: (data: TextSectionData, meta) => call(Text, { title: meta.title ?? '', paragraphs: [...data.paragraphs], ...sectionTail(meta) }),
+  fromData: (data: TextSectionData, meta) => call(LessonText, { title: meta.title ?? '', paragraphs: [...data.paragraphs], ...sectionTail(meta) }),
 })
 
 const NestedBullet = z.lazy(() => BulletProps)
@@ -288,8 +288,8 @@ export const GalleryImage = defineOUIComponent({
   },
 })
 
-export const ImageGallery: LoomOUIComponent = defineOUISection({
-  name: 'ImageGallery',
+export const LearningGallery: LoomOUIComponent = defineOUISection({
+  name: 'LearningGallery',
   sectionType: 'image-gallery',
   description: 'Gallery of captioned images.',
   props: z.object({
@@ -302,7 +302,7 @@ export const ImageGallery: LoomOUIComponent = defineOUISection({
     images: 'The images, as GalleryImage references, in order.',
   },
   toData: (p) => ({ type: 'image-gallery', items: p.images as unknown as GalleryItem[] }),
-  fromData: (data: ImageGallerySectionData, meta) => call(ImageGallery, {
+  fromData: (data: ImageGallerySectionData, meta) => call(LearningGallery, {
     title: meta.title ?? '',
     images: data.items.map((i) => call(GalleryImage, { id: i.id, url: i.url, caption: i.caption, credit: i.credit })),
     ...sectionTail(meta),
@@ -361,7 +361,7 @@ export const MatrixBlock = defineOUIComponent({
   }),
   fields: {
     id: 'Block ID, unique within the map; `dependsOn` refers to it.',
-    title: 'Text shown on the block.',
+    title: 'LessonText shown on the block.',
     layer: 'Anchor row: Layer reference or ID.',
     colOffset: 'Optional anchor column, from 0 (default 0).',
     colSpan: 'Optional number of columns covered (default 1).',
@@ -445,10 +445,10 @@ export const PillarLayer: LoomOUIComponent = defineOUISection({
 
 export const progressiveContentOUIComponents = [
   Intro, IntroWhat, IntroWhy, RoadmapStep,
-  Text,
+  LessonText,
   Bullets, Bullet,
   TaxonomyBrowser, TaxonomyCategory,
-  ImageGallery, GalleryImage,
+  LearningGallery, GalleryImage,
   PillarLayer, Layer, LayerItem, MatrixBlock,
   ...userJourneyOUIComponents,
   ...timelineOUIComponents,

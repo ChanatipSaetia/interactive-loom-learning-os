@@ -119,7 +119,7 @@ export const TradeoffScenario = defineOUIComponent({
 export const TradeoffSandbox: LoomOUIComponent = defineOUISection({
   name: 'TradeoffSandbox',
   sectionType: 'tradeoff-sandbox',
-  description: 'Interactive sandbox where learners make design choices and watch metrics move.',
+  description: 'Interactive sandbox where learners compare choices across one or more situations, weigh gains and costs, and see how goals, constraints and priorities change which option fits. Several contrasting situations can teach when to choose each alternative; avoid a universal winner.',
   props: z.object({
     title: z.string(),
     scenarios: z.array(TradeoffScenario.ref),

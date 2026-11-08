@@ -29,7 +29,8 @@
     "worker:dev": "npx --yes wrangler@4.146.0 dev",
     "mcp:host": "node tests/mcp-host/run.mjs",
     "mcp:check": "node tests/mcp-host/check.cjs && node tests/mcp-host/capability-check.cjs && node tests/mcp-host/download-check.cjs",
-    "demo:viewer": "node scripts/export-viewer-demo.mjs"
+    "demo:viewer": "node scripts/export-viewer-demo.mjs",
+    "oui:migrate": "vite-node scripts/migrate-oui-pages.ts"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",

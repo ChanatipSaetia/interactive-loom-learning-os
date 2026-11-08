@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { validateOUISection } from '../../../../src/core/learning-engine/validation/oui-gateway';
 
 const source = (step: string) => `
-root = Flowchart("Refs", [buyer], [shop, bank], [s1], [j])
+root = Page("Refs", Flowchart("Refs", [buyer], [shop, bank], [s1], [j]))
 buyer = Actor("buyer", "Buyer", "Buys")
 shop = System("shop", "Shop", "Sells", "aggregate")
 bank = System("bank", "Bank", "Pays", "external")

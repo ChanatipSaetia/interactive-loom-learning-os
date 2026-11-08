@@ -23,7 +23,6 @@ export type { FileStatement } from './statements'
 import { statementOfAnchor } from '../pick/tray'
 import { pickSourceNote, type PickSource } from '../../../learning-engine/composition/oui/pick-report'
 import { componentClosure, componentEntries } from '../../../learning-engine/composition/oui/assistant-prompt'
-import type { ComponentLibrary } from '../../../learning-engine/composition/oui/library'
 import { sectionTitle } from '../../../learning-engine/composition/oui/content-tree'
 
 export interface AssistantTopicContext {
@@ -53,14 +52,12 @@ export interface ContextPointer {
   anchor: string
 }
 
-const OPENUI_DIRECTIVE = /^\s*\/\/\s*@openui\b/
 
 /** `sections/quiz.oui (Quiz "Knowledge Check")`, or `(standard OpenUI "…")` (titles: decision 127). */
 function describeFile(file: string, source: string | undefined, statements: FileStatement[] | undefined): string {
   if (source === undefined) return `${file} (missing)`
   const title = file === 'topic.oui' ? undefined : sectionTitle(source)
   const titled = title ? ` "${title}"` : ''
-  if (OPENUI_DIRECTIVE.test(source)) return `${file} (standard OpenUI${titled})`
   const root = statements?.find((s) => s.name === 'root')
   return root?.component ? `${file} (${root.component}${titled})` : file
 }
@@ -123,12 +120,7 @@ export function buildTopicContext(context: AssistantTopicContext, pointers: read
   const order = [...context.fileOrder, ...Object.keys(context.files).filter((f) => !context.fileOrder.includes(f)).sort()]
   const contextFiles = order.filter((file) => wanted.has(file))
   const components = new Set<string>()
-  const scopedComponents: Record<ComponentLibrary, Set<string>> = { loom: new Set(), openui: new Set() }
-  const libraryOf = (file: string): ComponentLibrary => OPENUI_DIRECTIVE.test(context.files[file] ?? '') ? 'openui' : 'loom'
-  const collect = (file: string, statements: FileStatement[]) => statements.forEach((statement) => statement.calls.forEach((component) => {
-    components.add(component)
-    scopedComponents[libraryOf(file)].add(component)
-  }))
+  const collect = (_file: string, statements: FileStatement[]) => statements.forEach((statement) => statement.calls.forEach((component) => components.add(component)))
   const sections: string[][] = []
 
   const outline: string[] = []
@@ -177,10 +169,10 @@ export function buildTopicContext(context: AssistantTopicContext, pointers: read
       source.push('', `### ${file} (whole file)${unsaved}`)
       keys.push(fileKey)
     } else {
-      const chosen = statements.filter((s) => want.has(s.name) && !known.has(statementKey(file, s, libraryOf(file))))
+      const chosen = statements.filter((s) => want.has(s.name) && !known.has(statementKey(file, s)))
       if (!chosen.length) continue
       collect(file, chosen)
-      chosen.forEach((s) => keys.push(statementKey(file, s, libraryOf(file))))
+      chosen.forEach((s) => keys.push(statementKey(file, s)))
       body = chosen.map((s) => s.text).join('\n')
       source.push('', `### ${file}${unsaved}: ${chosen.map((s) => `${s.name} (line ${s.line})`).join(', ')}`)
     }
@@ -190,12 +182,10 @@ export function buildTopicContext(context: AssistantTopicContext, pointers: read
   if (source.length) sections.push(['## Current Source', ...source])
 
   if (options.reference) {
-    for (const library of ['loom', 'openui'] as const) {
-      const entries = componentClosure(scopedComponents[library], library).filter((name) => !known.has(`component:${name}:${library}`))
-      if (entries.length) {
-        sections.push([`## Components (${library})`, '', 'Arguments marked with ? are optional.', '', componentEntries(entries, library)])
-        entries.forEach((name) => keys.push(`component:${name}:${library}`))
-      }
+    const entries = componentClosure(components, undefined, 'selected').filter((name) => !known.has(`component:${name}`))
+    if (entries.length) {
+      sections.push(['## Components', '', 'Arguments marked with ? are optional.', '', componentEntries(entries)])
+      entries.forEach((name) => keys.push(`component:${name}`))
     }
   }
 
@@ -219,4 +209,4 @@ export function buildTopicContext(context: AssistantTopicContext, pointers: read
   return { text, components: [...components], files: sentFiles, keys }
 }
 
-const statementKey = (file: string, statement: FileStatement, library: ComponentLibrary) => `src:${file}#${statement.name}:${textHash(statement.text)}:${library}`
+const statementKey = (file: string, statement: FileStatement) => `src:${file}#${statement.name}:${textHash(statement.text)}`

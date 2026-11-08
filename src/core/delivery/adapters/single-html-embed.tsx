@@ -160,7 +160,9 @@ function renderEmbedSection(config: SectionConfig, sectionIndex?: number): React
   if (!Component) {
     return (
       <div className="section-missing" data-section-type={config.type}>
-        Section type not registered: {config.type}
+        {config.type === 'openui'
+          ? 'This OpenUI page requires Loom Viewer or the main app. Full OpenUI support is not included in the lightweight embed.'
+          : `Section type not registered: ${config.type}`}
       </div>
     )
   }

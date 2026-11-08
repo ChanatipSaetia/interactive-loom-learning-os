@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Onboarding Program Trade-off Workshop", [onboardingProgram])
+root = Page("Onboarding Program Trade-off Workshop", TradeoffSandbox("Onboarding Program Trade-off Workshop", [onboardingProgram]))
 
 onboardingProgram = TradeoffScenario(
   "onboarding-program",

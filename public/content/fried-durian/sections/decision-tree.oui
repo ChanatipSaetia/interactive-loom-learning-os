@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("ทุเรียนทอดแบบไหนเหมาะกับคุณ?", DecisionTree(
   "ทุเรียนทอดแบบไหนเหมาะกับคุณ?",
   "durian-advisor",
   "experience",
@@ -18,7 +18,7 @@ root = DecisionTree(
     "เลือกสูตรที่เหมาะกับรสนิยมและความสามารถ",
     "จบแล้ว — กลับไปเริ่มใหม่หรือลองทำเลย!",
   ),
-)
+))
 
 experience = DecisionNode(
   "experience",

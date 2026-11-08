@@ -1,4 +1,4 @@
-root = Flowchart(
+root = Page("mTLS Handshake Process", Flowchart(
   "mTLS Handshake Process",
   [clientDev, serverAdmin],
   [client, server, tlsStack, keyStore, caService],
@@ -15,7 +15,7 @@ root = Flowchart(
     handshakeComplete,
   ],
   [mtlsHappyPath, mtlsRejectedPath],
-)
+))
 
 clientDev = Actor("client_dev", "Client Developer", "Integrates mTLS into client application")
 serverAdmin = Actor(

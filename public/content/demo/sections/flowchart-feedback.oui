@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Agent Feedback Loop", Flowchart(
   "Agent Feedback Loop",
   [devUser, qaUser],
   [orchFeedback, evaluator, llmFeedback, memoryStore],
   [fbCheck, fbDecision, fbStore, fbRerun],
   [fbJourneyPass, fbJourneyRevise],
-)
+))
 
 devUser = Actor("dev_user", "Developer (Feedback Source)", "Provides feedback on agent output")
 qaUser = Actor("qa_user", "QA Reviewer", "Evaluates agent output quality")

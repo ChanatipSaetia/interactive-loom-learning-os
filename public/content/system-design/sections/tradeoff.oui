@@ -1,8 +1,8 @@
-root = TradeoffSandbox(
+root = Page("Design Trade-off Sandbox", TradeoffSandbox(
   "Design Trade-off Sandbox",
   [ecommerce],
   "Explore Consistency vs Availability Decisions",
-)
+))
 
 ecommerce = TradeoffScenario(
   "ecommerce",

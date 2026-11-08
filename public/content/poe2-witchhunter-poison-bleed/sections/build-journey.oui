@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("Build Progression Scenario", Scenario(
   "Build Progression Scenario",
   "league-journey",
   [
@@ -15,7 +15,7 @@ root = Scenario(
   "You've chosen the Poison + Bleed Witchhunter build for this league. Your decisions will shape your success.",
   null,
   "Your Witchhunter Journey",
-)
+))
 
 start = ScenarioNode(
   "start",

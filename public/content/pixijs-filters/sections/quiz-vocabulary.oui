@@ -1,4 +1,4 @@
-root = Quiz("Shader & Uniform Vocabulary Quiz", [qFilterPadding, qUsampler, qColormatrix])
+root = Page("Shader & Uniform Vocabulary Quiz", Quiz("Shader & Uniform Vocabulary Quiz", [qFilterPadding, qUsampler, qColormatrix]))
 
 qFilterPadding = QuizQuestion(
   "q-filter-padding",

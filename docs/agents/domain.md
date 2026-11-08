@@ -261,3 +261,14 @@ Provided by `UISystemContext` to `CoreLearningEngineContext` and all Core Sectio
 1. **`ThemeContract`**: Catppuccin Frappé color tokens, typography scales, spacing variables.
 2. **`UIComponentRegistryContract`**: Standardized UI primitives (`<Card>`, `<Button>`, `<RangeSlider>`, `<Modal>`, `<Badge>`).
 3. **`SensoryFeedbackContract`**: Audio triggers (`sound.playClick()`, `sound.playSuccess()`) and motion animation variants.
+
+
+## Unified OpenUI page authoring
+
+The authored OUI boundary is now `Page(title, body, heading?)`, one section per
+page. All component contracts come from one catalog. Existing domain schemas,
+learning behavior and separate Read/Present renderers remain internal adapters;
+authors do not select a section type or component library. Present remains
+hands-free and may derive several automatic scenes within a page. See
+[Authored pages](../sections/page.md) and the accepted decisions in
+[the migration plan](../ai-experience/unified-openui-plan.md).

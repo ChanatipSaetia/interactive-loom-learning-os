@@ -17,8 +17,8 @@ import {
 import { compileViewerTopic } from '../../../../../../src/viewer/compileTopic'
 
 const TOPIC = 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz")])\n'
-const INTRO = 'root = Text("Intro", ["Héllo ✨"])\n'
-const QUIZ = 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "A", true, "Yes")])\n'
+const INTRO = "root = Page(\"Intro\", LessonText(\"Intro\", [\"Héllo ✨\"]))\n"
+const QUIZ = "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"A\", true, \"Yes\")])\n"
 
 const demo = (): TopicFiles => ({
   topicId: 'demo',
@@ -142,7 +142,7 @@ describe('reading pasted text', () => {
         'sections/check.oui': QUIZ,
       },
     }])
-    const openui = '// @openui "Steep \\"Guide\\"" "By tea"\nroot = Card([TextContent("Hi")])\n'
+    const openui = "root = Page(\"Steep \\\"Guide\\\"\", Card([TextContent(\"Hi\")]), \"By tea\")\n"
     const [topic] = readTopicText(openui)
     expect(topic.topicId).toBe('pasted')
     expect(topic.files['topic.oui']).toContain('root = Topic("Steep \\"Guide\\""')
@@ -226,7 +226,7 @@ describe('reading picked files', () => {
 describe('workspace export and import', () => {
   it('exports the topic as currently edited', async () => {
     const workspace = await TopicWorkspace.open(memoryFolder('demo', demo().files))
-    workspace.setSource('intro', 'root = Text("Changed", ["Hi."])\n')
+    workspace.setSource('intro', "root = Page(\"Changed\", LessonText(\"Changed\", [\"Hi.\"]))\n")
     workspace.updateMetadata({ title: 'Renamed' })
     const { topicId, files } = workspace.exportFiles()
     expect(topicId).toBe('demo')

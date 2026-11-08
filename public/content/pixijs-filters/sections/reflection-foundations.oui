@@ -1,4 +1,4 @@
-root = ReflectionSequence("Filter Setup & Creation Sequencing", [challenge1])
+root = Page("Filter Setup & Creation Sequencing", ReflectionSequence("Filter Setup & Creation Sequencing", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "Arrange the chronological steps for authoring and applying a custom GLSL Filter in PixiJS:",

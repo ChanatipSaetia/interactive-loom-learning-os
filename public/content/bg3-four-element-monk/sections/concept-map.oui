@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Build Mechanics Map", ConceptMap(
   "Build Mechanics Map",
   [
     kiPoints,
@@ -43,7 +43,7 @@ root = ConceptMap(
     ConceptLink(patient0, kiPoints, "boosts damage with Ki"),
     ConceptLink(dragonClawGloves, twinElementalWrath, "amplifies infused damage"),
   ],
-)
+))
 
 kiPoints = Concept("ki-points", "Ki Points", "mechanic")
 elementalAttunement = Concept("elemental-attunement", "Elemental Attunement", "feature")

@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Concept Constellation", ConceptMap(
   "Concept Constellation",
   [
     onboarding,
@@ -48,7 +48,7 @@ root = ConceptMap(
     ConceptLink(cohort, humanAnchor, "guarantees"),
     ConceptLink(ticketStorm, goldenPath, "maps its quit-points"),
   ],
-)
+))
 
 onboarding = Concept("onboarding", "Onboarding Craft", "concept")
 accessFirst = Concept("access_first", "Access First (Pre-boarding)", "principle")

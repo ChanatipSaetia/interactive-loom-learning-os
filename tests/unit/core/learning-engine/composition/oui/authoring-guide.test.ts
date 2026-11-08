@@ -5,7 +5,7 @@ import { LOOM_OUI_COMPONENTS } from '../../../../../../src/core/learning-engine/
 
 const signature = (name: string) => new RegExp(`^${name}\\(`, 'm')
 
-const DRIVE = new Set(['Domain', 'DomainRef', 'Library'])
+const DRIVE = new Set(['Domain', 'DomainRef', 'Library', 'Catalog', 'TopicRef'])
 
 describe('getAuthoringGuide', () => {
   it('includes bullet composition guidance only when bullets are requested', () => {
@@ -35,8 +35,8 @@ describe('getAuthoringGuide', () => {
     expect(guide).toMatch(signature('Topic'))
     expect(guide).toMatch(signature('Narration'))
     expect(guide).not.toMatch(signature('Quiz'))
-    expect(guide).toContain('- `quiz` (Quiz):')
-    expect(guide).toContain('call get_authoring_guide again')
+    expect(guide).toContain('- Quiz:')
+    expect(guide).toContain('Request exact component names')
     expect(guide).not.toContain('## Standard OpenUI Sections')
   })
 
@@ -48,13 +48,13 @@ describe('getAuthoringGuide', () => {
   })
 
   it('adds the standard OpenUI part only for openui', () => {
-    expect(getAuthoringGuide(['openui'])).toContain('## Standard OpenUI Sections')
+    expect(getAuthoringGuide(['openui'])).toContain('root = Page(')
     expect(getAuthoringGuide(['openui'])).toContain('## Narration Files')
     expect(getAuthoringGuide(['quiz'])).toContain('## Narration Files')
   })
 
   it('names section types it does not know', () => {
-    expect(getAuthoringGuide(['quiz', 'karaoke'])).toContain('Unknown section types ignored: karaoke.')
+    expect(getAuthoringGuide([], ['Quiz', 'Karaoke'])).toContain('Unknown components: Karaoke.')
   })
 })
 
@@ -67,15 +67,11 @@ it('returns exact canonical signatures and dependencies without unrelated sectio
   expect(getAuthoringGuide([], ['MissingComponent'])).toContain('Unknown components: MissingComponent')
 })
 
-it('resolves focused contracts and dependencies in the selected library', () => {
-  const native = getAuthoringGuide([], ['Text'], 'loom')
-  const standard = getAuthoringGuide([], ['Text'], 'openui')
-  expect(native).toMatch(/^Text\(title: string, paragraphs:/m)
-  expect(standard).toMatch(/^Text\(variant\?/m)
-  expect(standard).not.toContain('paragraphs: string[]')
-  expect(getAuthoringGuide([], ['Quiz'], 'openui')).toContain('Unknown components: Quiz')
-  expect(getAuthoringGuide([], ['Table'], 'loom')).toContain('Unknown components: Table')
-  expect(getAuthoringGuide([], ['Table'], 'openui')).toMatch(/^Col\(/m)
-  expect(getAuthoringGuide([], ['Text'])).toContain('Ambiguous component names: Text')
-  expect(() => getAuthoringGuide(['openui'], undefined, 'openui')).toThrow('provide components')
+it('resolves every component by its canonical name without selecting a library', () => {
+  expect(getAuthoringGuide([], ['LessonText'])).toMatch(/^LessonText\(title: string, paragraphs:/m)
+  expect(getAuthoringGuide([], ['Text'])).toMatch(/^Text\(variant\?/m)
+  expect(getAuthoringGuide([], ['Quiz', 'Table'])).toMatch(/^Quiz\(/m)
+  expect(getAuthoringGuide([], ['Quiz', 'Table'])).toMatch(/^Col\(/m)
+  expect(getAuthoringGuide([], ['Text'])).not.toContain('Ambiguous component names')
+  expect(getAuthoringGuide([], ['Table'], 'loom')).toMatch(/^Table\(/m)
 })

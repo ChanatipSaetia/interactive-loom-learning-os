@@ -34,7 +34,7 @@ Bullet(text: string, children?: Bullet[], icon?: "list" | "check" | "shield" | "
 Example section (`sections/first-day.oui`):
 
 ```
-root = Bullets("A productive first day", [access, goal])
+root = Page("A productive first day", Bullets("A productive first day", [access, goal]))
 access = Bullet("Prepare **access** before day one", [accounts, permissions], "key")
 accounts = Bullet("Check **accounts** before Monday", null, "clock")
 permissions = Bullet("Verify repository **permissions**", null, "shield")

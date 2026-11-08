@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Filter Pipeline & System Map", ConceptMap(
   "Filter Pipeline & System Map",
   [
     app,
@@ -26,7 +26,7 @@ root = ConceptMap(
     ConceptLink(fragmentShader, displacementMap, "samples UV offset coordinates"),
     ConceptLink(filterSystem, framebuffer, "composites final filtered output"),
   ],
-)
+))
 
 app = Concept("app", "PIXI.Application", "Core Entrypoint")
 renderer = Concept("renderer", "Renderer (WebGL / WebGPU)", "GPU Pipeline")

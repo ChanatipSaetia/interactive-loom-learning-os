@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("Key Agent Capabilities", Bullets(
   "Key Agent Capabilities",
   [
     Bullet(
@@ -15,4 +15,4 @@ root = Bullets(
     Bullet("Multi-agent coordination (delegating sub-tasks)"),
   ],
   false,
-)
+))

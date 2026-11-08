@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("mTLS Alternatives", TaxonomyBrowser(
   "mTLS Alternatives",
   [],
   null,
@@ -7,4 +7,4 @@ root = TaxonomyBrowser(
     "mTLS isn't always the right choice. Understanding alternatives helps you pick the right tool.",
     "Walk through the mTLS handshake process in the flowchart.",
   ),
-)
+))

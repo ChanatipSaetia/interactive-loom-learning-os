@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("The Six Onboarding Principles", Bullets(
   "The Six Onboarding Principles",
   [
     Bullet(
@@ -60,4 +60,4 @@ root = Bullets(
       ],
     ),
   ],
-)
+))

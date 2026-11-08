@@ -90,7 +90,7 @@ export const EDIT_TOOLS: ToolDefinition[] = [
       description: 'Reference entries (signature, what each argument is for, an example) for the selected library, with dependencies resolved within that library. Use before writing a component you have not seen in the topic.',
       parameters: {
         type: 'object',
-        properties: { names: { type: 'array', maxItems: 100, items: { type: 'string' }, description: 'Exact component names in the selected library.' }, library: { type: 'string', enum: [...COMPONENT_LIBRARIES], description: 'loom for native components, openui for standard components. Omission keeps legacy Loom-first lookup.' } },
+        properties: { names: { type: 'array', maxItems: 100, items: { type: 'string' }, description: 'Exact canonical component names from the shared catalog.' }, library: { type: 'string', enum: [...COMPONENT_LIBRARIES], description: 'Deprecated ignored hint; canonical names resolve from one shared catalog.' } },
         required: ['names'],
         additionalProperties: false,
       },

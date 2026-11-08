@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("How It All Connects", ConceptMap(
   "How It All Connects",
   [
     readerNeed,
@@ -31,7 +31,7 @@ root = ConceptMap(
     ConceptLink(review, taskPage, "proves"),
     ConceptLink(wallOfText, readerNeed, "ignores"),
   ],
-)
+))
 
 readerNeed = Concept("reader_need", "Reader's Need", "foundation")
 diataxis = Concept("diataxis", "Diátaxis", "framework")
@@ -46,4 +46,4 @@ styleGuide = Concept("style_guide", "Style Guides", "style")
 vale = Concept("vale", "Vale Linter", "tool")
 readability = Concept("readability", "Readability Score", "tool")
 review = Concept("review", "Review & Step Test", "process")
-wallOfText = Concept("wall_of_text", "Wall of Text (failure)", "risk")
+wallOfText = Concept("wall_of_text", "Wall of LessonText (failure)", "risk")

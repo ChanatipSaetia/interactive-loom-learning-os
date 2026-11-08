@@ -6,8 +6,7 @@ interface OpenUIHelpModalProps {
   onClose: () => void
 }
 
-const EXAMPLE = `// @openui "Plans" "Pick the one that fits"
-root = Card([header, tabs])
+const EXAMPLE = `root = Page("Plans", Card([header, tabs]), "Pick the one that fits")
 header = CardHeader("Plans", "Compare what you get")
 tabs = Tabs([
   TabItem("free", "Free", [TextContent("Up to **3** projects.")]),

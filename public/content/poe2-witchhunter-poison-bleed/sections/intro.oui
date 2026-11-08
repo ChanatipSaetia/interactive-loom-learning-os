@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("The Dual Pestilence Witchhunter", Intro(
   "The Dual Pestilence Witchhunter",
   what,
   why,
@@ -55,7 +55,7 @@ root = Intro(
   "Poison + Bleed DoT Mercenary Build — PoE 2 v0.5",
   "8 min read",
   8,
-)
+))
 
 what = IntroWhat(
   "Complete build guide for the Witchhunter ascendancy Mercenary, covering dual-ailment mechanics, ascendancy synergies, gear milestones, and DPS calculations.",

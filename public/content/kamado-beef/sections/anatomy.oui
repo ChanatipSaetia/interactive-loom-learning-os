@@ -1,10 +1,10 @@
-root = PillarLayer(
+root = Page("โครงสร้างและกายวิภาคของเตา Kamado", PillarLayer(
   "โครงสร้างและกายวิภาคของเตา Kamado",
   [lDomeExhaust, lCookingZone, lFireboxCore, lBaseDraft],
   [bTopVent, bCeramicDome, bGrillGrate, bDeflector, bFirebox, bFireRing, bDraftDoor, bAshDrawer],
   "โครงสร้างแบบเป็นชั้นของเตา Kamado แสดงการถ่ายเทความร้อน การกักเก็บพลังงาน และการควบคุมการไหลเวียนอากาศ",
   "กายวิภาคและสถาปัตยกรรมเตาเซรามิก Kamado (Kamado Anatomy Stack)",
-)
+))
 
 lDomeExhaust = Layer(
   "l-dome-exhaust",

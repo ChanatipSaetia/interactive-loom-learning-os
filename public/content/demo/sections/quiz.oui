@@ -1,4 +1,4 @@
-root = Quiz("Knowledge Check", [qOrchestration, qMemory, qReflexion, qMapReduce, qToolUse])
+root = Page("Knowledge Check", Quiz("Knowledge Check", [qOrchestration, qMemory, qReflexion, qMapReduce, qToolUse]))
 
 qOrchestration = QuizQuestion(
   "q_orchestration",

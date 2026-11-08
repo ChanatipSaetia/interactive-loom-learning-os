@@ -202,11 +202,10 @@ function hasTopicMarkers(text: string): boolean {
 
 const TOPIC_ROOT = /^\s*root\s*=\s*Topic\s*\(/m
 const SECTION_TITLE = /^\s*root\s*=\s*\w+\s*\(\s*("(?:[^"\\\n]|\\.)*")/m
-const OPENUI_TITLE = /^\s*\/\/\s*@openui\s+("(?:[^"\\\n]|\\.)*")/m
 
 /** Title of a section source: its `// @openui "Title"` or the first string argument of `root = …(`. */
 function sectionTitle(source: string): string | undefined {
-  const match = OPENUI_TITLE.exec(source) ?? SECTION_TITLE.exec(source)
+  const match = SECTION_TITLE.exec(source)
   if (!match) return undefined
   try {
     return JSON.parse(match[1]) as string

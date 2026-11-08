@@ -1,4 +1,4 @@
-root = Flowchart(
+root = Page("Combat Flow", Flowchart(
   "Combat Flow",
   [player, boss, pack],
   [
@@ -25,7 +25,7 @@ root = Flowchart(
     stepBossCommit,
   ],
   [journeyMapping, journeyBoss],
-)
+))
 
 player = Actor("player", "Player", "Martial Artist Monk controlling skills and gear")
 boss = Actor("boss", "Boss Enemy", "Map boss or Pinnacle boss")

@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Glossary", Flashcards(
   "Glossary",
   [
     leastPrivilege,
@@ -14,7 +14,7 @@ root = Flashcards(
     asCode,
     watchTryTest,
   ],
-)
+))
 
 leastPrivilege = Flashcard(
   "least-privilege",

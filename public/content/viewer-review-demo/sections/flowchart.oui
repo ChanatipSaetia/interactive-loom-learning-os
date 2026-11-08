@@ -1,4 +1,4 @@
-root = Flowchart("09 · Flowchart — Behind the research request", [sam], [assistant, search], [submit, retrieve, compose], [research])
+root = Page("09 · Flowchart — Behind the research request", Flowchart("09 · Flowchart — Behind the research request", [sam], [assistant, search], [submit, retrieve, compose], [research]))
 sam = Actor("sam", "Sam", "Reviews and approves the answer")
 assistant = System("assistant", "Assistant", "Coordinates the research request", "aggregate")
 search = System("search", "Evidence search", "Retrieves relevant source material", "external")

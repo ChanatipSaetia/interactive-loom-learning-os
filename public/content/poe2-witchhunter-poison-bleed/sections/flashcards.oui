@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Key Vocabulary", Flashcards(
   "Key Vocabulary",
   [
     witchhunter,
@@ -16,7 +16,7 @@ root = Flashcards(
     concentration,
     escalatingPoison,
   ],
-)
+))
 
 witchhunter = Flashcard(
   "witchhunter",

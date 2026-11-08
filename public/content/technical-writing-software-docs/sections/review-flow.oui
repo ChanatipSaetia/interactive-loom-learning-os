@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("The Docs Review Flow", Flowchart(
   "The Docs Review Flow",
   [writer, sme, tester],
   [docsRepo, stagingApp, valeCi, docsSite],
   [stepDraft, stepSme, stepTest, stepTestOutcome, stepPublish],
   [journeyPublish, journeyRewrite],
-)
+))
 
 writer = Actor("writer", "Technical Writer", "Drafts the page in Markdown and opens a pull request")
 sme = Actor(

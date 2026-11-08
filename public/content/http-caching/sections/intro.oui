@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("HTTP Caching", Intro(
   "HTTP Caching",
   what,
   why,
@@ -14,7 +14,7 @@ root = Intro(
   "Reuse responses safely so pages load fast and servers stay calm.",
   "5 min read",
   2,
-)
+))
 
 what = IntroWhat(
   "HTTP caching lets a browser or CDN keep a copy of a response and reuse it instead of asking the origin server again.",

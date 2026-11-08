@@ -54,7 +54,7 @@ describe('Section pick anchors', () => {
   }
 
   it('points at named statements, inline components and props', async () => {
-    const anchors = await anchorsOf(`root = Quiz("Check", [q2])
+    const anchors = await anchorsOf(`root = Page("Check", Quiz("Check", [q2]))
 q2 = QuizQuestion("kafka-offsets", "Why?", [QuizChoice("a", "A", true, "Because"), c2], "Think")
 c2 = QuizChoice("b", "B", false, "No")
 `)
@@ -64,16 +64,16 @@ c2 = QuizChoice("b", "B", false, "No")
   })
 
   it('tags concept map nodes, links and link labels', async () => {
-    const anchors = await anchorsOf(`root = ConceptMap("Map", [a, b], [ConceptLink(a, b, "uses")])
+    const anchors = await anchorsOf(`root = Page("Map", ConceptMap("Map", [a, b], [ConceptLink(a, b, "uses")]))
 a = Concept("a", "Alpha", "concept")
 b = Concept("b", "Beta")
 `)
-    expect(anchors).toEqual(expect.arrayContaining(['a', 'a.title', 'a.category', 'b', 'root.links[0]', 'root.links[0].label']))
+    expect(anchors).toEqual(expect.arrayContaining(['a', 'a.title', 'a.category', 'b', 'root.body.links[0]', 'root.body.links[0].label']))
   })
 
   it('tags paragraphs and nested bullets', async () => {
-    expect(await anchorsOf('root = Text("T", ["One", "Two"])\n')).toEqual(['root', 'root.paragraphs[0]', 'root.paragraphs[1]'])
-    const bullets = await anchorsOf('root = Bullets("B", [Bullet("Top", [Bullet("Child")]), b2])\nb2 = Bullet("Second")\n')
-    expect(bullets).toEqual(expect.arrayContaining(['root.items[0]', 'root.items[0].text', 'b2', 'b2.text']))
+    expect(await anchorsOf("root = Page(\"T\", LessonText(\"T\", [\"One\", \"Two\"]))\n")).toEqual(['root', 'root.body.paragraphs[0]', 'root.body.paragraphs[1]'])
+    const bullets = await anchorsOf("root = Page(\"B\", Bullets(\"B\", [Bullet(\"Top\", [Bullet(\"Child\")]), b2]))\nb2 = Bullet(\"Second\")\n")
+    expect(bullets).toEqual(expect.arrayContaining(['root.body.items[0]', 'root.body.items[0].text', 'b2', 'b2.text']))
   })
 })

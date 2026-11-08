@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Indexing Pipeline", Flowchart(
   "Indexing Pipeline",
   [devUser],
   [fileConverter, textSplitter, docEmbedder, embeddingModel, docWriter, docStore],
   [startIndexing, convertFiles, splitTexts, computeEmbeddings, writeDocs],
   [indexingFlow],
-)
+))
 
 devUser = Actor("dev_user", "Developer", "Initiates the indexing process with raw data files.")
 

@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Docs-as-Code Publish Flow", Flowchart(
   "Docs-as-Code Publish Flow",
   [docWriter, reviewer],
   [gitRepo, ciPipeline, previewHost, docsSite],
   [stepCommit, stepPreview, stepReview, stepOutcome],
   [journeyPublish, journeyRevision],
-)
+))
 
 docWriter = Actor(
   "doc_writer",

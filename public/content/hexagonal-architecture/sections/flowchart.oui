@@ -1,4 +1,4 @@
-root = Flowchart(
+root = Page("Order Placement Request Lifecycle", Flowchart(
   "Order Placement Request Lifecycle",
   [customer],
   [orderAggregate, httpController, createOrderPort, orderRepoPort, postgresAdapter],
@@ -10,7 +10,7 @@ root = Flowchart(
     "Visualizes step-by-step how Driving Adapters, Ports, Use Case Policies, and Driven Adapters interact.",
     "Next: Challenge your process recall in the Reflection Sequence.",
   ),
-)
+))
 
 customer = Actor(
   "customer",

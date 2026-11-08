@@ -1,4 +1,4 @@
-root = TaxonomyBrowser("Spell Selection", [fireSpells, coldSpells, lightningSpells, acidSpells])
+root = Page("Spell Selection", TaxonomyBrowser("Spell Selection", [fireSpells, coldSpells, lightningSpells, acidSpells]))
 
 fireSpells = TaxonomyCategory(
   "Fire Spells",

@@ -1,4 +1,4 @@
-root = ReflectionSequence("Transform Pipeline Sequencing", [challenge1])
+root = Page("Transform Pipeline Sequencing", ReflectionSequence("Transform Pipeline Sequencing", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "Order the stages of coordinate matrix transformation from local entity properties to canvas screen viewport:",

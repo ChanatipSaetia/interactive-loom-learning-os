@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Flowcast Combat Flow", Flowchart(
   "Flowcast Combat Flow",
   [player, enemy],
   [kiPool, elementalEngine, unarmedCombat, defenseSystem, twistedWrathHandler, fourPointHandler],
   [step1, stepOpening, stepAttackLoop, stepKiCheck],
   [journeyOffense, journeyBoss, journeyDefensive],
-)
+))
 
 player = Actor("player", "Player (Monk)", "Controls the Four Element Monk")
 enemy = Actor("enemy", "Enemy", "Target of attacks and spells")

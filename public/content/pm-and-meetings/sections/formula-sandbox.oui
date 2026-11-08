@@ -1,4 +1,4 @@
-root = FormulaSandbox(
+root = Page("Synchronous Meeting Cost & Focus Loss Simulator", FormulaSandbox(
   "Synchronous Meeting Cost & Focus Loss Simulator",
   [
     FormulaVariable("attendees_count", "Meeting Attendees (Engineers)", 2, 15, 1, 6),
@@ -6,7 +6,7 @@ root = FormulaSandbox(
     FormulaVariable("average_hourly_rate", "Average Engineer Hourly Rate ($)", 50, 150, 10, 80),
   ],
   [recall, latency, cost],
-)
+))
 
 recall = FormulaMetric(
   "recall",

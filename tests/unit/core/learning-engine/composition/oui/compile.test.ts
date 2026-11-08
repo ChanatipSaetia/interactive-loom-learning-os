@@ -96,7 +96,7 @@ describe('compileOUISection — mapping details', () => {
   })
 
   it('collects heading, lead and ordered into section meta', () => {
-    const { value } = compileOUISection(`root = Bullets("List", [Bullet("a")], false, "Heading", Lead("What", "Why", "Next"))`)
+    const { value } = compileOUISection(`root = Page("List", Bullets("List", [Bullet("a")], false, "Heading", Lead("What", "Why", "Next")))`)
     expect(value?.meta).toEqual({
       type: 'bullets',
       title: 'List',
@@ -110,7 +110,7 @@ describe('compileOUISection — mapping details', () => {
   it('evaluates $state defaults, builtins and ternaries', () => {
     const { value, issues } = compileOUISection(`
 $level = "beginner"
-root = Text("Level: " + $level, [$level == "beginner" ? "Start slow." : "Go deep.", "" + @Count([1, 2, 3]) + " parts"])
+root = Page("Level: " + $level, LessonText("Level: " + $level, [$level == "beginner" ? "Start slow." : "Go deep.", "" + @Count([1, 2, 3]) + " parts"]))
 `)
     expect(issues).toEqual([])
     expect(value?.meta.title).toBe('Level: beginner')
@@ -126,12 +126,16 @@ describe('compileOUISection — issues', () => {
   })
 
   it('reports unknown components with their line', () => {
-    const result = compileOUISection(`root = Quiz("Q", [q1])\n\nq1 = Questoin("q1")`)
+    const result = compileOUISection(`root = Page("Q", Quiz("Q", [q1]))
+
+q1 = Questoin("q1")`)
     expect(result.issues).toContainEqual(expect.objectContaining({ tier: 1, code: 'unknown-component', statementId: 'q1', line: 3 }))
   })
 
   it('reports missing required arguments as tier 2', () => {
-    const result = compileOUISection(`root = Quiz("Q", [q1])\nq1 = QuizQuestion("q1", "Why?", [c])\nc = QuizChoice("a", "A", true)`)
+    const result = compileOUISection(`root = Page("Q", Quiz("Q", [q1]))
+q1 = QuizQuestion("q1", "Why?", [c])
+c = QuizChoice("a", "A", true)`)
     expect(result.issues).toContainEqual(expect.objectContaining({ tier: 2, code: 'missing-required', statementId: 'c', line: 3, path: '/explanation' }))
   })
 
@@ -141,12 +145,14 @@ describe('compileOUISection — issues', () => {
   })
 
   it('reports unused statements as tier 3', () => {
-    const result = compileOUISection(`root = Text("T", ["a"])\nleftover = Text("x", [])`)
+    const result = compileOUISection(`root = Page("T", LessonText("T", ["a"]))
+leftover = LessonText("x", [])`)
     expect(result.issues).toEqual([expect.objectContaining({ tier: 3, code: 'unused-statement', statementId: 'leftover', line: 2 })])
   })
 
   it('rejects Query() as unsupported', () => {
-    const result = compileOUISection(`root = Text("T", ["a"])\ndata = Query("tool", {}, {rows: []})`)
+    const result = compileOUISection(`root = Page("T", LessonText("T", ["a"]))
+data = Query("tool", {}, {rows: []})`)
     expect(result.issues).toContainEqual(expect.objectContaining({ tier: 1, code: 'unsupported-feature', statementId: 'data' }))
   })
 })
@@ -197,36 +203,38 @@ describe('compileOUISection — standard OpenUI sections (// @openui)', () => {
   it('compiles the directive into meta and keeps the program verbatim', () => {
     const { value, issues, rootComponent } = compileOUISection(SECTION_FIXTURES.openui)
     expect(issues).toEqual([])
-    expect(rootComponent).toBe('Card')
+    expect(rootComponent).toBe('Page')
     expect(value?.meta).toEqual({ type: 'openui', title: 'Plans', heading: 'Pick one', resource: '.' })
     expect((value?.data as any).source).toMatch(/^root = Card\(\[header, tabs\]\)\n/)
     expect((value?.data as any).source).not.toContain('@openui')
   })
 
   it('accepts a directive with only a title', () => {
-    const { value } = compileOUISection(`// @openui "Just a title"\nroot = Card([TextContent("hi")])`)
+    const { value } = compileOUISection(`root = Page("Just a title", Card([TextContent("hi")]))`)
     expect(value?.meta).toEqual({ type: 'openui', title: 'Just a title', resource: '.' })
   })
 
-  it('validates against the standard library, not the Loom one', () => {
-    const loomOnly = validateOUISection(`// @openui "X"\nroot = Quiz("Q", [])`)
-    expect(loomOnly.status).toBe('error')
-    expect(loomOnly.diagnostics).toContainEqual(expect.objectContaining({ tier: 1, line: 2, fixHint: expect.stringContaining('standard OpenUI library') }))
-    expect(loomOnly.payload).toBeNull()
+  it('accepts learning and public components through the same catalog', () => {
+    const activity = validateOUISection(`root = Page("X", Quiz("Q", []))`)
+    expect(activity.status).toBe('valid')
+    expect(activity.payload?.meta.type).toBe('quiz')
   })
 
   it('reports missing required arguments with their line', () => {
-    const result = validateOUISection(`// @openui "X"\nroot = Card([t])\nt = TextContent()`)
+    const result = validateOUISection(`root = Page("X", Card([t]))
+t = TextContent()`)
     expect(result.status).toBe('error')
-    expect(result.diagnostics).toContainEqual(expect.objectContaining({ tier: 2, line: 3 }))
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ tier: 2, line: 2 }))
   })
 
   it('rejects Query()/Mutation() since content is static', () => {
-    const result = validateOUISection(`// @openui "X"\nroot = Card([TextContent(data)])\ndata = Query("get_data", {}, "")`)
-    expect(result.diagnostics).toContainEqual(expect.objectContaining({ tier: 1, line: 3, message: expect.stringContaining('Query()/Mutation()') }))
+    const result = validateOUISection(`root = Page("X", Card([TextContent(data)]))
+data = Query("get_data", {}, "")`)
+    expect(result.diagnostics).toContainEqual(expect.objectContaining({ tier: 1, line: 2, message: expect.stringContaining('Query()/Mutation()') }))
   })
 
   it('treats a plain comment as a Loom section', () => {
-    expect(compileOUISection(`// openui is great\nroot = Text("T", ["p"])`).value?.meta.type).toBe('text')
+    expect(compileOUISection(`// openui is great
+root = Page("T", LessonText("T", ["p"]))`).value?.meta.type).toBe('text')
   })
 })

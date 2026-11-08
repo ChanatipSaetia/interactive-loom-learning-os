@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("The Diátaxis Framework", TaxonomyBrowser(
   "The Diátaxis Framework",
   [tutorial, howToGuide, reference, explanation, donTMixTheTypes],
-)
+))
 
 tutorial = TaxonomyCategory(
   "Tutorial",

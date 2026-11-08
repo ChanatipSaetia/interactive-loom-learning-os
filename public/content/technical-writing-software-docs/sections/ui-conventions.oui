@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("UI Text Conventions", TaxonomyBrowser(
   "UI Text Conventions",
   [
     boldUiLabelsExactlyAsShown,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     inputFormatting,
     consistentDeviceNeutralVerbs,
   ],
-)
+))
 
 boldUiLabelsExactlyAsShown = TaxonomyCategory(
   "Bold UI Labels, Exactly as Shown",

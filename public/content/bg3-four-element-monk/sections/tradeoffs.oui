@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Build Trade-offs", [pureMonk, multiclassSorcerer])
+root = Page("Build Trade-offs", TradeoffSandbox("Build Trade-offs", [pureMonk, multiclassSorcerer]))
 
 pureMonk = TradeoffScenario(
   "pure-monk",

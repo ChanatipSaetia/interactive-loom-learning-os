@@ -20,7 +20,7 @@ root = Narration([
 ])
 
 // === sections/ai-product.oui ===
-root = UserJourney("Research with an AI assistant", "Sam", "Find a supported answer to a research question", [ask, review, save])
+root = Page("Research with an AI assistant", UserJourney("Research with an AI assistant", "Sam", "Find a supported answer to a research question", [ask, review, save]))
 ask = JourneyStage("Ask", "Set a useful scope", "Sam asks why customer support volume increased.", "The assistant asks which date range and channels to examine.")
 review = JourneyStage("Review evidence", "Check the answer before relying on it", "Sam reads the findings and opens their cited sources.", "The assistant connects each claim to the available evidence.", "One claim has no supporting source.", "Flag the gap, remove the unsupported claim, and ask for more evidence.", "Sam keeps only the findings supported by the sources.")
 save = JourneyStage("Save the result", "Share a traceable summary", "Sam edits the summary and confirms the final version.", "The assistant exports the approved summary with its sources.")
@@ -45,7 +45,7 @@ root = Narration([
 ])
 
 // === sections/motorcycle.oui ===
-root = UserJourney("Choosing a motorcycle", "Maya", "Find a motorcycle for a daily commute", [compare, visit, decide])
+root = Page("Choosing a motorcycle", UserJourney("Choosing a motorcycle", "Maya", "Find a motorcycle for a daily commute", [compare, visit, decide]))
 
 compare = JourneyStage(
   "Compare options",

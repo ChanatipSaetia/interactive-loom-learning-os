@@ -1,4 +1,4 @@
-root = FormulaSandbox(
+root = Page("เครื่องคำนวณเวลาและอุณหภูมิสเต๊ก Reverse Sear", FormulaSandbox(
   "เครื่องคำนวณเวลาและอุณหภูมิสเต๊ก Reverse Sear",
   [
     FormulaVariable("thickness_cm", "ความหนาของเนื้อสเต๊ก (cm)", 2, 8, 0.5, 4),
@@ -13,7 +13,7 @@ root = FormulaSandbox(
     ),
   ],
   [pullTempC, targetInternalTempC, indirectTimeMin, restingTimeMin],
-)
+))
 
 pullTempC = FormulaMetric(
   "pull_temp_c",

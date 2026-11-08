@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Key Vocabulary", Flashcards(
   "Key Vocabulary",
   [
     gamification,
@@ -12,7 +12,7 @@ root = Flashcards(
     flow,
     darkPattern,
   ],
-)
+))
 
 gamification = Flashcard(
   "gamification",

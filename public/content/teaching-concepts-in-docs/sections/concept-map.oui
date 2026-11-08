@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("How It All Connects", ConceptMap(
   "How It All Connects",
   [
     procedural,
@@ -30,7 +30,7 @@ root = ConceptMap(
     ConceptLink(poe, mentalModel, "exposes and corrects"),
     ConceptLink(retrieval, conceptual, "makes it stick"),
   ],
-)
+))
 
 procedural = Concept("procedural", "Procedural Knowledge", "knowledge")
 conceptual = Concept("conceptual", "Conceptual Knowledge", "knowledge")

@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("Advisor: Should this be a Meeting?", DecisionTree(
   "Advisor: Should this be a Meeting?",
   "comm_channel_advisor",
   "issue_nature",
@@ -13,7 +13,7 @@ root = DecisionTree(
     leafAsyncProposal,
   ],
   "Communication Channel Advisor",
-)
+))
 
 issueNature = DecisionNode(
   "issue_nature",

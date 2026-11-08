@@ -1,4 +1,4 @@
-root = TradeoffSandbox("16 · Tradeoff sandbox — Choose a research approach", [research])
+root = Page("16 · Tradeoff sandbox — Choose a research approach", TradeoffSandbox("16 · Tradeoff sandbox — Choose a research approach", [research]))
 research = TradeoffScenario("research", "A first-pass investigation", [speed, depth], [approach, verification, uncertainty, delivery], "Illustrative scores show a trade-off, not benchmark results.")
 speed = TradeoffMetric("speed", "Speed", 50, 0, 100, "higher")
 depth = TradeoffMetric("depth", "Evidence depth", 50, 0, 100, "higher")

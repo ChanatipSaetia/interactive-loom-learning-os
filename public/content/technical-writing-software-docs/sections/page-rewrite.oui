@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Page Rewrite Workshop", [resetPasswordPage])
+root = Page("Page Rewrite Workshop", TradeoffSandbox("Page Rewrite Workshop", [resetPasswordPage]))
 
 resetPasswordPage = TradeoffScenario(
   "reset-password-page",

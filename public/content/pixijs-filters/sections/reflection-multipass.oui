@@ -1,4 +1,4 @@
-root = ReflectionSequence("Multi-Pass Convolution Sequencing", [challenge1])
+root = Page("Multi-Pass Convolution Sequencing", ReflectionSequence("Multi-Pass Convolution Sequencing", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "Arrange the sequential stages of a 2-pass separable Gaussian/Kawase blur convolution pipeline:",

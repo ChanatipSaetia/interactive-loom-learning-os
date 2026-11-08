@@ -22,7 +22,8 @@ describe('printOUISection', () => {
   it('hoists named children and prints references by statement name', () => {
     const { meta, data } = compileOUISection(SECTION_FIXTURES.flowchart).value!
     const source = printOUISection(meta, data)
-    expect(source).toMatch(/^root = Flowchart\("Checkout", \[buyer\], \[orders, pay\], \[placeOrder, payBranch\], \[happy\]\)\n/)
+    expect(source).toMatch(/^root = Page\(/)
+    expect(source).toContain('Flowchart("Checkout", [buyer], [orders, pay], [placeOrder, payBranch], [happy])')
     expect(source).toContain('\nbuyer = Actor("buyer", "Buyer", "Person placing the order")\n')
     // A referenced branch option is hoisted so the journey can point at it.
     expect(source).toContain('\nok = BranchOption("ok", "Approved", "When order placed", "Charge", pay, [Event("paid", "Paid")])\n')
@@ -36,7 +37,7 @@ describe('printOUISection', () => {
       { width: 60 },
     )
     expect(source).toBe([
-      'root = Quiz("Q", [q1])',
+      "root = Page(\"Q\", Quiz(\"Q\", [q1]))",
       '',
       'q1 = QuizQuestion(',
       '  "q1",',
@@ -72,7 +73,7 @@ describe('printOUISection', () => {
       { type: 'text', paragraphs: ['p'] },
       { header: ['Generated'] },
     )
-    expect(source).toBe('// Generated\nroot = Text("T", ["p"], "H", Lead("W"))\n')
+    expect(source).toBe("// Generated\nroot = Page(\"T\", LessonText(\"T\", [\"p\"], \"H\", Lead(\"W\")), \"H\")\n")
   })
 })
 

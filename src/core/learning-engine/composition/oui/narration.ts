@@ -24,7 +24,7 @@ export const Highlight = defineOUIComponent({
 })
 
 export const Callout = defineOUIComponent({
-  name: 'Callout',
+  name: 'NarrationCallout',
   description: 'Narration effect: a note that pops up beside one element of the section, with explanation the section does not say itself.',
   props: z.object({ target: z.string(), text: z.string() }),
   fields: {
@@ -54,7 +54,7 @@ export const NarrationStep = defineOUIComponent({
   fields: {
     beat: 'The beat it plays on, by its ID for the section type, e.g. "q1", "q1.wrong", "q1.right" for a quiz, "p2" for a text paragraph (see Narration Files).',
     caption: 'Subtitle line shown and read aloud while the beat plays, in the topic\'s language; null for none.',
-    effects: 'Highlight, Callout and Spotlight calls for the step.',
+    effects: 'Highlight, NarrationCallout and Spotlight calls for the step.',
     view: 'For flowcharts, optionally switch to this view while this narration step plays; null keeps the flowchart’s initial view.',
   },
 })

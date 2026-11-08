@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("Agent Design Patterns", TaxonomyBrowser(
   "Agent Design Patterns",
   [reActReasonAct, planAndExecute, mapReduceAgent, reflexionAgent],
-)
+))
 
 reActReasonAct = TaxonomyCategory(
   "ReAct (Reason + Act)",

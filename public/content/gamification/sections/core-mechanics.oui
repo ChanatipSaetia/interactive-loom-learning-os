@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("The Core Mechanics Toolkit", Bullets(
   "The Core Mechanics Toolkit",
   [
     Bullet(
@@ -50,4 +50,4 @@ root = Bullets(
   ],
   false,
   "The building blocks — from PBL to the extended toolkit",
-)
+))

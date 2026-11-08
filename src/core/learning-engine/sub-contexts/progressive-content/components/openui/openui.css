@@ -224,3 +224,5 @@
 .present-stage.is-portrait .present-openui { padding-block-start: 16px; }
 .present-stage.is-portrait .present-openui .loom-openui-scope { gap: 22px; }
 .present-stage.is-portrait .present-openui :is(.openui-table-cell, .openui-table-head) { padding: 12px 14px; }
+.loom-page-activity .section-title-bar,
+.loom-page-activity .section-title-bar-actions { display: none; }

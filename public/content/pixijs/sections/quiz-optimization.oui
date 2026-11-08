@@ -1,4 +1,4 @@
-root = Quiz("Performance & Memory Optimization Quiz", [qOpt1, qOpt2])
+root = Page("Performance & Memory Optimization Quiz", Quiz("Performance & Memory Optimization Quiz", [qOpt1, qOpt2]))
 
 qOpt1 = QuizQuestion(
   "q_opt_1",

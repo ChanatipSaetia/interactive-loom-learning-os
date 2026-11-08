@@ -18,8 +18,7 @@ How to draw:
 Example section file, and its narration walking the drawing shape by shape:
 
 ```
-// @openui "Two Leaves and a Bud" "What a fine pluck takes"
-root = Card([header, shoot, why])
+root = Page("Two Leaves and a Bud", Card([header, shoot, why]), "What a fine pluck takes")
 header = CardHeader("The fine pluck", "Only the tip of each tea shoot is picked")
 shoot = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 250">
   <path id="stem" d="M180 246 V40" stroke="overlay1" stroke-width="4" fill="none"/>
@@ -42,6 +41,6 @@ title = NarrationStep("title", "Every fine green tea starts with the same pluck.
 head = NarrationStep("part1", "Pickers take only the very tip of each shoot.", [Highlight("header")])
 bud = NarrationStep("part2", "At the top sits the bud, still rolled up.", [Highlight("shoot.bud")])
 leaves = NarrationStep("part2", "Then the two youngest leaves below it.", [Spotlight(["shoot.leaf1", "shoot.leaf2"])])
-older = NarrationStep("part2", null, [Callout("shoot.older", "Older leaves are tougher and flatter in taste; they stay on the bush.")])
+older = NarrationStep("part2", null, [NarrationCallout("shoot.older", "Older leaves are tougher and flatter in taste; they stay on the bush.")])
 why = NarrationStep("part3", "So two leaves and a bud is a recipe for flavour.", [Highlight("why")])
 ```

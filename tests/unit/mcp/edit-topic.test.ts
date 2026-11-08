@@ -45,7 +45,7 @@ describe('editTopicSource', () => {
   it('changes nothing when an edit cannot be placed', () => {
     const outcome = editTopicSource('chinese101-day1', oui, [{ file: 'sections/quiz.oui', statements: 'nope = DELETE' }])
     expect(outcome).toEqual({ ok: false, error: expect.stringContaining('has no statement "nope" to delete') })
-    expect(editTopicSource('chinese101-day1', oui, [{ file: 'sections/missing.oui', statements: 'root = Intro("x")' }]).ok).toBe(false)
+    expect(editTopicSource('chinese101-day1', oui, [{ file: 'sections/missing.oui', statements: "root = Page(\"x\", Intro(\"x\"))" }]).ok).toBe(false)
   })
 })
 

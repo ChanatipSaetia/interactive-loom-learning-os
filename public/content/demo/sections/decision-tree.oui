@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("Agent Architecture Decision Guide", DecisionTree(
   "Agent Architecture Decision Guide",
   "agent_architecture",
   "scale_question",
@@ -11,7 +11,7 @@ root = DecisionTree(
     leafOrchestrator,
     leafFanOut,
   ],
-)
+))
 
 scaleQuestion = DecisionNode(
   "scale_question",

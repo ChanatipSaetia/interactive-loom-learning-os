@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("Plain Language Rules", Bullets(
   "Plain Language Rules",
   [
     Bullet(
@@ -45,4 +45,4 @@ root = Bullets(
       ],
     ),
   ],
-)
+))

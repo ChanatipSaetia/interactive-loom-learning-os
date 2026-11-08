@@ -1,4 +1,4 @@
-root = ReflectionSequence("Sprint Development Cycle Sequence", [challenge1, challenge2])
+root = Page("Sprint Development Cycle Sequence", ReflectionSequence("Sprint Development Cycle Sequence", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Order the stages of a standard IT feature development sprint loop (Part 1):",

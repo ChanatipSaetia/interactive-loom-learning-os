@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("The Six-Stage Manual Presentation Arc", Bullets(
   "The Six-Stage Manual Presentation Arc",
   [
     Bullet(
@@ -49,4 +49,4 @@ root = Bullets(
     ),
   ],
   true,
-)
+))

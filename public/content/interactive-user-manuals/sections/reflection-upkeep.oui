@@ -1,4 +1,4 @@
-root = ReflectionSequence("Order the Upkeep Loop", [challenge1, challenge2, challenge3])
+root = Page("Order the Upkeep Loop", ReflectionSequence("Order the Upkeep Loop", [challenge1, challenge2, challenge3]))
 
 challenge1 = SequenceChallenge(
   "A new product release is coming. Put the maintainability loop in the right order.",

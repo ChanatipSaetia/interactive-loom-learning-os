@@ -1,4 +1,4 @@
-root = Quiz("Essential PixiJS Vocabulary Quiz", [qVoc1, qVoc2])
+root = Page("Essential PixiJS Vocabulary Quiz", Quiz("Essential PixiJS Vocabulary Quiz", [qVoc1, qVoc2]))
 
 qVoc1 = QuizQuestion(
   "q_voc_1",

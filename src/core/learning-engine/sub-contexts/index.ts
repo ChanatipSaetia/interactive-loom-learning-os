@@ -165,13 +165,11 @@ export { TextSection, TextHelpModal } from './progressive-content'
 export type { TextSectionProps } from './progressive-content'
 
 export { OpenUISection, OpenUIHelpModal } from './progressive-content'
-export type { OpenUISectionProps, OpenUIDirective, StandardOpenUISpec } from './progressive-content'
+export type { OpenUISectionProps, StandardOpenUISpec } from './progressive-content'
 export {
   OPENUI_SECTION_TYPE,
   standardOpenUISchema,
   standardOpenUISpec,
-  readOpenUIDirective,
-  isOpenUISource,
   openUIProgramOf,
   printOpenUISection,
 } from './progressive-content'

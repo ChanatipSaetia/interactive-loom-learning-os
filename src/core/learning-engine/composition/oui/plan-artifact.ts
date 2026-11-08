@@ -60,12 +60,12 @@ export function reviewPlanArtifact(artifact: CompiledPlanArtifact, input?: unkno
     const compiled = actual.get(section.id)
     if (!compiled) add('MISSING_SECTION', 'This planned section is absent from the compiled topic outline.', section.id)
     else if (!compiled.config) add('UNCOMPILED_ARTIFACT', 'This section did not compile; its representation cannot be verified.', section.id)
-    else if (compiled.config.type !== section.representation) add('REPRESENTATION_MISMATCH', `Plan specifies ${section.representation}; compiled artifact is ${compiled.config.type}. Repair the section or explicitly revise the plan.`, section.id)
+    else if (section.representation !== 'page' && compiled.config.type !== section.representation) add('REPRESENTATION_MISMATCH', `Plan specifies ${section.representation}; compiled artifact is ${compiled.config.type}. Repair the section or explicitly revise the plan.`, section.id)
     const statements = fileStatements(artifact.files[`sections/${section.id}.oui`] ?? '')
     const names = new Set(statements.map((statement) => statement.name))
     // Compare only explicit component claims, not arbitrary educational prose.
     // Follow root dependencies so unused declarations cannot satisfy the claim.
-    if (section.representation === 'openui' && compiled?.config?.type === 'openui') {
+    if ((section.components?.length || section.representation === 'openui') && compiled?.config) {
       const byName = new Map(statements.map((statement) => [statement.name, statement]))
       const visited = new Set<string>(), calls = new Set<string>()
       const visit = (name: string): void => {
@@ -76,6 +76,7 @@ export function reviewPlanArtifact(artifact: CompiledPlanArtifact, input?: unkno
         for (const ref of statement?.refs ?? []) visit(ref)
       }
       visit('root')
+      for (const name of section.components ?? []) if (!calls.has(name)) add('COMPOSITION_MISMATCH', `Planned component ${name} is absent from this page and its dependencies.`, section.id)
       const strategy = `${section.rationale ?? ''} ${section.presentation?.strategy ?? ''}`
       const claims = [...strategy.matchAll(/\bcomposition\s*[:=]\s*["'`]?([A-Z][A-Za-z0-9]*)/g)].map((match) => match[1])
       for (const claim of new Set(claims)) if (!calls.has(claim)) add('COMPOSITION_MISMATCH', `The explicit composition: ${claim} claim is absent from the OpenUI root and its dependencies. Generate the selected composition or revise and revalidate the plan. Component presence alone does not establish interaction quality or learning.`, section.id)

@@ -43,8 +43,7 @@ Separator(orientation?: "horizontal" | "vertical", decorative?: boolean) — A d
 Example section files, a how-to and reference facts:
 
 ```
-// @openui "Cold Brew" "Green tea without a kettle"
-root = Stack([header, steps, recipe, warning])
+root = Page("Cold Brew", Stack([header, steps, recipe, warning]), "Green tea without a kettle")
 header = InlineHeader("Cold-brewed sencha", "Sweeter and less bitter: catechins barely dissolve in cold water.")
 steps = Steps([StepsItem("Weigh the leaf", "10 g of sencha per litre, twice the hot-brew ratio."), StepsItem("Add cold water", "Filtered water straight from the fridge."), StepsItem("Steep in the fridge", "3 hours for a light cup, up to 8 for a full one."), StepsItem("Strain", "Pour through a fine sieve and drink within 2 days.")])
 recipe = EntityList([{left: "Leaf", right: "10 g"}, {left: "Water", right: "1 l"}, {left: "Steep", right: "3–8 h"}], "default", {left: "Per litre", right: "Amount"})
@@ -52,8 +51,7 @@ warning = Callout("warning", "Keep it cold", "Steeping at room temperature for h
 ```
 
 ```
-// @openui "One Plant, Three Teas" "What processing changes"
-root = Card([header, teas, faq])
+root = Page("One Plant, Three Teas", Card([header, teas, faq]), "What processing changes")
 header = CardHeader("Camellia sinensis, processed three ways", "Oxidation, not the plant, makes the difference")
 teas = ContextCardBlock([ContextCardItem("green", "Green", "Heated within hours of picking, so it never oxidises."), ContextCardItem("oolong", "Oolong", "Bruised and partly oxidised, then heated."), ContextCardItem("black", "Black", "Rolled and fully oxidised before drying.")], "grid")
 faq = Accordion([AccordionItem("caffeine", "Which has the most caffeine?", [TextContent("The leaf and the steep matter more than the type: a long, hot steep of any of them extracts more.")]), AccordionItem("plant", "Is it really the same plant?", [TextContent("Yes. Growers pick the same leaf; what happens after picking decides the tea.")])])
@@ -66,7 +64,7 @@ root = Narration([title, why, steps, ratio, amounts, warning])
 title = NarrationStep("title", "No kettle needed: cold water makes the sweetest sencha.")
 why = NarrationStep("part1", "Cold water barely touches the bitter catechins, so the cup stays sweet.", [Highlight("header")])
 steps = NarrationStep("part2", "Four steps, and the fridge does the work.", [Spotlight(["steps"])])
-ratio = NarrationStep("part2", null, [Callout("steps", "Twice the leaf makes up for the slow, cold extraction.")])
+ratio = NarrationStep("part2", null, [NarrationCallout("steps", "Twice the leaf makes up for the slow, cold extraction.")])
 amounts = NarrationStep("part3", "For one litre, that is all you need.", [Highlight("recipe")])
-warning = NarrationStep("part4", "One rule you cannot skip.", [Callout("warning", "Hours at room temperature are a food-safety risk, not a flavour choice.")])
+warning = NarrationStep("part4", "One rule you cannot skip.", [NarrationCallout("warning", "Hours at room temperature are a food-safety risk, not a flavour choice.")])
 ```

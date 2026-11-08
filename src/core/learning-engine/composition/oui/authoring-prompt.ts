@@ -35,11 +35,11 @@ const PREAMBLE = `You write learning topics for Interactive Loom, an interactive
 A topic is a folder named after its topic ID (lowercase letters, digits, \`-\` and \`_\`, e.g. \`http-caching\`):
 
 - \`topic.oui\`: \`root = Topic(...)\`, the catalog metadata and the ordered list of \`SectionRef("<name>")\`.
-- \`sections/<name>.oui\`: one section per file, \`root = <Section>(...)\` where \`<Section>\` is a section component (Intro, Text, Bullets, Flowchart, Quiz, …), or a standard OpenUI section (see Standard OpenUI Sections).
+- \`sections/<name>.oui\`: one authored page per file, \`root = Page("Title", body, heading?)\`. Pick body components from one shared catalog.
 - \`sections/<name>.narrate.oui\`: \`root = Narration(...)\`, the script the section plays to when the learner plays the topic in Present mode (see Narration Files). One per section; not listed in topic.oui.
 
 Every file is its own openui-lang program: it has its own \`root\` and its own statement names, so names may repeat across files.
-In the rules below, "program" means one file. The \`root\` of \`topic.oui\` is \`Topic(...)\`; the \`root\` of a section file is a section component.
+In the rules below, "program" means one file. The \`root\` of \`topic.oui\` is \`Topic(...)\`; the \`root\` of a section file is Page(...).
 
 ## Output Formats
 
@@ -52,7 +52,7 @@ Answer in the format the user asks for. If they do not say, use the single .oui 
    // === topic.oui ===
    root = Topic(...)
    // === sections/intro.oui ===
-   root = Intro(...)
+   root = Page(..., Intro(...))
    \`\`\`
 
 2. **Folder of .oui files**: one code block per file, each preceded by its path (\`<topic-id>/topic.oui\`, \`<topic-id>/sections/<name>.oui\`) so the user can save them into that folder.
@@ -63,9 +63,9 @@ The user opens the result in Loom Viewer (${LOOM_PAGES_URL}viewer.html) or impor
 export const NARRATION_EXAMPLE = `root = Narration([title, word1, back1, word2, back2])
 title = NarrationStep("title", "Two words every tea brewer uses, and why they matter in the cup.")
 word1 = NarrationStep("card1", "First word: catechins.", [Highlight("catechins")])
-back1 = NarrationStep("card1.back", "They are the bitterness in green tea.", [Callout("catechins", "They dissolve faster in hotter water, so water at 75 °C keeps the cup sweet.")])
+back1 = NarrationStep("card1.back", "They are the bitterness in green tea.", [NarrationCallout("catechins", "They dissolve faster in hotter water, so water at 75 °C keeps the cup sweet.")])
 word2 = NarrationStep("card2", "Next: steep.")
-back2 = NarrationStep("card2.back", "Steep time is the dial you control.", [Callout("steep", "Every extra minute adds more catechins than flavour. Pour off all the water when the time is up.")])
+back2 = NarrationStep("card2.back", "Steep time is the dial you control.", [NarrationCallout("steep", "Every extra minute adds more catechins than flavour. Pour off all the water when the time is up.")])
 `
 
 const BEAT_TABLE = Object.entries(BEAT_IDS).map(([type, ids]) => `| \`${type}\` | ${ids} |`).join('\n')
@@ -79,7 +79,7 @@ Loom Viewer can play a topic hands-free (Present mode): each section plays beat 
 
 - \`caption\` is what the narrator says: one or two spoken sentences in the topic's language. Explain and connect, do not just repeat the screen: on a quiz's \`.wrong\` beat say why that answer is tempting and wrong, on its \`.right\` beat why the right one is right. Pass \`null\` for a step that only plays an effect (its Callout is still read).
 - Write it as a talk, not a template: vary how captions open, link a beat to the one before or to an earlier section, ask the question the learner is about to answer, and put the why or the example the screen leaves out in a Callout. Mix the effects to what each beat needs; not every step needs one.
-- Effects (optional): \`Highlight(target)\`, \`Callout(target, text)\` (a note beside an element, one or two short sentences, read after the caption), \`Spotlight([targets])\` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: \`"catechins"\`, \`"q1.hint"\`, \`"root.items[0]"\`. Name the statements you will point at in the section file (e.g. \`catechins = Flashcard(...)\`) rather than writing them inline. In a standard OpenUI section, a target names one of the root's children (see Standard OpenUI Sections) or one value of a chart or table among them, by the path of the value in its statement: \`"bars.series[0].values[4]"\` (one bar or line point), \`"bars.labels[4]"\` (every bar or point at the fifth label), \`"bars.series[1]"\` (a whole series), \`"pie.values[2]"\` (a slice), \`"table.columns[2].data[4]"\` (a cell), \`"table.columns[2]"\` (a column) or \`"table.columns[2].label"\` (its header). To point at a table row, Spotlight its cells. In a drawing (\`Svg\`), a target names one shape by its \`id\` in the markup: \`"plant.bud"\`. Use these to explain one figure or one part of a picture at a time: Highlight a bar while the caption names it, Callout a point with why it is there, Spotlight the shapes of a drawing the caption is about.
+- Effects (optional): \`Highlight(target)\`, \`NarrationCallout(target, text)\` (a note beside an element, one or two short sentences, read after the caption), \`Spotlight([targets])\` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: \`"catechins"\`, \`"q1.hint"\`, \`"root.items[0]"\`. Name the statements you will point at in the section file (e.g. \`catechins = Flashcard(...)\`) rather than writing them inline. In a standard OpenUI section, a target names one of the root's children (see Standard OpenUI Sections) or one value of a chart or table among them, by the path of the value in its statement: \`"bars.series[0].values[4]"\` (one bar or line point), \`"bars.labels[4]"\` (every bar or point at the fifth label), \`"bars.series[1]"\` (a whole series), \`"pie.values[2]"\` (a slice), \`"table.columns[2].data[4]"\` (a cell), \`"table.columns[2]"\` (a column) or \`"table.columns[2].label"\` (its header). To point at a table row, Spotlight its cells. In a drawing (\`Svg\`), a target names one shape by its \`id\` in the markup: \`"plant.bud"\`. Use these to explain one figure or one part of a picture at a time: Highlight a bar while the caption names it, Callout a point with why it is there, Spotlight the shapes of a drawing the caption is about.
 - In the single .oui file, the narration file follows its section: \`// === sections/vocabulary.narrate.oui ===\`.
 
 Every section except the intro opens on a \`title\` beat: a card with the section's title, its \`heading\` and its \`Lead\` text. Its step introduces the section: what it is about and why it comes now (without one, the narrator reads the card). The intro's own beats start with its \`title\`.
@@ -101,10 +101,10 @@ ${OPENUI_FOCUSED_RULES}
 
 OpenUI compositions are first-class teaching formats alongside native Loom sections. Choose them proactively when a visual layout teaches the idea best; Text is not the default for every explanation:
 
-- Its first line is \`// @openui "<Section title>" "<optional heading>"\`.
-- The rest is openui-lang written with the standard OpenUI component library (\`@openuidev/react-ui\`), not the Loom components above. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
+- Every section uses \`root = Page("Title", body, heading?)\`; there is no library directive.
+- The body uses components from the unified catalog: upstream OpenUI components and Loom learning components. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: ${OPENUI_REACT_UI_DOCS_URL}. Language specification: ${OPENUI_LANG_DOCS_URL}.
-- Content is static: no Query(), Mutation(), tools, actions, forms or buttons (there is no backend).
+- Page-local reactive inputs and state actions work without another model call. Query/Mutation tool connections are deferred.
 - List it in topic.oui with \`SectionRef\` like any other section. Choose a native Loom section when its interaction teaches the goal (a process, a quiz, a trade-off); choose standard OpenUI when a visual composition teaches it better: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
 
 Shape each section to its content and learner action. Reuse a consistent table or card layout when it makes comparisons easier; vary the composition when the learning purpose changes. Visual novelty and layout variety are not learning objectives.
@@ -139,8 +139,7 @@ function componentSignatures(components: Array<[name: string, use: string]>): st
 }
 
 /** A standard OpenUI section with a chart and a table (checked by unit tests). */
-export const TABLE_CHART_EXAMPLE = `// @openui "Water Temperature" "How hot to brew each tea"
-root = Card([header, chart, table, tip])
+export const TABLE_CHART_EXAMPLE = `root = Page("Water Temperature", Card([header, chart, table, tip]), "How hot to brew each tea")
 header = CardHeader("Water temperature by tea", "Starting points for a 2-minute steep")
 chart = BarChart(["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"], [Series("Water (°C)", [60, 75, 80, 90, 95])], "grouped", "Tea", "°C")
 table = Table([Col("Tea", ["Gyokuro", "Sencha", "Matcha", "Oolong", "Black"]), Col("Water (°C)", [60, 75, 80, 90, 95], "number"), Col("Why", ["Shaded leaf, sweet and delicate", "Balanced, grassy", "Whisked powder, scorches easily", "Partly oxidised, needs more heat", "Fully oxidised, robust"])])
@@ -152,7 +151,7 @@ export const TABLE_CHART_NARRATION_EXAMPLE = `root = Narration([title, head, low
 title = NarrationStep("title", "How hot should the water be? It depends on the leaf.")
 head = NarrationStep("part1", "Five teas, each at its usual starting point.", [Highlight("header")])
 low = NarrationStep("part2", "Gyokuro wants the coolest water of all.", [Highlight("chart.labels[0]")])
-high = NarrationStep("part2", "Black tea takes it almost boiling.", [Callout("chart.series[0].values[4]", "Fully oxidised leaf has little left to turn bitter.")])
+high = NarrationStep("part2", "Black tea takes it almost boiling.", [NarrationCallout("chart.series[0].values[4]", "Fully oxidised leaf has little left to turn bitter.")])
 why = NarrationStep("part3", "The last column says why: gyokuro is shaded, so it is sweet and delicate.", [Spotlight(["table.columns[0].data[0]", "table.columns[2].data[0]"])])
 tip = NarrationStep("part4", "No thermometer? Time does the job.", [Highlight("tip")])
 `
@@ -216,8 +215,7 @@ const LAYOUT_COMPONENTS: Array<[name: string, use: string]> = [
 ]
 
 /** A how-to as a standard OpenUI section, one narratable part per child (checked by unit tests). */
-export const HOWTO_EXAMPLE = `// @openui "Cold Brew" "Green tea without a kettle"
-root = Stack([header, steps, recipe, warning])
+export const HOWTO_EXAMPLE = `root = Page("Cold Brew", Stack([header, steps, recipe, warning]), "Green tea without a kettle")
 header = InlineHeader("Cold-brewed sencha", "Sweeter and less bitter: catechins barely dissolve in cold water.")
 steps = Steps([StepsItem("Weigh the leaf", "10 g of sencha per litre, twice the hot-brew ratio."), StepsItem("Add cold water", "Filtered water straight from the fridge."), StepsItem("Steep in the fridge", "3 hours for a light cup, up to 8 for a full one."), StepsItem("Strain", "Pour through a fine sieve and drink within 2 days.")])
 recipe = EntityList([{left: "Leaf", right: "10 g"}, {left: "Water", right: "1 l"}, {left: "Steep", right: "3–8 h"}], "default", {left: "Per litre", right: "Amount"})
@@ -229,14 +227,13 @@ export const HOWTO_NARRATION_EXAMPLE = `root = Narration([title, why, steps, rat
 title = NarrationStep("title", "No kettle needed: cold water makes the sweetest sencha.")
 why = NarrationStep("part1", "Cold water barely touches the bitter catechins, so the cup stays sweet.", [Highlight("header")])
 steps = NarrationStep("part2", "Four steps, and the fridge does the work.", [Spotlight(["steps"])])
-ratio = NarrationStep("part2", null, [Callout("steps", "Twice the leaf makes up for the slow, cold extraction.")])
+ratio = NarrationStep("part2", null, [NarrationCallout("steps", "Twice the leaf makes up for the slow, cold extraction.")])
 amounts = NarrationStep("part3", "For one litre, that is all you need.", [Highlight("recipe")])
-warning = NarrationStep("part4", "One rule you cannot skip.", [Callout("warning", "Hours at room temperature are a food-safety risk, not a flavour choice.")])
+warning = NarrationStep("part4", "One rule you cannot skip.", [NarrationCallout("warning", "Hours at room temperature are a food-safety risk, not a flavour choice.")])
 `
 
 /** Reference facts as a standard OpenUI section: cards side by side and an FAQ (checked by unit tests). */
-export const FACTS_EXAMPLE = `// @openui "One Plant, Three Teas" "What processing changes"
-root = Card([header, teas, faq])
+export const FACTS_EXAMPLE = `root = Page("One Plant, Three Teas", Card([header, teas, faq]), "What processing changes")
 header = CardHeader("Camellia sinensis, processed three ways", "Oxidation, not the plant, makes the difference")
 teas = ContextCardBlock([ContextCardItem("green", "Green", "Heated within hours of picking, so it never oxidises."), ContextCardItem("oolong", "Oolong", "Bruised and partly oxidised, then heated."), ContextCardItem("black", "Black", "Rolled and fully oxidised before drying.")], "grid")
 faq = Accordion([AccordionItem("caffeine", "Which has the most caffeine?", [TextContent("The leaf and the steep matter more than the type: a long, hot steep of any of them extracts more.")]), AccordionItem("plant", "Is it really the same plant?", [TextContent("Yes. Growers pick the same leaf; what happens after picking decides the tea.")])])
@@ -273,8 +270,7 @@ The how-to plays one beat per child; this narration walks it, with two steps on 
 ${HOWTO_NARRATION_EXAMPLE}\`\`\``
 
 /** A drawing as a standard OpenUI section: an Svg part whose shapes narration points at (checked by unit tests). */
-export const DRAWING_EXAMPLE = `// @openui "Two Leaves and a Bud" "What a fine pluck takes"
-root = Card([header, shoot, why])
+export const DRAWING_EXAMPLE = `root = Page("Two Leaves and a Bud", Card([header, shoot, why]), "What a fine pluck takes")
 header = CardHeader("The fine pluck", "Only the tip of each tea shoot is picked")
 shoot = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 250">
   <path id="stem" d="M180 246 V40" stroke="overlay1" stroke-width="4" fill="none"/>
@@ -297,7 +293,7 @@ title = NarrationStep("title", "Every fine green tea starts with the same pluck.
 head = NarrationStep("part1", "Pickers take only the very tip of each shoot.", [Highlight("header")])
 bud = NarrationStep("part2", "At the top sits the bud, still rolled up.", [Highlight("shoot.bud")])
 leaves = NarrationStep("part2", "Then the two youngest leaves below it.", [Spotlight(["shoot.leaf1", "shoot.leaf2"])])
-older = NarrationStep("part2", null, [Callout("shoot.older", "Older leaves are tougher and flatter in taste; they stay on the bush.")])
+older = NarrationStep("part2", null, [NarrationCallout("shoot.older", "Older leaves are tougher and flatter in taste; they stay on the bush.")])
 why = NarrationStep("part3", "So two leaves and a bud is a recipe for flavour.", [Highlight("why")])
 `
 
@@ -346,17 +342,17 @@ export const AUTHORING_EXAMPLE = `// @loom-topic green-tea
 root = Topic("Brewing Green Tea", "Food & Drink", "Water temperature, steep time and leaf ratio for a sweet, balanced cup of green tea.", [SectionRef("intro"), SectionRef("vocabulary"), SectionRef("brewing-flow"), SectionRef("steep-guide"), SectionRef("knowledge-check")], ["tea", "brewing"], "beginner")
 
 // === sections/intro.oui ===
-root = Intro("Brewing Green Tea", what, why, [RoadmapStep("Vocabulary", "flashcards", "Learn the words tea brewers use.", "vocabulary"), RoadmapStep("Brewing flow", "flowchart", "Follow one brew from kettle to cup.", "brewing-flow"), RoadmapStep("Knowledge check", "quiz", "Test what you learned.", "knowledge-check")], "Cooler water, shorter steeps", "10 min", 3)
+root = Page("Brewing Green Tea", Intro("Brewing Green Tea", what, why, [RoadmapStep("Vocabulary", "flashcards", "Learn the words tea brewers use.", "vocabulary"), RoadmapStep("Brewing flow", "flowchart", "Follow one brew from kettle to cup.", "brewing-flow"), RoadmapStep("Knowledge check", "quiz", "Test what you learned.", "knowledge-check")], "Cooler water, shorter steeps", "10 min", 3))
 what = IntroWhat("Green tea is unoxidised tea leaf brewed in water well below boiling.", "Green tea: leaves of Camellia sinensis, heated soon after picking so they do not oxidise.", ["Water at 70–80 °C", "Steeps of 1–3 minutes", "About 2 g of leaf per 100 ml"], ["tea", "temperature"])
 why = IntroWhy("Boiling water and long steeps pull out bitter catechins and hide the sweet, grassy flavour.", "A few degrees and seconds change the cup more than the price of the leaf.")
 
 // === sections/vocabulary.oui ===
-root = Flashcards("Vocabulary", [catechins, steep])
+root = Page("Vocabulary", Flashcards("Vocabulary", [catechins, steep]))
 catechins = Flashcard("catechins", "Catechins", "/ˈkætɪkɪnz/", "chemistry", "Bitter, astringent compounds in tea leaf.", "Antioxidant polyphenols that dissolve faster in hotter water and over longer steeps.", "They are what makes over-brewed green tea taste harsh.")
 steep = Flashcard("steep", "Steep", "/stiːp/", "technique", "Soaking leaves in hot water.", "The time leaves spend in the water; each extra minute extracts more bitterness than flavour.", "Steep time is the easiest variable to control.")
 
 // === sections/brewing-flow.oui ===
-root = Flowchart("Brewing Flow", [brewer], [kettle, teapot], [heat, brew], [happy], "From kettle to cup")
+root = Page("Brewing Flow", Flowchart("Brewing Flow", [brewer], [kettle, teapot], [heat, brew], [happy], "From kettle to cup"))
 brewer = Actor("brewer", "Brewer", "Person making the tea")
 kettle = System("kettle", "Kettle", "Heats water to a set temperature", "external")
 teapot = System("teapot", "Teapot", "Holds leaf and water while it steeps", "aggregate")
@@ -365,13 +361,12 @@ brew = Step("steep-leaves", "When water is ready", "SteepLeaves", teapot, [Event
 happy = Journey("happy", "Balanced cup", "Heat, steep and pour on time", [JourneyStep(heat, "Heat water", "The kettle stops at 75 °C instead of boiling."), JourneyStep(brew, "Steep", "Two minutes, then pour off all the water.")])
 
 // === sections/steep-guide.oui ===
-// @openui "Steep Guide" "Starting points by tea"
-root = Card([table, tip])
+root = Page("Steep Guide", Card([table, tip]), "Starting points by tea")
 table = Table([Col("Tea", ["Sencha", "Gyokuro", "Matcha"]), Col("Water (°C)", [75, 60, 80], "number"), Col("Steep", ["1–2 min", "2 min", "Whisk 15 s"])])
 tip = Callout("info", "Adjust to taste", "Bitter? Cooler water or a shorter steep. Flat? The opposite.")
 
 // === sections/knowledge-check.oui ===
-root = Quiz("Knowledge Check", [q1])
+root = Page("Knowledge Check", Quiz("Knowledge Check", [q1]))
 q1 = QuizQuestion("q1", "Why does boiling water make green tea bitter?", [QuizChoice("a", "It extracts catechins quickly", true, "Hot water dissolves bitter catechins faster than flavour compounds."), QuizChoice("b", "It removes the caffeine", false, "Caffeine is extracted, not removed, and it is only mildly bitter.")], "Look back at the vocabulary cards.")
 `
 
@@ -384,8 +379,8 @@ const REWRITES: Array<[string, string]> = [
   ['prefer references for better streaming.', 'prefer references for readability.'],
   ['## Hoisting & Streaming (CRITICAL)', '## Hoisting & Statement Order'],
   [
-    'every program must define `root = Topic(...)`',
-    'every file must define `root`: `root = Topic(...)` in topic.oui, `root = <Section>(...)` in a section file',
+    'every program must define `root = Page(...)`',
+    'every file must define `root`: `root = Topic(...)` in topic.oui, `root = Page("Title", body)` in a section file',
   ],
   [
     'During streaming, the output is re-parsed on every chunk.',
@@ -393,9 +388,9 @@ const REWRITES: Array<[string, string]> = [
   ],
   [
     '- Choose components that best represent the content (tables for comparisons, charts for trends, forms for input, etc.)',
-    '- Choose the section types that best teach the content (see Loom Authoring Rules).',
+    '- Choose the components that best teach the content (see Loom Authoring Rules).',
   ],
-  ['1. root = Topic(...) is the FIRST line (for optimal streaming).', '1. In every file, the `root = ...` statement comes first.'],
+  ['1. root = Page(...) is the FIRST line (for optimal streaming).', '1. In every file, the `root = ...` statement comes first.'],
 ]
 
 function replaceOnce(text: string, from: string, to: string): string {

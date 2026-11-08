@@ -30,3 +30,7 @@ DomainRef(id: string) — Includes the domain folder Loom/<id>/ (its domain.oui)
   - id: Domain ID: the folder name under Loom/, lowercase letters, digits, - and _ (e.g. "fight-animation").
 Library(domains: DomainRef[]) — The learner's library (root of Loom/index.oui): the list of their domains.
   - domains: The domains, as DomainRef calls, most recently studied first.
+Page(title: string, body: any, heading?: string) — One authored page with one main visual or activity and supporting text. Present may explain it through several automatic scenes.
+  - title: Page title used in navigation and the presentation title beat.
+  - body: The main learning component or an OpenUI composition such as Stack or Card.
+  - heading: Optional supporting explanation shown with the page.

@@ -1,8 +1,8 @@
-root = TradeoffSandbox(
+root = Page("ยุทธศาสตร์และทางเลือกในประวัติศาสตร์", TradeoffSandbox(
   "ยุทธศาสตร์และทางเลือกในประวัติศาสตร์",
   [ancientTradeRoutes, industrialPolicyBalance],
   "ทดลองชั่งน้ำหนักผลกระทบจากการตัดสินใจเชิงนโยบายและยุทธศาสตร์สำคัญ",
-)
+))
 
 ancientTradeRoutes = TradeoffScenario(
   "ancient-trade-routes",

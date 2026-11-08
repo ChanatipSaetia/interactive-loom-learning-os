@@ -1,4 +1,4 @@
-root = ReflectionTemplate("Engine Dynamics Evaluation", [challenge1, challenge2])
+root = Page("Engine Dynamics Evaluation", ReflectionTemplate("Engine Dynamics Evaluation", [challenge1, challenge2]))
 
 challenge1 = TemplateChallenge(
   "Complete the statement explaining cylinder dimensions and engine volume (Part 1):",

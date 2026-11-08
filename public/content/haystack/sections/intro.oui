@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("", Intro(
   "",
   what,
   why,
@@ -37,7 +37,7 @@ root = Intro(
   null,
   "7 min read",
   10,
-)
+))
 
 what = IntroWhat(
   "Comprehensive guide to Haystack 2.x — the open-source LLM orchestration and RAG pipeline framework.",

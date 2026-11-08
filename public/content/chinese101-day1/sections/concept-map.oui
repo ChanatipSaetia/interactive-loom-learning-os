@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("ภาพรวมภาษาจีน", ConceptMap(
   "ภาพรวมภาษาจีน",
   [pinyin, tones, characters, greeting, numbers, selfIntro, topic, comment, sentence],
   [
@@ -14,7 +14,7 @@ root = ConceptMap(
     ConceptLink(sentence, selfIntro, "ใช้"),
   ],
   "แนวคิดพื้นฐานของภาษาจีนกลาง",
-)
+))
 
 pinyin = Concept("pinyin", "พินอิน (拼音)", "concept")
 tones = Concept("tones", "4 เสียง (声调)", "concept")

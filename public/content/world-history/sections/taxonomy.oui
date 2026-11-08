@@ -1,8 +1,8 @@
-root = TaxonomyBrowser(
+root = Page("หมวดหมู่อารยธรรมโบราณหลัก", TaxonomyBrowser(
   "หมวดหมู่อารยธรรมโบราณหลัก",
   [taxonomyCategory, taxonomyCategory2, taxonomyCategory3, taxonomyCategory4],
   "สำรวจ 4 แหล่งอารยธรรมสำคัญที่เป็นรากฐานของมนุษยชาติ",
-)
+))
 
 taxonomyCategory = TaxonomyCategory(
   "อารยธรรมเมโสโปเตเมีย",

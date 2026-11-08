@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Introduction to PixiJS Filters", Intro(
   "Introduction to PixiJS Filters",
   what,
   why,
@@ -92,7 +92,7 @@ root = Intro(
   "30 min",
   14,
   "PixiJS Filters & Post-Processing Shaders",
-)
+))
 
 what = IntroWhat(
   "A powerful effects subsystem in PixiJS that enables blurs, color grading, displacement maps, glows, outlines, and custom GLSL/WGSL shaders with automatic bounding box padding and render target pooling.",

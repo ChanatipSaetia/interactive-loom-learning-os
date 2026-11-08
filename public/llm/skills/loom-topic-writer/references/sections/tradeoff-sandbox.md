@@ -6,7 +6,7 @@ Read [shared components](../core/components.md) and [narration](../core/narratio
 
 ## Component signatures
 
-TradeoffSandbox(title: string, scenarios: TradeoffScenario[], heading?: string, lead?: Lead) — Interactive sandbox where learners make design choices and watch metrics move.
+TradeoffSandbox(title: string, scenarios: TradeoffScenario[], heading?: string, lead?: Lead) — Interactive sandbox where learners compare choices across one or more situations, weigh gains and costs, and see how goals, constraints and priorities change which option fits. Several contrasting situations can teach when to choose each alternative; avoid a universal winner.
   - title: Section title, shown in the topic outline and as the section header.
   - scenarios: The scenarios, as TradeoffScenario references.
   - heading: Optional sub-heading shown under the section title.

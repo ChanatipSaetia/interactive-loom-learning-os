@@ -11,11 +11,11 @@
 // Diagnostics carry the source line of the statement that produced them.
 // ============================================================================
 
-import { compileOUINarration, compileOUISection, indexStatementLines, type OUIIssue, type OUISectionPayload, type OUISourceMap } from '../composition/oui/compile'
-import { getLoomOUIComponent } from '../composition/oui/library'
+import { compileOUINarration, compileOUISection, compileSectionElement, parseOUIElements, indexStatementLines, type OUIIssue, type OUISectionPayload, type OUISourceMap } from '../composition/oui/compile'
+import type { ElementNode } from '@openuidev/lang-core'
+import { getLoomOUIComponent, OUI_SECTION_TYPES } from '../composition/oui/library'
 import { targetProp, targetStatement, type NarrationData } from '../composition/oui/narration'
 import { bundleToSections } from '../composition/okf/sections'
-import { isOpenUISource, openUIProgramOf } from '../sub-contexts/progressive-content/openui-standard'
 import { openuiParts } from '../sub-contexts/progressive-content/present'
 import { svgShapeIds } from '../sub-contexts/progressive-content/components/openui/svg-markup'
 import type { AbstractFlow } from '../sub-contexts/process-simulation/components/flowchart/abstract-flow/types'
@@ -81,6 +81,34 @@ export function validateOUISection(
     for (const diag of tier3Validate(data, payload.meta.type, context)) {
       diagnostics.push({ ...diag, line: diag.line ?? lineForDataPath(data, diag.field, compiled.sourceMap) })
     }
+    const mainComponents = new Set([...OUI_SECTION_TYPES.keys(), 'Table', 'EditableTable', 'Svg', 'Image', 'ImageGallery', 'CodeBlock', 'Steps', 'BarChart', 'LineChart', 'AreaChart', 'RadarChart', 'HorizontalBarChart', 'PieChart', 'RadialChart', 'SingleStackedBarChart', 'ScatterChart'])
+    const main: string[] = []
+    const seen = new Set<object>()
+    const visit = (value: unknown): void => {
+      if (!value || typeof value !== 'object' || seen.has(value)) return
+      seen.add(value)
+      if (Array.isArray(value)) { value.forEach(visit); return }
+      const node = value as { type?: string; typeName?: string; props?: unknown }
+      if (node.type === 'element' && node.typeName && mainComponents.has(node.typeName)) {
+        main.push(node.typeName)
+        if (payload.meta.type === 'openui' && OUI_SECTION_TYPES.has(node.typeName)) {
+          const activity = compileSectionElement(value as ElementNode)
+          if (activity) {
+            const data = activity.data as unknown as Record<string, unknown>
+            diagnostics.push(...tier2Validate(data, activity.meta.type, context).diagnostics, ...tier3Validate(data, activity.meta.type, context))
+          }
+        }
+        return
+      }
+      Object.values(value).forEach(visit)
+    }
+    visit(parseOUIElements(source))
+    if (main.length > 1) diagnostics.push({
+      tier: 3, field: 'root.body', line: compiled.sourceMap.lineOf('root'),
+      message: `Page focus review: ${main.join(', ')} may compete as main activities.`,
+      fixHint: 'Prefer one main visual/activity plus supporting text. Split distinct learning activities into pages, or explain why these components form one activity. This warning does not reject valid composition.',
+      ...contextToDiagnostic(context),
+    })
   }
 
   let status: ValidationResult['status'] = 'valid'
@@ -119,8 +147,9 @@ export function sectionBeatsOf(sectionSource: string): Beat[] | null {
  * Null for a Loom section.
  */
 function openuiPointable(sectionSource: string): string[] | null {
-  if (!isOpenUISource(sectionSource)) return null
-  const parts = openuiParts(openUIProgramOf(sectionSource)) ?? []
+  const page = compileOUISection(sectionSource).value
+  if (page?.data.type !== 'openui') return null
+  const parts = openuiParts(page.data.source) ?? []
   return parts.length > 1 ? parts.flatMap((p) => (p.name ? [p.name] : [])) : []
 }
 

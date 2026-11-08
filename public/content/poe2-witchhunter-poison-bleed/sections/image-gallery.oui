@@ -1,4 +1,4 @@
-root = ImageGallery(
+root = Page("Skill & Mechanic Showcase", LearningGallery(
   "Skill & Mechanic Showcase",
   [
     GalleryImage(
@@ -32,4 +32,4 @@ root = ImageGallery(
       "Source: poe2wiki.net",
     ),
   ],
-)
+))

@@ -8,7 +8,7 @@ import {
   sectionTitle,
 } from '../../../../../../src/core/learning-engine/composition/oui/content-tree'
 
-const QUIZ = `root = Quiz("Check", [q2, QuizQuestion("q3", "Third?", [QuizChoice("a", "Yes", true, "Right.")])])
+const QUIZ = `root = Page("Check", Quiz("Check", [q2, QuizQuestion("q3", "Third?", [QuizChoice("a", "Yes", true, "Right.")])]))
 q2 = QuizQuestion("q2", "Why?", [QuizChoice("a", "A", true, "Because"), c2], "Think.")
 c2 = QuizChoice("b", "B", false, "No")
 `
@@ -23,7 +23,7 @@ describe('content tree (decisions 121–123)', () => {
     expect(tree.find(anchor(sourceMap.anchorOf(questions[0].choices[0])))?.props.text).toBe('A')
     expect(tree.find(anchor(sourceMap.anchorOf(questions[0].choices[1])))?.props.text).toBe('B')
     expect(tree.find(anchor(sourceMap.anchorOf(questions[1])))?.props.question).toBe('Third?')
-    expect(tree.find('root.questions[1].choices[0]')?.props.text).toBe('Yes')
+    expect(tree.find('root.body.questions[1].choices[0]')?.props.text).toBe('Yes')
     expect(tree.find('nope')).toBeUndefined()
   })
 
@@ -31,7 +31,7 @@ describe('content tree (decisions 121–123)', () => {
     const tree = contentTreeOf(QUIZ, 'sections/quiz.oui')!
     expect(listParts(tree.root, tree)).toEqual([
       '- sections/quiz.oui #q2 QuizQuestion "Why?" (2 choices)',
-      '- sections/quiz.oui #root.questions[1] QuizQuestion "Third?" (1 choices)',
+      '- sections/quiz.oui #root.body.questions[1] QuizQuestion "Third?" (1 choices)',
     ])
     const section = renderElement(tree.root, tree)
     expect(section).toContain('title: Check')
@@ -45,8 +45,7 @@ describe('content tree (decisions 121–123)', () => {
   })
 
   it('describes a drawing instead of its markup, and reads standard OpenUI sections', () => {
-    const source = `// @openui "Airflow"
-root = Card([Svg('<svg viewBox="0 0 10 10"><rect id="door" /><text x="1">Air in</text></svg>', "The path of air")])
+    const source = `root = Page("Airflow", Card([Svg('<svg viewBox="0 0 10 10"><rect id="door" /><text x="1">Air in</text></svg>', "The path of air")]))
 `
     const tree = contentTreeOf(source)!
     const text = renderElement(tree.root, tree)

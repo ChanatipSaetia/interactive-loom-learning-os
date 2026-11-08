@@ -1,4 +1,4 @@
-root = ReflectionSequence("ลำดับขั้นตอนการย่างแบบ Reverse Sear", [challenge1])
+root = Page("ลำดับขั้นตอนการย่างแบบ Reverse Sear", ReflectionSequence("ลำดับขั้นตอนการย่างแบบ Reverse Sear", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "เรียงลำดับขั้นตอนการทำสเต๊กแบบ Reverse Sear บนเตา Kamado ให้ถูกต้องตามกระบวนการทำลายขอบเทา (Edge-to-edge pink):",

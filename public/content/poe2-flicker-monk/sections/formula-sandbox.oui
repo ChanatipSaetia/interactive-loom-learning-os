@@ -1,4 +1,4 @@
-root = FormulaSandbox(
+root = Page("Flicker Monk DPS & Stats Calculator", FormulaSandbox(
   "Flicker Monk DPS & Stats Calculator",
   [
     FormulaVariable("attack_speed", "Attack Speed (Attacks / sec)", 2, 10, 0.5, 4.5),
@@ -6,7 +6,7 @@ root = FormulaSandbox(
     FormulaVariable("lightning_damage", "Base Lightning Damage", 100, 2000, 50, 400),
   ],
   [recall, latency, cost],
-)
+))
 
 recall = FormulaMetric(
   "recall",

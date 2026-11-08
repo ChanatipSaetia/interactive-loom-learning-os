@@ -3,7 +3,7 @@
 root = Topic("Pacing Demo: Take Your Time", "Demo", "Compare short, medium, and longer beats, then watch a worked quiz answer.", [SectionRef("reading"), SectionRef("check")], ["demo", "pacing"], "beginner")
 
 // === sections/reading.oui ===
-root = Bullets("Short, medium, and long", [short, medium, long], true, "Try with narration on, then muted")
+root = Page("Short, medium, and long", Bullets("Short, medium, and long", [short, medium, long], true, "Try with narration on, then muted"))
 short = Bullet("Pause. Take a breath. Notice the screen.", null, "clock")
 medium = Bullet("A little more to read: find the main idea first, then follow the supporting detail. This longer beat gives you extra time before the next idea appears.", null, "clock")
 long = Bullet("Longer explanations need more time. Read this paragraph once to understand its message, then look back for the key detail: autoplay now grows with the amount of text instead of stopping at nine seconds. You can still pause whenever you need to reflect, or press Next when you are ready to continue.", null, "clock")
@@ -16,7 +16,7 @@ medium = NarrationStep("item2", "A little more to read: find the main idea first
 long = NarrationStep("item3", "Longer explanations need more time. Read this paragraph once to understand its message, then look back for the key detail: autoplay now grows with the amount of text instead of stopping at nine seconds. You can still pause whenever you need to reflect, or press Next when you are ready to continue.")
 
 // === sections/check.oui ===
-root = Quiz("Does this feel readable?", [q1], "Present demonstrates the answers; Read lets you choose")
+root = Page("Does this feel readable?", Quiz("Does this feel readable?", [q1], "Present demonstrates the answers; Read lets you choose"))
 q1 = QuizQuestion("q1", "What happens when a beat has more text?", [wrong, right], "Think about the longer explanation you just read.")
 wrong = QuizChoice("a", "It always disappears after nine seconds.", false, "That was the old ceiling. Long text now receives more reading time instead of being capped at nine seconds.")
 right = QuizChoice("b", "It receives more reading time, and I can still pause.", true, "Yes. Short beats have a five-second minimum, longer text gets more time, and Pause and Next keep you in control.")

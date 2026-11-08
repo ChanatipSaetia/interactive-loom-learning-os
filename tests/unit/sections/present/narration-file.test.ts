@@ -25,7 +25,7 @@ describe('narration files', () => {
 
   it('warns about targets that name no statement or no prop of the section', () => {
     const result = validateOUINarration(`root = Narration([a])
-a = NarrationStep("cards", "Look", [Highlight("nocache"), Callout("noCache.colour", "Hi")])
+a = NarrationStep("cards", "Look", [Highlight("nocache"), NarrationCallout("noCache.colour", "Hi")])
 `, section, ctx)
     expect(result.status).toBe('warning')
     expect(result.diagnostics.map((d) => d.message)).toEqual([
@@ -39,14 +39,13 @@ a = NarrationStep("cards", "Look", [Highlight("nocache"), Callout("noCache.colou
   it('accepts prop paths, list indexes and steps with only a caption', () => {
     const result = validateOUINarration(`root = Narration([a, b])
 a = NarrationStep("cards", "Only words.")
-b = NarrationStep("card1", null, [Highlight("noCache.description"), Highlight("root.categories[0]")])
+b = NarrationStep("card1", null, [Highlight("noCache.description"), Highlight("root.body.categories[0]")])
 `, section, ctx)
     expect(result.diagnostics).toEqual([])
   })
 
   it('warns about targets inside a standard OpenUI section that Present mode cannot point at', () => {
-    const openui = `// @openui "Guide"
-root = Stack([intro, tabs])
+    const openui = `root = Page("Guide", Stack([intro, tabs]))
 intro = TextContent("Pick your platform.")
 tabs = Tabs([TabItem("mac", "macOS", [mac])])
 mac = TextContent("Use Homebrew.")
@@ -61,20 +60,21 @@ a = NarrationStep("part2", "Here.", [Highlight("intro"), Highlight("mac"), Highl
     expect(result.diagnostics[0].fixHint).toContain("Point at one of the root's children (intro, tabs)")
     const single = validateOUINarration(`root = Narration([a])
 a = NarrationStep("all", "Here.", [Highlight("mac")])
-`, `// @openui "Guide"\nroot = Tabs([TabItem("mac", "macOS", [mac])])\nmac = TextContent("Use Homebrew.")\n`, { sectionName: 'guide' })
+`, `root = Page("Guide", Tabs([TabItem("mac", "macOS", [mac])]))
+mac = TextContent("Use Homebrew.")
+`, { sectionName: 'guide' })
     expect(single.diagnostics[0].fixHint).toContain('Card([...]) or Stack([...])')
   })
 
   it('accepts a bar, a point, a slice or a cell of a chart or table part (decision 117)', () => {
-    const openui = `// @openui "Data"
-root = Stack([bars, line, pie, table])
+    const openui = `root = Page("Data", Stack([bars, line, pie, table]))
 bars = BarChart(["A", "B"], [Series("One", [1, 2])])
 line = LineChart(["A", "B"], [Series("One", [1, 2])])
 pie = PieChart(["A", "B"], [1, 2])
 table = Table([Col("Name", ["a", "b"]), Col("N", [1, 2], "number")])
 `
     const ok = validateOUINarration(`root = Narration([a])
-a = NarrationStep("part1", "Here.", [Highlight("bars.labels[1]"), Highlight("bars.series[0]"), Callout("line.series[0].values[1]", "Up."), Spotlight(["pie.values[0]", "table.columns[1].data[0]", "table.columns[0].label", "table.columns[1]"])])
+a = NarrationStep("part1", "Here.", [Highlight("bars.labels[1]"), Highlight("bars.series[0]"), NarrationCallout("line.series[0].values[1]", "Up."), Spotlight(["pie.values[0]", "table.columns[1].data[0]", "table.columns[0].label", "table.columns[1]"])])
 `, openui, { sectionName: 'data' })
     expect(ok.diagnostics).toEqual([])
     const bad = validateOUINarration(`root = Narration([a])
@@ -84,8 +84,7 @@ a = NarrationStep("part1", "Here.", [Highlight("pie.series[0]"), Highlight("tabl
   })
 
   it('accepts a shape of a drawing part by its id (decision 118)', () => {
-    const openui = `// @openui "Engine"
-root = Card([header, engine])
+    const openui = `root = Page("Engine", Card([header, engine]))
 header = CardHeader("One stroke")
 engine = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <rect id="cylinder" x="20" y="10" width="60" height="80" fill="surface1"/>
@@ -114,7 +113,7 @@ a = NarrationStep("q1", "No quiz here.")
 
   it('needs its section and the Narration root', () => {
     expect(validateOUINarration('root = Narration([])\n', undefined, ctx).diagnostics[0].message).toBe('There is no sections/directives.oui for this narration to play with.')
-    const wrong = validateOUINarration('root = Text("T", ["p"])\n', section, ctx)
+    const wrong = validateOUINarration("root = Page(\"T\", LessonText(\"T\", [\"p\"]))\n", section, ctx)
     expect(wrong.status).toBe('error')
     expect(wrong.payload).toBeNull()
   })

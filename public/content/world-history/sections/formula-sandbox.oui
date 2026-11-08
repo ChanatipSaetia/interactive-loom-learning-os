@@ -1,4 +1,4 @@
-root = FormulaSandbox(
+root = Page("แบบจำลองดุลอำนาจและเสถียรภาพยุคสงครามเย็น", FormulaSandbox(
   "แบบจำลองดุลอำนาจและเสถียรภาพยุคสงครามเย็น",
   [
     FormulaVariable(
@@ -35,7 +35,7 @@ root = FormulaSandbox(
     ),
   ],
   [deterrenceStability, crisisEscalationRisk, geopoliticalInfluence],
-)
+))
 
 deterrenceStability = FormulaMetric(
   "deterrence_stability",

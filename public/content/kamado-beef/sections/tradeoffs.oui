@@ -1,7 +1,7 @@
-root = TradeoffSandbox(
+root = Page("การเลือกถ่านและไม้รมควัน (Fuel & Smoke Trade-offs)", TradeoffSandbox(
   "การเลือกถ่านและไม้รมควัน (Fuel & Smoke Trade-offs)",
   [fuelChoice, woodFlavor],
-)
+))
 
 fuelChoice = TradeoffScenario(
   "fuel-choice",

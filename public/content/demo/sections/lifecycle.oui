@@ -1,4 +1,4 @@
-root = Text(
+root = Page("Agent Lifecycle", LessonText(
   "Agent Lifecycle",
   [
     "**Goal Intake** — The user submits a natural-language goal. The orchestrator parses intent, identifies required capabilities, and selects relevant tools from the registry.",
@@ -8,4 +8,4 @@ root = Text(
     "**Evaluation & Loop** — The evaluator checks whether the execution result satisfies the success criteria. If not, it feeds failure context back to the orchestrator and triggers a new planning iteration.",
     "**Response Delivery** — Once the evaluator confirms success, the final artefact (answer, code diff, report) is formatted and returned to the user. Results are optionally persisted to memory.",
   ],
-)
+))

@@ -1,4 +1,4 @@
-root = Text(
+root = Page("The PixiJS Render Pipeline", LessonText(
   "The PixiJS Render Pipeline",
   [
     "PixiJS is built from the ground up to achieve desktop-class 60+ frames per second (FPS) rendering on the web. While traditional HTML5 Canvas API relies on synchronous CPU drawing commands that become bottlenecked when animating thousands of objects, PixiJS converts your scene graph into optimized GPU vertex buffers.",
@@ -33,4 +33,4 @@ root = Text(
     "```",
     "When using shared texture atlases, set `baseTexture: false` so that destroying one sprite does not invalidate the shared texture atlas used by other active sprites.",
   ],
-)
+))

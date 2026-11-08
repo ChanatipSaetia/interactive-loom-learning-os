@@ -1,4 +1,4 @@
-root = TradeoffSandbox("ทางเลือกและการตัดสินใจ", [fuelSystem, engineOil, tires])
+root = Page("ทางเลือกและการตัดสินใจ", TradeoffSandbox("ทางเลือกและการตัดสินใจ", [fuelSystem, engineOil, tires]))
 
 fuelSystem = TradeoffScenario(
   "fuel-system",

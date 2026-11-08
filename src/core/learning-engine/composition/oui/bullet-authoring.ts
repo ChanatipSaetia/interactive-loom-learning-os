@@ -1,7 +1,7 @@
 /** Shared guidance for authoring bots, the writer skill and its published references. */
 import { BULLET_ICON_NAMES } from '../../sub-contexts/progressive-content/schema'
 
-export const BULLET_AUTHORING_EXAMPLE = `root = Bullets("A productive first day", [access, goal])
+export const BULLET_AUTHORING_EXAMPLE = `root = Page("A productive first day", Bullets("A productive first day", [access, goal]))
 access = Bullet("Prepare **access** before day one", [accounts, permissions], "key")
 accounts = Bullet("Check **accounts** before Monday", null, "clock")
 permissions = Bullet("Verify repository **permissions**", null, "shield")

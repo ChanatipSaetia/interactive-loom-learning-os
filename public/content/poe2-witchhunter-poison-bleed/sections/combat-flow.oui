@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Combat Engagement Flow", Flowchart(
   "Combat Engagement Flow",
   [player, pack, boss],
   [gasGrenade, barrage, dotSystem, noMercy, sorceryWard],
   [stepPoisonPack, stepBleedPack, stepDotsPack, stepClearBranch, stepBleedBoss, stepDotsBoss],
   [journeyPackClear, journeyBossFight],
-)
+))
 
 player = Actor(
   "player",

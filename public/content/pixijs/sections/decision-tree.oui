@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("Display Object Selection Guide", DecisionTree(
   "Display Object Selection Guide",
   "pixi-display-decision-tree",
   "q_purpose",
@@ -15,7 +15,7 @@ root = DecisionTree(
     leafPixiGraphics,
   ],
   "PixiJS Display Object Selection Guide",
-)
+))
 
 qPurpose = DecisionNode(
   "q_purpose",
@@ -97,7 +97,7 @@ leafPixiText = DecisionNode(
   null,
   null,
   DecisionLeaf(
-    "Use PIXI.Text (or PIXI.HTMLText)",
+    "Use PIXI.LessonText (or PIXI.HTMLText)",
     "PIXI.Text supports all system fonts, rich CSS gradients, and drop shadows without pre-baking. Perfect for static labels.",
     [
       "Do not update strings in tight loops to avoid VRAM churn.",

@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("AI Agent Capability Taxonomy", TaxonomyBrowser(
   "AI Agent Capability Taxonomy",
   [
     hierarchicalOrchestration,
@@ -10,7 +10,7 @@ root = TaxonomyBrowser(
     supervisorRouter,
     toolUse,
   ],
-)
+))
 
 hierarchicalOrchestration = TaxonomyCategory(
   "Hierarchical Orchestration",

@@ -1,5 +1,4 @@
-// @openui "เส้นทางลมในเตา Kamado (Airflow)" "ภาพตัดขวาง: อากาศเข้า ไฟลุก ความร้อนไหลเวียน"
-root = Card([header, kamado, rule])
+root = Page("เส้นทางลมในเตา Kamado (Airflow)", Card([header, kamado, rule]), "ภาพตัดขวาง: อากาศเข้า ไฟลุก ความร้อนไหลเวียน")
 header = CardHeader("ลมเดินอย่างไรในเตา Kamado", "อากาศเข้าทางล่าง ผ่านกองถ่าน อ้อมแผ่น Deflector แล้วออกทางวาล์วบน")
 kamado = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 340">
   <defs>

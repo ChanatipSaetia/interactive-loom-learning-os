@@ -1,5 +1,338 @@
 {
   "schemaVersion": 1,
+  "page": {
+    "root": "Page",
+    "boundary": "one section = one authored page",
+    "focus": "one main visual/activity plus supporting text; advisory warnings",
+    "presentation": "hands-free automatic scenes/beats; mode-specific views of shared content"
+  },
+  "componentGroups": [
+    {
+      "name": "Layout",
+      "components": [
+        "Stack",
+        "Tabs",
+        "TabItem",
+        "Accordion",
+        "AccordionItem",
+        "Steps",
+        "StepsItem",
+        "Carousel",
+        "Separator",
+        "Modal"
+      ],
+      "notes": [
+        "- For grid-like layouts, use Stack with direction \"row\" and wrap set to true.",
+        "- Prefer justify \"start\" (or omit justify) with wrap=true for stable columns instead of uneven gutters.",
+        "- Use nested Stacks when you need explicit rows/sections.",
+        "- Show/hide sections: $editId != \"\" ? Card([editForm]) : null",
+        "- Modal: Modal(\"Title\", $showModal, [content]) — $showModal is boolean, X/Escape auto-closes. Put Form with its own buttons inside children.",
+        "- Use Tabs for alternative views (chart types, data sections) — no $variable needed",
+        "- Shared filter across Tabs: same $days binding in Query args works across all TabItems"
+      ]
+    },
+    {
+      "name": "Content",
+      "components": [
+        "Card",
+        "CardHeader",
+        "TextContent",
+        "MarkDownRenderer",
+        "Callout",
+        "TextCallout",
+        "Image",
+        "ImageBlock",
+        "ImageGallery",
+        "CodeBlock",
+        "InlineHeader",
+        "Svg"
+      ],
+      "notes": [
+        "- InlineHeader is a compact heading + description pair for labelling a block (lighter than CardHeader).",
+        "- Use Cards to group related KPIs or sections. Stack with direction \"row\" for side-by-side layouts.",
+        "- Success toast: Callout(\"success\", \"Saved\", \"Done.\", $showSuccess) — use @Set($showSuccess, true) in save action, auto-dismisses after 3s. For errors: result.status == \"error\" ? Callout(\"error\", \"Failed\", result.error) : null",
+        "- KPI card: Card([TextContent(\"Label\", \"small\"), TextContent(\"\" + @Count(@Filter(data.rows, \"field\", \"==\", \"value\")), \"large-heavy\")])",
+        "- Svg draws what is easier shown than told: a shape, a layout, a mechanism, a geometry. Write the markup in a single-quoted string so its attributes keep their double quotes; it may span several lines."
+      ]
+    },
+    {
+      "name": "Tables",
+      "components": [
+        "Table",
+        "Col",
+        "EditableTable"
+      ],
+      "notes": [
+        "- EditableTable lets the user edit cells inline. Give it a unique name, columns of { type, key, header } with type one of text | number | date-single | select | url (select also needs options: [{ value, label }]).",
+        "- data is an array of { id, values } rows where values are ordered positionally to match columns. Edited data is submitted when the user clicks Save Changes.",
+        "- Table is COLUMN-oriented: Table([Col(\"Label\", dataArray), Col(\"Count\", countArray, \"number\")]). Use array pluck for data: data.rows.fieldName",
+        "- Col data can be component arrays for styled cells: Col(\"Status\", @Each(data.rows, \"item\", Tag(item.status, null, \"sm\", item.status == \"open\" ? \"success\" : \"danger\")))",
+        "- Row actions: Col(\"Actions\", @Each(data.rows, \"t\", Button(\"Edit\", Action([@Set($showEdit, true), @Set($editId, t.id)]))))",
+        "- Sortable: sorted = @Sort(data.rows, $sortField, \"desc\"). Bind $sortField to Select. Use sorted.fieldName for Col data",
+        "- Searchable: filtered = @Filter(data.rows, \"title\", \"contains\", $search). Bind $search to Input",
+        "- Chain sort + filter: filtered = @Filter(...) then sorted = @Sort(filtered, ...) — use sorted for both Table and Charts",
+        "- Empty state: @Count(data.rows) > 0 ? Table([...]) : TextContent(\"No data yet\")"
+      ]
+    },
+    {
+      "name": "Charts (2D)",
+      "components": [
+        "BarChart",
+        "LineChart",
+        "AreaChart",
+        "RadarChart",
+        "HorizontalBarChart",
+        "Series"
+      ],
+      "notes": [
+        "- Charts accept column arrays: LineChart(labels, [Series(\"Name\", values)]). Use array pluck: LineChart(data.rows.day, [Series(\"Views\", data.rows.views)])",
+        "- Use Cards to wrap charts with CardHeader for titled sections",
+        "- Chart + Table from same source: use @Sort or @Filter result for both LineChart and Table Col data",
+        "- Multiple chart views: use Tabs — Tabs([TabItem(\"line\", \"Line\", [LineChart(...)]), TabItem(\"bar\", \"Bar\", [BarChart(...)])])"
+      ]
+    },
+    {
+      "name": "Charts (1D)",
+      "components": [
+        "PieChart",
+        "RadialChart",
+        "SingleStackedBarChart",
+        "Slice"
+      ],
+      "notes": [
+        "- PieChart and BarChart need NUMBERS, not objects. For list data, use @Count(@Filter(...)) to aggregate:",
+        "- PieChart from list: `PieChart([\"Low\", \"Med\", \"High\"], [@Count(@Filter(data.rows, \"priority\", \"==\", \"low\")), @Count(@Filter(data.rows, \"priority\", \"==\", \"medium\")), @Count(@Filter(data.rows, \"priority\", \"==\", \"high\"))], \"donut\")`",
+        "- KPI from count: `TextContent(\"\" + @Count(@Filter(data.rows, \"status\", \"==\", \"open\")), \"large-heavy\")`"
+      ]
+    },
+    {
+      "name": "Charts (Scatter)",
+      "components": [
+        "ScatterChart",
+        "ScatterSeries",
+        "Point"
+      ]
+    },
+    {
+      "name": "Forms",
+      "components": [
+        "Form",
+        "FormControl",
+        "Label",
+        "Input",
+        "TextArea",
+        "Select",
+        "SelectItem",
+        "DatePicker",
+        "Slider",
+        "CheckBoxGroup",
+        "CheckBoxItem",
+        "RadioGroup",
+        "RadioItem",
+        "SwitchGroup",
+        "SwitchItem",
+        "Chips",
+        "ChipItem",
+        "OptionCards",
+        "OptionCard"
+      ],
+      "notes": [
+        "- Chips: compact single/multiple selection pills. Use ChipItem references for each option.",
+        "- OptionCards: larger selectable cards with title, subtitle and an optional Icon or Image on top. Use OptionCard references for each option.",
+        "- For Form fields, define EACH FormControl as its own reference — do NOT inline all controls in one array. This allows progressive field-by-field streaming.",
+        "- NEVER nest Form inside Form — each Form should be a standalone container.",
+        "- Form requires explicit buttons. Always pass a Buttons(...) reference as the third Form argument.",
+        "- rules is an optional object: {required: true, email: true, minLength: 8, maxLength: 100}",
+        "- Available rules: required, email, min, max, minLength, maxLength, pattern, url, numeric",
+        "- The renderer shows error messages automatically — do NOT generate error text in the UI",
+        "- Conditional fields: $country == \"US\" ? stateField : $country == \"UK\" ? postcodeField : addressField",
+        "- Edit form in Modal: Modal(\"Edit\", $showEdit, [Form(\"edit\", Buttons([saveBtn, cancelBtn]), [fields...])]). Save button should include @Set($showEdit, false) to close modal."
+      ]
+    },
+    {
+      "name": "Buttons",
+      "components": [
+        "Button",
+        "Buttons",
+        "IconButton"
+      ],
+      "notes": [
+        "- Icon renders a lucide icon by kebab-case name; it is also used as the icon of IconButton, IconText and OptionCard.",
+        "- Toggle in @Each: @Each(rows, \"t\", Button(t.status == \"open\" ? \"Close\" : \"Reopen\", Action([...])))"
+      ]
+    },
+    {
+      "name": "Data Display",
+      "components": [
+        "TagBlock",
+        "Tag",
+        "Icon",
+        "EntityList",
+        "ListBlock",
+        "ListItem"
+      ],
+      "notes": [
+        "- Color-mapped Tag: Tag(value, null, \"sm\", value == \"high\" ? \"danger\" : value == \"medium\" ? \"warning\" : \"neutral\")",
+        "- EntityList is a compact two-column list of { left, right } rows (e.g. name / value). size='default' also supports a header and footer row; size='small' does not.",
+        "- ListBlock is a numbered or image list of ListItem references. An action on ListItem is optional."
+      ]
+    },
+    {
+      "name": "Cards",
+      "components": [
+        "SnippetCardBlock",
+        "SnippetCardItem",
+        "OverviewCardBlock",
+        "OverviewCardItem",
+        "ContextCardBlock",
+        "ContextCardItem",
+        "CompositeCardBlock",
+        "CompositeCardItem",
+        "VisualCardBlock",
+        "VisualCardItem",
+        "Text",
+        "BoldText",
+        "IconText",
+        "ImageText",
+        "ImageTextLarge",
+        "MetricIndicatorInline",
+        "MetricIndicatorWithStrikethrough"
+      ],
+      "notes": [
+        "- Card blocks lay out 2+ items in a responsive grid (or carousel where supported). Every item in a block must have the same structure.",
+        "- SnippetCardItem: small card with lhs (IconText | ImageText) and optional rhs (Text | BoldText) — good for key/value facts.",
+        "- OverviewCardItem: small card with top (IconText | ImageText | Text) and optional bottom MetricIndicatorInline — good for KPIs.",
+        "- ContextCardItem: medium card with a title (string or Tag), body text and optional background image — good for summaries.",
+        "- CompositeCardItem: rich card with header, body array (Text, BoldText, MetricIndicatorInline, IconText, Image, charts, ListBlock, TagBlock, EntityList) and footer (price + Button) — good for products/offers.",
+        "- VisualCardItem: image-first card with a BoldText body and optional Tag.",
+        "- Text / BoldText / IconText / ImageText / ImageTextLarge / MetricIndicator* are the inline building blocks used INSIDE card items; do not place them directly in the root Card."
+      ]
+    },
+    {
+      "name": "Progressive Content",
+      "components": [
+        "Intro",
+        "IntroWhat",
+        "IntroWhy",
+        "RoadmapStep",
+        "LessonText",
+        "Bullets",
+        "Bullet",
+        "TaxonomyBrowser",
+        "TaxonomyCategory",
+        "LearningGallery",
+        "GalleryImage",
+        "PillarLayer",
+        "Layer",
+        "LayerItem",
+        "MatrixBlock",
+        "UserJourney",
+        "JourneyStage",
+        "Timeline",
+        "TimelineLane",
+        "TimelineActivity",
+        "TimelineGroup",
+        "BreakdownTree",
+        "BreakdownNode"
+      ]
+    },
+    {
+      "name": "Process Simulation",
+      "components": [
+        "Flowchart",
+        "Actor",
+        "System",
+        "StateMachine",
+        "MachineState",
+        "Step",
+        "Branch",
+        "BranchOption",
+        "Event",
+        "Journey",
+        "JourneyStep",
+        "Scenario",
+        "ScenarioNode",
+        "ScenarioChoice",
+        "Outcome"
+      ]
+    },
+    {
+      "name": "Trade-off Sandbox",
+      "components": [
+        "TradeoffSandbox",
+        "TradeoffScenario",
+        "TradeoffStep",
+        "TradeoffChoice",
+        "TradeoffMetric",
+        "ProCon",
+        "FormulaSandbox",
+        "FormulaVariable",
+        "FormulaMetric",
+        "DecisionTree",
+        "DecisionNode",
+        "DecisionChoice",
+        "DecisionLeaf"
+      ]
+    },
+    {
+      "name": "Reflection & Synthesis",
+      "components": [
+        "ReflectionSequence",
+        "SequenceChallenge",
+        "SequenceItem",
+        "ReflectionTemplate",
+        "TemplateChallenge",
+        "Chip"
+      ]
+    },
+    {
+      "name": "Practice & Assessment",
+      "components": [
+        "Quiz",
+        "QuizQuestion",
+        "QuizChoice",
+        "Flashcards",
+        "Flashcard",
+        "Dialogue",
+        "ConceptMap",
+        "Concept",
+        "ConceptLink"
+      ]
+    },
+    {
+      "name": "Shared",
+      "components": [
+        "Lead"
+      ]
+    },
+    {
+      "name": "Topic & Catalog",
+      "components": [
+        "Topic",
+        "SectionRef",
+        "Catalog",
+        "TopicRef"
+      ]
+    },
+    {
+      "name": "The learner's Loom folder (Loom/index.oui, Loom/<domain-id>/domain.oui)",
+      "components": [
+        "Domain",
+        "DomainRef",
+        "Library"
+      ]
+    },
+    {
+      "name": "Narration (sections/<name>.narrate.oui)",
+      "components": [
+        "Narration",
+        "NarrationStep",
+        "Highlight",
+        "NarrationCallout",
+        "Spotlight"
+      ]
+    }
+  ],
   "planSchema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
@@ -153,6 +486,7 @@
               }
             },
             "representation": {
+              "default": "page",
               "type": "string",
               "minLength": 1,
               "maxLength": 120
@@ -161,6 +495,16 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 4000
+            },
+            "components": {
+              "minItems": 1,
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              }
             },
             "rationale": {
               "type": "string",
@@ -252,7 +596,7 @@
     "additionalProperties": false
   },
   "workflow": {
-    "version": 5,
+    "version": 6,
     "stages": [
       "understand",
       "discover",
@@ -264,7 +608,7 @@
       "deliver"
     ]
   },
-  "selectionGuidance": "Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Native Loom sections and OpenUI are first-class choices; there is no section ranking, visual quota or mandatory sequence.\n\nCompare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.\n\nBullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. Compare OpenUI compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. OpenUI Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.\n\nFlashcards introduce definitions and meanings as well as practise recall. OpenUI cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox evaluates options and decisions; Formula Sandbox explores parameter sensitivity. Select the other native sections by their learning purpose below.\n\nFor a 3D web research lesson, compare matched capabilities in an OpenUI table, inspect annotated use-case cards, and explain camera/geometry with a labelled Svg when each serves an objective. Bullets can guide real initialization steps; native Flowchart can trace system messages. These are candidates, not a required section mix.\n\nFor full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.\n\nRetrieve selected section rules, then library-scoped component contracts and dependencies. If focused retrieval fails, retry with the correct library and forceRefresh; then use the selected legacy section guide (omit library/components). For OpenUI, retrieve its section guide and selected component families. If contracts remain unavailable, report the blocker and revise/revalidate the plan only to an equally faithful supported representation; never silently downgrade to Text/Bullets or invent signatures. Focused OpenUI contracts include compact section rules and beats: request only the actual composition components and required model types; permitted generic child alternatives are not all dependencies.",
+  "selectionGuidance": "Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Native Loom sections and OpenUI are first-class choices; there is no section ranking, visual quota or mandatory sequence.\n\nCompare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.\n\nBullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. Compare OpenUI compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. OpenUI Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.\n\nFlashcards introduce definitions and meanings as well as practise recall. OpenUI cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox evaluates options and decisions; Formula Sandbox explores parameter sensitivity. Select the other native sections by their learning purpose below.\n\nFor a 3D web research lesson, compare matched capabilities in an OpenUI table, inspect annotated use-case cards, and explain camera/geometry with a labelled Svg when each serves an objective. Bullets can guide real initialization steps; native Flowchart can trace system messages. These are candidates, not a required section mix.\n\nFor full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.\n\nRetrieve selected section rules, then canonical component contracts and dependencies. If focused retrieval fails, retry with the exact component names and forceRefresh; then use the selected legacy section guide (omit library/components). For OpenUI, retrieve its section guide and selected component families. If contracts remain unavailable, report the blocker and revise/revalidate the plan only to an equally faithful supported representation; never silently downgrade to Text/Bullets or invent signatures. Focused OpenUI contracts include compact section rules and beats: request only the actual composition components and required model types; permitted generic child alternatives are not all dependencies.",
   "openuiVisuals": [
     {
       "learningGoal": "Compare concrete examples or evidence layouts side by side",
@@ -326,7 +670,7 @@
     },
     {
       "type": "text",
-      "component": "Text",
+      "component": "LessonText",
       "summary": "Prose section: one string per paragraph.",
       "mentalModel": "Connected explanation and narrative",
       "selectionQuestion": "Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal.",
@@ -362,7 +706,7 @@
     },
     {
       "type": "image-gallery",
-      "component": "ImageGallery",
+      "component": "LearningGallery",
       "summary": "Gallery of captioned images.",
       "mentalModel": "Visual recognition and concrete references",
       "selectionQuestion": "What does it look like? Compare examples, textures, objects or screenshots.",
@@ -482,7 +826,7 @@
     {
       "type": "tradeoff-sandbox",
       "component": "TradeoffSandbox",
-      "summary": "Interactive sandbox where learners make design choices and watch metrics move.",
+      "summary": "Interactive sandbox where learners compare choices across one or more situations, weigh gains and costs, and see how goals, constraints and priorities change which option fits. Several contrasting situations can teach when to choose each alternative; avoid a universal winner.",
       "mentalModel": "Presenting options, comparing alternatives and trade-offs",
       "selectionQuestion": "What are my options, how do they compare, and when should I choose each? Show strengths, limitations, gains, costs and suitability; a recommendation can explain why an option fits. Use this for option comparison even without formal mathematical optimisation.",
       "learningBehavior": {
@@ -577,8 +921,8 @@
     },
     {
       "type": "openui",
-      "component": "// @openui",
-      "summary": "Free-form layout from the standard OpenUI library: cards, tabs, tables, charts and Svg drawings.",
+      "component": "Page",
+      "summary": "One page composed from the shared catalog: tables, charts, cards, drawings and local controls.",
       "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
       "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
       "learningBehavior": {

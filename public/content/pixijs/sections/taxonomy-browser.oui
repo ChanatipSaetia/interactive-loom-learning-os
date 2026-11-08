@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Display Object Taxonomies", TaxonomyBrowser(
   "Display Object Taxonomies",
   [
     displayObjectsSceneGraph,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     shadersFiltersPostProcessing,
     highPerformanceBatchingParticles,
   ],
-)
+))
 
 displayObjectsSceneGraph = TaxonomyCategory(
   "Display Objects & Scene Graph",

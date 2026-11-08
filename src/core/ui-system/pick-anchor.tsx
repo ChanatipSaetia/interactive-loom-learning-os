@@ -30,6 +30,9 @@ export interface PickAnchorAttributes {
 
 const PickAnchorContext = createContext<PickAnchorScope | null>(null)
 
+/** Adapters may preserve the file scope while mapping freshly compiled objects. */
+export function usePickAnchorScope() { return useContext(PickAnchorContext) }
+
 export function PickAnchorProvider({ scope, children }: { scope: PickAnchorScope | null; children: ReactNode }) {
   return <PickAnchorContext.Provider value={scope}>{children}</PickAnchorContext.Provider>
 }

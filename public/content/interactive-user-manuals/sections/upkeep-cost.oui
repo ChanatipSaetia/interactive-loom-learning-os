@@ -1,4 +1,4 @@
-root = FormulaSandbox(
+root = Page("Upkeep Cost Calculator", FormulaSandbox(
   "Upkeep Cost Calculator",
   [
     FormulaVariable("releases", "Product releases per year", 1, 52, 1, 12),
@@ -21,7 +21,7 @@ root = FormulaSandbox(
     ),
   ],
   [pixelHours, reuseHours, hoursSaved],
-)
+))
 
 pixelHours = FormulaMetric(
   "pixel_hours",

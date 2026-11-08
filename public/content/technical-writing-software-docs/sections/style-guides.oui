@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Style Guides & Tools", TaxonomyBrowser(
   "Style Guides & Tools",
   [
     microsoftWritingStyleGuide,
@@ -6,7 +6,7 @@ root = TaxonomyBrowser(
     houseStyleGuide,
     valeProseLinter,
   ],
-)
+))
 
 microsoftWritingStyleGuide = TaxonomyCategory(
   "Microsoft Writing Style Guide",

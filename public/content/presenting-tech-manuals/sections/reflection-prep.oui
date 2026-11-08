@@ -1,4 +1,4 @@
-root = ReflectionSequence("Rehearsal Chamber", [challenge1])
+root = Page("Rehearsal Chamber", ReflectionSequence("Rehearsal Chamber", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "Reassemble the Six-Stage Manual Presentation Arc in the correct chronological order:",

@@ -1,4 +1,4 @@
-root = TradeoffSandbox(
+root = Page("ทางเลือกในการทอดทุเรียน", TradeoffSandbox(
   "ทางเลือกในการทอดทุเรียน",
   [durianChoice],
   null,
@@ -7,7 +7,7 @@ root = TradeoffSandbox(
     "เข้าใจว่าการเลือกแต่ละอย่างส่งผลต่อผลลัพธ์อย่างไร",
     "ถัดไป: ใช้ Decision Tree เลือกสไตล์ที่เหมาะกับคุณ",
   ),
-)
+))
 
 durianChoice = TradeoffScenario(
   "durian-choice",

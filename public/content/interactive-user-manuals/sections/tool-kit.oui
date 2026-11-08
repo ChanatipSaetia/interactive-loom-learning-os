@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Tools for Each Approach", TaxonomyBrowser(
   "Tools for Each Approach",
   [
     screenshotVideoGuideTools,
@@ -8,7 +8,7 @@ root = TaxonomyBrowser(
     driftDetectionTools,
     sandboxSyntheticDataTools,
   ],
-)
+))
 
 screenshotVideoGuideTools = TaxonomyCategory(
   "Screenshot & Video Guide Tools",

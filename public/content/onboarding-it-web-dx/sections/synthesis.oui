@@ -1,4 +1,4 @@
-root = ReflectionTemplate("Synthesis Vault", [challenge1, challenge2, challenge3])
+root = Page("Synthesis Vault", ReflectionTemplate("Synthesis Vault", [challenge1, challenge2, challenge3]))
 
 challenge1 = TemplateChallenge(
   "Complete the doctrine (Track 1):",

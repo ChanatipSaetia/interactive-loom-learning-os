@@ -1,4 +1,4 @@
-root = PillarLayer(
+root = Page("Port & Adapter Layer Stack", PillarLayer(
   "Port & Adapter Layer Stack",
   [lDrivingAdapters, lDrivingPorts, lDomainKernel, lDrivenPorts, lDrivenAdapters],
   [
@@ -26,7 +26,7 @@ root = PillarLayer(
     "Provides a structural blueprint showing how Dependency Inversion decouples business rules from databases, frameworks, and protocol drivers.",
     "Next: Test your understanding with the knowledge check quiz.",
   ),
-)
+))
 
 lDrivingAdapters = Layer(
   "l-driving-adapters",

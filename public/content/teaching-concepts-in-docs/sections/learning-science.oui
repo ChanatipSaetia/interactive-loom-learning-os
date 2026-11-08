@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("Four Findings from Learning Science", Bullets(
   "Four Findings from Learning Science",
   [
     Bullet(
@@ -38,4 +38,4 @@ root = Bullets(
       ],
     ),
   ],
-)
+))

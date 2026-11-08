@@ -32,7 +32,7 @@ export const SECTION_TEMPLATES: SectionTemplate[] = [
     component: 'Intro',
     label: 'Intro',
     description: 'Topic opener with what / why and a roadmap',
-    source: (title) => `root = Intro(${q(title)}, what, why, [RoadmapStep("Next section", "text", "What comes next")])
+    source: (title) => `root = Page(${q(title)}, Intro(${q(title)}, what, why, [RoadmapStep("Next section", "text", "What comes next")]))
 
 what = IntroWhat("One-sentence summary of the topic.", "A precise definition.", ["Key point"], ["tag"])
 
@@ -41,13 +41,13 @@ why = IntroWhy("Why this topic matters.", "The impact of understanding it.")
   },
   {
     type: 'text',
-    component: 'Text',
+    component: 'LessonText',
     label: 'Text',
     description: 'Paragraphs of prose',
-    source: (title) => `root = Text(${q(title)}, [
+    source: (title) => `root = Page(${q(title)}, LessonText(${q(title)}, [
   "First paragraph.",
   "Second paragraph.",
-])
+]))
 `,
   },
   {
@@ -55,10 +55,10 @@ why = IntroWhy("Why this topic matters.", "The impact of understanding it.")
     component: 'Bullets',
     label: 'Bullets',
     description: 'Bulleted or numbered checklist',
-    source: (title) => `root = Bullets(${q(title)}, [
+    source: (title) => `root = Page(${q(title)}, Bullets(${q(title)}, [
   Bullet("First point", [Bullet("Detail")]),
   Bullet("Second point"),
-], false)
+], false))
 `,
   },
   {
@@ -66,8 +66,7 @@ why = IntroWhy("Why this topic matters.", "The impact of understanding it.")
     component: 'OpenUI',
     label: 'OpenUI',
     description: 'Any standard OpenUI components (cards, tabs, tables, charts…)',
-    source: (title) => `// @openui ${q(title)}
-root = Card([header, tabs])
+    source: (title) => `root = Page(${q(title)}, Card([header, tabs]))
 
 header = CardHeader("Heading", "A short subtitle")
 
@@ -82,7 +81,7 @@ tabs = Tabs([
     component: 'TaxonomyBrowser',
     label: 'Taxonomy Browser',
     description: 'Browsable category cards',
-    source: (title) => `root = TaxonomyBrowser(${q(title)}, [category])
+    source: (title) => `root = Page(${q(title)}, TaxonomyBrowser(${q(title)}, [category]))
 
 category = TaxonomyCategory(
   "Category",
@@ -100,10 +99,10 @@ category = TaxonomyCategory(
   },
   {
     type: 'image-gallery',
-    component: 'ImageGallery',
+    component: 'LearningGallery',
     label: 'Image Gallery',
     description: 'Captioned images',
-    source: (title) => `root = ImageGallery(${q(title)}, [GalleryImage("image-1", "https://example.com/image.png", "Caption")])
+    source: (title) => `root = Page(${q(title)}, LearningGallery(${q(title)}, [GalleryImage("image-1", "https://example.com/image.png", "Caption")]))
 `,
   },
   {
@@ -111,7 +110,7 @@ category = TaxonomyCategory(
     component: 'PillarLayer',
     label: 'Pillar & Layer',
     description: 'Layer-stack map of blocks',
-    source: (title) => `root = PillarLayer(${q(title)}, [top, bottom], [web, db])
+    source: (title) => `root = Page(${q(title)}, PillarLayer(${q(title)}, [top, bottom], [web, db]))
 
 top = Layer("top", "Top layer")
 bottom = Layer("bottom", "Bottom layer")
@@ -125,7 +124,7 @@ db = MatrixBlock("db", "Database", bottom, 0)
     component: 'Flowchart',
     label: 'Flowchart',
     description: 'Event Storming flow with journeys',
-    source: (title) => `root = Flowchart(${q(title)}, [user], [service], [submit], [happy])
+    source: (title) => `root = Page(${q(title)}, Flowchart(${q(title)}, [user], [service], [submit], [happy]))
 
 user = Actor("user", "User", "Person starting the flow")
 
@@ -141,7 +140,7 @@ happy = Journey("happy", "Happy path", "The request succeeds", [JourneyStep(subm
     component: 'Scenario',
     label: 'Scenario',
     description: 'Branching "what would you do?" story',
-    source: (title) => `root = Scenario(${q(title)}, "scenario", [start, good, risky], "Set the scene.")
+    source: (title) => `root = Page(${q(title)}, Scenario(${q(title)}, "scenario", [start, good, risky], "Set the scene."))
 
 start = ScenarioNode("start", "What do you do?", [
   ScenarioChoice("careful", "Take the careful option", "good"),
@@ -157,7 +156,7 @@ risky = ScenarioNode("risky", null, null, Outcome("It worked, barely", "What cou
     component: 'TradeoffSandbox',
     label: 'Trade-off Sandbox',
     description: 'Design choices that move metrics',
-    source: (title) => `root = TradeoffSandbox(${q(title)}, [scenario])
+    source: (title) => `root = Page(${q(title)}, TradeoffSandbox(${q(title)}, [scenario]))
 
 scenario = TradeoffScenario("scenario", "Scenario", [TradeoffMetric("cost", "Cost", 50, 0, 100, "lower")], [step])
 
@@ -172,7 +171,7 @@ optionB = TradeoffChoice("option-b", "Option B", "Pricier", {cost: 10}, [ProCon(
     component: 'FormulaSandbox',
     label: 'Formula Sandbox',
     description: 'Sliders driving computed metrics',
-    source: (title) => `root = FormulaSandbox(${q(title)}, [FormulaVariable("x", "Input", 0, 100, 1, 50)], [result])
+    source: (title) => `root = Page(${q(title)}, FormulaSandbox(${q(title)}, [FormulaVariable("x", "Input", 0, 100, 1, 50)], [result]))
 
 result = FormulaMetric("double", "Doubled", "x * 2", "Twice the input")
 `,
@@ -182,7 +181,7 @@ result = FormulaMetric("double", "Doubled", "x * 2", "Twice the input")
     component: 'DecisionTree',
     label: 'Decision Tree',
     description: 'Question flow ending in recommendations',
-    source: (title) => `root = DecisionTree(${q(title)}, "advisor", "start", [start, small, large])
+    source: (title) => `root = Page(${q(title)}, DecisionTree(${q(title)}, "advisor", "start", [start, small, large]))
 
 start = DecisionNode("start", "How big is the project?", [
   DecisionChoice("small", "Small", "small"),
@@ -198,7 +197,7 @@ large = DecisionNode("large", null, null, DecisionLeaf("Add structure", "Large p
     component: 'ReflectionSequence',
     label: 'Reflection Sequence',
     description: 'Put steps in the right order',
-    source: (title) => `root = ReflectionSequence(${q(title)}, [challenge])
+    source: (title) => `root = Page(${q(title)}, ReflectionSequence(${q(title)}, [challenge]))
 
 challenge = SequenceChallenge("Put the steps in order", [first, second], [first, second])
 
@@ -211,7 +210,7 @@ second = SequenceItem("second", "Second step")
     component: 'ReflectionTemplate',
     label: 'Reflection Template',
     description: 'Fill-in-the-blank self-explanation',
-    source: (title) => `root = ReflectionTemplate(${q(title)}, [challenge])
+    source: (title) => `root = Page(${q(title)}, ReflectionTemplate(${q(title)}, [challenge]))
 
 challenge = TemplateChallenge(
   "Complete the sentence",
@@ -227,7 +226,7 @@ challenge = TemplateChallenge(
     component: 'Quiz',
     label: 'Quiz',
     description: 'Multiple-choice knowledge check',
-    source: (title) => `root = Quiz(${q(title)}, [q1])
+    source: (title) => `root = Page(${q(title)}, Quiz(${q(title)}, [q1]))
 
 q1 = QuizQuestion("q1", "Your question?", [
   QuizChoice("a", "Correct answer", true, "Why it is right."),
@@ -240,7 +239,7 @@ q1 = QuizQuestion("q1", "Your question?", [
     component: 'Flashcards',
     label: 'Flashcards',
     description: 'Vocabulary flip cards',
-    source: (title) => `root = Flashcards(${q(title)}, [card])
+    source: (title) => `root = Page(${q(title)}, Flashcards(${q(title)}, [card]))
 
 card = Flashcard("term", "Term", "term", "Category", "Short definition.", "Longer definition.", "Why it matters.")
 `,
@@ -250,7 +249,7 @@ card = Flashcard("term", "Term", "term", "Category", "Short definition.", "Longe
     component: 'ConceptMap',
     label: 'Concept Map',
     description: 'Concepts and their relations',
-    source: (title) => `root = ConceptMap(${q(title)}, [a, b], [ConceptLink(a, b, "relates to")])
+    source: (title) => `root = Page(${q(title)}, ConceptMap(${q(title)}, [a, b], [ConceptLink(a, b, "relates to")]))
 
 a = Concept("a", "Concept A")
 b = Concept("b", "Concept B")

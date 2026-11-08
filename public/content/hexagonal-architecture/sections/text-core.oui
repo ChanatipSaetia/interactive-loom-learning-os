@@ -1,4 +1,4 @@
-root = Text(
+root = Page("The Mechanics of Dependency Inversion", LessonText(
   "The Mechanics of Dependency Inversion",
   [
     "In traditional layered software architectures, high-level business logic directly imports low-level database drivers, web frameworks, or external SDKs. This creates tight coupling, where a database schema update or framework upgrade forces breaking changes throughout the entire codebase.",
@@ -8,4 +8,4 @@ root = Text(
     "**Adapters (Implementations)**: Adapters sit outside the hexagon boundary. Driving Adapters invoke Driving Ports, while Driven Adapters implement Driven Ports.",
     "By keeping the Core independent of technology choices, you gain extreme testability: unit tests can instantiate domain services with fast in-memory adapters without needing a running database or HTTP server.",
   ],
-)
+))

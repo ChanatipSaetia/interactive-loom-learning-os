@@ -1,7 +1,7 @@
-root = Flashcards(
+root = Page("Key Terminology", Flashcards(
   "Key Terminology",
   [timeboxing, asyncFirst, scopeCreep, velocity, retrospective, manDays],
-)
+))
 
 timeboxing = Flashcard(
   "timeboxing",

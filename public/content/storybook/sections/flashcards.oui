@@ -1,7 +1,7 @@
-root = Flashcards(
+root = Page("Essential Storybook Vocabulary", Flashcards(
   "Essential Storybook Vocabulary",
   [story, meta, csf, args, controls, decorator, play, managerPreview, addon, docsMdx, testRunner],
-)
+))
 
 story = Flashcard(
   "story",

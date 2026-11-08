@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("As Code & With AI", TaxonomyBrowser(
   "As Code & With AI",
   [
     nativelyAsCode,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     whereAiHelpsDrafting,
     verifyAiOutput,
   ],
-)
+))
 
 nativelyAsCode = TaxonomyCategory(
   "Natively As Code",

@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("How It All Connects", ConceptMap(
   "How It All Connects",
   [
     realSystem,
@@ -37,7 +37,7 @@ root = ConceptMap(
     ConceptLink(principles, interactiveManual, "shape"),
     ConceptLink(principles, watchTryTest, "include"),
   ],
-)
+))
 
 realSystem = Concept("real_system", "Real System", "foundation")
 accessBarriers = Concept("access_barriers", "Access Barriers", "concept")

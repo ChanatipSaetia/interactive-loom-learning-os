@@ -1,4 +1,4 @@
-root = ReflectionSequence("Skill Combination Sequence Challenge", [challenge1, challenge2])
+root = Page("Skill Combination Sequence Challenge", ReflectionSequence("Skill Combination Sequence Challenge", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Order the combat skills in the correct sequence to maximize lightning conversion and trigger Falling Thunder Nova (Part 1):",

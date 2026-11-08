@@ -18,12 +18,12 @@ const cachingDirectives = content('http-caching/sections/directives.oui')
 
 describe('progressive-content beats', () => {
   it('intro: title, What, Why, then the roadmap when there is one', () => {
-    const withRoadmap = propsOf<Parameters<typeof introBeats>[0]>(`root = Intro("HTTP Caching", what, why, [RoadmapStep("Directives", "taxonomy-browser", "Compare them.", "directives")])
+    const withRoadmap = propsOf<Parameters<typeof introBeats>[0]>(`root = Page("HTTP Caching", Intro("HTTP Caching", what, why, [RoadmapStep("Directives", "taxonomy-browser", "Compare them.", "directives")]))
 what = IntroWhat("Caches keep copies.")
 why = IntroWhy("Origin requests cost time.")
 `)
     expect(ids(introBeats(withRoadmap))).toEqual(['title', 'what', 'why', 'roadmap'])
-    const without = propsOf<Parameters<typeof introBeats>[0]>(`root = Intro("HTTP Caching", what, why)
+    const without = propsOf<Parameters<typeof introBeats>[0]>(`root = Page("HTTP Caching", Intro("HTTP Caching", what, why))
 what = IntroWhat("Caches keep copies.")
 why = IntroWhy("Origin requests cost time.")
 `)
@@ -31,13 +31,13 @@ why = IntroWhy("Origin requests cost time.")
   })
 
   it('text: one beat per paragraph', () => {
-    const props = propsOf<Parameters<typeof textBeats>[0]>('root = Text("What a cache keeps", ["First **paragraph**.", "Second.", "Third."])\n')
+    const props = propsOf<Parameters<typeof textBeats>[0]>("root = Page(\"What a cache keeps\", LessonText(\"What a cache keeps\", [\"First **paragraph**.\", \"Second.\", \"Third.\"]))\n")
     expect(kinds(textBeats(props))).toEqual(['show', 'show', 'show'])
     expect(textBeats(props)[0]).toEqual({ id: 'p1', about: 'Paragraph 1: First paragraph.' })
   })
 
   it('bullets: each nested point gets a beat before the next top-level point', () => {
-    const props = propsOf<Parameters<typeof bulletsBeats>[0]>(`root = Bullets("Where copies live", [Bullet("Private caches", [Bullet("Memory"), Bullet("Disk")]), Bullet("Shared caches")])
+    const props = propsOf<Parameters<typeof bulletsBeats>[0]>(`root = Page("Where copies live", Bullets("Where copies live", [Bullet("Private caches", [Bullet("Memory"), Bullet("Disk")]), Bullet("Shared caches")]))
 `)
     expect(ids(bulletsBeats(props))).toEqual(['item1', 'item1.child1', 'item1.child2', 'item2'])
   })
@@ -49,7 +49,7 @@ why = IntroWhy("Origin requests cost time.")
   })
 
   it('openui: one beat per child of a Card or Stack root (decision 116)', () => {
-    const source = '// @openui "Steep Guide"\nroot = Card([header, Table([Col("Tea", ["a, b]", "c"])]), tip])\nheader = CardHeader("x")\ntip = Callout("info", "T", "D")'
+    const source = "root = Page(\"Steep Guide\", Card([header, Table([Col(\"Tea\", [\"a, b]\", \"c\"])]), tip]))\nheader = CardHeader(\"x\")\ntip = Callout(\"info\", \"T\", \"D\")"
     expect(openuiParts(source)).toEqual([{ name: 'header' }, { component: 'Table' }, { name: 'tip' }])
     expect(ids(openuiBeats({ source }))).toEqual(['part1', 'part2', 'part3'])
     expect(openuiBeats({ source })[1].about).toBe('Part 2: Table')

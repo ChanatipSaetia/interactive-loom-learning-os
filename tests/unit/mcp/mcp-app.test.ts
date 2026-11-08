@@ -32,7 +32,7 @@ describe('loadTopic', () => {
   })
 
   it('keeps the good sections and reports the broken one', () => {
-    const loaded = loadTopic(topicSource('chinese101-day1').replace('root = Quiz(', 'root = Quizz('))
+    const loaded = loadTopic(topicSource('chinese101-day1').replace('Quiz(', 'Quizz('))
     expect(loaded.topic?.sections.find((s) => s.name === 'quiz')?.config).toBeNull()
     expect(loaded.report).toContain('sections/quiz.oui')
   })
