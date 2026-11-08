@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("ประเภททุเรียนทอด", TaxonomyBrowser(
   "ประเภททุเรียนทอด",
   [taxonomyCategory, taxonomyCategory2, taxonomyCategory3],
   null,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     "แต่ละประเภทมีเทคนิคและรสชาติที่แตกต่างกัน",
     "ถัดไป: ดูส่วนผสมที่ต้องเตรียม",
   ),
-)
+))
 
 taxonomyCategory = TaxonomyCategory(
   "ทุเรียนทอดเปล่า",

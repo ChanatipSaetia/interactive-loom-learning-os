@@ -1,8 +1,8 @@
-root = ReflectionTemplate(
+root = Page("สังเคราะห์บทเรียนการเปลี่ยนแปลง", ReflectionTemplate(
   "สังเคราะห์บทเรียนการเปลี่ยนแปลง",
   [challenge1, challenge2, challenge3, challenge4, challenge5],
   "วิเคราะห์สาเหตุและผลกระทบของจุดเปลี่ยนสำคัญในประวัติศาสตร์โลก",
-)
+))
 
 challenge1 = TemplateChallenge(
   "เติมคำในช่องว่างเพื่ออธิบายการเปลี่ยนผ่านสู่ยุคใหม่และการปฏิวัติอุตสาหกรรม (Part 1):",

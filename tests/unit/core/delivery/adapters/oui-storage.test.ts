@@ -10,9 +10,9 @@ import {
 const FILES: Record<string, string> = {
   '/content/index.oui': 'root = Catalog([TopicRef("demo")])',
   '/content/demo/topic.oui': 'root = Topic("Demo", "Architecture", "A demo topic", [SectionRef("intro"), SectionRef("quiz")], ["ai"])',
-  '/content/demo/sections/intro.oui': 'root = Text("Intro", ["Hello."])',
+  '/content/demo/sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))",
   '/content/demo/sections/quiz.oui': [
-    'root = Quiz("Check", [q1])',
+    "root = Page(\"Check\", Quiz(\"Check\", [q1]))",
     'q1 = QuizQuestion("q1", "Q?", [QuizChoice("a", "A", true, "Yes")])',
     'unused = Text("x", [])',
   ].join('\n'),
@@ -81,7 +81,7 @@ describe('OpenUI content reader & OUIStorageAdapter', () => {
     expect(section).toEqual({
       meta: { type: 'text', title: 'Intro', resource: '.' },
       data: { type: 'text', paragraphs: ['Hello.'] },
-      body: 'root = Text("Intro", ["Hello."])',
+      body: "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))",
     })
 
     await expect(adapter.saveSection()).rejects.toThrow(/Loom Studio/)

@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("คำศัพท์สำคัญ", Flashcards(
   "คำศัพท์สำคัญ",
   [
     carburetor,
@@ -18,7 +18,7 @@ root = Flashcards(
     intakeValve,
     exhaustValve,
   ],
-)
+))
 
 carburetor = Flashcard(
   "carburetor",

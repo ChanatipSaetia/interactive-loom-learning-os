@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Lexicon of the Realm", Flashcards(
   "Lexicon of the Realm",
   [
     docsAsCode,
@@ -10,7 +10,7 @@ root = Flashcards(
     annotatedScreenshot,
     developerExperience,
   ],
-)
+))
 
 docsAsCode = Flashcard(
   "docs-as-code",

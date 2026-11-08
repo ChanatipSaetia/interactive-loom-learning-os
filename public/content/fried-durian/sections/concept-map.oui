@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("แผนที่แนวคิดทุเรียนทอด", ConceptMap(
   "แผนที่แนวคิดทุเรียนทอด",
   [
     durianRaw,
@@ -41,7 +41,7 @@ root = ConceptMap(
     "การสร้างแผนที่ความคิดช่วยให้เห็นภาพรวมก่อนลงรายละเอียด",
     "ถัดไป: เรียนรู้คำศัพท์สำคัญกับ Flashcards",
   ),
-)
+))
 
 durianRaw = Concept("durian_raw", "ทุเรียนดิบ/อ่อน", "ingredient")
 durianFlesh = Concept("durian_flesh", "เนื้อทุเรียน", "ingredient")

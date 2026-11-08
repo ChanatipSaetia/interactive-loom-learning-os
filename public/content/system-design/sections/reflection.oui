@@ -1,8 +1,8 @@
-root = ReflectionSequence(
+root = Page("Design Reflection", ReflectionSequence(
   "Design Reflection",
   [challenge1, challenge2, challenge3],
   "Reflect on Real-World Trade-offs",
-)
+))
 
 challenge1 = SequenceChallenge(
   "Arrange the 4 phases of Nir Eyal's Hook Model in the correct order",

@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("Build Progression Scenario", Scenario(
   "Build Progression Scenario",
   "build-journey",
   [
@@ -17,7 +17,7 @@ root = Scenario(
   "You've decided to play the Flicker Strike Monk. How you gear up determines your endgame ceiling. Make choices through the league and see where they lead.",
   null,
   "Your League Journey",
-)
+))
 
 start = ScenarioNode(
   "start",

@@ -1,4 +1,4 @@
-root = Quiz(
+root = Page("Knowledge Check Checkpoint", Quiz(
   "Knowledge Check Checkpoint",
   [q1, q2, q3],
   null,
@@ -7,7 +7,7 @@ root = Quiz(
     "Validates your readiness to design software using Ports and Adapters.",
     "Congratulations on completing the Hexagonal Architecture module!",
   ),
-)
+))
 
 q1 = QuizQuestion(
   "q1",

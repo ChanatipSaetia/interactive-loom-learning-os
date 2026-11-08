@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Concept Constellation", ConceptMap(
   "Concept Constellation",
   [
     audienceAnalysis,
@@ -35,7 +35,7 @@ root = ConceptMap(
     ConceptLink(endUsers, guidedTour, "learn via"),
     ConceptLink(operators, docsSite, "run from"),
   ],
-)
+))
 
 audienceAnalysis = Concept("audience_analysis", "Audience Analysis", "concept")
 endUsers = Concept("end_users", "End Users", "role")

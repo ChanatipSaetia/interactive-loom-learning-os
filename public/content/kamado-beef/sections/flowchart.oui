@@ -1,4 +1,4 @@
-root = Flowchart(
+root = Page("ผังกระบวนการย่างสเต๊กแบบ Reverse Sear", Flowchart(
   "ผังกระบวนการย่างสเต๊กแบบ Reverse Sear",
   [pitmaster],
   [firebox, deflectorUnit, meatProbe, searingGrate, restingBoard],
@@ -11,7 +11,7 @@ root = Flowchart(
     stepRestAndServe,
   ],
   [journeyReverseSear],
-)
+))
 
 pitmaster = Actor(
   "pitmaster",

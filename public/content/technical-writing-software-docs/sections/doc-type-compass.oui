@@ -1,10 +1,10 @@
-root = DecisionTree(
+root = Page("The Diátaxis Compass", DecisionTree(
   "The Diátaxis Compass",
   "diataxis-compass",
   "start",
   [start, actionPurpose, cognitionPurpose, leafTutorial, leafHowto, leafReference, leafExplanation],
   "Which kind of page should this content be?",
-)
+))
 
 start = DecisionNode(
   "start",

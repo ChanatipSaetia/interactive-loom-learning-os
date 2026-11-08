@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("Build Setup Advisor", DecisionTree(
   "Build Setup Advisor",
   "flicker-advisor",
   "stage",
@@ -16,7 +16,7 @@ root = DecisionTree(
     recUberSetup,
   ],
   "Flicker Monk Setup Advisor",
-)
+))
 
 stage = DecisionNode(
   "stage",

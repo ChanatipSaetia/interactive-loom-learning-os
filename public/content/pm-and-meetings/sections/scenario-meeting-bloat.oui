@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("Interactive Scenario: Taming Meeting Bloat", Scenario(
   "Interactive Scenario: Taming Meeting Bloat",
   "meeting_bloat",
   [
@@ -12,7 +12,7 @@ root = Scenario(
   "A developer on your team, Alex, is highly talented but schedules a 30-minute meeting for every minor technical question, interrupting multiple senior developers. How do you handle this?",
   null,
   "Taming Meeting Bloat",
-)
+))
 
 start = ScenarioNode(
   "start",

@@ -1,4 +1,4 @@
-root = ReflectionSequence("Hook Loop Builder", [challenge1, challenge2])
+root = Page("Hook Loop Builder", ReflectionSequence("Hook Loop Builder", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Arrange the four stages of Nir Eyal's Hook Model in the correct order:",

@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("Scenario: The Ticket Storm", Scenario(
   "Scenario: The Ticket Storm",
   "ticket-storm",
   [
@@ -15,7 +15,7 @@ root = Scenario(
   "Support gets 40 tickets a week saying 'I can't export my report'. The docs page 'Reporting' is 2,500 words: two paragraphs on why the reporting engine was rebuilt, a table of every report field, then one paragraph that ends '...and then export it as needed.' You're asked to fix it.",
   null,
   "The Ticket Storm",
-)
+))
 
 start = ScenarioNode(
   "start",

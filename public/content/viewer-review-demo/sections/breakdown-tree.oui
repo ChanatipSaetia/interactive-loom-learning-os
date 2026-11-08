@@ -1,4 +1,4 @@
-root = BreakdownTree("06 · Breakdown tree — How the review budget is divided", [total, retrieval, review, records, documents], "quantity", "min", "Illustrative time budget, not measured performance.", "Review uses 12 of the 20 minutes: 60% of the whole budget.")
+root = Page("06 · Breakdown tree — How the review budget is divided", BreakdownTree("06 · Breakdown tree — How the review budget is divided", [total, retrieval, review, records, documents], "quantity", "min", "Illustrative time budget, not measured performance.", "Review uses 12 of the 20 minutes: 60% of the whole budget."))
 total = BreakdownNode("total", "Whole investigation", 20, null, "The total time budget.", "blue")
 retrieval = BreakdownNode("retrieval", "Find sources", 8, "total", "Time to locate useful material.", "teal")
 review = BreakdownNode("review", "Review evidence", 12, "total", "Time to inspect claims and citations.", "mauve")

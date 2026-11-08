@@ -1,11 +1,11 @@
-root = Scenario(
+root = Page("Scenario: The Menu Moved", Scenario(
   "Scenario: The Menu Moved",
   "menu-moved",
   [start, resultWait, fix, fixAuto, resultRerecord, resultNote, resultAuto, resultAi],
   "Your company's expense web app ships version 5.0 on Monday. The 'Submit claim' button has moved from the top toolbar into a new 'Actions' menu. You own the interactive manual that 900 staff use, built as a hotspot simulation plus a screenshot quick-reference. Monday is three days away.",
   null,
   "The Menu Moved",
-)
+))
 
 start = ScenarioNode(
   "start",

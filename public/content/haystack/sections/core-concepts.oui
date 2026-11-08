@@ -1,4 +1,4 @@
-root = Text(
+root = Page("Core Concepts", LessonText(
   "Core Concepts",
   [
     "Core Concepts",
@@ -11,4 +11,4 @@ root = Text(
     "**Custom Components** — Build any logic with the `@component` decorator. Define inputs via method arguments and outputs with `@component.output_types`. The framework handles serialization, type validation, and pipeline wiring automatically.",
     "**SuperComponents** — Wrap an entire sub-pipeline into a single reusable component. This simplifies complex graphs by hiding internal wiring behind a clean interface.",
   ],
-)
+))

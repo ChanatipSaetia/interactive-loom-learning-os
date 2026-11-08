@@ -116,7 +116,7 @@ ${step}
 
 describe('sendsTo in OpenUI Lang', () => {
   const source = `
-root = Flowchart("Hello", [dev], [client, server], [hello, fork], [j])
+root = Page("Hello", Flowchart("Hello", [dev], [client, server], [hello, fork], [j]))
 dev = Actor("dev", "Developer", "Starts it")
 client = System("client", "Client", "Calls", "aggregate")
 server = System("server", "Server", "Answers", "aggregate")

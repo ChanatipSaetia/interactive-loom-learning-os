@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("ระบบหัวฉีด (Fuel Injection / EFI)", Flowchart(
   "ระบบหัวฉีด (Fuel Injection / EFI)",
   [rider],
   [ecu, fuelInjector],
   [injectThrottle, injectFuel, fuelBranch],
   [fuelInjectionNormal, fuelInjectionCold],
-)
+))
 
 rider = Actor("rider", "ผู้ขับขี่ (Rider)", "ผู้ใช้งานมอเตอร์ไซค์")
 

@@ -1,7 +1,7 @@
-root = ReflectionTemplate(
+root = Page("Design a Concept Lesson", ReflectionTemplate(
   "Design a Concept Lesson",
   [challenge1, challenge2, challenge3, challenge4],
-)
+))
 
 challenge1 = TemplateChallenge(
   "Why concepts (Track 1):",

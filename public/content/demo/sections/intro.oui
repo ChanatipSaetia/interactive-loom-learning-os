@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("", Intro(
   "",
   what,
   why,
@@ -43,7 +43,7 @@ root = Intro(
   null,
   "8 min read",
   6,
-)
+))
 
 what = IntroWhat(
   "Comprehensive conceptual and interactive guide to building stateful, resilient AI agent systems.",

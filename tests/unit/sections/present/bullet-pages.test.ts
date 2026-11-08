@@ -31,10 +31,10 @@ describe('measured bullet pagination', () => {
 
 describe('author-selected bullet icons', () => {
   it('rejects unsupported icon names', () => {
-    expect(validateOUISection('root = Bullets("Access", [Bullet("Prepare", [], "unknown-icon")])').diagnostics.length).toBeGreaterThan(0)
+    expect(validateOUISection("root = Page(\"Access\", Bullets(\"Access\", [Bullet(\"Prepare\", [], \"unknown-icon\")]))").diagnostics.length).toBeGreaterThan(0)
   })
   it('compiles and round-trips icons on parents and nested points', () => {
-    const source = 'root = Bullets("Access", [Bullet("Prepare", [Bullet("Before Monday", [], "clock")], "key")])'
+    const source = "root = Page(\"Access\", Bullets(\"Access\", [Bullet(\"Prepare\", [Bullet(\"Before Monday\", [], \"clock\")], \"key\")]))"
     const data = propsOf<BulletsPresentData>(source)
     expect(data.items[0].icon).toBe('key')
     expect(data.items[0].children[0].icon).toBe('clock')

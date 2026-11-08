@@ -17,7 +17,7 @@ import { createLearningCheckpoint } from '../../src/core/supporting/learner-prog
 
 const files = {
   'topic.oui': 'root = Topic("Caching fixture", "Architecture", "Choose private caching", [SectionRef("quiz")])',
-  'sections/quiz.oui': 'root = Quiz("Caching check", [q1])\nq1 = QuizQuestion("q1", "Which directive restricts caching to this browser?", [c1, c2])\nc1 = QuizChoice("a", "private", true, "Only private caches")\nc2 = QuizChoice("b", "public", false, "Shared caches may store it")',
+  'sections/quiz.oui': "root = Page(\"Caching check\", Quiz(\"Caching check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Which directive restricts caching to this browser?\", [c1, c2])\nc1 = QuizChoice(\"a\", \"private\", true, \"Only private caches\")\nc2 = QuizChoice(\"b\", \"public\", false, \"Shared caches may store it\")",
   'sections/quiz.narrate.oui': 'root = Narration([NarrationStep("q1", "Choose a cache policy")])',
 }
 const bundle = (input = files) => '// @loom-topic caching-fixture\n' + Object.entries(input).map(([file, source]) => `// === ${file} ===\n${source}\n`).join('')

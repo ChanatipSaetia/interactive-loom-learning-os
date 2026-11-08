@@ -7,7 +7,7 @@ import {
   parseEditBlocks,
 } from '../../../../../../src/core/supporting/authoring-editor/assistant'
 
-const QUIZ = `root = Quiz("Check", [q1, q2])
+const QUIZ = `root = Page("Check", Quiz("Check", [q1, q2]))
 q1 = QuizQuestion("q1", "First?", [QuizChoice("a", "Yes", true, "Right."), QuizChoice("b", "No", false, "Wrong.")])
 q2 = QuizQuestion("q2", "Second?", [QuizChoice("a", "Yes", true, "Right."), QuizChoice("b", "No", false, "Wrong.")])
 `
@@ -53,7 +53,7 @@ describe('applyEditBlock', () => {
     const [b] = parseEditBlocks(block('file=sections/quiz.oui', 'q1 = QuizQuestion("q1", "Better?", [c1])\nc1 = QuizChoice("a", "Yes", true, "Right.")\nq2 = DELETE'))
     const result = applyEditBlock(QUIZ, b)
     expect(result.ok).toBe(true)
-    expect(result.source).toBe(`root = Quiz("Check", [q1, q2])
+    expect(result.source).toBe(`root = Page("Check", Quiz("Check", [q1, q2]))
 q1 = QuizQuestion("q1", "Better?", [c1])
 c1 = QuizChoice("a", "Yes", true, "Right.")
 `)
@@ -66,10 +66,10 @@ c1 = QuizChoice("a", "Yes", true, "Right.")
   })
 
   it('creates files, and refuses to create one that exists or change one that does not', () => {
-    const [create] = parseEditBlocks(block('file=sections/extra.oui mode=create', 'root = Text("Extra", ["Hi."])'))
-    expect(applyEditBlock(undefined, create)).toMatchObject({ ok: true, source: 'root = Text("Extra", ["Hi."])\n' })
+    const [create] = parseEditBlocks(block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", LessonText(\"Extra\", [\"Hi.\"]))"))
+    expect(applyEditBlock(undefined, create)).toMatchObject({ ok: true, source: "root = Page(\"Extra\", LessonText(\"Extra\", [\"Hi.\"]))\n" })
     expect(applyEditBlock('x', create)).toMatchObject({ ok: false, error: expect.stringMatching(/already exists/) })
-    const [change] = parseEditBlocks(block('file=sections/extra.oui', 'root = Text("Extra", [])'))
+    const [change] = parseEditBlocks(block('file=sections/extra.oui', "root = Page(\"Extra\", LessonText(\"Extra\", []))"))
     expect(applyEditBlock(undefined, change)).toMatchObject({ ok: false, error: expect.stringMatching(/mode=create/) })
   })
 
@@ -89,7 +89,7 @@ describe('checkProposal', () => {
     const blocks = parseEditBlocks(reply(
       block('file=sections/quiz.oui', 'q1 = DELETE'),
       block('file=sections/quiz.oui', 'gone = DELETE'),
-      block('file=sections/extra.oui mode=create', 'root = Text("Extra", ["Hi."])'),
+      block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", LessonText(\"Extra\", [\"Hi.\"]))"),
     ))
     const { problems } = checkProposal('demo', blocks, files)
     expect(problems.some((p) => p.startsWith('sections/quiz.oui') && /q1/.test(p))).toBe(true)
@@ -100,7 +100,7 @@ describe('checkProposal', () => {
   it('applies new files before topic.oui, so a new SectionRef finds its file', () => {
     const blocks = parseEditBlocks(reply(
       block('file=topic.oui', 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz"), SectionRef("extra")])'),
-      block('file=sections/extra.oui mode=create', 'root = Text("Extra", ["Hi."])'),
+      block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", LessonText(\"Extra\", [\"Hi.\"]))"),
     ))
     expect(applyOrder(blocks).map((b) => b.file)).toEqual(['sections/extra.oui', 'topic.oui'])
     expect(checkProposal('demo', blocks, files).problems).toEqual([])

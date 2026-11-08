@@ -351,6 +351,8 @@ export function ViewerApp() {
   const assistant = useAssistant({ topicId: topic?.topicId ?? '', app: 'viewer', getContext: getAssistantContext })
   const presentSections = useMemo(() => (topic ? presentSectionsOf(topic) : []), [topic])
   const presenting = mode === 'present' && !!topic && presentSections.length > 0
+  const readTopic = useRef<ViewerTopic | null>(null)
+  if (topic && !presenting) readTopic.current = topic
   // Present renderers load while the learner reads, so the switch is instant
   useEffect(() => preloadPresenters(presentSections), [presentSections])
 
@@ -516,8 +518,7 @@ export function ViewerApp() {
         </header>
         {presenting && headerHidden && <button type="button" className="viewer-pill viewer-show-header" onClick={() => setHeaderHidden(false)} aria-label="Show Viewer header" title="Show Viewer header" data-testid="viewer-show-header" autoFocus><ChevronDown size={16} /></button>}
         <main className="main-content">
-          {topic && presenting
-            ? (
+          {topic && presenting && (
               <ProgressProvider>
                 <HUDProvider>
                   <PresentMode
@@ -530,9 +531,9 @@ export function ViewerApp() {
                   />
                 </HUDProvider>
               </ProgressProvider>
-            )
-            : topic
-            ? <TopicView key={`${loaded.source}:${topic.topicId}:${loaded.revision}`} topic={topic} />
+            )}
+          {topic
+            ? <div hidden={presenting}>{readTopic.current === topic && <TopicView key={`${loaded.source}:${topic.topicId}:${loaded.revision}`} topic={topic} />}</div>
             : shelf
             ? (() => {
               const domain = shelf.domainId ? shelf.library.domains.find((d) => d.id === shelf.domainId) : undefined

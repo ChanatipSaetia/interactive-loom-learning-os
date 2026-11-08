@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Introduction to Storybook", Intro(
   "Introduction to Storybook",
   what,
   why,
@@ -80,7 +80,7 @@ root = Intro(
   "30 min",
   13,
   "Storybook — The Component Workshop",
-)
+))
 
 what = IntroWhat(
   "A component workshop that turns each component state into a runnable, isolated example (a story) written in Component Story Format (CSF), then layers on interactive Controls, auto-generated Docs, accessibility checks, and automated visual and interaction testing.",

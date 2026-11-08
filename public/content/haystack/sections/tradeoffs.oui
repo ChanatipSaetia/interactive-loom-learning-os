@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Architecture Trade-offs", [haystackArchitecture])
+root = Page("Architecture Trade-offs", TradeoffSandbox("Architecture Trade-offs", [haystackArchitecture]))
 
 haystackArchitecture = TradeoffScenario(
   "haystack-architecture",

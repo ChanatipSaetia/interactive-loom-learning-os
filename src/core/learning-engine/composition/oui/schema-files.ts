@@ -48,7 +48,7 @@ function llmsTxt(): string {
 ## OpenUI
 
 - [OpenUI Lang specification](${OPENUI_LANG_DOCS_URL}): the language every \`.oui\` file is written in.
-- [OpenUI react-ui components](${OPENUI_REACT_UI_DOCS_URL}): the standard component library used by \`// @openui\` sections.
+- [OpenUI react-ui components](${OPENUI_REACT_UI_DOCS_URL}): the standard component library available in the shared page catalog.
 
 ## Tools
 

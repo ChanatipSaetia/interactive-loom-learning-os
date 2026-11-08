@@ -1,4 +1,4 @@
-root = Quiz("Performance & Optimization Quiz", [qBatchBreaking, qKawaseBenefit, qHalfRes])
+root = Page("Performance & Optimization Quiz", Quiz("Performance & Optimization Quiz", [qBatchBreaking, qKawaseBenefit, qHalfRes]))
 
 qBatchBreaking = QuizQuestion(
   "q-batch-breaking",

@@ -6,7 +6,7 @@ Read [shared components](../core/components.md) and [narration](../core/narratio
 
 ## Component signatures
 
-Text(title: string, paragraphs: string[], heading?: string, lead?: Lead) — Prose section: one string per paragraph.
+LessonText(title: string, paragraphs: string[], heading?: string, lead?: Lead) — Prose section: one string per paragraph.
   - title: Section title, shown in the topic outline and as the section header.
   - paragraphs: The paragraphs, one string each, in order.
   - heading: Optional sub-heading shown under the section title.

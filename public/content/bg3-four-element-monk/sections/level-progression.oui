@@ -1,4 +1,4 @@
-root = ReflectionSequence("Level Progression", [challenge1])
+root = Page("Level Progression", ReflectionSequence("Level Progression", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "Arrange the Four Element Monk milestones in the correct level order:",

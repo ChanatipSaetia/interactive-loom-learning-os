@@ -41,7 +41,7 @@ Use `BreakdownTree` to divide a measurable whole into a hierarchy: meal cost →
 Cooking-cost section:
 
 ```
-root = BreakdownTree("Where does the meal budget go?", [meal, main, side, protein, vegetables, rice, other], "quantity", "USD", "Illustrative cost of one meal. All values use the same currency.", "Protein costs 8 USD: 66.7% of the main dish, but 40% of the whole meal.")
+root = Page("Where does the meal budget go?", BreakdownTree("Where does the meal budget go?", [meal, main, side, protein, vegetables, rice, other], "quantity", "USD", "Illustrative cost of one meal. All values use the same currency.", "Protein costs 8 USD: 66.7% of the main dish, but 40% of the whole meal."))
 meal = BreakdownNode("meal", "Whole meal", 20, null, "The total budget for the main dish and side dish.", "blue")
 main = BreakdownNode("main", "Main dish", 12, "meal", "The main dish accounts for 60% of the meal cost.", "teal")
 side = BreakdownNode("side", "Side dish", 8, "meal", "The side dish accounts for 40% of the meal cost.", "peach")
@@ -68,7 +68,7 @@ root = Narration([
 Conditional-probability section:
 
 ```
-root = BreakdownTree("Request outcome probabilities", [requests, cached, uncached, cachedSuccess, cachedFailure, uncachedSuccess, uncachedFailure], "probability", null, "Illustrative conditional probabilities; cached and uncached requests form a complete partition.", "A cached failure has probability 60% × 1% = 0.6% of all requests.")
+root = Page("Request outcome probabilities", BreakdownTree("Request outcome probabilities", [requests, cached, uncached, cachedSuccess, cachedFailure, uncachedSuccess, uncachedFailure], "probability", null, "Illustrative conditional probabilities; cached and uncached requests form a complete partition.", "A cached failure has probability 60% × 1% = 0.6% of all requests."))
 requests = BreakdownNode("requests", "All requests", 1)
 cached = BreakdownNode("cached", "Cached", 0.6, "requests", "60% of requests use the cache.", "teal")
 uncached = BreakdownNode("uncached", "Uncached", 0.4, "requests", "40% of requests do not use the cache.", "mauve")

@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("Test Layer Advisor", DecisionTree(
   "Test Layer Advisor",
   "storybook-test-advisor",
   "risk",
@@ -14,7 +14,7 @@ root = DecisionTree(
     leafDocs,
   ],
   "Which Storybook Test Layer Do You Need?",
-)
+))
 
 risk = DecisionNode(
   "risk",

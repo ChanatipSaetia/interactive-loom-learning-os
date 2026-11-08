@@ -1,5 +1,5 @@
 ## Important Rules
-- Choose the section types that best teach the content (see Loom Authoring Rules).
+- Choose the components that best teach the content (see Loom Authoring Rules).
 
 ## Final Verification
 Before finishing, walk your output and verify:

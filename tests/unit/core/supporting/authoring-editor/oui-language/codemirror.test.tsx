@@ -25,7 +25,7 @@ function tokens(code: string): string[] {
 
 describe('CodeMirror highlighting', () => {
   it('classifies statements, calls and values', () => {
-    expect(tokens('root = Quiz("T", [q1]) // c\n$n = 1\nq1 = X(@Count(a), true, {k: 2})')).toEqual(expect.arrayContaining([
+    expect(tokens("root = Page(\"T\", Quiz(\"T\", [q1])) // c\n$n = 1\nq1 = X(@Count(a), true, {k: 2})")).toEqual(expect.arrayContaining([
       'rootKeyword:root',
       'component:Quiz',
       'string:"T"',
@@ -41,13 +41,13 @@ describe('CodeMirror highlighting', () => {
   })
 
   it('does not treat continuation lines inside brackets as definitions', () => {
-    expect(tokens('root = Text(\n  title,\n  [a]\n)')).toContain('reference:title')
+    expect(tokens("root = Page(title, LessonText(\n  title,\n  [a]\n))")).toContain('reference:title')
   })
 })
 
 describe('CodeMirror completions', () => {
   it('returns snippet completions for the argument position', () => {
-    const doc = 'root = Quiz("T", [])'
+    const doc = "root = Page(\"T\", Quiz(\"T\", []))"
     const state = EditorState.create({ doc })
     const result = ouiCompletionSource()(new CompletionContext(state, doc.indexOf(']'), true))
     expect(result?.options.map((o) => o.label)).toContain('QuizQuestion')
@@ -92,7 +92,7 @@ describe('CodeMirror editor features', () => {
   })
 
   it('jumps to definitions', () => {
-    const doc = 'root = Text("T", [p])\np = "x"'
+    const doc = "root = Page(\"T\", LessonText(\"T\", [p]))\np = \"x\""
     const v = view(doc, doc.indexOf('p]'))
     expect(goToDefinition(v)).toBe(true)
     expect(v.state.selection.main.from).toBe(doc.indexOf('p ='))
@@ -111,15 +111,15 @@ describe('renderTooltipMarkdown', () => {
 describe('OUICodeEditor', () => {
   it('renders the source and reports edits', () => {
     const onChange = vi.fn()
-    const { getByTestId, rerender } = render(<OUICodeEditor value={'root = Text("T", [])'} onChange={onChange} />)
+    const { getByTestId, rerender } = render(<OUICodeEditor value={"root = Page(\"T\", LessonText(\"T\", []))"} onChange={onChange} />)
     const host = getByTestId('oui-code-editor')
-    expect(host.textContent).toContain('root = Text("T", [])')
+    expect(host.textContent).toContain("root = Page(\"T\", LessonText(\"T\", []))")
 
     const editor = EditorView.findFromDOM(host.querySelector('.cm-editor') as HTMLElement)!
     editor.dispatch({ changes: { from: 0, insert: '// hi\n' } })
-    expect(onChange).toHaveBeenLastCalledWith('// hi\nroot = Text("T", [])')
+    expect(onChange).toHaveBeenLastCalledWith("// hi\nroot = Page(\"T\", LessonText(\"T\", []))")
 
-    rerender(<OUICodeEditor value={'root = Text("New", [])'} onChange={onChange} />)
-    expect(editor.state.doc.toString()).toBe('root = Text("New", [])')
+    rerender(<OUICodeEditor value={"root = Page(\"New\", LessonText(\"New\", []))"} onChange={onChange} />)
+    expect(editor.state.doc.toString()).toBe("root = Page(\"New\", LessonText(\"New\", []))")
   })
 })

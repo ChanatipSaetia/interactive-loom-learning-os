@@ -1,4 +1,4 @@
-root = ReflectionSequence("Filter Pipeline Lifecycle Sequencing", [challenge1])
+root = Page("Filter Pipeline Lifecycle Sequencing", ReflectionSequence("Filter Pipeline Lifecycle Sequencing", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "Arrange the chronological stages of the PixiJS Filter execution lifecycle from initial interception to framebuffer swap:",

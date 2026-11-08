@@ -1,11 +1,11 @@
-root = Scenario(
+root = Page("Architecture Decision Scenario", Scenario(
   "Architecture Decision Scenario",
   "haystack-design",
   [start, bm25Outcome, vectorOutcome, hybridOutcome],
   "Your company needs a search system for its knowledge base. You've chosen Haystack. How do you design it?",
   null,
   "Designing a Search System",
-)
+))
 
 start = ScenarioNode(
   "start",

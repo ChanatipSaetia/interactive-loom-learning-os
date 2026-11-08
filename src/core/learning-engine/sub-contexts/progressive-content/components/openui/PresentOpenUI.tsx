@@ -1,11 +1,13 @@
-import { useEffect, useInsertionEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import { lazy, Suspense, useEffect, useInsertionEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { Renderer, type ActionEvent } from '@openuidev/react-lang'
 import '@openuidev/react-ui/components.css'
 import { beatMarks, type PresentRendererProps } from '../../../present-kernel'
 import { openuiParts, type OpenUIPresentData } from '../../present'
 import { ensureLoomOpenUITheme } from './theme'
 import { tagDataAnchors } from './data-anchors'
-import { loomOpenUILibrary } from './themed-charts'
+import { createLoomReactLibrary } from '../../../../composition/oui/react'
+import { pageActivityPlan, type PageActivity } from '../../../../composition/oui/page-activities'
+import { CORE_PRESENTERS } from '../../../../registry/register-core-presenters'
 import './openui.css'
 import '../present.css'
 
@@ -29,10 +31,24 @@ function partElements(scope: HTMLElement): HTMLElement[] {
  * it, down to one bar, point, slice or table cell (decision 117). Any other root plays in one beat,
  * each top-level child fading in (decision 78).
  */
-export default function PresentOpenUI({ data, beats, beat }: PresentRendererProps<OpenUIPresentData>) {
+function ActivityScene({ activity, beat, sectionIndex, active }: { activity: PageActivity; beat: number; sectionIndex: number; active: boolean }) {
+  const presenter = CORE_PRESENTERS[activity.config.type]
+  const Component = useMemo(() => presenter ? lazy(presenter.load) : null, [presenter])
+  if (!Component) return null
+  const local = Math.max(-1, Math.min(beat - activity.start, activity.beats.length - 1))
+  return <Suspense fallback={null}><Component data={activity.config.props} beats={activity.beats} beat={local}
+    sectionIndex={sectionIndex} active={active && beat >= activity.start && beat < activity.start + activity.beats.length} /></Suspense>
+}
+
+export default function PresentOpenUI({ data, beats, beat, sectionIndex, active }: PresentRendererProps<OpenUIPresentData>) {
   const mark = beatMarks(beat)
   const scope = useRef<HTMLDivElement>(null)
   const parts = useMemo(() => (beats.length > 1 ? openuiParts(data.source) : null), [beats.length, data.source])
+  const activityPlan = useMemo(() => pageActivityPlan(data.source), [data.source])
+  const library = useMemo(() => createLoomReactLibrary((config, statementId) => {
+    const activity = activityPlan.activities.find((entry) => entry.config.type === config.type && (!statementId || entry.statementId === statementId))
+    return activity ? <ActivityScene activity={{ ...activity, config }} beat={beat} sectionIndex={sectionIndex} active={active} /> : null
+  }), [activityPlan, beat, sectionIndex, active])
   useInsertionEffect(() => ensureLoomOpenUITheme(), [])
 
   // Marks set on the rendered elements before the stage enters the beat (its effects run after ours)
@@ -56,7 +72,7 @@ export default function PresentOpenUI({ data, beats, beat }: PresentRendererProp
     // Pick anchors carry the section's file and label, as the stage's own anchors do
     const owner = root.closest('[data-oui-file]')
     const file = owner && { 'data-oui-file': owner.getAttribute('data-oui-file') ?? undefined, 'data-oui-section': owner.getAttribute('data-oui-section') ?? undefined }
-    els.forEach((el, i) => set(el, { ...mark(i, { motion: 'rise' }), ...(parts[i].name && { ...file, 'data-oui-anchor': parts[i].name }) }))
+    els.forEach((el, i) => set(el, { ...mark(activityPlan.activities.length ? activityPlan.starts[i] : i, { motion: 'rise' }), ...(parts[i].name && { ...file, 'data-oui-anchor': parts[i].name }) }))
   })
 
   // Charts draw once they are measured, so their bars, points and cells are tagged as they appear (decision 117)
@@ -83,7 +99,7 @@ export default function PresentOpenUI({ data, beats, beat }: PresentRendererProp
     <div className="openui-section present-openui">
       {data.heading && <h4 className="openui-section-heading" {...mark(0, { motion: 'fade' })}>{data.heading}</h4>}
       <div ref={scope} className="loom-openui-scope openui-section-body" {...(whole && mark(0, { motion: 'children' }))}>
-        <Renderer response={data.source} library={loomOpenUILibrary} onAction={handleAction} publishObservability={false} />
+        <Renderer response={data.source} library={library} onAction={handleAction} publishObservability={false} />
       </div>
     </div>
   )

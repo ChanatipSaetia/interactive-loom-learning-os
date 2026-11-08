@@ -51,7 +51,7 @@ Use the dedicated `Timeline` section for elapsed start times, durations, overlap
 Example section (sections/parallel-retrieval.oui):
 
 ```
-root = Timeline("Parallel retrieval · 200 ms elapsed", [request, database, search, agent], [validate, records, documents, compose], [prepare, retrieve, join], "ms", "Illustrative timings for one request; tasks are ordered by start time on a shared scale.", "20 + max(80, 150) + 30 = 200 ms elapsed. Running everything sequentially would take 280 ms.")
+root = Page("Parallel retrieval · 200 ms elapsed", Timeline("Parallel retrieval · 200 ms elapsed", [request, database, search, agent], [validate, records, documents, compose], [prepare, retrieve, join], "ms", "Illustrative timings for one request; tasks are ordered by start time on a shared scale.", "20 + max(80, 150) + 30 = 200 ms elapsed. Running everything sequentially would take 280 ms."))
 request = TimelineLane("request", "Request", "blue")
 database = TimelineLane("database", "Database", "teal")
 search = TimelineLane("search", "Search", "mauve")

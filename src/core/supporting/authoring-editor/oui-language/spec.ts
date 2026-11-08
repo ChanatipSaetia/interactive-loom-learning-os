@@ -7,8 +7,7 @@
  * library for `// @openui` section files.
  */
 import { ACTION_NAMES, BUILTINS, type ComponentGroup } from '@openuidev/lang-core'
-import { getLoomOUIJSONSchema, getLoomOUILibrary, OUI_SECTION_TYPES } from '../../../learning-engine/composition/oui/library'
-import { isOpenUISource, standardOpenUISchema, standardOpenUISpec } from '../../../learning-engine/sub-contexts/progressive-content/openui-standard'
+import { getLoomOUIJSONSchema, getUnifiedOUISpec } from '../../../learning-engine/composition/oui/library'
 
 type JSONSchema = {
   type?: string | string[]
@@ -129,25 +128,20 @@ function paramSpec(name: string, schema: JSONSchema, optional: boolean): OUIPara
 }
 
 let cached: OUILanguageSpec | null = null
-let cachedStandard: OUILanguageSpec | null = null
 
 /** Suggested roots of a standard OpenUI section, in order. */
-const STANDARD_ROOTS = ['Card', 'Stack', 'Tabs', 'Accordion', 'Steps', 'Table', 'Carousel']
 
 /**
  * Build (once) the language spec for a source: the standard OpenUI library
  * when it starts with an `// @openui` directive, else the Loom library.
  */
 export function getOUILanguageSpec(source?: string): OUILanguageSpec {
-  if (source !== undefined && isOpenUISource(source)) {
-    cachedStandard ??= buildSpec(standardOpenUISchema, standardOpenUISpec.components, standardOpenUISpec.componentGroups, STANDARD_ROOTS)
-    return cachedStandard
-  }
+  void source
   cached ??= buildSpec(
     getLoomOUIJSONSchema(),
-    getLoomOUILibrary().toSpec().components as PromptSpecs,
-    getLoomOUILibrary().componentGroups ?? [],
-    [...OUI_SECTION_TYPES.keys()],
+    getUnifiedOUISpec().components as PromptSpecs,
+    getUnifiedOUISpec().componentGroups,
+    ['Page'],
   )
   return cached
 }

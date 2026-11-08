@@ -22,7 +22,7 @@ export const THREE_SPLINE_PLAN: TopicPlan = {
 }
 
 /** Source-supported toy rendering model: no invented lifecycle or numerical data. */
-export const RENDER_FLOW = (view = 'architecture') => `root = Flowchart("Render request", [developer], [app, renderer], [render], [frame], null, null, "${view}")
+export const RENDER_FLOW = (view = 'architecture') => `root = Page("Render request", Flowchart("Render request", [developer], [app, renderer], [render], [frame], null, null, "${view}"))
 developer = Actor("developer", "Developer", "Runs the application")
 app = System("app", "Application", "Owns the scene and camera", "service")
 renderer = System("renderer", "Renderer", "Draws the scene", "service")
@@ -31,45 +31,42 @@ frame = Journey("frame", "One frame", "Follow the rendering request", [JourneySt
 
 export const THREE_SPLINE_FILES: Record<string, string> = {
   'topic.oui': `root = Topic("Three.js and Spline", "3D web", "Choose an authoring approach and trace rendering", [${rows.map(([id]) => `SectionRef("${id}")`).join(', ')}])`,
-  'sections/terms.oui': `root = Flashcards("Rendering terms", [scene, camera, renderer])
+  'sections/terms.oui': `root = Page("Rendering terms", Flashcards("Rendering terms", [scene, camera, renderer]))
 scene = Flashcard("scene", "Scene", "scene", "Rendering", "The container of objects to render.", "It groups the objects supplied for rendering.", "The renderer needs a scene.")
 camera = Flashcard("camera", "Camera", "camera", "Rendering", "Defines the viewpoint used to render the scene.", "It determines the view of the objects.", "The renderer needs a viewpoint.")
 renderer = Flashcard("renderer", "Renderer", "renderer", "Rendering", "Draws a scene from a camera viewpoint.", "It takes the scene and camera when drawing a frame.", "It produces the displayed result.")`,
-  'sections/comparison.oui': `// @openui "Authoring approaches"
-root = Table([Col("Approach", ["Three.js", "Spline"]), Col("Authoring", ["JavaScript code", "Visual editor"]), Col("Primary artifact", ["Application code", "Designed scene"])])`,
+  'sections/comparison.oui': `root = Page("Authoring approaches", Table([Col("Approach", ["Three.js", "Spline"]), Col("Authoring", ["JavaScript code", "Visual editor"]), Col("Primary artifact", ["Application code", "Designed scene"])]))`,
   'sections/pipeline.oui': RENDER_FLOW(),
   'sections/pipeline.narrate.oui': `root = Narration([NarrationStep("title", "Trace the rendering request"), chart, participants, messages])
 chart = NarrationStep("chart", "First identify the participating components.", null, "architecture")
 participants = NarrationStep("step1", "The application owns scene and camera; the renderer draws them.", null, "architecture")
 messages = NarrationStep("step1", "Now trace the request and returned frame in order.", null, "sequence")`,
-  'sections/spatial.oui': `// @openui "What the camera can see"
-root = Stack([heading, figure, explanation])
+  'sections/spatial.oui': `root = Page("What the camera can see", Stack([heading, figure, explanation]))
 heading = CardHeader("Objects need a viewpoint", "A conceptual slice of a 3D view")
 figure = Svg('<svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg"><path id="view" d="M 50 100 L 220 30 L 220 170 Z" fill="var(--ctp-surface0)" stroke="var(--ctp-blue)" stroke-width="2"/><rect id="camera" x="20" y="88" width="26" height="24" fill="var(--ctp-blue)"/><text x="8" y="140" font-size="18" fill="var(--ctp-text)">Camera</text><rect id="inside" x="150" y="86" width="28" height="28" fill="var(--ctp-green)"/><text x="132" y="140" font-size="18" fill="var(--ctp-text)">In view</text><rect id="outside" x="280" y="24" width="28" height="28" fill="var(--ctp-red)"/><text x="255" y="80" font-size="18" fill="var(--ctp-text)">Outside</text></svg>', "Illustrative slice, not a measured projection")
 explanation = TextContent("An object can belong to the scene and still lie outside the camera view. This spatial relationship differs from the order of render requests.")`,
-  'sections/layers.oui': `root = PillarLayer("Rendering dependencies", [application, foundation], [product, engine])
+  'sections/layers.oui': `root = Page("Rendering dependencies", PillarLayer("Rendering dependencies", [application, foundation], [product, engine]))
 application = Layer("application", "Application", "Uses rendering")
 foundation = Layer("foundation", "Rendering foundation", "Supports application")
 product = MatrixBlock("product", "Product logic", application, 0, 1, 1, "Owns application behavior", "blue", ["engine"])
 engine = MatrixBlock("engine", "Rendering", foundation, 0)`,
-  'sections/examples.oui': `// @openui "Concrete examples"
-root = Stack([code, visual])
+  'sections/examples.oui': `root = Page("Concrete examples", Stack([code, visual]))
 code = Card([CardHeader("Code-driven object"), TextContent("A developer constructs geometry and materials in application code.")])
 visual = Card([CardHeader("Visual composition"), TextContent("A designer arranges objects and materials in a visual editor.")])`,
-  'sections/setup.oui': `root = Bullets("Initialize a scene", [Bullet("Create scene"), Bullet("Configure camera"), Bullet("Initialize renderer"), Bullet("Add geometry and materials"), Bullet("Start animation loop")], true)`,
-  'sections/choices.oui': `root = TradeoffSandbox("Authoring choices", [project])
+  'sections/setup.oui': `root = Page("Initialize a scene", Bullets("Initialize a scene", [Bullet("Create scene"), Bullet("Configure camera"), Bullet("Initialize renderer"), Bullet("Add geometry and materials"), Bullet("Start animation loop")], true))`,
+  'sections/choices.oui': `root = Page("Authoring choices", TradeoffSandbox("Authoring choices", [project]))
 project = TradeoffScenario("project", "Choose for project constraints", [], [approach], "Qualitative comparison; no measured performance scores")
 approach = TradeoffStep("approach", "Authoring approach", [code, visual])
 code = TradeoffChoice("code", "Three.js", "Code-owned behavior", {}, [ProCon("Custom code control")], [ProCon("Requires programming")])
 visual = TradeoffChoice("visual", "Spline", "Visual authoring", {}, [ProCon("Visual composition workflow")], [ProCon("Check integration requirements")])`,
-  'sections/experience.oui': `root = UserJourney("Configure a product", "Shopper", "Inspect a finish before choosing", [choose, inspect])
+  'sections/experience.oui': `root = Page("Configure a product", UserJourney("Configure a product", "Shopper", "Inspect a finish before choosing", [choose, inspect]))
 choose = JourneyStage("Choose", "Try a finish", "Select a finish option.", "The displayed object changes finish.")
 inspect = JourneyStage("Inspect", "Check appearance", "Inspect the configured object.", "The chosen finish remains visible.")`,
-  'sections/failure.oui': `root = Scenario("Missing performance evidence", "evidence", [start, grounded, unsupported])
+  'sections/failure.oui': `root = Page("Missing performance evidence", Scenario("Missing performance evidence", "evidence", [start, grounded, unsupported]))
 start = ScenarioNode("start", "No matched measurements are available. What should you do?", [ScenarioChoice("measure", "Request matched measurements", "grounded"), ScenarioChoice("guess", "Claim the visual tool is faster", "unsupported")])
 grounded = ScenarioNode("grounded", null, null, Outcome("Grounded decision", "Compare the same workload and target device before making a performance claim.", "a"))
 unsupported = ScenarioNode("unsupported", null, null, Outcome("Unsupported claim", "Authoring workflow alone does not establish runtime performance.", "b-plus"))`,
-  'sections/assessment.oui': `root = Quiz("Apply the comparison", [q1])
+  'sections/assessment.oui': `root = Page("Apply the comparison", Quiz("Apply the comparison", [q1]))
 q1 = QuizQuestion("q1", "A project requires custom code-owned rendering behavior. Which approach directly matches that requirement?", [QuizChoice("code", "Three.js application code", true, "It directly exposes a code-owned rendering workflow."), QuizChoice("speed", "Choose by an unverified speed claim", false, "No matched performance evidence was supplied.")])`,
 }
 const narration: Record<string, Array<[string, string]>> = {

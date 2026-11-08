@@ -6,7 +6,7 @@ import { TYPES } from '../../../../src/core/learning-engine/sub-contexts/process
 import type { AbstractFlow } from '../../../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/types';
 
 const source = `
-root = Flowchart("Kinds", [user], [api, store, mail], [save, notify], [j])
+root = Page("Kinds", Flowchart("Kinds", [user], [api, store, mail], [save, notify], [j]))
 user = Actor("user", "User", "Saves")
 api = System("api", "API", "Handles requests", "service")
 store = System("store", "Store", "Keeps records", "database")

@@ -44,19 +44,19 @@ try {
   const guide = (await call('get_authoring_guide', { components: ['QuizQuestion'] })).content[0].text
   assert.match(guide, /^QuizQuestion\(/m)
   assert.match(guide, /^QuizChoice\(/m)
-  const nativeText = (await call('get_authoring_guide', { components: ['Text'], library: 'loom' })).content[0].text
-  const openuiText = (await call('get_authoring_guide', { components: ['Text'], library: 'openui' })).content[0].text
-  assert.match(nativeText, /^Text\(title: string, paragraphs:/m)
+  const nativeText = (await call('get_authoring_guide', { components: ['LessonText'] })).content[0].text
+  const openuiText = (await call('get_authoring_guide', { components: ['Text'] })).content[0].text
+  assert.match(nativeText, /^LessonText\(title: string, paragraphs:/m)
   assert.match(openuiText, /^Text\(variant\?/m)
   assert.ok(!openuiText.includes('paragraphs: string[]'))
-  const selected = JSON.parse((await call('get_authoring_guide', { detail: 'focused', library: 'openui', components: ['Stack', 'Card', 'CardHeader', 'TextContent'] })).content[0].text)
+  const selected = JSON.parse((await call('get_authoring_guide', { detail: 'focused', components: ['Stack', 'Card', 'CardHeader', 'TextContent'] })).content[0].text)
   for (const component of ['Stack', 'Card', 'CardHeader', 'TextContent']) assert.ok(selected.contracts.includes(`${component}(`))
   assert.ok(!/^Form\(/m.test(selected.contracts))
   assert.match(selected.contracts, /Generic children are alternatives/)
   assert.ok(selected.beats.openui)
   assert.ok(selected.measurement.estimatedTokens < 2000)
   const capabilities = JSON.parse((await call('get_loom_capabilities')).content[0].text)
-  assert.equal(capabilities.workflow.version, 5)
+  assert.equal(capabilities.workflow.version, 6)
   const index = JSON.parse((await call('get_loom_capabilities', { detail: 'index' })).content[0].text)
   assert.deepEqual(index.flowchart.views, ['event-storming', 'architecture', 'swimlanes', 'sequence', 'data-flow', 'state-machine'])
   assert.match(index.openui, /tables/)
@@ -75,7 +75,7 @@ try {
   assert.ok(shown.structuredContent.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'UNJUSTIFIED_TEXT_SELECTION'))
   assert.ok(capabilities.planSchema)
   assert.equal(JSON.parse((await call('validate_topic_plan', { plan: null })).content[0].text).valid, false)
-  const context = JSON.parse((await call('get_topic_context', { files: { 'sections/text.oui': 'root = Text("T", ["One"])' }, roots: ['sections/text.oui'] })).content[0].text)
+  const context = JSON.parse((await call('get_topic_context', { files: { 'sections/text.oui': "root = Page(\"T\", LessonText(\"T\", [\"One\"]))" }, roots: ['sections/text.oui'] })).content[0].text)
   assert.equal(context.sources.length, 1)
   assert.equal(context.truncated, false)
   console.log('Real workerd: startup, stateless tools, focused references, runtime input validation, representation readiness and source context passed.')

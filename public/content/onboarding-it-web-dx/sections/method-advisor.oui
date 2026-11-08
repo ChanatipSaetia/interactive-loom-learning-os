@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("Onboarding Method Advisor", DecisionTree(
   "Onboarding Method Advisor",
   "method-advisor",
   "audience",
@@ -14,7 +14,7 @@ root = DecisionTree(
     recDevs,
   ],
   "Which Onboarding Method Fits Your Crowd?",
-)
+))
 
 audience = DecisionNode(
   "audience",

@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("Choosing a Deployment Strategy", Scenario(
   "Choosing a Deployment Strategy",
   "deploy_decision",
   [
@@ -14,7 +14,7 @@ root = Scenario(
     outcomeMetrics,
   ],
   "Your team needs to deploy an AI agent system. Requirements: low latency, cost control, observability.",
-)
+))
 
 start = ScenarioNode(
   "start",

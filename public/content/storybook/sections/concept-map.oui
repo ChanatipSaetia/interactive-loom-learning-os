@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Storybook Architecture Map", ConceptMap(
   "Storybook Architecture Map",
   [
     component,
@@ -33,7 +33,7 @@ root = ConceptMap(
     ConceptLink(play, testrunner, "executed by"),
     ConceptLink(testrunner, visual, "feeds snapshots"),
   ],
-)
+))
 
 component = Concept("component", "Your Component", "system")
 meta = Concept("meta", "Meta Export (default)", "mechanism")

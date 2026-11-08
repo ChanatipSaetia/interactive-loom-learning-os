@@ -1,13 +1,13 @@
 ## Standard OpenUI Sections
 
-OpenUI section rules: start with // @openui "Title", then root = Component(...) using library openui and exact positional signatures. Generic children are alternatives, not required dependencies: request every child component you actually use; specific model dependencies are included. Static visual explanations are valid. There is no backend: no Query/Mutation, actions, forms or submit buttons. Use supplied/verified chart data or label illustrative values; never invent benchmarks. For narrated compositions use Card/Stack with several named children (part1, part2, …); other roots use all. Every section also opens on title. Narration targets named root children or supported chart/table/Svg paths; validate source, beats and targets and preview mobile Read/Present.
+Page rules: root = Page("Title", body, heading?). One section file is one authored page; choose components, not a section type or library. Use one main visual/activity plus supporting text. Local controls and their visual form one activity. Multiple competing activities produce review warnings, not a component-count rejection. Size the topic to the learner goal. Generic children are alternatives, not mandatory dependencies. Use exact positional signatures; request actual child components and required data models. LessonText is Loom prose; Text is an upstream card building block. LearningGallery retains Loom learning/presentation behavior; ImageGallery is upstream. Page body may be a learning component or an OpenUI composition. Query/Mutation host tools are deferred. Local reactive $variables, input bindings and Set/Reset actions are allowed. Do not use actions unsupported by the host. Use supplied/verified chart data or label illustrative values; never invent benchmarks. Present is hands-free, may use internal scenes/beats, and may render differently from Read using the same content. Demonstrations use authored defaults and never count as learner attempts. Narration is authored in OUI; preserve statement IDs and validate beat/target references. Preview narrow and desktop Read/Present layouts.
 
 OpenUI compositions are first-class teaching formats alongside native Loom sections. Choose them proactively when a visual layout teaches the idea best; Text is not the default for every explanation:
 
-- Its first line is `// @openui "<Section title>" "<optional heading>"`.
-- The rest is openui-lang written with the standard OpenUI component library (`@openuidev/react-ui`), not the Loom components above. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
+- Every section uses `root = Page("Title", body, heading?)`; there is no library directive.
+- The body uses components from the unified catalog: upstream OpenUI components and Loom learning components. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: https://openui.com/docs/api-reference/react-ui. Language specification: https://openui.com/docs/openui-lang.
-- Content is static: no Query(), Mutation(), tools, actions, forms or buttons (there is no backend).
+- Page-local reactive inputs and state actions work without another model call. Query/Mutation tool connections are deferred.
 - List it in topic.oui with `SectionRef` like any other section. Choose a native Loom section when its interaction teaches the goal (a process, a quiz, a trade-off); choose standard OpenUI when a visual composition teaches it better: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
 
 Shape each section to its content and learner action. Reuse a consistent table or card layout when it makes comparisons easier; vary the composition when the learning purpose changes. Visual novelty and layout variety are not learning objectives.
@@ -19,6 +19,7 @@ The `sections/steep-guide.oui` file in the example above is a standard OpenUI se
 
 ## Visual references
 
+- [Canonical visual contracts](../openui/components.md)
 - [Tables and charts](../openui/charts.md)
 - [Layouts](../openui/layouts.md)
 - [SVG drawings](../openui/drawings.md)

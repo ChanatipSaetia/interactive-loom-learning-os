@@ -1,11 +1,11 @@
-root = Scenario(
+root = Page("Combat Scenario", Scenario(
   "Combat Scenario",
   "boss-encounter",
   [start, fourPointResult, spellResult, defenseResult],
   "You face a massive elemental-resistant boss in a narrow chamber. Your party is low on healing. What's your strategy?",
   null,
   "Boss Encounter",
-)
+))
 
 start = ScenarioNode(
   "start",

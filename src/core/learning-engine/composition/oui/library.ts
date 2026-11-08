@@ -20,10 +20,23 @@ import { progressiveContentOUIComponents } from '../../sub-contexts/progressive-
 import { reflectionSynthesisOUIComponents } from '../../sub-contexts/reflection-synthesis/openui'
 import { tradeoffSandboxOUIComponents } from '../../sub-contexts/tradeoff-sandbox/openui'
 import { NARRATION_COMPONENTS } from './narration'
+import { standardOpenUISchema, standardOpenUISpec } from '../../sub-contexts/progressive-content/openui-standard'
 
 /** Component names are local to these libraries (both define Text, for example). */
 export const COMPONENT_LIBRARIES = ['loom', 'openui'] as const
 export type ComponentLibrary = typeof COMPONENT_LIBRARIES[number]
+
+/** A section is one authored page; its body chooses components, never a library. */
+export const Page = defineOUIComponent({
+  name: 'Page',
+  description: 'One authored page with one main visual or activity and supporting text. Present may explain it through several automatic scenes.',
+  props: z.object({ title: z.string(), body: z.any(), heading: z.string().optional() }),
+  fields: {
+    title: 'Page title used in navigation and the presentation title beat.',
+    body: 'The main learning component or an OpenUI composition such as Stack or Card.',
+    heading: 'Optional supporting explanation shown with the page.',
+  },
+})
 
 // ============================================================================
 // Topic & catalog manifest components
@@ -153,6 +166,7 @@ const MANIFEST_COMPONENTS = [Topic, SectionRef, Catalog, TopicRef]
 const DRIVE_COMPONENTS = [Domain, DomainRef, LibraryIndex]
 
 export const LOOM_OUI_COMPONENTS: LoomOUIComponent[] = [
+  Page,
   ...SUBDOMAIN_GROUPS.flatMap((g) => g.components),
   Lead,
   ...MANIFEST_COMPONENTS,
@@ -205,7 +219,8 @@ type JSONSchemaNode = { description?: string; properties?: Record<string, JSONSc
  */
 export function getLoomOUIJSONSchema(): LibraryJSONSchema {
   if (!cachedJSONSchema) {
-    const schema = getLoomOUILibrary().toJSONSchema()
+    const native = getLoomOUILibrary().toJSONSchema()
+    const schema = structuredClone({ ...native, $defs: { ...standardOpenUISchema.$defs, ...native.$defs } }) as LibraryJSONSchema
     const defs = (schema as { $defs?: Record<string, JSONSchemaNode> }).$defs ?? {}
     for (const component of LOOM_OUI_COMPONENTS) {
       const properties = defs[component.name]?.properties ?? {}
@@ -213,9 +228,37 @@ export function getLoomOUIJSONSchema(): LibraryJSONSchema {
         if (properties[prop]) properties[prop].description = description
       }
     }
+    const page = (schema.$defs as Record<string, { properties?: Record<string, unknown> }>).Page
+    if (page?.properties) page.properties.body = { anyOf: Object.keys(getUnifiedOUISpec().components)
+      .filter((name) => !!standardOpenUISpec.components[name] || OUI_SECTION_TYPES.has(name))
+      .map((name) => ({ $ref: `#/$defs/${name}` })) }
+    // Extend generic visual slots, not activity data-model slots (QuizQuestion,
+    // FlowStep, etc.). The runtime uses this same serializable contract.
+    const extendSlots = (node: unknown): void => {
+      if (!node || typeof node !== 'object') return
+      if (Array.isArray(node)) { node.forEach(extendSlots); return }
+      const object = node as { anyOf?: Array<{ $ref?: string }> }
+      if (object.anyOf?.some((option) => option.$ref === '#/$defs/Image')) {
+        for (const name of OUI_SECTION_TYPES.keys()) {
+          if (!object.anyOf.some((option) => option.$ref === `#/$defs/${name}`)) object.anyOf.push({ $ref: `#/$defs/${name}` })
+        }
+      }
+      Object.values(node).forEach(extendSlots)
+    }
+    extendSlots(schema.$defs)
     cachedJSONSchema = schema
   }
   return cachedJSONSchema
+}
+
+/** One catalog for parser contracts, editor tooling and focused AI discovery. */
+export function getUnifiedOUISpec() {
+  const native = getLoomOUILibrary().toSpec()
+  return {
+    root: 'Page',
+    components: { ...standardOpenUISpec.components, ...native.components },
+    componentGroups: [...standardOpenUISpec.componentGroups, ...(native.componentGroups ?? [])],
+  }
 }
 
 /** Component description followed by one `- prop: description` line per prop, in signature order. */
@@ -230,7 +273,7 @@ export function promptDescription(component: LoomOUIComponent): string {
  * prompt (syntax rules, signatures, hoisting) with every prop documented.
  */
 export function getLoomOUIPrompt(options: PromptOptions = {}): string {
-  const spec = getLoomOUILibrary().toSpec()
+  const spec = getUnifiedOUISpec()
   const components: PromptSpec['components'] = {}
   for (const [name, entry] of Object.entries(spec.components)) {
     const component = componentsByName.get(name)

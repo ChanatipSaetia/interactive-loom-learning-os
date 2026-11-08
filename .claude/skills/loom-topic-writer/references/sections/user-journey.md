@@ -39,7 +39,7 @@ Use UserJourney to describe a person's experience of physical products, software
 Example (illustrative, not customer research):
 
 ```
-root = UserJourney("Choosing a motorcycle", "Maya", "Find a motorcycle for a daily commute", [compare, visit])
+root = Page("Choosing a motorcycle", UserJourney("Choosing a motorcycle", "Maya", "Find a motorcycle for a daily commute", [compare, visit]))
 compare = JourneyStage("Compare options", "Find a suitable shortlist", "Maya compares riding position, parking needs and costs.", "The website explains practical differences between models.")
 visit = JourneyStage("Visit the dealer", "Check the fit in person", "With the dealer supporting a stationary motorcycle, Maya checks the riding position.", "The dealer explains the controls and alternatives.", "The first model feels uncomfortable.", "Compare another suitable model before deciding.", "Maya leaves with a clearer shortlist, without being pressured to buy.")
 ```

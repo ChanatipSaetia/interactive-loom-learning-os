@@ -1,4 +1,4 @@
-root = TradeoffSandbox(
+root = Page("Architecture Strategy & Tradeoff Sandbox", TradeoffSandbox(
   "Architecture Strategy & Tradeoff Sandbox",
   [architectureChoice],
   null,
@@ -7,7 +7,7 @@ root = TradeoffSandbox(
     "Evaluates the trade-offs of initial development velocity vs long-term testability and maintainability.",
     "Next: Synthesize your understanding in the Reflection Template.",
   ),
-)
+))
 
 architectureChoice = TradeoffScenario(
   "architecture-choice",

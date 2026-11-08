@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("Audience Map — Who Is the Manual For?", TaxonomyBrowser(
   "Audience Map — Who Is the Manual For?",
   [endUsers, operatorsAdmins, developersDx],
-)
+))
 
 endUsers = TaxonomyCategory(
   "End Users",

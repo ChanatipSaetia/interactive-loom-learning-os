@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("วินิจฉัยปัญหารถมอเตอร์ไซค์", DecisionTree(
   "วินิจฉัยปัญหารถมอเตอร์ไซค์",
   "motorcycle-diag",
   "symptom",
@@ -15,7 +15,7 @@ root = DecisionTree(
     recBrakePad,
   ],
   "ตัวช่วยวินิจฉัยปัญหา",
-)
+))
 
 symptom = DecisionNode(
   "symptom",

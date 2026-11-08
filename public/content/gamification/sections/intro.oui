@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("", Intro(
   "",
   what,
   why,
@@ -73,7 +73,7 @@ root = Intro(
   null,
   "8 min read",
   11,
-)
+))
 
 what = IntroWhat(
   "A guided tour of why games are engaging, the psychology of motivation behind them, and how to design reward systems that build real habits instead of hollow point-farming.",

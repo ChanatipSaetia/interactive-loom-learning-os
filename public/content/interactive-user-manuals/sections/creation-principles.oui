@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Principles for Building Simulations", TaxonomyBrowser(
   "Principles for Building Simulations",
   [
     taskFirstNotScreenFirst,
@@ -9,7 +9,7 @@ root = TaxonomyBrowser(
     bridgeToTheRealSystem,
     accessible,
   ],
-)
+))
 
 taskFirstNotScreenFirst = TaxonomyCategory(
   "Task-First, Not Screen-First",

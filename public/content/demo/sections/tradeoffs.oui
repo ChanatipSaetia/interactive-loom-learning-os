@@ -1,7 +1,7 @@
-root = TradeoffSandbox(
+root = Page("Architecture Trade-off Sandbox", TradeoffSandbox(
   "Architecture Trade-off Sandbox",
   [enterpriseWeb, realtimeChat, financialAudit],
-)
+))
 
 enterpriseWeb = TradeoffScenario(
   "enterprise-web",

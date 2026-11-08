@@ -1,4 +1,4 @@
-root = PillarLayer(
+root = Page("Haystack RAG Pipeline Layer Stack", PillarLayer(
   "Haystack RAG Pipeline Layer Stack",
   [lOrchestration, lModels, lRetrieval, lStorage],
   [
@@ -23,7 +23,7 @@ root = PillarLayer(
     "Shows how query pipelines, prompt nodes, embedding retrievers, and document stores connect.",
     "Next: Test your understanding with the knowledge check quiz.",
   ),
-)
+))
 
 lOrchestration = Layer(
   "l-orchestration",

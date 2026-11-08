@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("mTLS Concept Map", ConceptMap(
   "mTLS Concept Map",
   [
     mtls,
@@ -46,7 +46,7 @@ root = ConceptMap(
     ConceptLink(trustStore, ca, "anchors at"),
     ConceptLink(mutualAuthentication, zeroTrust, "supports"),
   ],
-)
+))
 
 mtls = Concept("mtls", "mTLS", "pattern")
 tls = Concept("tls", "TLS", "pattern")

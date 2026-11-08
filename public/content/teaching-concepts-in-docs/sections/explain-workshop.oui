@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Explain 'Permission Inheritance'", [permissionInheritance])
+root = Page("Explain 'Permission Inheritance'", TradeoffSandbox("Explain 'Permission Inheritance'", [permissionInheritance]))
 
 permissionInheritance = TradeoffScenario(
   "permission-inheritance",

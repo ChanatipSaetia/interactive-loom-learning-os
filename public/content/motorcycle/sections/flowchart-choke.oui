@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("ระบบโช้ค (Choke System)", Flowchart(
   "ระบบโช้ค (Choke System)",
   [rider],
   [chokeValve, engineWarm],
   [chokeOn, richMixBranch, chokeOff],
   [chokeColdStart, chokeForgotOff],
-)
+))
 
 rider = Actor("rider", "ผู้ขับขี่ (Rider)", "ผู้ใช้งานมอเตอร์ไซค์")
 

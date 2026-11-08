@@ -1,4 +1,4 @@
-root = PillarLayer(
+root = Page("Microservice Platform Layer Stack", PillarLayer(
   "Microservice Platform Layer Stack",
   [lClients, lGateway, lServices, lInfra],
   [
@@ -20,7 +20,7 @@ root = PillarLayer(
     "Demonstrates clean multi-tier decoupling between presentation, gateway routing, domain logic, and infrastructure.",
     "Next: Test your understanding with the knowledge check quiz.",
   ),
-)
+))
 
 lClients = Layer(
   "l-clients",

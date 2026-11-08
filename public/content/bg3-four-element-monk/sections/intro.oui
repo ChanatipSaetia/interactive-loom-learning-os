@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("BG3 Four Element Monk Build", Intro(
   "BG3 Four Element Monk Build",
   what,
   why,
@@ -73,7 +73,7 @@ root = Intro(
   null,
   "8 min read",
   12,
-)
+))
 
 what = IntroWhat(
   "Comprehensive build guide for the Monk of the Four Elements, covering subclass features, spell selection, Ki point optimization, and multiclass synergy with Sorcerer metamagic.",

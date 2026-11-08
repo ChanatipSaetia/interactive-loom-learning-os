@@ -10,8 +10,8 @@ export const plan = {
   schemaVersion: 1 as const, topicId: 'evidence', goal: 'Distinguish evidence needs',
   objectives: [{ id: 'compare', description: 'Compare single-span and distributed evidence' }],
   sections: [
-    { id: 'examples', title: 'Compare evidence', objectiveRefs: ['compare'], representation: 'openui', library: 'openui' as const, activity: 'Inspect two labelled documents', rationale: 'The evidence positions are a spatial comparison' },
-    { id: 'check', title: 'Apply it', objectiveRefs: ['compare'], representation: 'quiz', library: 'loom' as const, activity: 'Choose which question needs both sections', rationale: 'A native quiz records assessment evidence' },
+    { id: 'examples', title: 'Compare evidence', objectiveRefs: ['compare'], representation: 'page', components: ['Svg'], activity: 'Inspect two labelled documents', rationale: 'The evidence positions are a spatial comparison' },
+    { id: 'check', title: 'Apply it', objectiveRefs: ['compare'], representation: 'page', components: ['Quiz'], activity: 'Choose which question needs both sections', rationale: 'A native quiz records assessment evidence' },
   ],
 }
 
@@ -25,7 +25,7 @@ describe('shared authoring workflow and plan', () => {
     for (const host of ['mcp', 'studio'] as const) {
       const text = getAuthoringWorkflow(host)
       expect(text.indexOf('get_loom_capabilities')).toBeLessThan(text.indexOf('validate_topic_plan'))
-      expect(text).toContain('library: "loom" | "openui"')
+      expect(text).toContain('component contracts')
       expect(text).toContain('For a small edit')
     }
     expect(getCapabilityCatalog().workflow).toEqual({ version: AUTHORING_WORKFLOW_VERSION, stages: AUTHORING_WORKFLOW_STAGES.map((stage) => stage.id) })
@@ -34,7 +34,7 @@ describe('shared authoring workflow and plan', () => {
     expect(TopicPlanSchema.safeParse(plan).success).toBe(true)
     const studio = readStudioPlan(JSON.stringify({ plan, actions: { check: 'edit' } }))!
     expect(studio.topicPlan).toEqual(plan)
-    expect(studio.items[1]).toMatchObject({ action: 'edit', type: 'quiz', activity: plan.sections[1].activity, rationale: plan.sections[1].rationale, library: 'loom' })
+    expect(studio.items[1]).toMatchObject({ action: 'edit', type: 'page', activity: plan.sections[1].activity, rationale: plan.sections[1].rationale, components: ['Quiz'] })
     const message = buildStudioPlanMessage(studio, [1])
     expect(message).toContain(plan.sections[1].activity)
     expect(message).toContain(plan.sections[1].rationale)
@@ -44,8 +44,8 @@ describe('shared authoring workflow and plan', () => {
   it('keeps legacy plans and rejects invalid canonical plans and action maps', () => {
     expect(readStudioPlan(JSON.stringify({ goal: 'G', items: [{ action: 'create', name: 'sections/check.oui', type: 'Quiz', title: 'Check', idea: 'Apply the idea' }] }))?.items[0].name).toBe('check')
     for (const actions of [{ missing: 'edit' }, { check: 'delete' }, { check: ['edit'] }]) expect(readStudioPlan(JSON.stringify({ plan, actions }))).toBeNull()
-    const invalid = { ...plan, sections: [{ ...plan.sections[0], library: 'loom' }] }
-    expect(validateTopicPlan(invalid, new Set(['openui', 'quiz']))[0].code).toBe('INVALID_LIBRARY')
+    const invalid = { ...plan, sections: [{ ...plan.sections[0], components: ['MissingComponent'] }] }
+    expect(validateTopicPlan(invalid, new Set(['openui', 'quiz']))[0].code).toBe('INVALID_INPUT')
     expect(readStudioPlan(JSON.stringify({ plan: invalid }))).toBeNull()
   })
 })

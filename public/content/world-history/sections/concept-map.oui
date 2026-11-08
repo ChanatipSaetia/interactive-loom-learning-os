@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("แผนผังมโนทัศน์ประวัติศาสตร์โลก", ConceptMap(
   "แผนผังมโนทัศน์ประวัติศาสตร์โลก",
   [
     civilization,
@@ -27,7 +27,7 @@ root = ConceptMap(
     ConceptLink(nationState, globalization, "มีปฏิสัมพันธ์ในระบบ"),
   ],
   "ความเชื่อมโยงระหว่างการเมือง เศรษฐกิจ สังคม นวัตกรรม และภูมิศาสตร์",
-)
+))
 
 civilization = Concept("civilization", "อารยธรรม (Civilization)", "concept")
 agriculture = Concept("agriculture", "การปฏิวัติเกษตรกรรม", "process")

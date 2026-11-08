@@ -1,11 +1,11 @@
-root = Flowchart(
+root = Page("วิวัฒนาการการปฏิวัติอุตสาหกรรม", Flowchart(
   "วิวัฒนาการการปฏิวัติอุตสาหกรรม",
   [inventorScientist, merchantCapitalist, factoryWorker],
   [steamEngine, factorySystem, globalMarket],
   [stepInventEngine, stepBuildFactory, stepMassProduce, stepExpandTrade],
   [journeyIndustrialTransition],
   "ผังกระบวนการเปลี่ยนผ่านจากแรงงานฝีมือสู่ระบบโรงงานและตลาดโลก",
-)
+))
 
 inventorScientist = Actor(
   "inventor_scientist",

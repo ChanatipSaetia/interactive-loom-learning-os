@@ -14,7 +14,7 @@ const route = (id: string, label = id): TopicRoute => ({ id, label, path: `/topi
 const FILES: Record<string, string> = {
   '/content/index.oui': 'root = Catalog([TopicRef("demo")])',
   '/content/demo/topic.oui': 'root = Topic("Demo (OpenUI)", "Architecture", "D", [SectionRef("intro")])',
-  '/content/demo/sections/intro.oui': 'root = Text("Intro", ["From OpenUI."])',
+  '/content/demo/sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"From OpenUI.\"]))",
   '/okf/legacy/index.md': '# Legacy\n\n* [Intro](sections/intro/section.md)\n',
   '/okf/legacy/sections/intro/section.md': '---\ntype: text\ntitle: Intro\n---\nFrom OKF.\n',
 }

@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("AI Agent Architecture — Knowledge Graph", ConceptMap(
   "AI Agent Architecture — Knowledge Graph",
   [
     orchestrator,
@@ -37,7 +37,7 @@ root = ConceptMap(
     ConceptLink(rewardModel, automatedEval, "powers"),
     ConceptLink(rewardModel, benchmark, "trained on"),
   ],
-)
+))
 
 orchestrator = Concept("orchestrator", "Orchestrator", "pattern")
 workers = Concept("workers", "Workers", "pattern")

@@ -11,7 +11,7 @@ import { compileOUISection } from '../../../../src/core/learning-engine/composit
 import { content, propsOf } from '../present/helpers';
 import { printOUISection } from '../../../../src/core/learning-engine/composition/oui/print';
 
-const source = (tail: string) => `root = Flowchart("Brew", [brewer], [kettle], [heat], [happy]${tail})
+const source = (tail: string) => `root = Page("Brew", Flowchart("Brew", [brewer], [kettle], [heat], [happy]${tail}))
 brewer = Actor("brewer", "Brewer", "Makes tea")
 kettle = System("kettle", "Kettle", "Heats water", "aggregate")
 heat = Step("heat", "On brew", "Heat water", kettle, [Event("hot", "Water Hot")], brewer, null, null, null, brewer)

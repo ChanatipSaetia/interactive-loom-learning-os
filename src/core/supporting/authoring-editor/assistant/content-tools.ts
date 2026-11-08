@@ -16,7 +16,6 @@ import {
   summaryOf,
   type ElementIndex,
 } from '../../../learning-engine/composition/oui/content-tree'
-import { readOpenUIDirective } from '../../../learning-engine/sub-contexts/progressive-content/openui-standard'
 import type { AssistantTopicContext } from './context'
 import { fileStatements } from './context'
 import { statementOfAnchor } from '../pick/tray'
@@ -189,8 +188,7 @@ export class ContentToolRunner {
         return
       }
       const tree = this.tree(file)
-      const directive = readOpenUIDirective(source)
-      const what = directive ? `OpenUI section "${directive.title}"` : tree ? summaryOf(tree.root) : 'does not compile'
+      const what = tree ? summaryOf(tree.root) : 'does not compile'
       const errors = this.errorsOf(file).length ? ' (has errors)' : ''
       lines.push(`${i + 1}. ${file} ${what}${errors}`)
     })

@@ -1,4 +1,4 @@
-root = ReflectionTemplate("Retrieval Evaluation Template", [challenge1, challenge2])
+root = Page("Retrieval Evaluation Template", ReflectionTemplate("Retrieval Evaluation Template", [challenge1, challenge2]))
 
 challenge1 = TemplateChallenge(
   "Complete the statement explaining Top K retrieval characteristics (Part 1):",

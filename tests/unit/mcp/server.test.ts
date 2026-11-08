@@ -27,7 +27,7 @@ describe('checkTopic', () => {
   })
 
   it('names the file and line of an error, as a fix request', () => {
-    const check = checkTopic(oui.replace('root = Quiz(', 'root = Quizz('))
+    const check = checkTopic(oui.replace('Quiz(', 'Quizz('))
     expect(check.ok).toBe(false)
     expect(check.report).toContain('sections/quiz.oui')
     expect(check.report).toContain('Quizz')
@@ -69,10 +69,10 @@ describe('Loom MCP server', () => {
     const standard = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Text'], library: 'openui' } }))
     expect(standard).toContain('Text(variant?')
     expect(standard).not.toContain('paragraphs: string[]')
-    const native = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Text'], library: 'loom' } }))
-    expect(native).toContain('Text(title: string, paragraphs:')
+    const native = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['LessonText'] } }))
+    expect(native).toContain('LessonText(title: string, paragraphs:')
     expect((await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Text'], library: 'unknown' } })).isError).toBe(true)
-    expect((await client.callTool({ name: 'get_authoring_guide', arguments: { sections: ['openui'], library: 'openui' } })).isError).toBe(true)
+    expect((await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Table', 'Quiz'] } })).isError).not.toBe(true)
     const catalog = JSON.parse(textOf(await client.callTool({ name: 'get_loom_capabilities', arguments: {} })))
     expect(catalog.planSchema.properties.sections.items.properties.activity.type).toBe('string')
   })
@@ -103,7 +103,7 @@ describe('Loom MCP server', () => {
   it('validates topics and answers with the errors to fix', async () => {
     const oui = topicSource('chinese101-day1')
     expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { oui } }))).toMatch(/^valid: /)
-    expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { oui: oui.replace('root = Quiz(', 'root = Quizz(') } }))).toContain('sections/quiz.oui')
+    expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { oui: oui.replace('Quiz(', 'Quizz(') } }))).toContain('sections/quiz.oui')
   })
 
   it('tells the model what show_topic showed, with a Viewer link for a chat that does not show apps', async () => {
@@ -150,7 +150,7 @@ describe('Loom MCP server, hosted (slice 5)', () => {
   it('offers only the guide and show_topic, and leaves checking to the app', async () => {
     const { tools } = await client.listTools()
     expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_loom_capabilities', 'get_storage_guide', 'get_topic_context', 'get_tutor_guide', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'])
-    const text = textOf(await client.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1').replace('root = Quiz(', 'root = Quizz(') } }))
+    const text = textOf(await client.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1').replace('Quiz(', 'Quizz(') } }))
     expect(text).toContain('The app checks the topic')
     expect(text).not.toContain('Quizz')
     expect(text).toContain('https://loom-mcp.example.workers.dev/viewer.html#present&oui=')

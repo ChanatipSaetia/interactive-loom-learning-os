@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("", Intro(
   "",
   what,
   why,
@@ -37,7 +37,7 @@ root = Intro(
   "Isolate core domain logic from external technologies, frameworks, databases, and UI drivers",
   "25 mins",
   6,
-)
+))
 
 what = IntroWhat(
   "Hexagonal Architecture (also known as Ports & Adapters) decouples core business domain logic from external dependencies like HTTP controllers, databases, message brokers, and third-party APIs through explicit contracts called Ports, implemented by Adapters.",

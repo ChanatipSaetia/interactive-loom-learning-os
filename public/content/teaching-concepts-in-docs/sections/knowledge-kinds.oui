@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("Steps vs Understanding", TaxonomyBrowser(
   "Steps vs Understanding",
   [proceduralKnowledge, conceptualKnowledge, transfer],
-)
+))
 
 proceduralKnowledge = TaxonomyCategory(
   "Procedural Knowledge",

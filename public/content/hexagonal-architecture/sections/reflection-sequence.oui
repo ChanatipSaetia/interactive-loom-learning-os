@@ -1,4 +1,4 @@
-root = ReflectionSequence(
+root = Page("Order Flow Sequencing Challenge", ReflectionSequence(
   "Order Flow Sequencing Challenge",
   [challenge1],
   null,
@@ -7,7 +7,7 @@ root = ReflectionSequence(
     "Verifies that you understand the exact order of execution across Ports and Adapters.",
     "Next: Compare Hexagonal Architecture in the Tradeoff Sandbox.",
   ),
-)
+))
 
 challenge1 = SequenceChallenge(
   "Arrange the execution steps of a Hexagonal Architecture request in correct chronological order from HTTP entry to Database persistence:",

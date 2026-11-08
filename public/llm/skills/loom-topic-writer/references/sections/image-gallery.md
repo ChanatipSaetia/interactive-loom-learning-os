@@ -6,7 +6,7 @@ Read [shared components](../core/components.md) and [narration](../core/narratio
 
 ## Component signatures
 
-ImageGallery(title: string, images: GalleryImage[], heading?: string, lead?: Lead) — Gallery of captioned images.
+LearningGallery(title: string, images: GalleryImage[], heading?: string, lead?: Lead) — Gallery of captioned images.
   - title: Section title, shown in the topic outline and as the section header.
   - images: The images, as GalleryImage references, in order.
   - heading: Optional sub-heading shown under the section title.

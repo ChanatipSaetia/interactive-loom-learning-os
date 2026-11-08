@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Introduction to PixiJS", Intro(
   "Introduction to PixiJS",
   what,
   why,
@@ -62,7 +62,7 @@ root = Intro(
   "25 min",
   10,
   "PixiJS — 2D WebGL & WebGPU Creation Engine",
-)
+))
 
 what = IntroWhat(
   "A battle-tested 2D rendering library that provides a hierarchical scene graph, automatic draw-call batching, multi-texture optimization, custom filters, and asset management for 60+ FPS web graphics.",

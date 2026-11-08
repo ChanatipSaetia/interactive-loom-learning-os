@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("หมวดหมู่เทคนิคการย่างเนื้อบนเตา Kamado", TaxonomyBrowser(
   "หมวดหมู่เทคนิคการย่างเนื้อบนเตา Kamado",
   [reverseSear, lowSlowSmoking, directHighHeatGrilling, cavemanStyle],
-)
+))
 
 reverseSear = TaxonomyCategory(
   "Reverse Sear (ย่างย้อนศร)",

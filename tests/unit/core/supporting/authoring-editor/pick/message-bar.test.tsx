@@ -4,7 +4,7 @@ import { PickMode, sourceResolver, type PickAssistantBridge } from '../../../../
 
 const files = {
   'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz")])\n',
-  'sections/quiz.oui': 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "Yes", true, "Right.")])\n',
+  'sections/quiz.oui': "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"Yes\", true, \"Right.\")])\n",
 }
 const resolve = sourceResolver(files)
 

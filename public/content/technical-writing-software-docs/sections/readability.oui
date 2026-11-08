@@ -1,11 +1,11 @@
-root = FormulaSandbox(
+root = Page("Readability Calculator", FormulaSandbox(
   "Readability Calculator",
   [
     FormulaVariable("words_per_sentence", "Average words per sentence", 5, 40, 1, 25),
     FormulaVariable("syllables_per_word", "Average syllables per word", 1, 2.5, 0.05, 1.6),
   ],
   [flesch, sentencePenalty, wordPenalty, warning],
-)
+))
 
 flesch = FormulaMetric(
   "flesch",

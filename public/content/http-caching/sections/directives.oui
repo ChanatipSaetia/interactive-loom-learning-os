@@ -1,4 +1,4 @@
-root = TaxonomyBrowser("Cache-Control Directives", [maxAge, noCache, noStore, private])
+root = Page("Cache-Control Directives", TaxonomyBrowser("Cache-Control Directives", [maxAge, noCache, noStore, private]))
 
 maxAge = TaxonomyCategory(
   "max-age",

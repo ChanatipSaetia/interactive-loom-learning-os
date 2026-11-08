@@ -1,4 +1,4 @@
-root = ReflectionTemplate("Plan Your Simulation", [challenge1, challenge2, challenge3, challenge4])
+root = Page("Plan Your Simulation", ReflectionTemplate("Plan Your Simulation", [challenge1, challenge2, challenge3, challenge4]))
 
 challenge1 = TemplateChallenge(
   "Complete the case for simulating (Track 1):",

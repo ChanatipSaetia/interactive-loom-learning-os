@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("PM & Meeting Ecosystem", ConceptMap(
   "PM & Meeting Ecosystem",
   [projectGoal, backlog, standup, retro, asyncUpdate, blocker, team, pm],
   [
@@ -9,7 +9,7 @@ root = ConceptMap(
     ConceptLink(asyncUpdate, projectGoal, "tracks"),
     ConceptLink(blocker, pm, "escalated to"),
   ],
-)
+))
 
 projectGoal = Concept("project_goal", "Project Goal", "pattern")
 backlog = Concept("backlog", "Task Backlog", "data")

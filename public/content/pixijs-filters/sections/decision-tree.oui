@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("Filter Selection & Performance Advisor", DecisionTree(
   "Filter Selection & Performance Advisor",
   "filter-selection-advisor",
   "primary_goal",
@@ -15,7 +15,7 @@ root = DecisionTree(
     recCustomGlsl,
   ],
   "PixiJS Filter Selection & Performance Advisor",
-)
+))
 
 primaryGoal = DecisionNode(
   "primary_goal",

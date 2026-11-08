@@ -4,7 +4,7 @@ import { compileOUISection } from '../../../../../../src/core/learning-engine/co
 import { PickLayer, PickSection } from '../../../../../../src/core/supporting/authoring-editor/pick'
 import { usePickAnchor } from '../../../../../../src/core/ui-system'
 
-const { value, sourceMap } = compileOUISection(`root = Quiz("Check", [q2])
+const { value, sourceMap } = compileOUISection(`root = Page("Check", Quiz("Check", [q2]))
 q2 = QuizQuestion("kafka-offsets", "Why?", [QuizChoice("a", "A", true, "Because")])
 `)
 const question = (value!.data as unknown as { questions: Array<{ question: string; choices: Array<{ text: string }> }> }).questions[0]

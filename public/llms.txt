@@ -18,7 +18,7 @@
 ## OpenUI
 
 - [OpenUI Lang specification](https://openui.com/docs/openui-lang): the language every `.oui` file is written in.
-- [OpenUI react-ui components](https://openui.com/docs/api-reference/react-ui): the standard component library used by `// @openui` sections.
+- [OpenUI react-ui components](https://openui.com/docs/api-reference/react-ui): the standard component library available in the shared page catalog.
 
 ## Tools
 

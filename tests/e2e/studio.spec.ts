@@ -95,7 +95,7 @@ test.describe('Loom Studio', () => {
   test('refreshes the topic after its files change on disk', async ({ page }) => {
     await openOpfsTopic(page, 'refresh-demo', {
       'topic.oui': 'root = Topic("Refresh", "Demo", "", [SectionRef("intro")])\n',
-      'sections/intro.oui': 'root = Text("Intro", ["Before."])\n',
+      'sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Before.\"]))\n",
     })
     // Another tool (an AI agent) rewrites the folder.
     await page.evaluate(async () => {
@@ -107,8 +107,8 @@ test.describe('Loom Studio', () => {
       }
       await write(dir, 'topic.oui', 'root = Topic("Refresh", "Demo", "", [SectionRef("intro"), SectionRef("added")])\n')
       const sections = await dir.getDirectoryHandle('sections')
-      await write(sections, 'intro.oui', 'root = Text("Intro", ["After."])\n')
-      await write(sections, 'added.oui', 'root = Text("Added", ["New section."])\n')
+      await write(sections, 'intro.oui', "root = Page(\"Intro\", LessonText(\"Intro\", [\"After.\"]))\n")
+      await write(sections, 'added.oui', "root = Page(\"Added\", LessonText(\"Added\", [\"New section.\"]))\n")
     })
     await page.getByTestId('studio-refresh').click()
     await expect(page.getByTestId('studio-section-added')).toBeVisible()

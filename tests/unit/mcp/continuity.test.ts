@@ -34,7 +34,7 @@ describe('authenticated cross-client continuity', () => {
   it('preserves plan/source revisions and invalidates old objective evidence after an edit', async () => {
     const port = durableFixture()
     const repository = createLearningRepository(port, learner)
-    const oui = '// @loom-topic demo\n// === topic.oui ===\nroot = Topic("T", "C", "D", [SectionRef("quiz")])\n// === sections/quiz.oui ===\nroot = Quiz("T", [q1])\nq1 = QuizQuestion("q1", "Why?", [])\n'
+    const oui = "// @loom-topic demo\n// === topic.oui ===\nroot = Topic(\"T\", \"C\", \"D\", [SectionRef(\"quiz\")])\n// === sections/quiz.oui ===\nroot = Page(\"T\", Quiz(\"T\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [])\n"
     const topicVersion = topicSourceVersion(readTopicText(oui)[0])
     const plan = { schemaVersion: 1 as const, topicId: 'demo', goal: 'Apply', objectives: [{ id: 'apply', description: 'Apply the rule' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', objectiveRefs: ['apply'], activity: 'Submit an answer', assessment: { itemRefs: ['sections/quiz.oui#q1'], successCriterion: 'Correct answer' } }] }
     const current = { ...record, oui, plan, events: [{ ...record.events[0], topicVersion, result: 'correct' as const }] }

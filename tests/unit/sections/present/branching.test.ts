@@ -16,7 +16,7 @@ describe('spatial and branching beats', () => {
   })
 
   it('uses one architecture overview for a compact system', () => {
-    const source = content('hexagonal-architecture/sections/flowchart.oui').replace('  ),\n)\n', '  ),\n  "architecture",\n)\n')
+    const source = content('hexagonal-architecture/sections/flowchart.oui').replace('  ),\n))\n', '  ),\n  "architecture",\n))\n')
     const props = propsOf<FlowchartPresentData>(source)
     expect(flowchartOverviewPages(props)).toBe(1)
     expect(ids(flowchartBeats(props)).slice(0, 2)).toEqual(['chart', 'step1'])

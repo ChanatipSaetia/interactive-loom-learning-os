@@ -24,7 +24,7 @@ LayerItem(title: string, description?: string) — A labelled item listed inside
   - description: Optional detail.
 MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number, colSpan?: number, rowSpan?: number, description?: string, color?: string, dependsOn?: string[], shape?: "rect" | "l-bottom-left" | "l-bottom-right" | "l-top-left" | "l-top-right", offsets?: number[][], group?: string) — A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is "rect" or an L-shape. `dependsOn` lists block IDs.
   - id: Block ID, unique within the map; `dependsOn` refers to it.
-  - title: Text shown on the block.
+  - title: LessonText shown on the block.
   - layer: Anchor row: Layer reference or ID.
   - colOffset: Optional anchor column, from 0 (default 0).
   - colSpan: Optional number of columns covered (default 1).
@@ -53,7 +53,7 @@ MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number
 Example section (`sections/agent-foundation.oui`):
 
 ```
-root = PillarLayer("Actions and knowledge build on a foundation", [capabilities, foundation], [tools, connectors, retrieval, search, compute, storage])
+root = Page("Actions and knowledge build on a foundation", PillarLayer("Actions and knowledge build on a foundation", [capabilities, foundation], [tools, connectors, retrieval, search, compute, storage]))
 capabilities = Layer("capabilities", "Tools & Knowledge")
 foundation = Layer("foundation", "Cloud Foundation")
 tools = MatrixBlock("tools", "Tool Execution", capabilities, 0, 1, 1, "Runs permitted actions.", "teal", ["compute"], null, null, "Tools")

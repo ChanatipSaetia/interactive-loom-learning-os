@@ -10,7 +10,7 @@ afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks() })
 
 const source = createTopicSource([{ topicId: 'demo', files: {
   'topic.oui': 'root = Topic("A topic", "Demo", "", [SectionRef("intro")])',
-  'sections/intro.oui': 'root = Text("Intro", ["Read this content."])',
+  'sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Read this content.\"]))",
 } }])
 const open = async () => {
   fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [{ name: 'demo.loom.oui', arrayBuffer: async () => new TextEncoder().encode(source).buffer }] } })

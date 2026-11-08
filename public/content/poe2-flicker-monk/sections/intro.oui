@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("", Intro(
   "",
   what,
   why,
@@ -43,7 +43,7 @@ root = Intro(
   null,
   "6 min read",
   13,
-)
+))
 
 what = IntroWhat(
   "Comprehensive build guide and mechanics breakdown for the PoE 2 Flicker Strike Invoker Monk.",

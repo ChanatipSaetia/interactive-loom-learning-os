@@ -14,7 +14,7 @@
  */
 import type { OUICall, OUIRef, OUIValue } from '../../sub-contexts/openui-kernel'
 import type { OKFSectionData, OKFSectionMeta } from '../okf/types'
-import { Catalog, getLoomOUIComponent, LOOM_OUI_COMPONENTS, SectionRef, Topic, TopicRef } from './library'
+import { Catalog, getLoomOUIComponent, LOOM_OUI_COMPONENTS, Page, SectionRef, Topic, TopicRef } from './library'
 import type { OUITopicManifest } from './compile'
 import { OPENUI_SECTION_TYPE, printOpenUISection } from '../../sub-contexts/progressive-content/openui-standard'
 
@@ -185,7 +185,9 @@ export function printOUISection(meta: OKFSectionMeta, data: OKFSectionData, opti
   if (data.type === OPENUI_SECTION_TYPE) return printOpenUISection(data.source, meta.title ?? '', meta.heading)
   const component = SECTION_BY_TYPE.get(type)
   if (!component?.fromData) throw new Error(`No OpenUI section component for type "${type}"`)
-  return printOUIProgram(component.fromData(data as unknown as Record<string, unknown>, meta), options)
+  return printOUIProgram({ kind: 'call', component: Page.name, props: {
+    title: meta.title ?? '', body: component.fromData(data as unknown as Record<string, unknown>, meta), heading: meta.heading,
+  } }, options)
 }
 
 /** Print a `topic.oui` manifest. */

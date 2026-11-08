@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("From Task to Simulation", Bullets(
   "From Task to Simulation",
   [
     Bullet(
@@ -47,4 +47,4 @@ root = Bullets(
       ],
     ),
   ],
-)
+))

@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Predict → Observe → Explain", Flowchart(
   "Predict → Observe → Explain",
   [learner],
   [explainer],
   [stepPredict, stepObserve, stepCompare],
   [journeyMismatch, journeyMatch],
-)
+))
 
 learner = Actor("learner", "Learner", "A user learning a concept in the docs")
 

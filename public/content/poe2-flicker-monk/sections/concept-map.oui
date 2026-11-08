@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Build Mechanics Map", ConceptMap(
   "Build Mechanics Map",
   [
     flickerStrike,
@@ -38,7 +38,7 @@ root = ConceptMap(
     ConceptLink(chaosInoculation, subterfugeMask, "stacked defenses"),
     ConceptLink(ailithsChimes, combo, "consumes combo"),
   ],
-)
+))
 
 flickerStrike = Concept("flicker-strike", "Flicker Strike", "skill")
 fallingThunder = Concept("falling-thunder", "Falling Thunder", "skill")

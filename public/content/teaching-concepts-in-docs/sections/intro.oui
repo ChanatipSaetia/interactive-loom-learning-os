@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Teaching Concepts in Software Docs", Intro(
   "Teaching Concepts in Software Docs",
   what,
   why,
@@ -97,7 +97,7 @@ root = Intro(
   ],
   "Help users understand the ideas behind a web app, not just the clicks",
   "40 min",
-)
+))
 
 what = IntroWhat(
   "Steps tell users what to click; concepts tell them why. This topic covers why understanding matters (mental models and transfer), techniques for explaining (analogies, worked examples, refutation, diagrams), interactive explanations (simulators, what-ifs, Predict → Observe → Explain), and findings from learning science that make understanding stick.",

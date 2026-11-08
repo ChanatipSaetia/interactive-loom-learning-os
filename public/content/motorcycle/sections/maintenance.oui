@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("การบำรุงรักษาพื้นฐาน", Bullets(
   "การบำรุงรักษาพื้นฐาน",
   [
     Bullet(
@@ -37,4 +37,4 @@ root = Bullets(
     ),
   ],
   false,
-)
+))

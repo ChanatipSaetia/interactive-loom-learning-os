@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("แผนผังวิทยาศาสตร์อาหารและอุณหพลศาสตร์เตา Kamado", ConceptMap(
   "แผนผังวิทยาศาสตร์อาหารและอุณหพลศาสตร์เตา Kamado",
   [
     ceramicMass,
@@ -25,7 +25,7 @@ root = ConceptMap(
     ConceptLink(carryoverCooking, perfectSteak, "กระจายน้ำในเนื้อให้ชุ่มฉ่ำสม่ำเสมอ"),
     ConceptLink(moistureRetention, perfectSteak, "คงเนื้อสัมผัสนุ่มละมุน"),
   ],
-)
+))
 
 ceramicMass = Concept("ceramic_mass", "Ceramic Thermal Mass (มวลความร้อนเซรามิก)", "mechanism")
 airflowControl = Concept("airflow_control", "Airflow Vent Control (การควบคุมวาล์วลม)", "mechanism")

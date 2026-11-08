@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("คำศัพท์สำคัญ", Flashcards(
   "คำศัพท์สำคัญ",
   [durianOen, namGluea, tan, krapong, nuengTanIip, krating],
   null,
@@ -7,7 +7,7 @@ root = Flashcards(
     "จำคำศัพท์ให้แม่นยำก่อนลงมือทำ",
     "ถัดไป: ประเภทของทุเรียนทอดใน Taxonomy Browser",
   ),
-)
+))
 
 durianOen = Flashcard(
   "durian_oen",

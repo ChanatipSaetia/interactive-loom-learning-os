@@ -1,4 +1,4 @@
-root = Quiz("Display Object Taxonomies Quiz", [qTax1, qTax2, qTax3])
+root = Page("Display Object Taxonomies Quiz", Quiz("Display Object Taxonomies Quiz", [qTax1, qTax2, qTax3]))
 
 qTax1 = QuizQuestion(
   "q_tax_1",

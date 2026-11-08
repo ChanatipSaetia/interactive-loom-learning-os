@@ -7,7 +7,7 @@ const topicText = (id: string, sections: string[]) => [
   '// @loom-domain fight-animation',
   '// === topic.oui ===',
   `root = Topic("${id} title", "Fight Animation", "", [${sections.map((s) => `SectionRef("${s}")`).join(', ')}])`,
-  ...sections.flatMap((s) => [`// === sections/${s}.oui ===`, `root = Text("${s}", ["x"])`]),
+  ...sections.flatMap((s) => [`// === sections/${s}.oui ===`, `root = Page("${s}", LessonText("${s}", ["x"]))`]),
   '',
 ].join('\n')
 

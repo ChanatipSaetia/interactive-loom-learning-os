@@ -1,4 +1,4 @@
-root = FormulaSandbox(
+root = Page("Engine Displacement & Performance Sandbox", FormulaSandbox(
   "Engine Displacement & Performance Sandbox",
   [
     FormulaVariable("bore_size", "Cylinder Bore Size (mm)", 50, 100, 2, 54),
@@ -6,7 +6,7 @@ root = FormulaSandbox(
     FormulaVariable("rpm", "Engine Speed (RPM)", 1000, 12000, 500, 6000),
   ],
   [recall, latency, cost],
-)
+))
 
 recall = FormulaMetric(
   "recall",

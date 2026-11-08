@@ -122,3 +122,13 @@ Use the **Playwright MCP** tools (`playwright_browser_*`) for E2E testing instea
 - Trust documentation in `docs/` and root spec docs (`docs/agents/domain.md`, `grill-log-refactoring.md`) as authoritative truth.
 - Keep content (data) strictly separate from structure (UI) — content lives in `public/okf/` or `src/topics/<topic>/data/`.
 - Only commit, push, or open PRs when explicitly requested.
+
+## Unified page authoring (current)
+
+For new OUI content, follow [docs/sections/page.md](docs/sections/page.md).
+Every section root is `Page(title, body, heading?)`; choose canonical components
+from one catalog. Earlier descriptions of `// @openui` and separate OUI dialects
+above describe the retired authoring format. Native domain schemas and the
+Read/Present adapters remain internal. Preserve hands-free Present scenes and
+separate learner state from demonstration state. Use `npm run oui:migrate` for
+explicit conversion; do not add a parallel old-format runtime reader.

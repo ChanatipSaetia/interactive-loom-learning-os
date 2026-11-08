@@ -1,4 +1,4 @@
-root = Flowchart(
+root = Page("Filter Execution & Render Pipeline", Flowchart(
   "Filter Execution & Render Pipeline",
   [renderTicker],
   [filterSystem, targetPool, displayContainer, shaderProgram, gpuDriver],
@@ -11,7 +11,7 @@ root = Flowchart(
     stepRecycleTargets,
   ],
   [journeySinglePass, journeyMultiPass],
-)
+))
 
 renderTicker = Actor(
   "render_ticker",

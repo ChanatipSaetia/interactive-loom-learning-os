@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Interactive User Manuals", Intro(
   "Interactive User Manuals",
   what,
   why,
@@ -126,7 +126,7 @@ root = Intro(
   ],
   "Teach people to use IT systems and software in a safe copy, when they can't touch the real thing",
   "45 min",
-)
+))
 
 what = IntroWhat(
   "Trainees often aren't allowed to touch the real software: they lack the role, it holds real people's data, or one wrong click sends real money. This topic covers why we simulate, the five ways to build a simulation and the tools for each, how to keep it matching the real software release after release (including as code and with AI), and the principles that make a simulation actually teach.",

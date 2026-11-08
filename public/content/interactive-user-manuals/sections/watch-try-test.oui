@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Watch → Try → Test", Flowchart(
   "Watch → Try → Test",
   [learner],
   [simPlayer, lms],
   [stepWatch, stepTry, stepTryCheck, stepTest, stepRecord],
   [journeyHappy, journeyWrongClick],
-)
+))
 
 learner = Actor("learner", "Learner", "A staff member learning one task in the simulation")
 

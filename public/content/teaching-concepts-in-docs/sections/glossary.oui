@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Glossary", Flashcards(
   "Glossary",
   [
     procedural,
@@ -12,7 +12,7 @@ root = Flashcards(
     poe,
     retrievalPractice,
   ],
-)
+))
 
 procedural = Flashcard(
   "procedural",

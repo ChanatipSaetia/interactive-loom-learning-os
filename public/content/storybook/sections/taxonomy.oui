@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("What Storybook Does Catalog", TaxonomyBrowser(
   "What Storybook Does Catalog",
   [
     componentWorkshop,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     reviewCollaborationHub,
     designSystemCatalog,
   ],
-)
+))
 
 componentWorkshop = TaxonomyCategory(
   "Component Workshop",

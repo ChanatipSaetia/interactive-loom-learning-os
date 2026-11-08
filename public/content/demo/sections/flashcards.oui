@@ -1,7 +1,7 @@
-root = Flashcards(
+root = Page("Key Vocabulary", Flashcards(
   "Key Vocabulary",
   [hierarchy, whitespace, contrast, affordance, consistency, fluidity, typography, animations],
-)
+))
 
 hierarchy = Flashcard(
   "hierarchy",

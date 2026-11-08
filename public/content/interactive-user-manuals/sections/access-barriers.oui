@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("Why Learners Can't Touch the Real System", TaxonomyBrowser(
   "Why Learners Can't Touch the Real System",
   [leastPrivilegeAccess, productionData, irreversibleActions, licenceEnvironmentCost],
-)
+))
 
 leastPrivilegeAccess = TaxonomyCategory(
   "Least-Privilege Access",

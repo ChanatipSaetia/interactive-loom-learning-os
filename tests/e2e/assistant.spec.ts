@@ -250,7 +250,7 @@ test('Studio: Apply all adds a new section and lists it in topic.oui, written on
       await w.close()
     }
     await write(dir, 'topic.oui', 'root = Topic("Create", "Demo", "A demo.", [SectionRef("intro")])\n')
-    await write(await dir.getDirectoryHandle('sections', { create: true }), 'intro.oui', 'root = Text("Intro", ["Hello."])\n')
+    await write(await dir.getDirectoryHandle('sections', { create: true }), 'intro.oui', "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))\n")
     await (window as unknown as { __loomStudio: { openFolder(d: FileSystemDirectoryHandle): Promise<void> } }).__loomStudio.openFolder(dir)
   })
   await expect(page.getByTestId('studio-workspace')).toBeVisible()
@@ -264,7 +264,7 @@ test('Studio: Apply all adds a new section and lists it in topic.oui, written on
     '```',
     '',
     '```oui-edit file=sections/summary.oui mode=create',
-    'root = Text("Summary", ["That is all."])',
+    "root = Page(\"Summary\", LessonText(\"Summary\", [\"That is all.\"]))",
     '```',
   ].join('\n')
   await page.getByTestId('pick-composer').fill(`REPLY<<${proposal}>>`)

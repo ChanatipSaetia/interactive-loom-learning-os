@@ -1,24 +1,95 @@
 // @loom-topic viewer-review-demo
 // === topic.oui ===
 root = Topic("Viewer Review · All 20 Section Types", "Demo", "A permanent design review collection for Read and Present. Explore a proposed AI research assistant through 20 numbered examples. All timings, scores, budgets and experiences are illustrative.", [SectionRef("intro"), SectionRef("text"), SectionRef("bullets"), SectionRef("user-journey"), SectionRef("timeline"), SectionRef("breakdown-tree"), SectionRef("taxonomy-browser"), SectionRef("concept-map"), SectionRef("flowchart"), SectionRef("pillar-layer"), SectionRef("image-gallery"), SectionRef("flashcards"), SectionRef("quiz"), SectionRef("scenario"), SectionRef("decision-tree"), SectionRef("tradeoff-sandbox"), SectionRef("formula-sandbox"), SectionRef("reflection-sequence"), SectionRef("reflection-template"), SectionRef("openui")], ["demo", "viewer", "all-sections", "design-review"], "beginner")
-// === sections/intro.oui ===
-root = Intro("01 · Intro — Welcome to the Viewer review", what, why, [RoadmapStep("Read every section", "text", "Scroll through the numbered examples and try their controls.", "text"), RoadmapStep("Follow a journey", "user-journey", "Compare goals, actions, responses and recovery.", "user-journey"), RoadmapStep("Check your understanding", "quiz", "Answer a question, then compare the worked answer in Present.", "quiz")], "20 section types · one reusable review topic", "15 min", 20)
-what = IntroWhat("Explore every supported Loom section through a small AI research assistant example.", "This is a design review collection, not a complete product specification.", ["Read: interact with each example", "Present: inspect pacing, focus, captions and typography", "Switch themes and compare narrow and wide screens"], ["Viewer", "Read", "Present"])
-why = IntroWhy("A shared example makes visual changes easier to compare over time.", "Use the section numbers when reporting a layout or readability issue.")
-// === sections/text.oui ===
-root = Text("02 · Text — A question becomes a supported answer", ["Sam wants to understand why customer support volume increased. The assistant should clarify the scope, find relevant evidence, and show where each claim comes from.", "**A useful answer is traceable.** A fluent summary still needs sources, clear limitations, and a chance for Sam to correct the scope.", "This collection uses illustrative journeys, timings, budgets and outcomes. They are teaching examples, not measured product performance or customer research."])
+// === sections/breakdown-tree.oui ===
+root = Page("06 · Breakdown tree — How the review budget is divided", BreakdownTree("06 · Breakdown tree — How the review budget is divided", [total, retrieval, review, records, documents], "quantity", "min", "Illustrative time budget, not measured performance.", "Review uses 12 of the 20 minutes: 60% of the whole budget."))
+total = BreakdownNode("total", "Whole investigation", 20, null, "The total time budget.", "blue")
+retrieval = BreakdownNode("retrieval", "Find sources", 8, "total", "Time to locate useful material.", "teal")
+review = BreakdownNode("review", "Review evidence", 12, "total", "Time to inspect claims and citations.", "mauve")
+records = BreakdownNode("records", "Check records", 7, "review", "Review the support counts and dates.")
+documents = BreakdownNode("documents", "Check documents", 5, "review", "Review release notes and context.")
 // === sections/bullets.oui ===
-root = Bullets("03 · Bullets — Before sharing an AI answer", [scope, evidence, share], true)
+root = Page("03 · Bullets — Before sharing an AI answer", Bullets("03 · Bullets — Before sharing an AI answer", [scope, evidence, share], true))
 scope = Bullet("Confirm the scope", [Bullet("Name the date range and support channels"), Bullet("State the question in one sentence")])
 evidence = Bullet("Check the evidence", [Bullet("Open the cited sources"), Bullet("Remove claims that the sources do not support")])
 share = Bullet("Share with context", [Bullet("Include the sources and limitations")])
-// === sections/user-journey.oui ===
-root = UserJourney("04 · User journey — From question to trusted summary", "Sam", "Share an answer supported by source evidence", [ask, review, save])
-ask = JourneyStage("Ask", "Set a useful scope", "Sam asks why support volume increased.", "The assistant asks which dates and channels to examine.")
-review = JourneyStage("Review evidence", "Check the answer before relying on it", "Sam reads the findings and opens the cited sources.", "The assistant connects each claim to the available evidence.", "One claim has no supporting source.", "Remove the unsupported claim and ask for more evidence.", "Sam keeps only supported findings.")
-save = JourneyStage("Save the result", "Share a traceable summary", "Sam edits the summary and confirms the final version.", "The assistant exports the approved summary with its sources.")
+// === sections/concept-map.oui ===
+root = Page("08 · Concept map — How a supported answer fits together", ConceptMap("08 · Concept map — How a supported answer fits together", [question, evidence, claim, summary], [ConceptLink(question, evidence, "guides retrieval"), ConceptLink(evidence, claim, "supports"), ConceptLink(claim, summary, "forms"), ConceptLink(summary, question, "answers")]))
+question = Concept("question", "Question", "core")
+evidence = Concept("evidence", "Evidence", "data")
+claim = Concept("claim", "Checked claim", "mechanism")
+summary = Concept("summary", "Summary", "pattern")
+// === sections/decision-tree.oui ===
+root = Page("15 · Decision tree — What should the assistant do next?", DecisionTree("15 · Decision tree — What should the assistant do next?", "next-action", "start", [start, clarify, verify, deliver]))
+start = DecisionNode("start", "Is the question scoped clearly?", [DecisionChoice("no", "No: dates or channels are missing", "clarify", "Clarify before retrieving.", true), DecisionChoice("yes", "Yes: the scope is clear", "verify", "Check whether the evidence supports an answer.")])
+clarify = DecisionNode("clarify", null, null, DecisionLeaf("Ask a focused question", "Confirm the date range and support channels.", ["Adds one exchange before research starts"]))
+verify = DecisionNode("verify", "Does every material claim have support?", [DecisionChoice("ready", "Yes", "deliver", "Share with citations.", true), DecisionChoice("gap", "No", "clarify", "Explain the evidence gap and request what is missing.")])
+deliver = DecisionNode("deliver", null, null, DecisionLeaf("Share a sourced summary", "Keep citations and limitations with the answer.", ["The reader still needs to judge relevance"]))
+// === sections/flashcards.oui ===
+root = Page("12 · Flashcards — Words worth checking", Flashcards("12 · Flashcards — Words worth checking", [source, claim]))
+source = Flashcard("source", "Source", "/sɔːrs/", "Evidence", "The material a claim is based on.", "A support report, release note or interview can be a source. Its relevance depends on the question and date range.", "A source lets the reader inspect the basis of the answer.")
+claim = Flashcard("claim", "Claim", "/kleɪm/", "Reasoning", "A statement that can be checked.", "Support volume rose after the release is a claim. The report must support the dates and comparison being made.", "Checking each claim helps catch confident but unsupported conclusions.")
+// === sections/flowchart.oui ===
+root = Page("09 · Flowchart — Behind the research request", Flowchart("09 · Flowchart — Behind the research request", [sam], [assistant, search], [submit, retrieve, compose], [research]))
+sam = Actor("sam", "Sam", "Reviews and approves the answer")
+assistant = System("assistant", "Assistant", "Coordinates the research request", "aggregate")
+search = System("search", "Evidence search", "Retrieves relevant source material", "external")
+submit = Step("submit", "When Sam asks a scoped question", "SubmitQuestion", assistant, [Event("requested", "Research Requested")], sam, search, "retrieve")
+retrieve = Step("retrieve", "When research is requested", "FindEvidence", search, [Event("found", "Evidence Found")], null, null, "compose", null, assistant)
+compose = Step("compose", "When evidence is found", "DraftAnswer", assistant, [Event("drafted", "Answer Drafted")], null, null, null, null, sam)
+research = Journey("research", "Research request", "Question to draft", [JourneyStep(submit, "Ask", "Sam sends a scoped question."), JourneyStep(retrieve, "Retrieve", "Search finds relevant records."), JourneyStep(compose, "Draft", "The assistant links claims to sources.")])
+// === sections/formula-sandbox.oui ===
+root = Page("17 · Formula sandbox — Estimate the review effort", FormulaSandbox("17 · Formula sandbox — Estimate the review effort", [sources, minutes], [effort]))
+sources = FormulaVariable("sources", "Sources to inspect", 1, 12, 1, 4)
+minutes = FormulaVariable("minutes", "Minutes per source", 1, 10, 1, 3)
+effort = FormulaMetric("effort", "Estimated review time (min)", "sources * minutes", "Illustrative estimate: sources multiplied by minutes per source. Real review time varies.", "Like estimating a reading session")
+// === sections/image-gallery.oui ===
+root = Page("11 · Image gallery — Two visual reminders", LearningGallery("11 · Image gallery — Two visual reminders", [GalleryImage("scope", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNDIwIj48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjQyMCIgcng9IjI0IiBmaWxsPSIjMjAyNzM3Ii8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIzMiIgZmlsbD0iIzkxYjVlOCIvPjx0ZXh0IHg9IjU2IiB5PSIyMTIiIGZpbGw9IiNlZGYwZjciIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjM4Ij5TY29wZSB0aGUgcXVlc3Rpb248L3RleHQ+PHBhdGggZD0iTTU2IDI3MEg2NjQiIHN0cm9rZT0iIzkxYjVlOCIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHRleHQgeD0iNTYiIHk9IjMyNiIgZmlsbD0iI2I3YzBkMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjMiPlF1ZXN0aW9uIOKGkiBldmlkZW5jZSDihpIgc3VwcG9ydGVkIGFuc3dlcjwvdGV4dD48L3N2Zz4=", "A clear scope identifies the question, date range and channels.", "Original Loom demo illustration"), GalleryImage("evidence", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNDIwIj48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjQyMCIgcng9IjI0IiBmaWxsPSIjMjAyNzM3Ii8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIzMiIgZmlsbD0iIzgzYzliNiIvPjx0ZXh0IHg9IjU2IiB5PSIyMTIiIGZpbGw9IiNlZGYwZjciIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjM4Ij5Db25uZWN0IHRoZSBldmlkZW5jZTwvdGV4dD48cGF0aCBkPSJNNTYgMjcwSDY2NCIgc3Ryb2tlPSIjODNjOWI2IiBzdHJva2Utd2lkdGg9IjQiLz48dGV4dCB4PSI1NiIgeT0iMzI2IiBmaWxsPSIjYjdjMGQzIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMyI+UXVlc3Rpb24g4oaSIGV2aWRlbmNlIOKGkiBzdXBwb3J0ZWQgYW5zd2VyPC90ZXh0Pjwvc3ZnPg==", "Trace each claim to an inspectable source.", "Original Loom demo illustration")]))
+// === sections/intro.oui ===
+root = Page("01 · Intro — Welcome to the Viewer review", Intro("01 · Intro — Welcome to the Viewer review", what, why, [RoadmapStep("Read every section", "text", "Scroll through the numbered examples and try their controls.", "text"), RoadmapStep("Follow a journey", "user-journey", "Compare goals, actions, responses and recovery.", "user-journey"), RoadmapStep("Check your understanding", "quiz", "Answer a question, then compare the worked answer in Present.", "quiz")], "20 section types · one reusable review topic", "15 min", 20))
+what = IntroWhat("Explore every supported Loom section through a small AI research assistant example.", "This is a design review collection, not a complete product specification.", ["Read: interact with each example", "Present: inspect pacing, focus, captions and typography", "Switch themes and compare narrow and wide screens"], ["Viewer", "Read", "Present"])
+why = IntroWhy("A shared example makes visual changes easier to compare over time.", "Use the section numbers when reporting a layout or readability issue.")
+// === sections/openui.oui ===
+root = Page("20 · OpenUI — A free-form review workspace", Card([header, tabs, note]), "Compare a composed layout with the dedicated learning sections")
+header = CardHeader("Review workspace", "A small example with tabs and a table")
+tabs = Tabs([TabItem("findings", "Findings", [TextContent("**Observed:** support volume increased in the selected period. Verify the report before sharing."), Table([Col("Check", ["Date range", "Channels", "Sources"]), Col("Status", ["Confirmed", "Confirmed", "Review required"])])]), TabItem("limits", "Limitations", [TextContent("This is an illustrative workspace. It contains no real customer data or measured results.")])])
+note = Callout("info", "Review tip", "Switch tabs, then inspect this section in Present.")
+// === sections/pillar-layer.oui ===
+root = Page("10 · Pillar layer — Actions and knowledge build on a foundation", PillarLayer("10 · Pillar layer — Actions and knowledge build on a foundation", [capabilities, foundation], [tools, connectors, retrieval, search, compute, storage]))
+capabilities = Layer("capabilities", "Tools & Knowledge")
+foundation = Layer("foundation", "Cloud Foundation")
+tools = MatrixBlock("tools", "Tool Execution", capabilities, 0, 1, 1, "Runs permitted actions.", "teal", ["compute"], null, null, "Tools")
+connectors = MatrixBlock("connectors", "APIs & Connectors", capabilities, 1, 1, 1, "Connects to external services.", "teal", ["compute"], null, null, "Tools")
+retrieval = MatrixBlock("retrieval", "Knowledge Retrieval", capabilities, 2, 1, 1, "Finds relevant source material.", "green", ["storage"], null, null, "Knowledge")
+search = MatrixBlock("search", "Document Search", capabilities, 3, 1, 1, "Searches indexed documents.", "green", ["storage"], null, null, "Knowledge")
+compute = MatrixBlock("compute", "Compute", foundation, 0, 2, 1, "Hosts the services.", "blue")
+storage = MatrixBlock("storage", "Storage", foundation, 2, 2, 1, "Persists documents and indexes.", "blue")
+// === sections/quiz.oui ===
+root = Page("13 · Quiz — Can the summary be shared?", Quiz("13 · Quiz — Can the summary be shared?", [q1, q2]))
+q1 = QuizQuestion("q1", "A summary contains a claim with no supporting source. What should Sam do?", [QuizChoice("verify", "Verify it or remove it before sharing", true, "Keep the summary limited to what can be supported."), QuizChoice("trust", "Keep it because the wording sounds confident", false, "Confident wording does not establish evidence.")], "Check the connection between the claim and its source.")
+q2 = QuizQuestion("q2", "What makes a comparison of support volume useful?", [QuizChoice("scope", "A clear date range and consistent channels", true, "A defined scope makes the comparison interpretable."), QuizChoice("length", "A longer answer with more adjectives", false, "Length does not fix an unclear comparison.")], "Compare like with like.")
+// === sections/reflection-sequence.oui ===
+root = Page("18 · Reflection sequence — Put the review in order", ReflectionSequence("18 · Reflection sequence — Put the review in order", [SequenceChallenge("From question to shared answer", [scope, inspect, share], [scope, inspect, share])]))
+scope = SequenceItem("scope", "Confirm the question and date range", "1")
+inspect = SequenceItem("inspect", "Inspect the sources behind each claim", "2")
+share = SequenceItem("share", "Share supported findings with citations", "3")
+// === sections/reflection-template.oui ===
+root = Page("19 · Reflection template — Explain why the answer is trustworthy", ReflectionTemplate("19 · Reflection template — Explain why the answer is trustworthy", [reason]))
+reason = TemplateChallenge("Complete the reasoning", "A useful summary connects each {claim} to its {source} and states its {limits}.", [Chip("claim-chip", "claim"), Chip("source-chip", "source"), Chip("limits-chip", "limitations"), Chip("style-chip", "confident tone")], {claim: "claim-chip", source: "source-chip", limits: "limits-chip"}, "Traceability and limits help the reader judge the answer.")
+// === sections/scenario.oui ===
+root = Page("14 · Scenario — A missing source before the meeting", Scenario("14 · Scenario — A missing source before the meeting", "missing-source", [start, checked, rushed], "Sam has five minutes before a review meeting. One claim is missing its source."))
+start = ScenarioNode("start", "What should Sam do?", [ScenarioChoice("check", "Remove the claim and flag the evidence gap", "checked"), ScenarioChoice("send", "Send the summary without checking", "rushed")])
+checked = ScenarioNode("checked", null, null, Outcome("A defensible summary", "The team sees the supported findings and the open question.", "a"))
+rushed = ScenarioNode("rushed", null, null, Outcome("A weak basis for a decision", "The team cannot verify the unsupported claim. Revise it before relying on it.", "c"))
+// === sections/taxonomy-browser.oui ===
+root = Page("07 · Taxonomy browser — Three kinds of evidence", TaxonomyBrowser("07 · Taxonomy browser — Three kinds of evidence", [records, documents, feedback]))
+records = TaxonomyCategory("Records", "Count what happened", "Database", "blue", "Structured support tickets and timestamps.", "Useful for comparing volume across a defined date range.", "Like a ledger", "Measured activity", ["Ticket counts", "Channel totals"], ["Explaining motives"])
+documents = TaxonomyCategory("Documents", "Understand the context", "FileText", "teal", "Release notes and operating procedures.", "Use the version that applied during the period being examined.", "Like a reference shelf", "Written context", ["Release changes", "Policy updates"], ["Counting tickets"])
+feedback = TaxonomyCategory("Feedback", "Hear what people report", "MessageCircle", "mauve", "Customer comments and interview notes.", "Clearly distinguish individual reports from population-wide claims.", "Like a conversation", "Reported experience", ["Recurring complaints", "Follow-up questions"], ["Estimating frequency without a sample"])
+// === sections/text.oui ===
+root = Page("02 · Text — A question becomes a supported answer", LessonText("02 · Text — A question becomes a supported answer", ["Sam wants to understand why customer support volume increased. The assistant should clarify the scope, find relevant evidence, and show where each claim comes from.", "**A useful answer is traceable.** A fluent summary still needs sources, clear limitations, and a chance for Sam to correct the scope.", "This collection uses illustrative journeys, timings, budgets and outcomes. They are teaching examples, not measured product performance or customer research."]))
 // === sections/timeline.oui ===
-root = Timeline("05 · Timeline — Parallel retrieval · 200 ms elapsed", [request, database, search, agent], [validate, records, documents, compose], [prepare, retrieve, join], "ms", "Illustrative timings for one request; tasks are ordered by start time on a shared scale.", "20 + max(80, 150) + 30 = 200 ms elapsed. Running everything sequentially would take 280 ms.")
+root = Page("05 · Timeline — Parallel retrieval · 200 ms elapsed", Timeline("05 · Timeline — Parallel retrieval · 200 ms elapsed", [request, database, search, agent], [validate, records, documents, compose], [prepare, retrieve, join], "ms", "Illustrative timings for one request; tasks are ordered by start time on a shared scale.", "20 + max(80, 150) + 30 = 200 ms elapsed. Running everything sequentially would take 280 ms."))
 request = TimelineLane("request", "Request", "blue")
 database = TimelineLane("database", "Database", "teal")
 search = TimelineLane("search", "Search", "mauve")
@@ -30,66 +101,8 @@ compose = TimelineActivity("compose", "Compose answer", agent, 170, 30, "Waits f
 prepare = TimelineGroup("prepare", "Prepare the request", [validate], "Validation completes before retrieval begins.")
 retrieve = TimelineGroup("retrieve", "Retrieve in parallel", [records, documents], "Both tasks start at 20 ms. Search takes longer; their durations overlap.")
 join = TimelineGroup("join", "Wait for both, then compose", [compose], "Records are ready at 100 ms, but composing cannot start until Search finishes at 170 ms.")
-// === sections/breakdown-tree.oui ===
-root = BreakdownTree("06 · Breakdown tree — How the review budget is divided", [total, retrieval, review, records, documents], "quantity", "min", "Illustrative time budget, not measured performance.", "Review uses 12 of the 20 minutes: 60% of the whole budget.")
-total = BreakdownNode("total", "Whole investigation", 20, null, "The total time budget.", "blue")
-retrieval = BreakdownNode("retrieval", "Find sources", 8, "total", "Time to locate useful material.", "teal")
-review = BreakdownNode("review", "Review evidence", 12, "total", "Time to inspect claims and citations.", "mauve")
-records = BreakdownNode("records", "Check records", 7, "review", "Review the support counts and dates.")
-documents = BreakdownNode("documents", "Check documents", 5, "review", "Review release notes and context.")
-// === sections/taxonomy-browser.oui ===
-root = TaxonomyBrowser("07 · Taxonomy browser — Three kinds of evidence", [records, documents, feedback])
-records = TaxonomyCategory("Records", "Count what happened", "Database", "blue", "Structured support tickets and timestamps.", "Useful for comparing volume across a defined date range.", "Like a ledger", "Measured activity", ["Ticket counts", "Channel totals"], ["Explaining motives"])
-documents = TaxonomyCategory("Documents", "Understand the context", "FileText", "teal", "Release notes and operating procedures.", "Use the version that applied during the period being examined.", "Like a reference shelf", "Written context", ["Release changes", "Policy updates"], ["Counting tickets"])
-feedback = TaxonomyCategory("Feedback", "Hear what people report", "MessageCircle", "mauve", "Customer comments and interview notes.", "Clearly distinguish individual reports from population-wide claims.", "Like a conversation", "Reported experience", ["Recurring complaints", "Follow-up questions"], ["Estimating frequency without a sample"])
-// === sections/concept-map.oui ===
-root = ConceptMap("08 · Concept map — How a supported answer fits together", [question, evidence, claim, summary], [ConceptLink(question, evidence, "guides retrieval"), ConceptLink(evidence, claim, "supports"), ConceptLink(claim, summary, "forms"), ConceptLink(summary, question, "answers")])
-question = Concept("question", "Question", "core")
-evidence = Concept("evidence", "Evidence", "data")
-claim = Concept("claim", "Checked claim", "mechanism")
-summary = Concept("summary", "Summary", "pattern")
-// === sections/flowchart.oui ===
-root = Flowchart("09 · Flowchart — Behind the research request", [sam], [assistant, search], [submit, retrieve, compose], [research])
-sam = Actor("sam", "Sam", "Reviews and approves the answer")
-assistant = System("assistant", "Assistant", "Coordinates the research request", "aggregate")
-search = System("search", "Evidence search", "Retrieves relevant source material", "external")
-submit = Step("submit", "When Sam asks a scoped question", "SubmitQuestion", assistant, [Event("requested", "Research Requested")], sam, search, "retrieve")
-retrieve = Step("retrieve", "When research is requested", "FindEvidence", search, [Event("found", "Evidence Found")], null, null, "compose", null, assistant)
-compose = Step("compose", "When evidence is found", "DraftAnswer", assistant, [Event("drafted", "Answer Drafted")], null, null, null, null, sam)
-research = Journey("research", "Research request", "Question to draft", [JourneyStep(submit, "Ask", "Sam sends a scoped question."), JourneyStep(retrieve, "Retrieve", "Search finds relevant records."), JourneyStep(compose, "Draft", "The assistant links claims to sources.")])
-// === sections/pillar-layer.oui ===
-root = PillarLayer("10 · Pillar layer — Actions and knowledge build on a foundation", [capabilities, foundation], [tools, connectors, retrieval, search, compute, storage])
-capabilities = Layer("capabilities", "Tools & Knowledge")
-foundation = Layer("foundation", "Cloud Foundation")
-tools = MatrixBlock("tools", "Tool Execution", capabilities, 0, 1, 1, "Runs permitted actions.", "teal", ["compute"], null, null, "Tools")
-connectors = MatrixBlock("connectors", "APIs & Connectors", capabilities, 1, 1, 1, "Connects to external services.", "teal", ["compute"], null, null, "Tools")
-retrieval = MatrixBlock("retrieval", "Knowledge Retrieval", capabilities, 2, 1, 1, "Finds relevant source material.", "green", ["storage"], null, null, "Knowledge")
-search = MatrixBlock("search", "Document Search", capabilities, 3, 1, 1, "Searches indexed documents.", "green", ["storage"], null, null, "Knowledge")
-compute = MatrixBlock("compute", "Compute", foundation, 0, 2, 1, "Hosts the services.", "blue")
-storage = MatrixBlock("storage", "Storage", foundation, 2, 2, 1, "Persists documents and indexes.", "blue")
-// === sections/image-gallery.oui ===
-root = ImageGallery("11 · Image gallery — Two visual reminders", [GalleryImage("scope", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNDIwIj48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjQyMCIgcng9IjI0IiBmaWxsPSIjMjAyNzM3Ii8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIzMiIgZmlsbD0iIzkxYjVlOCIvPjx0ZXh0IHg9IjU2IiB5PSIyMTIiIGZpbGw9IiNlZGYwZjciIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjM4Ij5TY29wZSB0aGUgcXVlc3Rpb248L3RleHQ+PHBhdGggZD0iTTU2IDI3MEg2NjQiIHN0cm9rZT0iIzkxYjVlOCIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHRleHQgeD0iNTYiIHk9IjMyNiIgZmlsbD0iI2I3YzBkMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjMiPlF1ZXN0aW9uIOKGkiBldmlkZW5jZSDihpIgc3VwcG9ydGVkIGFuc3dlcjwvdGV4dD48L3N2Zz4=", "A clear scope identifies the question, date range and channels.", "Original Loom demo illustration"), GalleryImage("evidence", "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgNDIwIj48cmVjdCB3aWR0aD0iNzIwIiBoZWlnaHQ9IjQyMCIgcng9IjI0IiBmaWxsPSIjMjAyNzM3Ii8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIzMiIgZmlsbD0iIzgzYzliNiIvPjx0ZXh0IHg9IjU2IiB5PSIyMTIiIGZpbGw9IiNlZGYwZjciIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjM4Ij5Db25uZWN0IHRoZSBldmlkZW5jZTwvdGV4dD48cGF0aCBkPSJNNTYgMjcwSDY2NCIgc3Ryb2tlPSIjODNjOWI2IiBzdHJva2Utd2lkdGg9IjQiLz48dGV4dCB4PSI1NiIgeT0iMzI2IiBmaWxsPSIjYjdjMGQzIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMyI+UXVlc3Rpb24g4oaSIGV2aWRlbmNlIOKGkiBzdXBwb3J0ZWQgYW5zd2VyPC90ZXh0Pjwvc3ZnPg==", "Trace each claim to an inspectable source.", "Original Loom demo illustration")])
-// === sections/flashcards.oui ===
-root = Flashcards("12 · Flashcards — Words worth checking", [source, claim])
-source = Flashcard("source", "Source", "/sɔːrs/", "Evidence", "The material a claim is based on.", "A support report, release note or interview can be a source. Its relevance depends on the question and date range.", "A source lets the reader inspect the basis of the answer.")
-claim = Flashcard("claim", "Claim", "/kleɪm/", "Reasoning", "A statement that can be checked.", "Support volume rose after the release is a claim. The report must support the dates and comparison being made.", "Checking each claim helps catch confident but unsupported conclusions.")
-// === sections/quiz.oui ===
-root = Quiz("13 · Quiz — Can the summary be shared?", [q1, q2])
-q1 = QuizQuestion("q1", "A summary contains a claim with no supporting source. What should Sam do?", [QuizChoice("verify", "Verify it or remove it before sharing", true, "Keep the summary limited to what can be supported."), QuizChoice("trust", "Keep it because the wording sounds confident", false, "Confident wording does not establish evidence.")], "Check the connection between the claim and its source.")
-q2 = QuizQuestion("q2", "What makes a comparison of support volume useful?", [QuizChoice("scope", "A clear date range and consistent channels", true, "A defined scope makes the comparison interpretable."), QuizChoice("length", "A longer answer with more adjectives", false, "Length does not fix an unclear comparison.")], "Compare like with like.")
-// === sections/scenario.oui ===
-root = Scenario("14 · Scenario — A missing source before the meeting", "missing-source", [start, checked, rushed], "Sam has five minutes before a review meeting. One claim is missing its source.")
-start = ScenarioNode("start", "What should Sam do?", [ScenarioChoice("check", "Remove the claim and flag the evidence gap", "checked"), ScenarioChoice("send", "Send the summary without checking", "rushed")])
-checked = ScenarioNode("checked", null, null, Outcome("A defensible summary", "The team sees the supported findings and the open question.", "a"))
-rushed = ScenarioNode("rushed", null, null, Outcome("A weak basis for a decision", "The team cannot verify the unsupported claim. Revise it before relying on it.", "c"))
-// === sections/decision-tree.oui ===
-root = DecisionTree("15 · Decision tree — What should the assistant do next?", "next-action", "start", [start, clarify, verify, deliver])
-start = DecisionNode("start", "Is the question scoped clearly?", [DecisionChoice("no", "No: dates or channels are missing", "clarify", "Clarify before retrieving.", true), DecisionChoice("yes", "Yes: the scope is clear", "verify", "Check whether the evidence supports an answer.")])
-clarify = DecisionNode("clarify", null, null, DecisionLeaf("Ask a focused question", "Confirm the date range and support channels.", ["Adds one exchange before research starts"]))
-verify = DecisionNode("verify", "Does every material claim have support?", [DecisionChoice("ready", "Yes", "deliver", "Share with citations.", true), DecisionChoice("gap", "No", "clarify", "Explain the evidence gap and request what is missing.")])
-deliver = DecisionNode("deliver", null, null, DecisionLeaf("Share a sourced summary", "Keep citations and limitations with the answer.", ["The reader still needs to judge relevance"]))
 // === sections/tradeoff-sandbox.oui ===
-root = TradeoffSandbox("16 · Tradeoff sandbox — Choose a research approach", [research])
+root = Page("16 · Tradeoff sandbox — Choose a research approach", TradeoffSandbox("16 · Tradeoff sandbox — Choose a research approach", [research]))
 research = TradeoffScenario("research", "A first-pass investigation", [speed, depth], [approach, verification, uncertainty, delivery], "Illustrative scores show a trade-off, not benchmark results.")
 speed = TradeoffMetric("speed", "Speed", 50, 0, 100, "higher")
 depth = TradeoffMetric("depth", "Evidence depth", 50, 0, 100, "higher")
@@ -105,22 +118,8 @@ infer = TradeoffChoice("infer", "Include a labeled hypothesis", "Keep a possible
 delivery = TradeoffStep("delivery", "Choose the handoff format", [brief, appendix], "How will the team review the result?", "brief")
 brief = TradeoffChoice("brief", "Source-linked brief", "Share the key findings with citations and limitations.", {speed: 10, depth: 0}, [ProCon("Quick to review")], [ProCon("Less background", "Readers must open sources for detail")], "A short meeting needs a concise summary with inspectable sources.")
 appendix = TradeoffChoice("appendix", "Full evidence appendix", "Attach detailed extracts and the complete review notes.", {speed: -15, depth: 5}, [ProCon("More review context")], [ProCon("Longer reading time", "The key findings may be harder to find")], "Use when reviewers need to audit the investigation in depth.")
-// === sections/formula-sandbox.oui ===
-root = FormulaSandbox("17 · Formula sandbox — Estimate the review effort", [sources, minutes], [effort])
-sources = FormulaVariable("sources", "Sources to inspect", 1, 12, 1, 4)
-minutes = FormulaVariable("minutes", "Minutes per source", 1, 10, 1, 3)
-effort = FormulaMetric("effort", "Estimated review time (min)", "sources * minutes", "Illustrative estimate: sources multiplied by minutes per source. Real review time varies.", "Like estimating a reading session")
-// === sections/reflection-sequence.oui ===
-root = ReflectionSequence("18 · Reflection sequence — Put the review in order", [SequenceChallenge("From question to shared answer", [scope, inspect, share], [scope, inspect, share])])
-scope = SequenceItem("scope", "Confirm the question and date range", "1")
-inspect = SequenceItem("inspect", "Inspect the sources behind each claim", "2")
-share = SequenceItem("share", "Share supported findings with citations", "3")
-// === sections/reflection-template.oui ===
-root = ReflectionTemplate("19 · Reflection template — Explain why the answer is trustworthy", [reason])
-reason = TemplateChallenge("Complete the reasoning", "A useful summary connects each {claim} to its {source} and states its {limits}.", [Chip("claim-chip", "claim"), Chip("source-chip", "source"), Chip("limits-chip", "limitations"), Chip("style-chip", "confident tone")], {claim: "claim-chip", source: "source-chip", limits: "limits-chip"}, "Traceability and limits help the reader judge the answer.")
-// === sections/openui.oui ===
-// @openui "20 · OpenUI — A free-form review workspace" "Compare a composed layout with the dedicated learning sections"
-root = Card([header, tabs, note])
-header = CardHeader("Review workspace", "A small example with tabs and a table")
-tabs = Tabs([TabItem("findings", "Findings", [TextContent("**Observed:** support volume increased in the selected period. Verify the report before sharing."), Table([Col("Check", ["Date range", "Channels", "Sources"]), Col("Status", ["Confirmed", "Confirmed", "Review required"])])]), TabItem("limits", "Limitations", [TextContent("This is an illustrative workspace. It contains no real customer data or measured results.")])])
-note = Callout("info", "Review tip", "Switch tabs, then inspect this section in Present.")
+// === sections/user-journey.oui ===
+root = Page("04 · User journey — From question to trusted summary", UserJourney("04 · User journey — From question to trusted summary", "Sam", "Share an answer supported by source evidence", [ask, review, save]))
+ask = JourneyStage("Ask", "Set a useful scope", "Sam asks why support volume increased.", "The assistant asks which dates and channels to examine.")
+review = JourneyStage("Review evidence", "Check the answer before relying on it", "Sam reads the findings and opens the cited sources.", "The assistant connects each claim to the available evidence.", "One claim has no supporting source.", "Remove the unsupported claim and ask for more evidence.", "Sam keeps only supported findings.")
+save = JourneyStage("Save the result", "Share a traceable summary", "Sam edits the summary and confirms the final version.", "The assistant exports the approved summary with its sources.")

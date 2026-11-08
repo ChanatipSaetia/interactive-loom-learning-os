@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("Key Capabilities", Bullets(
   "Key Capabilities",
   [
     Bullet(
@@ -43,4 +43,4 @@ root = Bullets(
     Bullet("Pipeline visualization as Mermaid graphs"),
   ],
   false,
-)
+))

@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Key Vocabulary", Flashcards(
   "Key Vocabulary",
   [
     flickerStrike,
@@ -14,7 +14,7 @@ root = Flashcards(
     novaProjectiles,
     quarterstaff,
   ],
-)
+))
 
 flickerStrike = Flashcard(
   "flicker-strike",

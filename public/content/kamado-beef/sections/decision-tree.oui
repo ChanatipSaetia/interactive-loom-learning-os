@@ -1,10 +1,10 @@
-root = DecisionTree(
+root = Page("ระบบแนะนำเทคนิคการย่างตามชิ้นส่วนเนื้อ (Beef Cut Advisor)", DecisionTree(
   "ระบบแนะนำเทคนิคการย่างตามชิ้นส่วนเนื้อ (Beef Cut Advisor)",
   "beef-cut-advisor",
   "cut_nature",
   [cutNature, steakThickness, recLowAndSlow, recReverseSear, recDirectSear],
   "Beef Cut Technique Advisor (ที่ปรึกษาการเลือกวิธีปรุงเนื้อวัว)",
-)
+))
 
 cutNature = DecisionNode(
   "cut_nature",

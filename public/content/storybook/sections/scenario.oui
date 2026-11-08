@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("Release-Day Crisis Scenario", Scenario(
   "Release-Day Crisis Scenario",
   "storybook-release-crisis",
   [
@@ -14,7 +14,7 @@ root = Scenario(
   "You maintain the design system at PixelForge. A teammate's Button refactor — touching a shared z-index mixin — passed code review and is queued for tonight's release. Your job: decide how the team catches (or misses) what the refactor broke.",
   null,
   "The Tooltip That Betrayed Production",
-)
+))
 
 start = ScenarioNode(
   "start",

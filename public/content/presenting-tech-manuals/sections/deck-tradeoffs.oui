@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Launch Webinar Trade-off Workshop", [launchWebinar])
+root = Page("Launch Webinar Trade-off Workshop", TradeoffSandbox("Launch Webinar Trade-off Workshop", [launchWebinar]))
 
 launchWebinar = TradeoffScenario(
   "launch-webinar",

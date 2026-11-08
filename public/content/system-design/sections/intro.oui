@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("Welcome to System Design", Intro(
   "Welcome to System Design",
   what,
   why,
@@ -13,7 +13,7 @@ root = Intro(
   null,
   null,
   "Building Systems That Scale",
-)
+))
 
 what = IntroWhat(
   "Learn how to design scalable, reliable, and maintainable distributed systems.",

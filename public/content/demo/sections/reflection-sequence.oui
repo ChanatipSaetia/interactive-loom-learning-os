@@ -1,4 +1,4 @@
-root = ReflectionSequence("Process Flow Sequence Builder", [challenge1, challenge2])
+root = Page("Process Flow Sequence Builder", ReflectionSequence("Process Flow Sequence Builder", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Arrange the steps in the correct chronological order to model the product feature loop (Part 1):",

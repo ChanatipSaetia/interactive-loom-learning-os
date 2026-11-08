@@ -1,4 +1,4 @@
-root = ReflectionTemplate("Synthesis Vault", [challenge1, challenge2])
+root = Page("Synthesis Vault", ReflectionTemplate("Synthesis Vault", [challenge1, challenge2]))
 
 challenge1 = TemplateChallenge(
   "Complete the architecture statement describing how a story reaches the screen (Part 1):",

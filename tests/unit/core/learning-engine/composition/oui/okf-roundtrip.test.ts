@@ -60,7 +60,7 @@ afterAll(() => {
 
 describe('OKF → OpenUI Lang round trip', () => {
   it('preserves named peer containers when a layer stack is saved and reopened', () => {
-    const result = validateOUISection(`root = PillarLayer("Stack", [layer], [tool, knowledge])
+    const result = validateOUISection(`root = Page("Stack", PillarLayer("Stack", [layer], [tool, knowledge]))
 layer = Layer("capabilities", "Capabilities")
 tool = MatrixBlock("tool", "Execute", layer, 0, 1, 1, null, "teal", [], null, null, "Tools")
 knowledge = MatrixBlock("knowledge", "Retrieve", layer, 1, 1, 1, null, "green", [], null, null, "Knowledge")`)

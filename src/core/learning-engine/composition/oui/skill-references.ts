@@ -3,6 +3,7 @@ import { getAuthoringWorkflow } from './authoring-workflow'
 import { getLoomAuthoringPrompt } from './authoring-prompt'
 import { OUI_SECTION_TYPES } from './library'
 import { BEAT_IDS } from './narration'
+import { standardOpenUISpec } from '../../sub-contexts/progressive-content/openui-standard'
 import { SECTION_MENTAL_MODELS } from './mental-model-guide'
 import { WRITER_OUTPUT, WRITER_PICK, WRITER_VALIDATION, WRITER_VISUAL_PLANNING } from './skill-workflow'
 
@@ -33,6 +34,7 @@ export function getWriterSkillReferences(): Record<string, string> {
   put('planning/visuals', WRITER_VISUAL_PLANNING)
   put('core/formats', take('Topic Layout'), take('Output Formats'))
   put('core/syntax', take('Syntax Rules'), take('Hoisting & Statement Order'))
+  put('core/actions', take('Action — Button Behavior'), 'Page-local state actions work without a model call. Query/Mutation host connections are deferred; do not assume a host handles assistant-conversation actions.')
   put('core/rules', take('Important Rules'), take('Final Verification'), take('Loom Authoring Rules'))
   put('examples/topic', take('Examples'))
   put('workflow/output', WRITER_OUTPUT)
@@ -47,7 +49,7 @@ export function getWriterSkillReferences(): Record<string, string> {
   for (const line of signatures.split('\n').slice(1)) {
     if (line.startsWith('### ')) { owner = line.startsWith('### Narration') ? 'narration' : 'core'; continue }
     const component = /^([A-Z][A-Za-z0-9]*)\(/.exec(line)?.[1]
-    if (component) owner = OUI_SECTION_TYPES.get(component) ?? owner
+    if (component) owner = OUI_SECTION_TYPES.get(component) ?? (standardOpenUISpec.components[component] ? 'visuals' : owner)
     if (component || line.startsWith('  ')) {
       const lines = groups.get(owner) ?? []
       lines.push(line)
@@ -55,6 +57,7 @@ export function getWriterSkillReferences(): Record<string, string> {
     }
   }
   put('core/components', '# Topic and shared components', 'Arguments marked with ? are optional. Read core/syntax.md for positional argument rules.', (groups.get('core') ?? []).join('\n'))
+  put('openui/components', '# Canonical visual component contracts', 'These share the same catalog as Loom learning components. Retrieve the selected families only; a page does not choose a library.', (groups.get('visuals') ?? []).join('\n'))
 
   const narration = take('Narration Files')
     .replace(/Beat IDs by section type[^\n]*\n\n\| Section type \| Beats \|\n\|---\|---\|\n(?:\|[^\n]*\n)+/, 'Beat IDs are in each selected section reference under Presentation beats.\n')
@@ -80,7 +83,7 @@ export function getWriterSkillReferences(): Record<string, string> {
   const layouts = standard.indexOf('\n### Layouts for Other Content')
   const drawings = standard.indexOf('\n### Drawings')
   if (family < 0 || layouts < family || drawings < layouts) throw new Error('OpenUI skill reference families changed')
-  put('sections/openui', standard.slice(0, family), '## Visual references', '- [Tables and charts](../openui/charts.md)\n- [Layouts](../openui/layouts.md)\n- [SVG drawings](../openui/drawings.md)\n- [Time, shares and utilization](../openui/time-usage.md)', '## Presentation beats', '`title`, then ' + BEAT_IDS.openui, 'Read [narration](../core/narration.md) for effects and targets.')
+  put('sections/openui', standard.slice(0, family), '## Visual references', '- [Canonical visual contracts](../openui/components.md)\n- [Tables and charts](../openui/charts.md)\n- [Layouts](../openui/layouts.md)\n- [SVG drawings](../openui/drawings.md)\n- [Time, shares and utilization](../openui/time-usage.md)', '## Presentation beats', '`title`, then ' + BEAT_IDS.openui, 'Read [narration](../core/narration.md) for effects and targets.')
   put('openui/charts', standard.slice(family, layouts))
   put('openui/layouts', standard.slice(layouts, drawings))
   put('openui/drawings', standard.slice(drawings))

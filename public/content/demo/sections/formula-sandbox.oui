@@ -1,4 +1,4 @@
-root = FormulaSandbox(
+root = Page("RAG Parameter Dynamics Sandbox", FormulaSandbox(
   "RAG Parameter Dynamics Sandbox",
   [
     FormulaVariable("chunk_size", "Chunk Size (characters)", 100, 2000, 50, 500),
@@ -6,7 +6,7 @@ root = FormulaSandbox(
     FormulaVariable("overhead", "LLM Query Overhead (ms)", 100, 1500, 50, 400),
   ],
   [recall, latency, cost],
-)
+))
 
 recall = FormulaMetric(
   "recall",

@@ -1,10 +1,10 @@
-root = DecisionTree(
+root = Page("Pick Your Approach", DecisionTree(
   "Pick Your Approach",
   "pick-approach",
   "start",
   [start, platform, backend, devs, leafScreenshots, leafHotspot, leafSandbox, leafClone, leafDom],
   "Which interactive manual approach fits your situation?",
-)
+))
 
 start = DecisionNode(
   "start",

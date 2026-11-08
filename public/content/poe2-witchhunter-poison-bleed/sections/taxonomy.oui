@@ -1,4 +1,4 @@
-root = TaxonomyBrowser("Build Components", [mainDamageSkills, supportGems, defenses, ascendancy])
+root = Page("Build Components", TaxonomyBrowser("Build Components", [mainDamageSkills, supportGems, defenses, ascendancy]))
 
 mainDamageSkills = TaxonomyCategory(
   "Main Damage Skills",

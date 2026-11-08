@@ -1,11 +1,11 @@
-root = FormulaSandbox(
+root = Page("Haystack Retrieval Parameter Sandbox", FormulaSandbox(
   "Haystack Retrieval Parameter Sandbox",
   [
     FormulaVariable("top_k", "Top K Documents Retrieved", 1, 20, 1, 5),
     FormulaVariable("document_overlap", "Document Chunk Overlap (chars)", 0, 500, 50, 100),
   ],
   [recall, latency, cost],
-)
+))
 
 recall = FormulaMetric(
   "recall",

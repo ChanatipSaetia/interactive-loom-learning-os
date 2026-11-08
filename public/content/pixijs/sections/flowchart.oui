@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("60 FPS Frame Render Loop", Flowchart(
   "60 FPS Frame Render Loop",
   [appTicker],
   [tickerManager, sceneGraph, batchRenderer, webglDriver],
   [stepTick, stepTransforms, stepTraverse, stepBatch, stepDraw],
   [renderLoop],
-)
+))
 
 appTicker = Actor(
   "app_ticker",

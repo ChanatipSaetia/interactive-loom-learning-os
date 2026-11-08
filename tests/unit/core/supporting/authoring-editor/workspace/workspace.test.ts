@@ -11,8 +11,8 @@ import { KNOWN_SECTION_TYPES } from '../../../../../../src/core/learning-engine/
 import { validateOUISection } from '../../../../../../src/core/learning-engine/validation/oui-gateway'
 
 const TOPIC = 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz")], ["ai"])\n'
-const INTRO = 'root = Text("Intro", ["Hello."])\n'
-const QUIZ = 'root = Quiz("Check", [q1])\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "A", true, "Yes")])\n'
+const INTRO = "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))\n"
+const QUIZ = "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"A\", true, \"Yes\")])\n"
 
 function demoFolder(extra: Record<string, string> = {}) {
   return memoryFolder('demo', { 'topic.oui': TOPIC, 'sections/intro.oui': INTRO, 'sections/quiz.oui': QUIZ, ...extra })
@@ -80,7 +80,7 @@ describe('content edits', () => {
     const notified: number[] = []
     ws.subscribe(() => notified.push(1))
 
-    ws.setSource('intro', 'root = Text("Intro", ["Hello.", "More."])\n')
+    ws.setSource('intro', "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\", \"More.\"]))\n")
     expect(ws.getSnapshot().dirtySections).toEqual(['intro'])
     expect(ws.section('intro')?.lastValid?.data).toEqual({ type: 'text', paragraphs: ['Hello.', 'More.'] })
 
@@ -89,9 +89,9 @@ describe('content edits', () => {
     expect(ws.section('intro')?.lastValid?.data).toEqual({ type: 'text', paragraphs: ['Hello.', 'More.'] })
     expect(folder.files.get('sections/intro.oui')).toBe(INTRO)
 
-    ws.setSource('intro', '// edited\nroot = Text("Intro", ["Bye."])\n')
+    ws.setSource('intro', "// edited\nroot = Page(\"Intro\", LessonText(\"Intro\", [\"Bye.\"]))\n")
     await ws.save()
-    expect(folder.files.get('sections/intro.oui')).toBe('// edited\nroot = Text("Intro", ["Bye."])\n')
+    expect(folder.files.get('sections/intro.oui')).toBe("// edited\nroot = Page(\"Intro\", LessonText(\"Intro\", [\"Bye.\"]))\n")
     expect(ws.getSnapshot().dirtySections).toEqual([])
     expect(notified.length).toBeGreaterThan(0)
   })
@@ -99,7 +99,7 @@ describe('content edits', () => {
   it('reprints the source for Visual Form edits', async () => {
     const ws = await TopicWorkspace.open(demoFolder())
     ws.setSectionData('intro', { type: 'text', title: 'Intro', resource: '.' }, { type: 'text', paragraphs: ['From the form'] })
-    expect(ws.section('intro')?.source).toBe('root = Text("Intro", ["From the form"])\n')
+    expect(ws.section('intro')?.source).toBe("root = Page(\"Intro\", LessonText(\"Intro\", [\"From the form\"]))\n")
   })
 
   it('saves topic metadata edits', async () => {
@@ -119,7 +119,7 @@ describe('structural actions', () => {
     const ws = await TopicWorkspace.open(folder)
     await ws.addSection('flow', 'flowchart', 'Checkout Flow', 1)
     expect(ws.getSnapshot().sections.map((s) => s.name)).toEqual(['intro', 'flow', 'quiz'])
-    expect(folder.files.get('sections/flow.oui')).toContain('root = Flowchart("Checkout Flow"')
+    expect(folder.files.get('sections/flow.oui')).toContain('root = Page("Checkout Flow", Flowchart("Checkout Flow"')
     expect(topicOnDisk(folder)?.sections).toEqual(['intro', 'flow', 'quiz'])
     expect(ws.getSnapshot().topicDirty).toBe(false)
   })
@@ -169,7 +169,7 @@ describe('buffered structure (AI assistant proposals)', () => {
   it('inserts a section and reorders without writing until save', async () => {
     const folder = demoFolder()
     const ws = await TopicWorkspace.open(folder)
-    ws.insertSection('summary', 'root = Text("Summary", ["Done."])\n')
+    ws.insertSection('summary', "root = Page(\"Summary\", LessonText(\"Summary\", [\"Done.\"]))\n")
     ws.setSectionOrder(['intro', 'summary', 'quiz'])
     expect(folder.files.has('sections/summary.oui')).toBe(false)
     expect(topicOnDisk(folder)?.sections).toEqual(['intro', 'quiz'])
@@ -178,15 +178,15 @@ describe('buffered structure (AI assistant proposals)', () => {
     expect(snap.topicDirty).toBe(true)
 
     await ws.save()
-    expect(folder.files.get('sections/summary.oui')).toBe('root = Text("Summary", ["Done."])\n')
+    expect(folder.files.get('sections/summary.oui')).toBe("root = Page(\"Summary\", LessonText(\"Summary\", [\"Done.\"]))\n")
     expect(topicOnDisk(folder)?.sections).toEqual(['intro', 'summary', 'quiz'])
     expect(ws.isDirty).toBe(false)
   })
 
   it('refuses bad names and incomplete orders', async () => {
     const ws = await TopicWorkspace.open(demoFolder())
-    expect(() => ws.insertSection('intro', 'root = Text("X", [])\n')).toThrow(WorkspaceError)
-    expect(() => ws.insertSection('Bad Name', 'root = Text("X", [])\n')).toThrow(WorkspaceError)
+    expect(() => ws.insertSection('intro', "root = Page(\"X\", LessonText(\"X\", []))\n")).toThrow(WorkspaceError)
+    expect(() => ws.insertSection('Bad Name', "root = Page(\"X\", LessonText(\"X\", []))\n")).toThrow(WorkspaceError)
     expect(() => ws.setSectionOrder(['intro'])).toThrow(WorkspaceError)
     expect(() => ws.setSectionOrder(['intro', 'intro'])).toThrow(WorkspaceError)
   })

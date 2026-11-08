@@ -1,7 +1,7 @@
-root = TradeoffSandbox(
+root = Page("Management & Sync Trade-offs", TradeoffSandbox(
   "Management & Sync Trade-offs",
   [communicationStrategy, processOverhead, estimationsAndPlanning],
-)
+))
 
 communicationStrategy = TradeoffScenario(
   "communication-strategy",

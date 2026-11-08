@@ -1,11 +1,11 @@
-root = Scenario(
+root = Page("Scenario: Archive Is Not Delete", Scenario(
   "Scenario: Archive Is Not Delete",
   "archive-not-delete",
   [start, resultSteps, technique, resultFact, check, resultA, resultCheckbox],
   "Your project-management web app has an Archive button with a box-shaped icon. Every month, support gets tickets: some users are afraid to archive ('will I lose it?'), and others archive projects to 'get rid of' confidential data, which is still there. You own the docs.",
   null,
   "Archive Is Not Delete",
-)
+))
 
 start = ScenarioNode(
   "start",

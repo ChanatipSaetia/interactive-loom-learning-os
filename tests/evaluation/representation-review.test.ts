@@ -10,7 +10,7 @@ import { validateTopicPlan, type TopicPlan } from '../../src/core/learning-engin
 import { resolveTopicContext } from '../../src/core/supporting/authoring-editor/assistant/context-graph'
 import { checkTopic } from '../../src/mcp/check'
 
-const table = '// @openui "Cache attributes"\nroot = Table([Col("Policy", ["private", "public"]), Col("Shared cache", ["Disallowed", "Allowed subject to other rules"])])'
+const table = "root = Page(\"Cache attributes\", Table([Col(\"Policy\", [\"private\", \"public\"]), Col(\"Shared cache\", [\"Disallowed\", \"Allowed subject to other rules\"])]))"
 const corpus = [
   { id: 'classification', request: 'Explore categories and distinguish them', type: 'taxonomy-browser', alternatives: ['openui'], source: SECTION_FIXTURES['taxonomy-browser'] },
   { id: 'procedure', request: 'Read an ordered checklist', type: 'bullets', alternatives: ['openui'], source: SECTION_FIXTURES.bullets },
@@ -21,7 +21,7 @@ const corpus = [
   { id: 'quantities', request: 'Compare supplied illustrative temperature values', type: 'openui', alternatives: [], source: TABLE_CHART_EXAMPLE, narration: TABLE_CHART_NARRATION_EXAMPLE },
   { id: 'drawing', request: 'Inspect a labelled spatial mechanism', type: 'openui', alternatives: ['image-gallery'], source: DRAWING_EXAMPLE, narration: DRAWING_NARRATION_EXAMPLE },
   { id: 'argument', request: 'Read a connected argument', type: 'text', alternatives: ['openui'], source: SECTION_FIXTURES.text },
-  { id: 'dense-review', request: 'Review whether a long table is readable', type: 'openui', alternatives: ['text', 'taxonomy-browser'], source: `// @openui "Review required"\nroot = Table([Col("Notes", ["${'Long factual explanation. '.repeat(100)}"])])` },
+  { id: 'dense-review', request: 'Review whether a long table is readable', type: 'openui', alternatives: ['text', 'taxonomy-browser'], source: `root = Page("Review required", Table([Col("Notes", ["${'Long factual explanation. '.repeat(100)}"])]))` },
 ]
 
 const supported = new Set(getCapabilityCatalog().sections.map((section) => section.type))

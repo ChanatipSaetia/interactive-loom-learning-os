@@ -19,7 +19,7 @@ it('uses library-scoped Studio descriptions and rejects invalid libraries and ar
   const standard = r.run('describe_components', '{"names":["Text"],"library":"openui"}')
   expect(standard.content).toContain('Text(variant?')
   expect(standard.content).not.toContain('paragraphs: string[]')
-  expect(r.run('describe_components', '{"names":["Text"]}').content).toContain('Ambiguous component names: Text')
+  expect(r.run('describe_components', '{"names":["Text"]}').content).not.toContain('Ambiguous component names')
   expect(r.run('describe_components', '{"names":["Text"],"library":"unknown"}').content).toContain('Error: library')
   expect(r.run('describe_components', 'null').content).toContain('arguments must be an object')
 })

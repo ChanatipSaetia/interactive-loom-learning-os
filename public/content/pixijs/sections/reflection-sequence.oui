@@ -1,4 +1,4 @@
-root = ReflectionSequence("Render Loop Sequencing", [challenge1])
+root = Page("Render Loop Sequencing", ReflectionSequence("Render Loop Sequencing", [challenge1]))
 
 challenge1 = SequenceChallenge(
   "Arrange the stages of the PixiJS Render Loop in correct chronological order from frame tick to screen output:",

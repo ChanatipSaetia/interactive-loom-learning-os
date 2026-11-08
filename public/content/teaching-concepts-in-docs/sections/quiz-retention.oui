@@ -1,4 +1,4 @@
-root = Quiz("Retention Check", [q1, q2, q3, q4])
+root = Page("Retention Check", Quiz("Retention Check", [q1, q2, q3, q4]))
 
 q1 = QuizQuestion(
   "q1",

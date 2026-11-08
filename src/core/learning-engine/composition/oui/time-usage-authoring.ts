@@ -29,8 +29,7 @@ export const TIME_USAGE_AUTHORING_GUIDE = `## Time and Usage Visuals
 export const TIME_USAGE_EXAMPLES = [
   {
     name: 'timeline',
-    section: `// @openui "Timeline · Where does the time go?"
-root = Card([header, drawing, takeaway], "clear")
+    section: `root = Page("Timeline · Where does the time go?", Card([header, drawing, takeaway], "clear"))
 header = CardHeader("Timeline · Where does the time go?", "Order and duration · illustrative request trace")
 drawing = Svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 280">
 <text x="28" y="35" fill="text" font-size="24">One illustrative request · 200 ms total</text>
@@ -54,8 +53,7 @@ takeaway = Callout("info", "What to notice", "Processing accounts for 150 of 200
   },
   {
     name: 'trend',
-    section: `// @openui "Trend · How does usage change?"
-root = Card([header, chart, takeaway], "clear")
+    section: `root = Page("Trend · How does usage change?", Card([header, chart, takeaway], "clear"))
 header = CardHeader("Trend · How does usage change?", "CPU utilization at four observation times · illustrative data")
 chart = LineChart(["09:00", "09:05", "09:10", "09:15"], [Series("CPU utilization (%)", [20, 45, 80, 35])], "linear", "Observation time", "CPU (%)", 280)
 takeaway = Callout("info", "What to notice", "CPU peaks at 80% at 09:10, then falls to 35%; a peak is different from sustained high usage.")
@@ -72,8 +70,7 @@ takeaway = Callout("info", "What to notice", "CPU peaks at 80% at 09:10, then fa
   },
   {
     name: 'comparison',
-    section: `// @openui "Comparison · Which handles more?"
-root = Card([header, chart, takeaway], "clear")
+    section: `root = Page("Comparison · Which handles more?", Card([header, chart, takeaway], "clear"))
 header = CardHeader("Comparison · Which handles more?", "Requests by operation in one observation window · illustrative data")
 chart = HorizontalBarChart(["Search", "Database", "Other"], [Series("Requests", [600, 300, 100])], "grouped", "Request count", "Operation")
 takeaway = Callout("info", "What to notice", "Search handles twice as many requests as Database in this sample; counts alone do not measure resource cost.")
@@ -90,8 +87,7 @@ takeaway = Callout("info", "What to notice", "Search handles twice as many reque
   },
   {
     name: 'share',
-    section: `// @openui "Proportion · How is the whole divided?"
-root = Card([header, chart, takeaway], "clear")
+    section: `root = Page("Proportion · How is the whole divided?", Card([header, chart, takeaway], "clear"))
 header = CardHeader("Proportion · How is the whole divided?", "Share of the same 1,000 requests · illustrative data")
 chart = PieChart(["Search · 60%", "Database · 30%", "Other · 10%"], [60, 30, 10], "donut")
 takeaway = Callout("info", "What to notice", "These shares add to 100%. They describe the request mix, not percentage of machine capacity.")
@@ -108,8 +104,7 @@ takeaway = Callout("info", "What to notice", "These shares add to 100%. They des
   },
   {
     name: 'utilization',
-    section: `// @openui "Utilization · How much capacity remains?"
-root = Card([header, chart, takeaway], "clear")
+    section: `root = Page("Utilization · How much capacity remains?", Card([header, chart, takeaway], "clear"))
 header = CardHeader("Utilization · How much capacity remains?", "Used versus remaining capacity · illustrative snapshot")
 chart = HorizontalBarChart(["CPU", "Memory", "Storage"], [Series("Used (%)", [60, 80, 35]), Series("Remaining (%)", [40, 20, 65])], "stacked", "Percent of each resource’s capacity", "Resource")
 takeaway = Callout("info", "What to notice", "Memory has the least remaining capacity: 20%. Each row has its own capacity denominator; do not add the rows together.")

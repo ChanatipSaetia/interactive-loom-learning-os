@@ -19,7 +19,7 @@ it('makes OpenUI tasks visible before selecting a section', () => {
 it('retrieves selected card content without expanding every permitted layout child', () => {
   const components = ['Stack', 'Card', 'CardHeader', 'TextContent']
   const focused = getAuthoringContract({ detail: 'focused', library: 'openui', components })
-  const legacy = getAuthoringGuide([], components, 'openui')
+  const legacy = getAuthoringGuide([], components, undefined, 'all')
   for (const name of components) expect(focused.contracts).toMatch(new RegExp(`^${name}\\(`, 'm'))
   expect(focused.contracts).not.toMatch(/^(Form|BarChart|DatePicker|Table)\(/m)
   expect(legacy).toMatch(/^Form\(/m)
@@ -38,8 +38,8 @@ it('keeps specific required model contracts and native closure intact', () => {
 it('includes compact OpenUI section rules and beat guidance in focused retrieval', () => {
   const focused = getAuthoringContract({ detail: 'focused', library: 'openui', components: ['Card'] })
   expect(focused.contracts).toContain('Generic children are alternatives')
-  expect(focused.contracts).toContain('// @openui')
-  expect(focused.contracts).toContain('no backend')
+  expect(focused.contracts).toContain('root = Page(')
+  expect(focused.contracts).toContain('Query/Mutation host tools are deferred')
   expect(focused.beats).toHaveProperty('openui')
 })
 

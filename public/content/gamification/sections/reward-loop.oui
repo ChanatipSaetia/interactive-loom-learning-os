@@ -1,4 +1,4 @@
-root = Flowchart(
+root = Page("The Reward Loop", Flowchart(
   "The Reward Loop",
   [learner],
   [
@@ -22,7 +22,7 @@ root = Flowchart(
     notifyBranch,
   ],
   [happyPath, retryLoop],
-)
+))
 
 learner = Actor(
   "learner",

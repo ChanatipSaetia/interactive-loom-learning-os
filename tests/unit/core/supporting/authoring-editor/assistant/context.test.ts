@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildTopicContext, fileStatements, type AssistantTopicContext } from '../../../../../../src/core/supporting/authoring-editor/assistant'
 
-const QUIZ = `root = Quiz("Check", [q1, q2])
+const QUIZ = `root = Page("Check", Quiz("Check", [q1, q2]))
 q1 = QuizQuestion("q1", "First?", [a1, QuizChoice("b", "No", false, "Because.")])
 a1 = QuizChoice("a", "Yes", true, "Right.")
 q2 = QuizQuestion(
@@ -15,7 +15,7 @@ const context = (extra: Partial<AssistantTopicContext> = {}): AssistantTopicCont
   topicId: 'demo',
   files: {
     'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("intro"), SectionRef("quiz")])\n',
-    'sections/intro.oui': 'root = Text("Intro", ["Hello."])\n',
+    'sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))\n",
     'sections/quiz.oui': QUIZ,
   },
   fileOrder: ['topic.oui', 'sections/intro.oui', 'sections/quiz.oui'],
@@ -27,7 +27,7 @@ describe('fileStatements', () => {
   it('lists statements with their lines, components and references', () => {
     const statements = fileStatements(QUIZ)
     expect(statements.map((s) => [s.name, s.line, s.component])).toEqual([
-      ['root', 1, 'Quiz'],
+      ['root', 1, 'Page'],
       ['q1', 2, 'QuizQuestion'],
       ['a1', 3, 'QuizChoice'],
       ['q2', 4, 'QuizQuestion'],
@@ -43,8 +43,8 @@ describe('buildTopicContext', () => {
     const block = buildTopicContext(context(), [{ file: 'sections/quiz.oui', anchor: 'q1.choices[1].text' }])
     expect(block.files).toEqual(['sections/quiz.oui'])
     expect(block.components.sort()).toEqual(['QuizChoice', 'QuizQuestion'])
-    expect(block.text).toContain('- sections/intro.oui (Text "Intro")')
-    expect(block.text).toContain('- sections/quiz.oui (Quiz "Check"): root Quiz, q1 QuizQuestion, a1 QuizChoice, q2 QuizQuestion')
+    expect(block.text).toContain('- sections/intro.oui (Page "Intro")')
+    expect(block.text).toContain('- sections/quiz.oui (Page "Check"): root Page, q1 QuizQuestion, a1 QuizChoice, q2 QuizQuestion')
     expect(block.text).toContain('### sections/quiz.oui: q1 (line 2), a1 (line 3)')
     expect(block.text).not.toContain('Second?')
     expect(block.text.startsWith('<topic-context topic="demo">')).toBe(true)
@@ -79,10 +79,10 @@ describe('buildTopicContext', () => {
 
   it('notes where the topic was opened from and standard OpenUI sections', () => {
     const ctx = context({ source: { kind: 'archive', name: 'demo.loom.oui' } })
-    ctx.files['sections/intro.oui'] = '// @openui "Intro"\nroot = Card([])\n'
+    ctx.files['sections/intro.oui'] = "root = Page(\"Intro\", Card([]))\n"
     const block = buildTopicContext(ctx, [])
     expect(block.text).toContain('Opened in demo.loom.oui.')
-    expect(block.text).toContain('- sections/intro.oui (standard OpenUI "Intro")')
+    expect(block.text).toContain('- sections/intro.oui (Page "Intro")')
   })
 })
 
@@ -125,34 +125,34 @@ describe('buildTopicContext in Viewer', () => {
   it('says where the learner is and sends the section in view whole, once', () => {
     const first = buildTopicContext(context({ view: { mode: 'present', file: 'sections/quiz.oui' } }), [], { reference: true })
     expect(first.text).toContain('## On Screen\n\nPresent mode')
-    expect(first.text).toContain('at sections/quiz.oui (Quiz "Check").')
+    expect(first.text).toContain('at sections/quiz.oui (Page "Check").')
     expect(first.text).toContain('### sections/quiz.oui (whole file)')
     expect(first.text).toContain('QuizQuestion(id: string')
     const again = buildTopicContext(context({ view: { mode: 'present', file: 'sections/quiz.oui' } }), [], { reference: true, known: new Set(first.keys) })
     expect(again.text).toBe('')
     const moved = buildTopicContext(context({ view: { mode: 'read', file: 'sections/intro.oui' } }), [], { known: new Set(first.keys) })
-    expect(moved.text).toContain('Read mode, at sections/intro.oui (Text "Intro").')
+    expect(moved.text).toContain('Read mode, at sections/intro.oui (Page "Intro").')
     expect(moved.text).toContain('### sections/intro.oui (whole file)')
   })
 })
 
 it('keeps native and OpenUI Text references separate, including cached history', () => {
-  const c = context({ files: { 'topic.oui': 'root = Topic("T", "C", "D", [])', 'sections/native.oui': 'root = Text("T", ["Native prose"])', 'sections/standard.oui': '// @openui "Standard"\nroot = Text("text", "OpenUI value")' }, fileOrder: ['topic.oui', 'sections/native.oui', 'sections/standard.oui'] })
+  const c = context({ files: { 'topic.oui': 'root = Topic("T", "C", "D", [])', 'sections/native.oui': "root = Page(\"T\", LessonText(\"T\", [\"Native prose\"]))", 'sections/standard.oui': "root = Page(\"Standard\", Text(\"text\", \"OpenUI value\"))" }, fileOrder: ['topic.oui', 'sections/native.oui', 'sections/standard.oui'] })
   const native = buildTopicContext(c, [{ file: 'sections/native.oui', anchor: 'root' }], { reference: true })
   const standard = buildTopicContext(c, [{ file: 'sections/standard.oui', anchor: 'root' }], { reference: true, known: new Set(native.keys) })
-  expect(native.text).toContain('Text(title: string, paragraphs:')
+  expect(native.text).toContain('LessonText(title: string, paragraphs:')
   expect(standard.text).toContain('Text(variant?')
-  expect(standard.text).not.toContain('Text(title: string, paragraphs:')
-  expect(native.keys).toContain('component:Text:loom')
-  expect(standard.keys).toContain('component:Text:openui')
+  expect(standard.text).not.toContain('LessonText(title: string, paragraphs:')
+  expect(native.keys).toContain('component:LessonText')
+  expect(standard.keys).toContain('component:Text')
 })
 
-it('refreshes a statement reference when only its library directive changes', () => {
-  const files = { 'sections/value.oui': 'root = label\nlabel = Text("text", "Value")' }
+it('does not resend canonical contracts when only a comment changes', () => {
+  const files = { 'sections/value.oui': 'root = Page("Value", label)\nlabel = Text("text", "Value")' }
   const c = context({ files, fileOrder: ['sections/value.oui'] })
   const pointers = [{ file: 'sections/value.oui', anchor: 'label' }]
   const prior = buildTopicContext(c, pointers, { reference: true })
-  const next = buildTopicContext({ ...c, files: { 'sections/value.oui': '// @openui "Value"\n' + files['sections/value.oui'] } }, pointers, { reference: true, known: new Set(prior.keys) })
-  expect(next.text).toContain('Text(variant?')
-  expect(next.files).toEqual(['sections/value.oui'])
+  const next = buildTopicContext({ ...c, files: { 'sections/value.oui': '// A revised note\n' + files['sections/value.oui'] } }, pointers, { reference: true, known: new Set(prior.keys) })
+  expect(next.text).not.toContain('Text(variant?')
+  expect(next.files).toEqual([])
 })

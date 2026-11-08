@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Gear Investment Trade-offs", [budgetLeagueStarter, investedEndgame])
+root = Page("Gear Investment Trade-offs", TradeoffSandbox("Gear Investment Trade-offs", [budgetLeagueStarter, investedEndgame]))
 
 budgetLeagueStarter = TradeoffScenario(
   "budget-league-starter",

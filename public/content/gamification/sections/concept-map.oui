@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Concept Map", ConceptMap(
   "Concept Map",
   [
     gamification,
@@ -38,7 +38,7 @@ root = ConceptMap(
     ConceptLink(darkPatterns, coreDrives, "abuses"),
     ConceptLink(xp, coreDrives, "expresses development"),
   ],
-)
+))
 
 gamification = Concept("gamification", "Gamification", "concept")
 gamefulness = Concept("gamefulness", "Gamefulness", "concept")

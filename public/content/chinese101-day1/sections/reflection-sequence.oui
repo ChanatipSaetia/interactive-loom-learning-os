@@ -1,4 +1,4 @@
-root = ReflectionSequence("Chinese Grammar Sequence Challenge", [challenge1, challenge2])
+root = Page("Chinese Grammar Sequence Challenge", ReflectionSequence("Chinese Grammar Sequence Challenge", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Arrange the words in the correct Chinese grammatical sequence to say: 'Are you busy today?' (Part 1):",

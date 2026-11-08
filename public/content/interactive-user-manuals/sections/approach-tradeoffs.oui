@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Trade-off Sandbox: Fidelity vs Upkeep", [helpdeskTraining])
+root = Page("Trade-off Sandbox: Fidelity vs Upkeep", TradeoffSandbox("Trade-off Sandbox: Fidelity vs Upkeep", [helpdeskTraining]))
 
 helpdeskTraining = TradeoffScenario(
   "helpdesk-training",

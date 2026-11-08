@@ -1,4 +1,4 @@
-root = Text(
+root = Page("The Story Authoring Workflow", LessonText(
   "The Story Authoring Workflow",
   [
     "Storybook's day-one workflow has five moves. First, add Storybook to an existing project with `npx storybook@latest init` — the automigration detects your framework (React, Vue, Angular, Svelte, Web Components), generates a `.storybook/` config directory, and scaffolds example stories. Then `storybook dev -p 6006` opens the workshop in your browser while your app keeps running on its own port.",
@@ -8,4 +8,4 @@ root = Text(
     "Fifth, ship the loop into CI. `storybook build` produces a static site you can publish (e.g. to Chromatic or any CDN) so every branch gets a reviewable URL. The test runner executes every story and its play function headlessly in Playwright or Puppeteer, and visual regression snapshots diff pixels between commits. The payoff: the same story file drives development, documentation, and the release gate — one artifact, three jobs.",
   ],
   "From bare component to published safety net",
-)
+))

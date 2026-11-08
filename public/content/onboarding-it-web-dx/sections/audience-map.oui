@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("Audience Map — Who Are You Onboarding?", TaxonomyBrowser(
   "Audience Map — Who Are You Onboarding?",
   [webAppEndUsers, internalStaffOperators, developersDx],
-)
+))
 
 webAppEndUsers = TaxonomyCategory(
   "Web App End Users",

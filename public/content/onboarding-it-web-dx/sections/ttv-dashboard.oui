@@ -1,9 +1,9 @@
-root = PillarLayer(
+root = Page("The Time-to-Value Dashboard Stack", PillarLayer(
   "The Time-to-Value Dashboard Stack",
   [lInstrument, lFriction, lLeading, lNorthstar],
   [bEvents, bIdentity, bTickets, bDropoff, bDay1, bGoldenpath, bFirstcall, bTtfv, bActivation],
   "Onboarding measurement as a Lego stack: raw instrumentation on the bottom, friction diagnostics above it, leading indicators, and the north-star time-to-first-value on top.",
-)
+))
 
 lInstrument = Layer(
   "l-instrument",

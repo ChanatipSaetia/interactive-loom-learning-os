@@ -1,12 +1,12 @@
-import { useCallback, useInsertionEffect, useState } from 'react'
+import { useCallback, useInsertionEffect, useMemo, useState } from 'react'
 import { Renderer, type ActionEvent, type OpenUIError } from '@openuidev/react-lang'
 import '@openuidev/react-ui/components.css'
 import { ScrollReveal } from '../../../../../ui-system/motion/scroll-reveal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
 import { OpenUIHelpModal } from './OpenUIHelpModal'
 import { ensureLoomOpenUITheme } from './theme'
-import { loomOpenUILibrary } from './themed-charts'
 import './openui.css'
+import { createLoomReactLibrary, renderLearningActivity } from '../../../../composition/oui/react'
 
 export interface OpenUISectionProps {
   title?: string
@@ -15,6 +15,7 @@ export interface OpenUISectionProps {
   source: string
   animate?: boolean
   sectionIndex?: number
+  onEvent?: (event: { type: string; [key: string]: unknown }) => void
 }
 
 function handleAction(event: ActionEvent) {
@@ -24,7 +25,8 @@ function handleAction(event: ActionEvent) {
   }
 }
 
-function OpenUISection({ title, heading, source, animate = false, sectionIndex = 0 }: OpenUISectionProps) {
+function OpenUISection({ title, heading, source, animate = false, sectionIndex = 0, onEvent }: OpenUISectionProps) {
+  const library = useMemo(() => createLoomReactLibrary((config, statementId) => renderLearningActivity(config, statementId, onEvent)), [onEvent])
   const [errors, setErrors] = useState<OpenUIError[]>([])
   const onError = useCallback((next: OpenUIError[]) => setErrors(next), [])
 
@@ -48,7 +50,7 @@ function OpenUISection({ title, heading, source, animate = false, sectionIndex =
       <div className="loom-openui-scope openui-section-body" data-testid="openui-content">
         <Renderer
           response={source}
-          library={loomOpenUILibrary}
+          library={library}
           onAction={handleAction}
           onError={onError}
           publishObservability={false}

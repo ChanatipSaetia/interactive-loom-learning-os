@@ -14,7 +14,7 @@ describe('validateOUISection', () => {
 
   it('reports OpenUI type mismatches as tier 2 at the offending statement', () => {
     const result = validateOUISection([
-      'root = Quiz("Q", [q1])',
+      "root = Page(\"Q\", Quiz(\"Q\", [q1]))",
       'q1 = QuizQuestion("q1", "Why?", [c])',
       'c = QuizChoice("a", "A", "yes", "e")',
     ].join('\n'), context)
@@ -24,7 +24,7 @@ describe('validateOUISection', () => {
 
   it('runs the subdomain Zod schema (tier 2) and points at the producing line', () => {
     const result = validateOUISection([
-      'root = PillarLayer("Stack", [l1], [a, b])',
+      "root = Page(\"Stack\", PillarLayer(\"Stack\", [l1], [a, b]))",
       'l1 = Layer("l1", "Layer 1")',
       'a = MatrixBlock("a", "A", l1, 0)',
       'b = MatrixBlock("b", "B", "missing-layer", 1)',
@@ -40,7 +40,7 @@ describe('validateOUISection', () => {
 
   it('runs subdomain tier 3 checks and maps bracket paths to lines', () => {
     const result = validateOUISection([
-      'root = ConceptMap("Map", [a], [link])',
+      "root = Page(\"Map\", ConceptMap(\"Map\", [a], [link]))",
       'a = Concept("a", "A")',
       'link = ConceptLink(a, "ghost")',
     ].join('\n'), context)
@@ -49,7 +49,7 @@ describe('validateOUISection', () => {
   })
 
   it('reports unused statements as warnings', () => {
-    const result = validateOUISection('root = Text("T", ["a"])\nunused = Text("U", [])', context)
+    const result = validateOUISection("root = Page(\"T\", LessonText(\"T\", [\"a\"]))\nunused = LessonText(\"U\", [])", context)
     expect(result.status).toBe('warning')
     expect(result.payload?.data).toEqual({ type: 'text', paragraphs: ['a'] })
   })

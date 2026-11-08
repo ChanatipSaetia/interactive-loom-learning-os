@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("Render & Hot-Reload Pipeline", Flowchart(
   "Render & Hot-Reload Pipeline",
   [frontendDev],
   [devServer, storyIndexer, previewRuntime, controlsAddon],
   [stepAuthor, stepHmr, stepIndex, stepRender, stepOutcome, stepTune, stepRerender],
   [journeyHotReload, journeyControls],
-)
+))
 
 frontendDev = Actor(
   "frontend_dev",

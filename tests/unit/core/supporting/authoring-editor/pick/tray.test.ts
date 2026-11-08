@@ -17,7 +17,7 @@ import {
 
 const sources = {
   'topic.oui': 'root = Topic("Kafka", "Data", "", [SectionRef("quiz")])\n',
-  'sections/quiz.oui': 'root = Quiz("Check", [q1])\n\nq1 = QuizQuestion("q1", "Why?", [QuizChoice("a", "A", true, "Yes")])\n',
+  'sections/quiz.oui': "root = Page(\"Check\", Quiz(\"Check\", [q1]))\n\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"A\", true, \"Yes\")])\n",
 }
 
 const pick = (anchor: string, file = 'sections/quiz.oui') => ({ file, anchor, label: 'Check' })
@@ -32,7 +32,7 @@ describe('Pick tray', () => {
   })
 
   it('finds the statement a code line belongs to', () => {
-    const source = '// note\nroot = Quiz("C", [q1])\n\nq1 = QuizQuestion(\n  "q1", "Why?",\n  [QuizChoice("a", "A", true, "Yes")],\n)\n'
+    const source = "// note\nroot = Page(\"C\", Quiz(\"C\", [q1]))\n\nq1 = QuizQuestion(\n  \"q1\", \"Why?\",\n  [QuizChoice(\"a\", \"A\", true, \"Yes\")],\n)\n"
     expect(statementAtLine(source, 1)).toBeUndefined()
     expect(statementAtLine(source, 2)).toBe('root')
     expect(statementAtLine(source, 3)).toBe('root')

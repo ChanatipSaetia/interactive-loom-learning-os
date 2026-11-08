@@ -1,4 +1,4 @@
-root = Flashcards(
+root = Page("Essential Filter Terminology", Flashcards(
   "Essential Filter Terminology",
   [
     filtersystem,
@@ -11,7 +11,7 @@ root = Flashcards(
     colorMatrixFilter,
     cacheAsBitmap,
   ],
-)
+))
 
 filtersystem = Flashcard(
   "filtersystem",

@@ -1,4 +1,4 @@
-root = Intro(
+root = Page("", Intro(
   "",
   what,
   why,
@@ -37,7 +37,7 @@ root = Intro(
   null,
   "7 min read",
   14,
-)
+))
 
 what = IntroWhat(
   "คู่มือการบริหารโครงการซอฟต์แวร์และการตัดวงจรประชุมไร้ประสิทธิภาพ (Meeting Bloat) ในทีมไอที",

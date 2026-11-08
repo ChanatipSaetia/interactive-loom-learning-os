@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Rendering Architecture Trade-offs", [pixiRenderingArchitecture])
+root = Page("Rendering Architecture Trade-offs", TradeoffSandbox("Rendering Architecture Trade-offs", [pixiRenderingArchitecture]))
 
 pixiRenderingArchitecture = TradeoffScenario(
   "pixi-rendering-architecture",
@@ -100,7 +100,7 @@ stepText = TradeoffStep(
 
 canvasText = TradeoffChoice(
   "canvas_text",
-  "PIXI.Text (Canvas Rasterization)",
+  "PIXI.LessonText (Canvas Rasterization)",
   "Use standard PIXI.Text with CSS font family, gradient fills, and drop shadows.",
   {fps_performance: -20, draw_calls: 15, memory_footprint: 25, visual_fidelity: 15},
   [ProCon("Native system font support", "Renders any installed font with full CSS styling.")],

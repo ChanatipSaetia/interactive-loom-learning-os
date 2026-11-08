@@ -1,7 +1,7 @@
-root = TaxonomyBrowser(
+root = Page("Skill Arsenal", TaxonomyBrowser(
   "Skill Arsenal",
   [mainDamageSkills, supportBuffSkills, heraldsUtility, defenseLayers],
-)
+))
 
 mainDamageSkills = TaxonomyCategory(
   "Main Damage Skills",

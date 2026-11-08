@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("The Lean Project Lifecycle", Flowchart(
   "The Lean Project Lifecycle",
   [pm, dev],
   [backlog, slackChannel, devWorkspace, standupTool, issueTracker, retroBoard],
   [requestFeature, planSprint, dailyExecution, syncBranch, resolveBlocker, reviewCycle],
   [happyPath, blockedPath],
-)
+))
 
 pm = Actor(
   "pm",

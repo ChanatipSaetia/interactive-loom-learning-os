@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Filter Categories & Shader Effects", TaxonomyBrowser(
   "Filter Categories & Shader Effects",
   [
     spatialConvolutionBlurs,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     stylizedEdgeEffects,
     customGlslWgslShaders,
   ],
-)
+))
 
 spatialConvolutionBlurs = TaxonomyCategory(
   "Spatial & Convolution Blurs",

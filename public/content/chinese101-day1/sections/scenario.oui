@@ -1,4 +1,4 @@
-root = Scenario(
+root = Page("สถานการณ์: ที่สนามบินปักกิ่ง", Scenario(
   "สถานการณ์: ที่สนามบินปักกิ่ง",
   "airport-meeting",
   [start, helloResult, nameResult, waveResult],
@@ -6,7 +6,7 @@ root = Scenario(
   null,
   "การพบปะที่สนามบิน",
   "ลองใช้ภาษาจีนในชีวิตจริง",
-)
+))
 
 start = ScenarioNode(
   "start",

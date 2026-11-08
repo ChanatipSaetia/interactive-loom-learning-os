@@ -1,4 +1,4 @@
-root = Quiz("System Design Knowledge Check", [q1, q2, q3, q4, q5], "Test Your Understanding")
+root = Page("System Design Knowledge Check", Quiz("System Design Knowledge Check", [q1, q2, q3, q4, q5], "Test Your Understanding"))
 
 q1 = QuizQuestion(
   "q1",

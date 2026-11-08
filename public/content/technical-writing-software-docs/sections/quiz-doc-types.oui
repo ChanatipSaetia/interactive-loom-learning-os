@@ -1,4 +1,4 @@
-root = Quiz("Doc Types Check", [q1, q2, q3, q4, q5, q6])
+root = Page("Doc Types Check", Quiz("Doc Types Check", [q1, q2, q3, q4, q5, q6]))
 
 q1 = QuizQuestion(
   "q1",

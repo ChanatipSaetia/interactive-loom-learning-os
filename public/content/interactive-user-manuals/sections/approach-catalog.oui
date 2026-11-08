@@ -1,4 +1,4 @@
-root = TaxonomyBrowser(
+root = Page("Implementation Approaches", TaxonomyBrowser(
   "Implementation Approaches",
   [
     annotatedScreenshotVideoGuides,
@@ -7,7 +7,7 @@ root = TaxonomyBrowser(
     uiCloneWithAMockedBackend,
     trainingSandbox,
   ],
-)
+))
 
 annotatedScreenshotVideoGuides = TaxonomyCategory(
   "Annotated Screenshot & Video Guides",

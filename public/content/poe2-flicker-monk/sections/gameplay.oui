@@ -1,4 +1,4 @@
-root = Bullets(
+root = Page("Gameplay Loop", Bullets(
   "Gameplay Loop",
   [
     Bullet(
@@ -68,4 +68,4 @@ root = Bullets(
     ),
   ],
   true,
-)
+))

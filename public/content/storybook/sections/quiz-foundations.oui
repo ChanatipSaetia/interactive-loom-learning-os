@@ -1,4 +1,4 @@
-root = Quiz("Foundations Trial", [qCsf, qMeta, qArgs, qFrames, qDecorator])
+root = Page("Foundations Trial", Quiz("Foundations Trial", [qCsf, qMeta, qArgs, qFrames, qDecorator]))
 
 qCsf = QuizQuestion(
   "q-csf",

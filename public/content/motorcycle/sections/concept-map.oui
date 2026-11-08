@@ -1,4 +1,4 @@
-root = ConceptMap(
+root = Page("Concept Map", ConceptMap(
   "Concept Map",
   [
     engine,
@@ -47,7 +47,7 @@ root = ConceptMap(
     ConceptLink(drivetrain, transmission, "รวม"),
     ConceptLink(drivetrain, sprocket, "รวม"),
   ],
-)
+))
 
 engine = Concept("engine", "เครื่องยนต์ (Engine)", "system")
 piston = Concept("piston", "ลูกสูบ (Piston)", "mechanism")

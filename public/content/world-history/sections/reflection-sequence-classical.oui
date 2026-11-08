@@ -1,8 +1,8 @@
-root = ReflectionSequence(
+root = Page("ถอดรหัสไทม์ไลน์: ยุคคลาสสิกและยุคกลาง", ReflectionSequence(
   "ถอดรหัสไทม์ไลน์: ยุคคลาสสิกและยุคกลาง",
   [challenge1, challenge2],
   "เรียงลำดับเหตุการณ์สำคัญตั้งแต่ยุคประชาธิปไตยกรีก กฎหมายโรมัน สู่มหากฎบัตรแมกนาคาร์ตา",
-)
+))
 
 challenge1 = SequenceChallenge(
   "ถอดรหัสยุคคลาสสิกและการขยายอารยธรรมกรีก-โรมัน (Classical Antiquity):",

@@ -16,7 +16,6 @@
  */
 import type { ElementNode } from '@openuidev/lang-core'
 import { parseOUIElements } from './compile'
-import { readOpenUIDirective } from '../../sub-contexts/progressive-content/openui-standard'
 
 export interface ElementIndex {
   root: ElementNode
@@ -172,6 +171,7 @@ export function capResult(text: string, limit = READ_LIMIT, hint = 'read the par
 
 /** The readable content of one element: a header line, then its props. */
 export function renderElement(element: ElementNode, index: ElementIndex): string {
+  if (element.typeName === 'Page' && isElement(element.props.body)) return renderElement(element.props.body, index)
   const out = [`${element.typeName}${countsOf(element)}`]
   renderProps(element, index, '', out)
   return capResult(out.join('\n'))
@@ -179,6 +179,7 @@ export function renderElement(element: ElementNode, index: ElementIndex): string
 
 /** The parts directly inside an element, one line each with its anchor. */
 export function listParts(element: ElementNode, index: ElementIndex): string[] {
+  if (element.typeName === 'Page' && isElement(element.props.body)) return listParts(element.props.body, index)
   return partsOf(element).map((part) => `- ${addressOf(part, index)} ${summaryOf(part)}`)
 }
 
@@ -195,8 +196,6 @@ export function contentTreeOf(source: string, file?: string): ElementIndex | nul
 /** A section's title: its root's title prop, or a standard OpenUI section's directive title. */
 export function sectionTitle(source: string | undefined, tree?: ElementIndex | null): string | undefined {
   if (source === undefined) return undefined
-  const directive = readOpenUIDirective(source)
-  if (directive) return directive.title
   const root = (tree === undefined ? contentTreeOf(source) : tree)?.root
   const title = (root?.props as Record<string, unknown> | undefined)?.title
   return typeof title === 'string' ? title : undefined

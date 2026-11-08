@@ -1,4 +1,4 @@
-root = UserJourney("Choosing a motorcycle", "Maya", "Find a motorcycle for a daily commute", [compare, visit, decide])
+root = Page("Choosing a motorcycle", UserJourney("Choosing a motorcycle", "Maya", "Find a motorcycle for a daily commute", [compare, visit, decide]))
 
 compare = JourneyStage(
   "Compare options",

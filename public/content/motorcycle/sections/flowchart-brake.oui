@@ -1,10 +1,10 @@
-root = Flowchart(
+root = Page("ระบบเบรก (Brake System)", Flowchart(
   "ระบบเบรก (Brake System)",
   [rider],
   [brakeMaster, brakeCaliper],
   [brake, caliperSqueeze, brakeBranch],
   [brakeNormal2, brakeFade2],
-)
+))
 
 rider = Actor("rider", "ผู้ขับขี่ (Rider)", "ผู้ใช้งานมอเตอร์ไซค์")
 

@@ -1,4 +1,4 @@
-root = TradeoffSandbox("Post-Processing Performance Trade-offs", [filterOptimizationStrategy])
+root = Page("Post-Processing Performance Trade-offs", TradeoffSandbox("Post-Processing Performance Trade-offs", [filterOptimizationStrategy]))
 
 filterOptimizationStrategy = TradeoffScenario(
   "filter-optimization-strategy",

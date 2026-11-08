@@ -1,4 +1,4 @@
-root = ReflectionSequence("Build a POE Moment", [challenge1, challenge2])
+root = Page("Build a POE Moment", ReflectionSequence("Build a POE Moment", [challenge1, challenge2]))
 
 challenge1 = SequenceChallenge(
   "Build a Predict → Observe → Explain moment for 'permission inheritance'. Put it in order.",

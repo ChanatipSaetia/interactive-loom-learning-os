@@ -1,4 +1,4 @@
-root = DecisionTree(
+root = Page("Mechanic Fit Advisor", DecisionTree(
   "Mechanic Fit Advisor",
   "mechanic-fit",
   "inherent-fun",
@@ -13,7 +13,7 @@ root = DecisionTree(
     recNarrative,
     recCareful,
   ],
-)
+))
 
 inherentFun = DecisionNode(
   "inherent-fun",

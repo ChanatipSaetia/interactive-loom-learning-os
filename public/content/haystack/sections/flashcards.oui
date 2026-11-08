@@ -1,7 +1,7 @@
-root = Flashcards(
+root = Page("Key Vocabulary", Flashcards(
   "Key Vocabulary",
   [pipeline, component, documentStore, document, retriever, embedder, rag, ranking],
-)
+))
 
 pipeline = Flashcard(
   "pipeline",
