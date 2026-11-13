@@ -13,17 +13,12 @@ import { readReference, REFERENCE_ROOT } from '../core/learning-engine/compositi
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/server'
 import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
-import { COMPONENT_LIBRARIES } from '../core/learning-engine/composition/oui/library'
-import { getAuthoringGuide, guideSectionTypes } from '../core/learning-engine/composition/oui/authoring-guide'
-import { getAuthoringContract, authoringContractVersion } from '../core/learning-engine/composition/oui/authoring-contract'
 import { measureTool, type AuthoringStage, type ToolMeasurement } from './measurement'
 import { TopicContextInput, resolveTopicContext } from '../core/supporting/authoring-editor/assistant/context-graph'
-import { getCapabilityCatalog, getCapabilityIndex } from '../core/learning-engine/composition/oui/capability-catalog'
 import { validateTopicPlan, topicPlanReview } from '../core/learning-engine/composition/oui/topic-plan'
 import { LearningRecordSchema, LearningRepositoryError, type LearningRepository } from '../core/supporting/learner-progress/memory/repository'
 import { createLearningCheckpoint } from '../core/supporting/learner-progress/memory/checkpoint'
-import { STORAGE_GUIDE_DESCRIPTION, getStorageGuide } from '../core/learning-engine/composition/oui/storage-guide'
-import { LOOM_SERVER_INSTRUCTIONS, getTutorGuide } from '../core/learning-engine/composition/oui/tutor-skills'
+import { LOOM_SERVER_INSTRUCTIONS } from '../core/learning-engine/composition/oui/tutor-skills'
 import { topicLinkUrl } from '../viewer/topic-link'
 import { isLearnerEvent, summarize, summaryText, type LearnerEvent } from '../core/supporting/learner-progress/memory/events'
 import type { TopicCheck, checkSection } from './check'
@@ -96,9 +91,7 @@ export function appShell(appUrl: string): string {
 <body><div id="root"></div><script type="module" src="${appUrl}app.js"></script></body></html>`
 }
 
-const GUIDE_TOOL_DESCRIPTION = `Retrieve exact OUI contracts after choosing representations. For a new lesson: discover learning purposes with get_loom_capabilities({detail:"index"}) or this tool's detail:"index"; plan objectives, learner actions and candidate capabilities; call validate_topic_plan and resolve relevant readiness warnings or justify proceeding. Then use detail:"focused" with selected components; omit detail for legacy section-filtered guides, ["all"] for the full guide. Consider OpenUI tables for factual comparisons, cards for examples, Svg for spatial explanations and charts for verified data; focused OpenUI requests include section rules and selected child contracts. Lists/prose need a structure-fit rationale, not just easy syntax. Native sections and OpenUI are first-class; no ranking or quota. In a chat, keep topics short by default for quick explanations; honor full-lesson requests with complementary learning contributions, without fixed section counts or order.`
-
-const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). To show a lesson again, retrieve its complete original source from an authorized file/attachment and pass it unchanged; never regenerate from a title or summary. If unavailable, ask for the saved .loom.oui file. The hosted Worker stores no topics. For a new lesson, discover capabilities and validate_topic_plan before writing with get_authoring_guide. Resolve readiness warnings or explain proceeding; pass plan here and to validate_topic when available. Compilation alone does not establish representation readiness. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. After showing a topic in an established domain, save the exact topic to the learner's drive and update domain.oui following get_storage_guide unless the learner opted out. Showing the app is not a Drive save.`
+const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). To show a lesson again, retrieve its complete original source from an authorized file/attachment and pass it unchanged; never regenerate from a title or summary. If unavailable, ask for the saved .loom.oui file. The hosted Worker stores no topics. For a new lesson, follow read_reference from index.md, discover relevant capabilities, validate_topic_plan and read selected component contracts before writing. Resolve readiness warnings or explain proceeding; pass plan here and to validate_topic when available. Compilation alone does not establish representation readiness. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. After showing a topic in an established domain, save the exact topic to the learner's drive and update domain.oui following storage references unless the learner opted out. Showing the app is not a Drive save.`
 
 const VALIDATE_TOOL_DESCRIPTION = `Check a Loom topic (.loom.oui text) the way Loom Viewer does, before showing it. Answers "valid" or the errors to fix; fix only what they point at and check again.`
 
@@ -128,47 +121,18 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     }],
   }))
 
-  server.registerResource('loom-authoring-entry', `${REFERENCE_ROOT}index.md`, { mimeType: 'application/json', description: 'Start progressive authoring navigation here; read linked references only as needed.' }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(readReference('index.md')) }] }))
+  const read = (path: string) => ({ ...readReference(path), deployment: { storageAvailable: Boolean(store || options.repository), serverValidationAvailable: Boolean(checkTopic), sectionValidationAvailable: Boolean(options.checkSection) } })
+
+  server.registerResource('loom-authoring-entry', `${REFERENCE_ROOT}index.md`, { mimeType: 'application/json', description: 'Start progressive authoring navigation here; read linked references only as needed.' }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(read('index.md')) }] }))
   server.registerResource('loom-authoring-reference', new ResourceTemplate(`${REFERENCE_ROOT}{+path}`, { list: undefined }), { description: 'One linked authoring reference; no recursive expansion.' }, async (uri) => {
-    const result = readReference(decodeURIComponent(uri.href.slice(REFERENCE_ROOT.length)))
+    const result = read(decodeURIComponent(uri.href.slice(REFERENCE_ROOT.length)))
     return { contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(result) }] }
   })
   server.registerTool('read_reference', {
     description: 'Progressive navigation fallback for clients without MCP resource reading. Start with index.md. Read one linked file at a time; do not crawl all references.',
     inputSchema: z.object({ path: z.string().max(240).default('index.md') }),
     annotations: { readOnlyHint: true },
-  }, async ({ path }) => ({ content: [{ type: 'text', text: JSON.stringify(readReference(path)) }] }))
-
-  server.registerTool('get_tutor_guide', {
-    title: 'How to tutor with Loom',
-    description: 'The tutoring routine for learning with Loom in this chat: planning short topics from the learner\'s progress, writing and showing them, saving topics and progress notes to their drive, and showing where they are. Call it once when the learner wants to learn or continue a subject with Loom, asks what to learn next, or sends a progress note.',
-    inputSchema: z.object({}),
-    annotations: { readOnlyHint: true },
-  }, async () => measured('get_tutor_guide', 'discovery', {}, async () => ({ content: [{ type: 'text', text: getTutorGuide() }] })))
-
-  // Where topics and progress notes go in the learner's drive (the Loom/<domain-id>/ layout)
-  server.registerTool('get_storage_guide', {
-    title: 'Where Loom keeps topics and progress',
-    description: STORAGE_GUIDE_DESCRIPTION,
-    inputSchema: z.object({}),
-    annotations: { readOnlyHint: true },
-  }, async () => measured('get_storage_guide', 'discovery', {}, async () => ({ content: [{ type: 'text', text: getStorageGuide() }] })))
-
-  server.registerTool('get_authoring_guide', {
-    title: 'Loom authoring guide',
-    description: GUIDE_TOOL_DESCRIPTION,
-    inputSchema: z.object({
-      detail: z.enum(['index', 'focused', 'full']).optional().describe('Structured progressive contracts; omit to preserve legacy text responses.'),
-      knownContractVersion: z.string().max(120).optional(),
-      forceRefresh: z.boolean().optional(),
-      library: z.enum(COMPONENT_LIBRARIES).optional().describe("Deprecated ignored hint. All canonical component names resolve from one catalog; omit this field."),
-      components: z.array(z.string().max(120)).max(100).optional().describe("Exact component names and their signature dependencies. Omit to preserve the section-filtered guide."),
-      sections: z.array(z.string()).optional().describe(`Optional domain-capability filters; pages themselves have no authored type: ${guideSectionTypes().map((t) => t.type).join(', ')}, or "all".`),
-    }),
-    annotations: { readOnlyHint: true },
-  }, async ({ sections, components, library, detail, knownContractVersion, forceRefresh }) => measured('get_authoring_guide', 'discovery', { sections, components, library, detail, knownContractVersion, forceRefresh }, async () => ({ content: [{ type: 'text', text: detail
-    ? JSON.stringify(getAuthoringContract({ detail, sections, components, library, knownContractVersion, forceRefresh }))
-    : getAuthoringGuide(sections, components, library) }] })))
+  }, async ({ path }) => measured('read_reference', 'discovery', { path }, async () => ({ content: [{ type: 'text', text: JSON.stringify(read(path)) }] })))
 
   server.registerTool('get_topic_context', {
     title: 'Focused topic context',
@@ -176,18 +140,6 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     inputSchema: TopicContextInput,
     annotations: { readOnlyHint: true },
   }, async (input) => measured('get_topic_context', 'context', input, async () => ({ content: [{ type: 'text', text: JSON.stringify(resolveTopicContext(input)) }] })))
-
-  // Stateless contracts: no filesystem, session state, or long-running process required.
-  server.registerTool('get_loom_capabilities', {
-    title: 'Loom section capabilities',
-    description: 'Versioned catalog of supported learning representations and their teaching purposes. Use detail: index for compact orientation, full for learner actions, Read/Present constraints, evidence limits and the plan schema. Choose by learning task, not a section quota.',
-    inputSchema: z.object({ detail: z.enum(['index', 'full']).optional().describe('index is compact initial discovery; omission preserves the full legacy catalog.') }),
-    annotations: { readOnlyHint: true },
-  }, async ({ detail }) => measured('get_loom_capabilities', 'discovery', { detail }, async () => ({ content: [{ type: 'text', text: JSON.stringify({
-    ...(detail === 'index' ? getCapabilityIndex() : getCapabilityCatalog()),
-    contractVersion: authoringContractVersion(),
-    deployment: { storageAvailable: Boolean(store || options.repository), serverValidationAvailable: Boolean(checkTopic) },
-  }) }] })))
 
   server.registerTool('validate_topic_plan', {
     title: 'Validate a Loom topic plan',
@@ -257,7 +209,7 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
         ? `\n\nThis chat may not show Loom's player. Give the learner this link, which opens the topic in Loom Viewer, ready to play: ${link}`
         : '\n\nThis chat may not show Loom\'s player, and the topic is too long for a link: the learner can paste it into Loom Viewer.'
     }
-    if (!check || check.ok) text += '\n\nNext: if this topic belongs to an established domain, save the exact topic to the learner\'s Drive and update domain.oui following get_storage_guide, unless the learner opted out. Local server memory does not by itself confirm a Drive save. If the connector cannot write, say it is not saved and provide the exact file. To reopen, reuse original source; if missing, ask for the saved .loom.oui file instead of regenerating.'
+    if (!check || check.ok) text += '\n\nNext: if this topic belongs to an established domain, save the exact topic to the learner\'s Drive and update domain.oui following storage references, unless the learner opted out. Local server memory does not by itself confirm a Drive save. If the connector cannot write, say it is not saved and provide the exact file. To reopen, reuse original source; if missing, ask for the saved .loom.oui file instead of regenerating.'
     if (plan === undefined) {
       text += '\n\nRepresentation readiness not reviewed: no TopicPlan supplied. For new lessons, discover capabilities and call validate_topic_plan.'
       return { content: [{ type: 'text', text }] }
@@ -305,9 +257,9 @@ const LoomFile = z.object({
   text: z.string().describe("The file's text. For a topic, its header lines and its topic.oui part are enough."),
 })
 
-const LIBRARY_TOOL_DESCRIPTION = `Show the learner's Loom library in the chat: one card per domain with its goal and how far they are. Call it when the learner asks to see their library, their domains or everything they are learning. Pass files from their drive's Loom/ folder (see get_storage_guide), paths relative to Loom/: index.oui, each <domain-id>/domain.oui, each topic's header and topic.oui part as <domain-id>/topics/<topic-id>.loom.oui, and the latest progress note per topic as <domain-id>/progress/<file>.md. The Loom server on the learner's computer reads its own folder: call it there with no files.`
+const LIBRARY_TOOL_DESCRIPTION = `Show the learner's Loom library in the chat: one card per domain with its goal and how far they are. Call it when the learner asks to see their library, their domains or everything they are learning. Pass files from their drive's Loom/ folder (see storage references), paths relative to Loom/: index.oui, each <domain-id>/domain.oui, each topic's header and topic.oui part as <domain-id>/topics/<topic-id>.loom.oui, and the latest progress note per topic as <domain-id>/progress/<file>.md. The Loom server on the learner's computer reads its own folder: call it there with no files.`
 
-const DOMAIN_TOOL_DESCRIPTION = `Show one of the learner's Loom domains in the chat: its topics in learning order, what is done, in progress or to review, and the topic up next. Call it only when the learner asks about a specific domain ("where am I in Chinese?", "show my fight animation topics"). Pass the domain ID and files from Loom/<domain-id>/ in their drive (see get_storage_guide), paths relative to that folder: domain.oui, each topic's header and topic.oui part as topics/<topic-id>.loom.oui (the whole topic is not needed), and the latest progress note per topic as progress/<file>.md. The Loom server on the learner's computer reads its own folder: call it there with only the domain.`
+const DOMAIN_TOOL_DESCRIPTION = `Show one of the learner's Loom domains in the chat: its topics in learning order, what is done, in progress or to review, and the topic up next. Call it only when the learner asks about a specific domain ("where am I in Chinese?", "show my fight animation topics"). Pass the domain ID and files from Loom/<domain-id>/ in their drive (see storage references), paths relative to that folder: domain.oui, each topic's header and topic.oui part as topics/<topic-id>.loom.oui (the whole topic is not needed), and the latest progress note per topic as progress/<file>.md. The Loom server on the learner's computer reads its own folder: call it there with only the domain.`
 
 /** A topic cut to its header lines and its topic.oui part: all a library or domain page needs. */
 export function topicHead(text: string): string {
@@ -345,7 +297,7 @@ function registerLibraryTools(server: McpServer, store?: LearnerStore) {
     return Object.fromEntries(Object.entries(read).slice(0, MAX_FILES).map(([path, text]) => [path, path.endsWith('.loom.oui') ? topicHead(text) : text]))
   }
   const missing = (what: string) => ({
-    content: [{ type: 'text' as const, text: `No files to show. Read ${what} from the learner's drive (see get_storage_guide) and pass them as files.` }],
+    content: [{ type: 'text' as const, text: `No files to show. Read ${what} from the learner's drive (see storage references) and pass them as files.` }],
     isError: true,
   })
 
@@ -438,7 +390,7 @@ function registerMemoryTools(server: McpServer, store: LearnerStore) {
 
   server.registerTool('learner_summary', {
     title: "The learner's progress",
-    description: "What the learner has seen and answered in each Loom topic, and which answers were last wrong. Use it to suggest what to learn or review next; pass the domain to plan within one domain (see get_storage_guide).",
+    description: "What the learner has seen and answered in each Loom topic, and which answers were last wrong. Use it to suggest what to learn or review next; pass the domain to plan within one domain (see storage references).",
     inputSchema: z.object({
       topic: z.string().optional().describe('One topic ID; all topics when left out.'),
       domain: z.string().optional().describe("One domain ID: only that domain's topics and progress notes."),

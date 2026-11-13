@@ -121,7 +121,7 @@ describe('Loom learner skills (slice 6)', () => {
   })
 
   it('use the domain layout: the app skill asks the server for it, the Viewer skill carries the storage guide', () => {
-    expect(getTutorAppSkill()).toContain('Call `get_storage_guide` once')
+    expect(getTutorAppSkill()).toContain('Call `read_reference({path:"storage/index.md"})` once')
     expect(getTutorAppSkill()).toContain('`// @loom-domain <domain-id>` as its second line')
     expect(getTutorAppSkill()).toContain('show it with `show_domain`')
     expect(getTutorAppSkill()).toContain('Never show them unasked')
@@ -138,7 +138,7 @@ describe('Loom learner skills (slice 6)', () => {
       expect(files[`${dir}/${LOOM_TUTOR_APP_SKILL}/${LOOM_SKILL_REFERENCE}`]).toBeUndefined()
       expect(files[`${dir}/${LOOM_TUTOR_VIEWER_SKILL}/${LOOM_SKILL_REFERENCE}`]).toBe(files['public/llm/loom-authoring-prompt.md'])
     }
-    expect(getTutorAppSkill()).toContain('get_authoring_guide')
+    expect(getTutorAppSkill()).toContain('read_reference')
     expect(getTutorAppSkill()).toContain('Save my progress')
     expect(getTutorViewerSkill()).toContain(LOOM_SKILL_REFERENCE)
     expect(getTutorViewerSkill()).toContain('Copy progress')

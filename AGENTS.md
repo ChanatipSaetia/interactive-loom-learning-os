@@ -132,3 +132,14 @@ above describe the retired authoring format. Native domain schemas and the
 Read/Present adapters remain internal. Preserve hands-free Present scenes and
 separate learner state from demonstration state. Use `npm run oui:migrate` for
 explicit conversion; do not add a parallel old-format runtime reader.
+
+## Current MCP knowledge interface
+
+The hosted server exposes six tools: `read_reference`, `get_topic_context`,
+`validate_topic_plan`, `show_topic`, `show_library`, and `show_domain`. Start at
+`loom://references/index.md` (or `read_reference({path:"index.md"})`) and select
+the user intent. The former get_authoring_guide, get_loom_capabilities,
+get_tutor_guide and get_storage_guide MCP tools are removed; earlier descriptions
+above are historical. Their canonical content is served as linked references.
+Local compiler, editing and learner-storage tools remain conditional. Studio's
+own discovery/description tools remain separate from the MCP interface.

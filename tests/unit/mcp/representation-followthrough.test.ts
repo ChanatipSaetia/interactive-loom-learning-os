@@ -33,9 +33,9 @@ describe.each(['local', 'hosted'] as const)('representation review through %s MC
     await client.connect(a)
     try {
       const tools = (await client.listTools()).tools
-      const description = tools.find((t) => t.name === 'get_authoring_guide')!.description!
-      expect(description).toContain('validate_topic_plan')
-      expect(description).toContain('get_loom_capabilities')
+      const description = tools.find((t) => t.name === 'read_reference')!.description!
+      expect(description).toContain('index.md')
+      expect(description).toContain('one linked file')
       expect(description).not.toContain('1–3 sections')
       const reviewed = data(await client.callTool({ name: 'validate_topic_plan', arguments: { plan } }))
       expect(reviewed).toMatchObject({ valid: true, experienceReadiness: { status: 'review-needed' } })

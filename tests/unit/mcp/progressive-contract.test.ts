@@ -19,11 +19,10 @@ describe('stateless progressive authoring contracts', () => {
     const files = { 'topic.oui': 'root = Topic("Loops", "Practice", "Recognise a loop", [SectionRef("quiz")])', 'sections/quiz.oui': "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Which repeats?\", [QuizChoice(\"a\", \"A loop\", true, \"Correct\")])" }
     const oui = '// @loom-topic loop\n' + Object.entries(files).map(([file, source]) => `// === ${file} ===\n${source}\n`).join('')
     try {
-      expect(JSON.parse(text(await client.callTool({ name: 'get_loom_capabilities', arguments: { detail: 'index' } }))).sections.some((s: { type: string }) => s.type === 'quiz')).toBe(true)
+      expect(JSON.parse(text(await client.callTool({ name: 'read_reference', arguments: { path: 'capabilities/index.md' } }))).content).toContain('Quiz')
       expect(JSON.parse(text(await client.callTool({ name: 'validate_topic_plan', arguments: { plan } }))).valid).toBe(true)
-      const guide = JSON.parse(text(await client.callTool({ name: 'get_authoring_guide', arguments: { detail: 'focused', sections: ['quiz'], library: 'loom' } })))
-      expect(guide.coreContracts).toContain('Topic(')
-      expect(guide.contracts).toContain('QuizQuestion(')
+      const guide = JSON.parse(text(await client.callTool({ name: 'read_reference', arguments: { path: 'components/Quiz.md' } })))
+      expect(guide.content).toContain('QuizQuestion(')
       const context = JSON.parse(text(await client.callTool({ name: 'get_topic_context', arguments: { files, roots: ['sections/quiz.oui#q1'], plan } })))
       expect(context.designContext.sections[0].activity).toBe('Submit an answer')
       expect(context.truncated).toBe(false)
@@ -33,7 +32,7 @@ describe('stateless progressive authoring contracts', () => {
       const browser = loadTopic(oui, plan)
       expect(browser.report).toBeNull()
       expect(browser.topic?.sections[0].config?.type).toBe('quiz')
-      expect(observations.map((m) => m.tool)).toEqual(['get_loom_capabilities', 'validate_topic_plan', 'get_authoring_guide', 'get_topic_context', 'validate_topic', 'show_topic'])
+      expect(observations.map((m) => m.tool)).toEqual(['read_reference', 'validate_topic_plan', 'read_reference', 'get_topic_context', 'validate_topic', 'show_topic'])
     } finally { await client.close() }
   })
   it('refreshes stale/unknown contracts and allows explicit refresh after compaction', () => {
@@ -77,9 +76,9 @@ describe('stateless progressive authoring contracts', () => {
     const client = new Client({ name: 'fresh-client', version: '1' }, { capabilities: { extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: ['text/html;profile=mcp-app'] } } } })
     await client.connect(a)
     try {
-      const catalog = await client.callTool({ name: 'get_loom_capabilities', arguments: { detail: 'index' } })
+      const catalog = await client.callTool({ name: 'read_reference', arguments: { path: 'capabilities/index.md' } })
       const text = (r: unknown) => (r as { content: Array<{ text: string }> }).content.map((c) => c.text).join('')
-      expect(JSON.parse(text(catalog)).contractVersion).toBe(authoringContractVersion())
+      expect(JSON.parse(text(catalog)).version).toMatch(/^reference-v1:/)
       const source = '// @loom-topic example\n' + 'source payload '.repeat(10000)
       const shown = text(await client.callTool({ name: 'show_topic', arguments: { oui: source } }))
       expect(shown).not.toContain('source payload')

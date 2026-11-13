@@ -19,8 +19,7 @@ describe the earlier merged increment, not the latest CI run.
 
 ## MCP additions and compatibility
 
-- `get_loom_capabilities`: schemaVersion 1 section/mental-model catalog; also generated at `/llm/loom-capabilities.json`. Optional `detail: "index"` returns compact initial discovery; omitted detail preserves the full catalog/plan schema. Full entries include learner actions, Read/Present constraints and evidence boundaries from shared mental-model metadata. MCP adds deployment flags from actual injected storage/compiler adapters; these flags do not verify external connector permissions.
-- `get_authoring_guide`: existing text/`sections`/`components` behavior preserved. Optional `detail` returns structured index/focused/full contracts with compact core rules and `contractVersion`; `knownContractVersion` deduplicates unchanged core guidance and `forceRefresh` restores it explicitly. Unknown/stale versions refresh without session memory. Library-scoped components include signature dependencies.
+- `read_reference`: progressive knowledge reading from `index.md`. Intent links lead to workflow, component, capability, tutoring, storage and display references. Every response includes adapter-derived deployment flags; these do not establish external connector permissions. MCP resources serve the same nodes.
 - `validate_topic_plan`: runtime-validated version-1 plans with required page component lists (no representation/library selectors), objective coverage/prerequisites/compositions and optional `sources` with evidence references. A valid linkage does not establish factual correctness.
 - `get_topic_context`: source files supplied explicitly from the assistant's authorized connector or latest editor buffers; no URL or path fetching. Roots are `file#statement`, or file for root. Empty roots give overview. Responses include version/hash, complete source statements, component names and truncation/missing-reference diagnostics. Limits: 100 files, 32 KiB per file, 128 KiB total, 200 dependency nodes, 32 KiB JSON output. These are JS character budgets, not token counts. Hashes are noncryptographic change hints, not security or write tokens. No automatic cross-host cache.
 - `validate_section`: local CLI only, or an explicitly injected browser/compiler implementation. Accepts `source`, a section `file` and current `sectionSource` for narration. Uses the existing gateway; warnings are distinct from errors. Full-topic validation remains available locally.
@@ -32,7 +31,7 @@ Existing topic formats, show_topic, Viewer, Studio and local learner-folder APIs
 When context is truncated, `omittedReferences` gives bounded expansion addresses
 and `omittedReferenceCount` counts known omitted addresses. Source addresses can
 be requested as new roots with the same current files and `expectedHash`;
-`component:<library>:<name>` addresses call for scoped `get_authoring_guide`
+`component:<library>:<name>` addresses call for selected `components/<Name>.md` reference
 retrieval. `omissionScope: "dependency-frontier"` means deeper dependencies may
 be discovered during expansion. `omittedReferencesTruncated` discloses when the
 address list itself could not fit. Counts do not claim to enumerate an unvisited
@@ -68,7 +67,7 @@ neither mechanism grades pedagogy or changes legacy `show_topic` requests.
 
 ## Source of truth and trust
 
-The learner's authorized Drive folder remains the default durable source of truth (`get_storage_guide`). Save exact `.loom.oui` plus versioned provenance sidecars and append-only event logs/progress notes under the learner's own domain. Checkpoints are derived from events; they do not replace evidence. Assistants use their connector's permissions and revision preconditions. Where the connector cannot condition writes, avoid competing writers and report the lack of atomicity; do not advertise concurrency safety.
+The learner's authorized Drive folder remains the default durable source of truth (`storage/index.md`). Save exact `.loom.oui` plus versioned provenance sidecars and append-only event logs/progress notes under the learner's own domain. Checkpoints are derived from events; they do not replace evidence. Assistants use their connector's permissions and revision preconditions. Where the connector cannot condition writes, avoid competing writers and report the lack of atomicity; do not advertise concurrency safety.
 
 The optional storage port requires verified authentication middleware, read/write scopes and atomic CAS (writes that merge existing evidence require both read and write scopes). Instantiate a repository per request with the verified subject, never an unverified header/model argument. The port must isolate encoded subject/topic keys, return opaque version tokens and perform atomic conditional writes. No default provider is installed; backend deployment, identity verification, retention policy and connector permissions remain integrator responsibilities. Do not add a caller-provided learnerId or keep session state in a Worker. Neither a record version nor a hash grants access.
 
@@ -80,11 +79,11 @@ Exploration/navigation use existing `seen` events; repeated UI engagement is thr
 
 `authoring-workflow.ts` defines the stages and host-specific routes used by server instructions, the tutor guide, Studio's assistant prompt and the generated writer workflow reference. New/substantial topics discover capabilities, make/check a shared TopicPlan, then retrieve contracts and generate. Small edits retain the targeted context/edit path. These instructions guide external assistants; they do not impose a server-held workflow session or prove that a host model followed every stage.
 
-`get_loom_capabilities` includes workflow version/stage IDs and the machine-readable `planSchema`. TopicPlan IDs accept lowercase underscore conventions. Each page requires a `components` list from the shared catalog; `representation` and `library` selectors are rejected. `activity` describes the learner action. Rationale is recommended for new plans and structurally optional. Structural validation is not a pedagogy score and imposes no section quota.
+`contracts/topic-plan.schema.json` supplies the machine-readable plan schema. TopicPlan IDs accept lowercase underscore conventions. Each page requires a `components` list; `representation` and `library` selectors are rejected. `activity` describes the learner action. Rationale is recommended and structurally optional. Structural validation is not a pedagogy score and imposes no section quota.
 
 Studio exposes the same `get_loom_capabilities` and `validate_topic_plan` contracts. Its `propose_plan` accepts `{plan: TopicPlan, actions?: {sectionId: "create" | "edit"}}`; create is the default. Canonical plans are validated before being shown. The existing `{goal, items}` form, native component-name labels and edit/review behavior remain supported through a compatibility adapter. A canonical plan card shows learner activities and rationales; Build these retains those decisions. Selecting a subset asks the assistant to adapt/revalidate objective coverage rather than silently dropping dependencies.
 
-MCP focused retrieval uses canonical names: `get_authoring_guide({detail:"focused",components:["Text"]})` retrieves upstream Text; request `LessonText` for Loom prose. The compatibility `library` hint is deprecated and ignored. Studio uses the same catalog through `describe_components({names})`. Old section-filtered guides remain available for reference lookup, not as authored page types.
+MCP component retrieval uses `read_reference({path:"components/Text.md"})` for upstream Text or `components/LessonText.md` for Loom prose. The four former guide/catalog tools are removed. Studio continues to use its own `describe_components({names})` and discovery tools over the shared catalog.
 
 `get_topic_context` retains component references for follow-up lookup. Internal domain and renderer identities remain implementation details. Response budgets apply to the complete serialized response. Progressive reference resources introduce no Worker filesystem access or learner/session state.
 
@@ -117,5 +116,4 @@ filesystem access. Clients without resource reading use
 `read_reference({path:"index.md"})`, then read one linked path at a time. Unknown
 paths return `REFERENCE_NOT_FOUND`; they never fetch arbitrary paths or URLs.
 
-Existing capability catalogs and authoring-guide calls remain compatibility APIs.
-They are not a requirement to load the full catalog before progressive navigation.
+The hosted tool list is exactly: read_reference, get_topic_context, validate_topic_plan, show_topic, show_library and show_domain. The former guide/catalog tools are removed from both MCP transports. Reconnect clients to refresh cached tool lists. Internal guide generators and Studio APIs remain available.

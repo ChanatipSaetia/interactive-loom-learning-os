@@ -28,9 +28,9 @@ The two servers offer the same core tools. The local server adds the full topic 
 
 | Tool | Hosted | Local | What it does |
 |---|---|---|---|
-| `get_tutor_guide` | ✓ | ✓ | The tutoring routine; chats are told to call it first |
-| `get_authoring_guide` | ✓ | ✓ | How to write a topic, cut to the section types used |
-| `get_storage_guide` | ✓ | ✓ | Where topics and progress go in your drive |
+| `read_reference` | ✓ | ✓ | Start at index.md, then follow relevant workflow, capability, component, tutoring or storage links |
+| `get_topic_context` | ✓ | ✓ | Progressively inspect explicitly supplied current source files |
+| `validate_topic_plan` | ✓ | ✓ | Validate page compositions and objective/evidence references |
 | `show_topic` | ✓ | ✓ | Shows a topic in the chat (or answers with a Viewer link) |
 | `show_library` / `show_domain` | ✓ | ✓ | Your domains, or one domain with what is done and up next |
 | `validate_topic` | | ✓ | Checks a topic before it is shown |
@@ -256,7 +256,7 @@ dsh adds MCP servers as `insert` entries in a profile's patch file (`~/.dsh/prof
         failOnStartupError: true
 ```
 
-The tools appear as `mcp__loom__show_topic`, `mcp__loom__get_tutor_guide` and so on.
+The tools appear as `mcp__loom__show_topic`, `mcp__loom__read_reference` and so on.
 
 A small local model can find writing a whole topic hard. The local server helps: `validate_topic` names each error and `edit_topic` fixes it a few lines at a time. If topics keep failing, raise the model's reasoning effort, or write topics with a stronger model and tutor with the local one.
 
@@ -274,7 +274,7 @@ Clients that only connect by URL can reach a local server through `--http 3001` 
 <a id="skills"></a>
 ## Skills (optional)
 
-With the connector, you need no skill: the server tells every chat to read `get_tutor_guide`, which is the `loom-tutor-app` skill's own text. Skills help chats without the server, or chats that should follow the routine without being told.
+With the connector, you need no skill: the server tells every chat to start at `read_reference({path:"index.md"})` and follow intent-specific references. Skills help chats without the server, or chats that should follow the routine without being told.
 
 | Skill | For |
 |---|---|
@@ -329,7 +329,7 @@ Loom/
     progress/<topic-id>-YYYY-MM-DD.md
 ```
 
-The chat follows the rules in `get_storage_guide` (the same text is in [storage-guide.ts](../src/core/learning-engine/composition/oui/storage-guide.ts)): after showing a topic in an established domain, it saves the exact topic to Drive and updates `domain.oui` unless you opted out. Local MCP memory alone does not count as a Drive save. It confirms new domains, replaces rather than duplicates, saves plain text, and reports when a connector cannot write. Topics and notes saved before domains existed (flat `Loom/topics/` and `Loom/progress/`) are moved into domains once you agree: ask *"Reorganise my Loom folder into domains following get_storage_guide."*
+The chat follows the rules in `read_reference({path:"storage/index.md"})` (the same text is in [storage-guide.ts](../src/core/learning-engine/composition/oui/storage-guide.ts)): after showing a topic in an established domain, it saves the exact topic to Drive and updates `domain.oui` unless you opted out. Local MCP memory alone does not count as a Drive save. It confirms new domains, replaces rather than duplicates, saves plain text, and reports when a connector cannot write. Topics and notes saved before domains existed (flat `Loom/topics/` and `Loom/progress/`) are moved into domains once you agree: ask *"Reorganise my Loom folder into domains following the storage references."*
 
 ## Loom Viewer
 
@@ -377,3 +377,5 @@ Reading mode in the MCP app displays the whole topic in a continuous scrolling v
 Reading scroll gestures stay inside the MCP app, including at the top and bottom of the topic; gestures outside its frame can scroll the surrounding chat normally. Diagrams and form controls retain their own gestures.
 
 The serverless AI workflow additions, conditional storage/validation APIs and compatibility boundaries are documented in [AI workflow contracts](ai-experience/workflows.md). Run `npm run evaluate:offline` for deterministic, synthetic context/validation/progress/handoff checks; see [evaluation methodology](ai-experience/evaluation.md) for measurements and external-model limitations.
+
+The hosted endpoint exposes exactly six tools: `read_reference`, `get_topic_context`, `validate_topic_plan`, `show_topic`, `show_library`, and `show_domain`. The four former guide/catalog tools have been removed; reconnect clients to refresh their tool lists. MCP resources and `read_reference` serve the same linked reference tree. Local compiler, editing and learner-storage tools remain conditional.
