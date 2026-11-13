@@ -17,14 +17,15 @@ export const plan = {
 
 describe('shared authoring workflow and plan', () => {
   it('routes MCP and Studio through discovery, checked planning and scoped contracts', () => {
-    expect(LOOM_SERVER_INSTRUCTIONS).toContain(getAuthoringWorkflow('mcp'))
+    expect(LOOM_SERVER_INSTRUCTIONS).toContain('loom://references/index.md')
+    expect(LOOM_SERVER_INSTRUCTIONS).not.toContain('get_authoring_guide')
     expect(getTutorGuide()).toContain(getAuthoringWorkflow('mcp'))
     expect(getLoomAssistantPrompt({ app: 'studio', tools: true })).toContain(getAuthoringWorkflow('studio'))
     expect(getTutorViewerSkill()).toContain(getAuthoringWorkflow('files'))
     expect(getWriterSkillReferences()['references/planning/workflow.md']).toContain(getAuthoringWorkflow('files'))
     for (const host of ['mcp', 'studio'] as const) {
       const text = getAuthoringWorkflow(host)
-      expect(text.indexOf('get_loom_capabilities')).toBeLessThan(text.indexOf('validate_topic_plan'))
+      expect(text.indexOf(host === 'studio' ? 'get_loom_capabilities' : host === 'mcp' ? 'read_reference' : 'get_loom_capabilities')).toBeLessThan(text.indexOf('validate_topic_plan'))
       expect(text).toContain('component contracts')
       expect(text).toContain('For a small edit')
     }

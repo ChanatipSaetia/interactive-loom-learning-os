@@ -54,7 +54,7 @@ describe('Loom MCP server', () => {
 
   it('offers the guide, validation and show_topic with its app', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_loom_capabilities', 'get_storage_guide', 'get_topic_context', 'get_tutor_guide', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'].sort())
+    expect(tools.map((t) => t.name).sort()).toEqual(['get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'].sort())
     const show = tools.find((t) => t.name === 'show_topic')!
     expect((show._meta as { ui?: { resourceUri?: string } }).ui?.resourceUri).toBe(APP_URI)
   })
@@ -65,39 +65,21 @@ describe('Loom MCP server', () => {
     expect((await client.listTools()).tools.map((t) => t.name)).not.toContain('get_learning_checkpoint')
   })
 
-  it('retrieves library-scoped contracts over MCP and rejects invalid namespaces', async () => {
-    const standard = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Text'], library: 'openui' } }))
+  it('reads selected component and schema references without unrelated contracts', async () => {
+    const read = async (path: string) => JSON.parse(textOf(await client.callTool({ name: 'read_reference', arguments: { path } })))
+    const standard = (await read('components/Text.md')).content
     expect(standard).toContain('Text(variant?')
     expect(standard).not.toContain('paragraphs: string[]')
-    const native = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['LessonText'] } }))
-    expect(native).toContain('LessonText(title: string, paragraphs:')
-    expect((await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Text'], library: 'unknown' } })).isError).toBe(true)
-    expect((await client.callTool({ name: 'get_authoring_guide', arguments: { components: ['Table', 'Quiz'] } })).isError).not.toBe(true)
-    const catalog = JSON.parse(textOf(await client.callTool({ name: 'get_loom_capabilities', arguments: {} })))
-    expect(catalog.planSchema.properties.sections.items.properties.activity.type).toBe('string')
+    expect((await read('components/LessonText.md')).content).toContain('LessonText(title: string, paragraphs:')
+    expect((await read('components/Quiz.md')).content).not.toMatch(/^Flowchart\(/m)
+    expect((await read('missing.md')).error).toBe('REFERENCE_NOT_FOUND')
+    const schema = JSON.parse((await read('contracts/topic-plan.schema.json')).content)
+    expect(schema.properties.sections.items.properties.activity.type).toBe('string')
   })
-
-  it('returns the guide for the section types asked for', async () => {
-    const quiz = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { sections: ['quiz'] } }))
-    expect(quiz).toMatch(/^Quiz\(/m)
-    expect(quiz).not.toMatch(/^Flowchart\(/m)
-  })
-
-  it('supports compact discovery and truthfully reports injected deployment capabilities', async () => {
-    const index = JSON.parse(textOf(await client.callTool({ name: 'get_loom_capabilities', arguments: { detail: 'index' } })))
-    expect(index).not.toHaveProperty('planSchema')
-    expect(index.deployment).toEqual({ storageAvailable: false, serverValidationAvailable: true })
-    const full = JSON.parse(textOf(await client.callTool({ name: 'get_loom_capabilities', arguments: {} })))
-    expect(full.planSchema).toBeTruthy()
-    expect(full.sections.find((s: { type: string }) => s.type === 'text').learningBehavior.learnerAction).toContain('connected explanation')
-  })
-
-  it('lets a chat write short topics: no Intro or quiz required, a full lesson when asked', async () => {
-    const guide = textOf(await client.callTool({ name: 'get_authoring_guide', arguments: { sections: ['flowchart'] } }))
-    expect(guide).toContain('Size the topic to the learner goal.')
-    expect(guide).not.toMatch(/'?Start with an `Intro` section/)
-    const { tools } = await client.listTools()
-    expect(tools.find((t) => t.name === 'get_authoring_guide')!.description).toContain('keep topics short by default')
+  it('reports configured runtime availability on the entry reference', async () => {
+    const entry = JSON.parse(textOf(await client.callTool({ name: 'read_reference', arguments: {} })))
+    expect(entry.deployment).toEqual({ storageAvailable: false, serverValidationAvailable: true, sectionValidationAvailable: false })
+    expect(entry.content).not.toContain('QuizQuestion(')
   })
 
   it('validates topics and answers with the errors to fix', async () => {
@@ -149,7 +131,7 @@ describe('Loom MCP server, hosted (slice 5)', () => {
 
   it('offers only the guide and show_topic, and leaves checking to the app', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_loom_capabilities', 'get_storage_guide', 'get_topic_context', 'get_tutor_guide', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'].sort())
+    expect(tools.map((t) => t.name).sort()).toEqual(['get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'].sort())
     const text = textOf(await client.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1').replace('Quiz(', 'Quizz(') } }))
     expect(text).toContain('The app checks the topic')
     expect(text).not.toContain('Quizz')
@@ -216,7 +198,7 @@ describe('Loom MCP server with a memory folder (slice 4)', () => {
 
   it('adds the memory tools, record_events for the app only', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_authoring_guide', 'get_learning_checkpoint', 'get_loom_capabilities', 'get_storage_guide', 'get_topic_context', 'get_tutor_guide', 'read_reference', 'learner_summary', 'list_topics', 'open_topic', 'record_events', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'].sort())
+    expect(tools.map((t) => t.name).sort()).toEqual(['get_learning_checkpoint', 'get_topic_context', 'read_reference', 'learner_summary', 'list_topics', 'open_topic', 'record_events', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'].sort())
     const record = tools.find((t) => t.name === 'record_events')!
     expect((record._meta as { ui?: { visibility?: string[] } }).ui?.visibility).toEqual(['app'])
   })

@@ -42,3 +42,21 @@ it('exposes the same stateless node through MCP resources and the fallback reade
     expect(JSON.parse((resource.contents[0] as { text: string }).text)).toEqual(JSON.parse((tool.content as { text: string }[])[0].text))
   } finally { await client.close() }
 })
+
+it('routes every intent and preserves policies and availability without the retired tools', async () => {
+  const entry = node('index.md')
+  for (const path of ['workflow/edit.md', 'tutoring/index.md', 'storage/index.md', 'display/library.md', 'display/domain.md', 'runtime.md']) {
+    expect(entry.next.map((n) => n.path)).toContain(path)
+    expect(node(path).content).toBeTruthy()
+  }
+  expect(node('storage/overview.md').content).toContain('one subject area')
+  expect(node('tutoring/overview.md').content).toContain('Loom MCP App')
+  expect(node('tutoring/progress-notes.md').content).toContain('## Answers')
+  expect(node('storage/saving.md').content).toContain('Replace, never duplicate')
+  expect(node('capabilities/Flowchart.md').content).toContain('data-flow')
+  expect(node('capabilities/Quiz.md').content).toContain('Submit an answer')
+  for (const path of referencePaths().filter((p) => !p.startsWith('components/'))) {
+    expect(node(path).content, path).not.toMatch(/get_authoring_guide|get_loom_capabilities|get_tutor_guide|get_storage_guide/)
+    for (const next of node(path).next) expect(referencePaths()).toContain(next.path)
+  }
+})

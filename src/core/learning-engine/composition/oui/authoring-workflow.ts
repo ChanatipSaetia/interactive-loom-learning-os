@@ -15,12 +15,12 @@ export const AUTHORING_WORKFLOW_STAGES = [
 
 const ROUTES: Record<AuthoringHost, Partial<Record<typeof AUTHORING_WORKFLOW_STAGES[number]['id'], string>>> = {
   mcp: {
-    discover: 'Call get_loom_capabilities with detail: index for orientation; full provides learner actions, evidence boundaries and the plan schema when needed.',
+    discover: 'Read capabilities/index.md through read_reference, then only relevant capability nodes; the plan schema is contracts/topic-plan.schema.json.',
     'validate-plan': 'Call validate_topic_plan with {plan}; fix diagnostics before generating.',
-    references: 'Use get_authoring_guide with detail: focused, selected components. The first structured response includes the core; pass its knownContractVersion on subsequent calls. Use forceRefresh after compaction or when unsure. Retrieve legacy section rules for complex section-specific constraints when needed; report a budget exception rather than omitting requirements. On focused retrieval failure retry the component-scoped request with forceRefresh, then retrieve the selected legacy section guide without library/components. If still unavailable, report the blocker; do not silently substitute Text/Bullets or guess signatures.',
+    references: 'Use read_reference for contracts/page.md, contracts/topic.md, contracts/narration.md and selected components/<Name>.md. Unknown paths return diagnostics; correct the path rather than silently substituting an easier composition.',
     generate: 'For reuse or edits, use get_topic_context with authorized current files and an available plan to preserve the selected action/rationale/presentation constraints; omit unnecessary lookups for a new topic.',
     verify: 'Use validate_topic({oui, plan}) / validate_section when available. Pass plan to show_topic for browser review. Hosted MCP leaves full compilation/layout to the player/browser; never report them as already checked by the Worker.',
-    deliver: 'Call show_topic and follow get_storage_guide for saving. Use edit_topic for targeted changes when available.',
+    deliver: 'Call show_topic and follow storage references for saving. Use edit_topic for targeted changes when available.',
   },
   studio: {
     discover: 'Call get_loom_capabilities.',
@@ -31,9 +31,9 @@ const ROUTES: Record<AuthoringHost, Partial<Record<typeof AUTHORING_WORKFLOW_STA
     deliver: 'Summarize staged changes. The author reviews/applies them; staged content is not yet saved.',
   },
   files: {
-    discover: 'Read the shared mental-model and visual-planning references; call get_loom_capabilities if connected to MCP.',
+    discover: 'Read the installed mental-model and visual-planning references; with MCP start at read_reference({path:"index.md"}).',
     'validate-plan': 'Use validate_topic_plan if available; otherwise check the same contract locally and state which checks ran.',
-    references: 'Read selected section references and only the relevant OpenUI families. With MCP, use get_authoring_guide with components.',
+    references: 'Read selected section references and only the relevant OpenUI families. With MCP, use read_reference for the selected components/<Name>.md paths.',
     deliver: 'Follow the skill output-location and validation references; provide the actual files.',
   },
 }

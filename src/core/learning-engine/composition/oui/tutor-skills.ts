@@ -21,7 +21,7 @@ import { LOOM_PAGES_URL, LOOM_SKILL_REFERENCE, LOOM_TUTOR_APP_SKILL, LOOM_TUTOR_
 import { getStorageGuide } from './storage-guide'
 
 export const TUTOR_APP_DESCRIPTION =
-  'Tutor a learner with Interactive Loom inside the chat through the Loom MCP App: find their Loom folder in their cloud drive, read their progress notes, plan the next short topic on one idea (a full lesson only when asked) with callbacks to earlier ones, write it with get_authoring_guide, play it with show_topic, and save topics and progress notes to the drive. Use when the learner wants to learn or continue a subject with Loom, asks what to learn next, or sends a Loom progress note to save.'
+  'Tutor a learner with Interactive Loom inside the chat through the Loom MCP App: find their Loom folder in their cloud drive, read their progress notes, plan the next short topic on one idea (a full lesson only when asked) with callbacks to earlier ones, write it with selected component references, play it with show_topic, and save topics and progress notes to the drive. Use when the learner wants to learn or continue a subject with Loom, asks what to learn next, or sends a Loom progress note to save.'
 
 export const TUTOR_VIEWER_DESCRIPTION =
   'Tutor a learner with Interactive Loom when the chat has no Loom MCP App: find their Loom folder in their cloud drive, read the progress notes they paste from Loom Viewer, plan the next topic with callbacks to earlier ones, and write it as one .loom.oui text for them to open in Loom Viewer. Use when the learner wants to learn or continue a subject with Loom, asks what to learn next, or pastes a Loom progress note.'
@@ -84,7 +84,7 @@ const FULL_LESSON = `Connect earlier knowledge when it supports this goal, rathe
 
 const TEACH_FIRST = 'Teach new ideas before testing them: every question tests only what an earlier section of the topic, or an earlier topic the learner has done, teaches.'
 
-const SHOW_CONCEPT = 'When a drawing makes the concept easier to understand, include one without waiting for the learner to ask: a labelled Svg schematic for parts, space, a mechanism or a concrete analogy; use a Flowchart for a process, a chart for quantities or a ConceptMap for relationships. Pair it with a short explanation and narration that highlights the important parts one at a time. Label analogies and simplifications, keep labels readable on a phone, and prefer static shapes over decorative animation or filters. For Svg, request the `openui` section type from get_authoring_guide (or read Drawings in the reference). A picture should teach the idea, not decorate it.'
+const SHOW_CONCEPT = 'When a drawing makes the concept easier to understand, include one without waiting for the learner to ask: a labelled Svg schematic for parts, space, a mechanism or a concrete analogy; use a Flowchart for a process, a chart for quantities or a ConceptMap for relationships. Pair it with a short explanation and narration that highlights the important parts one at a time. Label analogies and simplifications, keep labels readable on a phone, and prefer static shapes over decorative animation or filters. For Svg, read the components/Svg.md reference. A picture should teach the idea, not decorate it.'
 
 const NEXT_TOPIC = `## Planning the next topic
 
@@ -123,13 +123,7 @@ const TUTOR = `## While the learner works
  * What the Loom MCP server tells every chat when it connects (MCP server
  * instructions), so the routine reaches chats that never installed the skill.
  */
-export const LOOM_SERVER_INSTRUCTIONS = `For new topic authoring, start progressive navigation at loom://references/index.md (or read_reference({path:"index.md"}) if resource reading is unavailable). Read the linked workflow, relevant capabilities and selected component files step by step; do not load the tree or full catalog at once.
-
-Loom turns learning goals into topics that play in the chat. Match scope to the request: a full lesson needs complementary learning contributions, while a quick explanation can stay focused. When the learner wants to learn or continue a subject with Loom, asks what to learn next, asks where they are in a subject, or sends a Loom progress note, call get_tutor_guide once and follow it: it is the tutoring routine (plan, write with get_authoring_guide, show with show_topic, keep topics and progress in their drive by get_storage_guide). After show_topic, save a topic in an established domain to the drive and update domain.oui unless the learner opted out; showing the app or keeping local memory does not by itself confirm a Drive save.
-
-Reopening a lesson means reusing its complete original source unchanged, not regenerating. If it is unavailable, ask for the saved .loom.oui file.
-
-For authoring step contracts, follow loom://references/index.md progressively. The entry links to each workflow step, capability choice and exact selected component contract.`
+export const LOOM_SERVER_INSTRUCTIONS = `Start at loom://references/index.md or read_reference({path:"index.md"}). Select the user's intent and follow only its relevant links, one reference at a time; do not crawl the tree. References contain workflow, capability, component, tutoring and storage guidance. Topic context inspects supplied current files; validation checks plans; show tools display results. Keep short requests focused and honor full-lesson scope. Showing is not saving: follow storage references and save exact source for established domains unless opted out. Reopening means reusing the complete original source unchanged, not regenerating it from a summary. If unavailable, ask for the saved .loom.oui file.`
 
 /** The tutoring routine for chats with the Loom MCP App, served by get_tutor_guide: loom-tutor-app's own text. */
 export function getTutorGuide(): string {
@@ -148,17 +142,17 @@ The learner learns with Interactive Loom inside this chat. The **Loom MCP App** 
 
 ## The routine
 
-1. **Find the folder.** Call \`get_storage_guide\` once: it is the contract for every path below. Find \`Loom/\` in the learner's drive, read \`Loom/index.oui\`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's \`domain.oui\` and \`progress/\`. If you find topics or notes in the old flat \`Loom/topics/\` or \`Loom/progress/\`, offer once to move them into domains ("Moving from the old layout" in the storage guide). When the Loom server's \`learner_summary\` tool is there (the server on the learner's computer), call it too with the domain: it also holds what the learner did on that computer.
+1. **Find the folder.** Call \`read_reference({path:"storage/index.md"})\` once: it is the contract for every path below. Find \`Loom/\` in the learner's drive, read \`Loom/index.oui\`, and settle which domain the learner is working on (ask when it is not clear, or propose a new one). Read that domain's \`domain.oui\` and \`progress/\`. If you find topics or notes in the old flat \`Loom/topics/\` or \`Loom/progress/\`, offer once to move them into domains ("Moving from the old layout" in the storage guide). When the Loom server's \`learner_summary\` tool is there (the server on the learner's computer), call it too with the domain: it also holds what the learner did on that computer.
 ${getAuthoringWorkflow('mcp')}
 
-Include \`// @loom-domain <domain-id>\` as the second line when the domain is established. For a new topic, call \`get_authoring_guide\` with detail: focused for the selected contracts and compact core rules; reuse knownContractVersion only while the core remains available, and forceRefresh after compaction. Keep the topic short unless a full lesson was requested.
+Include \`// @loom-domain <domain-id>\` as the second line when the domain is established. For a new topic, read the selected component contracts through \`read_reference\` after validating the plan. Keep the topic short unless a full lesson was requested.
 
 ## Save topics and progress
 
 - **Save immediately after showing.** When the topic belongs to an established domain, save the exact topic passed to \`show_topic\` as \`Loom/<domain-id>/topics/<topic-id>.loom.oui\` with the drive connector, with \`// @loom-domain <domain-id>\` as its second line, and add its \`TopicRef\` to the domain's \`domain.oui\` without duplicating an existing reference. Do not end the turn after showing the app: complete this Drive save unless the learner opted out. Local server memory alone does not confirm a Drive save; skip a duplicate write only when the same file and domain index are confirmed saved in the intended synced Drive folder. After a fix or edit, save the updated topic too. Report a successful save with its path; if writing fails or no writable connector is available, say it is not saved and provide the file for manual saving.
 - **Save progress.** The app's **Save my progress** button sends a message with a progress note and the path to save it to: save it as it is, with no changes. If you cannot write files, say so and leave the note in the conversation.
 
-When the learner asks where they are in one domain, show it with \`show_domain\`; when they ask for their library, \`show_library\` (see "Showing the learner where they are" in \`get_storage_guide\`). Never show them unasked. To play a topic again, read it from the domain's \`topics/\` and pass it to \`show_topic\` (or call \`open_topic\` when the server has it). Without the app (the chat shows no player), \`show_topic\` answers with a link that opens the topic in Loom Viewer: give the learner that link.
+When the learner asks where they are in one domain, show it with \`show_domain\`; when they ask for their library, \`show_library\` (see "Showing the learner where they are" in \`read_reference({path:"storage/index.md"})\`). Never show them unasked. To play a topic again, read it from the domain's \`topics/\` and pass it to \`show_topic\` (or call \`open_topic\` when the server has it). Without the app (the chat shows no player), \`show_topic\` answers with a link that opens the topic in Loom Viewer: give the learner that link.
 
 ${FOLDER}
 
