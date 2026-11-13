@@ -21,7 +21,7 @@ describe the earlier merged increment, not the latest CI run.
 
 - `get_loom_capabilities`: schemaVersion 1 section/mental-model catalog; also generated at `/llm/loom-capabilities.json`. Optional `detail: "index"` returns compact initial discovery; omitted detail preserves the full catalog/plan schema. Full entries include learner actions, Read/Present constraints and evidence boundaries from shared mental-model metadata. MCP adds deployment flags from actual injected storage/compiler adapters; these flags do not verify external connector permissions.
 - `get_authoring_guide`: existing text/`sections`/`components` behavior preserved. Optional `detail` returns structured index/focused/full contracts with compact core rules and `contractVersion`; `knownContractVersion` deduplicates unchanged core guidance and `forceRefresh` restores it explicitly. Unknown/stale versions refresh without session memory. Library-scoped components include signature dependencies.
-- `validate_topic_plan`: runtime-validated version-1 plans, objective coverage/prerequisites/representations and optional `sources` with evidence references. A valid linkage does not establish factual correctness.
+- `validate_topic_plan`: runtime-validated version-1 plans with required page component lists (no representation/library selectors), objective coverage/prerequisites/compositions and optional `sources` with evidence references. A valid linkage does not establish factual correctness.
 - `get_topic_context`: source files supplied explicitly from the assistant's authorized connector or latest editor buffers; no URL or path fetching. Roots are `file#statement`, or file for root. Empty roots give overview. Responses include version/hash, complete source statements, component names and truncation/missing-reference diagnostics. Limits: 100 files, 32 KiB per file, 128 KiB total, 200 dependency nodes, 32 KiB JSON output. These are JS character budgets, not token counts. Hashes are noncryptographic change hints, not security or write tokens. No automatic cross-host cache.
 - `validate_section`: local CLI only, or an explicitly injected browser/compiler implementation. Accepts `source`, a section `file` and current `sectionSource` for narration. Uses the existing gateway; warnings are distinct from errors. Full-topic validation remains available locally.
 - `get_learning_checkpoint`: only with existing learner store. Existing fields preserved; assessment evidence explicitly reports mastery as not inferred. No implicit event-to-chat injection: learners use existing Ask/Pick and Save progress controls.
@@ -98,3 +98,24 @@ Automatic Studio context infers the library from the file's `// @openui` directi
 
 
 Capability-aware selection, readiness diagnostics, example TopicPlan, objective-support rubric and current Issue #198 verification are documented in [capability-selection-198.md](capability-selection-198.md).
+
+## Progressive reference navigation
+
+New authoring starts at `loom://references/index.md`. This is a small entry point,
+not the full workflow or component catalog. Follow linked workflow references,
+then only the relevant capability and selected component contracts. Each resource
+returns one reference envelope (`path`, `uri`, `version`, `mimeType`, `content`,
+`next`); links are not expanded automatically. Versions identify node content,
+not authorization or durable storage revisions.
+
+The reference tree is generated on demand from canonical workflow stages,
+capabilities, component signatures and the TopicPlan schema. It has `workflow/`,
+`capabilities/`, `components/` and `contracts/` paths. Component references include
+required signature dependencies; generic child alternatives remain choices.
+Resources are virtual files, served identically by local and hosted MCP without
+filesystem access. Clients without resource reading use
+`read_reference({path:"index.md"})`, then read one linked path at a time. Unknown
+paths return `REFERENCE_NOT_FOUND`; they never fetch arbitrary paths or URLs.
+
+Existing capability catalogs and authoring-guide calls remain compatibility APIs.
+They are not a requirement to load the full catalog before progressive navigation.

@@ -44,7 +44,6 @@ import { z } from 'zod'
 import { textHash } from './statements'
 import { scan } from '../oui-language/scanner'
 import { TopicPlanSchema, validateTopicPlan, type TopicPlan } from '../../../learning-engine/composition/oui/topic-plan'
-import { OUI_SECTION_TYPES } from '../../../learning-engine/composition/oui/library'
 
 /** Sources must be explicitly obtained by the assistant using its authorized connector. */
 export const TopicContextInput = z.object({
@@ -121,7 +120,7 @@ export function resolveTopicContext(input: TopicContextRequest) {
   updateOmissions()
   if (plan) {
     const planRevision = `plan-v1:${textHash(JSON.stringify(plan))}`
-    if (validateTopicPlan(plan, new Set([...OUI_SECTION_TYPES.values(), 'openui'])).length) result.diagnostics.push({ code: 'INVALID_PLAN', reference: 'Validate the supplied plan first' })
+    if (validateTopicPlan(plan).length) result.diagnostics.push({ code: 'INVALID_PLAN', reference: 'Validate the supplied plan first' })
     else if (expectedPlanRevision && expectedPlanRevision !== planRevision) result.diagnostics.push({ code: 'STALE_PLAN', reference: expectedPlanRevision })
     else {
       const selectedFiles = new Set([...roots.map((root) => root.split('#')[0]), ...result.sources.map((source) => source.file)])

@@ -98,12 +98,12 @@ export const EDIT_TOOLS: ToolDefinition[] = [
   },
   { type: 'function', function: {
     name: 'get_loom_capabilities',
-    description: 'Discover canonical learning representations before selecting a section type.',
+    description: 'Discover learning capabilities before composing pages from the shared component catalog.',
     parameters: { type: 'object', properties: {}, additionalProperties: false },
   } },
   { type: 'function', function: {
     name: 'validate_topic_plan',
-    description: 'Validate the same TopicPlan contract used by Loom MCP: objectives, prerequisites, representations, library and evidence references.',
+    description: 'Validate the same TopicPlan contract used by Loom MCP: objectives, prerequisites, page components and evidence references.',
     parameters: { type: 'object', properties: { plan: z.toJSONSchema(TopicPlanSchema) }, required: ['plan'], additionalProperties: false },
   } },
 ]
@@ -172,7 +172,7 @@ export class EditToolRunner {
     const summary = str(parsed.summary)?.trim() || name
     if (name === 'get_loom_capabilities') return { content: JSON.stringify(getCapabilityCatalog()), label: 'Loom capabilities', changeset: this.changeset }
     if (name === 'validate_topic_plan') {
-      const diagnostics = validateTopicPlan(parsed.plan, new Set(getCapabilityCatalog().sections.map((section) => section.type)))
+      const diagnostics = validateTopicPlan(parsed.plan)
       return { content: JSON.stringify({ valid: diagnostics.length === 0, diagnostics, ...topicPlanReview(parsed.plan, diagnostics.length === 0) }), label: 'Plan validation', changeset: this.changeset }
     }
     if (name === 'describe_components') {
@@ -181,7 +181,7 @@ export class EditToolRunner {
     }
     if (name === 'propose_plan') {
       const plan = readPlan(args)
-      if (!plan) return { content: 'Error: supply a valid shared TopicPlan as {plan}, or legacy goal/items. Check objective coverage, section types, library, actions and required fields with validate_topic_plan.', label: 'Plan (not shown)', changeset: this.changeset }
+      if (!plan) return { content: 'Error: supply a valid shared TopicPlan as {plan}, or legacy goal/items. Check objective coverage, page components, actions and required fields with validate_topic_plan.', label: 'Plan (not shown)', changeset: this.changeset }
       return {
         content: `Shown to the author as a plan card with ${plan.items.length} items. Do not stage anything yet: say in a sentence that they can tick the items to build and press Build these, or ask for changes to the plan.`,
         label: `Plan: ${plan.items.length} ${plan.items.length === 1 ? 'section' : 'sections'}`,

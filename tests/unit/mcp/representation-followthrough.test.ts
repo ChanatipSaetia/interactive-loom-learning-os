@@ -22,7 +22,7 @@ it.each(['Text explains complex concepts clearly.', 'Text is the simplest format
   const p = { ...plan, sections: plan.sections.map((section) => ({ ...section, rationale })) }
   expect(reviewTopicPlan(p).filter((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toHaveLength(2)
   expect(reviewTopicPlan({ ...p, sections: p.sections.map((section) => ({ ...section, rationale: 'Connected prose preserves nuanced qualifications that a table would hide.' })) }).filter((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toEqual([])
-  expect(reviewTopicPlan({ ...p, sections: p.sections.map((section) => ({ ...section, representation: 'bullets' })) }).filter((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toEqual([])
+  expect(reviewTopicPlan({ ...p, sections: p.sections.map((section) => ({ ...section, components: ['Bullets'] })) }).filter((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toEqual([])
 })
 
 describe.each(['local', 'hosted'] as const)('representation review through %s MCP', (host) => {

@@ -14,8 +14,9 @@ export function getCapabilityCatalog() {
     SECTION_MENTAL_MODELS.map(({ type, model, question }) => [type, { model, question }]),
   )
   return {
+    navigation: { entry: "loom://references/index.md", fallback: { tool: "read_reference", arguments: { path: "index.md" } }, strategy: "Read one linked reference at a time; follow relevant branches, never recursively expand the tree." },
     schemaVersion: CAPABILITY_CATALOG_VERSION,
-    page: { root: 'Page', boundary: 'one section = one authored page', focus: 'one main visual/activity plus supporting text; advisory warnings', presentation: 'hands-free automatic scenes/beats; mode-specific views of shared content' },
+    page: { root: 'Page', boundary: 'one section = one compositional learning page; no authored section type', focus: 'one main visual/activity plus supporting text; advisory warnings', presentation: 'hands-free automatic scenes/beats; mode-specific views of shared content' },
     componentGroups: getUnifiedOUISpec().componentGroups,
     planSchema: z.toJSONSchema(TopicPlanSchema),
     workflow: { version: AUTHORING_WORKFLOW_VERSION, stages: AUTHORING_WORKFLOW_STAGES.map((stage) => stage.id) },
@@ -40,13 +41,14 @@ export function getCapabilityCatalog() {
 export function getCapabilityIndex() {
   const models = new Map(SECTION_MENTAL_MODELS.map(({ type, model }) => [type as string, model]))
   return {
+    navigation: { entry: "loom://references/index.md", fallback: { tool: "read_reference", arguments: { path: "index.md" } }, strategy: "Read one linked reference at a time; follow relevant branches, never recursively expand the tree." },
     schemaVersion: CAPABILITY_CATALOG_VERSION,
-    page: 'Page(title, body, heading?): one section/page; one main activity; local state; automatic beats.',
+    page: 'Page(title, body, heading?): one compositional learning page per section; no authored section type; one main activity with supporting components; local state; automatic beats.',
     workflow: { version: AUTHORING_WORKFLOW_VERSION, stages: AUTHORING_WORKFLOW_STAGES.map((stage) => stage.id) },
     sections: guideSectionTypes().map(({ type, component }) => ({ type, component, mentalModel: models.get(type) ?? '' })),
     flowchart: { views: FLOWCHART_MODELS.map(([id]) => id), configuration: 'initialView; NarrationStep.view; Journey/JourneyStep; Branch/BranchOption; Event.data; StateMachine/Event.enters' },
     openui: 'tables (Table/Col) for factual attributes; cards/stacks (Card/Stack) for examples; labelled Svg for spatial mechanisms; Steps for visual stages; bar/horizontal, line/area, pie/donut/stacked, scatter, radar charts for supplied/verified or labelled illustrative data',
     selection: 'Objective → structure → learner action → capabilities → simplest faithful configuration; no rankings or quotas.',
-    next: 'Use detail: full for learner actions, presentation constraints, evidence boundaries and the exact TopicPlan schema; fetch library-scoped authoring contracts after choosing representations.',
+    next: 'Use detail: full for learner actions, presentation constraints, evidence boundaries and the exact TopicPlan schema; fetch exact component contracts after planning the page composition.',
   }
 }

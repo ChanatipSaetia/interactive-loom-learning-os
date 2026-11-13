@@ -1,3 +1,4 @@
+import { readReference, REFERENCE_ROOT } from '../core/learning-engine/composition/oui/reference-navigation'
 /**
  * The Loom MCP server (decisions 180–188 in grill-log-adaptive-learning.md):
  * the tools a chat's model calls and the `ui://` shell of the Loom MCP App.
@@ -9,7 +10,7 @@
  * rendering run in the app. The hosted endpoint passes topics through
  * unchecked (decision 184); the local server checks them with `check`.
  */
-import { McpServer } from '@modelcontextprotocol/server'
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/server'
 import { getUiCapability, registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from '@modelcontextprotocol/ext-apps/server'
 import { z } from 'zod'
 import { COMPONENT_LIBRARIES } from '../core/learning-engine/composition/oui/library'
@@ -102,7 +103,7 @@ const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to 
 const VALIDATE_TOOL_DESCRIPTION = `Check a Loom topic (.loom.oui text) the way Loom Viewer does, before showing it. Answers "valid" or the errors to fix; fix only what they point at and check again.`
 
 function reviewSuppliedPlan(plan: unknown) {
-  const valid = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type))).length === 0
+  const valid = validateTopicPlan(plan).length === 0
   return topicPlanReview(plan, valid)
 }
 
@@ -126,6 +127,17 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
         : { resourceDomains: [appOrigin, ...FONT_ORIGINS], connectDomains: [appOrigin] }, prefersBorder: true } },
     }],
   }))
+
+  server.registerResource('loom-authoring-entry', `${REFERENCE_ROOT}index.md`, { mimeType: 'application/json', description: 'Start progressive authoring navigation here; read linked references only as needed.' }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(readReference('index.md')) }] }))
+  server.registerResource('loom-authoring-reference', new ResourceTemplate(`${REFERENCE_ROOT}{+path}`, { list: undefined }), { description: 'One linked authoring reference; no recursive expansion.' }, async (uri) => {
+    const result = readReference(decodeURIComponent(uri.href.slice(REFERENCE_ROOT.length)))
+    return { contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(result) }] }
+  })
+  server.registerTool('read_reference', {
+    description: 'Progressive navigation fallback for clients without MCP resource reading. Start with index.md. Read one linked file at a time; do not crawl all references.',
+    inputSchema: z.object({ path: z.string().max(240).default('index.md') }),
+    annotations: { readOnlyHint: true },
+  }, async ({ path }) => ({ content: [{ type: 'text', text: JSON.stringify(readReference(path)) }] }))
 
   server.registerTool('get_tutor_guide', {
     title: 'How to tutor with Loom',
@@ -183,7 +195,7 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     inputSchema: z.object({ plan: z.unknown().describe("Version 1 TopicPlan; malformed inputs return structured diagnostics.") }),
     annotations: { readOnlyHint: true },
   }, async ({ plan }) => measured('validate_topic_plan', 'planning', { plan }, async () => {
-    const diagnostics = validateTopicPlan(plan, new Set(guideSectionTypes().map((section) => section.type)))
+    const diagnostics = validateTopicPlan(plan)
     return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics, ...topicPlanReview(plan, diagnostics.length === 0) }) }] }
   }))
 

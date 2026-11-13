@@ -10,8 +10,8 @@ export const plan = {
   schemaVersion: 1 as const, topicId: 'evidence', goal: 'Distinguish evidence needs',
   objectives: [{ id: 'compare', description: 'Compare single-span and distributed evidence' }],
   sections: [
-    { id: 'examples', title: 'Compare evidence', objectiveRefs: ['compare'], representation: 'page', components: ['Svg'], activity: 'Inspect two labelled documents', rationale: 'The evidence positions are a spatial comparison' },
-    { id: 'check', title: 'Apply it', objectiveRefs: ['compare'], representation: 'page', components: ['Quiz'], activity: 'Choose which question needs both sections', rationale: 'A native quiz records assessment evidence' },
+    { id: 'examples', title: 'Compare evidence', objectiveRefs: ['compare'], components: ['Svg'], activity: 'Inspect two labelled documents', rationale: 'The evidence positions are a spatial comparison' },
+    { id: 'check', title: 'Apply it', objectiveRefs: ['compare'], components: ['Quiz'], activity: 'Choose which question needs both sections', rationale: 'A native quiz records assessment evidence' },
   ],
 }
 
@@ -45,7 +45,7 @@ describe('shared authoring workflow and plan', () => {
     expect(readStudioPlan(JSON.stringify({ goal: 'G', items: [{ action: 'create', name: 'sections/check.oui', type: 'Quiz', title: 'Check', idea: 'Apply the idea' }] }))?.items[0].name).toBe('check')
     for (const actions of [{ missing: 'edit' }, { check: 'delete' }, { check: ['edit'] }]) expect(readStudioPlan(JSON.stringify({ plan, actions }))).toBeNull()
     const invalid = { ...plan, sections: [{ ...plan.sections[0], components: ['MissingComponent'] }] }
-    expect(validateTopicPlan(invalid, new Set(['openui', 'quiz']))[0].code).toBe('INVALID_INPUT')
+    expect(validateTopicPlan(invalid)[0].code).toBe('INVALID_INPUT')
     expect(readStudioPlan(JSON.stringify({ plan: invalid }))).toBeNull()
   })
 })

@@ -11,7 +11,7 @@ describe('context graph', () => {
 
 import { resolveTopicContext } from '../../../../../../src/core/supporting/authoring-editor/assistant/context-graph'
 const files = { 'topic.oui': 'root = Topic("T", "C", "D", [SectionRef("quiz")])', 'sections/quiz.oui': "root = Page(\"T\", Quiz(\"T\", [q]))\nq = QuizQuestion(\"q\", label, [c])\nlabel = \"Why?\"\nc = QuizChoice(\"a\", \"A\", true, \"Yes\")" }
-const design = { schemaVersion: 1 as const, topicId: 'demo', goal: 'Explain why', objectives: [{ id: 'explain', description: 'Explain why' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', activity: 'Submit an answer', rationale: 'Observe an explicit answer', presentation: { target: 'both' as const, strategy: 'Read for attempts; Present demonstrates' }, objectiveRefs: ['explain'] }] }
+const design = { schemaVersion: 1 as const, topicId: 'demo', goal: 'Explain why', objectives: [{ id: 'explain', description: 'Explain why' }], sections: [{ id: 'quiz', title: 'Check', components: ['Quiz'], activity: 'Submit an answer', rationale: 'Observe an explicit answer', presentation: { target: 'both' as const, strategy: 'Read for attempts; Present demonstrates' }, objectiveRefs: ['explain'] }] }
 it('includes only relevant versioned design decisions and reports stale or budget-omitted plans', () => {
   const current = resolveTopicContext({ files, roots: ['sections/quiz.oui#q'], plan: design })
   expect(current.designContext?.sections[0].activity).toBe('Submit an answer')

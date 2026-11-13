@@ -44,16 +44,16 @@ it('includes compact OpenUI section rules and beat guidance in focused retrieval
 })
 
 it('reviews flattening a comparison or system interaction into a list, without counting Bullets', () => {
-  const plan = { ...TEXT_HEAVY_REPRO_PLAN, sections: TEXT_HEAVY_REPRO_PLAN.sections.map((section) => ({ ...section, representation: 'bullets', rationale: 'Bullets are simple and clear.' })) }
+  const plan = { ...TEXT_HEAVY_REPRO_PLAN, sections: TEXT_HEAVY_REPRO_PLAN.sections.map((section) => ({ ...section, components: ['Bullets'], rationale: 'Bullets are simple and clear.' })) }
   expect(reviewTopicPlan(plan).filter((d) => d.code === 'LIST_STRUCTURE_REVIEW')).toHaveLength(2)
 })
 
 it.each(['Follow numbered initialization instructions', 'Check prerequisites with a checklist', 'Read a concise summary of the key points', 'Follow a linear procedure', 'Follow step by step setup instructions', 'Review supporting details', 'Read key points'])('preserves appropriate Bullets: %s', (activity) => {
-  const plan = { ...TEXT_HEAVY_REPRO_PLAN, sections: TEXT_HEAVY_REPRO_PLAN.sections.map((section) => ({ ...section, representation: 'bullets', activity, rationale: 'The list structure matches this concrete learner action.' })) }
+  const plan = { ...TEXT_HEAVY_REPRO_PLAN, sections: TEXT_HEAVY_REPRO_PLAN.sections.map((section) => ({ ...section, components: ['Bullets'], activity, rationale: 'The list structure matches this concrete learner action.' })) }
   expect(reviewTopicPlan(plan).filter((d) => d.code === 'LIST_STRUCTURE_REVIEW')).toEqual([])
 })
 
 it('accepts an explicit OpenUI factual comparison composition', () => {
-  const plan = { ...TEXT_HEAVY_REPRO_PLAN, objectives: TEXT_HEAVY_REPRO_PLAN.objectives.slice(0, 1), sections: [{ ...TEXT_HEAVY_REPRO_PLAN.sections[0], representation: 'openui', rationale: 'A factual table aligns both tools across the same attributes.', presentation: { target: 'both', strategy: 'composition: Table; compare matching attribute rows in Read and Present' } }] }
+  const plan = { ...TEXT_HEAVY_REPRO_PLAN, objectives: TEXT_HEAVY_REPRO_PLAN.objectives.slice(0, 1), sections: [{ ...TEXT_HEAVY_REPRO_PLAN.sections[0], components: ['Table'], rationale: 'A factual table aligns both tools across the same attributes.', presentation: { target: 'both', strategy: 'composition: Table; compare matching attribute rows in Read and Present' } }] }
   expect(reviewTopicPlan(plan)).toEqual([])
 })

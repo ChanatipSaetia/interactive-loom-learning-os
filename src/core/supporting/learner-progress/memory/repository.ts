@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { isLearnerEvent, mergeEvents, type LearnerEvent } from './events'
 import { createLearningCheckpoint } from './checkpoint'
 import { TopicPlanSchema, validateTopicPlan } from '../../../learning-engine/composition/oui/topic-plan'
-import { OUI_SECTION_TYPES } from '../../../learning-engine/composition/oui/library'
 import { topicSourceVersion } from '../../../learning-engine/composition/oui/topic-version'
 import { readTopicText } from '../../authoring-editor/workspace/archive'
 import { EvidenceReferenceSchema, validateEvidenceReferences } from '../../../learning-engine/composition/oui/source-provenance'
@@ -28,7 +27,7 @@ export const LearningRecordSchema = z.object({
   } catch {
     context.addIssue({ code: 'custom', path: ['oui'], message: 'Topic bundle could not be read; repair it before saving' })
   }
-  if (record.plan && (record.plan.topicId !== record.topicId || validateTopicPlan(record.plan, new Set([...OUI_SECTION_TYPES.values(), 'openui'])).length)) context.addIssue({ code: 'custom', path: ['plan'], message: 'Plan must be valid and belong to this topic' })
+  if (record.plan && (record.plan.topicId !== record.topicId || validateTopicPlan(record.plan).length)) context.addIssue({ code: 'custom', path: ['plan'], message: 'Plan must be valid and belong to this topic' })
   if (record.events.some((event) => event.topic !== record.topicId)) context.addIssue({ code: 'custom', path: ['events'], message: 'Events must belong to this topic' })
   if (validateEvidenceReferences(record.sources, []).length) context.addIssue({ code: 'custom', path: ['sources'], message: 'Invalid provenance locators' })
 })

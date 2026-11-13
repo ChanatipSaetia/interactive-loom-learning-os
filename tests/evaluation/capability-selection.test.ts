@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client'
 import { THREE_SPLINE_REQUEST, TEXT_HEAVY_REPRO_PLAN, TEXT_HEAVY_REPRO_OUI } from '../fixtures/ai-experience/text-selection'
 import { THREE_SPLINE_PLAN, THREE_SPLINE_FILES, THREE_SPLINE_OUI, RENDER_FLOW } from '../fixtures/ai-experience/three-spline'
-import { getCapabilityCatalog, getCapabilityIndex } from '../../src/core/learning-engine/composition/oui/capability-catalog'
+import { getCapabilityIndex } from '../../src/core/learning-engine/composition/oui/capability-catalog'
 import { reviewTopicPlan, validateTopicPlan } from '../../src/core/learning-engine/composition/oui/topic-plan'
 import { getAuthoringGuide } from '../../src/core/learning-engine/composition/oui/authoring-guide'
 import { getAuthoringContract } from '../../src/core/learning-engine/composition/oui/authoring-contract'
@@ -18,12 +18,11 @@ import { deriveSchema } from '../../src/core/learning-engine/sub-contexts/proces
 import { autoDeriveViews } from '../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/derivations'
 import type { AbstractFlow } from '../../src/core/learning-engine/sub-contexts/process-simulation/components/flowchart/abstract-flow/types'
 
-const supported = new Set(getCapabilityCatalog().sections.map((section) => section.type))
 const text = (result: unknown) => (result as { content: Array<{ text: string }> }).content.map((part) => part.text).join('')
 
 describe('capability-aware authored regression corpus', () => {
   it('validates a comprehensive Three.js/Spline plan and exact contracts without section quotas', () => {
-    expect(validateTopicPlan(THREE_SPLINE_PLAN, supported)).toEqual([])
+    expect(validateTopicPlan(THREE_SPLINE_PLAN)).toEqual([])
     expect(reviewTopicPlan(THREE_SPLINE_PLAN)).toEqual([])
     const result = checkTopic(THREE_SPLINE_OUI, THREE_SPLINE_PLAN)
     expect(result.report).toBeNull()
@@ -42,7 +41,7 @@ describe('capability-aware authored regression corpus', () => {
       for (const library of ['loom', 'openui'] as const) {
         const components = context.componentReferences.filter((reference) => reference.library === library).map((reference) => reference.name)
         if (!components.length) continue
-        const guide = getAuthoringContract({ detail: 'focused', sections: [section.representation], components, library, knownContractVersion: version })
+        const guide = getAuthoringContract({ detail: 'focused', components, library, knownContractVersion: version })
         expect(guide.diagnostics).toEqual([])
         expect(guide.contracts).not.toContain('Unknown components')
         guideSizes.push(guide.measurement.estimatedTokens)
@@ -92,11 +91,11 @@ describe('capability-aware authored regression corpus', () => {
   })
   it('detects an all-prose substitution and keeps appropriate prose and Bullets valid', () => {
     const unjustified = structuredClone(THREE_SPLINE_PLAN)
-    unjustified.sections = unjustified.sections.map((section) => ({ ...section, representation: 'text', library: 'loom', rationale: undefined, presentation: undefined, assessment: undefined }))
-    expect(validateTopicPlan(unjustified, supported)).toEqual([])
+    unjustified.sections = unjustified.sections.map((section) => ({ ...section, components: ['LessonText'], rationale: undefined, presentation: undefined, assessment: undefined }))
+    expect(validateTopicPlan(unjustified)).toEqual([])
     expect(reviewTopicPlan(unjustified).some((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toBe(true)
     expect(checkTopic(THREE_SPLINE_OUI, unjustified).planAlignment?.status).toBe('mismatch')
-    const prose = { ...THREE_SPLINE_PLAN, sections: THREE_SPLINE_PLAN.sections.map((section) => ({ ...section, representation: 'text', library: 'loom' as const, rationale: 'Connected prose preserves nuanced qualifications that a visual comparison would hide.' })) }
+    const prose = { ...THREE_SPLINE_PLAN, sections: THREE_SPLINE_PLAN.sections.map((section) => ({ ...section, components: ['LessonText'], rationale: 'Connected prose preserves nuanced qualifications that a visual comparison would hide.' })) }
     expect(reviewTopicPlan(prose).some((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toBe(false)
   })
   it('recovers focused retrieval failures through the selected legacy guide without changing representation', async () => {
@@ -140,7 +139,7 @@ it('exposes the user-request Text-selection loophole separately from OUI validit
 
 
 it('compares the same request with list-heavy and composition-aware plans and measures selected OpenUI contracts', () => {
-  const listPlan = { ...TEXT_HEAVY_REPRO_PLAN, sections: TEXT_HEAVY_REPRO_PLAN.sections.map((section) => ({ ...section, representation: 'bullets', rationale: 'Bullets are simple and clear.' })) }
+  const listPlan = { ...TEXT_HEAVY_REPRO_PLAN, sections: TEXT_HEAVY_REPRO_PLAN.sections.map((section) => ({ ...section, components: ['Bullets'], rationale: 'Bullets are simple and clear.' })) }
   const listReview = reviewTopicPlan(listPlan)
   expect(listReview.filter((diagnostic) => diagnostic.code === 'LIST_STRUCTURE_REVIEW')).toHaveLength(2)
   expect(reviewTopicPlan(THREE_SPLINE_PLAN)).toEqual([])

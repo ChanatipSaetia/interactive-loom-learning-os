@@ -7,7 +7,7 @@ import type { TopicPlan } from '../../../src/core/learning-engine/composition/ou
 const plan: TopicPlan = {
   schemaVersion: 1, topicId: 'explanation', goal: 'Explain a distinction',
   objectives: [{ id: 'distinguish', description: 'Explain the difference' }],
-  sections: [{ id: 'argument', title: 'Argument', representation: 'text', activity: 'Read a connected argument', objectiveRefs: ['distinguish'] }],
+  sections: [{ id: 'argument', title: 'Argument', components: ['LessonText'], activity: 'Read a connected argument', objectiveRefs: ['distinguish'] }],
 }
 const bundle = (source = "root = Page(\"Argument\", LessonText(\"Argument\", [\"First premise\", \"Conclusion\"]))", id = 'explanation') =>
   `// @loom-topic ${id}\n// === topic.oui ===\nroot = Topic("Explanation", "Reasoning", "Explain", [SectionRef("argument")])\n// === sections/argument.oui ===\n${source}\n`
@@ -20,10 +20,10 @@ describe('compiled plan/artifact review', () => {
     expect(checkTopic(bundle()).planAlignment?.status).toBe('not-provided')
   })
   it('reports a syntactically valid representation substitution separately from OUI errors', () => {
-    const check = checkTopic(bundle(), { ...plan, sections: [{ ...plan.sections[0], representation: 'quiz' }] })
+    const check = checkTopic(bundle(), { ...plan, sections: [{ ...plan.sections[0], components: ['Quiz'] }] })
     expect(check.ok).toBe(true)
     expect(check.report).toBeNull()
-    expect(check.planAlignment).toMatchObject({ status: 'mismatch', diagnostics: [{ code: 'REPRESENTATION_MISMATCH', severity: 'warning', sectionId: 'argument', file: 'sections/argument.oui', repairTarget: 'sections/argument.oui#root' }] })
+    expect(check.planAlignment).toMatchObject({ status: 'mismatch', diagnostics: [{ code: 'COMPOSITION_MISMATCH', severity: 'warning', sectionId: 'argument', file: 'sections/argument.oui', repairTarget: 'sections/argument.oui#root' }] })
   })
   it('distinguishes missing and unplanned sections and topic identity', () => {
     const check = checkTopic(bundle(), { ...plan, topicId: 'other', sections: [{ ...plan.sections[0], id: 'expected' }] })
@@ -72,14 +72,27 @@ describe('compiled plan/artifact review', () => {
 
 
 it('checks explicit OpenUI composition claims through reachable dependencies without grading teaching quality', () => {
-  const designed: TopicPlan = { ...plan, sections: [{ ...plan.sections[0], representation: 'openui', presentation: { target: 'both', strategy: 'composition: Table; compare attributes in Read and narrate the relationship in Present' } }] }
+  const designed: TopicPlan = { ...plan, sections: [{ ...plan.sections[0], components: ['Table'], presentation: { target: 'both', strategy: 'composition: Table; compare attributes in Read and narrate the relationship in Present' } }] }
   const source = "root = Page(\"Attributes\", Card([table]))\ntable = Table([Col(\"Attribute\", [\"Value\"])])"
   expect(checkTopic(bundle(source), designed).planAlignment?.status).toBe('aligned')
   const wrong = "root = Page(\"Attributes\", Card([TextContent(\"Table([Col(…)]), in prose\")]))\ntable = Table([Col(\"Unused\", [\"Decoy\"])])"
   expect(checkTopic(bundle(wrong), designed).planAlignment?.diagnostics[0]).toMatchObject({ code: 'COMPOSITION_MISMATCH', sectionId: 'argument' })
-  const interactiveClaim = { ...designed, sections: [{ ...designed.sections[0], presentation: { target: 'read' as const, strategy: 'composition: Tabs; explore alternatives' } }] }
+  const interactiveClaim = { ...designed, sections: [{ ...designed.sections[0], components: ['Tabs'], presentation: { target: 'read' as const, strategy: 'composition: Tabs; explore alternatives' } }] }
   expect(checkTopic(bundle(source), interactiveClaim).planAlignment?.diagnostics[0].code).toBe('COMPOSITION_MISMATCH')
   const tabs = "root = Page(\"Choices\", Tabs([TabItem(\"one\", \"One\", [TextContent(\"First\")])]))"
   expect(checkTopic(bundle(tabs), interactiveClaim).planAlignment?.status).toBe('aligned')
   expect(checkTopic(bundle(source), designed).planAlignment?.teachingQuality).toBe('not-evaluated')
+})
+
+it('aligns one learning page composed from Loom prose and a shared table', () => {
+  const composed: TopicPlan = { ...plan, sections: [{
+    ...plan.sections[0], components: ['Stack', 'Table', 'LessonText'],
+    activity: 'Compare matching attributes and explain the qualification',
+    rationale: 'The table aligns factual attributes; supporting prose explains a qualification.',
+    presentation: { target: 'both', strategy: 'Keep the table visible while explaining each attribute.' },
+  }] }
+  const source = 'root = Page("Compare", Stack([table, explanation]))\ntable = Table([Col("Approach", ["A", "B"])])\nexplanation = LessonText("Qualification", ["Choose for your project constraints."])'
+  const checked = checkTopic(bundle(source), composed)
+  expect(checked.report).toBeNull()
+  expect(checked.planAlignment?.status).toBe('aligned')
 })

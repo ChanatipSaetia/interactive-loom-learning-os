@@ -28,7 +28,7 @@ it('rejects invalid timestamps and assessment events without evidence', () => {
 })
 
 it('links objective evidence only to current source/version and preserves legacy aggregates', () => {
-  const plan: TopicPlan = { schemaVersion: 1, topicId: 'demo', goal: 'Apply', objectives: [{ id: 'apply', description: 'Apply the rule', evidenceOfLearning: 'Answer the authored item' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', objectiveRefs: ['apply'], activity: 'Answer', assessment: { itemRefs: ['sections/quiz.oui#q1'], successCriterion: 'Latest answer correct' } }] }
+  const plan: TopicPlan = { schemaVersion: 1, topicId: 'demo', goal: 'Apply', objectives: [{ id: 'apply', description: 'Apply the rule', evidenceOfLearning: 'Answer the authored item' }], sections: [{ id: 'quiz', title: 'Check', components: ['Quiz'], objectiveRefs: ['apply'], activity: 'Answer', assessment: { itemRefs: ['sections/quiz.oui#q1'], successCriterion: 'Latest answer correct' } }] }
   const files = { 'sections/quiz.oui': "root = Page(\"T\", Quiz(\"T\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [])" }
   const context = { topicVersion: 'v2', files, plan }
   const current: LearnerEvent = { ...event, id: 'current', topicVersion: 'v2', result: 'correct' }

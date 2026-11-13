@@ -493,13 +493,13 @@ describe('Plan card in Studio (decisions 138–139)', () => {
     schemaVersion: 1, topicId: 'demo', goal: plan.goal,
     objectives: [{ id: 'policy', description: 'Choose a cache policy' }],
     sections: [
-      { id: 'words', title: 'Key terms', objectiveRefs: ['policy'], representation: 'flashcards', library: 'loom', activity: 'Recall the meaning of each directive', rationale: 'Flip cards support recall' },
-      { id: 'quiz', title: 'Knowledge Check', objectiveRefs: ['policy'], representation: 'quiz', library: 'loom', activity: 'Choose a policy for a response', rationale: 'A quiz records the answer evidence' },
+      { id: 'words', title: 'Key terms', objectiveRefs: ['policy'], components: ['Flashcards'], activity: 'Recall the meaning of each directive', rationale: 'Flip cards support recall' },
+      { id: 'quiz', title: 'Knowledge Check', objectiveRefs: ['policy'], components: ['Quiz'], activity: 'Choose a policy for a response', rationale: 'A quiz records the answer evidence' },
     ],
   }
   it.each([
     { kind: 'legacy', payload: plan, type: 'Flashcards', activity: undefined, rationale: undefined },
-    { kind: 'shared', payload: { plan: shared, actions: { quiz: 'edit' } }, type: 'flashcards', activity: shared.sections[0].activity, rationale: shared.sections[0].rationale },
+    { kind: 'shared', payload: { plan: shared, actions: { quiz: 'edit' } }, type: 'page', activity: shared.sections[0].activity, rationale: shared.sections[0].rationale },
   ])('shows the $kind plan and Build these sends the selected design', async (testCase) => {
     seed('http://localhost:11434/v1')
     const buffers: Record<string, string> = { ...files }
