@@ -125,14 +125,17 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
 
   server.registerResource('loom-authoring-entry', `${REFERENCE_ROOT}index.md`, { mimeType: 'application/json', description: 'Start progressive authoring navigation here; read linked references only as needed.' }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(read('index.md')) }] }))
   server.registerResource('loom-authoring-reference', new ResourceTemplate(`${REFERENCE_ROOT}{+path}`, { list: undefined }), { description: 'One linked authoring reference; no recursive expansion.' }, async (uri) => {
-    const result = read(decodeURIComponent(uri.href.slice(REFERENCE_ROOT.length)))
+    const result = read(uri.href)
     return { contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(result) }] }
   })
   server.registerTool('read_reference', {
-    description: 'Progressive navigation fallback for clients without MCP resource reading. Start with index.md. Read one linked file at a time; do not crawl all references.',
-    inputSchema: z.object({ path: z.string().max(240).default('index.md') }),
+    description: 'Progressive reference navigation. Omit path to start at index.md. Accepts relative paths or full loom://references/ URIs. Follow returned next[].path or next[].uri one linked file at a time; do not guess filenames or crawl all references.',
+    inputSchema: z.object({ path: z.string().max(1024).default('index.md').describe('Relative reference path (index.md, workflow/understand.md, components/index.md) or full loom://references/ URI. Omit for index.md; follow returned next links.') }),
     annotations: { readOnlyHint: true },
-  }, async ({ path }) => measured('read_reference', 'discovery', { path }, async () => ({ content: [{ type: 'text', text: JSON.stringify(read(path)) }] })))
+  }, async ({ path }) => measured('read_reference', 'discovery', { path }, async () => {
+    const result = read(path)
+    return { content: [{ type: 'text', text: JSON.stringify(result) }], structuredContent: result, ...('error' in result ? { isError: true } : {}) }
+  }))
 
   server.registerTool('get_topic_context', {
     title: 'Focused topic context',
