@@ -72,3 +72,35 @@ Review diagnostics after conversion; old content is not a second runtime dialect
 
 Studio, Viewer, the main app and MCP use the unified pages. Full OpenUI rendering
 in the lightweight single-file embed is deferred.
+
+## AI planning contract
+
+A page is a compositional learning unit, not a wrapper around a section type.
+`TopicPlan.sections` retains section IDs and ordering, but every entry requires
+`components`: the canonical names of the main activity and supporting components.
+There are no `representation` or `library` fields in the plan. For example:
+
+```json
+{
+  "id": "comparison",
+  "title": "Compare approaches",
+  "objectiveRefs": ["compare"],
+  "components": ["Stack", "Table", "LessonText"],
+  "activity": "Compare matching attributes and explain the tradeoff",
+  "rationale": "The table aligns attributes; supporting prose explains qualifications.",
+  "presentation": {
+    "target": "both",
+    "strategy": "Read keeps the comparison visible; Present focuses each attribute."
+  }
+}
+```
+
+Reviews inspect the composition. Supporting prose beside a table is not a
+prose-only page. Flowchart view guidance and chart evidence guidance apply when
+those components occur anywhere in the planned composition. Artifact alignment
+checks that declared components are reachable from `root`; unused declarations
+cannot satisfy a plan. These checks do not establish teaching quality.
+
+Plans using the retired section-type fields must be rewritten with component
+lists before validation. Internal renderer and domain types remain implementation
+details and do not constrain a page to one component family.

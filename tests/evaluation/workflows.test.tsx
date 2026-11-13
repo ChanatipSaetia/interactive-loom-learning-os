@@ -5,7 +5,6 @@ import { describe, expect, it } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { getAuthoringGuide } from '../../src/core/learning-engine/composition/oui/authoring-guide'
 import { validateTopicPlan } from '../../src/core/learning-engine/composition/oui/topic-plan'
-import { getCapabilityCatalog } from '../../src/core/learning-engine/composition/oui/capability-catalog'
 import { resolveTopicContext } from '../../src/core/supporting/authoring-editor/assistant/context-graph'
 import { checkSection, checkTopic } from '../../src/mcp/check'
 import { editTopicSource } from '../../src/mcp/edit-topic'
@@ -21,12 +20,11 @@ const files = {
   'sections/quiz.narrate.oui': 'root = Narration([NarrationStep("q1", "Choose a cache policy")])',
 }
 const bundle = (input = files) => '// @loom-topic caching-fixture\n' + Object.entries(input).map(([file, source]) => `// === ${file} ===\n${source}\n`).join('')
-const supported = new Set(getCapabilityCatalog().sections.map((section) => section.type))
-const plan = { schemaVersion: 1, topicId: 'caching-fixture', goal: 'Choose a policy', objectives: [{ id: 'private-cache', description: 'Identify private caching' }], sections: [{ id: 'quiz', title: 'Check', objectiveRefs: ['private-cache'], representation: 'quiz', activity: 'Choose', evidenceRefs: ['rfc'] }], sources: [{ id: 'rfc', kind: 'web', uri: 'https://www.rfc-editor.org/rfc/rfc9111.html', revision: 'RFC9111', locator: 'section-5.2.2.7', supports: ['private-cache'] }] }
+const plan = { schemaVersion: 1, topicId: 'caching-fixture', goal: 'Choose a policy', objectives: [{ id: 'private-cache', description: 'Identify private caching' }], sections: [{ id: 'quiz', title: 'Check', objectiveRefs: ['private-cache'], components: ['Quiz'], activity: 'Choose', evidenceRefs: ['rfc'] }], sources: [{ id: 'rfc', kind: 'web', uri: 'https://www.rfc-editor.org/rfc/rfc9111.html', revision: 'RFC9111', locator: 'section-5.2.2.7', supports: ['private-cache'] }] }
 
 describe('offline AI experience evaluation', () => {
   it('measures fixed create/edit/validate/continue fixtures and context variants', async () => {
-    expect(validateTopicPlan(plan, supported)).toEqual([])
+    expect(validateTopicPlan(plan)).toEqual([])
     expect(checkTopic(bundle()).ok).toBe(true)
     expect(checkSection(files['sections/quiz.narrate.oui'], 'sections/quiz.narrate.oui', files['sections/quiz.oui']).diagnostics).toEqual([])
     const malformed = bundle().replace('QuizQuestion(', 'QuizQuestionTypo(')

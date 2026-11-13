@@ -123,11 +123,13 @@ const TUTOR = `## While the learner works
  * What the Loom MCP server tells every chat when it connects (MCP server
  * instructions), so the routine reaches chats that never installed the skill.
  */
-export const LOOM_SERVER_INSTRUCTIONS = `Loom turns learning goals into topics that play in the chat. Match scope to the request: a full lesson needs complementary learning contributions, while a quick explanation can stay focused. When the learner wants to learn or continue a subject with Loom, asks what to learn next, asks where they are in a subject, or sends a Loom progress note, call get_tutor_guide once and follow it: it is the tutoring routine (plan, write with get_authoring_guide, show with show_topic, keep topics and progress in their drive by get_storage_guide). After show_topic, save a topic in an established domain to the drive and update domain.oui unless the learner opted out; showing the app or keeping local memory does not by itself confirm a Drive save.
+export const LOOM_SERVER_INSTRUCTIONS = `For new topic authoring, start progressive navigation at loom://references/index.md (or read_reference({path:"index.md"}) if resource reading is unavailable). Read the linked workflow, relevant capabilities and selected component files step by step; do not load the tree or full catalog at once.
+
+Loom turns learning goals into topics that play in the chat. Match scope to the request: a full lesson needs complementary learning contributions, while a quick explanation can stay focused. When the learner wants to learn or continue a subject with Loom, asks what to learn next, asks where they are in a subject, or sends a Loom progress note, call get_tutor_guide once and follow it: it is the tutoring routine (plan, write with get_authoring_guide, show with show_topic, keep topics and progress in their drive by get_storage_guide). After show_topic, save a topic in an established domain to the drive and update domain.oui unless the learner opted out; showing the app or keeping local memory does not by itself confirm a Drive save.
 
 Reopening a lesson means reusing its complete original source unchanged, not regenerating. If it is unavailable, ask for the saved .loom.oui file.
 
-${getAuthoringWorkflow('mcp')}`
+For authoring step contracts, follow loom://references/index.md progressively. The entry links to each workflow step, capability choice and exact selected component contract.`
 
 /** The tutoring routine for chats with the Loom MCP App, served by get_tutor_guide: loom-tutor-app's own text. */
 export function getTutorGuide(): string {

@@ -1,6 +1,6 @@
 /** Portable AI-authored planning contract. AI authors plans; Loom checks structure. */
 import { z } from 'zod'
-import { COMPONENT_LIBRARIES, OUI_SECTION_TYPES, getUnifiedOUISpec } from './library'
+import { OUI_SECTION_TYPES, getUnifiedOUISpec } from './library'
 import { FLOWCHART_MODELS } from './mental-model-guide'
 import { EvidenceReferenceSchema, validateEvidenceReferences } from './source-provenance'
 
@@ -19,27 +19,26 @@ export const TopicPlanSchema = z.object({
   sections: z.array(z.object({
     id: z.string().min(1).max(120), title: z.string().min(1).max(1000),
     objectiveRefs: z.array(z.string().max(120)).min(1).max(100),
-    representation: z.string().min(1).max(120).default('page'), activity: z.string().min(1).max(4000),
-    components: z.array(z.string().min(1).max(120)).min(1).max(100).optional(),
+    activity: z.string().min(1).max(4000),
+    components: z.array(z.string().min(1).max(120)).min(1).max(100),
     rationale: z.string().min(1).max(4000).optional(),
     presentation: z.object({ target: z.enum(['read', 'present', 'both']), strategy: z.string().min(1).max(2000) }).strict().optional(),
     assessment: z.object({
       itemRefs: z.array(z.string().regex(/^sections\/[\w-]+\.oui#[\w-]+$/).max(240)).min(1).max(100),
       successCriterion: z.string().min(1).max(2000),
     }).strict().optional(),
-    library: z.enum(COMPONENT_LIBRARIES).optional(),
     evidenceRefs: z.array(z.string().max(120)).max(100).optional(),
   }).strict()).min(1).max(100),
 }).strict()
 export type TopicPlan = z.infer<typeof TopicPlanSchema>
 
 export interface PlanDiagnostic {
-  code: 'INVALID_ASSESSMENT' | 'INVALID_LIBRARY' | 'INVALID_EVIDENCE' | 'INVALID_INPUT' | 'INVALID_ID' | 'DUPLICATE_ID' | 'MISSING_OBJECTIVE' | 'MISSING_PREREQUISITE' | 'PREREQUISITE_CYCLE' | 'UNKNOWN_SECTION_TYPE' | 'UNCOVERED_OBJECTIVE'
+  code: 'INVALID_ASSESSMENT' | 'INVALID_EVIDENCE' | 'INVALID_INPUT' | 'INVALID_ID' | 'DUPLICATE_ID' | 'MISSING_OBJECTIVE' | 'MISSING_PREREQUISITE' | 'PREREQUISITE_CYCLE' | 'UNCOVERED_OBJECTIVE'
   path: string
   message: string
 }
 
-export function validateTopicPlan(input: unknown, supportedSections: ReadonlySet<string>): PlanDiagnostic[] {
+export function validateTopicPlan(input: unknown): PlanDiagnostic[] {
   const parsed = TopicPlanSchema.safeParse(input)
   if (!parsed.success) return parsed.error.issues.map((issue) => ({
     code: 'INVALID_INPUT' as const, path: issue.path.join('.'), message: issue.message,
@@ -65,8 +64,6 @@ export function validateTopicPlan(input: unknown, supportedSections: ReadonlySet
     for (const reference of section.assessment?.itemRefs ?? []) {
       if (!reference.startsWith(`sections/${section.id}.oui#`)) add('INVALID_ASSESSMENT', `${path}.assessment.itemRefs`, 'Assessment items must belong to the planned section')
     }
-    if (section.representation !== 'page' && !supportedSections.has(section.representation)) add('UNKNOWN_SECTION_TYPE', `${path}.representation`, `Unsupported representation ${section.representation}`)
-    if (section.representation === 'page' && !section.components?.length) add('INVALID_INPUT', `${path}.components`, 'Name the main visual/activity and supporting components for this page')
     for (const name of section.components ?? []) if (!getUnifiedOUISpec().components[name]) add('INVALID_INPUT', `${path}.components`, `Unknown component ${name}`)
     for (const id of section.objectiveRefs) if (!objectives.has(id)) add('MISSING_OBJECTIVE', `${path}.objectiveRefs`, `Unknown objective ${id}`)
   }
@@ -104,12 +101,10 @@ export interface StudioPlanItem {
   action: 'create' | 'edit'
   name: string
   type: string
-  representation?: string
   title: string
   idea: string
   activity?: string
   rationale?: string
-  library?: 'loom' | 'openui'
   objectiveRefs?: string[]
   presentation?: TopicPlan['sections'][number]['presentation']
   assessment?: TopicPlan['sections'][number]['assessment']
@@ -129,7 +124,7 @@ export function readStudioPlan(args: string): StudioPlan | null {
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null
     if (parsed.plan !== undefined) {
       const result = TopicPlanSchema.safeParse(parsed.plan)
-      if (!result.success || validateTopicPlan(result.data, new Set([...OUI_SECTION_TYPES.values(), 'openui'])).length) return null
+      if (!result.success || validateTopicPlan(result.data).length) return null
       const plan = result.data
       const actions = parsed.actions ?? {}
       if (!actions || typeof actions !== 'object' || Array.isArray(actions) || Object.entries(actions).some(([id, action]) => !plan.sections.some((section) => section.id === id) || (typeof action !== 'string' || !['create', 'edit'].includes(action)))) return null
@@ -138,7 +133,7 @@ export function readStudioPlan(args: string): StudioPlan | null {
         goal: plan.goal, topicPlan: plan,
         items: plan.sections.map((section) => ({
           action: actions[section.id] === 'edit' ? 'edit' : 'create', name: section.id,
-          type: section.representation, representation: section.representation, title: section.title,
+          type: 'page', title: section.title,
           idea: section.objectiveRefs.map((id) => objectives.get(id)).join('; '),
           activity: section.activity, rationale: section.rationale,
           components: section.components,
@@ -154,7 +149,7 @@ export function readStudioPlan(args: string): StudioPlan | null {
       const text = (key: string) => typeof item[key] === 'string' ? (item[key] as string).trim() : ''
       const name = text('name').replace(/^sections\//, '').replace(/\.oui$/, '')
       if (!name && !text('title')) return []
-      return [{ action: item.action === 'edit' ? 'edit' : 'create', name, type: text('type'), representation: sectionTypeOf(text('type')), title: text('title') || name, idea: text('idea') }]
+      return [{ action: item.action === 'edit' ? 'edit' : 'create', name, type: text('type'), title: text('title') || name, idea: text('idea') }]
     })
     return items.length ? { goal: typeof parsed.goal === 'string' ? parsed.goal.trim() : '', items } : null
   } catch { return null }
@@ -194,6 +189,13 @@ export function reviewTopicPlan(input: unknown) {
   const seen = new Map<string, string>()
   plan.sections.forEach((section, index) => {
     const path = `sections[${index}]`
+    const components = new Set(section.components)
+    const has = (...names: string[]) => names.some((name) => components.has(name))
+    // Layout wrappers and supporting prose do not turn a prose/list-only page
+    // into a structured learning activity. Inspect all declared activities together.
+    const structuredComponents = [...components].some((name) =>
+      (OUI_SECTION_TYPES.has(name) && !['LessonText', 'Bullets'].includes(name)) ||
+      ['Table', 'Svg', 'Steps', 'BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'PieChart', 'SingleStackedBarChart', 'ScatterChart', 'RadarChart'].includes(name))
     const rationaleWeak = !section.rationale || weak(section.rationale)
     const design = `${section.rationale ?? ''} ${section.presentation?.strategy ?? ''}`
     if (!section.rationale) add('MISSING_RATIONALE', `${path}.rationale`, 'Explain why this representation preserves the knowledge structure and supports this learner action; compare feasible alternatives.')
@@ -204,24 +206,24 @@ export function reviewTopicPlan(input: unknown) {
     const task = [section.title, section.activity, ...plan.objectives.filter((o) => section.objectiveRefs.includes(o.id)).map((o) => o.description)].join(' ')
     const structuredTask = /\b(compar\w*|capabilit\w*|differences?|process\w*|workflows?|spatial|classif\w*|relationship\w*|dependenc\w*|quantit\w*|recall|defin(?:e|ing|itions?)|terminolog\w*|vocabular\w*|architecture|interactions?|handoffs?|message ordering|state transitions?)\b/i.test(task) || /\bhow (?:\w+\s+){0,5}works\b/i.test(task)
     const proseNeed = /\b(connected prose|nuanc\w*|narrativ\w*|arguments?|qualifications?|ambigu\w*|interpret\w*|close reading|wording|essays?|caveats?|verbatim|prose (?:was|is) (?:explicitly )?requested)\b/i.test(section.rationale ?? '')
-    if (section.representation === 'text' && structuredTask && (rationaleWeak || !proseNeed)) {
+    if (has('LessonText', 'Text', 'TextContent') && !structuredComponents && !has('Bullets') && structuredTask && (rationaleWeak || !proseNeed)) {
       add('UNJUSTIFIED_TEXT_SELECTION', `${path}.rationale`, 'This objective involves structured knowledge. Compare feasible native/OpenUI capabilities, then state the prose-specific need (e.g. nuance, connected argument or careful wording) or revise the representation. Generic clarity, simplicity or length does not explain the fit. Justified Text remains valid.')
     }
     const relationalTask = /\b(compar\w*|factual attributes|spatial|relationships?|architecture|interactions?|handoffs?|data movement|state transitions?)\b/i.test(task)
     const listAction = /\b(numbered|step[- ]by[- ]step|procedures?|checklists?|prerequisites?|instructions?|key points|supporting details|concise summar(?:y|ies)|summari[sz]\w*)\b/i.test(section.activity)
-    if (section.representation === 'bullets' && relationalTask && !listAction) add('LIST_STRUCTURE_REVIEW', `${path}.rationale`, 'Review whether a list preserves the comparison, spatial structure or relationships. Consider an OpenUI table/cards/labelled diagram or the relevant native model. Keep Bullets for a genuine procedure, checklist, key points or summary; state that learner action and justify the fit. This is advisory, not a Bullets count or quality score.')
-    if (section.representation === 'openui') {
+    if (has('Bullets') && !structuredComponents && relationalTask && !listAction) add('LIST_STRUCTURE_REVIEW', `${path}.rationale`, 'Review whether a list preserves the comparison, spatial structure or relationships. Consider an OpenUI table/cards/labelled diagram or the relevant native model. Keep Bullets for a genuine procedure, checklist, key points or summary; state that learner action and justify the fit. This is advisory, not a Bullets count or quality score.')
+    if (has('Table', 'Svg', 'Steps', 'Card', 'BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'PieChart', 'SingleStackedBarChart', 'ScatterChart', 'RadarChart')) {
       if (!/\b(cards?|stacks?|tables?|charts?|diagrams?|svg|steps|barchart|horizontalbarchart|linechart|areachart|piechart|singlestackedbarchart|scatterchart|radarchart)\b/i.test(design)) add('MISSING_OPENUI_COMPOSITION', `${path}.rationale`, 'Name the intended OpenUI table, cards, Steps, labelled Svg diagram or chart and explain how it supports the learner action; retrieve those component contracts.')
-      if (/\b(chart|barchart|horizontalbarchart|linechart|areachart|piechart|singlestackedbarchart|scatterchart|radarchart)s?\b/i.test(design) && !section.evidenceRefs?.length && !/\b(illustrative|supplied|verified)\b/i.test(design)) add('CHART_DATA_UNVERIFIED', `${path}.evidenceRefs`, 'Provide supplied/verified data and source references for empirical charts, or explicitly label illustrative data. If data is unavailable, use a faithful factual table or qualitative explanation. A declared reference does not verify truth.')
+      if (has('BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'PieChart', 'SingleStackedBarChart', 'ScatterChart', 'RadarChart') && !section.evidenceRefs?.length && !/\b(illustrative|supplied|verified)\b/i.test(design)) add('CHART_DATA_UNVERIFIED', `${path}.evidenceRefs`, 'Provide supplied/verified data and source references for empirical charts, or explicitly label illustrative data. If data is unavailable, use a faithful factual table or qualitative explanation. A declared reference does not verify truth.')
     }
-    if (section.representation === 'flowchart') {
+    if (has('Flowchart')) {
       // Only check explicit initialView assignments; free prose cannot be parsed as a contract.
       const explicit = /\binitialView\s*[:=]\s*["'`]?([a-z-]+)/i.exec(design)?.[1]
       if (explicit && !views.includes(explicit as typeof views[number])) add('UNSUPPORTED_FLOWCHART_VIEW', `${path}.presentation.strategy`, `Use one documented primary view: ${views.join(', ')}. Retrieve Flowchart and NarrationStep contracts before configuring it.`)
       else if (!views.some((view) => new RegExp(`\\b${view}\\b`, 'i').test(design))) add('MISSING_FLOWCHART_VIEW', `${path}.presentation.strategy`, 'Name one meaningful primary view (event-storming, architecture, swimlanes, sequence, data-flow or state-machine). Explain optional narration transitions; do not enable every view or invent model detail.')
     }
     // Exact duplicate declarations are review candidates, not proof of redundancy.
-    const signature = JSON.stringify([section.representation, [...new Set(section.objectiveRefs)].sort(), normalize(section.activity), normalize(section.rationale ?? ''), section.presentation, section.assessment, [...(section.evidenceRefs ?? [])].sort()])
+    const signature = JSON.stringify([[...components].sort(), [...new Set(section.objectiveRefs)].sort(), normalize(section.activity), normalize(section.rationale ?? ''), section.presentation, section.assessment, [...(section.evidenceRefs ?? [])].sort()])
     const previous = seen.get(signature)
     if (previous) add('POSSIBLE_REDUNDANT_SECTION', path, `This repeats the declared objectives, action and design of ${previous}. Give each section a distinct presentation, exploration or assessment contribution, or combine them; verify content before removing anything.`)
     else seen.set(signature, section.id)

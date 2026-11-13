@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest'
 import { EditToolRunner, readPlan, buildMessage } from '../../../../../../src/core/supporting/authoring-editor/assistant/edit-tools'
 
-const plan = { schemaVersion: 1, topicId: 'demo', goal: 'Compare evidence', objectives: [{ id: 'compare', description: 'Compare the cases' }], sections: [{ id: 'cases', title: 'Evidence', objectiveRefs: ['compare'], representation: 'openui', library: 'openui', activity: 'Inspect the evidence positions', rationale: 'Spatial comparison' }] }
+const plan = { schemaVersion: 1, topicId: 'demo', goal: 'Compare evidence', objectives: [{ id: 'compare', description: 'Compare the cases' }], sections: [{ id: 'cases', title: 'Evidence', objectiveRefs: ['compare'], components: ['Table'], activity: 'Inspect the evidence positions', rationale: 'Spatial comparison' }] }
 const runner = () => new EditToolRunner({ topicId: 'demo', files: {}, fileOrder: [], diagnostics: {} }, [])
 it('discovers and validates without staging edits, then proposes the shared plan', () => {
   const r = runner()

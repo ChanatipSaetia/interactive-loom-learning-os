@@ -25,10 +25,11 @@ const corpus = [
 ]
 
 const supported = new Set(getCapabilityCatalog().sections.map((section) => section.type))
+const componentFor: Record<string, string> = { 'taxonomy-browser': 'TaxonomyBrowser', bullets: 'Bullets', flowchart: 'Flowchart', 'tradeoff-sandbox': 'TradeoffSandbox', 'formula-sandbox': 'FormulaSandbox', openui: 'Table', text: 'LessonText', quiz: 'Quiz' }
 const planFor = (id: string, type: string, action: string): TopicPlan => ({
   schemaVersion: 1, topicId: id, goal: action,
   objectives: [{ id: 'objective', description: action }],
-  sections: [{ id: 'lesson', title: 'Lesson', representation: type, library: type === 'openui' ? 'openui' : 'loom', activity: action, rationale: 'Authored fixture decision; teaching fit requires separate evaluation.', objectiveRefs: ['objective'] }],
+  sections: [{ id: 'lesson', title: 'Lesson', components: [componentFor[type] ?? type], activity: action, rationale: 'Authored fixture decision; teaching fit requires separate evaluation.', objectiveRefs: ['objective'] }],
 })
 const bundleOf = (id: string, source: string, narration?: string) => `// @loom-topic ${id}\n// === topic.oui ===\nroot = Topic("Fixture", "Evaluation", "Authored example", [SectionRef("lesson")])\n// === sections/lesson.oui ===\n${source}\n${narration ? `// === sections/lesson.narrate.oui ===\n${narration}\n` : ''}`
 
@@ -36,8 +37,8 @@ describe('offline representation decision review', () => {
   it('checks a fixed corpus without treating authored choices as model success', () => {
     const start = performance.now()
     const results = corpus.map((fixture) => {
-      const plan = planFor(fixture.id, fixture.type, fixture.request)
-      expect(validateTopicPlan(plan, supported), fixture.id).toEqual([])
+      const plan = planFor(fixture.id, fixture.id === 'drawing' ? 'Svg' : fixture.type, fixture.request)
+      expect(validateTopicPlan(plan), fixture.id).toEqual([])
       for (const alternative of fixture.alternatives) expect(supported.has(alternative)).toBe(true)
       const check = checkTopic(bundleOf(fixture.id, fixture.source, fixture.narration), plan)
       expect(check.ok, `${fixture.id}: ${check.report}`).toBe(true)
@@ -68,12 +69,12 @@ describe('offline representation decision review', () => {
   it('detects plan drift even when an all-static artifact compiles', () => {
     const check = checkTopic(bundleOf('substitution', table), planFor('substitution', 'quiz', 'Submit an answer'))
     expect(check.ok).toBe(true)
-    expect(check.planAlignment?.diagnostics[0].code).toBe('REPRESENTATION_MISMATCH')
+    expect(check.planAlignment?.diagnostics[0].code).toBe('COMPOSITION_MISMATCH')
   })
 
   it('reviews a mixed lesson without making variety the success criterion', () => {
     const plan = planFor('mixed', 'text', 'Read the explanation')
-    plan.sections.push({ ...plan.sections[0], id: 'practice', representation: 'quiz', activity: 'Submit an answer' })
+    plan.sections.push({ ...plan.sections[0], id: 'practice', components: ['Quiz'], activity: 'Submit an answer' })
     const oui = bundleOf('mixed', SECTION_FIXTURES.text)
       .replace('[SectionRef("lesson")]', '[SectionRef("lesson"), SectionRef("practice")]')
       + `// === sections/practice.oui ===\n${SECTION_FIXTURES.quiz}\n`

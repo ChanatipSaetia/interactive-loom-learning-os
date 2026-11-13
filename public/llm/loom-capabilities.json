@@ -1,8 +1,18 @@
 {
+  "navigation": {
+    "entry": "loom://references/index.md",
+    "fallback": {
+      "tool": "read_reference",
+      "arguments": {
+        "path": "index.md"
+      }
+    },
+    "strategy": "Read one linked reference at a time; follow relevant branches, never recursively expand the tree."
+  },
   "schemaVersion": 1,
   "page": {
     "root": "Page",
-    "boundary": "one section = one authored page",
+    "boundary": "one section = one compositional learning page; no authored section type",
     "focus": "one main visual/activity plus supporting text; advisory warnings",
     "presentation": "hands-free automatic scenes/beats; mode-specific views of shared content"
   },
@@ -485,12 +495,6 @@
                 "maxLength": 120
               }
             },
-            "representation": {
-              "default": "page",
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
             "activity": {
               "type": "string",
               "minLength": 1,
@@ -559,13 +563,6 @@
               ],
               "additionalProperties": false
             },
-            "library": {
-              "type": "string",
-              "enum": [
-                "loom",
-                "openui"
-              ]
-            },
             "evidenceRefs": {
               "maxItems": 100,
               "type": "array",
@@ -579,8 +576,8 @@
             "id",
             "title",
             "objectiveRefs",
-            "representation",
-            "activity"
+            "activity",
+            "components"
           ],
           "additionalProperties": false
         }

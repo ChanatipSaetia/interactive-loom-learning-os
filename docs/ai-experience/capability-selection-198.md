@@ -31,7 +31,7 @@ status is superseded by the current code and PR #197. The default target is
 3. Compare feasible candidates by **knowledge fidelity, learner action,
    perspective coverage, cognitive clarity, assessment suitability and authoring
    feasibility**. These are reasoning questions, never fixed renderer scores.
-4. Record the representation and meaningful configuration in existing
+4. Record the page composition and meaningful configuration in existing
    `activity`, `rationale` and `presentation.strategy` fields. One primary view
    is enough; additional views must reveal distinct understanding. Multiple
    sections should explain, guide implementation, explore or assess different
@@ -39,7 +39,7 @@ status is superseded by the current code and PR #197. The default target is
 5. `validate_topic_plan({plan})`: structural validity remains separate from
    advisory readiness. Resolve relevant warnings or explicitly justify proceeding.
 6. Retrieve the selected section rules and then
-   `get_authoring_guide({detail:"focused",sections,components,library})` including
+   `get_authoring_guide({detail:"focused",components})` including
    dependency contracts. Retain `knownContractVersion` only while the core is in
    context; use `forceRefresh:true` after compaction/uncertainty.
 7. On focused retrieval failure, retry with the correct library and explicit
@@ -106,10 +106,10 @@ in [three-spline.ts](../../tests/fixtures/ai-experience/three-spline.ts).
     {"id":"recover", "description":"Choose a response to missing retrieval evidence", "evidenceOfLearning":"Justify requesting evidence rather than inventing a claim"}
   ],
   "sections": [
-    {"id":"execution", "title":"Tool execution", "objectiveRefs":["trace"], "representation":"flowchart", "activity":"Trace messages between agent and retrieval tool", "rationale":"Component participation and message ordering are distinct useful perspectives on the same process", "presentation":{"target":"both", "strategy":"initialView: architecture; Journey follows the tool call; NarrationStep.view sequence on step1 explains ordering"}},
-    {"id":"setup", "title":"Implementation instructions", "objectiveRefs":["setup"], "representation":"bullets", "activity":"Follow numbered setup instructions", "rationale":"Concise linear instructions preserve order without an extra process model", "presentation":{"target":"both", "strategy":"Reveal each numbered instruction; Read keeps the checklist available"}},
-    {"id":"failure", "title":"Missing evidence", "objectiveRefs":["recover"], "representation":"scenario", "activity":"Choose a response to empty retrieval and inspect consequences", "rationale":"A branching decision teaches recovery rather than repeating system architecture", "presentation":{"target":"both", "strategy":"Read permits decisions; Present demonstrates choices before consequences"}},
-    {"id":"check", "title":"Apply the workflow", "objectiveRefs":["trace","recover"], "representation":"quiz", "activity":"Submit an answer about tool-result handling and missing evidence", "rationale":"An explicit response checks application after presentation and exploration", "presentation":{"target":"both", "strategy":"Use Read for actual attempts; Present demonstrates authored feedback"}, "assessment":{"itemRefs":["sections/check.oui#handling"], "successCriterion":"Correctly identify the recipient and justify the evidence boundary"}}
+    {"id":"execution", "title":"Tool execution", "objectiveRefs":["trace"], "components":["Flowchart"], "activity":"Trace messages between agent and retrieval tool", "rationale":"Component participation and message ordering are distinct useful perspectives on the same process", "presentation":{"target":"both", "strategy":"initialView: architecture; Journey follows the tool call; NarrationStep.view sequence on step1 explains ordering"}},
+    {"id":"setup", "title":"Implementation instructions", "objectiveRefs":["setup"], "components":["Bullets"], "activity":"Follow numbered setup instructions", "rationale":"Concise linear instructions preserve order without an extra process model", "presentation":{"target":"both", "strategy":"Reveal each numbered instruction; Read keeps the checklist available"}},
+    {"id":"failure", "title":"Missing evidence", "objectiveRefs":["recover"], "components":["Scenario"], "activity":"Choose a response to empty retrieval and inspect consequences", "rationale":"A branching decision teaches recovery rather than repeating system architecture", "presentation":{"target":"both", "strategy":"Read permits decisions; Present demonstrates choices before consequences"}},
+    {"id":"check", "title":"Apply the workflow", "objectiveRefs":["trace","recover"], "components":["Quiz"], "activity":"Submit an answer about tool-result handling and missing evidence", "rationale":"An explicit response checks application after presentation and exploration", "presentation":{"target":"both", "strategy":"Use Read for actual attempts; Present demonstrates authored feedback"}, "assessment":{"itemRefs":["sections/check.oui#handling"], "successCriterion":"Correctly identify the recipient and justify the evidence boundary"}}
   ]
 }
 ```

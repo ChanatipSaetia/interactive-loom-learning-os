@@ -15,7 +15,7 @@ describe('stateless progressive authoring contracts', () => {
     const client = new Client({ name: 'fresh-author-fixture', version: '1' }, { capabilities: { extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: ['text/html;profile=mcp-app'] } } } })
     await client.connect(a)
     const text = (r: unknown) => (r as { content: Array<{ text: string }> }).content.map((c) => c.text).join('')
-    const plan = { schemaVersion: 1, topicId: 'loop', goal: 'Recognise a loop', objectives: [{ id: 'recognise', description: 'Recognise a loop', evidenceOfLearning: 'Submit a correct authored answer' }], sections: [{ id: 'quiz', title: 'Check', representation: 'quiz', activity: 'Submit an answer', rationale: 'Collect explicit evidence', objectiveRefs: ['recognise'], assessment: { itemRefs: ['sections/quiz.oui#q1'], successCriterion: 'Correct answer' } }] }
+    const plan = { schemaVersion: 1, topicId: 'loop', goal: 'Recognise a loop', objectives: [{ id: 'recognise', description: 'Recognise a loop', evidenceOfLearning: 'Submit a correct authored answer' }], sections: [{ id: 'quiz', title: 'Check', components: ['Quiz'], activity: 'Submit an answer', rationale: 'Collect explicit evidence', objectiveRefs: ['recognise'], assessment: { itemRefs: ['sections/quiz.oui#q1'], successCriterion: 'Correct answer' } }] }
     const files = { 'topic.oui': 'root = Topic("Loops", "Practice", "Recognise a loop", [SectionRef("quiz")])', 'sections/quiz.oui': "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Which repeats?\", [QuizChoice(\"a\", \"A loop\", true, \"Correct\")])" }
     const oui = '// @loom-topic loop\n' + Object.entries(files).map(([file, source]) => `// === ${file} ===\n${source}\n`).join('')
     try {
@@ -98,7 +98,7 @@ it('separates structural validity from actionable experience-readiness feedback'
   await createLoomServer().connect(b)
   const client = new Client({ name: 'readiness-fixture', version: '1' })
   await client.connect(a)
-  const plan = { schemaVersion: 1, topicId: 'setup', goal: 'Initialize a renderer', objectives: [{ id: 'setup', description: 'Follow initialization steps', evidenceOfLearning: 'Explain each setup step' }], sections: [{ id: 'setup', title: 'Setup', representation: 'bullets', objectiveRefs: ['setup'], activity: 'Follow numbered setup instructions', rationale: 'Concise numbered instructions preserve the linear procedure', presentation: { target: 'both', strategy: 'Present each numbered item; Read keeps the checklist visible' } }] }
+  const plan = { schemaVersion: 1, topicId: 'setup', goal: 'Initialize a renderer', objectives: [{ id: 'setup', description: 'Follow initialization steps', evidenceOfLearning: 'Explain each setup step' }], sections: [{ id: 'setup', title: 'Setup', components: ['Bullets'], objectiveRefs: ['setup'], activity: 'Follow numbered setup instructions', rationale: 'Concise numbered instructions preserve the linear procedure', presentation: { target: 'both', strategy: 'Present each numbered item; Read keeps the checklist visible' } }] }
   const call = async (input: unknown) => JSON.parse((await client.callTool({ name: 'validate_topic_plan', arguments: { plan: input } })).content!.map((part) => 'text' in part ? part.text : '').join(''))
   try {
     expect(await call(plan)).toMatchObject({ valid: true, advisoryDiagnostics: [], experienceReadiness: { status: 'no-advisories', teachingQuality: 'not-evaluated' } })

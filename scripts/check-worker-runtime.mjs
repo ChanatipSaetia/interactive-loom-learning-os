@@ -38,6 +38,10 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 300))
   }
   assert.ok(ready, 'Local workerd did not become ready; inspect Wrangler directly for startup diagnostics')
+  const entry = JSON.parse((await call('read_reference', { path: 'index.md' })).content[0].text)
+  assert.equal(entry.path, 'index.md')
+  assert.equal(entry.next[0].path, 'workflow/understand.md')
+  assert.ok(!entry.content.includes('QuizQuestion('))
   const names = (await call()).tools.map((tool) => tool.name)
   for (const name of ['get_loom_capabilities', 'get_topic_context', 'validate_topic_plan', 'get_authoring_guide']) assert.ok(names.includes(name))
   for (const name of ['read_learning_record', 'write_learning_record', 'get_learning_checkpoint', 'record_events', 'validate_section']) assert.ok(!names.includes(name))
@@ -62,11 +66,11 @@ try {
   assert.match(index.openui, /tables/)
   const authoringIndex = JSON.parse((await call('get_authoring_guide', { detail: 'index' })).content[0].text)
   assert.match(authoringIndex.sections.find((section) => section.type === 'flashcards').mentalModel, /Definitions/)
-  const plan = { schemaVersion: 1, topicId: 'selection-smoke', goal: 'Compare authoring capabilities', objectives: [{ id: 'compare', description: 'Compare authoring capabilities' }], sections: [{ id: 'comparison', title: 'Capabilities', objectiveRefs: ['compare'], representation: 'text', activity: 'Read the comparison', rationale: 'Text explains complex concepts clearly.' }] }
+  const plan = { schemaVersion: 1, topicId: 'selection-smoke', goal: 'Compare authoring capabilities', objectives: [{ id: 'compare', description: 'Compare authoring capabilities' }], sections: [{ id: 'comparison', title: 'Capabilities', objectiveRefs: ['compare'], components: ['LessonText'], activity: 'Read the comparison', rationale: 'Text explains complex concepts clearly.' }] }
   const review = JSON.parse((await call('validate_topic_plan', { plan })).content[0].text)
   assert.equal(review.valid, true)
   assert.ok(review.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'UNJUSTIFIED_TEXT_SELECTION'))
-  const listPlan = { ...plan, sections: plan.sections.map((section) => ({ ...section, representation: 'bullets', activity: 'Compare matching authoring attributes' })) }
+  const listPlan = { ...plan, sections: plan.sections.map((section) => ({ ...section, components: ['Bullets'], activity: 'Compare matching authoring attributes' })) }
   const listReview = JSON.parse((await call('validate_topic_plan', { plan: listPlan })).content[0].text)
   assert.equal(listReview.valid, true)
   assert.ok(listReview.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'LIST_STRUCTURE_REVIEW'))

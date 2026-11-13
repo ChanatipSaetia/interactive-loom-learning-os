@@ -1,5 +1,4 @@
 /** Compare explicit plan claims with compiled artifacts; never grade pedagogy. */
-import { OUI_SECTION_TYPES } from './library'
 import { TopicPlanSchema, validateTopicPlan } from './topic-plan'
 import { textHash } from '../../../supporting/authoring-editor/assistant/statements'
 import { fileStatements } from '../../../supporting/authoring-editor/assistant/statements'
@@ -11,7 +10,7 @@ export interface CompiledPlanArtifact {
   sections: Array<{ name: string; config: { type: string } | null }>
 }
 export interface AlignmentDiagnostic {
-  code: 'COMPOSITION_MISMATCH' | 'ASSESSMENT_REFERENCE_MISSING' | 'INVALID_PLAN' | 'TOPIC_MISMATCH' | 'MISSING_SECTION' | 'UNPLANNED_SECTION' | 'REPRESENTATION_MISMATCH' | 'UNCOMPILED_ARTIFACT'
+  code: 'COMPOSITION_MISMATCH' | 'ASSESSMENT_REFERENCE_MISSING' | 'INVALID_PLAN' | 'TOPIC_MISMATCH' | 'MISSING_SECTION' | 'UNPLANNED_SECTION' | 'UNCOMPILED_ARTIFACT'
   severity: 'warning'
   file: string
   sectionId?: string
@@ -40,9 +39,8 @@ export function reviewPlanArtifact(artifact: CompiledPlanArtifact, input?: unkno
     const file = sectionId ? `sections/${sectionId}.oui` : 'topic.oui'
     result.diagnostics.push({ code, severity: 'warning', file, sectionId, message, repairTarget: sectionId ? `${file}#root` : 'topic.oui#root' })
   }
-  const supported = new Set([...OUI_SECTION_TYPES.values(), 'openui'])
   const parsed = TopicPlanSchema.safeParse(input)
-  if (!parsed.success || validateTopicPlan(input, supported).length) {
+  if (!parsed.success || validateTopicPlan(input).length) {
     result.status = 'unverified'
     add('INVALID_PLAN', 'Validate and repair the TopicPlan before comparing artifacts.')
     return result
@@ -60,12 +58,11 @@ export function reviewPlanArtifact(artifact: CompiledPlanArtifact, input?: unkno
     const compiled = actual.get(section.id)
     if (!compiled) add('MISSING_SECTION', 'This planned section is absent from the compiled topic outline.', section.id)
     else if (!compiled.config) add('UNCOMPILED_ARTIFACT', 'This section did not compile; its representation cannot be verified.', section.id)
-    else if (section.representation !== 'page' && compiled.config.type !== section.representation) add('REPRESENTATION_MISMATCH', `Plan specifies ${section.representation}; compiled artifact is ${compiled.config.type}. Repair the section or explicitly revise the plan.`, section.id)
     const statements = fileStatements(artifact.files[`sections/${section.id}.oui`] ?? '')
     const names = new Set(statements.map((statement) => statement.name))
     // Compare only explicit component claims, not arbitrary educational prose.
     // Follow root dependencies so unused declarations cannot satisfy the claim.
-    if ((section.components?.length || section.representation === 'openui') && compiled?.config) {
+    if (section.components.length && compiled?.config) {
       const byName = new Map(statements.map((statement) => [statement.name, statement]))
       const visited = new Set<string>(), calls = new Set<string>()
       const visit = (name: string): void => {
