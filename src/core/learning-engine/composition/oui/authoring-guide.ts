@@ -1,3 +1,4 @@
+import { DOCUMENT_ROOT_RULES } from './document-contract'
 /** Focused contracts from one catalog. Internal domain types are not authoring modes. */
 import { OPENUI_FOCUSED_RULES } from './openui-focused-rules'
 import { getLoomAuthoringPrompt } from './authoring-prompt'
@@ -28,12 +29,14 @@ export function getAuthoringGuide(sections: string[] = [], components?: string[]
   const unknown = selected.filter((name) => !known.includes(name))
   const guidance: Record<string, string> = { Bullets: BULLET_AUTHORING_GUIDE, PillarLayer: LAYER_AUTHORING_GUIDE, UserJourney: USER_JOURNEY_AUTHORING_GUIDE, Timeline: TIMELINE_AUTHORING_GUIDE, BreakdownTree: BREAKDOWN_TREE_AUTHORING_GUIDE }
   return [
-    '## Focused component contracts', OPENUI_FOCUSED_RULES, ...(components === undefined ? [MENTAL_MODEL_GUIDE] : []),
+    '## Focused component contracts',
+    ...known.filter((name) => DOCUMENT_ROOT_RULES[name]).map((name) => DOCUMENT_ROOT_RULES[name]),
+    ...(!known.every((name) => ['Topic', 'Narration'].includes(name)) ? [OPENUI_FOCUSED_RULES] : []), ...(components === undefined ? [MENTAL_MODEL_GUIDE] : []),
     '## Component Signatures',
     componentEntries(componentClosure([...known, ...(components === undefined ? ['Page', 'Topic', 'Narration'] : [])], undefined, genericChildren)),
     ...known.flatMap((name) => guidance[name] ? [guidance[name]] : []),
     ...(components === undefined && sections.includes('openui') ? [getLoomAuthoringPrompt().split('## Standard OpenUI Sections')[1]?.split('## Narration Files')[0] ?? ''] : []),
-    '## Narration Files', 'Present is hands-free. Use Narration([NarrationStep(beat, caption, effects)]). Effects: Highlight, NarrationCallout, Spotlight. Keep Read and Present content shared and state separate.',
+    ...(!known.every((name) => name === 'Topic') ? ['## Narration Files', 'Present is hands-free. Use root = Narration([NarrationStep(beat, caption, effects)]). Effects: Highlight, NarrationCallout, Spotlight. Keep Read and Present content shared and state separate.'] : []),
     ...known.flatMap((name) => {
       const type = OUI_SECTION_TYPES.get(name)
       return type ? [`### ${name} presentation beats\n${type === 'intro' ? '' : '`title`, then '}${BEAT_IDS[type] ?? 'Retrieve the component presentation guide.'}`] : []
