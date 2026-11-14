@@ -17,7 +17,13 @@ export function referencePaths(): string[] {
     'contracts/topic-plan.schema.json', 'contracts/page.md', 'contracts/topic.md', 'contracts/narration.md', 'components/index.md',
     ...Object.keys(getUnifiedOUISpec().components).map((name) => `components/${name}.md`)]
 }
-export function readReference(path: string) {
+export function readReference(input = 'index.md') {
+  // Tool arguments and resource links identify the same virtual file. Never fetch
+  // arbitrary URLs or let URL normalization turn traversal into a valid path.
+  let path = input.startsWith(REFERENCE_ROOT) ? input.slice(REFERENCE_ROOT.length) : input
+  try { path = decodeURIComponent(path) } catch { return missing(input) }
+  if (!path || path.length > 240 || /[\\?#:]/.test(path) || [...path].some((char) => char.charCodeAt(0) < 32) || path.split('/').some((part) => !part || part === '.' || part === '..')) return missing(input)
+
   let content: string
   let next: string[] = []
   if (path === 'index.md') {
@@ -78,12 +84,12 @@ export function readReference(path: string) {
     content = '# Component contracts\n\nRead only components selected in your validated plan. Each file includes required signature dependencies; generic child alternatives remain choices.\n\n' + Object.keys(getUnifiedOUISpec().components).map((name) => '- ' + link(`components/${name}.md`, name)).join('\n') + '\n\nNext: ' + link(next[0], 'Generate source')
   } else {
     const name = /^components\/([A-Za-z][A-Za-z0-9]*)\.md$/.exec(path)?.[1]
-    if (!name || !getUnifiedOUISpec().components[name]) return missing(path)
+    if (!name || !Object.prototype.hasOwnProperty.call(getUnifiedOUISpec().components, name)) return missing(path)
     next = ['workflow/generate.md']
     content = `# ${name}\n\nRead when: this component is selected for the page composition.\n\n${getAuthoringGuide([], [name])}\n\nNext: ${link(next[0], 'Generate source')}`
   }
   return { schemaVersion: 1, path, uri: referenceUri(path), version: `reference-v1:${textHash(content)}`, mimeType: path.endsWith('.json') ? 'application/json' : 'text/markdown', content, next: next.map((p) => ({ path: p, uri: referenceUri(p) })) }
 }
 function missing(path: string) {
-  return { schemaVersion: 1, path, error: 'REFERENCE_NOT_FOUND', entry: referenceUri('index.md') }
+  return { schemaVersion: 1, path, error: 'REFERENCE_NOT_FOUND', entry: referenceUri('index.md'), entryPath: 'index.md', next: [{ path: 'index.md', uri: referenceUri('index.md') }] }
 }

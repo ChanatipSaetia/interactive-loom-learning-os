@@ -60,3 +60,38 @@ it('routes every intent and preserves policies and availability without the reti
     for (const next of node(path).next) expect(referencePaths()).toContain(next.path)
   }
 })
+
+it('accepts linked full URIs and relative paths as the same canonical reference', () => {
+  for (const path of ['index.md', 'workflow/understand.md', 'components/Table.md']) {
+    expect(readReference(REFERENCE_ROOT + path)).toEqual(readReference(path))
+  }
+  expect(readReference()).toEqual(readReference('index.md'))
+  for (const path of ['topic-authoring.md', 'components.md', 'https://example.com/index.md', '../index.md', 'loom://references/%2e%2e/index.md', 'components/%2e%2e/index.md', 'loom://references/index.md?x=1', 'loom://references/%', 'components/toString.md']) {
+    const result = readReference(path)
+    expect(result).toMatchObject({ error: 'REFERENCE_NOT_FOUND', entryPath: 'index.md', next: [{ path: 'index.md', uri: REFERENCE_ROOT + 'index.md' }] })
+    expect(node(result.next[0].path).content).toBeTruthy()
+  }
+})
+
+it('returns nonempty structured data and identical text for default, path and URI tool calls', async () => {
+  const [a, b] = InMemoryTransport.createLinkedPair()
+  await createLoomServer().connect(b)
+  const client = new Client({ name: 'reference-contract', version: '1' })
+  await client.connect(a)
+  try {
+    let first: unknown
+    for (const args of [{}, { path: 'index.md' }, { path: REFERENCE_ROOT + 'index.md' }]) {
+      const result = await client.callTool({ name: 'read_reference', arguments: args })
+      expect(result.isError).not.toBe(true)
+      expect(result.structuredContent).toMatchObject({ path: 'index.md', content: expect.stringContaining('# Loom: start here'), next: expect.any(Array) })
+      expect(JSON.parse((result.content as { text: string }[])[0].text)).toEqual(result.structuredContent)
+      if (first) expect(result.structuredContent).toEqual(first)
+      first = result.structuredContent
+    }
+    const failed = await client.callTool({ name: 'read_reference', arguments: { path: 'components.md' } })
+    expect(failed.isError).toBe(true)
+    expect(failed.structuredContent).toMatchObject({ error: 'REFERENCE_NOT_FOUND', entryPath: 'index.md' })
+    const resource = await client.readResource({ uri: REFERENCE_ROOT + 'index.md' })
+    expect(JSON.parse((resource.contents[0] as { text: string }).text)).toEqual(first)
+  } finally { await client.close() }
+})

@@ -117,3 +117,19 @@ filesystem access. Clients without resource reading use
 paths return `REFERENCE_NOT_FOUND`; they never fetch arbitrary paths or URLs.
 
 The hosted tool list is exactly: read_reference, get_topic_context, validate_topic_plan, show_topic, show_library and show_domain. The former guide/catalog tools are removed from both MCP transports. Reconnect clients to refresh cached tool lists. Internal guide generators and Studio APIs remain available.
+
+### Reference addressing and result contract
+
+`read_reference` accepts either a relative virtual path (`index.md`,
+`workflow/understand.md`, `components/index.md`) or its complete
+`loom://references/` URI. Omitting `path` opens `index.md`. Follow the returned
+`next[].path` or `next[].uri`; both identify the same canonical node. Names such
+as `topic-authoring.md` and `components.md` are not aliases.
+
+The tool returns the same reference envelope in `structuredContent` and its text
+content for clients that support either representation. MCP resource reads return
+the same envelope. Successful results use canonical relative `path` and full
+`uri` fields. Not-found results set `isError: true` on the tool response and carry
+`REFERENCE_NOT_FOUND`, `entryPath: "index.md"`, `entry`, and a `next` recovery link.
+Malformed encodings, foreign URL schemes, queries/fragments and traversal paths
+are rejected; the reader never fetches arbitrary URLs or filesystem paths.
