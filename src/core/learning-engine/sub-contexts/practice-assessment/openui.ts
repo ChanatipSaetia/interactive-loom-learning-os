@@ -117,7 +117,7 @@ export const Flashcard = defineOUIComponent({
     shortDefinition: 'One-line definition shown on the back.',
     detailedDefinition: 'A coherent explanation shown on the back, with a concise example or common mistake when useful.',
     whyItMatters: 'Why the learner should care about this term.',
-    image: 'Optional image URL or path shown on the card.',
+    image: 'Optional image source; check contracts/images.md and the current MCP runtime resource policy before using a URL or data URI.',
     dialogue: 'Optional Dialogue(...) example that shows the term in use.',
   },
 })

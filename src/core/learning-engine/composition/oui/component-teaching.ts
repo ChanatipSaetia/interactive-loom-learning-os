@@ -136,7 +136,7 @@ assign(['Image', 'ImageBlock', 'ImageGallery', 'ImageText', 'ImageTextLarge', 'L
   'Teach visual recognition and concrete examples by showing relevant features, variations and distinctions.',
   'Inspect and compare images with explanatory labels or captions; use the selected gallery’s actual preview and presentation behavior.',
   'Viewing, zooming or switching images is engagement. Recognition evidence requires a response that identifies or explains a feature.',
-  'Images must contribute to the learning goal, remain legible and use supported accessibility/attribution fields. Do not infer hidden mechanisms from a photograph or claim a gallery provides a classification test.',
+  'Check the MCP runtime image policy: a reachable HTTPS URL may still be blocked. Images must contribute to the learning goal, remain legible and use supported accessibility/attribution fields. Do not infer hidden mechanisms from a photograph or claim a gallery provides a classification test.',
 ))
 assign(['Svg'], profile(
   'Explain spatial structure, anatomy, a mechanism, geometry or a clearly labelled analogy.',

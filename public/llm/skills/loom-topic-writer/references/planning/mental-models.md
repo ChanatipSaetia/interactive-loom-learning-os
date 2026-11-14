@@ -18,7 +18,7 @@ Read only plausible capability summaries, then the exact contracts and required 
 
 ### Choose an activity, then a composition
 
-For each page establish the learning objective, knowledge structure and concrete learner action. For every candidate ask what it can introduce, what learners can explore, what their response demonstrates and what its limits are. Read those four teaching-purpose fields in the relevant capability or component reference; do not load every component guide. Consider feasible alternatives, then explain the selected composition and its limits in the existing plan rationale. Use evidenceRefs for sources, presentation for Read/Present behavior and assessment for observable answers. No additional TopicPlan fields are needed. Supporting components must serve the same main activity; a second page needs a distinct contribution. Do not require a fixed number of components, pages, alternatives or interactions.
+For each page establish the learning objective, knowledge structure and concrete learner action. For every candidate ask what it can introduce, what learners can explore, what their response demonstrates and what its limits are. Read those four teaching-purpose fields in the relevant capability or component reference; do not load every component guide. Consider feasible alternatives, then explain the selected composition and its limits in the existing plan rationale. Use evidenceRefs for sources and also author useful learner-visible source or further-reading links in the page; internal plan references do not render themselves. Use presentation for Read/Present behavior and assessment for observable answers. No additional TopicPlan fields are needed. Supporting components must serve the same main activity; a second page needs a distinct contribution. Do not require a fixed number of components, pages, alternatives or interactions.
 
 | Learner action | Candidate capabilities to inspect | Fit and boundary |
 |---|---|---|
@@ -73,6 +73,18 @@ Choose one meaningful primary view with Flowchart.initialView. In presentation.s
 | Execute or understand a procedure | Steps, Bullets or Flowchart according to instruction, checklist or structural needs |
 
 ### Applying the selection
+
+### Reference links for learners
+
+Encourage useful learner-visible reference links for deeper reading, checking a claim or trying the next step. Prefer relevant official documentation, primary sources and original image/data sources. Link to a specific section when its destination is supplied or checked, and identify a relevant version or date when it affects the explanation. Use a small, purposeful selection; no fixed reference count or separate references page is required.
+
+Give each link a descriptive label and a short reason to open it, such as a worked example, API detail, source dataset or explanation beyond the lesson's scope. Place it beside the related explanation or in a concise Further reading block inside the authored lesson, not only in a chat reply or source comment. Keep the core learning task understandable without following external links. Do not make Present depend on opening a website or narrating long raw URLs.
+
+Use supplied or checked destinations; never fabricate URLs, titles, quotations or source support. Mark unverified availability honestly. Distinguish a claim's source from optional further reading. Internal TopicPlan evidenceRefs are not automatically rendered links for the learner: author the visible link in the page content too, without adding unsupported Topic, Page or source fields.
+
+Use Markdown links in TextContent or another component that explicitly supports them, or a documented open_url action when suitable. Do not assume every string field supports Markdown or invent a Reference/Link component. Read the actual contract before writing a button or action. Verify navigation in the target chat host; a host may intercept or block external navigation. Do not open links automatically during presentation. External reference navigation and permission to embed an image are different concerns.
+
+For an image, distinguish the direct image source used for rendering from the source/credit/detail page the learner can visit. Put a readable source or attribution link in supported caption/credit content or adjacent TextContent. LearningGallery captions and credits render as plain text; use adjacent TextContent for a clickable link there. A source-page link is not the image src, and an allowed image origin does not guarantee a working detail-page link. Svg removes links, so place learner references outside the SVG markup. Preserve image rights/attribution information available from the supplied source; a credit is not itself permission to reuse an image.
 
 For a procedure, ask whether the learner needs to execute instructions, understand their structure, or practise their order. Steps, Bullets and Flowchart are peer candidates: Steps guides instructions with explanations or code, Bullets supports concise checklists and prerequisites, and Flowchart explains sequence, dependencies, branches, responsibilities and consequences. A linear procedure can justify Flowchart when the connections help explain it; branching or multiple participants are not selection prerequisites. The existing Flowchart contract still applies: model only supported participants, events and relationships; never invent actors or events just to use it.
 

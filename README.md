@@ -131,6 +131,29 @@ skills provide a [purpose index](.claude/skills/loom-topic-writer/references/pla
 and [per-component contracts](.claude/skills/loom-topic-writer/references/components/).
 MCP serves the same guidance through linked references, one relevant file at a time.
 
+### Images inside an MCP chat
+
+A reachable HTTPS URL can still be blocked by the chat host's resource policy.
+Before adding an image, read `contracts/images.md` and `runtime.md` through
+`read_reference`; the latter reports the configured `deployment.imagePolicy`.
+The default hosted app does not declare arbitrary image CDNs. The bundled local
+player declares `data:` resources and no remote origins. Loom does not upload
+image attachments or create public image URLs. Verify the source in the target
+chat, including Read and Present; Viewer loading alone is not that check.
+
+See [image delivery constraints](docs/ai-experience/mcp-images.md) for source
+selection, inline-data size, SVG alternatives and failure handling.
+
+### Reference links for learners
+
+Include useful, clearly labelled links to official documentation, original sources,
+image credits or further reading beside the relevant explanation. Explain what the
+learner can find there and keep the core lesson self-contained. Use supplied or
+checked URLs; internal plan evidence references do not automatically appear in the
+page. For images, distinguish the renderable image URL from its source/detail page.
+Read `contracts/learner-references.md` through MCP or the writer skill's
+`references/core/learner-references.md` for authoring and host-navigation guidance.
+
 ## Author a topic
 
 A topic folder contains a manifest, Page-root content files and optional narration

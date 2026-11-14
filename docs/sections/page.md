@@ -207,3 +207,24 @@ roles in their focused references. They inherit the owning activity's behavior;
 their presence does not create a separate learning activity or evidence. Read
 responses and Present demonstrations remain distinct, and no representation,
 assessment, interaction count or lesson sequence is mandatory.
+
+## Image sources in MCP
+
+Before adding an image, read the progressive `contracts/images.md` reference and
+inspect `runtime.md`'s `deployment.imagePolicy`. Public HTTPS reachability alone
+does not establish that the chat iframe may load an origin. Use the exact image
+component fields, verify loading in the target host, and preserve the learning
+objective when choosing a fallback. See [MCP image constraints](../ai-experience/mcp-images.md).
+
+## Learner-visible references
+
+Encourage purposeful source and further-reading links with descriptive labels and
+a short reason to follow them. Put them near the relevant explanation or in a
+concise reading block; keep the main learning task self-contained. Prefer official
+documentation and primary sources, using supplied or checked destinations. Internal
+TopicPlan evidenceRefs are not rendered references: author visible links using
+supported Markdown content or documented link actions. Distinguish image src URLs
+from credit/detail pages, and place links outside sanitized Svg markup. Verify
+external navigation in the target host and do not open references automatically
+during Present. See the focused `contracts/learner-references.md` reference or
+installed `references/core/learner-references.md`.

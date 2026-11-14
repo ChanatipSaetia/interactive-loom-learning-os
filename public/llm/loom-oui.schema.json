@@ -7369,7 +7369,7 @@
         },
         "image": {
           "type": "string",
-          "description": "Optional image URL or path shown on the card."
+          "description": "Optional image source; check contracts/images.md and the current MCP runtime resource policy before using a URL or data URI."
         },
         "dialogue": {
           "$ref": "#/$defs/Dialogue",

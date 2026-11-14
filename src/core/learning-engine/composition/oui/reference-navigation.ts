@@ -1,3 +1,5 @@
+import { LEARNER_REFERENCE_GUIDE } from './learner-reference-guide'
+import { IMAGE_DELIVERY_GUIDE, IMAGE_SOURCE_COMPONENTS } from './image-delivery-guide'
 import { componentTeachingGuide } from './component-teaching'
 import { COMPONENT_PURPOSES } from './component-purpose'
 import { DOCUMENT_SYNTAX_GUIDE } from './document-contract'
@@ -17,7 +19,7 @@ const link = (path: string, label: string) => `[${label}](${referenceUri(path)})
 export function referencePaths(): string[] {
   return ['index.md', 'workflow/edit.md', 'display/library.md', 'display/domain.md', 'runtime.md', 'tutoring/index.md', 'storage/index.md', 'capabilities/selection.md', ...Object.keys(guideReferences()), ...AUTHORING_WORKFLOW_STAGES.map((stage) => `workflow/${stage.id}.md`),
     'capabilities/index.md', ...Object.keys(getUnifiedOUISpec().components).map((name) => `capabilities/${name}.md`),
-    'contracts/topic-plan.schema.json', 'contracts/delivery.md', 'contracts/syntax.md', 'contracts/page.md', 'contracts/topic.md', 'contracts/narration.md', 'components/index.md',
+    'contracts/topic-plan.schema.json', 'contracts/learner-references.md', 'contracts/images.md', 'contracts/delivery.md', 'contracts/syntax.md', 'contracts/page.md', 'contracts/topic.md', 'contracts/narration.md', 'components/index.md',
     ...Object.keys(getUnifiedOUISpec().components).map((name) => `components/${name}.md`)]
 }
 export function readReference(input = 'index.md') {
@@ -35,7 +37,8 @@ export function readReference(input = 'index.md') {
       ['Create a topic', next[0]], ['Edit or inspect a topic', next[1]], ['Learn or continue learning', next[2]], ['Show the library', next[3]], ['Show one domain', next[4]], ['Save a topic or progress', next[5]], ['Inspect runtime availability', next[6]],
     ].map(([label, path]) => '- ' + link(path, label)).join('\n')
   } else if (path === 'runtime.md') {
-    content = '# Runtime availability\n\nEvery reference response carries deployment metadata derived from the configured server adapters: storageAvailable, serverValidationAvailable and sectionValidationAvailable. These do not establish permissions in external connectors. Hosted MCP has six tools; local compiler, editing and learner-memory tools are conditional. The Worker stores no topics by default. Source and progress must be obtained from authorized connectors or current buffers.'
+    content = '# Runtime availability\n\nEvery reference response carries deployment metadata derived from the configured server adapters: storageAvailable, serverValidationAvailable and sectionValidationAvailable. These do not establish permissions in external connectors. Hosted MCP has six tools; local compiler, editing and learner-memory tools are conditional. The Worker stores no topics by default. Source and progress must be obtained from authorized connectors or current buffers. deployment.imagePolicy reports the requested resourceDomains and connectDomains of this server configuration, the asset mode, and image upload availability. Static image loading uses resourceDomains; HTTPS reachability alone is insufficient. The chat host enforces the final policy. Read contracts/images.md before adding image sources.'
+    next = ['contracts/images.md']
   } else if (path === 'workflow/edit.md') {
     next = ['contracts/page.md', 'workflow/verify.md', 'storage/index.md']
     content = '# Edit or inspect an existing topic\n\nObtain current authorized source files, including unsaved buffers. Call get_topic_context({files}) for an overview, then supply roots such as sections/exchange.oui#diagram. Follow omittedReferences with narrower calls when truncated; resupply current files and expectedHash when applicable. Component references lead to components/<Name>.md. Hashes are change hints, not permissions or write tokens.\n\nChange only relevant statements; preserve learner actions, IDs and narration targets. For a small edit do not reload all references or rebuild a plan unnecessarily. Validate the page and narration locally when available, otherwise use the player and report unrun checks. Local edit_topic can apply targeted changes when exposed.\n\nNext:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
@@ -57,7 +60,7 @@ export function readReference(input = 'index.md') {
     const index = AUTHORING_WORKFLOW_STAGES.findIndex((stage) => path === `workflow/${stage.id}.md`)
     if (index < 0) return missing(path)
     const stage = AUTHORING_WORKFLOW_STAGES[index]
-    const related: Record<string, string[]> = { discover: ['capabilities/index.md'], plan: ['contracts/topic-plan.schema.json'], references: ['contracts/syntax.md', 'contracts/page.md', 'contracts/topic.md', 'contracts/narration.md', 'components/index.md'], generate: ['contracts/syntax.md'], deliver: ['contracts/delivery.md', 'storage/index.md'] }
+    const related: Record<string, string[]> = { discover: ['capabilities/index.md'], plan: ['contracts/topic-plan.schema.json'], references: ['contracts/syntax.md', 'contracts/page.md', 'contracts/topic.md', 'contracts/narration.md', 'contracts/learner-references.md', 'components/index.md'], generate: ['contracts/syntax.md'], deliver: ['contracts/delivery.md', 'storage/index.md'] }
     next = [...(related[stage.id] ?? []), ...(AUTHORING_WORKFLOW_STAGES[index + 1] ? [`workflow/${AUTHORING_WORKFLOW_STAGES[index + 1].id}.md`] : [])]
     const tools: Record<string, string> = { discover: 'Browse capabilities/index.md, then read only relevant capability nodes.', 'validate-plan': 'Call validate_topic_plan({plan}); repair errors and resolve or explain advisory warnings.', references: 'Read components/index.md and only the component files selected in the plan.', generate: 'Write topic.oui, Page-root section files and narration. For edits supply current authorized buffers to get_topic_context.', verify: 'Use validate_topic({oui, plan}) and validate_section when available; hosted MCP leaves compilation to the player. Inspect Read/Present layout and report checks not run.', deliver: 'New topics require show_topic({oui, plan}). Missing planned components, invalid source references and unresolved advisories block delivery. Repair missing presentation/evidence fields; design warnings may use advisoryResolutions bound to the current planVersion. Read contracts/delivery.md for the exact contract and storage/index.md for saving accepted source. Existing exact-source replay uses intent: reopen.' }
     content = `# ${stage.id}\n\nRead when: performing the ${stage.id} step.\n\n${stage.task}\n\n${tools[stage.id] ?? ''}\n\nPrerequisite: ${link(index ? `workflow/${AUTHORING_WORKFLOW_STAGES[index - 1].id}.md` : 'index.md', index ? 'Previous step' : 'Entry point')}\n\nNext:\n${next.map((p) => '- ' + link(p, p)).join('\n')}`
@@ -71,13 +74,19 @@ export function readReference(input = 'index.md') {
     const name = /^capabilities\/([A-Za-z][A-Za-z0-9]*)\.md$/.exec(path)?.[1]
     if (!name || !Object.prototype.hasOwnProperty.call(getUnifiedOUISpec().components, name)) return missing(path)
     const item = guideSectionTypes().find((c) => c.component === name) ?? { type: 'openui', component: name, summary: getUnifiedOUISpec().components[name]!.description }
-    next = ['workflow/plan.md', `components/${name}.md`]
+    next = ['workflow/plan.md', `components/${name}.md`, ...(IMAGE_SOURCE_COMPONENTS.has(name) ? ['contracts/images.md', 'runtime.md'] : [])]
     const behavior = SECTION_LEARNING_BEHAVIORS[item.type as keyof typeof SECTION_LEARNING_BEHAVIORS]
     const model = SECTION_MENTAL_MODELS.find((entry) => entry.type === item.type)
     const purpose = COMPONENT_PURPOSES.find((group) => (group.components as readonly string[]).includes(name))
     const alternatives = purpose?.components.filter((candidate) => candidate !== name).map((candidate) => link(`capabilities/${candidate}.md`, candidate)).join(', ')
     const details = [purpose?.purpose, componentTeachingGuide(name), alternatives ? `Compare when relevant: ${alternatives}. These are alternatives, not dependencies.` : '', model?.model, model?.question, behavior?.learnerAction, behavior?.presentationConstraint, behavior?.evidenceBoundary, item.component === 'Flowchart' ? FLOWCHART_MODELS.map(([id, purpose]) => `${id}: ${purpose}`).join('\n') : ''].filter(Boolean).join('\n\n')
     content = `# ${item.component}\n\n${item.summary}\n\n${details}\n\nRead when: considering this capability for a learner action. Combine it with supporting components; it does not determine a page type.\n\nBefore authoring, ${link(next[0], 'plan the composition')}. Then read ${link(next[1], 'the exact component contract')}.`
+  } else if (path === 'contracts/learner-references.md') {
+    next = ['components/TextContent.md', 'contracts/images.md', 'workflow/verify.md']
+    content = LEARNER_REFERENCE_GUIDE + '\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
+  } else if (path === 'contracts/images.md') {
+    next = ['runtime.md', 'contracts/learner-references.md', 'components/Image.md', 'components/ImageGallery.md', 'components/LearningGallery.md', 'components/Svg.md']
+    content = IMAGE_DELIVERY_GUIDE + '\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
   } else if (path === 'contracts/delivery.md') {
     next = ['workflow/validate-plan.md', 'workflow/verify.md', 'storage/index.md']
     content = '# Delivery review\n\nNew topics use show_topic({oui, plan, mode?, advisoryResolutions?}); intent defaults to create. Call validate_topic_plan first and retain its planVersion. Source inspection is limited to 256 Ki characters per topic. Source/plan review follows root dependencies; unused declarations and component names inside prose do not satisfy a planned activity. Source mismatches and missing presentation or learning-evidence fields must be repaired. No component quota is imposed.\n\nDesign warnings UNJUSTIFIED_TEXT_SELECTION, LIST_STRUCTURE_REVIEW, POSSIBLE_REDUNDANT_SECTION and GOAL_COMPOSITION_REVIEW may be resolved explicitly with {code, path, reason, planVersion}. Use the exact warning code/path and current planVersion; reason must explain the specific exception (40–2000 characters). A changed plan invalidates prior resolutions. Explanations are recorded declarations, not independent judgments of teaching quality. Original advisories remain visible even when delivery accepts a justified exception.\n\nA blocked result has isError: true, deliveryReview.status: blocked, repair targets and unresolved diagnostics; the app must not render or export the rejected draft, and nothing is saved. Accepted source is sent in app-only metadata for the player to compile. accepted-for-player-check is not proof of compiler validity, layout or learning. Local compiler failures block creation too.\n\nExisting topics can be replayed unchanged with show_topic({oui, intent: "reopen"}). Planless replay is explicitly unreviewed; it must not be used for newly authored content. If a plan is supplied, its checks still apply.\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
@@ -99,6 +108,10 @@ export function readReference(input = 'index.md') {
     if (!name || !Object.prototype.hasOwnProperty.call(getUnifiedOUISpec().components, name)) return missing(path)
     next = ['workflow/generate.md']
     content = `# ${name}\n\nRead when: this component is selected for the page composition.\n\n${getAuthoringGuide([], [name])}\n\nNext: ${link(next[0], 'Generate source')}`
+  }
+  if (path.startsWith('components/') && IMAGE_SOURCE_COMPONENTS.has(path.slice('components/'.length, -3))) {
+    next.push('contracts/images.md', 'runtime.md')
+    content += '\n\nImage delivery: ' + link('contracts/images.md', 'Source constraints') + '; ' + link('runtime.md', 'Current deployment policy')
   }
   return { schemaVersion: 1, path, uri: referenceUri(path), version: `reference-v1:${textHash(content)}`, mimeType: path.endsWith('.json') ? 'application/json' : 'text/markdown', content, next: next.map((p) => ({ path: p, uri: referenceUri(p) })) }
 }

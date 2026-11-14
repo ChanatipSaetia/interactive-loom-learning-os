@@ -1,3 +1,4 @@
+import { LEARNER_REFERENCE_GUIDE } from './learner-reference-guide'
 /** Shared selection policy for one purpose-based component catalog. */
 export const REPRESENTATION_SELECTION_GUIDE = `Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Text, layouts, visuals and prebuilt activities share one catalog; there is no section ranking, visual quota or mandatory sequence.
 
@@ -36,7 +37,7 @@ Use the existing Flashcard fields: word carries the front's term or question, an
 /** A targeted selection leaf: candidates, not a mandatory component mix. */
 export const COMPOSITION_DECISION_GUIDE = `### Choose an activity, then a composition
 
-For each page establish the learning objective, knowledge structure and concrete learner action. For every candidate ask what it can introduce, what learners can explore, what their response demonstrates and what its limits are. Read those four teaching-purpose fields in the relevant capability or component reference; do not load every component guide. Consider feasible alternatives, then explain the selected composition and its limits in the existing plan rationale. Use evidenceRefs for sources, presentation for Read/Present behavior and assessment for observable answers. No additional TopicPlan fields are needed. Supporting components must serve the same main activity; a second page needs a distinct contribution. Do not require a fixed number of components, pages, alternatives or interactions.
+For each page establish the learning objective, knowledge structure and concrete learner action. For every candidate ask what it can introduce, what learners can explore, what their response demonstrates and what its limits are. Read those four teaching-purpose fields in the relevant capability or component reference; do not load every component guide. Consider feasible alternatives, then explain the selected composition and its limits in the existing plan rationale. Use evidenceRefs for sources and also author useful learner-visible source or further-reading links in the page; internal plan references do not render themselves. Use presentation for Read/Present behavior and assessment for observable answers. No additional TopicPlan fields are needed. Supporting components must serve the same main activity; a second page needs a distinct contribution. Do not require a fixed number of components, pages, alternatives or interactions.
 
 | Learner action | Candidate capabilities to inspect | Fit and boundary |
 |---|---|---|
@@ -160,6 +161,8 @@ ${FLOWCHART_MODELS.map(([view, model]) => `| ${view} | ${model} |`).join('\n')}
 ${OPENUI_MODELS.map(([model, visual]) => `| ${model} | ${visual} |`).join('\n')}
 
 ### Applying the selection
+
+${LEARNER_REFERENCE_GUIDE}
 
 ${PROCEDURE_TEACHING_GUIDE}
 

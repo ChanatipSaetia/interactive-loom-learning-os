@@ -78,7 +78,7 @@ describe('Loom MCP server', () => {
   })
   it('reports configured runtime availability on the entry reference', async () => {
     const entry = JSON.parse(textOf(await client.callTool({ name: 'read_reference', arguments: {} })))
-    expect(entry.deployment).toEqual({ storageAvailable: false, serverValidationAvailable: true, sectionValidationAvailable: false })
+    expect(entry.deployment).toEqual({ storageAvailable: false, serverValidationAvailable: true, sectionValidationAvailable: false, imagePolicy: { mode: 'hosted-assets', resourceDomains: ['http://localhost:5180', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'], connectDomains: ['http://localhost:5180'], enforcement: 'host-controlled', imageUploadAvailable: false } })
     expect(entry.content).not.toContain('QuizQuestion(')
   })
 
