@@ -20,7 +20,7 @@ FormulaVariable(id: string, label: string, min: number, max: number, step: numbe
 FormulaMetric(id: string, label: string, formula: string, description: string, analogy?: string, inScope?: string[], outOfScope?: string[]) — A computed metric. `formula` is an expression over variable IDs, e.g. "Math.round(chunk_size * (1 + overlap / 70))".
   - id: Metric ID, unique within the sandbox.
   - label: Metric name shown on its card.
-  - formula: JavaScript expression over variable IDs, e.g. "Math.round(chunk_size * (1 + overlap / 70))".
+  - formula: Restricted arithmetic expression over variable IDs and earlier metric IDs (no executable code), e.g. "Math.round(chunk_size * (1 + overlap / 70))".
   - description: What the metric measures.
   - analogy: Optional everyday analogy shown in the metric details.
   - inScope: Optional list of what the metric covers.

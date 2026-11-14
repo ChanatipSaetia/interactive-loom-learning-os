@@ -45,7 +45,7 @@ export function SectionEditor({ workspace, section, sectionNames, reveal, onAddT
   }, [file, title, onAddToTray])
   const narration = section.narration
   const diagnostics = tab === 'narration' ? narration?.validation.diagnostics ?? [] : section.validation.diagnostics
-  const blocking = diagnostics.some((d) => d.tier < 3)
+  const blocking = diagnostics.some((d) => d.tier < 3 || d.severity === 'error')
   const payload = blocking ? null : section.validation.payload
   const hints = useMemo(() => ({ sectionNames }), [sectionNames])
   const narrationHints = useMemo(() => ({ sectionSource: section.source }), [section.source])

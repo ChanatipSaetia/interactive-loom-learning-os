@@ -633,3 +633,13 @@
 @media (prefers-reduced-motion: reduce) {
   .present-region .present-narr-hl { animation: none; }
 }
+
+/* Technical titles and labels must fit their region without hiding authored text. */
+.present-title-content { min-width: 0; max-width: 100%; }
+.present-title-name, .present-title-heading, .present-title-lead,
+.present-region h2, .present-region .present-w {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.present-title-card { overflow-y: auto; }

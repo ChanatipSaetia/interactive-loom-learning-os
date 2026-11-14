@@ -43,7 +43,9 @@ try {
   assert.equal(entry.next[0].path, 'workflow/understand.md')
   assert.ok(!entry.content.includes('QuizQuestion('))
   const names = (await call()).tools.map((tool) => tool.name).sort()
-  assert.deepEqual(names, ['get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'].sort())
+  assert.deepEqual(names, ['recommend_components', 'get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'].sort())
+  const recommendation = JSON.parse((await call('recommend_components', { learningObjective: 'Show total spending split across graph nodes' })).content[0].text)
+  assert.ok(recommendation.candidates.some((candidate) => candidate.component === 'BreakdownTree'))
   const read = async (path) => JSON.parse((await call('read_reference', { path })).content[0].text)
   assert.match((await read('components/QuizQuestion.md')).content, /^QuizQuestion\(/m)
   assert.match((await read('components/TextContent.md')).content, /^TextContent\(text: string,/m)
@@ -61,6 +63,10 @@ try {
   const plan = { schemaVersion: 1, topicId: 'selection-smoke', goal: 'Compare authoring capabilities', objectives: [{ id: 'compare', description: 'Compare authoring capabilities' }], sections: [{ id: 'comparison', title: 'Capabilities', objectiveRefs: ['compare'], components: ['TextContent'], activity: 'Read the comparison', rationale: 'Text explains complex concepts clearly.' }] }
   const review = JSON.parse((await call('validate_topic_plan', { plan })).content[0].text)
   assert.equal(review.valid, true)
+  const numeric = JSON.parse((await call('validate_topic_plan', { plan, quantitativeModels: { formulas: [{ type: 'formula-sandbox', variables: [{ id: 'x', label: 'X', min: 0, max: 1, step: 0.1, defaultValue: 1 }], metrics: [{ id: 'inverse', label: 'Inverse', formula: '1 / x', description: 'Boundary probe' }] }] }, tokenUsage: { inputTokens: 100, outputTokens: 40, cacheReadTokens: 20, inputIncludesCacheRead: true, inputIncludesCacheWrite: false, outputIncludesReasoning: false } })).content[0].text)
+  assert.equal(numeric.valid, true)
+  assert.equal(numeric.quantitativeReview.status, 'invalid')
+  assert.equal(numeric.tokenAccounting.usage.freshInputTokens, 80)
   assert.ok(review.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'UNJUSTIFIED_TEXT_SELECTION'))
   const listPlan = { ...plan, sections: plan.sections.map((section) => ({ ...section, components: ['Bullets'], activity: 'Compare matching authoring attributes' })) }
   const listReview = JSON.parse((await call('validate_topic_plan', { plan: listPlan })).content[0].text)

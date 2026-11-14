@@ -1,3 +1,4 @@
+import { recommendComponents } from './component-recommendations'
 import { textHash } from '../../../supporting/authoring-editor/assistant/statements'
 /** Portable AI-authored planning contract. AI authors plans; Loom checks structure. */
 import { z } from 'zod'
@@ -182,8 +183,8 @@ export function reviewTopicPlan(input: unknown) {
   const parsed = TopicPlanSchema.safeParse(input)
   if (!parsed.success) return []
   const plan = parsed.data
-  const diagnostics: Array<{ code: string; severity: 'warning'; path: string; message: string }> = []
-  const add = (code: string, path: string, message: string) => diagnostics.push({ code, severity: 'warning', path, message })
+  const diagnostics: Array<{ code: string; severity: 'warning'; stage: 'planning' | 'representation' | 'quantitative'; path: string; message: string; suggestions: Array<{ action: string; target: string }> }> = []
+  const add = (code: string, path: string, message: string) => diagnostics.push({ code, severity: 'warning', stage: code.includes('QUANTITATIVE') ? 'quantitative' : /REPRESENTATION|STRUCTURE_MISMATCH/.test(code) ? 'representation' : 'planning', path, message, suggestions: [{ action: message, target: path }] })
   const normalize = (value: string) => value.trim().toLowerCase().replace(/[.!?]+$/, '').replace(/\s+/g, ' ')
   const weak = (value: string) => /^(?:|learn|understand|read|read and understand|read content|view section|understand the topic|learn about the topic|interact with content|view|watch|explore|interact|engage|study|review|tbd|n\/a|because|it fits|this is a good representation|best|good|appropriate|suitable|useful|clear|interactive|visual)$/.test(normalize(value))
   const views = FLOWCHART_MODELS.map(([id]) => id)
@@ -204,6 +205,12 @@ export function reviewTopicPlan(input: unknown) {
     if (!section.presentation) add('MISSING_PRESENTATION_STRATEGY', `${path}.presentation`, 'State the intended Read/Present strategy and inspect its layout.')
     else if (weak(section.presentation.strategy)) add('WEAK_PRESENTATION_STRATEGY', `${path}.presentation.strategy`, 'Describe the focus, stage guidance or narration in Read/Present rather than naming only a mode.')
     const task = [section.title, section.activity, ...plan.objectives.filter((o) => section.objectiveRefs.includes(o.id)).map((o) => o.description)].join(' ')
+    const discovery = recommendComponents({ learningObjective: task, learnerAction: section.activity })
+    const structures = discovery.inferredKnowledgeStructures
+    if (structures.includes('hierarchical_quantity') && has('Table') && !has('BreakdownTree') && !/\b(exact|reconcil|accessib|accounting)\w*\b/i.test(section.rationale ?? '')) add('REPRESENTATION_ALTERNATIVE_AVAILABLE', `${path}.rationale`, 'A measurable allocation may fit BreakdownTree with Table for exact reconciliation. Compare them, or justify Table for this objective; no component is mandatory.')
+    if (has('BreakdownTree') && structures.includes('classification') && !structures.includes('conditional_probability')) add('KNOWLEDGE_STRUCTURE_MISMATCH', `${path}.components`, 'Categories alone are not quantities. Consider TaxonomyBrowser or explain the measurable whole and mutually exclusive parts in the rationale.')
+    if (has('FormulaSandbox', 'BreakdownTree') && !section.evidenceRefs?.length && !/\b(illustrative|synthetic|assumptions?|supplied|derived|verified)\b/i.test(design)) add('MISSING_QUANTITATIVE_ASSUMPTIONS', `${path}.rationale`, 'State units, model assumptions and provenance; label illustrative quantities or reference supplied/verified data. Check formulas and sums before delivery.')
+
     const structuredTask = /\b(compar\w*|capabilit\w*|differences?|process\w*|workflows?|spatial|classif\w*|relationship\w*|dependenc\w*|quantit\w*|recall|defin(?:e|ing|itions?)|terminolog\w*|vocabular\w*|architecture|interactions?|handoffs?|message ordering|state transitions?|tradeoffs?|choos(?:e|ing)|decisions?|options?)\b/i.test(task) || /\bhow (?:\w+\s+){0,5}works\b/i.test(task)
     const proseNeed = /\b(connected prose|nuanc\w*|narrativ\w*|arguments?|qualifications?|ambigu\w*|interpret\w*|close reading|wording|essays?|caveats?|verbatim|prose (?:was|is) (?:explicitly )?requested)\b/i.test(section.rationale ?? '')
     const proseAlternative = /\b(table|matrix|diagram|flowchart|concept map|sandbox|cards?|quiz|sequence)\b/i.test(section.rationale ?? '')
@@ -249,6 +256,7 @@ export function topicPlanReview(input: unknown, structurallyValid: boolean) {
     planVersion: topicPlanVersion(input),
     experienceReadiness: {
       status: !structurallyValid ? 'unverified' : advisoryDiagnostics.length ? 'review-needed' : 'no-advisories',
+      structuralValidity: structurallyValid ? 'valid' : 'invalid', semanticValidity: 'advisory-only', quantitativeValidity: 'not-checked', presentationReadiness: { read: 'not-measured', present: 'not-measured' }, learningReadiness: 'not-evaluated',
       teachingQuality: 'not-evaluated',
       next: !structurallyValid ? 'Repair structural plan diagnostics with validate_topic_plan before claiming representation readiness.' : advisoryDiagnostics.length ? 'Resolve relevant warnings or record why proceeding is appropriate; validate OUI/narration and preview Read/Present before delivery.' : 'Validate OUI/narration and preview Read/Present; absence of advisories does not establish teaching quality.',
     },

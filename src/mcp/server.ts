@@ -1,3 +1,5 @@
+import { ComponentRecommendationRequest, recommendComponents } from '../core/learning-engine/composition/oui/component-recommendations'
+import { QuantitativeReviewInput, reviewQuantitativeModels, TokenUsageInput, normalizeTokenUsage } from '../core/learning-engine/validation/quantitative'
 import { AdvisoryResolution, reviewDelivery } from './delivery-review'
 import { readReference, REFERENCE_ROOT } from '../core/learning-engine/composition/oui/reference-navigation'
 /**
@@ -146,14 +148,29 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     annotations: { readOnlyHint: true },
   }, async (input) => measured('get_topic_context', 'context', input, async () => ({ content: [{ type: 'text', text: JSON.stringify(resolveTopicContext(input)) }] })))
 
+  server.registerTool('recommend_components', {
+    title: 'Compare learning representations',
+    description: 'Discover bounded component candidates from knowledge structures, learner action and constraints before planning. Deterministic affordance metadata; no model call or teaching-quality verdict. Retrieve only selected requiredContracts.',
+    inputSchema: ComponentRecommendationRequest,
+    annotations: { readOnlyHint: true },
+  }, async (input) => measured('recommend_components', 'discovery', input, async () => ({ content: [{ type: 'text', text: JSON.stringify(recommendComponents(input)) }] })))
+
   server.registerTool('validate_topic_plan', {
     title: 'Validate a Loom topic plan',
     description: 'Check structural coverage and representations; inspect separate advisory experience readiness, resolve warnings or justify proceeding before generating OUI.',
-    inputSchema: z.object({ plan: z.unknown().describe("Version 1 TopicPlan; malformed inputs return structured diagnostics.") }),
+    inputSchema: z.object({ plan: z.unknown().describe("Version 1 TopicPlan; malformed inputs return structured diagnostics."), quantitativeModels: QuantitativeReviewInput.optional(), tokenUsage: TokenUsageInput.optional() }),
     annotations: { readOnlyHint: true },
-  }, async ({ plan }) => measured('validate_topic_plan', 'planning', { plan }, async () => {
+  }, async ({ plan, quantitativeModels, tokenUsage }) => measured('validate_topic_plan', 'planning', { plan, quantitativeModels, tokenUsage }, async () => {
     const diagnostics = validateTopicPlan(plan)
-    return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics, ...topicPlanReview(plan, diagnostics.length === 0) }) }] }
+    const review = topicPlanReview(plan, diagnostics.length === 0)
+    const quantitativeReview = quantitativeModels ? reviewQuantitativeModels(quantitativeModels) : { status: 'not-checked' }
+    return { content: [{ type: 'text', text: JSON.stringify({ valid: diagnostics.length === 0, diagnostics, ...review,
+      advisoryDiagnostics: review.advisoryDiagnostics.slice(0, 12), advisoryCount: review.advisoryDiagnostics.length,
+      omittedAdvisoryCount: Math.max(0, review.advisoryDiagnostics.length - 12),
+      experienceReadiness: { ...review.experienceReadiness, quantitativeValidity: quantitativeReview.status },
+      quantitativeReview,
+      ...(tokenUsage ? { tokenAccounting: (() => { try { return { status: 'normalized', usage: normalizeTokenUsage(tokenUsage) } } catch (error) { return { status: 'invalid', message: error instanceof Error ? error.message : String(error) } } })() } : {}),
+    }) }] }
   }))
 
   if (options.checkSection) server.registerTool('validate_section', {

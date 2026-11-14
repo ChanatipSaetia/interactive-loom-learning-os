@@ -10,7 +10,7 @@
  * Every section is compiled and validated through the OpenUI Validation
  * Gateway. Sections load as long as they compile; their diagnostics travel
  * with the bundle so hosts can surface warnings. A file that cannot be
- * compiled at all (tier 1) rejects with an `OUILoadError`.
+ * compiled at all (tier 1), or has an explicit semantic error, rejects with an `OUILoadError`.
  */
 import { validateOUISection } from '../../validation/oui-gateway'
 import type { ValidationDiagnostic } from '../../validation/types'
@@ -33,10 +33,10 @@ export interface OUITopicBundle {
 export class OUILoadError extends Error {
   constructor(
     public readonly file: string,
-    public readonly diagnostics: Array<Pick<ValidationDiagnostic, 'tier' | 'line' | 'message' | 'fixHint'>>,
+    public readonly diagnostics: Array<Pick<ValidationDiagnostic, 'tier' | 'severity' | 'line' | 'message' | 'fixHint'>>,
   ) {
     const details = diagnostics
-      .filter((d) => d.tier === 1)
+      .filter((d) => d.tier === 1 || d.severity === 'error')
       .map((d) => `  ${d.line ? `line ${d.line}: ` : ''}${d.message}`)
       .join('\n')
     super(`Cannot load ${file}:\n${details}`)

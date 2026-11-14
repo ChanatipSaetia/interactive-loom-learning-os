@@ -90,7 +90,7 @@ function applyBinary(op: string, a: number, b: number): number {
 
 /** Evaluates a formula with the given variables. Throws on syntax errors and unknown names. */
 export function evaluateExpression(source: string, variables: Record<string, number>): number {
-  const tokens = tokenize(source)
+  const tokens = tokenize(source.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g, '$1'))
   let pos = 0
   const peek = () => tokens[pos]
   const isOp = (value: string) => peek()?.kind === 'op' && peek()!.value === value

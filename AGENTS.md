@@ -135,7 +135,7 @@ explicit conversion; do not add a parallel old-format runtime reader.
 
 ## Current MCP knowledge interface
 
-The hosted server exposes six tools: `read_reference`, `get_topic_context`,
+The hosted server exposes seven tools: `recommend_components`, `read_reference`, `get_topic_context`,
 `validate_topic_plan`, `show_topic`, `show_library`, and `show_domain`. Start at
 `loom://references/index.md` (or `read_reference({path:"index.md"})`) and select
 the user intent. The former get_authoring_guide, get_loom_capabilities,

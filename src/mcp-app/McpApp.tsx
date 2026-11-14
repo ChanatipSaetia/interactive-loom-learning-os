@@ -302,7 +302,7 @@ export function McpApp({ app }: { app: App }) {
     const inspect = () => {
       const root = document.querySelector<HTMLElement>(view === 'read' ? '[data-testid="mcp-read-scroll"]' : '[data-testid="mcp-present"] .mcp-stage')
       if (!root || cancelled) return
-      const review = reviewRenderedLayout(root)
+      const review = reviewRenderedLayout(root, { viewMode: view })
       const scene = Array.from(root.querySelectorAll('[data-focus], [data-beat][data-shown]')).slice(0, 20).map((el) => [el.getAttribute('data-oui-anchor'), el.getAttribute('data-beat'), el.getAttribute('data-focus')])
       const signature = `${topicSourceVersion(topic)}:${view}:${review.viewport.width}:${review.viewport.height}:${JSON.stringify(scene)}`
       if (layoutReports.current.has(signature)) return

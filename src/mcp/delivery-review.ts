@@ -4,7 +4,7 @@ import { topicPlanReview, validateTopicPlan } from '../core/learning-engine/comp
 
 export const AdvisoryResolution = z.object({ code: z.string().max(120), path: z.string().max(500), reason: z.string().trim().min(40).max(2000), planVersion: z.string().max(120) }).strict()
 export type AdvisoryResolutionInput = z.infer<typeof AdvisoryResolution>
-const justifiable = new Set(['UNJUSTIFIED_TEXT_SELECTION', 'LIST_STRUCTURE_REVIEW', 'POSSIBLE_REDUNDANT_SECTION', 'GOAL_COMPOSITION_REVIEW'])
+const justifiable = new Set(['REPRESENTATION_ALTERNATIVE_AVAILABLE', 'KNOWLEDGE_STRUCTURE_MISMATCH', 'UNJUSTIFIED_TEXT_SELECTION', 'LIST_STRUCTURE_REVIEW', 'POSSIBLE_REDUNDANT_SECTION', 'GOAL_COMPOSITION_REVIEW'])
 
 /** No session state. Every create call rechecks the exact plan and source. */
 export function reviewDelivery(oui: string, plan: unknown, resolutions: AdvisoryResolutionInput[]) {

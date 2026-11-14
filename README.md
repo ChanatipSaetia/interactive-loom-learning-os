@@ -201,10 +201,11 @@ diagnostics, particularly nested retired wrappers and narration targets.
 
 ## Progressive MCP workflow
 
-The hosted server exposes six tools:
+The hosted server exposes seven tools:
 
 | Tool | Purpose |
 |---|---|
+| `recommend_components` | Compare bounded representation candidates by knowledge structure, learner action and constraints. |
 | `read_reference` | Read the entry point, then relevant workflow, capability, component, tutoring or storage references. |
 | `get_topic_context` | Inspect explicitly supplied current files, narrowing to relevant statements and dependencies. |
 | `validate_topic_plan` | Check the plan's components, objectives and evidence references; report readiness advisories. |

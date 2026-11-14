@@ -7,6 +7,8 @@ export interface ValidationContext {
 }
 
 export interface ValidationDiagnostic {
+  severity?: 'error' | 'warning'
+  code?: string
   tier: 1 | 2 | 3
   file?: string
   field?: string

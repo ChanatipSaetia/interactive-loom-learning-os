@@ -2091,3 +2091,7 @@ button.flowchart-step-caption-alt:hover {
 .flowchart-section .flowchart-node-meta { border-bottom: 0 !important; padding-bottom: 1px !important; margin-bottom: 2px !important; }
 .flowchart-section .flowchart-node-meta > span { font-family: var(--font-ui); font-weight: 400 !important; text-transform: none !important; letter-spacing: 0 !important; font-size: 10px !important; color: var(--muted-foreground) !important; }
 .flowchart-section .flowchart-node-meta svg { width: 12px; height: 12px; opacity: 0.7; }
+
+/* A collapsed playback pill must remain reachable inside narrow embedded canvases. */
+.flowchart-dock-mini { max-width: 100%; box-sizing: border-box; }
+.flowchart-mini-player { min-width: 0; flex-wrap: wrap; justify-content: center; }

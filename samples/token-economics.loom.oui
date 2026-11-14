@@ -1,0 +1,96 @@
+// @loom-topic token-economics
+// === topic.oui ===
+root = Topic("Token economics for graph and harness engineering", "Synthetic regression lesson", "Explore allocations, execution, parameter sensitivity, cache semantics and architecture choices. All figures are illustrative.", [SectionRef("allocation"), SectionRef("sensitivity"), SectionRef("outcomes"), SectionRef("architecture"), SectionRef("context"), SectionRef("choices"), SectionRef("cache"), SectionRef("amortization"), SectionRef("check")], ["token-economics", "illustrative"], "intermediate")
+
+// === sections/allocation.oui ===
+root = Page("Synthetic execution cost", Stack([tree, ledger]))
+tree = BreakdownTree("Execution cost", [total, router, retrieval, reasoner, verifier, answer, router_fresh, router_output, retrieval_fresh, retrieval_output, retrieval_search, reasoner_fresh, reasoner_cache_read, reasoner_cache_write, reasoner_output, verifier_fresh, verifier_cache_read, verifier_output, answer_fresh, answer_cache_read, answer_output], "quantity", "USD", "Illustrative mutually exclusive charges for one execution; not provider prices.")
+ledger = Table([Col("Node", ["Router", "Retrieval", "Reasoner", "Verifier", "Answer", "Total"]), Col("USD", [0.0028, 0.0048, 0.0222, 0.0074, 0.007, 0.0442])])
+total = BreakdownNode("total", "Execution", 0.0442)
+router = BreakdownNode("router", "Router", 0.0028, "total")
+retrieval = BreakdownNode("retrieval", "Retrieval", 0.0048, "total")
+reasoner = BreakdownNode("reasoner", "Reasoner", 0.0222, "total")
+verifier = BreakdownNode("verifier", "Verifier", 0.0074, "total")
+answer = BreakdownNode("answer", "Answer", 0.007, "total")
+router_fresh = BreakdownNode("router_fresh", "Fresh", 0.002, "router")
+router_output = BreakdownNode("router_output", "Output", 0.0008, "router")
+retrieval_fresh = BreakdownNode("retrieval_fresh", "Fresh", 0.001, "retrieval")
+retrieval_output = BreakdownNode("retrieval_output", "Output", 0.0008, "retrieval")
+retrieval_search = BreakdownNode("retrieval_search", "Search", 0.003, "retrieval")
+reasoner_fresh = BreakdownNode("reasoner_fresh", "Fresh", 0.006, "reasoner")
+reasoner_cache_read = BreakdownNode("reasoner_cache_read", "Cache Read", 0.0016, "reasoner")
+reasoner_cache_write = BreakdownNode("reasoner_cache_write", "Cache Write", 0.005, "reasoner")
+reasoner_output = BreakdownNode("reasoner_output", "Output", 0.0096, "reasoner")
+verifier_fresh = BreakdownNode("verifier_fresh", "Fresh", 0.004, "verifier")
+verifier_cache_read = BreakdownNode("verifier_cache_read", "Cache Read", 0.001, "verifier")
+verifier_output = BreakdownNode("verifier_output", "Output", 0.0024, "verifier")
+answer_fresh = BreakdownNode("answer_fresh", "Fresh", 0.002, "answer")
+answer_cache_read = BreakdownNode("answer_cache_read", "Cache Read", 0.001, "answer")
+answer_output = BreakdownNode("answer_output", "Output", 0.004, "answer")
+
+// === sections/sensitivity.oui ===
+root = Page("Illustrative pricing sensitivity", FormulaSandbox("Pricing sensitivity", [FormulaVariable("fresh_input_tokens", "fresh_input_tokens", 0, 30000, 100, 15000), FormulaVariable("cached_read_tokens", "cached_read_tokens", 0, 10000, 100, 3600), FormulaVariable("cached_write_tokens", "cached_write_tokens", 0, 10000, 100, 5000), FormulaVariable("output_tokens", "output_tokens", 0, 20000, 100, 8800), FormulaVariable("input_price_per_million", "input_price_per_million", 0, 10, 0.1, 1), FormulaVariable("cache_read_price_per_million", "cache_read_price_per_million", 0, 10, 0.1, 1), FormulaVariable("cache_write_price_per_million", "cache_write_price_per_million", 0, 10, 0.1, 1), FormulaVariable("output_price_per_million", "output_price_per_million", 0, 10, 0.1, 2), FormulaVariable("tool_cost", "tool_cost", 0, 0.01, 0.001, 0.003)], [llm, tool, total]))
+llm = FormulaMetric("llm", "LLM USD", "(fresh_input_tokens * input_price_per_million + cached_read_tokens * cache_read_price_per_million + cached_write_tokens * cache_write_price_per_million + output_tokens * output_price_per_million) / 1000000", "Synthetic prices; token buckets are mutually exclusive after provider normalization.")
+tool = FormulaMetric("tool", "Tool USD", "tool_cost", "Illustrative external search charge.")
+total = FormulaMetric("total", "Total USD", "llm + tool", "Default total is 0.0442 USD, matching the tree and ledger.")
+
+// === sections/outcomes.oui ===
+root = Page("Cost per accepted task", FormulaSandbox("Outcome economics", [FormulaVariable("base", "Base USD", 0, 1, 0.0001, 0.0442), FormulaVariable("retry", "Retry USD", 0, 1, 0.0001, 0.0222), FormulaVariable("probability", "Retry probability", 0, 1, 0.01, 0.2), FormulaVariable("acceptance", "Acceptance rate", 0.01, 1, 0.01, 0.9)], [attempt, accepted]))
+attempt = FormulaMetric("attempt", "Expected USD per attempt", "base + retry * probability", "Illustrative one-retry model: 0.04864 USD by default; repeated retries require a different model.")
+accepted = FormulaMetric("accepted", "USD per accepted task", "attempt / acceptance", "Illustrative default approximately 0.0540444 USD; acceptance must remain positive.")
+
+// === sections/architecture.oui ===
+root = Page("Graph state and model context", Flowchart("Graph execution", [user], [router, retriever, reasoner, verifier, final], [route, retrieve, reason, verify, finish], [execution], null, null, "sequence"))
+user = Actor("user", "User", "Requests an answer")
+router = System("router", "Router", "Sees request and routing instructions, not necessarily all graph state", "service")
+retriever = System("retriever", "Retriever", "Sees search query and selected evidence", "service")
+reasoner = System("reasoner", "Reasoner", "Sees selected evidence and task instructions", "service")
+verifier = System("verifier", "Verifier", "Sees candidate answer and checking criteria", "service")
+final = System("final", "Final answer", "Sees verified result and response constraints", "service")
+route = Step("route", "When input is ready", "Route request", router, [Event("route_done", "Request routed")], user, null, "retrieve")
+retrieve = Step("retrieve", "When input is ready", "Retrieve evidence", retriever, [Event("retrieve_done", "Evidence selected")], null, null, "reason")
+reason = Step("reason", "When input is ready", "Reason over evidence", reasoner, [Event("reason_done", "Candidate produced")], null, null, "verify")
+verify = Step("verify", "When input is ready", "Check candidate", verifier, [Event("verify_done", "Candidate verified")], null, null, "finish")
+finish = Step("finish", "When input is ready", "Format final answer", final, [Event("finish_done", "Answer delivered")], null, null, null)
+
+execution = Journey("execution", "One execution", "Follow selected context through the graph", [JourneyStep(route, "Route", "Select the route"), JourneyStep(retrieve, "Retrieve", "Select evidence"), JourneyStep(reason, "Reason", "Assemble node-specific messages"), JourneyStep(verify, "Verify", "Check the candidate"), JourneyStep(finish, "Respond", "Format the verified result")])
+
+// === sections/context.oui ===
+root = Page("State is not submitted context", TextContent("Graph state is application data. Each model call receives only the messages and tool results assembled for that node. A router can see a request while a verifier sees the candidate and checking criteria. Prefix reuse requires a provider-supported matching prefix; storing state alone does not establish a cache hit. Cache writes, reads, reasoning tokens, tool charges and retries require explicit accounting semantics. All numeric examples here are constructed illustrations, not observed benchmarks."))
+
+// === sections/choices.oui ===
+root = Page("Architecture choices", TradeoffSandbox("Qualitative architecture comparison", [architecture]))
+architecture = TradeoffScenario("architecture", "Choose under explicit constraints", [], [context, orchestration, skills, prefix])
+context = TradeoffStep("context", "Context assembly", [monolithic, specific])
+monolithic = TradeoffChoice("monolithic", "Monolithic context", "Shared prompt assembly", {}, [ProCon("Simple shared assembly")], [ProCon("May include irrelevant context")])
+specific = TradeoffChoice("specific", "Node-specific context", "Select messages per task", {}, [ProCon("Can omit irrelevant inputs")], [ProCon("Requires careful dependency tracking")])
+orchestration = TradeoffStep("orchestration", "Delegation", [supervisor, direct])
+supervisor = TradeoffChoice("supervisor", "Supervisor plus subagents", "Delegate bounded tasks", {}, [ProCon("Separate task responsibilities")], [ProCon("Coordination introduces calls and context transfers")])
+direct = TradeoffChoice("direct", "Direct execution", "One agent handles the task", {}, [ProCon("Fewer coordination steps")], [ProCon("May concentrate context requirements")])
+skills = TradeoffStep("skills", "Skill loading", [eager, lazy])
+eager = TradeoffChoice("eager", "Eager loading", "Load all guidance initially", {}, [ProCon("Guidance immediately available")], [ProCon("Unused guidance consumes context")])
+lazy = TradeoffChoice("lazy", "Lazy loading", "Load relevant guidance progressively", {}, [ProCon("Can avoid unused guidance")], [ProCon("Discovery can require extra calls")])
+prefix = TradeoffStep("prefix", "Prompt prefix", [stable, volatile])
+stable = TradeoffChoice("stable", "Stable prefix", "Keep reusable guidance before changing task data", {}, [ProCon("May permit provider prefix caching")], [ProCon("Requires matching content and provider eligibility")])
+volatile = TradeoffChoice("volatile", "Volatile prefix", "Changing data precedes guidance", {}, [ProCon("Current task data appears early")], [ProCon("Changes may invalidate reusable prefix matches")])
+
+// === sections/cache.oui ===
+root = Page("Request outcome probabilities", BreakdownTree("Request outcome probabilities", [requests, cached, uncached, cachedSuccess, cachedFailure, uncachedSuccess, uncachedFailure], "probability", null, "Illustrative conditional probabilities; cached and uncached requests form a complete partition.", "A cached failure has probability 60% × 1% = 0.6% of all requests."))
+requests = BreakdownNode("requests", "All requests", 1)
+cached = BreakdownNode("cached", "Cached", 0.6, "requests", "60% of requests use the cache.", "teal")
+uncached = BreakdownNode("uncached", "Uncached", 0.4, "requests", "40% of requests do not use the cache.", "mauve")
+cachedSuccess = BreakdownNode("cachedSuccess", "Success", 0.99, "cached", "99% conditional on cached; 59.4% of all requests.")
+cachedFailure = BreakdownNode("cachedFailure", "Failure", 0.01, "cached", "1% conditional on cached; 0.6% of all requests.")
+uncachedSuccess = BreakdownNode("uncachedSuccess", "Success", 0.95, "uncached", "95% conditional on uncached; 38% of all requests.")
+uncachedFailure = BreakdownNode("uncachedFailure", "Failure", 0.05, "uncached", "5% conditional on uncached; 2% of all requests.")
+
+
+// === sections/amortization.oui ===
+root = Page("Illustrative cache amortization", FormulaSandbox("Cache amortization", [FormulaVariable("requests", "Requests", 1, 100, 1, 10), FormulaVariable("write", "Write USD", 0, 0.1, 0.001, 0.005), FormulaVariable("read", "Read USD", 0, 0.1, 0.001, 0.001)], [average]))
+average = FormulaMetric("average", "Average cache USD", "(write + (requests - 1) * read) / requests", "Illustrative one initial write followed by successful reads; ignores expiry and misses, which require a different model.")
+
+// === sections/check.oui ===
+root = Page("Check the model", Quiz("Token accounting", [q1]))
+q1 = QuizQuestion("q1", "A provider reports 100 input tokens including 20 cache-read tokens. How many fresh tokens remain if there are no cache writes?", [right, wrong])
+right = QuizChoice("a", "80 fresh input tokens", true, "Subtract the included cache-read bucket once; it is already inside the 100 total.")
+wrong = QuizChoice("b", "100 fresh plus 20 cache-read", false, "That double counts the cached bucket for an inclusive provider report.")

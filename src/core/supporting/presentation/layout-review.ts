@@ -6,6 +6,12 @@ export interface LayoutDiagnostic {
   file?: string
   sectionId?: string
   fontPixels?: number
+  domPath: string
+  viewMode?: 'read' | 'present'
+  bounds: { left: number; top: number; width: number; height: number }
+  containerBounds: { left: number; top: number; width: number; height: number }
+  overflowPixels: { left: number; right: number; top: number; bottom: number }
+  repairCategory: 'wrap-or-responsive-width' | 'reachable-scroll-or-resize' | 'readable-scale' | 'bring-focus-into-view'
   repairTarget: string
 }
 export interface LayoutReview {
@@ -20,7 +26,7 @@ export interface LayoutReview {
 }
 
 /** Labels/source text never enter the report; only bounded anchor IDs and numbers. */
-export function reviewRenderedLayout(root: HTMLElement, options: { maxElements?: number; maxDiagnostics?: number; minFontPixels?: number } = {}): LayoutReview {
+export function reviewRenderedLayout(root: HTMLElement, options: { maxElements?: number; maxDiagnostics?: number; minFontPixels?: number; viewMode?: 'read' | 'present' } = {}): LayoutReview {
   const maxElements = Math.min(1000, Math.max(1, options.maxElements ?? 300))
   const maxDiagnostics = Math.min(30, Math.max(1, options.maxDiagnostics ?? 12))
   const view = root.ownerDocument.defaultView!
@@ -37,7 +43,24 @@ export function reviewRenderedLayout(root: HTMLElement, options: { maxElements?:
     if (emitted.has(key)) return
     emitted.add(key)
     if (result.diagnostics.length >= maxDiagnostics) { result.truncated = true; return }
-    result.diagnostics.push({ code, severity: 'warning', target, ...(file ? { file, sectionId } : {}), repairTarget: file ? `${file}#${target}` : target, ...(fontPixels ? { fontPixels } : {}) })
+    const segments: string[] = []
+    for (let node: Element | null = element; node && node !== root && segments.length < 8; node = node.parentElement) {
+      const siblings = node.parentElement ? Array.from(node.parentElement.children) : [node]
+      segments.unshift(`${node.tagName.toLowerCase()}:nth-child(${siblings.indexOf(node) + 1})`)
+    }
+    const rect = element.getBoundingClientRect()
+    let container = element.parentElement ?? root
+    for (let parent = element.parentElement; parent && root.contains(parent); parent = parent.parentElement) {
+      const css = view.getComputedStyle(parent)
+      if (/hidden|clip/.test(`${css.overflowX} ${css.overflowY}`)) { container = parent; break }
+    }
+    const box = container.getBoundingClientRect()
+    const round = (n: number) => Math.round(n * 100) / 100
+    const bounds = (b: DOMRect) => ({ left: round(b.left), top: round(b.top), width: round(b.width), height: round(b.height) })
+    result.diagnostics.push({ code, severity: 'warning', target, domPath: segments.join(' > '),
+      ...(options.viewMode ? { viewMode: options.viewMode } : {}), bounds: bounds(rect), containerBounds: bounds(box),
+      overflowPixels: { left: round(Math.max(0, Math.max(0, box.left) - rect.left)), right: round(Math.max(0, rect.right - Math.min(view.innerWidth, box.right))), top: round(Math.max(0, box.top - rect.top)), bottom: round(Math.max(0, rect.bottom - box.bottom)) },
+      repairCategory: code === 'SMALL_TEXT' ? 'readable-scale' : code === 'FOCUS_OUTSIDE_VIEWPORT' ? 'bring-focus-into-view' : code === 'CLIPPED_CONTENT' ? 'reachable-scroll-or-resize' : 'wrap-or-responsive-width', ...(file ? { file, sectionId } : {}), repairTarget: file ? `${file}#${target}` : target, ...(fontPixels ? { fontPixels } : {}) })
   }
   for (const element of elements.slice(0, maxElements)) {
     const rect = element.getBoundingClientRect()
