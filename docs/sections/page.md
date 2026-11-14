@@ -104,3 +104,22 @@ cannot satisfy a plan. These checks do not establish teaching quality.
 Plans using the retired section-type fields must be rewritten with component
 lists before validation. Internal renderer and domain types remain implementation
 details and do not constrain a page to one component family.
+
+## Progressive syntax and composition guidance
+
+The entry point and eight authoring stages are unchanged. Read the relevant
+capability summaries first, explain the choice and feasible alternatives in the
+existing plan `rationale`, validate the plan, and retrieve only selected component
+contracts. `capabilities/selection.md` compares learner tasks across the catalog;
+it does not require a component mix, a sandbox, or extra TopicPlan fields. Label
+conceptual models and illustrative data; a local reactive demonstration is not
+execution or benchmarking of an external framework.
+
+`contracts/syntax.md` is a focused reference linked from the reference-retrieval
+and generation stages. Each virtual file needs exactly one named `root`
+assignment: Topic for the manifest, Page for a section, and Narration for its
+script. Bare top-level calls such as `Topic(...)` or `Page(...)` are not complete
+source statements. The syntax reference includes a compilable complete bundle;
+role-specific references must not teach Page as the root of a manifest or script.
+Check roots and document roles, then run compiler/narration validation when
+available. Root presence alone is not successful validation.

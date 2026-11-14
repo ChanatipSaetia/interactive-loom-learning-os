@@ -13,6 +13,32 @@ For full lessons, combine sections only when each adds a distinct contribution: 
 
 Retrieve selected section rules, then canonical component contracts and dependencies. If focused retrieval fails, retry with the exact component names and forceRefresh; then use the selected legacy section guide (omit library/components). For OpenUI, retrieve its section guide and selected component families. If contracts remain unavailable, report the blocker and revise/revalidate the plan only to an equally faithful supported representation; never silently downgrade to Text/Bullets or invent signatures. Focused OpenUI contracts include compact section rules and beats: request only the actual composition components and required model types; permitted generic child alternatives are not all dependencies.`
 
+/** A targeted selection leaf: candidates, not a mandatory component mix. */
+export const COMPOSITION_DECISION_GUIDE = `### Choose an activity, then a composition
+
+For each page establish the learning objective, knowledge structure and concrete learner action. Consider feasible alternatives, then explain the selected composition and its limits in the existing plan rationale. Use evidenceRefs for sources, presentation for Read/Present behavior and assessment for observable answers. No additional TopicPlan fields are needed. Supporting components must serve the same main activity; a second page needs a distinct contribution. Do not require a fixed number of components, pages, alternatives or interactions.
+
+| Learner action | Candidate capabilities to inspect | Fit and boundary |
+|---|---|---|
+| Orient or follow a connected argument | Intro, LessonText | Prose can preserve nuance; exposure is not demonstrated understanding. |
+| Follow instructions | Bullets, Steps | Preserve meaningful order; do not flatten comparisons into lists. |
+| Learn or recall terms | Flashcards | Definitions and examples support recall; flips do not prove correctness. |
+| Classify and distinguish kinds | TaxonomyBrowser | Explore categories and distinctions, then assess classification separately if needed. |
+| Compare factual attributes or concrete examples | Table, Card with Stack | Align matching attributes or annotate examples; a table is not a universal decision model. |
+| Trace events, ownership or messages | Flowchart | Choose a meaningful view and model real participants; do not invent internals to enable views. |
+| Explain relationships or spatial parts | ConceptMap, labelled Svg | Name relationships or show positions; label conceptual models and analogies. |
+| Explain foundations and dependencies | PillarLayer | Show what depends on what, not arbitrary decorative layers. |
+| Follow a person's experience | UserJourney | Explain goals, actions, responses and friction, distinct from internal system execution. |
+| Interpret measured time or quantities | Timeline, BreakdownTree, charts | Use verified measurements or clearly labelled illustrative data. |
+| Explore input/output sensitivity | FormulaSandbox | Use a defensible authored formula; sliders do not execute the real system. |
+| Compare choices and consequences | TradeoffSandbox, DecisionTree, Scenario | Choose comparative exploration, explicit diagnostic rules or branching consequences. Explain assumptions; avoid a universal winner. |
+| Recognize visual examples | LearningGallery, annotated cards | Images must teach recognition, not merely decorate. |
+| Apply, reconstruct or explain | Quiz, ReflectionSequence, ReflectionTemplate | Teach the assessed concepts first; correct answers concern the authored exercise. |
+
+For a framework comparison, a table can align APIs, a conceptual demonstration can explain state dependency, and TradeoffSandbox can explore project constraints. Compare relevant alternatives such as ConceptMap or Flowchart for the mechanism, and Scenario or DecisionTree for project choices. Include only distinct contributions. A Loom-local counter is an illustrative model, not execution or benchmarking of actual Svelte/React code. Do not invent productivity or performance scores to justify FormulaSandbox or charts. A linked code example is not evidence of a live execution environment.
+
+Progressive reading stays unchanged: browse capability summaries, open only plausible alternatives, validate the plan, then retrieve exact contracts only for the selected components. Do not load every component contract to fill this decision record.`
+
 /** Compact skill entry point; detailed policy stays in planning references. */
 export const REPRESENTATION_SELECTION_OVERVIEW = `Learning-first, representation-aware: objective → knowledge structure → learner action → candidate capabilities → simplest faithful representation/configuration. Compare knowledge fidelity, learner action, perspective coverage, cognitive clarity, assessment suitability and authoring feasibility. Native sections and OpenUI are first-class; no section ranking, visual quota or mandatory sequence. Bullets teach numbered linear procedures and checklists; a list is not a universal replacement for prose. Consider OpenUI tables for attributes, cards for examples and Svg for spatial mechanisms. Flashcards introduce definitions. Text can teach connected prose and nuance. OpenUI tables compare facts, cards compare examples, diagrams explain space and charts require supplied/verified or labelled illustrative data; never invent benchmark results. Record rationale and presentation strategy, resolve relevant readiness warnings, then retrieve focused contracts. See planning references for views, evidence boundaries and safe retrieval fallback.`
 
@@ -94,6 +120,8 @@ export const MENTAL_MODEL_GUIDE = `## Start Here: Mental Model and Section Selec
 Use this table as the agent's table of contents before planning or writing a topic. Identify what the learner should be able to define, picture, compare, explain or do; then select the main visual or learning activity that teaches that mental model. Rows name learning capabilities; retrieve the selected component contracts. Every authored section is Page(title, body, heading?), without a section-type or library choice. Read its exact component signatures before writing.
 
 ${REPRESENTATION_SELECTION_GUIDE}
+
+${COMPOSITION_DECISION_GUIDE}
 
 | Mental model / learning goal | Section type | Learner question and selection cue |
 |---|---|---|

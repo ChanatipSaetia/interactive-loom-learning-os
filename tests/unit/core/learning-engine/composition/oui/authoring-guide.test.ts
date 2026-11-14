@@ -75,3 +75,14 @@ it('resolves every component by its canonical name without selecting a library',
   expect(getAuthoringGuide([], ['Text'])).not.toContain('Ambiguous component names')
   expect(getAuthoringGuide([], ['Table'], 'loom')).toMatch(/^Table\(/m)
 })
+
+it('distinguishes manifest, page and narration source roots from bare signatures', () => {
+  const topic = getAuthoringGuide([], ['Topic'])
+  expect(topic).toContain('root = Topic(...)')
+  expect(topic).not.toContain('Page rules:')
+  expect(topic).not.toContain('root = Page(')
+  const narration = getAuthoringGuide([], ['Narration'])
+  expect(narration).toContain('root = Narration(...)')
+  expect(narration).not.toContain('Page rules:')
+  expect(getAuthoringGuide([], ['Page'])).toContain('root = Page(')
+})
