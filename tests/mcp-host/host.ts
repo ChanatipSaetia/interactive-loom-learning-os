@@ -97,7 +97,7 @@ async function main() {
       say('model', `validate_topic → ${textOf(check).slice(0, 160)}`)
     }
 
-    args = { oui, ...(params.get('fixture') === 'three-spline' ? { plan: THREE_SPLINE_PLAN } : {}) }
+    args = { oui, intent: 'reopen', ...(params.get('fixture') === 'three-spline' ? { plan: THREE_SPLINE_PLAN } : {}) }
     if (params.get('mode') === 'read') args.mode = 'read'
     result = await client.callTool({ name: 'show_topic', arguments: args })
     say('model', `show_topic → ${textOf(result).slice(0, 160)}`)

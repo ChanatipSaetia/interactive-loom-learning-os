@@ -84,12 +84,12 @@ describe('Loom MCP server', () => {
 
   it('validates topics and answers with the errors to fix', async () => {
     const oui = topicSource('chinese101-day1')
-    expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { oui } }))).toMatch(/^valid: /)
-    expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { oui: oui.replace('Quiz(', 'Quizz(') } }))).toContain('sections/quiz.oui')
+    expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { intent: 'reopen', oui } }))).toMatch(/^valid: /)
+    expect(textOf(await client.callTool({ name: 'validate_topic', arguments: { intent: 'reopen', oui: oui.replace('Quiz(', 'Quizz(') } }))).toContain('sections/quiz.oui')
   })
 
   it('tells the model what show_topic showed, with a Viewer link for a chat that does not show apps', async () => {
-    const text = textOf(await client.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1') } }))
+    const text = textOf(await client.callTool({ name: 'show_topic', arguments: { intent: 'reopen', oui: topicSource('chinese101-day1') } }))
     expect(text).toContain('6 sections')
     expect(text).toContain('Play')
     expect(text).toContain('http://localhost:5180/viewer.html#present&oui=')
@@ -102,7 +102,7 @@ describe('Loom MCP server', () => {
     await createLoomServer({ appUrl: 'http://localhost:5180/mcp-app/v1/', check: checkTopic }).connect(serverSide)
     const appsClient = new Client({ name: 'apps', version: '0' }, { capabilities: { extensions: { 'io.modelcontextprotocol/ui': { mimeTypes: ['text/html;profile=mcp-app'] } } } })
     await appsClient.connect(clientSide)
-    const text = textOf(await appsClient.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1') } }))
+    const text = textOf(await appsClient.callTool({ name: 'show_topic', arguments: { intent: 'reopen', oui: topicSource('chinese101-day1') } }))
     expect(text).not.toContain('viewer.html')
     await appsClient.close()
   })
@@ -132,8 +132,8 @@ describe('Loom MCP server, hosted (slice 5)', () => {
   it('offers only the guide and show_topic, and leaves checking to the app', async () => {
     const { tools } = await client.listTools()
     expect(tools.map((t) => t.name).sort()).toEqual(['get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'].sort())
-    const text = textOf(await client.callTool({ name: 'show_topic', arguments: { oui: topicSource('chinese101-day1').replace('Quiz(', 'Quizz(') } }))
-    expect(text).toContain('The app checks the topic')
+    const text = textOf(await client.callTool({ name: 'show_topic', arguments: { intent: 'reopen', oui: topicSource('chinese101-day1').replace('Quiz(', 'Quizz(') } }))
+    expect(text).toContain('The player must compile it')
     expect(text).not.toContain('Quizz')
     expect(text).toContain('https://loom-mcp.example.workers.dev/viewer.html#present&oui=')
   })
@@ -205,7 +205,7 @@ describe('Loom MCP server with a memory folder (slice 4)', () => {
 
   it('saves a topic it shows and opens it again', async () => {
     const oui = topicSource('chinese101-day1')
-    await client.callTool({ name: 'show_topic', arguments: { oui } })
+    await client.callTool({ name: 'show_topic', arguments: { intent: 'reopen', oui } })
     expect(textOf(await client.callTool({ name: 'list_topics', arguments: {} }))).toContain('chinese101-day1: not started')
     const opened = await client.callTool({ name: 'open_topic', arguments: { id: 'chinese101-day1' } })
     expect((opened.structuredContent as { oui: string }).oui).toBe(oui)

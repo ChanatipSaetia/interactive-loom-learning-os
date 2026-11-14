@@ -133,3 +133,41 @@ the same envelope. Successful results use canonical relative `path` and full
 `REFERENCE_NOT_FOUND`, `entryPath: "index.md"`, `entry`, and a `next` recovery link.
 Malformed encodings, foreign URL schemes, queries/fragments and traversal paths
 are rejected; the reader never fetches arbitrary URLs or filesystem paths.
+
+## Creation delivery gate
+
+The six-tool interface and progressive reference entry are unchanged. New topics
+use `show_topic({oui, plan})` with `intent: "create"` by default. A planless create
+returns `PLAN_REQUIRED`; replay of existing exact source must explicitly use
+`intent: "reopen"`. Supplying a plan on replay enables its delivery checks too.
+
+The hosted gate reads the bounded source bundle and follows named dependencies
+from each `root`. It checks topic/manifest identity, planned pages and learning
+order, declared components, reachable assessments and document roots. Unused
+component declarations or names inside strings do not satisfy a plan. The shared
+composition inspector also serves compiled artifact review. Missing components
+cannot be waived: implement the activity or revise and revalidate the plan.
+
+Plan review now challenges a prose/list-only comparison or decision goal even
+when its declared objectives avoid comparison words. A prose rationale must name
+a feasible alternative and the specific information it would lose; the phrase
+"connected prose" alone does not clear the warning. These remain heuristic design
+warnings, not a universal demand for interactivity or a pedagogy score.
+
+Missing presentation strategies, learning-evidence descriptions and other
+required review information must be repaired. Four design warnings can be
+explicitly resolved: `UNJUSTIFIED_TEXT_SELECTION`, `LIST_STRUCTURE_REVIEW`,
+`POSSIBLE_REDUNDANT_SECTION`, `GOAL_COMPOSITION_REVIEW`. Each resolution supplies
+`code`, `path`, a specific `reason` and the current `planVersion` returned by
+`validate_topic_plan`. The version is a normalized-plan change hint, not an access
+or storage token. Changing the plan invalidates previous resolutions. Resolutions
+record the assistant's explanation; they do not independently verify its quality.
+
+Blocked calls return `isError: true`, source repair targets and unresolved
+advisories before saving or releasing playable source to the app. The app waits
+for a successful result for creation. Accepted source is passed in app-only
+metadata with its plan and mode. `deliveryReview`, `sourceReview`, compiler
+validity and layout status are separate: source inspection does not compile OUI
+or check narration beats. Hosted acceptance is `accepted-for-player-check`; the
+browser must still compile and inspect the topic. Local compilation failures also
+block creation. Original advisories remain visible after justified exceptions.

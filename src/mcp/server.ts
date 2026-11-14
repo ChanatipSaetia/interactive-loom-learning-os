@@ -1,3 +1,4 @@
+import { AdvisoryResolution, reviewDelivery } from './delivery-review'
 import { readReference, REFERENCE_ROOT } from '../core/learning-engine/composition/oui/reference-navigation'
 /**
  * The Loom MCP server (decisions 180–188 in grill-log-adaptive-learning.md):
@@ -91,7 +92,7 @@ export function appShell(appUrl: string): string {
 <body><div id="root"></div><script type="module" src="${appUrl}app.js"></script></body></html>`
 }
 
-const SHOW_TOOL_DESCRIPTION = `Show a Loom learning topic in the chat, ready to play in Present mode or to read. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). To show a lesson again, retrieve its complete original source from an authorized file/attachment and pass it unchanged; never regenerate from a title or summary. If unavailable, ask for the saved .loom.oui file. The hosted Worker stores no topics. For a new lesson, follow read_reference from index.md, discover relevant capabilities, validate_topic_plan and read selected component contracts before writing. Resolve readiness warnings or explain proceeding; pass plan here and to validate_topic when available. Compilation alone does not establish representation readiness. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. After showing a topic in an established domain, save the exact topic to the learner's drive and update domain.oui following storage references unless the learner opted out. Showing the app is not a Drive save.`
+const SHOW_TOOL_DESCRIPTION = `Show a Loom topic after delivery review. New topics require a plan; intent: reopen is for an existing exact source. Planned root components must be implemented, and missing fields repaired. Design warnings need specific advisoryResolutions bound to the planVersion returned by validate_topic_plan. Source review is not compilation or teaching-quality verification. Pass the whole topic as one .loom.oui text: the first line \`// @loom-topic <topic-id>\`, then each file after a \`// === <path> ===\` line (topic.oui first). To show a lesson again, retrieve its complete original source from an authorized file/attachment and pass it unchanged; never regenerate from a title or summary. If unavailable, ask for the saved .loom.oui file. The hosted Worker stores no topics. For a new lesson, follow read_reference from index.md, discover relevant capabilities, validate_topic_plan and read selected component contracts before writing. Resolve readiness warnings or explain proceeding; pass plan here and to validate_topic when available. Compilation alone does not establish representation readiness. To change a topic shown before, use edit_topic when that tool is available: it takes only the changed statements. After showing a topic in an established domain, save the exact topic to the learner's drive and update domain.oui following storage references unless the learner opted out. Showing the app is not a Drive save.`
 
 const VALIDATE_TOOL_DESCRIPTION = `Check a Loom topic (.loom.oui text) the way Loom Viewer does, before showing it. Answers "valid" or the errors to fix; fix only what they point at and check again.`
 
@@ -185,16 +186,27 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     inputSchema: z.object({
       oui: z.string().describe('The whole topic as .loom.oui text.'),
       mode: z.enum(['present', 'read']).optional().describe('Open in Present (default) or Read.'),
-      plan: z.unknown().optional().describe('Optional TopicPlan forwarded to the browser for advisory artifact review. Hosted MCP does not compile it.'),
+      intent: z.enum(['create', 'reopen']).default('create'),
+      advisoryResolutions: z.array(AdvisoryResolution).max(100).default([]),
+      plan: z.unknown().optional().describe('Required for create; optional for exact-source reopen. Source/plan alignment is checked before delivery; the player still compiles it.'),
       viewerLink: z.boolean().optional().describe('Also answer with a link that opens the topic in Loom Viewer, for a chat that shows no Loom player.'),
     }),
     _meta: { ui: { resourceUri: APP_URI } },
-  }, async ({ oui, viewerLink, plan, mode }) => measured('show_topic', 'delivery', { oui, viewerLink, plan, mode }, async () => {
+  }, async ({ oui, viewerLink, plan, mode, intent, advisoryResolutions }) => measured('show_topic', 'delivery', { oui, viewerLink, plan, mode, intent }, async () => {
+    const delivery = intent === 'create' || plan !== undefined ? reviewDelivery(oui, plan, advisoryResolutions) : undefined
+    if (delivery?.deliveryReview.status === 'blocked') {
+      const first = [...delivery.deliveryReview.errors, ...(delivery.sourceReview?.diagnostics ?? []), ...delivery.deliveryReview.unresolvedAdvisories].slice(0, 3)
+      const details = first.map((d) => `${d.code} at ${'path' in d ? d.path : d.file}`).join('; ')
+      return { isError: true, content: [{ type: 'text', text: `Topic delivery blocked. Plan readiness: ${delivery.experienceReadiness.status}. ${details}. ${delivery.deliveryReview.next}` }], structuredContent: delivery }
+    }
     const check = checkTopic?.(oui, plan)
+    if (intent === 'create' && check && !check.ok) return { isError: true, content: [{ type: 'text', text: check.report ?? 'Topic compilation failed.' }], structuredContent: { ...delivery, deliveryReview: { ...delivery!.deliveryReview, status: 'blocked', sourceValidity: 'invalid' } } }
+    const accepted = { ...(delivery ?? {}), deliveryReview: delivery ? { ...delivery.deliveryReview, sourceValidity: check?.ok ? 'valid' : 'not-compiled' } : { status: 'reopened', sourceValidity: check ? check.ok ? 'valid' : 'invalid' : 'not-compiled', layout: 'not-measured', teachingQuality: 'not-evaluated' } }
+    const appSource = { loomTopic: { oui, plan, mode: mode ?? 'present' } }
     // Topics shown are kept, so a later chat can open them again (story T3)
-    if (store && check?.topicId && check.topicId !== 'pasted') await store.saveTopic({ id: check.topicId, oui }).catch(() => {})
+    if (store && check?.ok && check.topicId && check.topicId !== 'pasted') await store.saveTopic({ id: check.topicId, oui }).catch(() => {})
     let text: string
-    if (!check) text = 'Showing the topic. The learner can press Play. The app checks the topic and tells you about any errors to fix.'
+    if (!check) text = intent === 'reopen' ? 'Showing existing topic. The player must compile it; layout and teaching quality remain unverified.' : 'Source accepted for player checks. The app must compile the topic and narration; layout and teaching quality remain unverified.'
     else {
       const shown = check.title ? `Showing "${check.title}" (${check.sections.length} sections). The learner can press Play.` : 'Showing the topic.'
       text = check.ok ? shown : `${shown}\n\nIt has errors; the learner sees them in the app:\n\n${check.report}`
@@ -215,14 +227,16 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
     if (!check || check.ok) text += '\n\nNext: if this topic belongs to an established domain, save the exact topic to the learner\'s Drive and update domain.oui following storage references, unless the learner opted out. Local server memory does not by itself confirm a Drive save. If the connector cannot write, say it is not saved and provide the exact file. To reopen, reuse original source; if missing, ask for the saved .loom.oui file instead of regenerating.'
     if (plan === undefined) {
       text += '\n\nRepresentation readiness not reviewed: no TopicPlan supplied. For new lessons, discover capabilities and call validate_topic_plan.'
-      return { content: [{ type: 'text', text }] }
+      return { content: [{ type: 'text', text }], structuredContent: accepted, _meta: appSource }
     }
     const review = reviewSuppliedPlan(plan)
     const count = review.advisoryDiagnostics.length
     const references = review.advisoryDiagnostics.slice(0, 2).map((d) => `${d.code} at ${d.path}`).join('; ')
-    text += `\n\nPlan readiness: ${review.experienceReadiness.status}${count ? ` (${count} advisories): ${references}. Resolve relevant warnings with validate_topic_plan or justify proceeding.` : '. Teaching quality is not evaluated.'}`
+    if (delivery && delivery.deliveryReview.resolvedAdvisoryCount) text += `\n\n${count} design advisories explicitly resolved for ${delivery.planVersion}. Teaching quality is not evaluated.`
+    else text += `\n\nPlan readiness: ${review.experienceReadiness.status}${count ? ` (${count} advisories): ${references}. Resolve relevant warnings with validate_topic_plan or justify proceeding.` : '. Teaching quality is not evaluated.'}`
     // Bounded delivery context; the existing plan validator returns the full review.
-    return { content: [{ type: 'text', text }], structuredContent: {
+    return { content: [{ type: 'text', text }], _meta: appSource, structuredContent: {
+      ...accepted,
       experienceReadiness: review.experienceReadiness,
       advisoryDiagnostics: review.advisoryDiagnostics.slice(0, 3), advisoryCount: count,
       omittedAdvisoryCount: Math.max(0, count - 3),

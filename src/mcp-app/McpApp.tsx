@@ -196,9 +196,10 @@ export function McpApp({ app }: { app: App }) {
   useEffect(() => {
     app.ontoolinputpartial = () => setWriting(true)
     app.ontoolinput = (params) => {
-      const args = (params.arguments ?? {}) as { oui?: unknown; mode?: unknown; plan?: unknown }
+      const args = (params.arguments ?? {}) as { oui?: unknown; mode?: unknown; plan?: unknown; intent?: unknown }
       // open_topic and edit_topic send the topic in their result, not their input
-      if (typeof args.oui !== 'string') {
+      if (typeof args.oui !== 'string' || args.intent !== 'reopen') {
+        if (typeof args.oui === 'string') setLoaded(null)
         setWriting(true)
         return
       }
@@ -212,6 +213,12 @@ export function McpApp({ app }: { app: App }) {
     }
     // open_topic and edit_topic send the topic in their result rather than their input
     app.ontoolresult = (result) => {
+      if (result.isError) {
+        setWriting(false)
+        setLoaded({ topic: null, report: result.content.filter((c) => c.type === 'text').map((c) => 'text' in c ? c.text : '').join('\n') || 'Topic delivery needs repair.' })
+        setView('card')
+        return
+      }
       // show_library and show_domain
       const loom = loomOf(result)
       if (loom) {
@@ -220,10 +227,13 @@ export function McpApp({ app }: { app: App }) {
         setView('shelf')
         return
       }
-      const oui = (result.structuredContent as { oui?: unknown } | undefined)?.oui
+      const delivered = (result._meta?.loomTopic ?? result.structuredContent) as { oui?: unknown; plan?: unknown; mode?: unknown } | undefined
+      const oui = delivered?.oui
       if (typeof oui !== 'string') return
       setWriting(false)
-      setLoaded({ ...loadTopic(oui), oui })
+      setLoaded({ ...loadTopic(oui, delivered?.plan), oui })
+      setStartMode(delivered?.mode === 'read' ? 'read' : 'present')
+      setAsked(false)
       setView('card')
       told.current = false
     }

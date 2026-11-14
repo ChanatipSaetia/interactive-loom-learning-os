@@ -47,7 +47,7 @@ async function show(app: ReturnType<typeof host>, oui: string, result = false) {
   const api = app as unknown as App
   await act(async () => {
     if (result) await api.ontoolresult?.({ content: [], structuredContent: { oui } })
-    else await api.ontoolinput?.({ arguments: { oui } })
+    else await api.ontoolinput?.({ arguments: { oui, intent: 'reopen' } })
   })
 }
 
@@ -77,4 +77,29 @@ it('offers exact-source copying when the host lacks downloads, including for inv
   await waitFor(() => expect(copyText).toHaveBeenCalledWith(invalid))
   expect(app.downloadFile).not.toHaveBeenCalled()
   expect(app.sendMessage).not.toHaveBeenCalled()
+})
+
+it('waits for create review and never exposes a rejected draft as a playable/downloadable topic', async () => {
+  const app = host()
+  const api = app as unknown as App
+  render(<McpApp app={api} />)
+  await act(async () => { await api.ontoolinput?.({ arguments: { oui: source, plan: {} } }) })
+  expect(screen.queryByRole('button', { name: 'Download lesson' })).toBeNull()
+  expect(screen.queryByTestId('mcp-play')).toBeNull()
+  await act(async () => { await api.ontoolresult?.({ isError: true, content: [{ type: 'text', text: 'COMPOSITION_MISMATCH at sections/choice.oui#root' }] }) })
+  expect(await screen.findByText('This topic could not be opened')).toBeVisible()
+  expect(screen.queryByTestId('mcp-play')).toBeNull()
+  expect(screen.queryByRole('button', { name: 'Download lesson' })).toBeNull()
+})
+it('renders accepted source from app-only metadata with the original plan and mode', async () => {
+  const app = host()
+  const api = app as unknown as App
+  render(<McpApp app={api} />)
+  await act(async () => { await api.ontoolinput?.({ arguments: { oui: source, mode: 'read' } }) })
+  expect(screen.queryByTestId('mcp-play')).toBeNull()
+  await act(async () => { await api.ontoolresult?.({ content: [], _meta: { loomTopic: { oui: source, mode: 'read' } }, structuredContent: { deliveryReview: { status: 'accepted-for-player-check' } } }) })
+  expect(screen.getByTestId('mcp-play')).toHaveTextContent('Read')
+  fireEvent.click(screen.getByRole('button', { name: 'Download lesson' }))
+  await waitFor(() => expect(app.downloadFile).toHaveBeenCalledTimes(1))
+  expect(app.downloadFile.mock.calls[0][0]).toMatchObject({ contents: [{ resource: { text: source } }] })
 })

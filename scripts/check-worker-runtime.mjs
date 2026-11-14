@@ -15,7 +15,7 @@ runtime.on('error', () => { exited = true })
 runtime.stdout.resume()
 runtime.stderr.resume()
 const endpoint = `http://127.0.0.1:${port}/mcp`
-async function call(name, args = {}) {
+async function call(name, args = {}, allowError = false) {
   const response = await fetch(endpoint, {
     method: 'POST', signal: AbortSignal.timeout(5000),
     headers: { 'content-type': 'application/json', accept: 'application/json, text/event-stream', 'mcp-protocol-version': '2025-06-18' },
@@ -25,7 +25,7 @@ async function call(name, args = {}) {
   const raw = await response.text()
   const data = JSON.parse(raw.startsWith('{') ? raw : raw.split('\n').find((line) => line.startsWith('data: ')).slice(6))
   assert.ok(!data.error)
-  assert.ok(!data.result.isError)
+  if (!allowError) assert.ok(!data.result.isError)
   return data.result
 }
 try {
@@ -62,9 +62,18 @@ try {
   const listReview = JSON.parse((await call('validate_topic_plan', { plan: listPlan })).content[0].text)
   assert.equal(listReview.valid, true)
   assert.ok(listReview.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'LIST_STRUCTURE_REVIEW'))
-  const shown = await call('show_topic', { oui: '// @loom-topic selection-smoke', plan })
+  const shown = await call('show_topic', { oui: '// @loom-topic selection-smoke', plan }, true)
+  assert.equal(shown.isError, true)
+  assert.equal(shown.structuredContent.deliveryReview.status, 'blocked')
   assert.equal(shown.structuredContent.experienceReadiness.status, 'review-needed')
   assert.ok(shown.structuredContent.advisoryDiagnostics.some((diagnostic) => diagnostic.code === 'UNJUSTIFIED_TEXT_SELECTION'))
+  const source = '// @loom-topic table-smoke\n// === topic.oui ===\nroot = Topic("Compare", "Test", "Compare", [SectionRef("facts")])\n// === sections/facts.oui ===\nroot = Page("Facts", Table([Col("Kind", ["A", "B"])]))\n'
+  const complete = { schemaVersion: 1, topicId: 'table-smoke', goal: 'Compare facts', objectives: [{ id: 'compare', description: 'Compare facts', evidenceOfLearning: 'Explain the difference' }], sections: [{ id: 'facts', title: 'Facts', objectiveRefs: ['compare'], components: ['Table'], activity: 'Compare matching factual attributes', rationale: 'A table aligns matching factual attributes.', presentation: { target: 'both', strategy: 'Keep the table visible while narrating each attribute.' } }] }
+  const accepted = await call('show_topic', { oui: source, plan: complete })
+  assert.equal(accepted.structuredContent.deliveryReview.status, 'accepted-for-player-check')
+  assert.equal(accepted.structuredContent.sourceReview.compilation, 'not-run')
+  assert.equal(accepted._meta.loomTopic.oui, source)
+
   assert.equal(JSON.parse((await call('validate_topic_plan', { plan: null })).content[0].text).valid, false)
   const context = JSON.parse((await call('get_topic_context', { files: { 'sections/text.oui': "root = Page(\"T\", LessonText(\"T\", [\"One\"]))" }, roots: ['sections/text.oui'] })).content[0].text)
   assert.equal(context.sources.length, 1)
