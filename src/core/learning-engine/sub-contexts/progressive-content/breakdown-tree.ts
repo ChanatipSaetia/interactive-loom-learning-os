@@ -16,7 +16,7 @@ export type BreakdownNode = z.infer<typeof BreakdownNodeSchema>
 
 export function validateBreakdownTree(data: BreakdownTreeSectionData): ValidationDiagnostic[] {
   const diagnostics: ValidationDiagnostic[] = []
-  const error = (field: string, message: string, fixHint: string) => diagnostics.push({ tier: 3, field, message, fixHint })
+  const error = (field: string, message: string, fixHint: string) => diagnostics.push({ tier: 3, severity: 'error', code: 'INVALID_BREAKDOWN_MODEL', field, message, fixHint })
   const ids = new Set<string>()
   const nodes = new Map(data.nodes.map((n) => [n.id, n]))
   const roots = data.nodes.filter((n) => !n.parent)

@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "topicId": "token-economics",
+  "goal": "Explain token economics for graph and harness engineering using explicitly illustrative models",
+  "objectives": [
+    {
+      "id": "allocation",
+      "description": "Inspect how total execution spending is split across nodes and token categories",
+      "evidenceOfLearning": "Identify the reasoner contribution and reconcile the total"
+    },
+    {
+      "id": "sensitivity",
+      "description": "Change context size and token pricing and explain the cost differences",
+      "evidenceOfLearning": "Predict the result of changing an input and verify the computed value"
+    },
+    {
+      "id": "outcomes",
+      "description": "Calculate expected cost per attempt and per accepted task",
+      "evidenceOfLearning": "Explain why dividing by acceptance changes cost per accepted task"
+    },
+    {
+      "id": "architecture",
+      "description": "Trace control and state between graph nodes",
+      "evidenceOfLearning": "Explain the selected context each participant receives"
+    },
+    {
+      "id": "context",
+      "description": "Explain why graph state differs from submitted model context",
+      "evidenceOfLearning": "Explain why storing state does not establish prefix reuse"
+    },
+    {
+      "id": "choices",
+      "description": "Compare context, orchestration, skill loading and prefix choices",
+      "evidenceOfLearning": "Justify one architecture choice given a concrete constraint"
+    },
+    {
+      "id": "cache",
+      "description": "Calculate conditional and overall request outcome probabilities",
+      "evidenceOfLearning": "Multiply conditional probabilities along a path"
+    },
+    {
+      "id": "amortization",
+      "description": "Vary request count to calculate amortized cache cost",
+      "evidenceOfLearning": "Explain why the average approaches the read cost"
+    },
+    {
+      "id": "check",
+      "description": "Answer the taught inclusive-cache accounting question",
+      "evidenceOfLearning": "Select 80 fresh input tokens and explain subtraction"
+    }
+  ],
+  "sections": [
+    {
+      "id": "allocation",
+      "title": "Cost allocation",
+      "components": [
+        "BreakdownTree",
+        "Table"
+      ],
+      "objectiveRefs": [
+        "allocation"
+      ],
+      "activity": "Inspect how total execution spending is split across nodes and token categories",
+      "rationale": "Illustrative USD BreakdownTree shows mutually exclusive contributions; Table provides exact reconciliation from the same source model.",
+      "presentation": {
+        "target": "both",
+        "strategy": "Read inspects branches and the exact Table; Present follows focused subtree splits."
+      }
+    },
+    {
+      "id": "sensitivity",
+      "title": "Pricing sensitivity",
+      "components": [
+        "FormulaSandbox"
+      ],
+      "objectiveRefs": [
+        "sensitivity"
+      ],
+      "activity": "Change context size and token pricing and explain the cost differences",
+      "rationale": "FormulaSandbox exposes sensitivity of an illustrative USD model with explicit exclusive token categories and assumptions.",
+      "presentation": {
+        "target": "both",
+        "strategy": "Demonstrate default values then meaningful variable changes; Read allows experiments."
+      }
+    },
+    {
+      "id": "outcomes",
+      "title": "Outcome economics",
+      "components": [
+        "FormulaSandbox"
+      ],
+      "objectiveRefs": [
+        "outcomes"
+      ],
+      "activity": "Calculate expected cost per attempt and per accepted task",
+      "rationale": "Illustrative one-retry assumptions use USD and probabilities; FormulaSandbox reproduces defaults and keeps acceptance positive.",
+      "presentation": {
+        "target": "both",
+        "strategy": "Read varies retry and acceptance inputs; Present demonstrates computed outputs."
+      }
+    },
+    {
+      "id": "architecture",
+      "title": "Graph execution",
+      "components": [
+        "Flowchart"
+      ],
+      "objectiveRefs": [
+        "architecture"
+      ],
+      "activity": "Trace control and state between graph nodes",
+      "rationale": "Flowchart preserves routing and message order; no benchmark claims.",
+      "presentation": {
+        "target": "both",
+        "strategy": "initialView: sequence; follow the execution journey through node-specific contexts."
+      }
+    },
+    {
+      "id": "context",
+      "title": "Context semantics",
+      "components": [
+        "TextContent"
+      ],
+      "objectiveRefs": [
+        "context"
+      ],
+      "activity": "Explain why graph state differs from submitted model context",
+      "rationale": "Nuanced connected prose preserves provider qualifications that a table would obscure; this supports interpreting the preceding graph rather than duplicating its transitions.",
+      "presentation": {
+        "target": "both",
+        "strategy": "Read supports careful wording; Present narrates the distinction and limitations."
+      }
+    },
+    {
+      "id": "choices",
+      "title": "Architecture choices",
+      "components": [
+        "TradeoffSandbox"
+      ],
+      "objectiveRefs": [
+        "choices"
+      ],
+      "activity": "Compare context, orchestration, skill loading and prefix choices",
+      "rationale": "TradeoffSandbox compares qualitative alternatives using supplied design reasoning; there are no invented numeric scores.",
+      "presentation": {
+        "target": "both",
+        "strategy": "Read explores each choice; Present demonstrates strengths and limitations."
+      }
+    },
+    {
+      "id": "cache",
+      "title": "Conditional cache outcomes",
+      "components": [
+        "BreakdownTree"
+      ],
+      "objectiveRefs": [
+        "cache"
+      ],
+      "activity": "Calculate conditional and overall request outcome probabilities",
+      "rationale": "Illustrative probabilities form exhaustive sibling sets; BreakdownTree distinguishes conditional branches from path products.",
+      "presentation": {
+        "target": "both",
+        "strategy": "Read inspects denominators; Present focuses each conditional split."
+      }
+    },
+    {
+      "id": "amortization",
+      "title": "Cache amortization",
+      "components": [
+        "FormulaSandbox"
+      ],
+      "objectiveRefs": [
+        "amortization"
+      ],
+      "activity": "Vary request count to calculate amortized cache cost",
+      "rationale": "Illustrative USD FormulaSandbox assumes one write followed by cache reads; no expiry or misses.",
+      "presentation": {
+        "target": "both",
+        "strategy": "Read varies requests; Present demonstrates default and larger request counts."
+      }
+    },
+    {
+      "id": "check",
+      "title": "Accounting assessment",
+      "components": [
+        "Quiz"
+      ],
+      "objectiveRefs": [
+        "check"
+      ],
+      "activity": "Answer the taught inclusive-cache accounting question",
+      "rationale": "Quiz collects an explicit response after the context and pricing explanation.",
+      "presentation": {
+        "target": "both",
+        "strategy": "Present demonstrates authored feedback with separate state; Read records learner attempts."
+      },
+      "assessment": {
+        "itemRefs": [
+          "sections/check.oui#q1"
+        ],
+        "successCriterion": "Choose 80 fresh tokens for an inclusive report of 100 with 20 cache reads."
+      }
+    }
+  ]
+}

@@ -47,7 +47,7 @@ export function SectionList({ workspace, snapshot, selected, onSelect, run }: Pr
       <ol className="studio-section-list">
         {snapshot.sections.map((s, index) => {
           const dirty = snapshot.dirtySections.includes(s.name)
-          const hasErrors = s.validation.diagnostics.some((d) => d.tier < 3)
+          const hasErrors = s.validation.diagnostics.some((d) => d.tier < 3 || d.severity === 'error')
           const hasWarnings = !hasErrors && s.validation.diagnostics.length > 0
           const payload = s.validation.payload ?? s.lastValid
           return (

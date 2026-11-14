@@ -136,7 +136,7 @@ are rejected; the reader never fetches arbitrary URLs or filesystem paths.
 
 ## Creation delivery gate
 
-The six-tool interface and progressive reference entry are unchanged. New topics
+The progressive reference entry remains unchanged; the additive `recommend_components` discovery tool brings the hosted surface to seven tools. See [AI Experience Engineering V2](experience-v2.md). New topics
 use `show_topic({oui, plan})` with `intent: "create"` by default. A planless create
 returns `PLAN_REQUIRED`; replay of existing exact source must explicitly use
 `intent: "reopen"`. Supplying a plan on replay enables its delivery checks too.

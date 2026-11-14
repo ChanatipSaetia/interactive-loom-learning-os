@@ -84,7 +84,7 @@ function narrationState(topicId: string, name: string, source: string, savedSour
 const narrationDirty = (n: NarrationState | null) => !!n && n.source !== n.savedSource
 
 function usable(result: ValidationResult<OUISectionPayload | null>): OUISectionPayload | null {
-  return result.payload && !result.diagnostics.some((d) => d.tier < 3) ? result.payload : null
+  return result.payload && !result.diagnostics.some((d) => d.tier < 3 || d.severity === 'error') ? result.payload : null
 }
 
 function sameMetadata(a: TopicMetadata, b: TopicMetadata): boolean {

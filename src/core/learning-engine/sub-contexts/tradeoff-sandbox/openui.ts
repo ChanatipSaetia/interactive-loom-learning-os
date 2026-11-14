@@ -196,7 +196,7 @@ export const FormulaMetric = defineOUIComponent({
   fields: {
     id: 'Metric ID, unique within the sandbox.',
     label: 'Metric name shown on its card.',
-    formula: 'JavaScript expression over variable IDs, e.g. "Math.round(chunk_size * (1 + overlap / 70))".',
+    formula: 'Restricted arithmetic expression over variable IDs and earlier metric IDs (no executable code), e.g. "Math.round(chunk_size * (1 + overlap / 70))".',
     description: 'What the metric measures.',
     analogy: 'Optional everyday analogy shown in the metric details.',
     inScope: 'Optional list of what the metric covers.',

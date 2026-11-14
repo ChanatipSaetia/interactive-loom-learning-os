@@ -113,12 +113,12 @@ export function validateOUISection(
   }
 
   let status: ValidationResult['status'] = 'valid'
-  if (diagnostics.some((d) => d.tier === 1 || d.tier === 2)) status = 'error'
+  if (diagnostics.some((d) => d.tier === 1 || d.tier === 2 || d.severity === 'error')) status = 'error'
   else if (diagnostics.some((d) => d.tier === 3)) status = 'warning'
 
   return {
     status,
-    payload: diagnostics.some((d) => d.tier === 1) ? null : payload,
+    payload: diagnostics.some((d) => d.tier === 1 || d.severity === 'error') ? null : payload,
     diagnostics,
   }
 }
@@ -305,7 +305,7 @@ export function validateOUINarration(
   }
 
   let status: ValidationResult['status'] = 'valid'
-  if (diagnostics.some((d) => d.tier === 1 || d.tier === 2)) status = 'error'
+  if (diagnostics.some((d) => d.tier === 1 || d.tier === 2 || d.severity === 'error')) status = 'error'
   else if (diagnostics.some((d) => d.tier === 3)) status = 'warning'
   return { status, payload: diagnostics.some((d) => d.tier === 1) ? null : narration, diagnostics }
 }

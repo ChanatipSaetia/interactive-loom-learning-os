@@ -1,3 +1,4 @@
+import { REPRESENTATION_AFFORDANCES } from './component-recommendations'
 import { componentTeachingProfile } from './component-teaching'
 import { COMPONENT_PURPOSES } from './component-purpose'
 import { z } from 'zod'
@@ -8,7 +9,7 @@ import { FLOWCHART_MODELS, OPENUI_MODELS, REPRESENTATION_SELECTION_GUIDE, SECTIO
 import { guideSectionTypes } from './authoring-guide'
 import { getUnifiedOUISpec } from './library'
 
-export const CAPABILITY_CATALOG_VERSION = 2
+export const CAPABILITY_CATALOG_VERSION = 3
 
 export function getCapabilityCatalog() {
   const sections = guideSectionTypes()
@@ -26,6 +27,7 @@ export function getCapabilityCatalog() {
     visualChoices: OPENUI_MODELS.map(([learningGoal, components]) => ({ learningGoal, components })),
     components: sections.filter((section) => section.component !== 'Page').map((section) => ({
       component: section.component, summary: section.summary,
+      ...(() => { const affordances = REPRESENTATION_AFFORDANCES.find((entry) => entry.component === section.component); return affordances ? { affordances } : {} })(),
       teaching: componentTeachingProfile(section.component),
       mentalModel: models.get(section.type)?.model ?? '',
       selectionQuestion: models.get(section.type)?.question ?? '',
@@ -50,6 +52,7 @@ export function getCapabilityIndex() {
     componentGroups: COMPONENT_PURPOSES.map(({ name, purpose, components }) => ({ name, purpose, components })),
     flowchart: { views: FLOWCHART_MODELS.map(([id]) => id), configuration: 'initialView; NarrationStep.view; Journey/JourneyStep; Branch/BranchOption; Event.data; StateMachine/Event.enters' },
     compositionChoices: 'tables (Table/Col) for factual attributes; cards/stacks (Card/Stack) for examples; labelled Svg for spatial mechanisms; Steps for visual stages; bar/horizontal, line/area, pie/donut/stacked, scatter, radar charts for supplied/verified or labelled illustrative data',
+    discovery: { tool: 'recommend_components', inputs: ['learningObjective', 'knowledgeStructure', 'learnerAction', 'constraints'], strategy: 'Compare bounded candidates, then retrieve selected contracts.' },
     selection: 'Objective → structure → learner action → capabilities → simplest faithful configuration; no rankings or quotas.',
     next: 'Use detail: full for learner actions, presentation constraints, evidence boundaries and the exact TopicPlan schema; fetch exact component contracts after planning the page composition.',
   }

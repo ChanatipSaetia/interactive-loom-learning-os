@@ -60,7 +60,7 @@ export function compileViewerTopic({ topicId, files, domainId }: TopicFiles): Vi
     const source = files[file]
     if (source === undefined) return { name, config: null, error: `${file} is missing.` }
     const result = validateOUISection(source, { topicId, sectionName: name, file })
-    const blocking = result.diagnostics.filter((d) => d.tier < 3)
+    const blocking = result.diagnostics.filter((d) => d.tier < 3 || d.severity === 'error')
     if (!result.payload || blocking.length) return { name, config: null, error: formatIssues(blocking) || `${file} cannot be compiled.` }
     return { name, config: bundleToSections([result.payload])[0], sourceMap: sourceMapOf(result.payload) }
   })
@@ -77,7 +77,7 @@ export function compileViewerTopic({ topicId, files, domainId }: TopicFiles): Vi
     }
     const result = validateOUINarration(files[path], files[`sections/${name}.oui`], { topicId, sectionName: name, file: path })
     if (result.diagnostics.length) narrationErrors.push({ file: path, error: formatIssues(result.diagnostics) })
-    if (section && result.payload && !result.diagnostics.some((d) => d.tier < 3)) section.narration = result.payload
+    if (section && result.payload && !result.diagnostics.some((d) => d.tier < 3 || d.severity === 'error')) section.narration = result.payload
   }
   return { topicId, domainId, manifest: topic.value, sections, files, narrationErrors }
 }

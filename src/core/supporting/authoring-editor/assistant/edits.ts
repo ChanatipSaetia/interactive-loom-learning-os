@@ -177,12 +177,12 @@ export function fileErrors(topicId: string, file: string, files: Record<string, 
   const narrated = narrationNameOf(file)
   if (narrated) {
     return validateOUINarration(source, files[`sections/${narrated}.oui`], { topicId, sectionName: narrated, file })
-      .diagnostics.filter((d) => d.tier < 3)
+      .diagnostics.filter((d) => d.tier < 3 || d.severity === 'error')
       .map(describe)
   }
   const name = sectionNameOf(file) ?? file
   return validateOUISection(source, { topicId, sectionName: name, file })
-    .diagnostics.filter((d) => d.tier < 3)
+    .diagnostics.filter((d) => d.tier < 3 || d.severity === 'error')
     .map(describe)
 }
 

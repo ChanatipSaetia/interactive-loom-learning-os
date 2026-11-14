@@ -372,7 +372,7 @@ export function validateOKFSection(
   const hasTier3Errors = allDiagnostics.some((d) => d.tier === 3)
 
   let status: ValidationResult['status'] = 'valid'
-  if (hasTier1Errors || hasTier2Errors) {
+  if (hasTier1Errors || hasTier2Errors || allDiagnostics.some((d) => d.severity === 'error')) {
     status = 'error'
   } else if (hasTier3Errors) {
     status = 'warning'

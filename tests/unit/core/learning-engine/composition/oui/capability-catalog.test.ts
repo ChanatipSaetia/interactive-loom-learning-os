@@ -4,7 +4,7 @@ import { getCapabilityCatalog, getCapabilityIndex } from '../../../../../../src/
 describe('capability catalog', () => {
   it('includes a versioned, serializable section index', () => {
     const catalog = getCapabilityCatalog()
-    expect(catalog.schemaVersion).toBe(2)
+    expect(catalog.schemaVersion).toBe(3)
     expect(catalog.components.find((s) => s.component === 'Flowchart')?.mentalModel).toBeTruthy()
     expect(JSON.parse(JSON.stringify(catalog))).toEqual(catalog)
   })

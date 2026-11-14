@@ -54,7 +54,7 @@ describe('Loom MCP server', () => {
 
   it('offers the guide, validation and show_topic with its app', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'].sort())
+    expect(tools.map((t) => t.name).sort()).toEqual(['recommend_components', 'get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'].sort())
     const show = tools.find((t) => t.name === 'show_topic')!
     expect((show._meta as { ui?: { resourceUri?: string } }).ui?.resourceUri).toBe(APP_URI)
   })
@@ -131,7 +131,7 @@ describe('Loom MCP server, hosted (slice 5)', () => {
 
   it('offers only the guide and show_topic, and leaves checking to the app', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'].sort())
+    expect(tools.map((t) => t.name).sort()).toEqual(['recommend_components', 'get_topic_context', 'read_reference', 'show_domain', 'show_library', 'show_topic', 'validate_topic_plan'].sort())
     const text = textOf(await client.callTool({ name: 'show_topic', arguments: { intent: 'reopen', oui: topicSource('chinese101-day1').replace('Quiz(', 'Quizz(') } }))
     expect(text).toContain('The player must compile it')
     expect(text).not.toContain('Quizz')
@@ -198,7 +198,7 @@ describe('Loom MCP server with a memory folder (slice 4)', () => {
 
   it('adds the memory tools, record_events for the app only', async () => {
     const { tools } = await client.listTools()
-    expect(tools.map((t) => t.name).sort()).toEqual(['get_learning_checkpoint', 'get_topic_context', 'read_reference', 'learner_summary', 'list_topics', 'open_topic', 'record_events', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'].sort())
+    expect(tools.map((t) => t.name).sort()).toEqual(['recommend_components', 'get_learning_checkpoint', 'get_topic_context', 'read_reference', 'learner_summary', 'list_topics', 'open_topic', 'record_events', 'show_domain', 'show_library', 'show_topic', 'validate_topic', 'validate_topic_plan'].sort())
     const record = tools.find((t) => t.name === 'record_events')!
     expect((record._meta as { ui?: { visibility?: string[] } }).ui?.visibility).toEqual(['app'])
   })
