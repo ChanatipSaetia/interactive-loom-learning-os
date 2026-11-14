@@ -512,7 +512,7 @@ export function McpApp({ app }: { app: App }) {
       : shelf.parent ? () => setShelf({ library: shelf.parent!, domainId: null }) : undefined
     return (
       <UISystemProvider>
-        <div className={`mcp-read${full ? ' mcp-full' : TOUCH ? ' mcp-read-natural' : ''}`} data-testid="mcp-shelf">
+        <div className={`mcp-read${full ? ' mcp-full' : ' mcp-read-natural'}`} data-testid="mcp-shelf">
           <div className="mcp-bar">
             <span className="mcp-bar-title">{shelfDomain?.title ?? 'Your Loom library'}</span>
             <ThemePicker themeId={themeId} onPick={pickTheme} />
@@ -602,7 +602,7 @@ export function McpApp({ app }: { app: App }) {
               <PresentMode sections={presentSections} onExit={(sectionIndex) => readAt(sectionIndex, false)} onSectionChange={recordSeen} fillParent />
             </div>
           </HUDProvider></ProgressProvider>}
-          <div hidden={presenting} className="mcp-read">
+          <div hidden={presenting} className={`mcp-read${full ? '' : ' mcp-read-natural'}`}>
             <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
               <LearnerMemoryProvider port={memory} device={DEVICE}>
                 {readTopic.current === topic && <TopicView key={`${topic.topicId}:${topicSourceVersion(topic)}`} topic={topic} />}

@@ -276,8 +276,8 @@ body {
   .mcp-wide-only { display: none; }
 }
 
-/* Read in the conversation: a fixed-height card that scrolls inside. A frame as tall as the whole
-   topic would centre modals (taxonomy details, help) far from what the learner sees */
+/* Shared reader shell. Inline readers opt into content height below; full-screen
+   readers keep a bounded scroll area. */
 .mcp-read {
   display: flex;
   flex-direction: column;
@@ -286,6 +286,10 @@ body {
   overflow: hidden;
   border: 1px solid var(--glass-edge, var(--ctp-surface1));
 }
+
+/* Author display:flex overrides the browser's default [hidden] rule. Keep the
+   mounted reader out of layout while Present owns the stage. */
+.mcp-read[hidden] { display: none; }
 
 .mcp-read.mcp-full {
   height: 100vh;
@@ -310,8 +314,8 @@ body {
   overflow-y: auto;
 }
 
-/* Touch screens without the chat's full screen: Read at its full height, so the chat's own
-   scrolling moves through it (a scroll box inside the frame gets no swipes there) */
+/* Inline Read grows with its content; the chat owns scrolling. Only full screen
+   bounds the reader to the available viewport. */
 .mcp-read.mcp-read-natural {
   height: auto;
   overflow: visible;
@@ -448,9 +452,9 @@ body {
 .mcp-reading-section :is(.quiz-score-bar, .quiz-question-header) { display: none; }
 .mcp-reading-section .quiz-question-card { padding: 16px; gap: 12px; }
 
-/* Contain reading gestures at the iframe boundary, including the scroll edges.
-   These rules affect the embedded document only, never the surrounding chat. */
-html:has([data-testid='mcp-read']),
-body:has([data-testid='mcp-read']),
-[data-testid='mcp-read'],
-[data-testid='mcp-read-scroll'] { overscroll-behavior: none; }
+/* Full-screen reading contains gestures at the iframe boundary. Inline reading
+   leaves scrolling to the chat as the content grows. */
+html.mcp-is-full:has([data-testid='mcp-read']),
+html.mcp-is-full body:has([data-testid='mcp-read']),
+.mcp-full[data-testid='mcp-read'],
+.mcp-full [data-testid='mcp-read-scroll'] { overscroll-behavior: none; }
