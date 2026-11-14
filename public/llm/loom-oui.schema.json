@@ -5255,7 +5255,7 @@
         "categories"
       ],
       "additionalProperties": false,
-      "description": "Browsable taxonomy of categories with scope, analogy and details."
+      "description": "Introduce and explore meaningful categories with defining features, examples, scope and distinctions. Explain overlaps when relevant; browsing alone is not classification evidence."
     },
     "TaxonomyCategory": {
       "type": "object",
@@ -5282,7 +5282,7 @@
         },
         "details": {
           "type": "string",
-          "description": "Longer explanation shown in the category details."
+          "description": "Explanation with examples, distinguishing features and any overlapping scope, shown in the category details."
         },
         "analogy": {
           "type": "string",
@@ -6587,7 +6587,7 @@
         "scenarios"
       ],
       "additionalProperties": false,
-      "description": "Interactive sandbox where learners compare choices across one or more situations, weigh gains and costs, and see how goals, constraints and priorities change which option fits. Several contrasting situations can teach when to choose each alternative; avoid a universal winner."
+      "description": "Explained comparison of alternatives across shared criteria, strengths, limitations and consequences. Use for comparison even without a decision request; contextual situations and recommendations are optional. Qualitative comparisons use empty metrics; avoid invented scores or a universal winner."
     },
     "TradeoffScenario": {
       "type": "object",
@@ -6605,14 +6605,14 @@
           "items": {
             "$ref": "#/$defs/TradeoffMetric"
           },
-          "description": "Metrics to watch, as TradeoffMetric references."
+          "description": "Metrics to watch, as TradeoffMetric references; use [] for a qualitative comparison."
         },
         "steps": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/TradeoffStep"
           },
-          "description": "Decisions in order, as TradeoffStep references."
+          "description": "Comparison criteria or decisions in order, as TradeoffStep references."
         },
         "description": {
           "type": "string",
@@ -6626,7 +6626,7 @@
         "steps"
       ],
       "additionalProperties": false,
-      "description": "A trade-off scenario: metrics to watch and the sequence of decisions to make."
+      "description": "A general comparison container or a contextual situation, with comparison criteria or decisions to explore."
     },
     "TradeoffMetric": {
       "type": "object",
@@ -6677,7 +6677,7 @@
         },
         "title": {
           "type": "string",
-          "description": "The decision to make at this step."
+          "description": "The shared comparison criterion or decision to explore at this step."
         },
         "choices": {
           "type": "array",
@@ -6688,7 +6688,7 @@
         },
         "description": {
           "type": "string",
-          "description": "Optional context for the decision."
+          "description": "Optional explanation of the comparison criterion or decision context."
         },
         "recommended": {
           "type": "string",
@@ -6701,7 +6701,7 @@
         "choices"
       ],
       "additionalProperties": false,
-      "description": "A decision point in a trade-off scenario. `recommended` is the ID of the recommended choice."
+      "description": "One comparison criterion or decision point. Reuse alternatives across criteria; recommended is optional."
     },
     "TradeoffChoice": {
       "type": "object",
@@ -6726,7 +6726,7 @@
           "additionalProperties": {
             "type": "number"
           },
-          "description": "Delta per metric ID when picked, e.g. {performance: 10, cost: -5}."
+          "description": "Delta per metric ID when picked; use {} for a qualitative comparison without scores."
         },
         "pros": {
           "type": "array",
@@ -7334,7 +7334,7 @@
         "cards"
       ],
       "additionalProperties": false,
-      "description": "Deck of flip cards for key vocabulary."
+      "description": "Introduce individual concepts and meanings, then practise recall with focused explanation cards. Examples and dialogue can clarify meaning; a flip records exposure, not correctness."
     },
     "Flashcard": {
       "type": "object",
@@ -7345,7 +7345,7 @@
         },
         "word": {
           "type": "string",
-          "description": "The term on the front of the card."
+          "description": "One focused term or question on the front of the card."
         },
         "pronunciation": {
           "type": "string",
@@ -7361,7 +7361,7 @@
         },
         "detailedDefinition": {
           "type": "string",
-          "description": "Longer explanation shown on the back."
+          "description": "A coherent explanation shown on the back, with a concise example or common mistake when useful."
         },
         "whyItMatters": {
           "type": "string",
@@ -7386,7 +7386,7 @@
         "whyItMatters"
       ],
       "additionalProperties": false,
-      "description": "A vocabulary flip card: the term on the front, definitions on the back."
+      "description": "One focused term or question on the front and a coherent explanation on the back, for introduction or recall."
     },
     "Dialogue": {
       "type": "object",

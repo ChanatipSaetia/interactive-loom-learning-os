@@ -1,3 +1,4 @@
+import { componentTeachingProfile } from './component-teaching'
 import { COMPONENT_PURPOSES } from './component-purpose'
 import { z } from 'zod'
 import { TopicPlanSchema } from './topic-plan'
@@ -25,6 +26,7 @@ export function getCapabilityCatalog() {
     visualChoices: OPENUI_MODELS.map(([learningGoal, components]) => ({ learningGoal, components })),
     components: sections.filter((section) => section.component !== 'Page').map((section) => ({
       component: section.component, summary: section.summary,
+      teaching: componentTeachingProfile(section.component),
       mentalModel: models.get(section.type)?.model ?? '',
       selectionQuestion: models.get(section.type)?.question ?? '',
       learningBehavior: SECTION_LEARNING_BEHAVIORS[section.type as keyof typeof SECTION_LEARNING_BEHAVIORS],

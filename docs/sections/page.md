@@ -148,3 +148,62 @@ paragraph presentation scenes. Read uses the normal Markdown components, includi
 their size options. Mixed pages retain component-specific activity scenes and
 ordinary layout beats. Page lead metadata belongs to the title beat; it does not
 create an extra paragraph or shift existing narration.
+
+## Teaching procedures, categories and individual concepts
+
+For a procedure, choose from Steps, Bullets and Flowchart according to whether
+the learner should execute instructions, check prerequisites or understand step
+connections. A linear procedure can benefit from a Flowchart. Follow its existing
+model contract and use supported participants and events; do not invent them to
+activate a diagram. ReflectionSequence optionally assesses reconstructing an
+already-taught order. These are peer choices, not a required lesson sequence.
+
+TaxonomyBrowser can introduce a subject through meaningful kinds, examples and
+distinctions. Explain overlaps; use parent-child relationships only when they
+are meaningful. Its current contract is flat, so do not invent nested category
+fields. Compare Table or grouped cards for a compact overview, ConceptMap for
+relationships, and DecisionTree for identification rules. Category browsing does
+not demonstrate classification skill.
+
+Flashcards can teach concepts on first encounter and support later recall. Keep
+one focused term or question and a coherent explanation per card, with a concise
+example, dialogue or common mistake when helpful. Use the existing word and
+definition fields. TextContent develops connected explanations; TaxonomyBrowser
+organizes kinds. Read supports recall and reveal; Present demonstrates the card.
+Flips record exposure, not correctness or mastery.
+
+These rules are shared by planning and focused component references. Progressive
+navigation still reads relevant capabilities before the selected contracts; no
+new tool, mode, mandatory assessment or component quota is introduced.
+
+## Teaching purposes across the catalog
+
+Every component reference describes four things: what it can introduce, what
+learners can explore, what their response can demonstrate, and the limits of the
+representation. Read the relevant purpose and contract; do not retrieve every
+component reference to plan a lesson. The six tools and eight workflow stages
+remain unchanged. Installed writer skills use the same component-name contracts.
+
+| Candidate | Teaching purpose and boundary |
+|---|---|
+| ConceptMap | Introduce concepts and explain labelled relationships; a displayed map is not an automatic matching assessment. |
+| PillarLayer | Explain foundations and dependencies, using meaningful layers rather than decorative stacks. |
+| UserJourney | Teach a person's goals, actions, responses and friction, including introductions through a concrete experience. |
+| Timeline | Interpret measured start times, duration, overlap and waiting with verified or labelled illustrative values. |
+| BreakdownTree | Explain quantities or conditional probabilities through a defensible measurable whole and branches. |
+| FormulaSandbox | Predict and explore an authored formula's outputs; explain units, assumptions and valid ranges. |
+| DecisionTree | Explain explicit diagnostic or selection criteria; reaching a recommendation does not prove diagnostic skill. |
+| Scenario | Introduce and explain through situations, decisions, consequences and feedback; outcomes remain authored possibilities. |
+| Quiz | Apply taught knowledge and learn from answer-specific feedback; correctness concerns the authored question. |
+| ReflectionTemplate | Scaffold reasoning with supplied concepts; constrained completion is narrower than independent explanation. |
+| Images, galleries and Svg | Teach recognition, examples and spatial mechanisms with legible, supported labels and evidence boundaries. |
+| Charts and tables | Expose patterns and matched attributes; preserve comparability, units and data provenance. |
+| Text and code | Develop explanations and concrete implementation examples; display alone does not execute or assess code. |
+| Cards and layouts | Organize one learning activity; layout novelty and component counts do not demonstrate learning. |
+| Controls | Connect meaningful inputs to authored feedback; clicks do not imply grading, external execution or saving. |
+
+Document roots, narration effects and model/data helpers have explicit supporting
+roles in their focused references. They inherit the owning activity's behavior;
+their presence does not create a separate learning activity or evidence. Read
+responses and Present demonstrations remain distinct, and no representation,
+assessment, interaction count or lesson sequence is mandatory.

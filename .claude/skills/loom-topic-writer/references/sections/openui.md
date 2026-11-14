@@ -8,7 +8,7 @@ Text, layouts, visuals, controls and prebuilt activities are peers in one compon
 - The body uses components from the unified catalog: text, layouts, media, data components and prebuilt activities. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: https://openui.com/docs/api-reference/react-ui. Language specification: https://openui.com/docs/openui-lang.
 - Page-local reactive inputs and state actions work without another model call. Query/Mutation tool connections are deferred.
-- List it in topic.oui with `SectionRef` like any other section. Compare all relevant candidates by fit: Table for factual attributes, TradeoffSandbox for contextual choices, Steps for instructions, Flowchart for interactions, and TextContent for connected prose. Compose supporting components around the main learning activity.
+- List it in topic.oui with `SectionRef` like any other section. Compare all relevant candidates by fit: Table for factual attributes, TradeoffSandbox for explained comparisons and optional contextual choices, Steps for instructions, Flowchart for interactions, and TextContent for connected prose. Compose supporting components around the main learning activity.
 
 Shape each section to its content and learner action. Reuse a consistent table or card layout when it makes comparisons easier; vary the composition when the learning purpose changes. Visual novelty and layout variety are not learning objectives.
 

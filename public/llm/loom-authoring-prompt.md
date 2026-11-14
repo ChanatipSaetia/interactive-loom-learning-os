@@ -51,7 +51,7 @@ Compare candidates by knowledge fidelity (preserve information and relationships
 
 Bullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. Compare compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.
 
-Flashcards introduce definitions and meanings as well as practise recall. Cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox evaluates options and decisions; Formula Sandbox explores parameter sensitivity. Select other prebuilt activities by their learning purpose below.
+Flashcards introduce definitions and meanings as well as practise recall. Cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox explains comparisons as well as contextual decisions; Formula Sandbox explores parameter sensitivity. Select other prebuilt activities by their learning purpose below.
 
 For a 3D web research lesson, compare matched capabilities in a Table, inspect annotated use-case cards, and explain camera/geometry with a labelled Svg when each serves an objective. Bullets can guide real initialization steps; Flowchart can trace system messages. These are candidates, not a required section mix.
 
@@ -61,15 +61,15 @@ Read only plausible capability summaries, then the exact contracts and required 
 
 ### Choose an activity, then a composition
 
-For each page establish the learning objective, knowledge structure and concrete learner action. Consider feasible alternatives, then explain the selected composition and its limits in the existing plan rationale. Use evidenceRefs for sources, presentation for Read/Present behavior and assessment for observable answers. No additional TopicPlan fields are needed. Supporting components must serve the same main activity; a second page needs a distinct contribution. Do not require a fixed number of components, pages, alternatives or interactions.
+For each page establish the learning objective, knowledge structure and concrete learner action. For every candidate ask what it can introduce, what learners can explore, what their response demonstrates and what its limits are. Read those four teaching-purpose fields in the relevant capability or component reference; do not load every component guide. Consider feasible alternatives, then explain the selected composition and its limits in the existing plan rationale. Use evidenceRefs for sources, presentation for Read/Present behavior and assessment for observable answers. No additional TopicPlan fields are needed. Supporting components must serve the same main activity; a second page needs a distinct contribution. Do not require a fixed number of components, pages, alternatives or interactions.
 
 | Learner action | Candidate capabilities to inspect | Fit and boundary |
 |---|---|---|
 | Orient or follow a connected argument | TextContent, Card, Intro | Prose can preserve nuance; exposure is not demonstrated understanding. |
-| Follow instructions | Steps, Bullets, TextContent | Preserve meaningful order; do not flatten comparisons into lists. |
-| Learn or recall terms | Flashcards | Definitions and examples support recall; flips do not prove correctness. |
-| Classify and distinguish kinds | TaxonomyBrowser | Explore categories and distinctions, then assess classification separately if needed. |
-| Compare factual attributes or concrete examples | Table, Card with Stack | Align matching attributes or annotate examples; a table is not a universal decision model. |
+| Execute or understand a procedure | Steps, Bullets, Flowchart | Choose instruction, checklist or structural explanation; a linear procedure can benefit from a diagram. |
+| Introduce or recall individual concepts | Flashcards, TextContent | One focused idea per card; connected explanations can use prose; flips do not prove correctness. |
+| Introduce, organize or distinguish kinds | TaxonomyBrowser, Table, grouped cards | Explain defining features and overlaps; use ConceptMap for relationships or DecisionTree for identification rules. |
+| Compare attributes, examples and their implications | Table, TradeoffSandbox, Card with Stack | Use a compact overview or an explained comparison across shared criteria; a recommendation is optional. |
 | Trace events, ownership or messages | Flowchart | Choose a meaningful view and model real participants; do not invent internals to enable views. |
 | Explain relationships or spatial parts | ConceptMap, labelled Svg | Name relationships or show positions; label conceptual models and analogies. |
 | Explain foundations and dependencies | PillarLayer | Show what depends on what, not arbitrary decorative layers. |
@@ -80,7 +80,9 @@ For each page establish the learning objective, knowledge structure and concrete
 | Recognize visual examples | ImageGallery, LearningGallery, Image with Card | Images must teach recognition, not merely decorate. |
 | Apply, reconstruct or explain | Quiz, ReflectionSequence, ReflectionTemplate | Teach the assessed concepts first; correct answers concern the authored exercise. |
 
-For a framework comparison, a table can align APIs, a conceptual demonstration can explain state dependency, and TradeoffSandbox can explore project constraints. Compare relevant alternatives such as ConceptMap or Flowchart for the mechanism, and Scenario or DecisionTree for project choices. Include only distinct contributions. A Loom-local counter is an illustrative model, not execution or benchmarking of actual Svelte/React code. Do not invent productivity or performance scores to justify FormulaSandbox or charts. A linked code example is not evidence of a live execution environment.
+For procedures, distinguish executing instructions, understanding step connections and practising order. For taxonomy, introduce defining features and examples, explain overlapping categories and ground any parent-child relationships in the subject. For flashcards, introduce or recall one focused idea; use a connected explanation or category overview when those better fit.
+
+For a framework comparison, a table can align APIs, a conceptual demonstration can explain state dependency, and TradeoffSandbox can explain differences and consequences across shared criteria, then optionally explore project constraints. Compare relevant alternatives such as ConceptMap or Flowchart for the mechanism, and Scenario or DecisionTree for project choices. Include only distinct contributions. A Loom-local counter is an illustrative model, not execution or benchmarking of actual Svelte/React code. Do not invent productivity or performance scores to justify FormulaSandbox or charts. A linked code example is not evidence of a live execution environment.
 
 Progressive reading stays unchanged: browse capability summaries, open only plausible alternatives, validate the plan, then retrieve exact contracts only for the selected components. Do not load every component contract to fill this decision record.
 
@@ -109,15 +111,30 @@ Choose one meaningful primary view with Flowchart.initialView. In presentation.s
 | Compare used and remaining capacity | Stacked HorizontalBarChart |
 | Examine two numeric variables | ScatterChart; an association alone does not establish causation |
 | Compare profiles across comparable criteria | RadarChart |
-| Look up or compare factual attributes | Table |
+| Compare attributes and explain their implications | Table for a compact overview; TradeoffSandbox for an explained comparison |
 | Explain spatial structure, anatomy, a mechanism or a concrete analogy | Labelled Svg drawing |
-| Explain a straightforward procedure | Steps |
+| Execute or understand a procedure | Steps, Bullets or Flowchart according to instruction, checklist or structural needs |
 
 ### Applying the selection
 
-- Flashcards can define and introduce a concept before the learner has memorised it. Put the term or question on the front and a concise meaning on the back; use examples or dialogue when helpful. They are a teaching format as well as a recall activity. Use TextContent when a longer connected explanation is needed.
-- Tradeoff Sandbox also presents choices and compares alternatives. Choose it when the learner needs to evaluate options, their strengths and weaknesses, or suitability for a situation. A simple factual lookup matrix can use a Table; input-driven calculations belong in Formula Sandbox.
-- A Tradeoff Sandbox can contain multiple situations to teach how to choose between alternatives. Reuse comparable choices across contrasting situations, but vary the goals, constraints and priorities so the learner sees when each option fits. For HTTP versus WebSocket, contrast an ordinary resource API with a bidirectional live collaboration application; explain each situation's gains, costs and recommendation rather than declaring one universal winner. Use a Table for factual differences; use Tradeoff Sandbox when the comparison teaches selection and consequences. Several situations remain one main activity on one page, with internal automatic Present scenes; split pages when the learning purpose changes or the content becomes too dense. Recommendations must follow the authored situation, and numerical scores must be sourced or visibly labelled illustrative.
+For a procedure, ask whether the learner needs to execute instructions, understand their structure, or practise their order. Steps, Bullets and Flowchart are peer candidates: Steps guides instructions with explanations or code, Bullets supports concise checklists and prerequisites, and Flowchart explains sequence, dependencies, branches, responsibilities and consequences. A linear procedure can justify Flowchart when the connections help explain it; branching or multiple participants are not selection prerequisites. The existing Flowchart contract still applies: model only supported participants, events and relationships; never invent actors or events just to use it.
+
+For creating a Svelte app, Steps can guide installation, project creation and running commands; Flowchart can explain the edit-to-browser-update process. ReflectionSequence can optionally assess reconstructing a taught order. These serve distinct learning needs, not a mandatory sequence or component mix. Present demonstrations and checklist clicks do not prove procedural skill.
+
+TaxonomyBrowser introduces and explains meaningful kinds as well as supporting classification. Each category should state its defining features, give examples and distinguish nearby categories. Compare a compact Table or grouped cards for scanning, ConceptMap for labelled relationships and DecisionTree for rule-based identification. Select by the learner's question, without requiring every representation.
+
+For an introduction to Svelte, categories could organize components, reactivity, composition and lifecycle when their scope is clearly explained. Categories may overlap; explain shared examples instead of forcing a mutually exclusive partition. Use parent-child relationships only when the subject supports them. The current TaxonomyBrowser contract is a flat category browser: describe relevant relationships in its existing fields or select a suitable relationship component; do not invent nested category or parent fields. Preserve dependencies and process order through an appropriate representation. Browsing is exploration; classification practice requires an observable learner response.
+
+Flashcards teach individual concepts on first encounter as well as practising recall. Use a focused term or question on the front and one coherent explanation on the back, supported by a concise example, dialogue or common mistake when useful. For Svelte, a $state card can introduce its meaning, a small example and a misconception before recall practice. Keep one focused idea per card; use TextContent for a connected explanation and TaxonomyBrowser to organize kinds or distinguish categories.
+
+Use the existing Flashcard fields: word carries the front's term or question, and shortDefinition, detailedDefinition and optional dialogue carry the explanation and examples. Do not invent prompt, answer or automatic-grading fields. Read lets the learner attempt recall and reveal the explanation; Present demonstrates front and back. Flipping or viewing a card records exposure, not correctness or mastery. Add a grounded assessment only when the learning goal requires observable evidence.
+
+TradeoffSandbox is a first-class comparison component, including when the learner only asks how alternatives differ. Table provides a compact factual overview; TradeoffSandbox supports an explained comparison across shared criteria, strengths, limitations and practical consequences. Choose by learning value, without requiring a winner or a fixed component mix.
+
+For Svelte versus React, compare the same criteria for each option, such as reactivity, setup and ecosystem, and explain what each difference means in practice. Use a comparison step per useful criterion with the same alternatives; keep descriptions and pros/cons specific to that criterion. A project situation can follow if it adds a distinct learning contribution. Do not invent performance or productivity scores.
+
+A qualitative comparison needs no scores, sliders, recommendation or multiple situations. With the current contract, use one TradeoffScenario as the comparison container, metrics: [] and choice metrics: {}; omit recommended, whyThisFits and whenToUse unless useful. These are existing positional fields, not new mode flags. Present guides the authored comparisons; Read supports exploration. Inspecting or selecting an option is engagement, not evidence of a justified decision.
+- A Tradeoff Sandbox can contain multiple situations to teach how to choose between alternatives. Reuse comparable choices across contrasting situations, but vary the goals, constraints and priorities so the learner sees when each option fits. For HTTP versus WebSocket, contrast an ordinary resource API with a bidirectional live collaboration application; explain each situation's gains, costs and recommendation rather than declaring one universal winner. A general comparison may stand on its own; add contrasting situations only when they teach contextual suitability. Several situations remain one main activity on one page, with internal automatic Present scenes; split pages when the learning purpose changes or the content becomes too dense. Recommendations must follow the authored situation, and numerical scores must be sourced or visibly labelled illustrative.
 - Keep the distinctions explicit: Taxonomy classifies; Breakdown Tree divides a measurable whole. Pillar Layer shows foundations; Flowchart shows process. Sequence shows interaction order; Timeline shows measured time. Decision Tree selects by rules; Scenario explores consequences.
 - Select only the sections that help this topic. This is a catalogue of teaching choices, not a mandatory lesson sequence or a requirement to include every type. A focused explanation may use one strong section; a fuller topic can introduce meanings, show relationships or a mechanism, compare options, then practise applying the idea.
 - Read and Present deliver the same mental model. Read supports inspection and learner interaction; Present guides attention with narration and focus. Use each section's documented beats and view controls. In Present, quiz and reflection answers can be demonstrated by the stage; they are learner practice in the interactive Read mode.
@@ -157,8 +174,13 @@ Intro(title: string, what: IntroWhat, why: IntroWhy, roadmap?: RoadmapStep[], su
 CodeBlock(language: string, codeString: string) — Syntax-highlighted code block
 Callout(variant: "info" | "warning" | "error" | "success" | "neutral", title: string, description: string, visible?: $binding<boolean>) — Callout banner. Optional visible is a reactive $boolean — auto-dismisses after 3s by setting $visible to false.
 
-### Compare facts and examples
+### Compare and evaluate
 Table(columns: Col[]) — Data table — column-oriented. Each Col holds its own data array.
+TradeoffSandbox(title: string, scenarios: TradeoffScenario[], heading?: string, lead?: Lead) — Explained comparison of alternatives across shared criteria, strengths, limitations and consequences. Use for comparison even without a decision request; contextual situations and recommendations are optional. Qualitative comparisons use empty metrics; avoid invented scores or a universal winner.
+  - title: Section title, shown in the topic outline and as the section header.
+  - scenarios: The scenarios, as TradeoffScenario references.
+  - heading: Optional sub-heading shown under the section title.
+  - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
 Card(children: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | Svg | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock | Tabs | Carousel | Stack)[], variant?: "card" | "sunk" | "clear", direction?: "row" | "column", gap?: "none" | "xs" | "s" | "m" | "l" | "xl" | "2xl", align?: "start" | "center" | "end" | "stretch" | "baseline", justify?: "start" | "center" | "end" | "between" | "around" | "evenly", wrap?: boolean) — Styled container. variant: "card" (default, elevated) | "sunk" (recessed) | "clear" (transparent). Always full width. Accepts all Stack flex params (default: direction "column"). Cards flex to share space in row/wrap layouts.
 Stack(children: any[], direction?: "row" | "column", gap?: "none" | "xs" | "s" | "m" | "l" | "xl" | "2xl", align?: "start" | "center" | "end" | "stretch" | "baseline", justify?: "start" | "center" | "end" | "between" | "around" | "evenly", wrap?: boolean) — Flex container. direction: "row"|"column" (default "column"). gap: "none"|"xs"|"s"|"m"|"l"|"xl"|"2xl" (default "m"). align: "start"|"center"|"end"|"stretch"|"baseline". justify: "start"|"center"|"end"|"between"|"around"|"evenly".
 Tabs(items: TabItem[]) — Tabbed container
@@ -195,7 +217,7 @@ ConceptMap(title: string, concepts: Concept[], links: ConceptLink[], heading?: s
   - links: The edges between concepts, as ConceptLink references.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
-TaxonomyBrowser(title: string, categories: TaxonomyCategory[], heading?: string, lead?: Lead) — Browsable taxonomy of categories with scope, analogy and details.
+TaxonomyBrowser(title: string, categories: TaxonomyCategory[], heading?: string, lead?: Lead) — Introduce and explore meaningful categories with defining features, examples, scope and distinctions. Explain overlaps when relevant; browsing alone is not classification evidence.
   - title: Section title, shown in the topic outline and as the section header.
   - categories: The categories, as TaxonomyCategory references.
   - heading: Optional sub-heading shown under the section title.
@@ -239,11 +261,6 @@ BreakdownTree(title: string, nodes: BreakdownNode[], mode?: "quantity" | "probab
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
 
 ### Explore choices and models
-TradeoffSandbox(title: string, scenarios: TradeoffScenario[], heading?: string, lead?: Lead) — Interactive sandbox where learners compare choices across one or more situations, weigh gains and costs, and see how goals, constraints and priorities change which option fits. Several contrasting situations can teach when to choose each alternative; avoid a universal winner.
-  - title: Section title, shown in the topic outline and as the section header.
-  - scenarios: The scenarios, as TradeoffScenario references.
-  - heading: Optional sub-heading shown under the section title.
-  - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
 DecisionTree(title: string, id: string, root: string, nodes: DecisionNode[], displayTitle?: string, heading?: string, lead?: Lead) — Interactive decision guide. `root` is the ID of the first node. `displayTitle` overrides the title shown inside the guide.
   - title: Section title, shown in the topic outline and as the section header.
   - id: Tree ID, unique within the topic.
@@ -286,7 +303,7 @@ LearningGallery(title: string, images: GalleryImage[], heading?: string, lead?: 
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
 
 ### Recall, apply and explain
-Flashcards(title: string, cards: Flashcard[], heading?: string, lead?: Lead) — Deck of flip cards for key vocabulary.
+Flashcards(title: string, cards: Flashcard[], heading?: string, lead?: Lead) — Introduce individual concepts and meanings, then practise recall with focused explanation cards. Examples and dialogue can clarify meaning; a flip records exposure, not correctness.
   - title: Section title, shown in the topic outline and as the section header.
   - cards: The cards, as Flashcard references, in deck order.
   - heading: Optional sub-heading shown under the section title.
@@ -404,13 +421,13 @@ Event(id: string, title: string, desc?: string, enters?: string, data?: string) 
   - desc: Optional detail about the event.
   - enters: Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these.
   - data: Optional description of the data the event carries (e.g. "Order ID, total, line items"); the Data Flow view names the data object with it instead of the event title.
-Flashcard(id: string, word: string, pronunciation: string, category: string, shortDefinition: string, detailedDefinition: string, whyItMatters: string, image?: string, dialogue?: Dialogue) — A vocabulary flip card: the term on the front, definitions on the back.
+Flashcard(id: string, word: string, pronunciation: string, category: string, shortDefinition: string, detailedDefinition: string, whyItMatters: string, image?: string, dialogue?: Dialogue) — One focused term or question on the front and a coherent explanation on the back, for introduction or recall.
   - id: Card ID, unique within the deck.
-  - word: The term on the front of the card.
+  - word: One focused term or question on the front of the card.
   - pronunciation: How to say the term, e.g. "/ˈkæʃ/".
   - category: Grouping shown as a badge on the card (e.g. "concept").
   - shortDefinition: One-line definition shown on the back.
-  - detailedDefinition: Longer explanation shown on the back.
+  - detailedDefinition: A coherent explanation shown on the back, with a concise example or common mistake when useful.
   - whyItMatters: Why the learner should care about this term.
   - image: Optional image URL or path shown on the card.
   - dialogue: Optional Dialogue(...) example that shows the term in use.
@@ -614,7 +631,7 @@ TaxonomyCategory(title: string, subtitle: string, icon: string, color: string, d
   - icon: lucide-react icon name, e.g. "Brain" (falls back to a circle).
   - color: Accent colour: blue, peach, pink, mauve, green, teal, sky, lavender, yellow or red.
   - description: Summary shown on the card.
-  - details: Longer explanation shown in the category details.
+  - details: Explanation with examples, distinguishing features and any overlapping scope, shown in the category details.
   - analogy: Everyday analogy for the category.
   - primaryFocus: The main concern of this category, in one line.
   - inScope: What belongs in this category.
@@ -659,7 +676,7 @@ TradeoffChoice(id: string, label: string, description: string, metrics: Record<s
   - id: Choice ID, unique within the step; `recommended` refers to it.
   - label: Option name shown on the choice card.
   - description: What picking this option means.
-  - metrics: Delta per metric ID when picked, e.g. {performance: 10, cost: -5}.
+  - metrics: Delta per metric ID when picked; use {} for a qualitative comparison without scores.
   - pros: Advantages, as ProCon references.
   - cons: Drawbacks, as ProCon references.
   - whyThisFits: Optional reason this option fits the scenario.
@@ -671,17 +688,17 @@ TradeoffMetric(id: string, label: string, baseValue: number, min?: number, max?:
   - min: Optional lowest value the bar shows (default 0).
   - max: Optional highest value the bar shows (default 100).
   - direction: Optional "higher" or "lower": which way is better.
-TradeoffScenario(id: string, title: string, metrics: TradeoffMetric[], steps: TradeoffStep[], description?: string) — A trade-off scenario: metrics to watch and the sequence of decisions to make.
+TradeoffScenario(id: string, title: string, metrics: TradeoffMetric[], steps: TradeoffStep[], description?: string) — A general comparison container or a contextual situation, with comparison criteria or decisions to explore.
   - id: Scenario ID, unique within the sandbox.
   - title: Scenario name shown in the scenario picker.
-  - metrics: Metrics to watch, as TradeoffMetric references.
-  - steps: Decisions in order, as TradeoffStep references.
+  - metrics: Metrics to watch, as TradeoffMetric references; use [] for a qualitative comparison.
+  - steps: Comparison criteria or decisions in order, as TradeoffStep references.
   - description: Optional scenario summary.
-TradeoffStep(id: string, title: string, choices: TradeoffChoice[], description?: string, recommended?: string) — A decision point in a trade-off scenario. `recommended` is the ID of the recommended choice.
+TradeoffStep(id: string, title: string, choices: TradeoffChoice[], description?: string, recommended?: string) — One comparison criterion or decision point. Reuse alternatives across criteria; recommended is optional.
   - id: Step ID, unique within the scenario.
-  - title: The decision to make at this step.
+  - title: The shared comparison criterion or decision to explore at this step.
   - choices: The options, as TradeoffChoice references.
-  - description: Optional context for the decision.
+  - description: Optional explanation of the comparison criterion or decision context.
   - recommended: Optional ID of the recommended choice.
 VisualCardBlock(items: VisualCardItem[], layout?: "grid" | "carousel", responsive?: boolean, action?: ActionExpression, gap?: number | string) — A grid or carousel of photo-first cards: a full-bleed background image with a tag on top and a bold text panel at the bottom; an optional action makes every card clickable.
 VisualCardItem(body: BoldText, id?: string, bgImageSrc?: string, tag?: Tag, bgImageAlt?: string) — A single photo-first card inside a VisualCardBlock: a BoldText body panel, an optional Tag, and a background image (bgImageSrc must be a real URL; bgImageAlt is its alt text).
@@ -764,7 +781,7 @@ Text, layouts, visuals, controls and prebuilt activities are peers in one compon
 - The body uses components from the unified catalog: text, layouts, media, data components and prebuilt activities. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: https://openui.com/docs/api-reference/react-ui. Language specification: https://openui.com/docs/openui-lang.
 - Page-local reactive inputs and state actions work without another model call. Query/Mutation tool connections are deferred.
-- List it in topic.oui with `SectionRef` like any other section. Compare all relevant candidates by fit: Table for factual attributes, TradeoffSandbox for contextual choices, Steps for instructions, Flowchart for interactions, and TextContent for connected prose. Compose supporting components around the main learning activity.
+- List it in topic.oui with `SectionRef` like any other section. Compare all relevant candidates by fit: Table for factual attributes, TradeoffSandbox for explained comparisons and optional contextual choices, Steps for instructions, Flowchart for interactions, and TextContent for connected prose. Compose supporting components around the main learning activity.
 
 Shape each section to its content and learner action. Reuse a consistent table or card layout when it makes comparisons easier; vary the composition when the learning purpose changes. Visual novelty and layout variety are not learning objectives.
 
@@ -778,7 +795,7 @@ Use a table or chart in a composed page when the figures or the side-by-side com
 
 - **Table**: several items compared on the same attributes, or reference values the learner looks up (settings, limits, specs).
 - **Chart**: the shape of real numbers: a comparison, a trend, a share of a whole or a correlation. Pick the chart type from the question it answers (see the list below).
-- Not a table or chart: a trade-off the learner should explore by moving sliders (TradeoffSandbox), a formula (FormulaSandbox), categories or a hierarchy (TaxonomyBrowser), a few points with explanation (Bullets).
+- Not a table or chart: an explained comparison of alternatives and consequences (TradeoffSandbox; scores and recommendations are optional), a formula (FormulaSandbox), meaningful categories with examples and distinctions (TaxonomyBrowser), a few points with explanation (Bullets).
 
 How to write them:
 
@@ -897,7 +914,7 @@ warning = NarrationStep("part4", "One rule you cannot skip.", [NarrationCallout(
 
 ### Drawings
 
-When a picture explains it better than words or boxes and arrows, draw it with `Svg` in a composed page: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Match the representation to what it teaches: use Flowchart for a process with actors, a chart for measured quantities, TaxonomyBrowser for categories, and Svg for a spatial or annotated explanation. Combine them when each adds something useful.
+When a picture explains it better than words or boxes and arrows, draw it with `Svg` in a composed page: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Match the representation to what it teaches: use Flowchart for procedure connections, responsibilities or system interactions, a chart for measured quantities, TaxonomyBrowser for categories, and Svg for a spatial or annotated explanation. Combine them when each adds something useful.
 
 Plan the picture before the prose: what should the learner be able to picture or explain afterward? Include a labelled concept drawing whenever it makes the idea clearer, without waiting for a request for a picture. For an abstract idea, use a concrete visual analogy and explicitly label where the analogy or schematic simplifies reality. A drawing should explain a relationship, structure or change, not decorate the page. Pair it with a short explanation of what to notice and why it matters, and use narration to connect its parts to the idea one at a time.
 

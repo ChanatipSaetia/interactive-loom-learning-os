@@ -97,7 +97,7 @@ export const Dialogue = defineOUIComponent({
 
 export const Flashcard = defineOUIComponent({
   name: 'Flashcard',
-  description: 'A vocabulary flip card: the term on the front, definitions on the back.',
+  description: 'One focused term or question on the front and a coherent explanation on the back, for introduction or recall.',
   props: z.object({
     id: z.string(),
     word: z.string(),
@@ -111,11 +111,11 @@ export const Flashcard = defineOUIComponent({
   }),
   fields: {
     id: 'Card ID, unique within the deck.',
-    word: 'The term on the front of the card.',
+    word: 'One focused term or question on the front of the card.',
     pronunciation: 'How to say the term, e.g. "/ˈkæʃ/".',
     category: 'Grouping shown as a badge on the card (e.g. "concept").',
     shortDefinition: 'One-line definition shown on the back.',
-    detailedDefinition: 'Longer explanation shown on the back.',
+    detailedDefinition: 'A coherent explanation shown on the back, with a concise example or common mistake when useful.',
     whyItMatters: 'Why the learner should care about this term.',
     image: 'Optional image URL or path shown on the card.',
     dialogue: 'Optional Dialogue(...) example that shows the term in use.',
@@ -125,7 +125,7 @@ export const Flashcard = defineOUIComponent({
 export const Flashcards: LoomOUIComponent = defineOUISection({
   name: 'Flashcards',
   sectionType: 'flashcards',
-  description: 'Deck of flip cards for key vocabulary.',
+  description: 'Introduce individual concepts and meanings, then practise recall with focused explanation cards. Examples and dialogue can clarify meaning; a flip records exposure, not correctness.',
   props: z.object({
     title: z.string(),
     cards: z.array(Flashcard.ref),

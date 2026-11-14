@@ -211,7 +211,7 @@ export const TaxonomyCategory = defineOUIComponent({
     icon: 'lucide-react icon name, e.g. "Brain" (falls back to a circle).',
     color: 'Accent colour: blue, peach, pink, mauve, green, teal, sky, lavender, yellow or red.',
     description: 'Summary shown on the card.',
-    details: 'Longer explanation shown in the category details.',
+    details: 'Explanation with examples, distinguishing features and any overlapping scope, shown in the category details.',
     analogy: 'Everyday analogy for the category.',
     primaryFocus: 'The main concern of this category, in one line.',
     inScope: 'What belongs in this category.',
@@ -222,7 +222,7 @@ export const TaxonomyCategory = defineOUIComponent({
 export const TaxonomyBrowser: LoomOUIComponent = defineOUISection({
   name: 'TaxonomyBrowser',
   sectionType: 'taxonomy-browser',
-  description: 'Browsable taxonomy of categories with scope, analogy and details.',
+  description: 'Introduce and explore meaningful categories with defining features, examples, scope and distinctions. Explain overlaps when relevant; browsing alone is not classification evidence.',
   props: z.object({
     title: z.string(),
     categories: z.array(TaxonomyCategory.ref),

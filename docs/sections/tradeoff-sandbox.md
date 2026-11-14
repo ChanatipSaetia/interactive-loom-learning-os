@@ -1,6 +1,40 @@
-# Section Type: `tradeoff-sandbox`
+# TradeoffSandbox: explained comparisons and optional decisions
 
-**Mental model**: Architectural trade-offs and strategy matrix. Teaches that there are no "perfect" architectures — only trade-offs measured across multiple metrics.
+Use TradeoffSandbox when learners should explore how alternatives differ across
+shared criteria, strengths, limitations and practical consequences. A comparison
+can stand on its own, without choosing a winner. Table remains a compact overview;
+TradeoffSandbox provides an explained comparison. Both are peers in the shared
+component catalog, and neither is mandatory for every comparison.
+
+For Svelte versus React, reuse the alternatives across meaningful criteria such
+as state authoring, setup and ecosystem. Explain what each difference means in
+practice. Add a project situation or recommendation only when it contributes to
+the learning goal. Do not invent performance or productivity scores.
+
+## Current Page authoring
+
+A qualitative comparison can use one TradeoffScenario, with `[]` for scenario
+metrics and `{}` for each choice's metric deltas. Omit `recommended`, `whyThisFits`
+and `whenToUse` unless useful. These are existing fields; no new comparison-mode
+flag, sliders, multiple situations or scores are required.
+
+```oui
+root = Page("Svelte and React: state authoring", TradeoffSandbox("Compare state authoring", [comparison]))
+comparison = TradeoffScenario("comparison", "State authoring", [], [state], "Compare how each framework declares and updates local state.")
+state = TradeoffStep("state", "Declaring and updating state", [svelte, react], "Read each approach and its implications.")
+svelte = TradeoffChoice("svelte", "Svelte 5", "Declare reactive state with $state; assignment updates that state.", {}, [ProCon("Direct assignment", "State updates use assignment syntax.")], [ProCon("Learn runes", "Authors need to understand the $state rune and its rules.")])
+react = TradeoffChoice("react", "React", "Declare local state with useState and update it through its setter.", {}, [ProCon("Explicit updates", "A setter call identifies a state update.")], [ProCon("Use the setter", "Assigning to the local state variable does not update React state.")])
+```
+
+Read supports inspecting the alternatives; Present guides their descriptions and
+pros/cons. Selection alone does not demonstrate understanding. This is an authored
+comparison, not execution or benchmarking of either framework. Exact positional
+contracts are available through `components/TradeoffSandbox.md` in MCP.
+
+## Legacy OKF storage reference
+
+The storage examples below document the internal/legacy OKF data format. New OUI
+pages follow [the Page contract](page.md) and use the same comparison guidance.
 
 ---
 
@@ -193,6 +227,6 @@ From `public/okf/poe2-flicker-monk/sections/tradeoffs/gear-budget.yaml` — see 
 
 ## Pedagogical Role
 
-Place `tradeoff-sandbox` in the **"explore trade-offs"** phase (step 10) — after core content and flowcharts are understood. It teaches that every design decision has consequences measured across competing metrics. Follow it with `reflection-template` so learners must articulate what they observed.
+Place the comparison where its criteria have enough context to be understood. It may introduce alternatives or explore contextual decisions later. Add a reflection or assessment when the learning goal needs observable reasoning; there is no fixed lesson position or required follow-up component.
 
 See [sections-reference.md](../sections-reference.md) for the recommended section ordering.

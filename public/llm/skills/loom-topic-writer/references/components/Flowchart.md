@@ -1,0 +1,100 @@
+## Focused component contracts
+
+Page rules: root = Page("Title", body, heading?). One section file is one authored page; choose components, not a section type or library. Use one main visual/activity plus supporting text. Local controls and their visual form one activity. Multiple competing activities produce review warnings, not a component-count rejection. Size the topic to the learner goal. Generic children are alternatives, not mandatory dependencies. Use exact positional signatures; request actual child components and required data models. TextContent handles Markdown prose; Text is a short line or metric. Choose ImageGallery for a preview grid or LearningGallery for captioned learning scenes. All components share one catalog; prebuilt activities are reusable compositions, not a separate authoring mode. Query/Mutation host tools are deferred. Local reactive $variables, input bindings and Set/Reset actions are allowed. Do not use actions unsupported by the host. Use supplied/verified chart data or label illustrative values; never invent benchmarks. Present is hands-free, may use internal scenes/beats, and may render differently from Read using the same content. Demonstrations use authored defaults and never count as learner attempts. Narration is authored in OUI; preserve statement IDs and validate beat/target references. Preview narrow and desktop Read/Present layouts.
+
+## Component Signatures
+
+Flowchart(title: string, actors: Actor[], systems: System[], steps: (Step | Branch)[], journeys: Journey[], heading?: string, lead?: Lead, initialView?: "event-storming" | "architecture" | "swimlanes" | "sequence" | "data-flow" | "state-machine") — Animated Event Storming flowchart. Every actor and system must be used by at least one step.
+  - title: Section title, shown in the topic outline and as the section header.
+  - actors: Human actors, as Actor references. Each must start at least one step.
+  - systems: Systems, as System references. Each must handle or receive at least one step.
+  - steps: The flow, as Step and Branch references, in order.
+  - journeys: Guided paths through the flow, as Journey references.
+  - heading: Optional sub-heading shown under the section title.
+  - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
+  - initialView: Optional view the section opens on: "event-storming" (default), "architecture", "swimlanes", "sequence", "data-flow" or "state-machine" (needs a system with a StateMachine). Pick the one that shows the lesson best.
+Actor(id: string, title: string, desc: string) — A human actor (user role) who initiates steps.
+  - id: Actor ID, unique within the flowchart; steps refer to it with `initiatedBy`.
+  - title: Actor name shown on its sticky (e.g. "Buyer").
+  - desc: What this actor is or wants.
+System(id: string, title: string, desc: string, kind?: "aggregate" | "service" | "database" | "external", stateMachine?: StateMachine) — A system that handles commands: an "aggregate" (owned domain model) or an "external" service.
+  - id: System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`.
+  - title: System name shown on its sticky (e.g. "Order Service").
+  - desc: What the system owns or does.
+  - kind: Optional "aggregate" (owned domain model), "service" (owned component without its own domain model), "database" (data store) or "external" (outside system). Default "external".
+  - stateMachine: Optional StateMachine(...) for a system that orchestrates the flow.
+Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System, async?: boolean) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.
+  - id: Step ID, unique within the flowchart; journeys and `continuesAs` refer to it.
+  - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
+  - command: Command the policy issues, in imperative form (e.g. "PlaceOrder").
+  - handledBy: System that handles the command (System reference or ID).
+  - events: Events the handler emits, as Event references (past tense).
+  - initiatedBy: Optional actor that starts this path (Actor reference or ID), usually on the first step.
+  - delegatesTo: Optional second system the handler calls (System reference or ID).
+  - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
+  - description: Optional narration of this step, shown when it is highlighted.
+  - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
+  - async: Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead.
+Branch(id: string, event: string, options: BranchOption[]) — Branching step: one event splits into several policy/command paths.
+  - id: Branch ID, unique within the flowchart.
+  - event: The event that splits into the options (e.g. "Payment Checked").
+  - options: The paths, as BranchOption references.
+Journey(id: string, label: string, description: string, steps: JourneyStep[]) — A guided path through the flow, from start to finish.
+  - id: Journey ID, unique within the flowchart.
+  - label: Journey name shown in the journey picker (e.g. "Happy path").
+  - description: What this journey walks through.
+  - steps: The stops in order, as JourneyStep references.
+Lead(what?: string, why?: string, next?: string) — Short lead-in shown above a section: what it shows, why it matters, and what comes next.
+  - what: What this section shows, in one sentence.
+  - why: Why it matters to the learner.
+  - next: What the learner should do or look for next.
+StateMachine(states: MachineState[], initialState: string) — State machine for an orchestrating system. `initialState` is a state ID.
+  - states: The states, as MachineState references.
+  - initialState: ID of the starting MachineState.
+Event(id: string, title: string, desc?: string, enters?: string, data?: string) — A domain event produced by a step (past tense, e.g. "Order Placed").
+  - id: Event ID, unique within the flowchart.
+  - title: Event name in past tense (e.g. "Order Placed").
+  - desc: Optional detail about the event.
+  - enters: Optional MachineState ID the state machine enters when this event happens; the State Machine view draws its transitions from these.
+  - data: Optional description of the data the event carries (e.g. "Order ID, total, line items"); the Data Flow view names the data object with it instead of the event title.
+BranchOption(id: string, label: string, policy: string, command: string, handledBy: string | System, events: Event[], dashed?: boolean, initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System, async?: boolean) — One path of a branch: label, then the same POLICY → COMMAND → system → events cycle as a Step.
+  - id: Option ID, unique within the flowchart; journeys and `continuesAs` refer to it.
+  - label: Label drawn on the branch edge (e.g. "approved").
+  - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
+  - command: Command the policy issues, in imperative form (e.g. "PlaceOrder").
+  - handledBy: System that handles the command (System reference or ID).
+  - events: Events the handler emits, as Event references (past tense).
+  - dashed: Optional: true draws this path as a dashed line (e.g. an error path).
+  - initiatedBy: Optional actor that starts this path (Actor reference or ID), usually on the first step.
+  - delegatesTo: Optional second system the handler calls (System reference or ID).
+  - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
+  - description: Optional narration of this step, shown when it is highlighted.
+  - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
+  - async: Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead.
+JourneyStep(step: string | Step | BranchOption, name: string, description: string, processGroup?: string) — A stop on a journey: the Step or BranchOption it plays (reference or ID), with a short name and narration. `processGroup` is an optional phase label for the stop (e.g. "planning", "handshake").
+  - step: The Step or BranchOption this stop plays (reference or ID).
+  - name: Short stop name shown in the journey list.
+  - description: Narration shown while the stop is played.
+  - processGroup: Optional free-text phase label for the stop (e.g. "planning", "handshake"); the state-machine state comes from Event `enters`, not from this.
+MachineState(id: string, label: string, color: string) — A state of a system state machine.
+  - id: State ID, unique within the state machine.
+  - label: State name shown in the state machine view.
+  - color: CSS colour for the state, e.g. "var(--ctp-green)" or "#a6d189".
+
+### Flowchart: teaching purpose
+
+- Introduce: Teach procedures: executing instructions, understanding step connections or checking prerequisites.
+- Explore: Choose Steps for explained instructions, Bullets for concise checklists and Flowchart for meaningful sequence, dependencies, branches or responsibilities.
+- Evidence: Following a demonstration or clicking a checklist does not prove procedural skill. ReflectionSequence can check an already-taught order when appropriate.
+- Limits: A linear procedure can justify a diagram; follow the actual selected contract and never invent participants or events to activate Flowchart. No particular mix of these components is required.
+
+For a procedure, ask whether the learner needs to execute instructions, understand their structure, or practise their order. Steps, Bullets and Flowchart are peer candidates: Steps guides instructions with explanations or code, Bullets supports concise checklists and prerequisites, and Flowchart explains sequence, dependencies, branches, responsibilities and consequences. A linear procedure can justify Flowchart when the connections help explain it; branching or multiple participants are not selection prerequisites. The existing Flowchart contract still applies: model only supported participants, events and relationships; never invent actors or events just to use it.
+
+For creating a Svelte app, Steps can guide installation, project creation and running commands; Flowchart can explain the edit-to-browser-update process. ReflectionSequence can optionally assess reconstructing a taught order. These serve distinct learning needs, not a mandatory sequence or component mix. Present demonstrations and checklist clicks do not prove procedural skill.
+
+## Narration Files
+
+Present is hands-free. Use root = Narration([NarrationStep(beat, caption, effects)]). Effects: Highlight, NarrationCallout, Spotlight. Keep Read and Present content shared and state separate.
+
+### Flowchart presentation beats
+`title`, then `chart`, `chart.part2`, … show readable portions of the overview (up to two journey steps per page; compact architecture diagrams can use one page), then `step1`, `step2`, … one per step of the first journey

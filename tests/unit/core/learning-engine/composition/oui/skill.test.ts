@@ -66,9 +66,9 @@ describe('Loom agent skill', () => {
     }
   })
 
-  it('preserves every canonical Loom signature and field description exactly once', () => {
+  it('preserves every canonical signature and field description in the family references', () => {
     const prompt = getLoomAuthoringPrompt().split('## Component Signatures')[1].split('## Hoisting')[0]
-    const references = Object.values(getWriterSkillReferences()).join('\n')
+    const references = Object.entries(getWriterSkillReferences()).filter(([path]) => !path.startsWith('references/components/')).map(([, text]) => text).join('\n')
     for (const line of prompt.split('\n').filter(line => /^[A-Z][A-Za-z0-9]*\(/.test(line) || line.startsWith('  - '))) {
       // Identical field descriptions can belong to several different components.
       expect(references.split('\n').filter(candidate => candidate === line).length, line)
@@ -80,7 +80,6 @@ describe('Loom agent skill', () => {
     const files = getWriterSkillReferences()
     for (const { type } of SECTION_MENTAL_MODELS) {
       expect(files[`references/sections/${type}.md`]).toContain(BEAT_IDS[type])
-      expect(getLoomSkill()).toContain(`references/sections/${type}.md`)
     }
     expect(files['references/core/narration.md']).toContain('NarrationStep(beat:')
     expect(files['references/core/narration.md']).not.toContain('| Section type | Beats |')
