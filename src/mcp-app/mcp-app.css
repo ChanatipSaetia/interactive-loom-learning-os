@@ -211,6 +211,7 @@ body {
 .mcp-full {
   box-sizing: border-box;
   height: 100vh;
+  height: 100dvh;
   padding: var(--mcp-inset-top, 56px) var(--mcp-inset-right, 0px) var(--mcp-inset-bottom, 88px) var(--mcp-inset-left, 0px);
   border: 0;
   border-radius: 0;
@@ -224,6 +225,7 @@ body {
 }
 
 .mcp-bar {
+  flex-shrink: 0;
   position: sticky;
   top: 0;
   z-index: 20;
@@ -287,6 +289,17 @@ body {
 
 .mcp-read.mcp-full {
   height: 100vh;
+  height: 100dvh;
+  border-radius: 0;
+}
+
+/* The outer player owns the host insets and viewport height. Its reader must
+   use the remaining space, without another viewport or another set of insets. */
+.mcp-player.mcp-full > .mcp-read {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  border: 0;
   border-radius: 0;
 }
 
