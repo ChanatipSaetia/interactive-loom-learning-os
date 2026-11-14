@@ -24,7 +24,7 @@ describe('unified authored pages', () => {
     const old = 'root = Text("Explanation", ["Hello"])'
     expect(compileOUISection(old).value).toBeNull()
     const converted = migrateSectionSource(old)
-    expect(converted).toContain('Page("Explanation", LessonText(')
+    expect(converted).toContain('Page("Explanation", Stack(')
     expect(validateOUISection(converted).status).toBe('valid')
     expect(migrateSectionSource(converted)).toBe(converted)
   })
@@ -35,7 +35,7 @@ describe('unified authored pages', () => {
   })
   it('prints native pages and exposes named bodies without discarding declarations', () => {
     const source = 'root = Page("Facts", body)\nbody = Stack([text])\ntext = TextContent("Hello")'
-    expect(pageBodySource(source)).toContain('root = Stack([text])')
+    expect(pageBodySource(source)).toContain('root = body')
     const payload = compileOUISection(migrateSectionSource('root = Text("Facts", ["Hello"])')).value!
     expect(printOUISection(payload.meta, payload.data)).toContain('root = Page(')
   })
@@ -58,6 +58,6 @@ describe('unified authored pages', () => {
   it('does not rewrite component-like words inside content during conversion', () => {
     const converted = migrateSectionSource('root = Text("Syntax", ["Text( is a name, not a call here."])')
     expect(converted).toContain('"Text( is a name, not a call here."')
-    expect(converted).toContain('LessonText(')
+    expect(converted).toContain('TextContent(')
   })
 })

@@ -83,7 +83,7 @@ Exploration/navigation use existing `seen` events; repeated UI engagement is thr
 
 Studio exposes the same `get_loom_capabilities` and `validate_topic_plan` contracts. Its `propose_plan` accepts `{plan: TopicPlan, actions?: {sectionId: "create" | "edit"}}`; create is the default. Canonical plans are validated before being shown. The existing `{goal, items}` form, native component-name labels and edit/review behavior remain supported through a compatibility adapter. A canonical plan card shows learner activities and rationales; Build these retains those decisions. Selecting a subset asks the assistant to adapt/revalidate objective coverage rather than silently dropping dependencies.
 
-MCP component retrieval uses `read_reference({path:"components/Text.md"})` for upstream Text or `components/LessonText.md` for Loom prose. The four former guide/catalog tools are removed. Studio continues to use its own `describe_components({names})` and discovery tools over the shared catalog.
+MCP component retrieval uses canonical names such as `read_reference({path:"components/TextContent.md"})` for Markdown prose or `components/Table.md` for factual comparisons. Capability discovery groups all components by learner task; prebuilt activities are peers within that catalog. `LessonText` is removed. The four former guide/catalog tools are removed. Studio continues to use its own `describe_components({names})` and discovery tools over the shared catalog.
 
 `get_topic_context` retains component references for follow-up lookup. Internal domain and renderer identities remain implementation details. Response budgets apply to the complete serialized response. Progressive reference resources introduce no Worker filesystem access or learner/session state.
 

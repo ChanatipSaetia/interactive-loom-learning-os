@@ -73,7 +73,7 @@ describe('printOUISection', () => {
       { type: 'text', paragraphs: ['p'] },
       { header: ['Generated'] },
     )
-    expect(source).toBe("// Generated\nroot = Page(\"T\", LessonText(\"T\", [\"p\"], \"H\", Lead(\"W\")), \"H\")\n")
+    expect(source).toBe("// Generated\nroot = Page(\"T\", Stack([TextContent(\"p\")]), \"H\", Lead(\"W\", null, null))\n")
   })
 })
 

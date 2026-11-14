@@ -10,8 +10,8 @@ comparison = Table([
 ])
 ```
 
-`Page(title, body, heading?)` owns page metadata. Its body uses one shared catalog:
-public OpenUI components and Loom learning components. There is no authored
+`Page(title, body, heading?, lead?)` owns page metadata. Its body uses one shared catalog:
+text, layouts, controls, visuals and prebuilt activities. There is no authored
 section type or `// @openui` library directive. Topic, Catalog and Narration remain
 separate document roles.
 
@@ -32,8 +32,9 @@ and reference failures remain errors.
 ## Names and contracts
 
 Upstream names retain their public meanings. `Text` and `ImageGallery` are upstream
-components. `LessonText` and `LearningGallery` preserve Loom-specific prose and
-gallery behavior. The visual `Callout` is upstream; the narration effect is
+components. `TextContent` handles Markdown prose; `Text` handles short lines and metrics.
+`LessonText` is removed. `LearningGallery` is a prebuilt captioned learning
+activity; compare it with the `ImageGallery` preview grid by the desired behavior. The visual `Callout` is upstream; the narration effect is
 `NarrationCallout(target, text)`. Loom's `Svg(markup, caption?)` remains an extension.
 
 Retrieve exact contracts by component name. The parser, editor and authoring tools
@@ -67,7 +68,13 @@ npm run oui:migrate -- --write path/to/topic
 
 The first command reports conversions; `--write` applies them. Keep a backup of
 external exports. Conversion preserves named statements, wraps content in Page,
-renames colliding Loom calls and updates native-page root narration pointers.
+renames colliding calls and updates native-page root narration pointers. Retired
+`LessonText` becomes a column `Stack` of `TextContent` blocks. Its heading and
+Lead move to Page metadata; paragraph narration keeps `pN`/`pN.partK` beats.
+Paragraph effect paths move from `paragraphs[N]` to `children[N].text`. Nested retired wrappers require an explicit composition and narration review;
+unsupported cases produce a migration error rather than silently changing their beats.
+The component discovery catalog is version 2 and exposes component names and
+learning behavior, without an authored section-type discriminator.
 Review diagnostics after conversion; old content is not a second runtime dialect.
 
 Studio, Viewer, the main app and MCP use the unified pages. Full OpenUI rendering
@@ -85,7 +92,7 @@ There are no `representation` or `library` fields in the plan. For example:
   "id": "comparison",
   "title": "Compare approaches",
   "objectiveRefs": ["compare"],
-  "components": ["Stack", "Table", "LessonText"],
+  "components": ["Stack", "Table", "TextContent"],
   "activity": "Compare matching attributes and explain the tradeoff",
   "rationale": "The table aligns attributes; supporting prose explains qualifications.",
   "presentation": {
@@ -123,3 +130,21 @@ source statements. The syntax reference includes a compilable complete bundle;
 role-specific references must not teach Page as the root of a manifest or script.
 Check roots and document roles, then run compiler/narration validation when
 available. Root presence alone is not successful validation.
+
+## Component discovery by purpose
+
+The progressive entry and eight workflow stages stay unchanged. Capability
+discovery groups peer candidates by learner task: explain, compare, follow a
+process, explore relationships, interpret quantities, choose, inspect images or
+practise. Table, TradeoffSandbox, Steps, Flowchart and TextContent each have a
+focused capability leaf and exact contract. There is no standard-versus-Loom
+branch and no preference for a prebuilt component. A prebuilt activity packages
+reusable behavior and presentation scenes; select it only when those serve the
+learning goal. Compare contextual decisions with factual lookup, meaningful
+interaction with decoration, and measured data with illustrative models.
+
+A prose-only TextContent body or column Stack of TextContent blocks receives
+paragraph presentation scenes. Read uses the normal Markdown components, including
+their size options. Mixed pages retain component-specific activity scenes and
+ordinary layout beats. Page lead metadata belongs to the title beat; it does not
+create an extra paragraph or shift existing narration.

@@ -10,7 +10,7 @@ import {
 const FILES: Record<string, string> = {
   '/content/index.oui': 'root = Catalog([TopicRef("demo")])',
   '/content/demo/topic.oui': 'root = Topic("Demo", "Architecture", "A demo topic", [SectionRef("intro"), SectionRef("quiz")], ["ai"])',
-  '/content/demo/sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))",
+  '/content/demo/sections/intro.oui': "root = Page(\"Intro\", Stack([TextContent(\"Hello.\")]))",
   '/content/demo/sections/quiz.oui': [
     "root = Page(\"Check\", Quiz(\"Check\", [q1]))",
     'q1 = QuizQuestion("q1", "Q?", [QuizChoice("a", "A", true, "Yes")])',
@@ -44,7 +44,7 @@ describe('OpenUI content reader & OUIStorageAdapter', () => {
   it('loads a topic bundle with compiled sections and diagnostics', async () => {
     const bundle = await loadOUITopic('demo')
     expect(bundle.manifest.title).toBe('Demo')
-    expect(bundle.sections.map((s) => [s.sectionFolder, s.meta.type])).toEqual([['intro', 'text'], ['quiz', 'quiz']])
+    expect(bundle.sections.map((s) => [s.sectionFolder, s.meta.type])).toEqual([['intro', 'openui'], ['quiz', 'quiz']])
     expect(bundle.sections[0].diagnostics).toEqual([])
     expect(bundle.sections[1].diagnostics).toEqual([expect.objectContaining({ tier: 3, line: 3 })])
     expect(bundle.sections[1].source).toBe(FILES['/content/demo/sections/quiz.oui'])
@@ -79,9 +79,9 @@ describe('OpenUI content reader & OUIStorageAdapter', () => {
 
     const section = await adapter.readSection('demo', 'intro')
     expect(section).toEqual({
-      meta: { type: 'text', title: 'Intro', resource: '.' },
-      data: { type: 'text', paragraphs: ['Hello.'] },
-      body: "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))",
+      meta: { type: 'openui', title: 'Intro', resource: '.' },
+      data: { type: 'openui', source: 'root = Stack([TextContent("Hello.")])' },
+      body: "root = Page(\"Intro\", Stack([TextContent(\"Hello.\")]))",
     })
 
     await expect(adapter.saveSection()).rejects.toThrow(/Loom Studio/)

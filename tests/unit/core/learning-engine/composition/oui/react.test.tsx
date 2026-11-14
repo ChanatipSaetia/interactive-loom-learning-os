@@ -18,15 +18,13 @@ describe('OUISectionRenderer (react-lang bridge)', () => {
     ))
     render(
       <OUISectionRenderer
-        source={"$name = \"Loom\"\nroot = Page(\"Hello\", LessonText(\"Hello\", [\"Hi \" + $name, \"Bye\"]))"}
+        source={"$name = \"Loom\"\nroot = Page(\"Hello\", Stack([TextContent(\"Hi \" + $name), TextContent(\"Bye\")]))"}
         renderSection={renderSection}
       />,
     )
-    expect(screen.getByTestId('section').textContent).toBe('text:Hi Loom|Bye')
-    expect(renderSection).toHaveBeenLastCalledWith(expect.objectContaining({
-      type: 'text',
-      props: expect.objectContaining({ title: 'Hello', paragraphs: ['Hi Loom', 'Bye'] }),
-    }), undefined)
+    expect(screen.getByText('Hi Loom')).toBeInTheDocument()
+    expect(screen.getByText('Bye')).toBeInTheDocument()
+    expect(renderSection).not.toHaveBeenCalled()
   })
 
   it('compiles nested data components for the section', () => {

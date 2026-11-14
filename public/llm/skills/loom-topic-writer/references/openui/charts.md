@@ -1,6 +1,6 @@
 ### Tables and Charts
 
-Use a table or chart in a standard OpenUI section when the figures or the side-by-side comparison are what the learner should take away:
+Use a table or chart in a composed page when the figures or the side-by-side comparison are what the learner should take away:
 
 - **Table**: several items compared on the same attributes, or reference values the learner looks up (settings, limits, specs).
 - **Chart**: the shape of real numbers: a comparison, a trend, a share of a whole or a correlation. Pick the chart type from the question it answers (see the list below).

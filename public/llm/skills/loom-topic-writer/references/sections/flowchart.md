@@ -19,31 +19,6 @@ Actor(id: string, title: string, desc: string) — A human actor (user role) who
   - id: Actor ID, unique within the flowchart; steps refer to it with `initiatedBy`.
   - title: Actor name shown on its sticky (e.g. "Buyer").
   - desc: What this actor is or wants.
-System(id: string, title: string, desc: string, kind?: "aggregate" | "service" | "database" | "external", stateMachine?: StateMachine) — A system that handles commands: an "aggregate" (owned domain model) or an "external" service.
-  - id: System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`.
-  - title: System name shown on its sticky (e.g. "Order Service").
-  - desc: What the system owns or does.
-  - kind: Optional "aggregate" (owned domain model), "service" (owned component without its own domain model), "database" (data store) or "external" (outside system). Default "external".
-  - stateMachine: Optional StateMachine(...) for a system that orchestrates the flow.
-StateMachine(states: MachineState[], initialState: string) — State machine for an orchestrating system. `initialState` is a state ID.
-  - states: The states, as MachineState references.
-  - initialState: ID of the starting MachineState.
-MachineState(id: string, label: string, color: string) — A state of a system state machine.
-  - id: State ID, unique within the state machine.
-  - label: State name shown in the state machine view.
-  - color: CSS colour for the state, e.g. "var(--ctp-green)" or "#a6d189".
-Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System, async?: boolean) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.
-  - id: Step ID, unique within the flowchart; journeys and `continuesAs` refer to it.
-  - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
-  - command: Command the policy issues, in imperative form (e.g. "PlaceOrder").
-  - handledBy: System that handles the command (System reference or ID).
-  - events: Events the handler emits, as Event references (past tense).
-  - initiatedBy: Optional actor that starts this path (Actor reference or ID), usually on the first step.
-  - delegatesTo: Optional second system the handler calls (System reference or ID).
-  - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
-  - description: Optional narration of this step, shown when it is highlighted.
-  - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
-  - async: Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead.
 Branch(id: string, event: string, options: BranchOption[]) — Branching step: one event splits into several policy/command paths.
   - id: Branch ID, unique within the flowchart.
   - event: The event that splits into the options (e.g. "Payment Checked").
@@ -78,6 +53,31 @@ JourneyStep(step: string | Step | BranchOption, name: string, description: strin
   - name: Short stop name shown in the journey list.
   - description: Narration shown while the stop is played.
   - processGroup: Optional free-text phase label for the stop (e.g. "planning", "handshake"); the state-machine state comes from Event `enters`, not from this.
+MachineState(id: string, label: string, color: string) — A state of a system state machine.
+  - id: State ID, unique within the state machine.
+  - label: State name shown in the state machine view.
+  - color: CSS colour for the state, e.g. "var(--ctp-green)" or "#a6d189".
+StateMachine(states: MachineState[], initialState: string) — State machine for an orchestrating system. `initialState` is a state ID.
+  - states: The states, as MachineState references.
+  - initialState: ID of the starting MachineState.
+Step(id: string, policy: string, command: string, handledBy: string | System, events: Event[], initiatedBy?: string | Actor, delegatesTo?: string | System, continuesAs?: string, description?: string, sendsTo?: string | Actor | System, async?: boolean) — Linear Event Storming step: POLICY → COMMAND → handledBy system → resulting events. `initiatedBy` is the actor that starts it; `delegatesTo` a system the handler calls; `sendsTo` the actor or system that receives its events.
+  - id: Step ID, unique within the flowchart; journeys and `continuesAs` refer to it.
+  - policy: Policy that reacts to the incoming event ("When …"); the POLICY sticky.
+  - command: Command the policy issues, in imperative form (e.g. "PlaceOrder").
+  - handledBy: System that handles the command (System reference or ID).
+  - events: Events the handler emits, as Event references (past tense).
+  - initiatedBy: Optional actor that starts this path (Actor reference or ID), usually on the first step.
+  - delegatesTo: Optional second system the handler calls (System reference or ID).
+  - continuesAs: Optional ID of the Step, Branch or BranchOption that this path's events lead into.
+  - description: Optional narration of this step, shown when it is highlighted.
+  - sendsTo: Optional actor or system that receives this step's events (e.g. the server sends ServerHello to the client).
+  - async: Optional: true when the command is sent without waiting for a reply (fire-and-forget); the Sequence view draws it with an open arrowhead.
+System(id: string, title: string, desc: string, kind?: "aggregate" | "service" | "database" | "external", stateMachine?: StateMachine) — A system that handles commands: an "aggregate" (owned domain model) or an "external" service.
+  - id: System ID, unique within the flowchart; steps refer to it with `handledBy` / `delegatesTo`.
+  - title: System name shown on its sticky (e.g. "Order Service").
+  - desc: What the system owns or does.
+  - kind: Optional "aggregate" (owned domain model), "service" (owned component without its own domain model), "database" (data store) or "external" (outside system). Default "external".
+  - stateMachine: Optional StateMachine(...) for a system that orchestrates the flow.
 
 ## Presentation beats
 

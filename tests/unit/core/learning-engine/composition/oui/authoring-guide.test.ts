@@ -37,7 +37,7 @@ describe('getAuthoringGuide', () => {
     expect(guide).not.toMatch(signature('Quiz'))
     expect(guide).toContain('- Quiz:')
     expect(guide).toContain('Request exact component names')
-    expect(guide).not.toContain('## Standard OpenUI Sections')
+    expect(guide).not.toContain('## Page Composition')
   })
 
   it('keeps a section type with its sub-components and leaves out the others', () => {
@@ -68,7 +68,7 @@ it('returns exact canonical signatures and dependencies without unrelated sectio
 })
 
 it('resolves every component by its canonical name without selecting a library', () => {
-  expect(getAuthoringGuide([], ['LessonText'])).toMatch(/^LessonText\(title: string, paragraphs:/m)
+  expect(getAuthoringGuide([], ['TextContent'])).toMatch(/^TextContent\(text: string,/m)
   expect(getAuthoringGuide([], ['Text'])).toMatch(/^Text\(variant\?/m)
   expect(getAuthoringGuide([], ['Quiz', 'Table'])).toMatch(/^Quiz\(/m)
   expect(getAuthoringGuide([], ['Quiz', 'Table'])).toMatch(/^Col\(/m)

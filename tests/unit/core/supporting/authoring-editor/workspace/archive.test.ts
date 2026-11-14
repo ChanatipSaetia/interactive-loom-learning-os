@@ -17,7 +17,7 @@ import {
 import { compileViewerTopic } from '../../../../../../src/viewer/compileTopic'
 
 const TOPIC = 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz")])\n'
-const INTRO = "root = Page(\"Intro\", LessonText(\"Intro\", [\"Héllo ✨\"]))\n"
+const INTRO = "root = Page(\"Intro\", Stack([TextContent(\"Héllo ✨\")]))\n"
 const QUIZ = "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"A\", true, \"Yes\")])\n"
 
 const demo = (): TopicFiles => ({
@@ -226,7 +226,7 @@ describe('reading picked files', () => {
 describe('workspace export and import', () => {
   it('exports the topic as currently edited', async () => {
     const workspace = await TopicWorkspace.open(memoryFolder('demo', demo().files))
-    workspace.setSource('intro', "root = Page(\"Changed\", LessonText(\"Changed\", [\"Hi.\"]))\n")
+    workspace.setSource('intro', "root = Page(\"Changed\", Stack([TextContent(\"Hi.\")]))\n")
     workspace.updateMetadata({ title: 'Renamed' })
     const { topicId, files } = workspace.exportFiles()
     expect(topicId).toBe('demo')
@@ -263,7 +263,7 @@ describe('viewer topic compilation', () => {
       },
     })
     expect(topic.manifest?.title).toBe('Demo')
-    expect(topic.sections.map((s) => [s.name, s.config?.type ?? null])).toEqual([['intro', 'text'], ['broken', null], ['missing', null]])
+    expect(topic.sections.map((s) => [s.name, s.config?.type ?? null])).toEqual([['intro', 'openui'], ['broken', null], ['missing', null]])
     expect(topic.sections[2].error).toMatch(/missing/)
   })
 

@@ -11,16 +11,16 @@ Quiz(title: string, questions: QuizQuestion[], heading?: string, lead?: Lead) �
   - questions: The questions, as QuizQuestion references, in order.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
-QuizQuestion(id: string, question: string, choices: QuizChoice[], hint?: string) — A multiple-choice question. Mark exactly one choice as correct.
-  - id: Question ID, unique within the quiz.
-  - question: The question text.
-  - choices: Answer options, as QuizChoice references. Exactly one is correct.
-  - hint: Optional hint the learner can reveal before answering.
 QuizChoice(id: string, text: string, correct: boolean, explanation: string) — One answer option of a quiz question, with the explanation shown after answering.
   - id: Choice ID, unique within its question (e.g. "a").
   - text: Answer text shown on the option button.
   - correct: true for the one correct choice of the question.
   - explanation: Feedback shown after this choice is picked: why it is right or wrong.
+QuizQuestion(id: string, question: string, choices: QuizChoice[], hint?: string) — A multiple-choice question. Mark exactly one choice as correct.
+  - id: Question ID, unique within the quiz.
+  - question: The question text.
+  - choices: Answer options, as QuizChoice references. Exactly one is correct.
+  - hint: Optional hint the learner can reveal before answering.
 
 ## Presentation beats
 

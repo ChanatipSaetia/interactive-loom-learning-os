@@ -52,7 +52,7 @@ export function getAuthoringContract(input: z.input<typeof AuthoringContractInpu
     diagnostics: [
       ...components.filter((name) => !componentClosure([name], args.library).includes(name)).map((name) => ({ code: 'UNKNOWN_COMPONENT', reference: name, recovery: 'Check the library and component name, retry with forceRefresh, then retrieve the selected legacy section guide without library/components. If unavailable, report the blocker and revalidate any changed representation; never silently substitute Text.' })),
       ...unknownSections.map((type) => ({ code: 'UNKNOWN_SECTION_TYPE', reference: type })),
-      ...(args.sections.includes('openui') && !args.components.length ? [{ code: 'OPENUI_COMPONENTS_REQUIRED', reference: 'Choose an OpenUI composition from the capability index, then request its actual components with library: openui (e.g. Table; or Stack, Card, CardHeader, TextContent). Focused retrieval includes section rules, beats and required model dependencies; use the full section guide for additional examples.' }] : []),
+      ...(args.sections.includes('openui') && !args.components.length ? [{ code: 'COMPONENTS_REQUIRED', reference: 'Choose a composition by learner task from the capability index, then request its actual components (e.g. Table; or Stack, Card, CardHeader, TextContent). Focused retrieval includes section rules, beats and required model dependencies; use the full section guide for additional examples.' }] : []),
     ],
     estimateMethod: 'utf8-bytes and characters/4; estimated tokens are not billing counts',
   }

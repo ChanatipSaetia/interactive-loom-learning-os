@@ -11,7 +11,7 @@ import { KNOWN_SECTION_TYPES } from '../../../../../../src/core/learning-engine/
 import { validateOUISection } from '../../../../../../src/core/learning-engine/validation/oui-gateway'
 
 const TOPIC = 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz")], ["ai"])\n'
-const INTRO = "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))\n"
+const INTRO = "root = Page(\"Intro\", Stack([TextContent(\"Hello.\")]))\n"
 const QUIZ = "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"A\", true, \"Yes\")])\n"
 
 function demoFolder(extra: Record<string, string> = {}) {
@@ -29,7 +29,7 @@ describe('section templates', () => {
     it(`${template.type} template is valid`, () => {
       const result = validateOUISection(template.source('My Section'))
       expect(result.diagnostics).toEqual([])
-      expect(result.payload?.meta).toMatchObject({ type: template.type, title: 'My Section' })
+      expect(result.payload?.meta).toMatchObject({ type: template.type === 'text' ? 'openui' : template.type, title: 'My Section' })
     })
   }
 
@@ -44,7 +44,7 @@ describe('TopicWorkspace.open', () => {
     const snap = ws.getSnapshot()
     expect(snap.topicId).toBe('demo')
     expect(snap.metadata).toEqual({ title: 'Demo', category: 'Architecture', description: 'A demo', tags: ['ai'] })
-    expect(snap.sections.map((s) => [s.name, s.lastValid?.meta.type])).toEqual([['intro', 'text'], ['quiz', 'quiz']])
+    expect(snap.sections.map((s) => [s.name, s.lastValid?.meta.type])).toEqual([['intro', 'openui'], ['quiz', 'quiz']])
     expect(snap.dirtySections).toEqual([])
     expect(snap.topicDirty).toBe(false)
     expect(snap.notices).toEqual([])
@@ -80,18 +80,18 @@ describe('content edits', () => {
     const notified: number[] = []
     ws.subscribe(() => notified.push(1))
 
-    ws.setSource('intro', "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\", \"More.\"]))\n")
+    ws.setSource('intro', "root = Page(\"Intro\", Stack([TextContent(\"Hello.\"), TextContent(\"More.\")]))\n")
     expect(ws.getSnapshot().dirtySections).toEqual(['intro'])
-    expect(ws.section('intro')?.lastValid?.data).toEqual({ type: 'text', paragraphs: ['Hello.', 'More.'] })
+    expect(ws.section('intro')?.lastValid?.data).toMatchObject({ type: 'openui', source: expect.stringContaining('TextContent("More.")') })
 
     ws.setSource('intro', 'root = Text("Intro", [')
     expect(ws.section('intro')?.validation.status).toBe('error')
-    expect(ws.section('intro')?.lastValid?.data).toEqual({ type: 'text', paragraphs: ['Hello.', 'More.'] })
+    expect(ws.section('intro')?.lastValid?.data).toMatchObject({ type: 'openui', source: expect.stringContaining('TextContent("More.")') })
     expect(folder.files.get('sections/intro.oui')).toBe(INTRO)
 
-    ws.setSource('intro', "// edited\nroot = Page(\"Intro\", LessonText(\"Intro\", [\"Bye.\"]))\n")
+    ws.setSource('intro', "// edited\nroot = Page(\"Intro\", Stack([TextContent(\"Bye.\")]))\n")
     await ws.save()
-    expect(folder.files.get('sections/intro.oui')).toBe("// edited\nroot = Page(\"Intro\", LessonText(\"Intro\", [\"Bye.\"]))\n")
+    expect(folder.files.get('sections/intro.oui')).toBe("// edited\nroot = Page(\"Intro\", Stack([TextContent(\"Bye.\")]))\n")
     expect(ws.getSnapshot().dirtySections).toEqual([])
     expect(notified.length).toBeGreaterThan(0)
   })
@@ -99,7 +99,7 @@ describe('content edits', () => {
   it('reprints the source for Visual Form edits', async () => {
     const ws = await TopicWorkspace.open(demoFolder())
     ws.setSectionData('intro', { type: 'text', title: 'Intro', resource: '.' }, { type: 'text', paragraphs: ['From the form'] })
-    expect(ws.section('intro')?.source).toBe("root = Page(\"Intro\", LessonText(\"Intro\", [\"From the form\"]))\n")
+    expect(ws.section('intro')?.source).toBe("root = Page(\"Intro\", Stack([TextContent(\"From the form\")]))\n")
   })
 
   it('saves topic metadata edits', async () => {
@@ -169,7 +169,7 @@ describe('buffered structure (AI assistant proposals)', () => {
   it('inserts a section and reorders without writing until save', async () => {
     const folder = demoFolder()
     const ws = await TopicWorkspace.open(folder)
-    ws.insertSection('summary', "root = Page(\"Summary\", LessonText(\"Summary\", [\"Done.\"]))\n")
+    ws.insertSection('summary', "root = Page(\"Summary\", Stack([TextContent(\"Done.\")]))\n")
     ws.setSectionOrder(['intro', 'summary', 'quiz'])
     expect(folder.files.has('sections/summary.oui')).toBe(false)
     expect(topicOnDisk(folder)?.sections).toEqual(['intro', 'quiz'])
@@ -178,15 +178,15 @@ describe('buffered structure (AI assistant proposals)', () => {
     expect(snap.topicDirty).toBe(true)
 
     await ws.save()
-    expect(folder.files.get('sections/summary.oui')).toBe("root = Page(\"Summary\", LessonText(\"Summary\", [\"Done.\"]))\n")
+    expect(folder.files.get('sections/summary.oui')).toBe("root = Page(\"Summary\", Stack([TextContent(\"Done.\")]))\n")
     expect(topicOnDisk(folder)?.sections).toEqual(['intro', 'summary', 'quiz'])
     expect(ws.isDirty).toBe(false)
   })
 
   it('refuses bad names and incomplete orders', async () => {
     const ws = await TopicWorkspace.open(demoFolder())
-    expect(() => ws.insertSection('intro', "root = Page(\"X\", LessonText(\"X\", []))\n")).toThrow(WorkspaceError)
-    expect(() => ws.insertSection('Bad Name', "root = Page(\"X\", LessonText(\"X\", []))\n")).toThrow(WorkspaceError)
+    expect(() => ws.insertSection('intro', "root = Page(\"X\", Stack([]))\n")).toThrow(WorkspaceError)
+    expect(() => ws.insertSection('Bad Name', "root = Page(\"X\", Stack([]))\n")).toThrow(WorkspaceError)
     expect(() => ws.setSectionOrder(['intro'])).toThrow(WorkspaceError)
     expect(() => ws.setSectionOrder(['intro', 'intro'])).toThrow(WorkspaceError)
   })

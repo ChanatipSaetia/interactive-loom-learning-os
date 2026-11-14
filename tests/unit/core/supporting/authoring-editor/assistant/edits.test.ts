@@ -66,10 +66,10 @@ c1 = QuizChoice("a", "Yes", true, "Right.")
   })
 
   it('creates files, and refuses to create one that exists or change one that does not', () => {
-    const [create] = parseEditBlocks(block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", LessonText(\"Extra\", [\"Hi.\"]))"))
-    expect(applyEditBlock(undefined, create)).toMatchObject({ ok: true, source: "root = Page(\"Extra\", LessonText(\"Extra\", [\"Hi.\"]))\n" })
+    const [create] = parseEditBlocks(block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", Stack([TextContent(\"Hi.\")]))"))
+    expect(applyEditBlock(undefined, create)).toMatchObject({ ok: true, source: "root = Page(\"Extra\", Stack([TextContent(\"Hi.\")]))\n" })
     expect(applyEditBlock('x', create)).toMatchObject({ ok: false, error: expect.stringMatching(/already exists/) })
-    const [change] = parseEditBlocks(block('file=sections/extra.oui', "root = Page(\"Extra\", LessonText(\"Extra\", []))"))
+    const [change] = parseEditBlocks(block('file=sections/extra.oui', "root = Page(\"Extra\", Stack([]))"))
     expect(applyEditBlock(undefined, change)).toMatchObject({ ok: false, error: expect.stringMatching(/mode=create/) })
   })
 
@@ -89,7 +89,7 @@ describe('checkProposal', () => {
     const blocks = parseEditBlocks(reply(
       block('file=sections/quiz.oui', 'q1 = DELETE'),
       block('file=sections/quiz.oui', 'gone = DELETE'),
-      block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", LessonText(\"Extra\", [\"Hi.\"]))"),
+      block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", Stack([TextContent(\"Hi.\")]))"),
     ))
     const { problems } = checkProposal('demo', blocks, files)
     expect(problems.some((p) => p.startsWith('sections/quiz.oui') && /q1/.test(p))).toBe(true)
@@ -100,7 +100,7 @@ describe('checkProposal', () => {
   it('applies new files before topic.oui, so a new SectionRef finds its file', () => {
     const blocks = parseEditBlocks(reply(
       block('file=topic.oui', 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz"), SectionRef("extra")])'),
-      block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", LessonText(\"Extra\", [\"Hi.\"]))"),
+      block('file=sections/extra.oui mode=create', "root = Page(\"Extra\", Stack([TextContent(\"Hi.\")]))"),
     ))
     expect(applyOrder(blocks).map((b) => b.file)).toEqual(['sections/extra.oui', 'topic.oui'])
     expect(checkProposal('demo', blocks, files).problems).toEqual([])

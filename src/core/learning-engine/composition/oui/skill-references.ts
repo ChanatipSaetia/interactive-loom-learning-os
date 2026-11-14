@@ -1,3 +1,5 @@
+import { componentClosure } from './assistant-prompt'
+import { NARRATION_COMPONENTS } from './narration'
 import { getAuthoringWorkflow } from './authoring-workflow'
 /** Split the canonical prompt into focused, non-overlapping installed-skill references. */
 import { getLoomAuthoringPrompt } from './authoring-prompt'
@@ -46,10 +48,13 @@ export function getWriterSkillReferences(): Record<string, string> {
   const signatures = take('Component Signatures')
   const groups = new Map<string, string[]>()
   let owner = 'core'
+  const owners = new Map<string, string>()
+  for (const [name, type] of OUI_SECTION_TYPES) for (const dependency of componentClosure([name])) { if (!owners.has(dependency)) owners.set(dependency, type) }
+  for (const component of NARRATION_COMPONENTS) owners.set(component.name, 'narration')
   for (const line of signatures.split('\n').slice(1)) {
-    if (line.startsWith('### ')) { owner = line.startsWith('### Narration') ? 'narration' : 'core'; continue }
+    if (line.startsWith('### ')) continue
     const component = /^([A-Z][A-Za-z0-9]*)\(/.exec(line)?.[1]
-    if (component) owner = OUI_SECTION_TYPES.get(component) ?? (standardOpenUISpec.components[component] ? 'visuals' : owner)
+    if (component) owner = standardOpenUISpec.components[component] ? 'visuals' : owners.get(component) ?? 'core'
     if (component || line.startsWith('  ')) {
       const lines = groups.get(owner) ?? []
       lines.push(line)
@@ -57,7 +62,7 @@ export function getWriterSkillReferences(): Record<string, string> {
     }
   }
   put('core/components', '# Topic and shared components', 'Arguments marked with ? are optional. Read core/syntax.md for positional argument rules.', (groups.get('core') ?? []).join('\n'))
-  put('openui/components', '# Canonical visual component contracts', 'These share the same catalog as Loom learning components. Retrieve the selected families only; a page does not choose a library.', (groups.get('visuals') ?? []).join('\n'))
+  put('openui/components', '# Canonical visual component contracts', 'Text, layouts, charts and prebuilt activities share one catalog. Retrieve selected contracts only; a page does not choose a library.', (groups.get('visuals') ?? []).join('\n'))
 
   const narration = take('Narration Files')
     .replace(/Beat IDs by section type[^\n]*\n\n\| Section type \| Beats \|\n\|---\|---\|\n(?:\|[^\n]*\n)+/, 'Beat IDs are in each selected section reference under Presentation beats.\n')
@@ -72,13 +77,12 @@ export function getWriterSkillReferences(): Record<string, string> {
   }
   for (const { type, model, question } of SECTION_MENTAL_MODELS) {
     if (type === 'openui') continue
-    const components = groups.get(type)
+    const components = type === 'text' ? ['Read TextContent and Stack in [component contracts](../openui/components.md). These are the same components used throughout the catalog.'] : groups.get(type)
     if (!components?.length) throw new Error(`Missing skill signatures: ${type}`)
     put(`sections/${type}`, `# ${type}\n\n${model}. ${question}`, 'Read [shared components](../core/components.md) and [narration](../core/narration.md) before writing.', '## Component signatures', components.join('\n'), '## Presentation beats', (type === 'intro' ? '' : '`title`, then ') + BEAT_IDS[type], ...(composition[type] ? [composition[type]] : []))
   }
-  // Standard OpenUI has its own library. Keep the introduction small and route
-  // to visual families; no other section needs their signatures or examples.
-  const standard = take('Standard OpenUI Sections')
+  // Keep family references focused; they belong to the shared catalog.
+  const standard = take('Page Composition')
   const family = standard.indexOf('\n### Tables and Charts')
   const layouts = standard.indexOf('\n### Layouts for Other Content')
   const drawings = standard.indexOf('\n### Drawings')

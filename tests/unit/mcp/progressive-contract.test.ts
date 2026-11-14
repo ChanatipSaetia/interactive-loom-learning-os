@@ -53,8 +53,8 @@ describe('stateless progressive authoring contracts', () => {
   it('keeps library-specific signatures, beat rules, unknown diagnostics and legacy guides', () => {
     const native = getAuthoringContract({ detail: 'focused', library: 'loom', sections: ['text'] })
     const standard = getAuthoringContract({ detail: 'focused', library: 'openui', components: ['Text'] })
-    expect(native.contracts).toContain('paragraphs:')
-    expect(standard.contracts).not.toContain('paragraphs:')
+    expect(native.contracts).toContain('TextContent(text:')
+    expect(standard.contracts).not.toContain('TextContent(text:')
     expect(native.beats.text).toBeTruthy()
     expect(getAuthoringContract({ detail: 'focused', sections: ['unknown'] }).diagnostics[0].code).toBe('UNKNOWN_SECTION_TYPE')
     expect(getAuthoringGuide(['quiz'])).toContain('Quiz(')

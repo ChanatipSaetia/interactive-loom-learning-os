@@ -83,7 +83,7 @@ describe('Loom authoring prompt', () => {
   it('explains the topic layout and the three output formats around the OpenUI Lang spec', () => {
     const prompt = getLoomAuthoringPrompt()
     for (const text of ['## Topic Layout', '## Output Formats', '// @loom-topic <topic-id>', '<topic-id>/sections/<name>.oui',
-      '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Standard OpenUI Sections', 'root = Page(', 'https://openui.com/docs/api-reference/react-ui',
+      '## Syntax Rules', '## Component Signatures', '  - correct: true for the one correct choice', AUTHORING_EXAMPLE, '## Page Composition', 'root = Page(', 'https://openui.com/docs/api-reference/react-ui',
       '### Tables and Charts', 'Table(columns: Col[])', '### Layouts for Other Content', 'Steps(items: StepsItem[])', HOWTO_EXAMPLE, FACTS_EXAMPLE, HOWTO_NARRATION_EXAMPLE, 'BarChart(labels: string[], series: Series[]', TABLE_CHART_EXAMPLE, TABLE_CHART_NARRATION_EXAMPLE, '## Loom Authoring Rules',
       '### Drawings', 'Svg(markup: string, caption?: string)', DRAWING_EXAMPLE, DRAWING_NARRATION_EXAMPLE, '## Narration Files', 'sections/<name>.narrate.oui', NARRATION_EXAMPLE, 'Spotlight(targets: string[])']) {
       expect(prompt, text).toContain(text)

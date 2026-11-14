@@ -1,3 +1,5 @@
+import { COMPONENT_PURPOSES } from './component-purpose'
+import { getUnifiedOUISpec } from './library'
 import { DOCUMENT_ROOT_RULES } from './document-contract'
 /** Focused contracts from one catalog. Internal domain types are not authoring modes. */
 import { OPENUI_FOCUSED_RULES } from './openui-focused-rules'
@@ -18,7 +20,7 @@ export interface GuideSectionType { type: string; component: string; summary: st
 export function guideSectionTypes(): GuideSectionType[] {
   return [...OUI_SECTION_TYPES].map(([component, type]) => ({
     type, component, summary: getLoomOUIComponent(component)?.description.split('\n')[0] ?? '',
-  })).concat({ type: 'openui', component: 'Page', summary: 'One page composed from the shared catalog: tables, charts, cards, drawings and local controls.' })
+  })).concat([...new Set(COMPONENT_PURPOSES.flatMap((group) => [...group.components]))].filter((name) => !OUI_SECTION_TYPES.has(name)).map((name) => ({ type: name === 'TextContent' ? 'text' : 'openui', component: name, summary: getUnifiedOUISpec().components[name]?.description ?? '' }))).concat({ type: 'openui', component: 'Page', summary: 'One page composed from the shared catalog: tables, charts, cards, drawings and local controls.' })
 }
 
 export function getAuthoringGuide(sections: string[] = [], components?: string[], _library?: ComponentLibrary, genericChildren: 'all' | 'selected' = 'selected'): string {
@@ -35,10 +37,11 @@ export function getAuthoringGuide(sections: string[] = [], components?: string[]
     '## Component Signatures',
     componentEntries(componentClosure([...known, ...(components === undefined ? ['Page', 'Topic', 'Narration'] : [])], undefined, genericChildren)),
     ...known.flatMap((name) => guidance[name] ? [guidance[name]] : []),
-    ...(components === undefined && sections.includes('openui') ? [getLoomAuthoringPrompt().split('## Standard OpenUI Sections')[1]?.split('## Narration Files')[0] ?? ''] : []),
+    ...(components === undefined && sections.includes('openui') ? [getLoomAuthoringPrompt().split('## Page Composition')[1]?.split('## Narration Files')[0] ?? ''] : []),
     ...(!known.every((name) => name === 'Topic') ? ['## Narration Files', 'Present is hands-free. Use root = Narration([NarrationStep(beat, caption, effects)]). Effects: Highlight, NarrationCallout, Spotlight. Keep Read and Present content shared and state separate.'] : []),
     ...known.flatMap((name) => {
       const type = OUI_SECTION_TYPES.get(name)
+      if (name === 'TextContent') return ['### TextContent presentation beats\n' + BEAT_IDS.text + ' A prose-only Stack uses one pN per TextContent block; mixed pages use their layout beats for supporting text.']
       return type ? [`### ${name} presentation beats\n${type === 'intro' ? '' : '`title`, then '}${BEAT_IDS[type] ?? 'Retrieve the component presentation guide.'}`] : []
     }),
     ...(unknown.length ? [`Unknown components: ${unknown.join(', ')}.`] : []),

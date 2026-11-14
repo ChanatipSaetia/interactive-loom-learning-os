@@ -475,8 +475,10 @@ function compileOUISectionProgram(source: string): OUICompileResult<OUISectionPa
   }
   const body = root.props.body
   if (!isElement(body)) return { value: null, rootComponent, issues: [...issues, wrongRoot('a Page with a component body', undefined)], sourceMap }
+  const lead = (program.value as { lead?: OKFSectionMeta['intro'] })?.lead
   const native = compileSectionElement(body)
   if (native) {
+    if (lead) native.meta.intro = lead
     native.meta.title = String(root.props.title ?? '')
     if (typeof root.props.heading === 'string') native.meta.heading = root.props.heading
     // Compile again with tracking so native domain diagnostics retain their anchors.
@@ -485,7 +487,7 @@ function compileOUISectionProgram(source: string): OUICompileResult<OUISectionPa
   }
   return {
     value: {
-      meta: { type: OPENUI_SECTION_TYPE, title: String(root.props.title ?? ''), resource: '.', ...(typeof root.props.heading === 'string' ? { heading: root.props.heading } : {}) },
+      meta: { ...(lead ? { intro: lead } : {}), type: OPENUI_SECTION_TYPE, title: String(root.props.title ?? ''), resource: '.', ...(typeof root.props.heading === 'string' ? { heading: root.props.heading } : {}) },
       data: { type: OPENUI_SECTION_TYPE, source: pageBodySource(source) },
     },
     rootComponent,

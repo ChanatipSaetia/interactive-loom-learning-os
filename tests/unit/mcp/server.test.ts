@@ -70,7 +70,7 @@ describe('Loom MCP server', () => {
     const standard = (await read('components/Text.md')).content
     expect(standard).toContain('Text(variant?')
     expect(standard).not.toContain('paragraphs: string[]')
-    expect((await read('components/LessonText.md')).content).toContain('LessonText(title: string, paragraphs:')
+    expect((await read('components/TextContent.md')).content).toContain('TextContent(text: string,')
     expect((await read('components/Quiz.md')).content).not.toMatch(/^Flowchart\(/m)
     expect((await read('missing.md')).error).toBe('REFERENCE_NOT_FOUND')
     const schema = JSON.parse((await read('contracts/topic-plan.schema.json')).content)

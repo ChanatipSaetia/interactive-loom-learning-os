@@ -1,4 +1,7 @@
-import { useCallback, useInsertionEffect, useMemo, useState } from 'react'
+import { parseOUIElements } from '../../../../composition/oui/compile'
+import { proseAnchors, proseBlocks, proseRootAlias } from '../../../../composition/oui/page-prose'
+import { usePickAnchorScope } from '../../../../../ui-system/pick-anchor'
+import { useCallback, useInsertionEffect, useMemo, useState, useEffect, useRef } from 'react'
 import { Renderer, type ActionEvent, type OpenUIError } from '@openuidev/react-lang'
 import '@openuidev/react-ui/components.css'
 import { ScrollReveal } from '../../../../../ui-system/motion/scroll-reveal'
@@ -32,6 +35,28 @@ function OpenUISection({ title, heading, source, animate = false, sectionIndex =
 
   useInsertionEffect(() => ensureLoomOpenUITheme(), [])
 
+  const contentRef = useRef<HTMLDivElement>(null)
+  const pickScope = usePickAnchorScope()
+  useEffect(() => {
+    const element = contentRef.current
+    const root = parseOUIElements(source)
+    if (!element || !root || !pickScope || !proseBlocks(root)) return
+    const anchors = proseAnchors(root, true, proseRootAlias(source))
+    const tag = () => {
+      const blocks = element.querySelectorAll<HTMLElement>('.openui-text-content')
+      if (blocks.length !== anchors.length) return
+      blocks.forEach((block, index) => {
+        block.setAttribute('data-oui-anchor', anchors[index])
+        block.setAttribute('data-oui-file', pickScope.file)
+        block.setAttribute('data-oui-section', pickScope.label)
+      })
+    }
+    tag()
+    const observer = new MutationObserver(tag)
+    observer.observe(element, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [source, pickScope])
+
   const content = (
     <>
       <SectionTitleBar
@@ -47,7 +72,7 @@ function OpenUISection({ title, heading, source, animate = false, sectionIndex =
         </h4>
       )}
 
-      <div className="loom-openui-scope openui-section-body" data-testid="openui-content">
+      <div ref={contentRef} className="loom-openui-scope openui-section-body" data-testid="openui-content">
         <Renderer
           response={source}
           library={library}

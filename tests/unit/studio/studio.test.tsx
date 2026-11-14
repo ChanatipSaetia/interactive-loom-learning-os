@@ -7,7 +7,7 @@ import { registerCoreSections } from '../../../src/core/learning-engine/registry
 
 const files = () => ({
   'topic.oui': 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz")])\n',
-  'sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))\n",
+  'sections/intro.oui': "root = Page(\"Intro\", Stack([TextContent(\"Hello.\")]))\n",
   'sections/quiz.oui': "root = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"A\", true, \"Yes\")])\n",
 })
 
@@ -34,13 +34,13 @@ describe('Loom Studio', () => {
     expect(screen.getByTestId('studio-paste-create')).toBeDisabled()
     // Markers written the way chats often do: no "===", a topic-folder prefix.
     const pasted = '```\n// @loom-topic gundam-00\n// topic.oui\nroot = Topic("Gundam 00", "Anime", "Mobile suits", [SectionRef("intro"), SectionRef("quiz")])\n'
-      + "// --- gundam-00/sections/intro.oui ---\nroot = Page(\"Intro\", LessonText(\"Intro\", [\"Celestial Being.\"]))\n"
+      + "// --- gundam-00/sections/intro.oui ---\nroot = Page(\"Intro\", Stack([TextContent(\"Celestial Being.\")]))\n"
       + "// File: sections/quiz.oui\nroot = Page(\"Check\", Quiz(\"Check\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Who?\", [QuizChoice(\"a\", \"Setsuna\", true, \"Yes\")])\n```"
     fireEvent.change(screen.getByTestId('studio-paste-input'), { target: { value: pasted } })
     fireEvent.click(screen.getByTestId('studio-paste-create'))
     await waitFor(() => expect(screen.getByTestId('studio-section-quiz')).toBeInTheDocument())
     expect([...folder.files.keys()].sort()).toEqual(['sections/intro.oui', 'sections/quiz.oui', 'topic.oui'])
-    expect(folder.files.get('sections/intro.oui')).toBe("root = Page(\"Intro\", LessonText(\"Intro\", [\"Celestial Being.\"]))\n")
+    expect(folder.files.get('sections/intro.oui')).toBe("root = Page(\"Intro\", Stack([TextContent(\"Celestial Being.\")]))\n")
   })
 
   it('asks before replacing a topic in a non-empty folder, and shows parse errors without picking', async () => {
@@ -54,7 +54,7 @@ describe('Loom Studio', () => {
     expect(pickFolder).not.toHaveBeenCalled()
 
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
-    fireEvent.change(screen.getByTestId('studio-paste-input'), { target: { value: "root = Page(\"Solo\", LessonText(\"Solo\", [\"One section.\"]))" } })
+    fireEvent.change(screen.getByTestId('studio-paste-input'), { target: { value: "root = Page(\"Solo\", Stack([TextContent(\"One section.\")]))" } })
     fireEvent.click(screen.getByTestId('studio-paste-create'))
     await waitFor(() => expect(confirm).toHaveBeenCalled())
     expect(confirm.mock.calls[0][0]).toMatch(/already has a topic/)
@@ -64,10 +64,10 @@ describe('Loom Studio', () => {
 
   it('lists sections with their types and opens the first one', async () => {
     await renderWorkspace()
-    expect(screen.getByTestId('studio-section-intro').textContent).toContain('text')
+    expect(screen.getByTestId('studio-section-intro').textContent).toContain('openui')
     expect(screen.getByTestId('studio-section-quiz').textContent).toContain('quiz')
     expect(screen.getByTestId('studio-section-editor')).toBeInTheDocument()
-    await waitFor(() => expect(screen.getByTestId('studio-preview').getAttribute('data-section-type')).toBe('text'))
+    await waitFor(() => expect(screen.getByTestId('studio-preview').getAttribute('data-section-type')).toBe('openui'))
   })
 
   it('picks from the preview, with line hints from unsaved edits', async () => {
@@ -76,9 +76,9 @@ describe('Loom Studio', () => {
     fireEvent.click(screen.getByTestId('pick-toggle'))
     fireEvent.click(await screen.findByText('Hello.'))
     fireEvent.click(screen.getByTestId('pick-row'))
-    expect(screen.getByTestId('pick-editor').textContent).toContain('demo/sections/intro.oui:1 #root.body.paragraphs[0]')
-    act(() => workspace.setSource('intro', "// Edited\nroot = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))\n"))
-    await waitFor(() => expect(screen.getByTestId('pick-editor').textContent).toContain('demo/sections/intro.oui:2 #root.body.paragraphs[0] (unsaved)'))
+    expect(screen.getByTestId('pick-editor').textContent).toContain('demo/sections/intro.oui:1 #root.body.children[0].text')
+    act(() => workspace.setSource('intro', "// Edited\nroot = Page(\"Intro\", Stack([TextContent(\"Hello.\")]))\n"))
+    await waitFor(() => expect(screen.getByTestId('pick-editor').textContent).toContain('demo/sections/intro.oui:2 #root.body.children[0].text (unsaved)'))
     localStorage.clear()
   })
 
@@ -110,10 +110,10 @@ describe('Loom Studio', () => {
   it('tracks unsaved edits and saves with Ctrl+S', async () => {
     const { folder, workspace } = await renderWorkspace()
     expect(screen.getByTestId('studio-save').textContent).toContain('Saved')
-    act(() => workspace.setSource('intro', "root = Page(\"Intro\", LessonText(\"Intro\", [\"Changed.\"]))\n"))
+    act(() => workspace.setSource('intro', "root = Page(\"Intro\", Stack([TextContent(\"Changed.\")]))\n"))
     expect(screen.getByTestId('studio-save').textContent).toContain('Save (1)')
     fireEvent.keyDown(window, { key: 's', ctrlKey: true })
-    await waitFor(() => expect(folder.files.get('sections/intro.oui')).toBe("root = Page(\"Intro\", LessonText(\"Intro\", [\"Changed.\"]))\n"))
+    await waitFor(() => expect(folder.files.get('sections/intro.oui')).toBe("root = Page(\"Intro\", Stack([TextContent(\"Changed.\")]))\n"))
     await waitFor(() => expect(screen.getByTestId('studio-save').textContent).toContain('Saved'))
   })
 
@@ -152,7 +152,7 @@ describe('Loom Studio', () => {
     expect(screen.getByTestId('studio-form')).toBeInTheDocument()
     const titleInput = screen.getByDisplayValue('Intro')
     fireEvent.change(titleInput, { target: { value: 'Welcome' } })
-    expect(workspace.section('intro')?.source).toContain('root = Page("Welcome", LessonText("Welcome"')
+    expect(workspace.section('intro')?.source).toContain('root = Page("Welcome", Stack(')
   })
 
   it('adds a section from a template', async () => {
@@ -201,7 +201,7 @@ describe('Loom Studio', () => {
     Object.assign(URL, { createObjectURL, revokeObjectURL: vi.fn() })
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
     const { workspace } = await renderWorkspace()
-    act(() => workspace.setSource('intro', "root = Page(\"Intro\", LessonText(\"Intro\", [\"Unsaved.\"]))\n"))
+    act(() => workspace.setSource('intro', "root = Page(\"Intro\", Stack([TextContent(\"Unsaved.\")]))\n"))
 
     fireEvent.click(screen.getByTestId('studio-export-file'))
     expect(screen.getByTestId('studio-status').textContent).toContain('demo.loom.oui')
@@ -227,7 +227,7 @@ describe('Loom Studio', () => {
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
     const source = createTopicSource([{
       topicId: 'demo',
-      files: { 'topic.oui': 'root = Topic("Imported", "Cat", "", [SectionRef("only")])\n', 'sections/only.oui': "root = Page(\"Only\", LessonText(\"Only\", [\"Hi.\"]))\n" },
+      files: { 'topic.oui': 'root = Topic("Imported", "Cat", "", [SectionRef("only")])\n', 'sections/only.oui': "root = Page(\"Only\", Stack([TextContent(\"Hi.\")]))\n" },
     }])
     const file = { name: 'demo.loom.oui', arrayBuffer: async () => new TextEncoder().encode(source).buffer }
     fireEvent.change(screen.getByTestId('studio-import-input'), { target: { files: [file] } })
@@ -246,7 +246,7 @@ describe('Loom Studio', () => {
 
     // An AI agent edits the files on disk.
     folder.files.set('sections/quiz.oui', "root = Page(\"Check again\", Quiz(\"Check again\", [q1]))\nq1 = QuizQuestion(\"q1\", \"Why?\", [QuizChoice(\"a\", \"A\", true, \"Yes\")])\n")
-    folder.files.set('sections/extra.oui', "root = Page(\"Extra\", LessonText(\"Extra\", [\"New.\"]))\n")
+    folder.files.set('sections/extra.oui', "root = Page(\"Extra\", Stack([TextContent(\"New.\")]))\n")
     folder.files.set('topic.oui', 'root = Topic("Demo", "Architecture", "A demo", [SectionRef("intro"), SectionRef("quiz"), SectionRef("extra")])\n')
 
     fireEvent.click(screen.getByTestId('studio-refresh'))

@@ -5,12 +5,7 @@ root = Page("AI Agents", Intro("AI Agents", what, why, [RoadmapStep("Quiz", "qui
 what = IntroWhat("Agents act on goals.", "An agent is…", ["Loops"], ["LLM"])
 why = IntroWhy("Prompts alone break.", "Reliability")
 `,
-  text: `
-root = Page("Overview", LessonText("Overview", [
-  "First paragraph.",
-  "Second paragraph.",
-]))
-`,
+  text: "\nroot = Page(\"Overview\", Stack([TextContent(\"First paragraph.\"), TextContent(\"Second paragraph.\")]))\n",
   openui: `root = Page("Plans", Card([header, tabs]), "Pick one")
 header = CardHeader("Plans", "Compare what you get")
 tabs = Tabs([TabItem("free", "Free", [TextContent("Up to **3** projects.")]), TabItem("pro", "Pro", [Callout("info", "Pro", "Unlimited projects.")])])

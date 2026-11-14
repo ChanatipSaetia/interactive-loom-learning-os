@@ -16,10 +16,6 @@ Timeline(title: string, lanes: TimelineLane[], activities: TimelineActivity[], g
   - takeaway: Optional conclusion shown on the final summary beat.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
-TimelineLane(id: string, title: string, color?: "blue" | "teal" | "green" | "mauve" | "peach" | "sky" | "yellow" | "pink" | "lavender") — A named participant or resource used as a task’s secondary label and color. Each task gets its own row.
-  - id: Lane ID, unique within the timeline.
-  - title: Readable lane name.
-  - color: Optional theme accent for the lane and its activities.
 TimelineActivity(id: string, title: string, lane: string | TimelineLane, start: number, duration: number, description?: string, dependsOn?: string[]) — Activity positioned by elapsed start time and duration; zero duration represents a milestone.
   - id: Activity ID, unique within the timeline.
   - title: Short readable activity name.
@@ -33,6 +29,10 @@ TimelineGroup(id: string, title: string, activities: (string | TimelineActivity)
   - title: Short stage name shown in Present.
   - activities: Activities to highlight together, as references or IDs; include parallel activities in one group.
   - description: Optional explanation of what this stage means.
+TimelineLane(id: string, title: string, color?: "blue" | "teal" | "green" | "mauve" | "peach" | "sky" | "yellow" | "pink" | "lavender") — A named participant or resource used as a task’s secondary label and color. Each task gets its own row.
+  - id: Lane ID, unique within the timeline.
+  - title: Readable lane name.
+  - color: Optional theme accent for the lane and its activities.
 
 ## Presentation beats
 

@@ -10,7 +10,7 @@ import type { TimelineSectionData } from './timeline'
 import { textScenes } from './text-scenes'
 import { pillarLayerPlan } from './pillar-layer-scenes'
 import { pageActivityPlan } from '../../composition/oui/page-activities'
-import { pageBodySource } from '../../composition/oui/page-source'
+import { pageBodySource, rootCall } from '../../composition/oui/page-source'
 import { brief, show, type Beat, type SectionPresenter } from '../present-kernel'
 import type { BulletItem, GalleryItem, IntroSectionData, OpenUISectionData, PillarLayerSectionData, TaxonomyCategory, TextSectionData } from './schema'
 
@@ -84,6 +84,8 @@ const PART_CONTAINERS = new Set(['Card', 'Stack'])
  */
 export function openuiParts(source: string): OpenUIPart[] | null {
   source = pageBodySource(source)
+  const resolved = rootCall(source)
+  if (resolved && !/^[ \t]*root\s*=\s*[A-Z]\w*\s*\(/m.test(source)) source = `root = ${resolved.component}(${resolved.args.join(', ')})`
   const head = /^[ \t]*root[ \t]*=[ \t]*([A-Z][\w.]*)[ \t]*\(/m.exec(source)
   if (!head || !PART_CONTAINERS.has(head[1])) return null
   let i = head.index + head[0].length
@@ -117,7 +119,7 @@ export function openuiParts(source: string): OpenUIPart[] | null {
  */
 export function openuiBeats(data: OpenUIPresentData = { source: '' }): Beat[] {
   const plan = pageActivityPlan(data.source ?? '')
-  if (plan.activities.length) return plan.beats
+  if (plan.activities.length || (plan.beats.length && !plan.starts.length)) return plan.beats
   const parts = openuiParts(data.source ?? '')
   if (!parts || parts.length < 2) return [show('all', 'The whole section')]
   return parts.map((p, i) => show(`part${i + 1}`, `Part ${i + 1}: ${p.name ?? p.component ?? 'element'}`))

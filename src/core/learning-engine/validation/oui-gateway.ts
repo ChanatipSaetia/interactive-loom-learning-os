@@ -1,3 +1,4 @@
+import { proseAnchors, proseBlocks } from '../composition/oui/page-prose'
 // ============================================================================
 // Validation Gateway — OpenUI Lang (`.oui`) sources
 // ============================================================================
@@ -187,6 +188,8 @@ function statementText(source: string, name: string): string {
  * chart or table part, or a shape of a drawing part by its `id` (decision 118).
  */
 function openuiTargetPointable(target: string, parts: string[], statements: Map<string, string | undefined>, source: string): boolean {
+  const root = parseOUIElements(source)
+  if (root && proseBlocks(root) && proseAnchors(root).includes(target)) return true
   const statement = targetStatement(target)
   if (!parts.includes(statement)) return false
   const rest = target.slice(statement.length)

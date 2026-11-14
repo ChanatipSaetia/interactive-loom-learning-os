@@ -15,19 +15,19 @@ describe('advisory experience readiness', () => {
     expect(reviewTopicPlan(p)).toEqual([])
   })
   it('flags weak/missing decisions without changing structural valid semantics', () => {
-    const p = plan('LessonText', { activity: 'Learn', rationale: 'best', presentation: undefined })
+    const p = plan('TextContent', { activity: 'Learn', rationale: 'best', presentation: undefined })
     p.objectives[0].description = 'Compare system architecture and data relationships'
     expect(validateTopicPlan(p)).toEqual([])
     expect(codes(p)).toEqual(expect.arrayContaining(['WEAK_LEARNER_ACTION', 'WEAK_RATIONALE', 'MISSING_PRESENTATION_STRATEGY', 'UNJUSTIFIED_TEXT_SELECTION']))
     expect(reviewTopicPlan(p).every((d) => d.severity === 'warning' && d.path && d.message)).toBe(true)
   })
   it('accepts justified connected prose even for a comparison goal', () => {
-    const p = plan('LessonText', { activity: 'Read the nuanced comparison argument', rationale: 'Connected prose preserves qualifications and uncertainty; a numeric matrix would imply unsupported precision.' })
+    const p = plan('TextContent', { activity: 'Read the nuanced comparison argument', rationale: 'Connected prose preserves qualifications and uncertainty; a numeric matrix would imply unsupported precision.' })
     p.objectives[0].description = 'Compare nuanced interpretations'
     expect(reviewTopicPlan(p)).toEqual([])
   })
   it('requires an intended OpenUI composition, not an interactivity quota', () => {
-    expect(codes(plan('Table', { rationale: 'Explain the facts clearly' }))).toContain('MISSING_OPENUI_COMPOSITION')
+    expect(codes(plan('Table', { rationale: 'Explain the facts clearly' }))).toContain('MISSING_COMPOSITION_STRATEGY')
     expect(reviewTopicPlan(plan('Table', { rationale: 'A static factual table supports lookup across the same attributes.' }))).toEqual([])
     expect(codes(plan('BarChart', { rationale: 'A bar chart compares benchmark performance' }))).toContain('CHART_DATA_UNVERIFIED')
     expect(codes(plan('BarChart', { rationale: 'A bar chart uses explicitly labelled illustrative data to teach reading axes.' }))).not.toContain('CHART_DATA_UNVERIFIED')
@@ -54,14 +54,14 @@ describe('advisory experience readiness', () => {
 })
 
 it('reviews a composition without classifying the entire page by its supporting text', () => {
-  const prose = plan('LessonText', {
+  const prose = plan('TextContent', {
     activity: 'Compare matching factual attributes',
     rationale: 'A table aligns matching factual attributes; supporting prose explains the comparison.',
   })
   expect(codes(prose)).toContain('UNJUSTIFIED_TEXT_SELECTION')
-  prose.sections[0].components = ['Stack', 'Table', 'LessonText']
+  prose.sections[0].components = ['Stack', 'Table', 'TextContent']
   expect(codes(prose)).not.toContain('UNJUSTIFIED_TEXT_SELECTION')
-  prose.sections[0].components = ['Stack', 'LessonText', 'Flowchart', 'BarChart']
+  prose.sections[0].components = ['Stack', 'TextContent', 'Flowchart', 'BarChart']
   prose.sections[0].rationale = 'A diagram explains the process and quantities.'
   expect(codes(prose)).toEqual(expect.arrayContaining(['MISSING_FLOWCHART_VIEW', 'CHART_DATA_UNVERIFIED']))
 })

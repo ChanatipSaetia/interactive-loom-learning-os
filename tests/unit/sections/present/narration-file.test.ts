@@ -113,7 +113,7 @@ a = NarrationStep("q1", "No quiz here.")
 
   it('needs its section and the Narration root', () => {
     expect(validateOUINarration('root = Narration([])\n', undefined, ctx).diagnostics[0].message).toBe('There is no sections/directives.oui for this narration to play with.')
-    const wrong = validateOUINarration("root = Page(\"T\", LessonText(\"T\", [\"p\"]))\n", section, ctx)
+    const wrong = validateOUINarration("root = Page(\"T\", Stack([TextContent(\"p\")]))\n", section, ctx)
     expect(wrong.status).toBe('error')
     expect(wrong.payload).toBeNull()
   })

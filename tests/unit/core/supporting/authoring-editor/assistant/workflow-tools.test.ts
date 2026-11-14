@@ -6,7 +6,7 @@ const runner = () => new EditToolRunner({ topicId: 'demo', files: {}, fileOrder:
 it('discovers and validates without staging edits, then proposes the shared plan', () => {
   const r = runner()
   const catalog = r.run('get_loom_capabilities', '{}')
-  expect(JSON.parse(catalog.content).sections.some((section: { type: string }) => section.type === 'openui')).toBe(true)
+  expect(JSON.parse(catalog.content).components.some((component: { component: string }) => component.component === 'Table')).toBe(true)
   expect(catalog.changeset).toEqual([])
   expect(JSON.parse(r.run('validate_topic_plan', JSON.stringify({ plan })).content).valid).toBe(true)
   expect(JSON.parse(r.run('validate_topic_plan', '{"plan":null}').content).valid).toBe(false)

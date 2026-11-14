@@ -1,3 +1,4 @@
+import { purposeGroups } from './component-purpose'
 /**
  * Loom OpenUI Lang Library
  *
@@ -30,11 +31,12 @@ export type ComponentLibrary = typeof COMPONENT_LIBRARIES[number]
 export const Page = defineOUIComponent({
   name: 'Page',
   description: 'One authored page with one main visual or activity and supporting text. Present may explain it through several automatic scenes.',
-  props: z.object({ title: z.string(), body: z.any(), heading: z.string().optional() }),
+  props: z.object({ title: z.string(), body: z.any(), heading: z.string().optional(), lead: Lead.ref.optional() }),
   fields: {
     title: 'Page title used in navigation and the presentation title beat.',
-    body: 'The main learning component or an OpenUI composition such as Stack or Card.',
+    body: 'The page composition: text, layouts, visuals, controls and prebuilt activities from one catalog.',
     heading: 'Optional supporting explanation shown with the page.',
+    lead: 'Optional Lead(...) page introduction: what, why and next; used by the presentation title beat.',
   },
 })
 
@@ -252,12 +254,16 @@ export function getLoomOUIJSONSchema(): LibraryJSONSchema {
 }
 
 /** One catalog for parser contracts, editor tooling and focused AI discovery. */
+let unifiedSpec: ReturnType<typeof buildUnifiedSpec> | undefined
 export function getUnifiedOUISpec() {
+  return unifiedSpec ??= buildUnifiedSpec()
+}
+function buildUnifiedSpec() {
   const native = getLoomOUILibrary().toSpec()
   return {
     root: 'Page',
     components: { ...standardOpenUISpec.components, ...native.components },
-    componentGroups: [...standardOpenUISpec.componentGroups, ...(native.componentGroups ?? [])],
+    componentGroups: purposeGroups(Object.keys({ ...standardOpenUISpec.components, ...native.components })),
   }
 }
 
