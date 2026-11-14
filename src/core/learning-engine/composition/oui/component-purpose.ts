@@ -7,7 +7,7 @@ export const COMPONENT_PURPOSES = [
   { name: 'Interpret quantities and change', purpose: 'Compare amounts, trends, measured timing or parts of a whole. Use verified or labelled illustrative data.', components: ['BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'ScatterChart', 'PieChart', 'RadarChart', 'Timeline', 'BreakdownTree'] },
   { name: 'Explore choices and models', purpose: 'Trace diagnostic rules or branching consequences, or vary a defensible authored model.', components: ['DecisionTree', 'Scenario', 'FormulaSandbox'] },
   { name: 'Compose a local exploration', purpose: 'Bind controls to an authored visual or model without another AI call. Explain what the local model can and cannot represent.', components: ['Slider', 'Input', 'Select', 'SwitchGroup', 'Form', 'Button'] },
-  { name: 'Inspect visual references', purpose: 'Recognize and compare labelled visual examples.', components: ['Image', 'ImageGallery', 'LearningGallery'] },
+  { name: 'Inspect visual references', purpose: 'Recognize and compare labelled visual examples.', components: ['Image', 'ImageBlock', 'ImageText', 'ImageTextLarge', 'ImageGallery', 'LearningGallery'] },
   { name: 'Recall, apply and explain', purpose: 'Introduce focused concepts, practise recall or order, or answer an authored assessment.', components: ['Flashcards', 'Quiz', 'ReflectionSequence', 'ReflectionTemplate'] },
 ] as const
 
