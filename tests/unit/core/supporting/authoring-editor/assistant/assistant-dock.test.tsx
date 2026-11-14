@@ -459,7 +459,7 @@ describe('Tools and staged edits in Studio (decisions 129–136)', () => {
 
   it('applies a new section with its SectionRef where the model put it, and keeps the changeset after a reload', async () => {
     seed('http://localhost:11434/v1')
-    const buffers: Record<string, string> = { ...files, 'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz"), SectionRef("end")])\n', 'sections/end.oui': "root = Page(\"End\", LessonText(\"End\", [\"Bye.\"]))\n" }
+    const buffers: Record<string, string> = { ...files, 'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("quiz"), SectionRef("end")])\n', 'sections/end.oui': "root = Page(\"End\", Stack([TextContent(\"Bye.\")]))\n" }
     const answers = [toolCalls(['c1', 'create_section', { name: 'words', source: words, after: 'quiz', summary: 'Vocabulary' }]), streamOf('Done.')]
     const fetchImpl = vi.fn(async (url: string) => (url.endsWith('/models') ? json({ data: [{ id: 'm1' }] }) : answers.shift()!))
     const { unmount } = render(<StudioHarness fetchImpl={fetchImpl as unknown as typeof fetch} buffers={buffers} />)

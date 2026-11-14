@@ -79,7 +79,7 @@ Loom Viewer can play a topic hands-free (Present mode): each section plays beat 
 
 - \`caption\` is what the narrator says: one or two spoken sentences in the topic's language. Explain and connect, do not just repeat the screen: on a quiz's \`.wrong\` beat say why that answer is tempting and wrong, on its \`.right\` beat why the right one is right. Pass \`null\` for a step that only plays an effect (its Callout is still read).
 - Write it as a talk, not a template: vary how captions open, link a beat to the one before or to an earlier section, ask the question the learner is about to answer, and put the why or the example the screen leaves out in a Callout. Mix the effects to what each beat needs; not every step needs one.
-- Effects (optional): \`Highlight(target)\`, \`NarrationCallout(target, text)\` (a note beside an element, one or two short sentences, read after the caption), \`Spotlight([targets])\` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: \`"catechins"\`, \`"q1.hint"\`, \`"root.items[0]"\`. Name the statements you will point at in the section file (e.g. \`catechins = Flashcard(...)\`) rather than writing them inline. In a standard OpenUI section, a target names one of the root's children (see Standard OpenUI Sections) or one value of a chart or table among them, by the path of the value in its statement: \`"bars.series[0].values[4]"\` (one bar or line point), \`"bars.labels[4]"\` (every bar or point at the fifth label), \`"bars.series[1]"\` (a whole series), \`"pie.values[2]"\` (a slice), \`"table.columns[2].data[4]"\` (a cell), \`"table.columns[2]"\` (a column) or \`"table.columns[2].label"\` (its header). To point at a table row, Spotlight its cells. In a drawing (\`Svg\`), a target names one shape by its \`id\` in the markup: \`"plant.bud"\`. Use these to explain one figure or one part of a picture at a time: Highlight a bar while the caption names it, Callout a point with why it is there, Spotlight the shapes of a drawing the caption is about.
+- Effects (optional): \`Highlight(target)\`, \`NarrationCallout(target, text)\` (a note beside an element, one or two short sentences, read after the caption), \`Spotlight([targets])\` (zoom in and dim the rest). A target is a string naming a statement of the section file, optionally with a prop: \`"catechins"\`, \`"q1.hint"\`, \`"root.items[0]"\`. Name the statements you will point at in the section file (e.g. \`catechins = Flashcard(...)\`) rather than writing them inline. In a composed page, a target names one of the root's children (see Page Composition) or one value of a chart or table among them, by the path of the value in its statement: \`"bars.series[0].values[4]"\` (one bar or line point), \`"bars.labels[4]"\` (every bar or point at the fifth label), \`"bars.series[1]"\` (a whole series), \`"pie.values[2]"\` (a slice), \`"table.columns[2].data[4]"\` (a cell), \`"table.columns[2]"\` (a column) or \`"table.columns[2].label"\` (its header). To point at a table row, Spotlight its cells. In a drawing (\`Svg\`), a target names one shape by its \`id\` in the markup: \`"plant.bud"\`. Use these to explain one figure or one part of a picture at a time: Highlight a bar while the caption names it, Callout a point with why it is there, Spotlight the shapes of a drawing the caption is about.
 - In the single .oui file, the narration file follows its section: \`// === sections/vocabulary.narrate.oui ===\`.
 
 Every section except the intro opens on a \`title\` beat: a card with the section's title, its \`heading\` and its \`Lead\` text. Its step introduces the section: what it is about and why it comes now (without one, the narrator reads the card). The intro's own beats start with its \`title\`.
@@ -95,23 +95,23 @@ Example, for the \`sections/vocabulary.oui\` file of the example topic:
 \`\`\`
 ${NARRATION_EXAMPLE}\`\`\``
 
-const STANDARD_OPENUI = `## Standard OpenUI Sections
+const STANDARD_OPENUI = `## Page Composition
 
 ${OPENUI_FOCUSED_RULES}
 
-OpenUI compositions are first-class teaching formats alongside native Loom sections. Choose them proactively when a visual layout teaches the idea best; Text is not the default for every explanation:
+Text, layouts, visuals, controls and prebuilt activities are peers in one component catalog. Choose by learning purpose; prebuilt activities are reusable conveniences, not a separate tier:
 
 - Every section uses \`root = Page("Title", body, heading?)\`; there is no library directive.
-- The body uses components from the unified catalog: upstream OpenUI components and Loom learning components. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
+- The body uses components from the unified catalog: text, layouts, media, data components and prebuilt activities. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: ${OPENUI_REACT_UI_DOCS_URL}. Language specification: ${OPENUI_LANG_DOCS_URL}.
 - Page-local reactive inputs and state actions work without another model call. Query/Mutation tool connections are deferred.
-- List it in topic.oui with \`SectionRef\` like any other section. Choose a native Loom section when its interaction teaches the goal (a process, a quiz, a trade-off); choose standard OpenUI when a visual composition teaches it better: figures, a drawing, a how-to, code, reference facts, a set of options side by side.
+- List it in topic.oui with \`SectionRef\` like any other section. Compare all relevant candidates by fit: Table for factual attributes, TradeoffSandbox for contextual choices, Steps for instructions, Flowchart for interactions, and TextContent for connected prose. Compose supporting components around the main learning activity.
 
 Shape each section to its content and learner action. Reuse a consistent table or card layout when it makes comparisons easier; vary the composition when the learning purpose changes. Visual novelty and layout variety are not learning objectives.
 
 How the root shapes Present mode (see Narration Files): a \`Card([...])\` or \`Stack([...])\` root with several children plays one child per beat (\`part1\`, \`part2\`, …), and its children written as named statements are what narration can point at, down to one bar, point, slice or cell of a chart or table, or one shape of a drawing, among them. Any other root (Tabs, Accordion, Carousel, a single child) plays as one beat with nothing to point at, and only its first tab or slide shows. So for a section the narrator should walk through, make the root a Card or Stack of named statements, one idea each, and keep what must be presented out of Tabs, Accordion and Carousel (they suit extra detail the reader opens in Read mode).
 
-The \`sections/steep-guide.oui\` file in the example above is a standard OpenUI section.`
+The \`sections/steep-guide.oui\` file in the example above is a composed page.`
 
 /** Table and chart components listed with their real signatures, with when to use each. */
 const TABLE_CHART_COMPONENTS: Array<[name: string, use: string]> = [
@@ -158,7 +158,7 @@ tip = NarrationStep("part4", "No thermometer? Time does the job.", [Highlight("t
 
 const TABLES_AND_CHARTS = `### Tables and Charts
 
-Use a table or chart in a standard OpenUI section when the figures or the side-by-side comparison are what the learner should take away:
+Use a table or chart in a composed page when the figures or the side-by-side comparison are what the learner should take away:
 
 - **Table**: several items compared on the same attributes, or reference values the learner looks up (settings, limits, specs).
 - **Chart**: the shape of real numbers: a comparison, a trend, a share of a whole or a correlation. Pick the chart type from the question it answers (see the list below).
@@ -299,7 +299,7 @@ why = NarrationStep("part3", "So two leaves and a bud is a recipe for flavour.",
 
 const DRAWINGS = `### Drawings
 
-When a picture explains it better than words or boxes and arrows, draw it with \`Svg\` in a standard OpenUI section: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Match the representation to what it teaches: use native Flowchart for a process with actors, an OpenUI chart for measured quantities, native TaxonomyBrowser for categories, and Svg for a spatial or annotated explanation. Combine them when each adds something useful.
+When a picture explains it better than words or boxes and arrows, draw it with \`Svg\` in a composed page: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Match the representation to what it teaches: use Flowchart for a process with actors, a chart for measured quantities, TaxonomyBrowser for categories, and Svg for a spatial or annotated explanation. Combine them when each adds something useful.
 
 Plan the picture before the prose: what should the learner be able to picture or explain afterward? Include a labelled concept drawing whenever it makes the idea clearer, without waiting for a request for a picture. For an abstract idea, use a concrete visual analogy and explicitly label where the analogy or schematic simplifies reality. A drawing should explain a relationship, structure or change, not decorate the page. Pair it with a short explanation of what to notice and why it matters, and use narration to connect its parts to the idea one at a time.
 
@@ -327,7 +327,7 @@ const AUTHORING_RULES = [
   'Every `SectionRef("<name>")` in topic.oui has a matching `sections/<name>.oui` file, and every section file is listed exactly once. Section names use lowercase letters, digits, `-` and `_`.',
   'Size the topic to the learner goal. Choose sections by their distinct learning contribution, without a fixed count or sequence. A short explanation may need one section; a comprehensive lesson may combine orientation, explanation, exploration and assessment. Use Intro when orientation helps, and order prerequisites before activities that depend on them. Bullets are first-class for concise linear procedures and checklists; do not add visual complexity without learning value.',
   'Combine sections only when each adds a distinct learning contribution; connected prose alone is valid when it best teaches the goal. Do not force visual variety or interactivity.',
-  'Fit each section to its own content rather than to the example: different section types, and different layouts for standard OpenUI sections (Steps, CodeBlock, cards, EntityList, a chart or a table, an Svg drawing, …).',
+  'Fit each section to its own content rather than to the example: different activities and layouts (Steps, CodeBlock, cards, EntityList, a chart or a table, an Svg drawing, …).',
   'Write a narration file for every section, at least one NarrationStep per beat of that section type (see Narration Files), in the topic\'s language.',
   'Quizzes and reflection challenges only test what an earlier section of the topic teaches. Each QuizQuestion has exactly one choice with `correct` set to true.',
   'IDs (`id` props) are unique within their section. Props that point at an ID (`next`, `root`, `startNode`, `recommended`, `solution`, `continuesAs`, `initialState`, `dependsOn`) must name an ID that exists in the same section.',

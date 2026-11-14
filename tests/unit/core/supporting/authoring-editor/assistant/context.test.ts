@@ -15,7 +15,7 @@ const context = (extra: Partial<AssistantTopicContext> = {}): AssistantTopicCont
   topicId: 'demo',
   files: {
     'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("intro"), SectionRef("quiz")])\n',
-    'sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\"]))\n",
+    'sections/intro.oui': "root = Page(\"Intro\", Stack([TextContent(\"Hello.\")]))\n",
     'sections/quiz.oui': QUIZ,
   },
   fileOrder: ['topic.oui', 'sections/intro.oui', 'sections/quiz.oui'],
@@ -137,13 +137,13 @@ describe('buildTopicContext in Viewer', () => {
 })
 
 it('keeps native and OpenUI Text references separate, including cached history', () => {
-  const c = context({ files: { 'topic.oui': 'root = Topic("T", "C", "D", [])', 'sections/native.oui': "root = Page(\"T\", LessonText(\"T\", [\"Native prose\"]))", 'sections/standard.oui': "root = Page(\"Standard\", Text(\"text\", \"OpenUI value\"))" }, fileOrder: ['topic.oui', 'sections/native.oui', 'sections/standard.oui'] })
+  const c = context({ files: { 'topic.oui': 'root = Topic("T", "C", "D", [])', 'sections/native.oui': "root = Page(\"T\", Stack([TextContent(\"Native prose\")]))", 'sections/standard.oui': "root = Page(\"Standard\", Text(\"text\", \"OpenUI value\"))" }, fileOrder: ['topic.oui', 'sections/native.oui', 'sections/standard.oui'] })
   const native = buildTopicContext(c, [{ file: 'sections/native.oui', anchor: 'root' }], { reference: true })
   const standard = buildTopicContext(c, [{ file: 'sections/standard.oui', anchor: 'root' }], { reference: true, known: new Set(native.keys) })
-  expect(native.text).toContain('LessonText(title: string, paragraphs:')
+  expect(native.text).toContain('TextContent(text: string,')
   expect(standard.text).toContain('Text(variant?')
-  expect(standard.text).not.toContain('LessonText(title: string, paragraphs:')
-  expect(native.keys).toContain('component:LessonText')
+  expect(standard.text).not.toContain('TextContent(text: string,')
+  expect(native.keys).toContain('component:TextContent')
   expect(standard.keys).toContain('component:Text')
 })
 

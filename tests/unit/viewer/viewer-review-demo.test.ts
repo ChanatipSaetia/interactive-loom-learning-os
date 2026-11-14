@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import source from '../../../samples/viewer-review-demo.loom.oui?raw'
 import { readTopicText } from '../../../src/core/supporting/authoring-editor/workspace/archive'
 import { compileViewerTopic } from '../../../src/viewer/compileTopic'
-import { guideSectionTypes } from '../../../src/core/learning-engine/composition/oui/authoring-guide'
+import { KNOWN_SECTION_TYPES } from '../../../src/core/learning-engine/validation/gateway'
 import { coreBeatsOf } from '../../../src/core/learning-engine/registry/register-core-presenters'
 import { validateOUISection } from '../../../src/core/learning-engine/validation/oui-gateway'
 import type { TradeoffScenario } from '../../../src/core/learning-engine/sub-contexts/tradeoff-sandbox/schema'
@@ -15,7 +15,7 @@ describe('permanent Viewer review demo', () => {
     const compiled = compileViewerTopic(topic)
     expect(compiled.error).toBeUndefined()
     expect(compiled.narrationErrors).toEqual([])
-    const expected = guideSectionTypes().map(({ type }) => type).sort()
+    const expected = [...KNOWN_SECTION_TYPES].map((type) => type === 'text' ? 'openui' : type).sort()
     expect(compiled.sections.map(({ config }) => config?.type).sort()).toEqual(expected)
     for (const section of compiled.sections) {
       expect(section.error, section.name).toBeUndefined()

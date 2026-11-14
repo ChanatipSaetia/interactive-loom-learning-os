@@ -9,10 +9,10 @@ import { THREE_SPLINE_FILES } from '../../fixtures/ai-experience/three-spline'
 
 it('makes OpenUI tasks visible before selecting a section', () => {
   for (const index of [getCapabilityIndex(), getAuthoringContract({ detail: 'index' })]) {
-    expect(index.openui).toContain('factual attributes')
-    expect(index.openui).toContain('examples')
-    expect(index.openui).toContain('spatial')
-    expect(index.openui).toContain('verified')
+    expect(index.compositionChoices).toContain('factual attributes')
+    expect(index.compositionChoices).toContain('examples')
+    expect(index.compositionChoices).toContain('spatial')
+    expect(index.compositionChoices).toContain('verified')
   }
 })
 

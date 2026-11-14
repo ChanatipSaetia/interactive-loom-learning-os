@@ -1,3 +1,6 @@
+import PresentText from '../text/PresentText'
+import { proseAnchors, proseBlocks, proseRootAlias } from '../../../../composition/oui/page-prose'
+import { parseOUIElements } from '../../../../composition/oui/compile'
 import { lazy, Suspense, useEffect, useInsertionEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { Renderer, type ActionEvent } from '@openuidev/react-lang'
 import '@openuidev/react-ui/components.css'
@@ -45,6 +48,8 @@ export default function PresentOpenUI({ data, beats, beat, sectionIndex, active 
   const scope = useRef<HTMLDivElement>(null)
   const parts = useMemo(() => (beats.length > 1 ? openuiParts(data.source) : null), [beats.length, data.source])
   const activityPlan = useMemo(() => pageActivityPlan(data.source), [data.source])
+  const proseRoot = useMemo(() => parseOUIElements(data.source), [data.source])
+  const prose = proseRoot && proseBlocks(proseRoot)
   const library = useMemo(() => createLoomReactLibrary((config, statementId) => {
     const activity = activityPlan.activities.find((entry) => entry.config.type === config.type && (!statementId || entry.statementId === statementId))
     return activity ? <ActivityScene activity={{ ...activity, config }} beat={beat} sectionIndex={sectionIndex} active={active} /> : null
@@ -93,6 +98,9 @@ export default function PresentOpenUI({ data, beats, beat, sectionIndex, active 
       cancelAnimationFrame(frame)
     }
   }, [parts])
+
+  if (prose) return <PresentText data={{ ...data, paragraphs: prose.map((block) => String(block.props.text)) }} beats={beats} beat={beat} sectionIndex={sectionIndex} active={active}
+    paragraphAnchors={proseAnchors(proseRoot!, true, proseRootAlias(data.source))} />
 
   const whole = !parts
   return (

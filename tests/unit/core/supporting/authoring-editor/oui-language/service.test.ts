@@ -130,7 +130,7 @@ describe('completions', () => {
     const sectionItems = getCompletions('', 0, 'section')
     expect(labels(sectionItems)).toContain("root = Page(…)")
     expect(labels(getCompletions('', 0, 'topic'))).toEqual(['root = Topic(…)'])
-    expect(getCompletions("root = Page(\"a\", LessonText(\"a\", []))\n", "root = Page(\"a\", LessonText(\"a\", []))\n".length)).toEqual([])
+    expect(getCompletions("root = Page(\"a\", Stack([]))\n", "root = Page(\"a\", Stack([]))\n".length)).toEqual([])
   })
 
   it('offers literals, state and builtins for primitive params', () => {
@@ -221,13 +221,13 @@ describe('diagnostics', () => {
   })
 
   it('reports unused statements as warnings', () => {
-    const source = "root = Page(\"T\", LessonText(\"T\", []))\nextra = LessonText(\"x\", [])"
+    const source = "root = Page(\"T\", Stack([]))\nextra = Stack([])"
     expect(getDiagnostics(source)).toEqual([expect.objectContaining({ severity: 'warning', tier: 3 })])
   })
 
   it('validates topic and catalog files by kind', () => {
     expect(getDiagnostics('root = Topic("T", "C", "D", [SectionRef("intro")])', 'topic')).toEqual([])
-    expect(getDiagnostics("root = Page(\"x\", LessonText(\"x\", []))", 'topic')).toEqual([expect.objectContaining({ message: expect.stringContaining('Topic') })])
+    expect(getDiagnostics("root = Page(\"x\", Stack([]))", 'topic')).toEqual([expect.objectContaining({ message: expect.stringContaining('Topic') })])
     expect(fileKindFromPath('/x/public/content/index.oui')).toBe('catalog')
     expect(fileKindFromPath('C:\\content\\demo\\topic.oui')).toBe('topic')
     expect(fileKindFromPath('demo/sections/quiz.oui')).toBe('section')
@@ -237,9 +237,9 @@ describe('diagnostics', () => {
 describe('tokenAt', () => {
   it('prefers the word starting at the cursor over punctuation ending there', async () => {
     const { tokenAt } = await import('../../../../../../src/core/supporting/authoring-editor/oui-language/scanner')
-    const source = "root = Page(\"T\", LessonText(\"T\", [p]))"
-    expect(tokenAt(scan(source), source.indexOf('p]'))?.text).toBe('p')
-    expect(tokenAt(scan(source), source.indexOf('p]') + 1)?.text).toBe('p')
+    const source = "root = Page(\"T\", Stack([TextContent(p)]))"
+    expect(tokenAt(scan(source), source.indexOf('p)'))?.text).toBe('p')
+    expect(tokenAt(scan(source), source.indexOf('p)') + 1)?.text).toBe('p')
     expect(tokenAt(scan(source), source.indexOf('[') )?.text).toBe('[')
   })
 })

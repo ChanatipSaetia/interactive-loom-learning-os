@@ -11,6 +11,10 @@ Flashcards(title: string, cards: Flashcard[], heading?: string, lead?: Lead) —
   - cards: The cards, as Flashcard references, in deck order.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
+Dialogue(user: string, aiThoughts: string, aiQuestion: string) — Example exchange showing a term in use: what the user says, what the AI thinks, and its follow-up question.
+  - user: What the user says, using the term.
+  - aiThoughts: The AI's internal reasoning about the user's message.
+  - aiQuestion: The follow-up question the AI asks back.
 Flashcard(id: string, word: string, pronunciation: string, category: string, shortDefinition: string, detailedDefinition: string, whyItMatters: string, image?: string, dialogue?: Dialogue) — A vocabulary flip card: the term on the front, definitions on the back.
   - id: Card ID, unique within the deck.
   - word: The term on the front of the card.
@@ -21,10 +25,6 @@ Flashcard(id: string, word: string, pronunciation: string, category: string, sho
   - whyItMatters: Why the learner should care about this term.
   - image: Optional image URL or path shown on the card.
   - dialogue: Optional Dialogue(...) example that shows the term in use.
-Dialogue(user: string, aiThoughts: string, aiQuestion: string) — Example exchange showing a term in use: what the user says, what the AI thinks, and its follow-up question.
-  - user: What the user says, using the term.
-  - aiThoughts: The AI's internal reasoning about the user's message.
-  - aiQuestion: The follow-up question the AI asks back.
 
 ## Presentation beats
 

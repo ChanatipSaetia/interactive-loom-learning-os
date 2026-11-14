@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { marked } from 'marked'
-import { usePickAnchors } from '../../../../../ui-system/pick-anchor'
+import { usePickAnchors, usePickAnchorScope } from '../../../../../ui-system/pick-anchor'
 import { PresentAgenda } from '../../../PresentAgenda'
 import { PresentWords } from '../../../PresentWords'
 import { leadTerm, textScenes } from '../../text-scenes'
@@ -24,9 +24,10 @@ export { leadTerm } from '../../text-scenes'
  * with a bold term shows the term as its headline; when every paragraph does, an agenda of the terms
  * shows where the section is (decision 111).
  */
-export default function PresentText({ data, beat }: PresentRendererProps<TextPresentData>) {
+export default function PresentText({ data, beat, paragraphAnchors }: PresentRendererProps<TextPresentData> & { paragraphAnchors?: string[] }) {
   const mark = beatMarks(beat)
   const pick = usePickAnchors()
+  const pickScope = usePickAnchorScope()
   const paragraphs = data.paragraphs
   const terms = useMemo(() => (paragraphs ?? []).map(leadTerm), [paragraphs])
   const parts = useMemo(() => {
@@ -51,7 +52,7 @@ export default function PresentText({ data, beat }: PresentRendererProps<TextPre
   const scenes = (
     <div className="present-scenes present-text-scenes">
       {parts.map((p, i) => (
-        <div key={i} className="present-text-scene" {...mark(i, { motion: 'fade', until: i })} {...pick(paragraphs ?? [], p.paragraph)}>
+        <div key={i} className="present-text-scene" {...mark(i, { motion: 'fade', until: i })} {...(paragraphAnchors ? { 'data-oui-anchor': paragraphAnchors[p.paragraph], 'data-oui-file': pickScope?.file, 'data-oui-section': pickScope?.label } : pick(paragraphs ?? [], p.paragraph))}>
           {p.total > 1 && <p className="present-eyebrow" {...QUIET}>Part {p.part + 1} of {p.total}</p>}
           {p.term && <p className="present-headline" {...mark(i, { motion: 'zoom' })} {...focus(p.part === 0 && beat === i)} {...(p.part > 0 ? QUIET : {})}>{p.term}</p>}
           <div

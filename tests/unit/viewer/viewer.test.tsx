@@ -9,7 +9,7 @@ const topic = (id: string, title: string) => ({
   topicId: id,
   files: {
     'topic.oui': `root = Topic("${title}", "Architecture", "About ${title}", [SectionRef("intro"), SectionRef("broken")])\n`,
-    'sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello from the viewer.\"]))\n",
+    'sections/intro.oui': "root = Page(\"Intro\", Stack([TextContent(\"Hello from the viewer.\")]))\n",
     'sections/broken.oui': 'root = Quiz(',
   },
 })
@@ -98,7 +98,7 @@ describe('Loom Viewer', () => {
       topicId: 'two',
       files: {
         'topic.oui': 'root = Topic("Two Sections", "Architecture", "", [SectionRef("words"), SectionRef("check")])\n',
-        'sections/words.oui': "root = Page(\"Words\", LessonText(\"Words\", [\"First paragraph.\", \"Second paragraph.\"]))\n",
+        'sections/words.oui': "root = Page(\"Words\", Stack([TextContent(\"First paragraph.\"), TextContent(\"Second paragraph.\")]))\n",
         'sections/check.oui': "root = Page(\"Points\", Bullets(\"Points\", [Bullet(\"One\"), Bullet(\"Two\", [Bullet(\"Two a\")])]))\n",
       },
     }
@@ -111,7 +111,7 @@ describe('Loom Viewer', () => {
     expect(screen.getByTestId('present-stage')).toBeInTheDocument()
     expect(screen.getByTestId('viewer-topic')).not.toBeVisible()
     // Each section opens on its title beat (decision 114)
-    expect(screen.getByTestId('present-where').textContent).toBe('Text · 1 of 3')
+    expect(screen.getByTestId('present-where').textContent).toBe('Page · 1 of 3')
     await waitFor(() => expect(document.querySelector('[data-testid="present-region-0"] .present-title-name')?.textContent).toBe('Words'))
     expect(document.querySelector('[data-testid="present-region-0"] .present-title-card')?.hasAttribute('data-shown')).toBe(true)
 
@@ -121,10 +121,10 @@ describe('Loom Viewer', () => {
       if (screen.getByTestId('present-where').textContent !== where) fireEvent.click(next)
       await waitFor(() => expect(screen.getByTestId('present-where').textContent).toBe(where))
     }
-    await step('Text · 2 of 3')
+    await step('Page · 2 of 3')
     await waitFor(() => expect(document.querySelector('[data-testid="present-region-0"] .present-paragraph')?.textContent).toBe('First paragraph.\n'))
     expect(document.querySelector('[data-testid="present-region-0"] .present-title-card')?.hasAttribute('data-shown')).toBe(false)
-    await step('Text · 3 of 3')
+    await step('Page · 3 of 3')
     await step('Bullets · 1 of 4')
     await step('Bullets · 2 of 4')
     await step('Bullets · 3 of 4')
@@ -146,7 +146,7 @@ describe('Loom Viewer', () => {
       topicId: 'narrated',
       files: {
         'topic.oui': 'root = Topic("Narrated", "Architecture", "", [SectionRef("words")])\n',
-        'sections/words.oui': "root = Page(\"Words\", LessonText(\"Words\", [\"First paragraph.\", \"Second paragraph.\"]))\n",
+        'sections/words.oui': "root = Page(\"Words\", Stack([TextContent(\"First paragraph.\"), TextContent(\"Second paragraph.\")]))\n",
         'sections/words.narrate.oui': 'root = Narration([s0, s1])\ns0 = NarrationStep("title", "Two short paragraphs.")\ns1 = NarrationStep("p2", "Both paragraphs say one thing.")\n',
       },
     }
@@ -160,16 +160,16 @@ describe('Loom Viewer', () => {
     const where = () => screen.getByTestId('present-where').textContent
     // The step plays on the beat it names, adding no stop to the rail (decisions 96, 108)
     // The title beat plays the section's intro in the author's words (decision 114)
-    expect(where()).toBe('Text · 1 of 3')
+    expect(where()).toBe('Page · 1 of 3')
     expect((await screen.findByTestId('present-caption')).textContent).toBe('Two short paragraphs.')
     const to = async (target: string) => {
       fireEvent.click(screen.getByTestId('present-next'))
       if (where() !== target) fireEvent.click(screen.getByTestId('present-next'))
       await waitFor(() => expect(where()).toBe(target))
     }
-    await to('Text · 2 of 3')
+    await to('Page · 2 of 3')
     expect(screen.queryByTestId('present-caption')).toBeNull()
-    await to('Text · 3 of 3')
+    await to('Page · 3 of 3')
     expect((await screen.findByTestId('present-caption')).textContent).toBe('Both paragraphs say one thing.')
   })
 
@@ -178,8 +178,8 @@ describe('Loom Viewer', () => {
       topicId: 'two',
       files: {
         'topic.oui': `root = Topic("Refreshing", "Architecture", "", [${sections.map((n) => `SectionRef("${n}")`).join(', ')}])\n`,
-        'sections/words.oui': "root = Page(\"Words\", LessonText(\"Words\", [\"First paragraph.\", \"Second paragraph.\"]))\n",
-        'sections/added.oui': "root = Page(\"Added\", LessonText(\"Added\", [\"New.\"]))\n",
+        'sections/words.oui': "root = Page(\"Words\", Stack([TextContent(\"First paragraph.\"), TextContent(\"Second paragraph.\")]))\n",
+        'sections/added.oui': "root = Page(\"Added\", Stack([TextContent(\"New.\")]))\n",
         'sections/check.oui': "root = Page(\"Points\", Bullets(\"Points\", [Bullet(\"One\"), Bullet(\"Two\")]))\n",
       },
     })
@@ -190,7 +190,7 @@ describe('Loom Viewer', () => {
     await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
     fireEvent.click(screen.getByTestId('viewer-mode-present'))
     const where = () => screen.getByTestId('present-where').textContent
-    for (const target of ['Text · 2 of 3', 'Text · 3 of 3', 'Bullets · 1 of 3', 'Bullets · 2 of 3', 'Bullets · 3 of 3']) {
+    for (const target of ['Page · 2 of 3', 'Page · 3 of 3', 'Bullets · 1 of 3', 'Bullets · 2 of 3', 'Bullets · 3 of 3']) {
       fireEvent.click(screen.getByTestId('present-next'))
       if (where() !== target) fireEvent.click(screen.getByTestId('present-next'))
       await waitFor(() => expect(where()).toBe(target))
@@ -206,7 +206,7 @@ describe('Loom Viewer', () => {
     // The section removed: back to the start
     source = createTopicSource([files(['words', 'added'])])
     fireEvent.click(screen.getByTestId('viewer-refresh'))
-    await waitFor(() => expect(where()).toBe('Text · 1 of 3'))
+    await waitFor(() => expect(where()).toBe('Page · 1 of 3'))
   })
 
   it('opens pasted text from the Paste box', async () => {
@@ -223,7 +223,7 @@ describe('Loom Viewer', () => {
   it('opens text pasted anywhere on the start screen, including a single section', async () => {
     render(<ViewerApp />)
     const event = new Event('paste', { bubbles: true }) as Event & { clipboardData: unknown }
-    event.clipboardData = { getData: () => "root = Page(\"Just One\", LessonText(\"Just One\", [\"Hello from one section.\"]))\n" }
+    event.clipboardData = { getData: () => "root = Page(\"Just One\", Stack([TextContent(\"Hello from one section.\")]))\n" }
     fireEvent(document.body, event)
     await waitFor(() => expect(screen.getByTestId('viewer-topic')).toBeInTheDocument())
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Just One')
@@ -233,7 +233,7 @@ describe('Loom Viewer', () => {
 
   it('opens a single section .oui file', async () => {
     render(<ViewerApp />)
-    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [pickedFile('intro.oui', "root = Page(\"Intro File\", LessonText(\"Intro File\", [\"From a file.\"]))\n")] } })
+    fireEvent.change(screen.getByTestId('viewer-file-input'), { target: { files: [pickedFile('intro.oui', "root = Page(\"Intro File\", Stack([TextContent(\"From a file.\")]))\n")] } })
     await waitFor(() => expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Intro File'))
   })
 
@@ -292,7 +292,7 @@ describe('Loom Viewer', () => {
       topicId: 'kafka',
       files: {
         'topic.oui': 'root = Topic("Kafka", "Data", "Logs", [SectionRef("intro")])\n',
-        'sections/intro.oui': "// Intro\nroot = Page(\"Intro\", LessonText(\"Intro\", [\"Hello from the viewer.\"]))\n",
+        'sections/intro.oui': "// Intro\nroot = Page(\"Intro\", Stack([TextContent(\"Hello from the viewer.\")]))\n",
       },
     }])
 
@@ -322,10 +322,10 @@ describe('Loom Viewer', () => {
       const entries = screen.getAllByTestId('pick-entry')
       expect(entries).toHaveLength(2)
       expect(entries[0].textContent).toContain('whole section')
-      expect(entries[1].textContent).toContain('root.body.paragraphs[0]')
+      expect(entries[1].textContent).toContain('root.body.children[0].text')
       // A chip opens to show its full pointer and a comment box.
       fireEvent.click(screen.getAllByTestId('pick-row')[1])
-      expect(screen.getByTestId('pick-editor').textContent).toContain('kafka/sections/intro.oui:2 #root.body.paragraphs[0]')
+      expect(screen.getByTestId('pick-editor').textContent).toContain('kafka/sections/intro.oui:2 #root.body.children[0].text')
 
       fireEvent.change(screen.getByTestId('pick-entry-note'), { target: { value: 'Say why logs matter.' } })
       // With the assistant on the page, Copy for agent is in the ⋯ menu.
@@ -335,7 +335,7 @@ describe('Loom Viewer', () => {
       expect((writeText.mock.calls[0] as unknown as [string])[0]).toBe(
         'Comments on the Loom topic "kafka":\n'
         + '- kafka/topic.oui:1 #root (from pasted text)\n'
-        + '- kafka/sections/intro.oui:2 #root.body.paragraphs[0] (from pasted text)\n  Say why logs matter.\n',
+        + '- kafka/sections/intro.oui:2 #root.body.children[0].text (from pasted text)\n  Say why logs matter.\n',
       )
 
       fireEvent.keyDown(window, { key: 'Escape' })

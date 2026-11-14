@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   compileOUISection,
+  parseOUIElements,
   compileOUITopic,
   compileOUICatalog,
   indexStatementLines,
@@ -14,7 +15,7 @@ import { SECTION_FIXTURES } from './fixtures'
 
 describe('Loom OpenUI library', () => {
   it('has one section component for every known section type except directive-based openui', () => {
-    expect(new Set([...OUI_SECTION_TYPES.values(), 'openui'])).toEqual(KNOWN_SECTION_TYPES)
+    expect(new Set([...OUI_SECTION_TYPES.values(), 'text', 'openui'])).toEqual(KNOWN_SECTION_TYPES)
     expect([...OUI_SECTION_TYPES.values()]).not.toContain('openui')
   })
 
@@ -35,8 +36,8 @@ describe('compileOUISection — every section type', () => {
       const result = validateOUISection(source)
       expect(result.diagnostics).toEqual([])
       expect(result.status).toBe('valid')
-      expect(result.payload?.meta.type).toBe(type)
-      expect(result.payload?.data.type).toBe(type)
+      expect(result.payload?.meta.type).toBe(type === 'text' ? 'openui' : type)
+      expect(result.payload?.data.type).toBe(type === 'text' ? 'openui' : type)
     })
   }
 })
@@ -108,13 +109,11 @@ describe('compileOUISection — mapping details', () => {
   })
 
   it('evaluates $state defaults, builtins and ternaries', () => {
-    const { value, issues } = compileOUISection(`
-$level = "beginner"
-root = Page("Level: " + $level, LessonText("Level: " + $level, [$level == "beginner" ? "Start slow." : "Go deep.", "" + @Count([1, 2, 3]) + " parts"]))
-`)
+    const { value, issues } = compileOUISection("\n$level = \"beginner\"\nroot = Page(\"Level: \" + $level, Stack([TextContent($level == \"beginner\" ? \"Start slow.\" : \"Go deep.\"), TextContent(\"\" + @Count([1, 2, 3]) + \" parts\")]))\n")
     expect(issues).toEqual([])
     expect(value?.meta.title).toBe('Level: beginner')
-    expect(value?.data).toEqual({ type: 'text', paragraphs: ['Start slow.', '3 parts'] })
+    expect(value?.data.type).toBe('openui')
+    expect(parseOUIElements((value?.data as { source: string }).source)?.props.children).toMatchObject([{ props: { text: 'Start slow.' } }, { props: { text: '3 parts' } }])
   })
 })
 
@@ -145,14 +144,12 @@ c = QuizChoice("a", "A", true)`)
   })
 
   it('reports unused statements as tier 3', () => {
-    const result = compileOUISection(`root = Page("T", LessonText("T", ["a"]))
-leftover = LessonText("x", [])`)
+    const result = compileOUISection("root = Page(\"T\", Stack([TextContent(\"a\")]))\nleftover = Stack([])")
     expect(result.issues).toEqual([expect.objectContaining({ tier: 3, code: 'unused-statement', statementId: 'leftover', line: 2 })])
   })
 
   it('rejects Query() as unsupported', () => {
-    const result = compileOUISection(`root = Page("T", LessonText("T", ["a"]))
-data = Query("tool", {}, {rows: []})`)
+    const result = compileOUISection("root = Page(\"T\", Stack([TextContent(\"a\")]))\ndata = Query(\"tool\", {}, {rows: []})")
     expect(result.issues).toContainEqual(expect.objectContaining({ tier: 1, code: 'unsupported-feature', statementId: 'data' }))
   })
 })
@@ -234,7 +231,6 @@ data = Query("get_data", {}, "")`)
   })
 
   it('treats a plain comment as a Loom section', () => {
-    expect(compileOUISection(`// openui is great
-root = Page("T", LessonText("T", ["p"]))`).value?.meta.type).toBe('text')
+    expect(compileOUISection("// openui is great\nroot = Page(\"T\", Stack([TextContent(\"p\")]))").value?.meta.type).toBe('openui')
   })
 })

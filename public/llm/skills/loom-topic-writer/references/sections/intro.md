@@ -25,6 +25,10 @@ IntroWhat(summary: string, definition?: string, bullets?: string[], tags?: strin
 IntroWhy(summary: string, impact?: string) — The "why it matters" panel of a topic intro.
   - summary: One-paragraph answer to "why does it matter?".
   - impact: Optional concrete impact or payoff.
+Lead(what?: string, why?: string, next?: string) — Short lead-in shown above a section: what it shows, why it matters, and what comes next.
+  - what: What this section shows, in one sentence.
+  - why: Why it matters to the learner.
+  - next: What the learner should do or look for next.
 RoadmapStep(title: string, type: string, description: string, sectionId?: string) — A roadmap entry previewing a later section. `type` is the section type (e.g. "quiz"); `sectionId` its file name.
   - title: Name of the upcoming section.
   - type: Section type it previews, e.g. "quiz" or "flowchart".

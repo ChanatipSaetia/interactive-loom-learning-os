@@ -9,7 +9,7 @@ export const MINIMAL_TOPIC_EXAMPLE = `// @loom-topic greeting
 // === topic.oui ===
 root = Topic("A greeting", "Language", "Read one greeting.", [SectionRef("hello")])
 // === sections/hello.oui ===
-root = Page("Hello", LessonText("A greeting", ["Hello is a greeting."]))
+root = Page("Hello", TextContent("Hello is a greeting."))
 // === sections/hello.narrate.oui ===
 root = Narration([NarrationStep("p1", "Read the greeting.")])`
 

@@ -17,7 +17,7 @@ async function anchorsOf(source: string): Promise<string[]> {
   document.body.innerHTML = ''
   const { value } = compileOUISection(source)
   const config = bundleToSections([value!])[0]
-  const Component = SectionRegistry.get(config.type)!
+  const Component = (await SectionRegistry.loader(config.type)!()).default
   // The same providers Studio and Viewer render sections in.
   const { container } = render(
     <ProgressProvider>
@@ -72,7 +72,7 @@ b = Concept("b", "Beta")
   })
 
   it('tags paragraphs and nested bullets', async () => {
-    expect(await anchorsOf("root = Page(\"T\", LessonText(\"T\", [\"One\", \"Two\"]))\n")).toEqual(['root', 'root.body.paragraphs[0]', 'root.body.paragraphs[1]'])
+    expect(await anchorsOf("root = Page(\"T\", Stack([TextContent(\"One\"), TextContent(\"Two\")]))\n")).toEqual(['root', 'root.body.children[0].text', 'root.body.children[1].text'])
     const bullets = await anchorsOf("root = Page(\"B\", Bullets(\"B\", [Bullet(\"Top\", [Bullet(\"Child\")]), b2]))\nb2 = Bullet(\"Second\")\n")
     expect(bullets).toEqual(expect.arrayContaining(['root.body.items[0]', 'root.body.items[0].text', 'b2', 'b2.text']))
   })

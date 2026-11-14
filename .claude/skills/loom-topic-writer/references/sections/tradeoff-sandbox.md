@@ -11,18 +11,9 @@ TradeoffSandbox(title: string, scenarios: TradeoffScenario[], heading?: string, 
   - scenarios: The scenarios, as TradeoffScenario references.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
-TradeoffScenario(id: string, title: string, metrics: TradeoffMetric[], steps: TradeoffStep[], description?: string) — A trade-off scenario: metrics to watch and the sequence of decisions to make.
-  - id: Scenario ID, unique within the sandbox.
-  - title: Scenario name shown in the scenario picker.
-  - metrics: Metrics to watch, as TradeoffMetric references.
-  - steps: Decisions in order, as TradeoffStep references.
-  - description: Optional scenario summary.
-TradeoffStep(id: string, title: string, choices: TradeoffChoice[], description?: string, recommended?: string) — A decision point in a trade-off scenario. `recommended` is the ID of the recommended choice.
-  - id: Step ID, unique within the scenario.
-  - title: The decision to make at this step.
-  - choices: The options, as TradeoffChoice references.
-  - description: Optional context for the decision.
-  - recommended: Optional ID of the recommended choice.
+ProCon(title: string, description?: string) — A pro or con of a trade-off choice.
+  - title: Short pro or con statement.
+  - description: Optional detail behind the statement.
 TradeoffChoice(id: string, label: string, description: string, metrics: Record<string, number>, pros: ProCon[], cons: ProCon[], whyThisFits?: string, whenToUse?: string) — One option in a trade-off step. `metrics` maps metric IDs to the delta this choice applies, e.g. {performance: 10, cost: -5}.
   - id: Choice ID, unique within the step; `recommended` refers to it.
   - label: Option name shown on the choice card.
@@ -39,9 +30,18 @@ TradeoffMetric(id: string, label: string, baseValue: number, min?: number, max?:
   - min: Optional lowest value the bar shows (default 0).
   - max: Optional highest value the bar shows (default 100).
   - direction: Optional "higher" or "lower": which way is better.
-ProCon(title: string, description?: string) — A pro or con of a trade-off choice.
-  - title: Short pro or con statement.
-  - description: Optional detail behind the statement.
+TradeoffScenario(id: string, title: string, metrics: TradeoffMetric[], steps: TradeoffStep[], description?: string) — A trade-off scenario: metrics to watch and the sequence of decisions to make.
+  - id: Scenario ID, unique within the sandbox.
+  - title: Scenario name shown in the scenario picker.
+  - metrics: Metrics to watch, as TradeoffMetric references.
+  - steps: Decisions in order, as TradeoffStep references.
+  - description: Optional scenario summary.
+TradeoffStep(id: string, title: string, choices: TradeoffChoice[], description?: string, recommended?: string) — A decision point in a trade-off scenario. `recommended` is the ID of the recommended choice.
+  - id: Step ID, unique within the scenario.
+  - title: The decision to make at this step.
+  - choices: The options, as TradeoffChoice references.
+  - description: Optional context for the decision.
+  - recommended: Optional ID of the recommended choice.
 
 ## Presentation beats
 

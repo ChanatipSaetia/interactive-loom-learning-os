@@ -10,7 +10,7 @@ import { getLoomAuthoringPrompt } from '../../../../../../src/core/learning-engi
 
 describe('assistant prompt', () => {
   it('pulls in the components a component can contain', () => {
-    expect(componentClosure(['Quiz'])).toEqual(['Quiz', 'QuizQuestion', 'QuizChoice', 'Lead'])
+    expect(componentClosure(['Quiz'])).toEqual(['Quiz', 'QuizQuestion', 'Lead', 'QuizChoice'])
     expect(componentClosure(['Nope'])).toEqual([])
     expect(componentClosure(['Table'])).toContain('Col')
   })

@@ -1,3 +1,5 @@
+import { parseOUIElements } from '../../../../../../src/core/learning-engine/composition/oui/compile'
+import { proseBlocks } from '../../../../../../src/core/learning-engine/composition/oui/page-prose'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Every OKF section in public/okf must survive OKF → OpenUI Lang → compile
@@ -28,6 +30,11 @@ function normalize(type: string, data: unknown, metaTitle?: string): unknown {
     if (Array.isArray(item.children) && item.children.length === 0) delete item.children
     dropEmptyChildren(item.children)
   })
+  if (type === 'openui' && typeof clone.source === 'string') {
+    const root = parseOUIElements(clone.source)
+    const blocks = root && proseBlocks(root)
+    if (blocks) return { type: 'text', paragraphs: blocks.map((block) => block.props.text) }
+  }
   if (type === 'bullets') dropEmptyChildren(clone.items)
   if (type === 'intro') {
     clone.roadmap?.forEach((r: any) => delete r.id)
@@ -89,7 +96,7 @@ knowledge = MatrixBlock("knowledge", "Retrieve", layer, 1, 1, 1, null, "green", 
         expect(normalize(back.meta.type, back.data, back.meta.title), `${label} data`)
           .toEqual(normalize(section.meta.type, section.data, section.meta.title))
         expect(back.meta, `${label} meta`).toEqual(JSON.parse(JSON.stringify({
-          type: section.meta.type,
+          type: section.meta.type === 'text' ? 'openui' : section.meta.type,
           title: section.meta.title ?? '',
           resource: '.',
           heading: section.meta.heading,

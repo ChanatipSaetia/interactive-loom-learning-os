@@ -18,7 +18,7 @@ import { getAuthoringWorkflow } from './authoring-workflow'
  */
 import { standardOpenUISpec } from '../../sub-contexts/progressive-content/openui-standard'
 import { getLoomAuthoringPrompt } from './authoring-prompt'
-import { LOOM_OUI_COMPONENTS, getLoomOUIComponent, getUnifiedOUISpec, promptDescription, type ComponentLibrary } from './library'
+import { getLoomOUIComponent, getUnifiedOUISpec, promptDescription, type ComponentLibrary } from './library'
 
 export type AssistantApp = 'studio' | 'viewer'
 
@@ -46,7 +46,7 @@ const TOPIC_RULES = `## Loom Topics
 
 - A topic is a folder: \`topic.oui\` holds \`root = Topic(...)\` with the ordered \`SectionRef("<name>")\` list; each \`sections/<name>.oui\` holds one section, \`root = Page("Title", body)\`. \`sections/<name>.narrate.oui\` holds \`root = Narration(...)\`, the narrator's script for that section in Loom Viewer's Present mode: \`NarrationStep(beat, caption, [effects])\` per beat, where \`beat\` is the section type's beat ID (\`"q1"\`, \`"q1.wrong"\`, \`"q1.right"\` for a quiz, \`"p2"\` for a text paragraph, \`"card1.back"\` for a flashcard) and the effects' targets are strings naming statements of the section file (e.g. \`"q2.explanation"\`). Keep it in step when a section's items change. It is not listed in topic.oui; write a new one with \`mode=create\`.
 - Every file is its own openui-lang program with its own \`root\` and its own statement names.
-- All pages use one shared component catalog; Page wraps either a learning component or an OpenUI visual composition.
+- All pages use one shared component catalog; Page composes text, layouts, visuals and prebuilt activities from that catalog.
 
 ## openui-lang Syntax
 
@@ -70,7 +70,7 @@ const VIEWER_SOURCE_RULES = `## Reading the Topic Source
 
 The topic is written in openui-lang. You get its source only to know exactly what the learner sees; it is not what they want to talk about.
 
-- \`topic.oui\` lists the sections in order; each \`sections/<name>.oui\` holds one section, \`root = Page("Title", body)\`. \`sections/<name>.narrate.oui\` is the narrator's script for Present mode. Page bodies use a shared catalog of OpenUI visuals and Loom learning activities.
+- \`topic.oui\` lists the sections in order; each \`sections/<name>.oui\` holds one section, \`root = Page("Title", body)\`. \`sections/<name>.narrate.oui\` is the narrator's script for Present mode. Page bodies use a shared catalog of text, layouts, visuals and prebuilt activities.
 - One statement per line, \`name = Component(arg1, arg2, …)\`; statements use each other by name. Arguments are positional, in the order of the component's signature in the Components entries; optional ones (marked ?) can be left off the end, and null skips one.
 - Props that point at an ID (\`next\`, \`startNode\`, \`solution\`, …) must name an ID in the same section, and every name a statement uses must exist in its file.`
 
@@ -164,10 +164,11 @@ User messages can start with a <topic-context> block: the topic outline, the sou
 
 /** All component names have one canonical meaning. */
 function signatureOf(name: string, _library?: ComponentLibrary): string | undefined {
+  void _library
   return getUnifiedOUISpec().components[name]?.signature
 }
 
-export function ambiguousComponents(_names: Iterable<string>): string[] { return [] }
+export function ambiguousComponents(_names: Iterable<string>): string[] { void _names; return [] }
 
 /** Component names a signature's parameters mention (`Quiz` → `QuizQuestion`, `Lead`). */
 function childTypes(signature: string, library?: ComponentLibrary, genericChildren: 'all' | 'selected' = 'all'): string[] {
@@ -192,10 +193,7 @@ export function componentClosure(names: Iterable<string>, library?: ComponentLib
     seen.add(name)
     queue.push(...childTypes(signatureOf(name, library)!, library, genericChildren))
   }
-  if (library === 'openui') return [...seen].sort()
-  const loom = LOOM_OUI_COMPONENTS.map((c) => c.name).filter((name) => seen.has(name))
-  const standard = [...seen].filter((name) => !getLoomOUIComponent(name)).sort()
-  return [...loom, ...standard]
+  return [...seen]
 }
 
 /** Signature, description and one line per prop, as in the authoring prompt, for the given components and what they can contain. */
@@ -230,10 +228,11 @@ export function firstSentence(text: string): string {
 
 /** Every Loom component with a one-line summary, so the model knows what exists. */
 export function componentIndex(): string {
-  return Object.entries(getUnifiedOUISpec().components)
-    .filter(([name]) => !['Catalog', 'TopicRef'].includes(name))
-    .map(([name, component]) => `- ${name}: ${firstSentence(component.description ?? '')}`)
-    .join('\n')
+  const spec = getUnifiedOUISpec()
+  return spec.componentGroups.map((group) => `### ${group.name}\n` + group.components
+    .filter((name) => !['Catalog', 'TopicRef'].includes(name))
+    .map((name) => `- ${name}: ${firstSentence(spec.components[name]?.description ?? '')}`)
+    .join('\n')).join('\n\n')
 }
 
 /** The system prompt for one assistant request (without the topic context). */
@@ -255,6 +254,6 @@ export function getLoomAssistantPrompt({ app, components = [], library, fullRefe
   parts.push(TOPIC_RULES)
   const reference = componentReference(components, library)
   if (reference) parts.push(`## Components in the Picked Source\n\nArguments marked with ? are optional.\n\n${reference}`)
-  parts.push(`## All Loom Components\n\n${componentIndex()}`)
+  parts.push(`## Component catalog by purpose\n\n${componentIndex()}`)
   return parts.join('\n\n')
 }

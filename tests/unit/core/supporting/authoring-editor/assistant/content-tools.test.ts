@@ -3,7 +3,7 @@ import { ContentToolRunner, parseAddress, type AssistantTopicContext } from '../
 
 const files = {
   'topic.oui': 'root = Topic("Demo", "Test", "A demo.", [SectionRef("intro"), SectionRef("quiz"), SectionRef("broken")])\n',
-  'sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Hello.\", \"World.\"]))\n",
+  'sections/intro.oui': "root = Page(\"Intro\", Stack([TextContent(\"Hello.\"), TextContent(\"World.\")]))\n",
   'sections/quiz.oui': `root = Page("Check", Quiz("Check", [q1]))
 q1 = QuizQuestion("q1", "First?", [QuizChoice("a", "Yes", true, "Right.")], "Think.")
 `,
@@ -57,7 +57,7 @@ describe('content tools (decisions 120–126)', () => {
 
   it('read with source: true gives the statement or the file as written', () => {
     expect(run('read', { address: 'sections/quiz.oui #q1', source: true }).content).toContain('```oui\nq1 = QuizQuestion("q1"')
-    expect(run('read', { address: 'intro', source: true }).content).toContain('root = Page("Intro", LessonText("Intro"')
+    expect(run('read', { address: 'intro', source: true }).content).toContain('root = Page("Intro", Stack(')
   })
 
   it('explains what it cannot do', () => {

@@ -9,7 +9,7 @@
     },
     "strategy": "Read one linked reference at a time; follow relevant branches, never recursively expand the tree."
   },
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "page": {
     "root": "Page",
     "boundary": "one section = one compositional learning page; no authored section type",
@@ -18,328 +18,215 @@
   },
   "componentGroups": [
     {
-      "name": "Layout",
+      "name": "Explain and orient",
       "components": [
-        "Stack",
-        "Tabs",
-        "TabItem",
-        "Accordion",
-        "AccordionItem",
-        "Steps",
-        "StepsItem",
-        "Carousel",
-        "Separator",
-        "Modal"
-      ],
-      "notes": [
-        "- For grid-like layouts, use Stack with direction \"row\" and wrap set to true.",
-        "- Prefer justify \"start\" (or omit justify) with wrap=true for stable columns instead of uneven gutters.",
-        "- Use nested Stacks when you need explicit rows/sections.",
-        "- Show/hide sections: $editId != \"\" ? Card([editForm]) : null",
-        "- Modal: Modal(\"Title\", $showModal, [content]) — $showModal is boolean, X/Escape auto-closes. Put Form with its own buttons inside children.",
-        "- Use Tabs for alternative views (chart types, data sections) — no $variable needed",
-        "- Shared filter across Tabs: same $days binding in Query args works across all TabItems"
-      ]
-    },
-    {
-      "name": "Content",
-      "components": [
-        "Card",
-        "CardHeader",
         "TextContent",
-        "MarkDownRenderer",
-        "Callout",
-        "TextCallout",
-        "Image",
-        "ImageBlock",
-        "ImageGallery",
+        "Text",
+        "Intro",
         "CodeBlock",
-        "InlineHeader",
-        "Svg"
-      ],
-      "notes": [
-        "- InlineHeader is a compact heading + description pair for labelling a block (lighter than CardHeader).",
-        "- Use Cards to group related KPIs or sections. Stack with direction \"row\" for side-by-side layouts.",
-        "- Success toast: Callout(\"success\", \"Saved\", \"Done.\", $showSuccess) — use @Set($showSuccess, true) in save action, auto-dismisses after 3s. For errors: result.status == \"error\" ? Callout(\"error\", \"Failed\", result.error) : null",
-        "- KPI card: Card([TextContent(\"Label\", \"small\"), TextContent(\"\" + @Count(@Filter(data.rows, \"field\", \"==\", \"value\")), \"large-heavy\")])",
-        "- Svg draws what is easier shown than told: a shape, a layout, a mechanism, a geometry. Write the markup in a single-quoted string so its attributes keep their double quotes; it may span several lines."
+        "Callout"
       ]
     },
     {
-      "name": "Tables",
+      "name": "Compare facts and examples",
       "components": [
         "Table",
-        "Col",
-        "EditableTable"
-      ],
-      "notes": [
-        "- EditableTable lets the user edit cells inline. Give it a unique name, columns of { type, key, header } with type one of text | number | date-single | select | url (select also needs options: [{ value, label }]).",
-        "- data is an array of { id, values } rows where values are ordered positionally to match columns. Edited data is submitted when the user clicks Save Changes.",
-        "- Table is COLUMN-oriented: Table([Col(\"Label\", dataArray), Col(\"Count\", countArray, \"number\")]). Use array pluck for data: data.rows.fieldName",
-        "- Col data can be component arrays for styled cells: Col(\"Status\", @Each(data.rows, \"item\", Tag(item.status, null, \"sm\", item.status == \"open\" ? \"success\" : \"danger\")))",
-        "- Row actions: Col(\"Actions\", @Each(data.rows, \"t\", Button(\"Edit\", Action([@Set($showEdit, true), @Set($editId, t.id)]))))",
-        "- Sortable: sorted = @Sort(data.rows, $sortField, \"desc\"). Bind $sortField to Select. Use sorted.fieldName for Col data",
-        "- Searchable: filtered = @Filter(data.rows, \"title\", \"contains\", $search). Bind $search to Input",
-        "- Chain sort + filter: filtered = @Filter(...) then sorted = @Sort(filtered, ...) — use sorted for both Table and Charts",
-        "- Empty state: @Count(data.rows) > 0 ? Table([...]) : TextContent(\"No data yet\")"
+        "Card",
+        "Stack",
+        "Tabs"
       ]
     },
     {
-      "name": "Charts (2D)",
+      "name": "Follow steps and processes",
+      "components": [
+        "Steps",
+        "Bullets",
+        "Flowchart",
+        "UserJourney"
+      ]
+    },
+    {
+      "name": "Explore relationships and categories",
+      "components": [
+        "ConceptMap",
+        "TaxonomyBrowser",
+        "PillarLayer",
+        "Svg"
+      ]
+    },
+    {
+      "name": "Interpret quantities and change",
       "components": [
         "BarChart",
+        "HorizontalBarChart",
         "LineChart",
         "AreaChart",
-        "RadarChart",
-        "HorizontalBarChart",
-        "Series"
-      ],
-      "notes": [
-        "- Charts accept column arrays: LineChart(labels, [Series(\"Name\", values)]). Use array pluck: LineChart(data.rows.day, [Series(\"Views\", data.rows.views)])",
-        "- Use Cards to wrap charts with CardHeader for titled sections",
-        "- Chart + Table from same source: use @Sort or @Filter result for both LineChart and Table Col data",
-        "- Multiple chart views: use Tabs — Tabs([TabItem(\"line\", \"Line\", [LineChart(...)]), TabItem(\"bar\", \"Bar\", [BarChart(...)])])"
-      ]
-    },
-    {
-      "name": "Charts (1D)",
-      "components": [
-        "PieChart",
-        "RadialChart",
-        "SingleStackedBarChart",
-        "Slice"
-      ],
-      "notes": [
-        "- PieChart and BarChart need NUMBERS, not objects. For list data, use @Count(@Filter(...)) to aggregate:",
-        "- PieChart from list: `PieChart([\"Low\", \"Med\", \"High\"], [@Count(@Filter(data.rows, \"priority\", \"==\", \"low\")), @Count(@Filter(data.rows, \"priority\", \"==\", \"medium\")), @Count(@Filter(data.rows, \"priority\", \"==\", \"high\"))], \"donut\")`",
-        "- KPI from count: `TextContent(\"\" + @Count(@Filter(data.rows, \"status\", \"==\", \"open\")), \"large-heavy\")`"
-      ]
-    },
-    {
-      "name": "Charts (Scatter)",
-      "components": [
         "ScatterChart",
-        "ScatterSeries",
-        "Point"
-      ]
-    },
-    {
-      "name": "Forms",
-      "components": [
-        "Form",
-        "FormControl",
-        "Label",
-        "Input",
-        "TextArea",
-        "Select",
-        "SelectItem",
-        "DatePicker",
-        "Slider",
-        "CheckBoxGroup",
-        "CheckBoxItem",
-        "RadioGroup",
-        "RadioItem",
-        "SwitchGroup",
-        "SwitchItem",
-        "Chips",
-        "ChipItem",
-        "OptionCards",
-        "OptionCard"
-      ],
-      "notes": [
-        "- Chips: compact single/multiple selection pills. Use ChipItem references for each option.",
-        "- OptionCards: larger selectable cards with title, subtitle and an optional Icon or Image on top. Use OptionCard references for each option.",
-        "- For Form fields, define EACH FormControl as its own reference — do NOT inline all controls in one array. This allows progressive field-by-field streaming.",
-        "- NEVER nest Form inside Form — each Form should be a standalone container.",
-        "- Form requires explicit buttons. Always pass a Buttons(...) reference as the third Form argument.",
-        "- rules is an optional object: {required: true, email: true, minLength: 8, maxLength: 100}",
-        "- Available rules: required, email, min, max, minLength, maxLength, pattern, url, numeric",
-        "- The renderer shows error messages automatically — do NOT generate error text in the UI",
-        "- Conditional fields: $country == \"US\" ? stateField : $country == \"UK\" ? postcodeField : addressField",
-        "- Edit form in Modal: Modal(\"Edit\", $showEdit, [Form(\"edit\", Buttons([saveBtn, cancelBtn]), [fields...])]). Save button should include @Set($showEdit, false) to close modal."
-      ]
-    },
-    {
-      "name": "Buttons",
-      "components": [
-        "Button",
-        "Buttons",
-        "IconButton"
-      ],
-      "notes": [
-        "- Icon renders a lucide icon by kebab-case name; it is also used as the icon of IconButton, IconText and OptionCard.",
-        "- Toggle in @Each: @Each(rows, \"t\", Button(t.status == \"open\" ? \"Close\" : \"Reopen\", Action([...])))"
-      ]
-    },
-    {
-      "name": "Data Display",
-      "components": [
-        "TagBlock",
-        "Tag",
-        "Icon",
-        "EntityList",
-        "ListBlock",
-        "ListItem"
-      ],
-      "notes": [
-        "- Color-mapped Tag: Tag(value, null, \"sm\", value == \"high\" ? \"danger\" : value == \"medium\" ? \"warning\" : \"neutral\")",
-        "- EntityList is a compact two-column list of { left, right } rows (e.g. name / value). size='default' also supports a header and footer row; size='small' does not.",
-        "- ListBlock is a numbered or image list of ListItem references. An action on ListItem is optional."
-      ]
-    },
-    {
-      "name": "Cards",
-      "components": [
-        "SnippetCardBlock",
-        "SnippetCardItem",
-        "OverviewCardBlock",
-        "OverviewCardItem",
-        "ContextCardBlock",
-        "ContextCardItem",
-        "CompositeCardBlock",
-        "CompositeCardItem",
-        "VisualCardBlock",
-        "VisualCardItem",
-        "Text",
-        "BoldText",
-        "IconText",
-        "ImageText",
-        "ImageTextLarge",
-        "MetricIndicatorInline",
-        "MetricIndicatorWithStrikethrough"
-      ],
-      "notes": [
-        "- Card blocks lay out 2+ items in a responsive grid (or carousel where supported). Every item in a block must have the same structure.",
-        "- SnippetCardItem: small card with lhs (IconText | ImageText) and optional rhs (Text | BoldText) — good for key/value facts.",
-        "- OverviewCardItem: small card with top (IconText | ImageText | Text) and optional bottom MetricIndicatorInline — good for KPIs.",
-        "- ContextCardItem: medium card with a title (string or Tag), body text and optional background image — good for summaries.",
-        "- CompositeCardItem: rich card with header, body array (Text, BoldText, MetricIndicatorInline, IconText, Image, charts, ListBlock, TagBlock, EntityList) and footer (price + Button) — good for products/offers.",
-        "- VisualCardItem: image-first card with a BoldText body and optional Tag.",
-        "- Text / BoldText / IconText / ImageText / ImageTextLarge / MetricIndicator* are the inline building blocks used INSIDE card items; do not place them directly in the root Card."
-      ]
-    },
-    {
-      "name": "Progressive Content",
-      "components": [
-        "Intro",
-        "IntroWhat",
-        "IntroWhy",
-        "RoadmapStep",
-        "LessonText",
-        "Bullets",
-        "Bullet",
-        "TaxonomyBrowser",
-        "TaxonomyCategory",
-        "LearningGallery",
-        "GalleryImage",
-        "PillarLayer",
-        "Layer",
-        "LayerItem",
-        "MatrixBlock",
-        "UserJourney",
-        "JourneyStage",
+        "PieChart",
+        "RadarChart",
         "Timeline",
-        "TimelineLane",
-        "TimelineActivity",
-        "TimelineGroup",
-        "BreakdownTree",
-        "BreakdownNode"
+        "BreakdownTree"
       ]
     },
     {
-      "name": "Process Simulation",
-      "components": [
-        "Flowchart",
-        "Actor",
-        "System",
-        "StateMachine",
-        "MachineState",
-        "Step",
-        "Branch",
-        "BranchOption",
-        "Event",
-        "Journey",
-        "JourneyStep",
-        "Scenario",
-        "ScenarioNode",
-        "ScenarioChoice",
-        "Outcome"
-      ]
-    },
-    {
-      "name": "Trade-off Sandbox",
+      "name": "Explore choices and models",
       "components": [
         "TradeoffSandbox",
-        "TradeoffScenario",
-        "TradeoffStep",
-        "TradeoffChoice",
-        "TradeoffMetric",
-        "ProCon",
-        "FormulaSandbox",
-        "FormulaVariable",
-        "FormulaMetric",
         "DecisionTree",
-        "DecisionNode",
-        "DecisionChoice",
-        "DecisionLeaf"
+        "Scenario",
+        "FormulaSandbox"
       ]
     },
     {
-      "name": "Reflection & Synthesis",
+      "name": "Compose a local exploration",
       "components": [
-        "ReflectionSequence",
-        "SequenceChallenge",
-        "SequenceItem",
-        "ReflectionTemplate",
-        "TemplateChallenge",
-        "Chip"
+        "Slider",
+        "Input",
+        "Select",
+        "SwitchGroup",
+        "Form",
+        "Button"
       ]
     },
     {
-      "name": "Practice & Assessment",
+      "name": "Inspect visual references",
       "components": [
-        "Quiz",
-        "QuizQuestion",
-        "QuizChoice",
+        "Image",
+        "ImageGallery",
+        "LearningGallery"
+      ]
+    },
+    {
+      "name": "Recall, apply and explain",
+      "components": [
         "Flashcards",
-        "Flashcard",
-        "Dialogue",
-        "ConceptMap",
-        "Concept",
-        "ConceptLink"
+        "Quiz",
+        "ReflectionSequence",
+        "ReflectionTemplate"
       ]
     },
     {
-      "name": "Shared",
+      "name": "Layout, controls and supporting contracts",
       "components": [
-        "Lead"
-      ]
-    },
-    {
-      "name": "Topic & Catalog",
-      "components": [
-        "Topic",
-        "SectionRef",
+        "Accordion",
+        "AccordionItem",
+        "Actor",
+        "BoldText",
+        "Branch",
+        "BranchOption",
+        "BreakdownNode",
+        "Bullet",
+        "Buttons",
+        "CardHeader",
+        "Carousel",
         "Catalog",
-        "TopicRef"
-      ]
-    },
-    {
-      "name": "The learner's Loom folder (Loom/index.oui, Loom/<domain-id>/domain.oui)",
-      "components": [
+        "CheckBoxGroup",
+        "CheckBoxItem",
+        "Chip",
+        "ChipItem",
+        "Chips",
+        "Col",
+        "CompositeCardBlock",
+        "CompositeCardItem",
+        "Concept",
+        "ConceptLink",
+        "ContextCardBlock",
+        "ContextCardItem",
+        "DatePicker",
+        "DecisionChoice",
+        "DecisionLeaf",
+        "DecisionNode",
+        "Dialogue",
         "Domain",
         "DomainRef",
-        "Library"
-      ]
-    },
-    {
-      "name": "Narration (sections/<name>.narrate.oui)",
-      "components": [
-        "Narration",
-        "NarrationStep",
+        "EditableTable",
+        "EntityList",
+        "Event",
+        "Flashcard",
+        "FormControl",
+        "FormulaMetric",
+        "FormulaVariable",
+        "GalleryImage",
         "Highlight",
+        "Icon",
+        "IconButton",
+        "IconText",
+        "ImageBlock",
+        "ImageText",
+        "ImageTextLarge",
+        "InlineHeader",
+        "IntroWhat",
+        "IntroWhy",
+        "Journey",
+        "JourneyStage",
+        "JourneyStep",
+        "Label",
+        "Layer",
+        "LayerItem",
+        "Lead",
+        "Library",
+        "ListBlock",
+        "ListItem",
+        "MachineState",
+        "MarkDownRenderer",
+        "MatrixBlock",
+        "MetricIndicatorInline",
+        "MetricIndicatorWithStrikethrough",
+        "Modal",
+        "Narration",
         "NarrationCallout",
-        "Spotlight"
+        "NarrationStep",
+        "OptionCard",
+        "OptionCards",
+        "Outcome",
+        "OverviewCardBlock",
+        "OverviewCardItem",
+        "Page",
+        "Point",
+        "ProCon",
+        "QuizChoice",
+        "QuizQuestion",
+        "RadialChart",
+        "RadioGroup",
+        "RadioItem",
+        "RoadmapStep",
+        "ScatterSeries",
+        "ScenarioChoice",
+        "ScenarioNode",
+        "SectionRef",
+        "SelectItem",
+        "Separator",
+        "SequenceChallenge",
+        "SequenceItem",
+        "Series",
+        "SingleStackedBarChart",
+        "Slice",
+        "SnippetCardBlock",
+        "SnippetCardItem",
+        "Spotlight",
+        "StateMachine",
+        "Step",
+        "StepsItem",
+        "SwitchItem",
+        "System",
+        "TabItem",
+        "Tag",
+        "TagBlock",
+        "TaxonomyCategory",
+        "TemplateChallenge",
+        "TextArea",
+        "TextCallout",
+        "TimelineActivity",
+        "TimelineGroup",
+        "TimelineLane",
+        "Topic",
+        "TopicRef",
+        "TradeoffChoice",
+        "TradeoffMetric",
+        "TradeoffScenario",
+        "TradeoffStep",
+        "VisualCardBlock",
+        "VisualCardItem"
       ]
     }
   ],
@@ -605,8 +492,8 @@
       "deliver"
     ]
   },
-  "selectionGuidance": "Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Native Loom sections and OpenUI are first-class choices; there is no section ranking, visual quota or mandatory sequence.\n\nCompare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.\n\nBullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. Compare OpenUI compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. OpenUI Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.\n\nFlashcards introduce definitions and meanings as well as practise recall. OpenUI cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox evaluates options and decisions; Formula Sandbox explores parameter sensitivity. Select the other native sections by their learning purpose below.\n\nFor a 3D web research lesson, compare matched capabilities in an OpenUI table, inspect annotated use-case cards, and explain camera/geometry with a labelled Svg when each serves an objective. Bullets can guide real initialization steps; native Flowchart can trace system messages. These are candidates, not a required section mix.\n\nFor full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.\n\nRetrieve selected section rules, then canonical component contracts and dependencies. If focused retrieval fails, retry with the exact component names and forceRefresh; then use the selected legacy section guide (omit library/components). For OpenUI, retrieve its section guide and selected component families. If contracts remain unavailable, report the blocker and revise/revalidate the plan only to an equally faithful supported representation; never silently downgrade to Text/Bullets or invent signatures. Focused OpenUI contracts include compact section rules and beats: request only the actual composition components and required model types; permitted generic child alternatives are not all dependencies.",
-  "openuiVisuals": [
+  "selectionGuidance": "Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Text, layouts, visuals and prebuilt activities share one catalog; there is no section ranking, visual quota or mandatory sequence.\n\nCompare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.\n\nBullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. Compare compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.\n\nFlashcards introduce definitions and meanings as well as practise recall. Cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox evaluates options and decisions; Formula Sandbox explores parameter sensitivity. Select other prebuilt activities by their learning purpose below.\n\nFor a 3D web research lesson, compare matched capabilities in a Table, inspect annotated use-case cards, and explain camera/geometry with a labelled Svg when each serves an objective. Bullets can guide real initialization steps; Flowchart can trace system messages. These are candidates, not a required section mix.\n\nFor full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.\n\nRead only plausible capability summaries, then the exact contracts and required model dependencies of the selected components. Prebuilt activities package reusable interactions and presentation scenes; select them by fit, just like tables, text or controls. If a contract is unavailable, correct the path or explicitly revise and revalidate the plan; never silently downgrade to prose or invent signatures. Generic child alternatives are choices, not dependencies.",
+  "visualChoices": [
     {
       "learningGoal": "Compare concrete examples or evidence layouts side by side",
       "components": "Card / Stack with concise explanations or labelled Svg drawings"
@@ -652,9 +539,8 @@
       "components": "Steps"
     }
   ],
-  "sections": [
+  "components": [
     {
-      "type": "intro",
       "component": "Intro",
       "summary": "Topic opener: what it is, why it matters, and a roadmap of the sections ahead. `displayTitle` overrides the title shown inside the card.",
       "mentalModel": "Orientation, purpose and roadmap",
@@ -666,19 +552,6 @@
       }
     },
     {
-      "type": "text",
-      "component": "LessonText",
-      "summary": "Prose section: one string per paragraph.",
-      "mentalModel": "Connected explanation and narrative",
-      "selectionQuestion": "Does this idea need connected prose or narrative? Before choosing Text, consider native sections and OpenUI comparisons, diagrams, tables or charts; use prose when it best teaches the goal.",
-      "learningBehavior": {
-        "learnerAction": "Read a connected explanation or argument.",
-        "presentationConstraint": "Keep prose readable in Read and Present; check long paragraphs at phone width.",
-        "evidenceBoundary": "Prose can be the right representation; viewing it is not assessment."
-      }
-    },
-    {
-      "type": "bullets",
       "component": "Bullets",
       "summary": "Linear instructions, prerequisites, checklists, key points and summaries; set `ordered` true for numbered procedures.",
       "mentalModel": "Linear procedures, prerequisites, checklists and key points",
@@ -690,7 +563,6 @@
       }
     },
     {
-      "type": "taxonomy-browser",
       "component": "TaxonomyBrowser",
       "summary": "Browsable taxonomy of categories with scope, analogy and details.",
       "mentalModel": "Classification and distinctions",
@@ -702,7 +574,6 @@
       }
     },
     {
-      "type": "image-gallery",
       "component": "LearningGallery",
       "summary": "Gallery of captioned images.",
       "mentalModel": "Visual recognition and concrete references",
@@ -714,7 +585,6 @@
       }
     },
     {
-      "type": "pillar-layer",
       "component": "PillarLayer",
       "summary": "Layer-stack map: layers as rows (foundation last), blocks placed on a gap-free grid. Give blocks `dependsOn` so readers can tap a block to trace what it needs and what it affects. `displayTitle` overrides the title shown inside the map.",
       "mentalModel": "Layered dependency and foundation",
@@ -726,7 +596,6 @@
       }
     },
     {
-      "type": "user-journey",
       "component": "UserJourney",
       "summary": "A person’s experience across product or service stages. Read explores stages; Present walks goals, actions, responses and optional friction and outcomes without an Event Storming diagram.",
       "mentalModel": "A person’s experience with a product or service",
@@ -738,7 +607,6 @@
       }
     },
     {
-      "type": "timeline",
       "component": "Timeline",
       "summary": "Measured task timeline: one row per activity, sorted by start time, with duration-scaled bars, parallel work and finish-to-start dependencies. Present keeps the whole diagram visible while focusing authored groups.",
       "mentalModel": "Measured time, duration, overlap and waiting",
@@ -750,7 +618,6 @@
       }
     },
     {
-      "type": "breakdown-tree",
       "component": "BreakdownTree",
       "summary": "A whole divided into measurable parts: costs, counts, time allocation or conditional probability. Calculates each part’s share of its parent and the whole, validates totals, and explains one split per presentation beat.",
       "mentalModel": "Parts of a measurable whole and conditional probability",
@@ -762,7 +629,6 @@
       }
     },
     {
-      "type": "flowchart",
       "component": "Flowchart",
       "summary": "Animated Event Storming flowchart. Every actor and system must be used by at least one step.",
       "mentalModel": "Process, responsibility and interaction",
@@ -809,7 +675,6 @@
       }
     },
     {
-      "type": "scenario",
       "component": "Scenario",
       "summary": "Branching \"what would you do?\" scenario. `startNode` defaults to \"start\". `displayTitle` overrides the title shown inside the scenario.",
       "mentalModel": "Consequences across decisions",
@@ -821,7 +686,6 @@
       }
     },
     {
-      "type": "tradeoff-sandbox",
       "component": "TradeoffSandbox",
       "summary": "Interactive sandbox where learners compare choices across one or more situations, weigh gains and costs, and see how goals, constraints and priorities change which option fits. Several contrasting situations can teach when to choose each alternative; avoid a universal winner.",
       "mentalModel": "Presenting options, comparing alternatives and trade-offs",
@@ -833,7 +697,6 @@
       }
     },
     {
-      "type": "formula-sandbox",
       "component": "FormulaSandbox",
       "summary": "Parameter sandbox: sliders drive live formula-based metrics.",
       "mentalModel": "Input–output relationships and sensitivity",
@@ -845,7 +708,6 @@
       }
     },
     {
-      "type": "decision-tree",
       "component": "DecisionTree",
       "summary": "Interactive decision guide. `root` is the ID of the first node. `displayTitle` overrides the title shown inside the guide.",
       "mentalModel": "Rule-based diagnosis and selection",
@@ -857,7 +719,6 @@
       }
     },
     {
-      "type": "reflection-sequence",
       "component": "ReflectionSequence",
       "summary": "Sequence-builder reflection: learners put steps in the right order.",
       "mentalModel": "Reconstructing order and procedure",
@@ -869,7 +730,6 @@
       }
     },
     {
-      "type": "reflection-template",
       "component": "ReflectionTemplate",
       "summary": "Self-explanation reflection: learners complete sentence templates with chips.",
       "mentalModel": "Structured reasoning and explanation",
@@ -881,7 +741,6 @@
       }
     },
     {
-      "type": "quiz",
       "component": "Quiz",
       "summary": "Knowledge-check section of multiple-choice questions.",
       "mentalModel": "Checking understanding and applying knowledge",
@@ -893,7 +752,6 @@
       }
     },
     {
-      "type": "flashcards",
       "component": "Flashcards",
       "summary": "Deck of flip cards for key vocabulary.",
       "mentalModel": "Definitions, meaning, vocabulary and recall",
@@ -905,7 +763,6 @@
       }
     },
     {
-      "type": "concept-map",
       "component": "ConceptMap",
       "summary": "Knowledge graph of concepts and the relations between them.",
       "mentalModel": "Relationships between concepts",
@@ -917,9 +774,272 @@
       }
     },
     {
-      "type": "openui",
-      "component": "Page",
-      "summary": "One page composed from the shared catalog: tables, charts, cards, drawings and local controls.",
+      "component": "TextContent",
+      "summary": "Text block. Supports markdown. Optional size: \"small\" | \"default\" | \"large\" | \"small-heavy\" | \"large-heavy\".",
+      "mentalModel": "Connected explanation and narrative",
+      "selectionQuestion": "Does this idea need connected prose or narrative? Before choosing TextContent, consider comparisons, diagrams, tables or charts; use prose when it best teaches the goal.",
+      "learningBehavior": {
+        "learnerAction": "Read a connected explanation or argument.",
+        "presentationConstraint": "Keep prose readable in Read and Present; check long paragraphs at phone width.",
+        "evidenceBoundary": "Prose can be the right representation; viewing it is not assessment."
+      }
+    },
+    {
+      "component": "Text",
+      "summary": "Plain text line with optional subtext. variant 'number' uses tabular number styling; subtextVariant 'metric' colors a leading +/- subtext green/red.",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "CodeBlock",
+      "summary": "Syntax-highlighted code block",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Callout",
+      "summary": "Callout banner. Optional visible is a reactive $boolean — auto-dismisses after 3s by setting $visible to false.",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Table",
+      "summary": "Data table — column-oriented. Each Col holds its own data array.",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Card",
+      "summary": "Styled container. variant: \"card\" (default, elevated) | \"sunk\" (recessed) | \"clear\" (transparent). Always full width. Accepts all Stack flex params (default: direction \"column\"). Cards flex to share space in row/wrap layouts.",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Stack",
+      "summary": "Flex container. direction: \"row\"|\"column\" (default \"column\"). gap: \"none\"|\"xs\"|\"s\"|\"m\"|\"l\"|\"xl\"|\"2xl\" (default \"m\"). align: \"start\"|\"center\"|\"end\"|\"stretch\"|\"baseline\". justify: \"start\"|\"center\"|\"end\"|\"between\"|\"around\"|\"evenly\".",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Tabs",
+      "summary": "Tabbed container",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Steps",
+      "summary": "Step-by-step guide",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Svg",
+      "summary": "A drawing written as inline SVG markup (one <svg viewBox=\"…\"> element), with an optional caption under it. Color names of the Loom palette (blue, peach, green, mauve, red, yellow, teal, text, subtext0, overlay1, surface0, …) follow the theme; shapes without a fill take the text color. Give the shapes narration will point at an id. No scripts, links, images or foreignObject.",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "BarChart",
+      "summary": "Vertical bars; use for comparing values across categories with one or more series",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "HorizontalBarChart",
+      "summary": "Horizontal bars; prefer when category labels are long or for ranked lists",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "LineChart",
+      "summary": "Lines over categories; use for trends and continuous data over time",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "AreaChart",
+      "summary": "Filled area under lines; use for cumulative totals or volume trends over time",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "ScatterChart",
+      "summary": "X/Y scatter plot; use for correlations, distributions, and clustering",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "PieChart",
+      "summary": "Circular slices; use plucked arrays: PieChart(data.categories, data.values)",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "RadarChart",
+      "summary": "Spider/web chart; use for comparing multiple variables across one or more entities",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Slider",
+      "summary": "Numeric slider input; supports continuous and discrete (stepped) variants",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Input",
+      "summary": "",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Select",
+      "summary": "",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "SwitchGroup",
+      "summary": "Group of switch toggles",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Form",
+      "summary": "Form container with fields and explicit action buttons",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Button",
+      "summary": "Clickable button",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "Image",
+      "summary": "Image with alt text and optional URL",
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "ImageGallery",
+      "summary": "Gallery grid of images with modal preview",
       "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
       "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
       "learningBehavior": {

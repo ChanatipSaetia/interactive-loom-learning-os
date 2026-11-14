@@ -91,11 +91,11 @@ describe('capability-aware authored regression corpus', () => {
   })
   it('detects an all-prose substitution and keeps appropriate prose and Bullets valid', () => {
     const unjustified = structuredClone(THREE_SPLINE_PLAN)
-    unjustified.sections = unjustified.sections.map((section) => ({ ...section, components: ['LessonText'], rationale: undefined, presentation: undefined, assessment: undefined }))
+    unjustified.sections = unjustified.sections.map((section) => ({ ...section, components: ['TextContent'], rationale: undefined, presentation: undefined, assessment: undefined }))
     expect(validateTopicPlan(unjustified)).toEqual([])
     expect(reviewTopicPlan(unjustified).some((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toBe(true)
     expect(checkTopic(THREE_SPLINE_OUI, unjustified).planAlignment?.status).toBe('mismatch')
-    const prose = { ...THREE_SPLINE_PLAN, sections: THREE_SPLINE_PLAN.sections.map((section) => ({ ...section, components: ['LessonText'], rationale: 'Connected prose preserves nuanced qualifications that a factual table would hide.' })) }
+    const prose = { ...THREE_SPLINE_PLAN, sections: THREE_SPLINE_PLAN.sections.map((section) => ({ ...section, components: ['TextContent'], rationale: 'Connected prose preserves nuanced qualifications that a factual table would hide.' })) }
     expect(reviewTopicPlan(prose).some((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toBe(false)
   })
   it('recovers focused retrieval failures through the selected legacy guide without changing representation', async () => {
@@ -112,7 +112,7 @@ describe('capability-aware authored regression corpus', () => {
       expect(retry.content).not.toContain('QuizQuestion(')
       expect(checkSection(THREE_SPLINE_FILES['sections/comparison.oui'], 'sections/comparison.oui').valid).toBe(true)
       const missing = getAuthoringContract({ detail: 'focused', sections: ['openui'] })
-      expect(missing.diagnostics[0].code).toBe('OPENUI_COMPONENTS_REQUIRED')
+      expect(missing.diagnostics[0].code).toBe('COMPONENTS_REQUIRED')
     } finally { await client.close() }
   })
 })
@@ -150,7 +150,7 @@ it('compares the same request with list-heavy and composition-aware plans and me
   const legacy = getAuthoringGuide([], names, 'openui')
   expect(focused.measurement.estimatedTokens).toBeLessThan(2000)
   const selected = focused.contracts.split('\n').filter((line) => /^[A-Z]\w*\(/.test(line)).map((line) => line.split('(')[0])
-  expect(selected).toEqual(['Card', 'CardHeader', 'Stack', 'TextContent'])
+  expect([...selected].sort()).toEqual(['Card', 'CardHeader', 'Stack', 'TextContent'])
   mkdirSync('artifacts', { recursive: true })
   writeFileSync('artifacts/ai-openui-selection-regression.json', JSON.stringify({
     origin: 'authored-user-request-reproduction', request: THREE_SPLINE_REQUEST,

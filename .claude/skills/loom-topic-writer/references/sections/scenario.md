@@ -15,19 +15,19 @@ Scenario(title: string, id: string, nodes: ScenarioNode[], intro?: string, start
   - displayTitle: Optional title shown inside the scenario instead of `title`.
   - heading: Optional sub-heading shown under the section title.
   - lead: Optional Lead(...) intro card: what the section shows, why it matters, what comes next.
+Outcome(verdict: string, lesson: string, rating: "a" | "b-plus" | "b-minus" | "c") — End of a scenario path: verdict, lesson, and rating ("a", "b-plus", "b-minus" or "c").
+  - verdict: Short judgement of the path taken (e.g. "Solid call").
+  - lesson: What the learner should take away.
+  - rating: Grade of the path: "a", "b-plus", "b-minus" or "c".
+ScenarioChoice(id: string, text: string, next: string) — A choice in a scenario. `next` is the ID of the node it leads to.
+  - id: Choice ID, unique within its node.
+  - text: Choice text shown on the button.
+  - next: ID of the ScenarioNode this choice leads to.
 ScenarioNode(id: string, prompt?: string, choices?: ScenarioChoice[], outcome?: Outcome) — A scenario node: a prompt with choices, or an outcome.
   - id: Node ID, unique within the scenario; choices point at it with `next`.
   - prompt: Situation and question shown at this node (prompt nodes).
   - choices: Options, as ScenarioChoice references (prompt nodes).
   - outcome: Outcome(...) ending (outcome nodes, instead of prompt/choices).
-ScenarioChoice(id: string, text: string, next: string) — A choice in a scenario. `next` is the ID of the node it leads to.
-  - id: Choice ID, unique within its node.
-  - text: Choice text shown on the button.
-  - next: ID of the ScenarioNode this choice leads to.
-Outcome(verdict: string, lesson: string, rating: "a" | "b-plus" | "b-minus" | "c") — End of a scenario path: verdict, lesson, and rating ("a", "b-plus", "b-minus" or "c").
-  - verdict: Short judgement of the path taken (e.g. "Solid call").
-  - lesson: What the learner should take away.
-  - rating: Grade of the path: "a", "b-plus", "b-minus" or "c".
 
 ## Presentation beats
 

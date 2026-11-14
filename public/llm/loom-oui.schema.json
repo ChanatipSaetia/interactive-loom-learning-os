@@ -17,9 +17,6 @@
     "RoadmapStep": {
       "$ref": "#/$defs/RoadmapStep"
     },
-    "LessonText": {
-      "$ref": "#/$defs/LessonText"
-    },
     "Bullets": {
       "$ref": "#/$defs/Bullets"
     },
@@ -249,7 +246,6 @@
     "IntroWhat",
     "IntroWhy",
     "RoadmapStep",
-    "LessonText",
     "Bullets",
     "Bullet",
     "TaxonomyBrowser",
@@ -447,9 +443,6 @@
               },
               {
                 "$ref": "#/$defs/Intro"
-              },
-              {
-                "$ref": "#/$defs/LessonText"
               },
               {
                 "$ref": "#/$defs/Bullets"
@@ -2077,9 +2070,6 @@
               "$ref": "#/$defs/Intro"
             },
             {
-              "$ref": "#/$defs/LessonText"
-            },
-            {
               "$ref": "#/$defs/Bullets"
             },
             {
@@ -3271,9 +3261,6 @@
               "$ref": "#/$defs/Intro"
             },
             {
-              "$ref": "#/$defs/LessonText"
-            },
-            {
               "$ref": "#/$defs/Bullets"
             },
             {
@@ -3369,9 +3356,6 @@
               },
               {
                 "$ref": "#/$defs/Intro"
-              },
-              {
-                "$ref": "#/$defs/LessonText"
               },
               {
                 "$ref": "#/$defs/Bullets"
@@ -3898,9 +3882,6 @@
                 "$ref": "#/$defs/Intro"
               },
               {
-                "$ref": "#/$defs/LessonText"
-              },
-              {
                 "$ref": "#/$defs/Bullets"
               },
               {
@@ -4076,9 +4057,6 @@
                 },
                 {
                   "$ref": "#/$defs/Intro"
-                },
-                {
-                  "$ref": "#/$defs/LessonText"
                 },
                 {
                   "$ref": "#/$defs/Bullets"
@@ -4430,9 +4408,6 @@
                 "$ref": "#/$defs/Intro"
               },
               {
-                "$ref": "#/$defs/LessonText"
-              },
-              {
                 "$ref": "#/$defs/Bullets"
               },
               {
@@ -4612,9 +4587,6 @@
               },
               {
                 "$ref": "#/$defs/Intro"
-              },
-              {
-                "$ref": "#/$defs/LessonText"
               },
               {
                 "$ref": "#/$defs/Bullets"
@@ -4964,9 +4936,6 @@
               "$ref": "#/$defs/Intro"
             },
             {
-              "$ref": "#/$defs/LessonText"
-            },
-            {
               "$ref": "#/$defs/Bullets"
             },
             {
@@ -5022,6 +4991,10 @@
         "heading": {
           "type": "string",
           "description": "Optional supporting explanation shown with the page."
+        },
+        "lead": {
+          "$ref": "#/$defs/Lead",
+          "description": "Optional Lead(...) page introduction: what, why and next; used by the presentation title beat."
         }
       },
       "required": [
@@ -5030,6 +5003,25 @@
       ],
       "additionalProperties": false,
       "description": "One authored page with one main visual or activity and supporting text. Present may explain it through several automatic scenes."
+    },
+    "Lead": {
+      "type": "object",
+      "properties": {
+        "what": {
+          "type": "string",
+          "description": "What this section shows, in one sentence."
+        },
+        "why": {
+          "type": "string",
+          "description": "Why it matters to the learner."
+        },
+        "next": {
+          "type": "string",
+          "description": "What the learner should do or look for next."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Short lead-in shown above a section: what it shows, why it matters, and what comes next."
     },
     "Intro": {
       "type": "object",
@@ -5163,55 +5155,6 @@
       ],
       "additionalProperties": false,
       "description": "A roadmap entry previewing a later section. `type` is the section type (e.g. \"quiz\"); `sectionId` its file name."
-    },
-    "Lead": {
-      "type": "object",
-      "properties": {
-        "what": {
-          "type": "string",
-          "description": "What this section shows, in one sentence."
-        },
-        "why": {
-          "type": "string",
-          "description": "Why it matters to the learner."
-        },
-        "next": {
-          "type": "string",
-          "description": "What the learner should do or look for next."
-        }
-      },
-      "additionalProperties": false,
-      "description": "Short lead-in shown above a section: what it shows, why it matters, and what comes next."
-    },
-    "LessonText": {
-      "type": "object",
-      "properties": {
-        "title": {
-          "type": "string",
-          "description": "Section title, shown in the topic outline and as the section header."
-        },
-        "paragraphs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "The paragraphs, one string each, in order."
-        },
-        "heading": {
-          "type": "string",
-          "description": "Optional sub-heading shown under the section title."
-        },
-        "lead": {
-          "$ref": "#/$defs/Lead",
-          "description": "Optional Lead(...) intro card: what the section shows, why it matters, what comes next."
-        }
-      },
-      "required": [
-        "title",
-        "paragraphs"
-      ],
-      "additionalProperties": false,
-      "description": "Prose section: one string per paragraph."
     },
     "Bullets": {
       "type": "object",
@@ -5540,7 +5483,7 @@
         },
         "title": {
           "type": "string",
-          "description": "LessonText shown on the block."
+          "description": "Text shown on the block."
         },
         "layer": {
           "anyOf": [

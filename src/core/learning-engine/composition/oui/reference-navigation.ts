@@ -1,3 +1,4 @@
+import { COMPONENT_PURPOSES } from './component-purpose'
 import { DOCUMENT_SYNTAX_GUIDE } from './document-contract'
 import { guideReferences } from './reference-guides'
 import { SECTION_LEARNING_BEHAVIORS, SECTION_MENTAL_MODELS, FLOWCHART_MODELS, REPRESENTATION_SELECTION_GUIDE, COMPOSITION_DECISION_GUIDE } from './mental-model-guide'
@@ -14,7 +15,7 @@ export const referenceUri = (path: string) => `${REFERENCE_ROOT}${path}`
 const link = (path: string, label: string) => `[${label}](${referenceUri(path)})`
 export function referencePaths(): string[] {
   return ['index.md', 'workflow/edit.md', 'display/library.md', 'display/domain.md', 'runtime.md', 'tutoring/index.md', 'storage/index.md', 'capabilities/selection.md', ...Object.keys(guideReferences()), ...AUTHORING_WORKFLOW_STAGES.map((stage) => `workflow/${stage.id}.md`),
-    'capabilities/index.md', ...guideSectionTypes().map((item) => `capabilities/${item.component}.md`),
+    'capabilities/index.md', ...Object.keys(getUnifiedOUISpec().components).map((name) => `capabilities/${name}.md`),
     'contracts/topic-plan.schema.json', 'contracts/delivery.md', 'contracts/syntax.md', 'contracts/page.md', 'contracts/topic.md', 'contracts/narration.md', 'components/index.md',
     ...Object.keys(getUnifiedOUISpec().components).map((name) => `components/${name}.md`)]
 }
@@ -61,21 +62,24 @@ export function readReference(input = 'index.md') {
     content = `# ${stage.id}\n\nRead when: performing the ${stage.id} step.\n\n${stage.task}\n\n${tools[stage.id] ?? ''}\n\nPrerequisite: ${link(index ? `workflow/${AUTHORING_WORKFLOW_STAGES[index - 1].id}.md` : 'index.md', index ? 'Previous step' : 'Entry point')}\n\nNext:\n${next.map((p) => '- ' + link(p, p)).join('\n')}`
   } else if (path === 'capabilities/index.md') {
     next = ['capabilities/selection.md', 'workflow/plan.md']
-    content = '# Choose learning capabilities\n\nMap the objective to a learner action and knowledge structure. Read only relevant alternatives below; these are capabilities to compose, not page types.\n\n' + guideSectionTypes().map((c) => '- ' + link(`capabilities/${c.component}.md`, c.component) + ': ' + c.summary).join('\n') + '\n\nNext:\n' + next.map((p) => '- ' + link(p, p === 'workflow/plan.md' ? 'Plan pages' : 'Selection criteria')).join('\n')
+    content = '# Choose components by learning purpose\n\nOne catalog: text, layouts, charts and prebuilt activities are peers. Start with the learner’s task; inspect plausible alternatives without reading every contract. Prebuilt activities package useful interactions and presentation scenes; their origin does not give them priority. These are candidates, not page types or a required mix.\n\n' + COMPONENT_PURPOSES.map((group) => `## ${group.name}\n\n${group.purpose}\n\n` + group.components.filter((name) => !!getUnifiedOUISpec().components[name]).map((name) => link(`capabilities/${name}.md`, name)).join(', ')).join('\n\n') + '\n\nNext:\n' + next.map((p) => '- ' + link(p, p === 'workflow/plan.md' ? 'Plan pages' : 'Selection criteria')).join('\n')
   } else if (path === 'capabilities/selection.md') {
     next = ['workflow/plan.md']
     content = REPRESENTATION_SELECTION_GUIDE.replace(/Retrieve selected section rules[\s\S]*$/, 'Read selected component references through read_reference. If unavailable, correct the path or explicitly revise and revalidate the plan; do not silently substitute prose.') + '\n\n' + COMPOSITION_DECISION_GUIDE
   } else if (path.startsWith('capabilities/')) {
-    const item = guideSectionTypes().find((c) => path === `capabilities/${c.component}.md`)
-    if (!item) return missing(path)
-    next = ['workflow/plan.md', `components/${item.component}.md`]
+    const name = /^capabilities\/([A-Za-z][A-Za-z0-9]*)\.md$/.exec(path)?.[1]
+    if (!name || !Object.prototype.hasOwnProperty.call(getUnifiedOUISpec().components, name)) return missing(path)
+    const item = guideSectionTypes().find((c) => c.component === name) ?? { type: 'openui', component: name, summary: getUnifiedOUISpec().components[name]!.description }
+    next = ['workflow/plan.md', `components/${name}.md`]
     const behavior = SECTION_LEARNING_BEHAVIORS[item.type as keyof typeof SECTION_LEARNING_BEHAVIORS]
     const model = SECTION_MENTAL_MODELS.find((entry) => entry.type === item.type)
-    const details = [model?.model, model?.question, behavior?.learnerAction, behavior?.presentationConstraint, behavior?.evidenceBoundary, item.component === 'Flowchart' ? FLOWCHART_MODELS.map(([id, purpose]) => `${id}: ${purpose}`).join('\n') : ''].filter(Boolean).join('\n\n')
+    const purpose = COMPONENT_PURPOSES.find((group) => (group.components as readonly string[]).includes(name))
+    const alternatives = purpose?.components.filter((candidate) => candidate !== name).map((candidate) => link(`capabilities/${candidate}.md`, candidate)).join(', ')
+    const details = [purpose?.purpose, alternatives ? `Compare when relevant: ${alternatives}. These are alternatives, not dependencies.` : '', model?.model, model?.question, behavior?.learnerAction, behavior?.presentationConstraint, behavior?.evidenceBoundary, item.component === 'Flowchart' ? FLOWCHART_MODELS.map(([id, purpose]) => `${id}: ${purpose}`).join('\n') : ''].filter(Boolean).join('\n\n')
     content = `# ${item.component}\n\n${item.summary}\n\n${details}\n\nRead when: considering this capability for a learner action. Combine it with supporting components; it does not determine a page type.\n\nBefore authoring, ${link(next[0], 'plan the composition')}. Then read ${link(next[1], 'the exact component contract')}.`
   } else if (path === 'contracts/delivery.md') {
     next = ['workflow/validate-plan.md', 'workflow/verify.md', 'storage/index.md']
-    content = '# Delivery review\n\nNew topics use show_topic({oui, plan, mode?, advisoryResolutions?}); intent defaults to create. Call validate_topic_plan first and retain its planVersion. Source inspection is limited to 256 Ki characters per topic. Source/plan review follows root dependencies; unused declarations and component names inside prose do not satisfy a planned activity. Source mismatches and missing presentation or learning-evidence fields must be repaired. No component quota is imposed.\n\nDesign warnings UNJUSTIFIED_TEXT_SELECTION, LIST_STRUCTURE_REVIEW, POSSIBLE_REDUNDANT_SECTION and GOAL_COMPOSITION_REVIEW may be resolved explicitly with {code, path, reason, planVersion}. Use the exact warning code/path and current planVersion; reason must explain the specific exception (40–2000 characters). A changed plan invalidates prior resolutions. Explanations are recorded declarations, not independent judgments of teaching quality. Original advisories remain visible even when delivery accepts a justified exception.\n\nA blocked result has isError: true, deliveryReview.status: blocked, repair targets and unresolved diagnostics; the app must not render or export the rejected draft, and nothing is saved. Accepted source is sent in app-only metadata for the player to compile. accepted-for-player-check is not proof of compiler validity, layout or learning. Local compiler failures block creation too.\n\nExisting topics can be replayed unchanged with show_topic({oui, intent: \"reopen\"}). Planless replay is explicitly unreviewed; it must not be used for newly authored content. If a plan is supplied, its checks still apply.\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
+    content = '# Delivery review\n\nNew topics use show_topic({oui, plan, mode?, advisoryResolutions?}); intent defaults to create. Call validate_topic_plan first and retain its planVersion. Source inspection is limited to 256 Ki characters per topic. Source/plan review follows root dependencies; unused declarations and component names inside prose do not satisfy a planned activity. Source mismatches and missing presentation or learning-evidence fields must be repaired. No component quota is imposed.\n\nDesign warnings UNJUSTIFIED_TEXT_SELECTION, LIST_STRUCTURE_REVIEW, POSSIBLE_REDUNDANT_SECTION and GOAL_COMPOSITION_REVIEW may be resolved explicitly with {code, path, reason, planVersion}. Use the exact warning code/path and current planVersion; reason must explain the specific exception (40–2000 characters). A changed plan invalidates prior resolutions. Explanations are recorded declarations, not independent judgments of teaching quality. Original advisories remain visible even when delivery accepts a justified exception.\n\nA blocked result has isError: true, deliveryReview.status: blocked, repair targets and unresolved diagnostics; the app must not render or export the rejected draft, and nothing is saved. Accepted source is sent in app-only metadata for the player to compile. accepted-for-player-check is not proof of compiler validity, layout or learning. Local compiler failures block creation too.\n\nExisting topics can be replayed unchanged with show_topic({oui, intent: "reopen"}). Planless replay is explicitly unreviewed; it must not be used for newly authored content. If a plan is supplied, its checks still apply.\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
   } else if (path === 'contracts/syntax.md') {
     next = ['contracts/topic.md', 'contracts/page.md', 'contracts/narration.md', 'workflow/verify.md']
     content = DOCUMENT_SYNTAX_GUIDE + '\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
@@ -88,7 +92,7 @@ export function readReference(input = 'index.md') {
     content = JSON.stringify(z.toJSONSchema(TopicPlanSchema), null, 2)
   } else if (path === 'components/index.md') {
     next = ['workflow/generate.md']
-    content = '# Component contracts\n\nRead only components selected in your validated plan. Each file includes required signature dependencies; generic child alternatives remain choices.\n\n' + Object.keys(getUnifiedOUISpec().components).map((name) => '- ' + link(`components/${name}.md`, name)).join('\n') + '\n\nNext: ' + link(next[0], 'Generate source')
+    content = '# Component contracts\n\nRead only components selected in your validated plan. Each file includes required signature dependencies; generic child alternatives remain choices.\n\n' + getUnifiedOUISpec().componentGroups.map((group) => `## ${group.name}\n\n` + group.components.map((name) => '- ' + link(`components/${name}.md`, name)).join('\n')).join('\n\n') + '\n\nNext: ' + link(next[0], 'Generate source')
   } else {
     const name = /^components\/([A-Za-z][A-Za-z0-9]*)\.md$/.exec(path)?.[1]
     if (!name || !Object.prototype.hasOwnProperty.call(getUnifiedOUISpec().components, name)) return missing(path)

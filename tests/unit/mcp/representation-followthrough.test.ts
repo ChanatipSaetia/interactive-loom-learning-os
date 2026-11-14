@@ -12,10 +12,9 @@ const data = (r: unknown) => JSON.parse(text(r))
 
 it('gives the authoring index the same learning-purpose cues as capability discovery', () => {
   const index = getAuthoringContract({ detail: 'index' })
-  expect(index.sections?.find((s) => s.type === 'flashcards')).toHaveProperty('mentalModel', 'Definitions, meaning, vocabulary and recall')
-  expect(index.sections?.find((s) => s.type === 'bullets')?.mentalModel).toContain('Linear procedures')
+  expect(index.componentGroups?.flatMap((group) => [...group.components])).toEqual(expect.arrayContaining(['Flashcards', 'Steps', 'Bullets', 'Table', 'TradeoffSandbox']))
   expect(index).toHaveProperty('flowchart.views')
-  expect(index).toHaveProperty('openui')
+  expect(index).toHaveProperty('compositionChoices')
 })
 
 it.each(['Text explains complex concepts clearly.', 'Text is the simplest format for a detailed explanation.', 'Detailed written explanations make the capabilities easy to understand.'])('does not accept a generic Text rationale as a capability-fit decision: %s', (rationale) => {

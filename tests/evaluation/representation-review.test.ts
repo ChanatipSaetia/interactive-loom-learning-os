@@ -24,8 +24,8 @@ const corpus = [
   { id: 'dense-review', request: 'Review whether a long table is readable', type: 'openui', alternatives: ['text', 'taxonomy-browser'], source: `root = Page("Review required", Table([Col("Notes", ["${'Long factual explanation. '.repeat(100)}"])]))` },
 ]
 
-const supported = new Set(getCapabilityCatalog().sections.map((section) => section.type))
-const componentFor: Record<string, string> = { 'taxonomy-browser': 'TaxonomyBrowser', bullets: 'Bullets', flowchart: 'Flowchart', 'tradeoff-sandbox': 'TradeoffSandbox', 'formula-sandbox': 'FormulaSandbox', openui: 'Table', text: 'LessonText', quiz: 'Quiz' }
+const supported = new Set(getCapabilityCatalog().components.map((component) => component.component))
+const componentFor: Record<string, string> = { 'taxonomy-browser': 'TaxonomyBrowser', bullets: 'Bullets', flowchart: 'Flowchart', 'tradeoff-sandbox': 'TradeoffSandbox', 'formula-sandbox': 'FormulaSandbox', openui: 'Table', text: 'TextContent', quiz: 'Quiz', 'image-gallery': 'LearningGallery' }
 const planFor = (id: string, type: string, action: string): TopicPlan => ({
   schemaVersion: 1, topicId: id, goal: action,
   objectives: [{ id: 'objective', description: action }],
@@ -39,7 +39,7 @@ describe('offline representation decision review', () => {
     const results = corpus.map((fixture) => {
       const plan = planFor(fixture.id, fixture.id === 'drawing' ? 'Svg' : fixture.type, fixture.request)
       expect(validateTopicPlan(plan), fixture.id).toEqual([])
-      for (const alternative of fixture.alternatives) expect(supported.has(alternative)).toBe(true)
+      for (const alternative of fixture.alternatives) expect(supported.has(componentFor[alternative] ?? alternative)).toBe(true)
       const check = checkTopic(bundleOf(fixture.id, fixture.source, fixture.narration), plan)
       expect(check.ok, `${fixture.id}: ${check.report}`).toBe(true)
       expect(check.planAlignment?.status, fixture.id).toBe('aligned')

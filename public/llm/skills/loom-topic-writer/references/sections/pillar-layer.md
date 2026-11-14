@@ -24,7 +24,7 @@ LayerItem(title: string, description?: string) — A labelled item listed inside
   - description: Optional detail.
 MatrixBlock(id: string, title: string, layer: string | Layer, colOffset?: number, colSpan?: number, rowSpan?: number, description?: string, color?: string, dependsOn?: string[], shape?: "rect" | "l-bottom-left" | "l-bottom-right" | "l-top-left" | "l-top-right", offsets?: number[][], group?: string) — A block placed on the matrix, anchored at `layer` (reference or ID) and `colOffset`. Spans default to 1; `shape` is "rect" or an L-shape. `dependsOn` lists block IDs.
   - id: Block ID, unique within the map; `dependsOn` refers to it.
-  - title: LessonText shown on the block.
+  - title: Text shown on the block.
   - layer: Anchor row: Layer reference or ID.
   - colOffset: Optional anchor column, from 0 (default 0).
   - colSpan: Optional number of columns covered (default 1).

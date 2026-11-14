@@ -49,8 +49,8 @@ describe('validateOUISection', () => {
   })
 
   it('reports unused statements as warnings', () => {
-    const result = validateOUISection("root = Page(\"T\", LessonText(\"T\", [\"a\"]))\nunused = LessonText(\"U\", [])", context)
+    const result = validateOUISection("root = Page(\"T\", Stack([TextContent(\"a\")]))\nunused = Stack([])", context)
     expect(result.status).toBe('warning')
-    expect(result.payload?.data).toEqual({ type: 'text', paragraphs: ['a'] })
+    expect(result.payload?.data).toMatchObject({ type: 'openui', source: expect.stringContaining('TextContent("a")') })
   })
 })

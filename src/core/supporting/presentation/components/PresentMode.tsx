@@ -69,7 +69,7 @@ export interface PresentModeProps {
 }
 
 const KIND_LABELS: Record<string, string> = {
-  'user-journey': 'User journey', intro: 'Intro', text: 'Text', bullets: 'Bullets', openui: 'OpenUI', flowchart: 'Flowchart',
+  'user-journey': 'User journey', intro: 'Intro', text: 'Text', bullets: 'Bullets', openui: 'Page', flowchart: 'Flowchart',
   'tradeoff-sandbox': 'Trade-offs', 'taxonomy-browser': 'Taxonomy', flashcards: 'Flashcards', quiz: 'Quiz',
   'concept-map': 'Concept map', scenario: 'Scenario', 'decision-tree': 'Decision tree', 'image-gallery': 'Gallery',
   'breakdown-tree': 'Breakdown', 'timeline': 'Timeline', 'pillar-layer': 'Layers', 'formula-sandbox': 'Formula', 'reflection-sequence': 'Sequence', 'reflection-template': 'Template',

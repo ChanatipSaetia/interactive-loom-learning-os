@@ -195,8 +195,7 @@ export function reviewTopicPlan(input: unknown) {
     // Layout wrappers and supporting prose do not turn a prose/list-only page
     // into a structured learning activity. Inspect all declared activities together.
     const structuredComponents = [...components].some((name) =>
-      (OUI_SECTION_TYPES.has(name) && !['LessonText', 'Bullets'].includes(name)) ||
-      ['Table', 'Svg', 'Steps', 'BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'PieChart', 'SingleStackedBarChart', 'ScatterChart', 'RadarChart'].includes(name))
+      ['Intro', 'Flowchart', 'Scenario', 'TradeoffSandbox', 'FormulaSandbox', 'DecisionTree', 'TaxonomyBrowser', 'ConceptMap', 'PillarLayer', 'UserJourney', 'Timeline', 'BreakdownTree', 'LearningGallery', 'ImageGallery', 'Flashcards', 'Quiz', 'ReflectionSequence', 'ReflectionTemplate', 'Table', 'Svg', 'Steps', 'BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'PieChart', 'SingleStackedBarChart', 'ScatterChart', 'RadarChart'].includes(name))
     const rationaleWeak = !section.rationale || weak(section.rationale)
     const design = `${section.rationale ?? ''} ${section.presentation?.strategy ?? ''}`
     if (!section.rationale) add('MISSING_RATIONALE', `${path}.rationale`, 'Explain why this representation preserves the knowledge structure and supports this learner action; compare feasible alternatives.')
@@ -209,14 +208,14 @@ export function reviewTopicPlan(input: unknown) {
     const proseNeed = /\b(connected prose|nuanc\w*|narrativ\w*|arguments?|qualifications?|ambigu\w*|interpret\w*|close reading|wording|essays?|caveats?|verbatim|prose (?:was|is) (?:explicitly )?requested)\b/i.test(section.rationale ?? '')
     const proseAlternative = /\b(table|matrix|diagram|flowchart|concept map|sandbox|cards?|quiz|sequence)\b/i.test(section.rationale ?? '')
     const proseLimitation = /\b(hide|flatten|lose|imply|obscure|distort|cannot|mislead|unsupported)\b/i.test(section.rationale ?? '')
-    if (has('LessonText', 'Text', 'TextContent') && !structuredComponents && !has('Bullets') && structuredTask && (rationaleWeak || !proseNeed || !proseAlternative || !proseLimitation)) {
+    if (has('Text', 'TextContent') && !structuredComponents && !has('Bullets') && structuredTask && (rationaleWeak || !proseNeed || !proseAlternative || !proseLimitation)) {
       add('UNJUSTIFIED_TEXT_SELECTION', `${path}.rationale`, 'This objective involves structured knowledge. Compare feasible native/OpenUI capabilities, then state the prose-specific need (e.g. nuance, connected argument or careful wording) or revise the representation. Name a feasible alternative and the specific information or qualification it would lose. Saying connected prose alone is insufficient. Justified Text remains valid.')
     }
     const relationalTask = /\b(compar\w*|factual attributes|spatial|relationships?|architecture|interactions?|handoffs?|data movement|state transitions?|tradeoffs?|choos(?:e|ing)|decisions?|options?)\b/i.test(task)
     const listAction = /\b(numbered|step[- ]by[- ]step|procedures?|checklists?|prerequisites?|instructions?|key points|supporting details|concise summar(?:y|ies)|summari[sz]\w*)\b/i.test(section.activity)
-    if (has('Bullets') && !structuredComponents && relationalTask && !listAction) add('LIST_STRUCTURE_REVIEW', `${path}.rationale`, 'Review whether a list preserves the comparison, spatial structure or relationships. Consider an OpenUI table/cards/labelled diagram or the relevant native model. Keep Bullets for a genuine procedure, checklist, key points or summary; state that learner action and justify the fit. This is advisory, not a Bullets count or quality score.')
+    if (has('Bullets') && !structuredComponents && relationalTask && !listAction) add('LIST_STRUCTURE_REVIEW', `${path}.rationale`, 'Review whether a list preserves the comparison, spatial structure or relationships. Consider a table, cards, labelled diagram or relevant prebuilt activity. Keep Bullets for a genuine procedure, checklist, key points or summary; state that learner action and justify the fit. This is advisory, not a Bullets count or quality score.')
     if (has('Table', 'Svg', 'Steps', 'Card', 'BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'PieChart', 'SingleStackedBarChart', 'ScatterChart', 'RadarChart')) {
-      if (!/\b(cards?|stacks?|tables?|charts?|diagrams?|svg|steps|barchart|horizontalbarchart|linechart|areachart|piechart|singlestackedbarchart|scatterchart|radarchart)\b/i.test(design)) add('MISSING_OPENUI_COMPOSITION', `${path}.rationale`, 'Name the intended OpenUI table, cards, Steps, labelled Svg diagram or chart and explain how it supports the learner action; retrieve those component contracts.')
+      if (!/\b(cards?|stacks?|tables?|charts?|diagrams?|svg|steps|barchart|horizontalbarchart|linechart|areachart|piechart|singlestackedbarchart|scatterchart|radarchart)\b/i.test(design)) add('MISSING_COMPOSITION_STRATEGY', `${path}.rationale`, 'Name the intended table, cards, Steps, labelled Svg diagram or chart and explain how it supports the learner action; retrieve those component contracts.')
       if (has('BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'PieChart', 'SingleStackedBarChart', 'ScatterChart', 'RadarChart') && !section.evidenceRefs?.length && !/\b(illustrative|supplied|verified)\b/i.test(design)) add('CHART_DATA_UNVERIFIED', `${path}.evidenceRefs`, 'Provide supplied/verified data and source references for empirical charts, or explicitly label illustrative data. If data is unavailable, use a faithful factual table or qualitative explanation. A declared reference does not verify truth.')
     }
     if (has('Flowchart')) {
@@ -233,7 +232,7 @@ export function reviewTopicPlan(input: unknown) {
   })
   const comparisonGoal = /\b(compar\w*|versus|vs\.?|tradeoffs?|choos(?:e|ing)|decisions?)\b/i.test(plan.goal)
   const explicitProse = /\b(essay|prose[- ]only|text[- ]only|in (?:\d+|three|two|one) sentences?|single paragraph)\b/i.test(plan.goal)
-  const allProse = plan.sections.every((section) => section.components.every((name) => ['Page', 'Stack', 'Card', 'CardHeader', 'CardContent', 'LessonText', 'Text', 'TextContent', 'Lead', 'Bullets', 'Bullet'].includes(name)))
+  const allProse = plan.sections.every((section) => section.components.every((name) => ['Page', 'Stack', 'Card', 'CardHeader', 'CardContent', 'Text', 'TextContent', 'Lead', 'Bullets', 'Bullet'].includes(name)))
   if (comparisonGoal && allProse && !explicitProse) add('GOAL_COMPOSITION_REVIEW', 'goal', 'The goal asks for comparison or choice but the plan contains only prose/lists. Review relevant comparison, relationship or decision capabilities; justify the fit explicitly or revise the plan. This is advisory, not a component quota.')
   plan.objectives.forEach((objective, index) => {
     if (!objective.evidenceOfLearning) add('MISSING_LEARNING_EVIDENCE', `objectives[${index}].evidenceOfLearning`, 'Describe an observable response; viewing alone does not demonstrate understanding.')

@@ -8,7 +8,6 @@ import {
   openuiParts,
   pillarLayerBeats,
   taxonomyBeats,
-  textBeats,
 } from '../../../../src/core/learning-engine/sub-contexts/progressive-content/present'
 import { content, ids, kinds, propsOf } from './helpers'
 
@@ -31,9 +30,9 @@ why = IntroWhy("Origin requests cost time.")
   })
 
   it('text: one beat per paragraph', () => {
-    const props = propsOf<Parameters<typeof textBeats>[0]>("root = Page(\"What a cache keeps\", LessonText(\"What a cache keeps\", [\"First **paragraph**.\", \"Second.\", \"Third.\"]))\n")
-    expect(kinds(textBeats(props))).toEqual(['show', 'show', 'show'])
-    expect(textBeats(props)[0]).toEqual({ id: 'p1', about: 'Paragraph 1: First paragraph.' })
+    const props = propsOf<Parameters<typeof openuiBeats>[0]>("root = Page(\"What a cache keeps\", Stack([TextContent(\"First **paragraph**.\"), TextContent(\"Second.\"), TextContent(\"Third.\")]))\n")
+    expect(kinds(openuiBeats(props))).toEqual(['show', 'show', 'show'])
+    expect(openuiBeats(props)[0]).toEqual({ id: 'p1', about: 'Paragraph 1: First paragraph.' })
   })
 
   it('bullets: each nested point gets a beat before the next top-level point', () => {

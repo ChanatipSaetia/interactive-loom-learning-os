@@ -41,12 +41,12 @@ why = IntroWhy("Why this topic matters.", "The impact of understanding it.")
   },
   {
     type: 'text',
-    component: 'LessonText',
+    component: 'TextContent',
     label: 'Text',
-    description: 'Paragraphs of prose',
-    source: (title) => `root = Page(${q(title)}, LessonText(${q(title)}, [
-  "First paragraph.",
-  "Second paragraph.",
+    description: 'Markdown explanation',
+    source: (title) => `root = Page(${q(title)}, Stack([
+  TextContent("First paragraph."),
+  TextContent("Second paragraph."),
 ]))
 `,
   },

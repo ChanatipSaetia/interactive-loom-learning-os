@@ -1,3 +1,4 @@
+import { rootCall } from './page-source'
 /**
  * OpenUI Lang printer — section data → `.oui` source.
  *
@@ -182,7 +183,20 @@ const SECTION_BY_TYPE = new Map(LOOM_OUI_COMPONENTS.filter((c) => c.sectionType)
 /** Print a section (OKF-compatible meta + data) as a `.oui` file. */
 export function printOUISection(meta: OKFSectionMeta, data: OKFSectionData, options?: OUIPrintOptions): string {
   const type = data.type ?? meta.type
-  if (data.type === OPENUI_SECTION_TYPE) return printOpenUISection(data.source, meta.title ?? '', meta.heading)
+  if (data.type === 'text') {
+    const body = `Stack([${data.paragraphs.map((text) => `TextContent(${JSON.stringify(text)})`).join(', ')}])`
+    const intro = meta.intro
+    const lead = intro && (intro.what || intro.why || intro.next) ? `Lead(${[intro.what, intro.why, intro.next].map((value) => value ? JSON.stringify(value) : 'null').join(', ')})` : undefined
+    const header = options?.header?.map((line) => `// ${line}\n`).join('') ?? ''
+    return header + `root = Page(${JSON.stringify(meta.title ?? '')}, ${body}${meta.heading || lead ? `, ${JSON.stringify(meta.heading ?? null)}` : ''}${lead ? `, ${lead}` : ''})\n`
+  }
+  if (data.type === OPENUI_SECTION_TYPE) {
+    const printed = printOpenUISection(data.source, meta.title ?? '', meta.heading)
+    if (!meta.intro) return printed
+    const root = rootCall(printed)!
+    const args = [root.args[0], root.args[1], root.args[2] ?? 'null', `Lead(${[meta.intro.what, meta.intro.why, meta.intro.next].map((value) => JSON.stringify(value ?? null)).join(', ')})`]
+    return printed.slice(0, root.start) + `Page(${args.join(', ')})` + printed.slice(root.end)
+  }
   const component = SECTION_BY_TYPE.get(type)
   if (!component?.fromData) throw new Error(`No OpenUI section component for type "${type}"`)
   return printOUIProgram({ kind: 'call', component: Page.name, props: {

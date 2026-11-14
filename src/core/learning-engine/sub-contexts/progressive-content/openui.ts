@@ -7,7 +7,7 @@ export { Timeline, TimelineLane, TimelineActivity, TimelineGroup } from './timel
 /**
  * OpenUI Lang vocabulary for the Progressive Content subdomain.
  *
- *   root = LessonText("Overview", ["First paragraph.", "Second paragraph."])
+ *   root = Page("Overview", TextContent("First paragraph.\n\nSecond paragraph."))
  *   root = Bullets("Capabilities", [Bullet("Tool use", [Bullet("Search")])], false)
  */
 import { BulletIconSchema } from './schema'
@@ -33,7 +33,6 @@ import type {
   IntroSectionData,
   PillarLayerSectionData,
   TaxonomyBrowserSectionData,
-  TextSectionData,
   IntroRoadmapStep,
   PillarLayerBlock,
   PillarLayerLayer,
@@ -139,24 +138,7 @@ export const Intro: LoomOUIComponent = defineOUISection({
   }),
 })
 
-// --- LessonText & Bullets ---
-
-export const LessonText: LoomOUIComponent = defineOUISection({
-  name: 'LessonText',
-  sectionType: 'text',
-  description: 'Prose section: one string per paragraph.',
-  props: z.object({
-    title: z.string(),
-    paragraphs: z.array(z.string()),
-    ...sectionTailProps,
-  }),
-  fields: {
-    ...sectionFields,
-    paragraphs: 'The paragraphs, one string each, in order.',
-  },
-  toData: (p) => ({ type: 'text', paragraphs: p.paragraphs }),
-  fromData: (data: TextSectionData, meta) => call(LessonText, { title: meta.title ?? '', paragraphs: [...data.paragraphs], ...sectionTail(meta) }),
-})
+// --- Bullets ---
 
 const NestedBullet = z.lazy(() => BulletProps)
 tagSchemaId(NestedBullet, 'Bullet')
@@ -361,7 +343,7 @@ export const MatrixBlock = defineOUIComponent({
   }),
   fields: {
     id: 'Block ID, unique within the map; `dependsOn` refers to it.',
-    title: 'LessonText shown on the block.',
+    title: 'Text shown on the block.',
     layer: 'Anchor row: Layer reference or ID.',
     colOffset: 'Optional anchor column, from 0 (default 0).',
     colSpan: 'Optional number of columns covered (default 1).',
@@ -445,7 +427,6 @@ export const PillarLayer: LoomOUIComponent = defineOUISection({
 
 export const progressiveContentOUIComponents = [
   Intro, IntroWhat, IntroWhy, RoadmapStep,
-  LessonText,
   Bullets, Bullet,
   TaxonomyBrowser, TaxonomyCategory,
   LearningGallery, GalleryImage,

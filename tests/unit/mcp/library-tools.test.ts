@@ -3,7 +3,7 @@ import { Client, InMemoryTransport } from '@modelcontextprotocol/client'
 import { createLoomServer, topicHead, type LearnerStore } from '../../../src/mcp/server'
 import { readLoomFolder } from '../../../src/viewer/library'
 
-const TOPIC = "// @loom-topic punch\n// @loom-domain fight-animation\n// === topic.oui ===\nroot = Topic(\"Punch\", \"Fight Animation\", \"\", [SectionRef(\"pose\")])\n// === sections/pose.oui ===\nroot = Page(\"Pose\", LessonText(\"Pose\", [\"A long section…\"]))\n"
+const TOPIC = "// @loom-topic punch\n// @loom-domain fight-animation\n// === topic.oui ===\nroot = Topic(\"Punch\", \"Fight Animation\", \"\", [SectionRef(\"pose\")])\n// === sections/pose.oui ===\nroot = Page(\"Pose\", Stack([TextContent(\"A long section…\")]))\n"
 
 async function connect(store?: LearnerStore) {
   const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()

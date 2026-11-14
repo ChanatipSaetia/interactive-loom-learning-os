@@ -7,9 +7,9 @@ import type { TopicPlan } from '../../../src/core/learning-engine/composition/ou
 const plan: TopicPlan = {
   schemaVersion: 1, topicId: 'explanation', goal: 'Explain a distinction',
   objectives: [{ id: 'distinguish', description: 'Explain the difference' }],
-  sections: [{ id: 'argument', title: 'Argument', components: ['LessonText'], activity: 'Read a connected argument', objectiveRefs: ['distinguish'] }],
+  sections: [{ id: 'argument', title: 'Argument', components: ['TextContent'], activity: 'Read a connected argument', objectiveRefs: ['distinguish'] }],
 }
-const bundle = (source = "root = Page(\"Argument\", LessonText(\"Argument\", [\"First premise\", \"Conclusion\"]))", id = 'explanation') =>
+const bundle = (source = "root = Page(\"Argument\", Stack([TextContent(\"First premise\"), TextContent(\"Conclusion\")]))", id = 'explanation') =>
   `// @loom-topic ${id}\n// === topic.oui ===\nroot = Topic("Explanation", "Reasoning", "Explain", [SectionRef("argument")])\n// === sections/argument.oui ===\n${source}\n`
 
 describe('compiled plan/artifact review', () => {
@@ -86,12 +86,12 @@ it('checks explicit OpenUI composition claims through reachable dependencies wit
 
 it('aligns one learning page composed from Loom prose and a shared table', () => {
   const composed: TopicPlan = { ...plan, sections: [{
-    ...plan.sections[0], components: ['Stack', 'Table', 'LessonText'],
+    ...plan.sections[0], components: ['Stack', 'Table', 'TextContent'],
     activity: 'Compare matching attributes and explain the qualification',
     rationale: 'The table aligns factual attributes; supporting prose explains a qualification.',
     presentation: { target: 'both', strategy: 'Keep the table visible while explaining each attribute.' },
   }] }
-  const source = 'root = Page("Compare", Stack([table, explanation]))\ntable = Table([Col("Approach", ["A", "B"])])\nexplanation = LessonText("Qualification", ["Choose for your project constraints."])'
+  const source = "root = Page(\"Compare\", Stack([table, explanation]))\ntable = Table([Col(\"Approach\", [\"A\", \"B\"])])\nexplanation = Stack([TextContent(\"Choose for your project constraints.\")])"
   const checked = checkTopic(bundle(source), composed)
   expect(checked.report).toBeNull()
   expect(checked.planAlignment?.status).toBe('aligned')

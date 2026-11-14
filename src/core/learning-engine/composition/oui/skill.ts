@@ -1,5 +1,7 @@
+import { COMPONENT_PURPOSES } from './component-purpose'
+import { OUI_SECTION_TYPES } from './library'
 /** Short entry point; detailed guidance is generated into references/ by skill-references.ts. */
-import { REPRESENTATION_SELECTION_OVERVIEW, SECTION_MENTAL_MODELS } from './mental-model-guide'
+import { REPRESENTATION_SELECTION_OVERVIEW } from './mental-model-guide'
 import { LOOM_SKILL_NAME } from './llm-guide'
 
 export const LOOM_SKILL_DESCRIPTION =
@@ -20,25 +22,29 @@ Write, extend or repair Interactive Loom lessons as OpenUI Lang (.oui) content. 
 Paths below are relative to this skill folder. Read the linked files, not only this entry point. Load only the references relevant to the task; do not read every section spec.
 
 1. Read the user's source material. Establish the learner and goal; ask at most two short questions only when needed.
-2. Follow the [shared authoring workflow](references/planning/workflow.md): identify the learner action, discover candidate formats, make and check a TopicPlan, then retrieve component-scoped contracts. Choose sections from the table below. Read [mental models](references/planning/mental-models.md) for selection cues, flowchart views and chart choices, and [visual planning](references/planning/visuals.md) before planning a new lesson. Proactively illustrate time, quantities, structure or mechanisms when they teach the idea.
+2. Follow the [shared authoring workflow](references/planning/workflow.md): identify the learner action, discover candidate formats, make and check a TopicPlan, then retrieve component-scoped contracts. Choose components by learner task from the references below. Prebuilt activities are conveniences within the same catalog. Read [mental models](references/planning/mental-models.md) for selection cues, flowchart views and chart choices, and [visual planning](references/planning/visuals.md) before planning a new lesson. Proactively illustrate time, quantities, structure or mechanisms when they teach the idea.
 3. Before writing any OUI, read [syntax](references/core/syntax.md), [topic and shared components](references/core/components.md), [authoring rules](references/core/rules.md), [output location](references/workflow/output.md) and [file formats](references/core/formats.md). The workflow's folder default takes precedence over generic chat output examples. Use exact positional signatures; never invent arguments or write from memory.
-4. Read the reference for each selected section below. It contains that type's exact components, field descriptions and presentation beats. For Present, also read [narration](references/core/narration.md). Write a narration file for every section and cover every beat.
+4. Read the reference for each selected section below. It contains the selected components, field descriptions and presentation beats. For Present, also read [narration](references/core/narration.md). Write a narration file for every section and cover every beat.
 5. Write the files, then follow [validation and delivery](references/workflow/validation.md). A complete [topic example](references/examples/topic.md) is available when needed; adapt to the learner rather than copying its lesson structure.
 
 ## Choose the mental model
 
 ${REPRESENTATION_SELECTION_OVERVIEW}
 
-| Learning goal | Section reference |
+| Learning goal | Focused reference |
 |---|---|
-${SECTION_MENTAL_MODELS.map(({ type, model }) => `| ${model} | [${type}](references/sections/${type}.md) |`).join('\n')}
+${COMPONENT_PURPOSES.map(({ name, components }) => `| ${name} | ${components.map((component) => {
+  const type = OUI_SECTION_TYPES.get(component) ?? (component === 'TextContent' ? 'text' : undefined)
+  const family = /Chart$/.test(component) || component === 'Table' ? 'charts' : component === 'Svg' ? 'drawings' : 'layouts'
+  return `[${component}](references/${type ? `sections/${type}` : `openui/${family}`}.md)`
+}).join(', ')} |`).join('\n')}
 
-Flashcards teach definitions and meaning as well as recall. Tradeoff Sandbox presents options and compares their suitability as well as gains and costs. Select only what helps this topic; the table is not a mandatory sequence.
+Flashcards teach definitions and meaning as well as recall. Tradeoff Sandbox presents options and compares their suitability as well as gains and costs. Select only what helps this topic; the table is not a mandatory sequence. Read [page composition and presentation](references/sections/openui.md) when combining components.
 
 ## Editing existing content
 
 Read the current topic and affected section references first. Change only what the request needs. Keep SectionRef names, file names, IDs and narration in sync. For Studio/Viewer pointers or comments, read [Pick and comments](references/workflow/pick.md); respect requests to answer without editing.
 
-Standard OpenUI references are split into [layouts](references/openui/layouts.md), [tables and charts](references/openui/charts.md), [SVG drawings](references/openui/drawings.md), and [time, shares and utilization](references/openui/time-usage.md). Read only the visual families you use, after the OpenUI section reference.
+Composition references are split into [layouts](references/openui/layouts.md), [tables and charts](references/openui/charts.md), [SVG drawings](references/openui/drawings.md), and [time, shares and utilization](references/openui/time-usage.md). Read only the families you use; these are part of the same catalog as prebuilt activities.
 `
 }

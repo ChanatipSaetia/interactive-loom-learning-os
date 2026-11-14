@@ -12,9 +12,9 @@ const plan: TopicPlan = {
   objectives: [{ id: 'choose', description: 'Justify an option for a project constraint', evidenceOfLearning: 'Explain which constraint determines the choice' }],
   sections: [{ id: 'choice', title: 'Choose for a project', objectiveRefs: ['choose'], components: ['TradeoffSandbox'], activity: 'Compare suitability under different project constraints', rationale: 'TradeoffSandbox preserves gains, costs and context-dependent suitability.', presentation: { target: 'both', strategy: 'Read explores options; Present compares each authored situation.' } }],
 }
-const prose = 'root = Page("Choose", LessonText("Options", ["Consider the team and project."]))'
+const prose = "root = Page(\"Choose\", Stack([TextContent(\"Consider the team and project.\")]))"
 const bundle = (page = prose) => `// @loom-topic frameworks\n// === topic.oui ===\nroot = Topic("Frameworks", "Web", "Choose", [SectionRef("choice")])\n// === sections/choice.oui ===\n${page}\n`
-const textPlan: TopicPlan = { ...plan, sections: [{ ...plan.sections[0], components: ['LessonText'], rationale: 'Connected prose explains the concepts.' }] }
+const textPlan: TopicPlan = { ...plan, sections: [{ ...plan.sections[0], components: ['TextContent'], rationale: 'Connected prose explains the concepts.' }] }
 
 it('flags the actual failure pattern: prose keywords do not justify a prose-only comparison', () => {
   const review = topicPlanReview(textPlan, true)
@@ -23,7 +23,7 @@ it('flags the actual failure pattern: prose keywords do not justify a prose-only
   expect(topicPlanReview(narrowed, true).advisoryDiagnostics.map((d) => d.code)).toContain('GOAL_COMPOSITION_REVIEW')
 })
 it('detects missing planned activities, including unused and string decoys', () => {
-  for (const page of [prose, prose + '\nunused = TradeoffSandbox("Unused", [], [])', 'root = Page("Choose", LessonText("Words", ["TradeoffSandbox(…)"]))']) {
+  for (const page of [prose, prose + '\nunused = TradeoffSandbox("Unused", [], [])', "root = Page(\"Choose\", Stack([TextContent(\"TradeoffSandbox(…)\")]))"]) {
     expect(reviewTopicSource(bundle(page), plan).diagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ code: 'COMPOSITION_MISMATCH', repairTarget: 'sections/choice.oui#root' })]))
   }
   const alias = 'root = page\npage = Page("Choose", activity)\nactivity = TradeoffSandbox("Choose", [], [])'

@@ -33,7 +33,7 @@ test.describe('Loom Viewer refresh', () => {
   test('reloads a picked folder after its files change', async ({ page }) => {
     await writeOpfs(page, {
       'refresh-topic/topic.oui': topicFile('Before'),
-      'refresh-topic/sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"First draft.\"]))\n",
+      'refresh-topic/sections/intro.oui': "root = Page(\"Intro\", Stack([TextContent(\"First draft.\")]))\n",
     })
     await page.evaluate(() => {
       Object.assign(window, {
@@ -46,7 +46,7 @@ test.describe('Loom Viewer refresh', () => {
 
     await writeOpfs(page, {
       'refresh-topic/topic.oui': topicFile('After'),
-      'refresh-topic/sections/intro.oui': "root = Page(\"Intro\", LessonText(\"Intro\", [\"Second draft.\"]))\n",
+      'refresh-topic/sections/intro.oui': "root = Page(\"Intro\", Stack([TextContent(\"Second draft.\")]))\n",
     })
     await page.getByTestId('viewer-refresh').click()
     await expect(page.getByRole('heading', { level: 2 })).toHaveText('After')

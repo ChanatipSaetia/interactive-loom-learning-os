@@ -1,3 +1,4 @@
+import { proseBlocks } from './page-prose'
 /** Automatic activity scenes inside visual page layouts. No learner state is read. */
 import type { ElementNode } from '@openuidev/lang-core'
 import { compileSectionElement, parseOUIElements } from './compile'
@@ -17,8 +18,11 @@ export interface PageActivity {
 export function pageActivityPlan(source: string): { activities: PageActivity[]; beats: Beat[]; starts: number[] } {
   const root = parseOUIElements(source)
   const activities: PageActivity[] = [], beats: Beat[] = [], starts: number[] = []
-  const children = root && ['Stack', 'Card'].includes(root.typeName) && Array.isArray(root.props.children)
-    ? root.props.children : root ? [root] : []
+  const prose = root && proseBlocks(root)
+  if (prose) return { activities: [], beats: CORE_PRESENTERS.text.toBeats({ paragraphs: prose.map((block) => block.props.text) }), starts: [] }
+  const body = root?.typeName === 'Page' ? root.props.body as ElementNode : root
+  const children = body && ['Stack', 'Card'].includes(body.typeName) && Array.isArray(body.props.children)
+    ? body.props.children : body ? [body] : []
   const visit = (value: unknown, part: number): void => {
     if (!value || typeof value !== 'object') return
     if (Array.isArray(value)) { value.forEach((child) => visit(child, part)); return }

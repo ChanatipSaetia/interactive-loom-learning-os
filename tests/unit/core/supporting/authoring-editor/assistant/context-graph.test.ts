@@ -38,7 +38,7 @@ it('bounds cycles, missing references, output and stale sources', () => {
   expect(result.sources).toEqual([])
   expect(result.diagnostics[0].code).toBe('STALE_CONTEXT')
   expect(resolveTopicContext({ files: { ...files, 'sections/quiz.oui': files['sections/quiz.oui'] + '\nextra = "Unsaved"' } }).hash).not.toBe(result.hash)
-  const large = { 'sections/quiz.oui': `root = Page("T", LessonText("T", ["${'x'.repeat(5000)}"]))` }
+  const large = { 'sections/quiz.oui': `root = Page("T", TextContent("${'x'.repeat(5000)}"))` }
   const bounded = resolveTopicContext({ files: large, roots: ['sections/quiz.oui'], maxChars: 2048 })
   expect(JSON.stringify(bounded).length).toBeLessThanOrEqual(2048)
   expect(bounded.truncated).toBe(true)
@@ -66,7 +66,7 @@ it('returns actionable frontier addresses when a node budget omits dependencies'
 
 it('accounts for whole statements removed by the character budget', () => {
   const result = resolveTopicContext({
-    files: { 'sections/prose.oui': `root = Page("Argument", LessonText("Argument", ["${'x'.repeat(5000)}"]))` },
+    files: { 'sections/prose.oui': `root = Page("Argument", TextContent("${'x'.repeat(5000)}"))` },
     roots: ['sections/prose.oui'], maxChars: 2048,
   })
   expect(result.omittedReferences).toContain('sections/prose.oui#root')
@@ -76,7 +76,7 @@ it('accounts for whole statements removed by the character budget', () => {
 
 it('bounds omission metadata and discloses when expansion addresses cannot all fit', () => {
   const names = Array.from({ length: 100 }, (_, i) => `missing_${i}_${'x'.repeat(80)}`)
-  const result = resolveTopicContext({ files: { 'sections/many.oui': `root = Page("T", LessonText("T", [${names.join(', ')}]))` }, roots: ['sections/many.oui'], maxNodes: 1, maxChars: 2048 })
+  const result = resolveTopicContext({ files: { 'sections/many.oui': `root = Page("T", Stack([${names.map((name) => `TextContent(${name})`).join(', ')}]))` }, roots: ['sections/many.oui'], maxNodes: 1, maxChars: 2048 })
   expect(result.truncated).toBe(true)
   expect(result.omittedReferenceCount).toBeGreaterThan(100)
   expect(result.omittedReferencesTruncated).toBe(true)
@@ -86,9 +86,9 @@ it('bounds omission metadata and discloses when expansion addresses cannot all f
 
 it('returns distinct component library metadata for mixed source files', () => {
   const result = resolveTopicContext({ files: {
-    'sections/native.oui': "root = Page(\"T\", LessonText(\"T\", [\"Native prose\"]))",
+    'sections/native.oui': "root = Page(\"T\", Stack([TextContent(\"Native prose\")]))",
     'sections/standard.oui': "root = Page(\"Standard\", Text(\"text\", \"Standard value\"))",
   }, roots: ['sections/native.oui', 'sections/standard.oui'] })
-  expect(result.componentReferences).toEqual(expect.arrayContaining([{ name: 'LessonText' }, { name: 'Text' }]))
-  expect(result.components).toEqual(expect.arrayContaining(['Page', 'LessonText', 'Text']))
+  expect(result.componentReferences).toEqual(expect.arrayContaining([{ name: 'TextContent' }, { name: 'Text' }]))
+  expect(result.components).toEqual(expect.arrayContaining(['Page', 'TextContent', 'Text']))
 })

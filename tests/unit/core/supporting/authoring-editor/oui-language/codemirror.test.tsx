@@ -41,7 +41,7 @@ describe('CodeMirror highlighting', () => {
   })
 
   it('does not treat continuation lines inside brackets as definitions', () => {
-    expect(tokens("root = Page(title, LessonText(\n  title,\n  [a]\n))")).toContain('reference:title')
+    expect(tokens("root = Page(title, Stack([TextContent(a)]))")).toContain('reference:title')
   })
 })
 
@@ -92,8 +92,8 @@ describe('CodeMirror editor features', () => {
   })
 
   it('jumps to definitions', () => {
-    const doc = "root = Page(\"T\", LessonText(\"T\", [p]))\np = \"x\""
-    const v = view(doc, doc.indexOf('p]'))
+    const doc = "root = Page(\"T\", Stack([TextContent(p)]))\np = \"x\""
+    const v = view(doc, doc.indexOf('p)'))
     expect(goToDefinition(v)).toBe(true)
     expect(v.state.selection.main.from).toBe(doc.indexOf('p ='))
     v.destroy()
@@ -111,15 +111,15 @@ describe('renderTooltipMarkdown', () => {
 describe('OUICodeEditor', () => {
   it('renders the source and reports edits', () => {
     const onChange = vi.fn()
-    const { getByTestId, rerender } = render(<OUICodeEditor value={"root = Page(\"T\", LessonText(\"T\", []))"} onChange={onChange} />)
+    const { getByTestId, rerender } = render(<OUICodeEditor value={"root = Page(\"T\", Stack([]))"} onChange={onChange} />)
     const host = getByTestId('oui-code-editor')
-    expect(host.textContent).toContain("root = Page(\"T\", LessonText(\"T\", []))")
+    expect(host.textContent).toContain("root = Page(\"T\", Stack([]))")
 
     const editor = EditorView.findFromDOM(host.querySelector('.cm-editor') as HTMLElement)!
     editor.dispatch({ changes: { from: 0, insert: '// hi\n' } })
-    expect(onChange).toHaveBeenLastCalledWith("// hi\nroot = Page(\"T\", LessonText(\"T\", []))")
+    expect(onChange).toHaveBeenLastCalledWith("// hi\nroot = Page(\"T\", Stack([]))")
 
-    rerender(<OUICodeEditor value={"root = Page(\"New\", LessonText(\"New\", []))"} onChange={onChange} />)
-    expect(editor.state.doc.toString()).toBe("root = Page(\"New\", LessonText(\"New\", []))")
+    rerender(<OUICodeEditor value={"root = Page(\"New\", Stack([]))"} onChange={onChange} />)
+    expect(editor.state.doc.toString()).toBe("root = Page(\"New\", Stack([]))")
   })
 })
