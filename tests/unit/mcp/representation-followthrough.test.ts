@@ -48,7 +48,7 @@ describe.each(['local', 'hosted'] as const)('representation review through %s MC
       expect(text(shown)).toContain('review-needed')
       expect(text(shown)).toContain('UNJUSTIFIED_TEXT_SELECTION')
       expect(text(shown).length).toBeLessThan(1000)
-      const legacy = text(await client.callTool({ name: 'show_topic', arguments: { oui } }))
+      const legacy = text(await client.callTool({ name: 'show_topic', arguments: { intent: 'reopen', oui } }))
       expect(legacy).toContain('Showing')
       expect(legacy).toContain('readiness not reviewed')
       expect(legacy.length).toBeLessThan(1000)

@@ -95,7 +95,7 @@ describe('capability-aware authored regression corpus', () => {
     expect(validateTopicPlan(unjustified)).toEqual([])
     expect(reviewTopicPlan(unjustified).some((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toBe(true)
     expect(checkTopic(THREE_SPLINE_OUI, unjustified).planAlignment?.status).toBe('mismatch')
-    const prose = { ...THREE_SPLINE_PLAN, sections: THREE_SPLINE_PLAN.sections.map((section) => ({ ...section, components: ['LessonText'], rationale: 'Connected prose preserves nuanced qualifications that a visual comparison would hide.' })) }
+    const prose = { ...THREE_SPLINE_PLAN, sections: THREE_SPLINE_PLAN.sections.map((section) => ({ ...section, components: ['LessonText'], rationale: 'Connected prose preserves nuanced qualifications that a factual table would hide.' })) }
     expect(reviewTopicPlan(prose).some((d) => d.code === 'UNJUSTIFIED_TEXT_SELECTION')).toBe(false)
   })
   it('recovers focused retrieval failures through the selected legacy guide without changing representation', async () => {

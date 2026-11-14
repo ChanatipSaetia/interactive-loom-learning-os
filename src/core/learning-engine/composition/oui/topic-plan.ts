@@ -1,3 +1,4 @@
+import { textHash } from '../../../supporting/authoring-editor/assistant/statements'
 /** Portable AI-authored planning contract. AI authors plans; Loom checks structure. */
 import { z } from 'zod'
 import { OUI_SECTION_TYPES, getUnifiedOUISpec } from './library'
@@ -64,7 +65,7 @@ export function validateTopicPlan(input: unknown): PlanDiagnostic[] {
     for (const reference of section.assessment?.itemRefs ?? []) {
       if (!reference.startsWith(`sections/${section.id}.oui#`)) add('INVALID_ASSESSMENT', `${path}.assessment.itemRefs`, 'Assessment items must belong to the planned section')
     }
-    for (const name of section.components ?? []) if (!getUnifiedOUISpec().components[name]) add('INVALID_INPUT', `${path}.components`, `Unknown component ${name}`)
+    for (const name of section.components ?? []) if (!Object.prototype.hasOwnProperty.call(getUnifiedOUISpec().components, name)) add('INVALID_INPUT', `${path}.components`, `Unknown component ${name}`)
     for (const id of section.objectiveRefs) if (!objectives.has(id)) add('MISSING_OBJECTIVE', `${path}.objectiveRefs`, `Unknown objective ${id}`)
   }
   for (const [i, obj] of plan.objectives.entries()) {
@@ -204,12 +205,14 @@ export function reviewTopicPlan(input: unknown) {
     if (!section.presentation) add('MISSING_PRESENTATION_STRATEGY', `${path}.presentation`, 'State the intended Read/Present strategy and inspect its layout.')
     else if (weak(section.presentation.strategy)) add('WEAK_PRESENTATION_STRATEGY', `${path}.presentation.strategy`, 'Describe the focus, stage guidance or narration in Read/Present rather than naming only a mode.')
     const task = [section.title, section.activity, ...plan.objectives.filter((o) => section.objectiveRefs.includes(o.id)).map((o) => o.description)].join(' ')
-    const structuredTask = /\b(compar\w*|capabilit\w*|differences?|process\w*|workflows?|spatial|classif\w*|relationship\w*|dependenc\w*|quantit\w*|recall|defin(?:e|ing|itions?)|terminolog\w*|vocabular\w*|architecture|interactions?|handoffs?|message ordering|state transitions?)\b/i.test(task) || /\bhow (?:\w+\s+){0,5}works\b/i.test(task)
+    const structuredTask = /\b(compar\w*|capabilit\w*|differences?|process\w*|workflows?|spatial|classif\w*|relationship\w*|dependenc\w*|quantit\w*|recall|defin(?:e|ing|itions?)|terminolog\w*|vocabular\w*|architecture|interactions?|handoffs?|message ordering|state transitions?|tradeoffs?|choos(?:e|ing)|decisions?|options?)\b/i.test(task) || /\bhow (?:\w+\s+){0,5}works\b/i.test(task)
     const proseNeed = /\b(connected prose|nuanc\w*|narrativ\w*|arguments?|qualifications?|ambigu\w*|interpret\w*|close reading|wording|essays?|caveats?|verbatim|prose (?:was|is) (?:explicitly )?requested)\b/i.test(section.rationale ?? '')
-    if (has('LessonText', 'Text', 'TextContent') && !structuredComponents && !has('Bullets') && structuredTask && (rationaleWeak || !proseNeed)) {
-      add('UNJUSTIFIED_TEXT_SELECTION', `${path}.rationale`, 'This objective involves structured knowledge. Compare feasible native/OpenUI capabilities, then state the prose-specific need (e.g. nuance, connected argument or careful wording) or revise the representation. Generic clarity, simplicity or length does not explain the fit. Justified Text remains valid.')
+    const proseAlternative = /\b(table|matrix|diagram|flowchart|concept map|sandbox|cards?|quiz|sequence)\b/i.test(section.rationale ?? '')
+    const proseLimitation = /\b(hide|flatten|lose|imply|obscure|distort|cannot|mislead|unsupported)\b/i.test(section.rationale ?? '')
+    if (has('LessonText', 'Text', 'TextContent') && !structuredComponents && !has('Bullets') && structuredTask && (rationaleWeak || !proseNeed || !proseAlternative || !proseLimitation)) {
+      add('UNJUSTIFIED_TEXT_SELECTION', `${path}.rationale`, 'This objective involves structured knowledge. Compare feasible native/OpenUI capabilities, then state the prose-specific need (e.g. nuance, connected argument or careful wording) or revise the representation. Name a feasible alternative and the specific information or qualification it would lose. Saying connected prose alone is insufficient. Justified Text remains valid.')
     }
-    const relationalTask = /\b(compar\w*|factual attributes|spatial|relationships?|architecture|interactions?|handoffs?|data movement|state transitions?)\b/i.test(task)
+    const relationalTask = /\b(compar\w*|factual attributes|spatial|relationships?|architecture|interactions?|handoffs?|data movement|state transitions?|tradeoffs?|choos(?:e|ing)|decisions?|options?)\b/i.test(task)
     const listAction = /\b(numbered|step[- ]by[- ]step|procedures?|checklists?|prerequisites?|instructions?|key points|supporting details|concise summar(?:y|ies)|summari[sz]\w*)\b/i.test(section.activity)
     if (has('Bullets') && !structuredComponents && relationalTask && !listAction) add('LIST_STRUCTURE_REVIEW', `${path}.rationale`, 'Review whether a list preserves the comparison, spatial structure or relationships. Consider an OpenUI table/cards/labelled diagram or the relevant native model. Keep Bullets for a genuine procedure, checklist, key points or summary; state that learner action and justify the fit. This is advisory, not a Bullets count or quality score.')
     if (has('Table', 'Svg', 'Steps', 'Card', 'BarChart', 'HorizontalBarChart', 'LineChart', 'AreaChart', 'PieChart', 'SingleStackedBarChart', 'ScatterChart', 'RadarChart')) {
@@ -228,6 +231,10 @@ export function reviewTopicPlan(input: unknown) {
     if (previous) add('POSSIBLE_REDUNDANT_SECTION', path, `This repeats the declared objectives, action and design of ${previous}. Give each section a distinct presentation, exploration or assessment contribution, or combine them; verify content before removing anything.`)
     else seen.set(signature, section.id)
   })
+  const comparisonGoal = /\b(compar\w*|versus|vs\.?|tradeoffs?|choos(?:e|ing)|decisions?)\b/i.test(plan.goal)
+  const explicitProse = /\b(essay|prose[- ]only|text[- ]only|in (?:\d+|three|two|one) sentences?|single paragraph)\b/i.test(plan.goal)
+  const allProse = plan.sections.every((section) => section.components.every((name) => ['Page', 'Stack', 'Card', 'CardHeader', 'CardContent', 'LessonText', 'Text', 'TextContent', 'Lead', 'Bullets', 'Bullet'].includes(name)))
+  if (comparisonGoal && allProse && !explicitProse) add('GOAL_COMPOSITION_REVIEW', 'goal', 'The goal asks for comparison or choice but the plan contains only prose/lists. Review relevant comparison, relationship or decision capabilities; justify the fit explicitly or revise the plan. This is advisory, not a component quota.')
   plan.objectives.forEach((objective, index) => {
     if (!objective.evidenceOfLearning) add('MISSING_LEARNING_EVIDENCE', `objectives[${index}].evidenceOfLearning`, 'Describe an observable response; viewing alone does not demonstrate understanding.')
     else if (/^(?:view|watch|click|flip|switch|visit|read)(?:\b|ing)/i.test(objective.evidenceOfLearning.trim()) && !/\b(answer|explain|justify|identify|correct|submit|reconstruct|demonstrate)\b/i.test(objective.evidenceOfLearning)) add('ENGAGEMENT_AS_LEARNING_EVIDENCE', `objectives[${index}].evidenceOfLearning`, 'Viewing, clicking, switching views and flipping cards show engagement. Describe an answer, explanation or applied task separately from exposure.')
@@ -240,10 +247,17 @@ export function topicPlanReview(input: unknown, structurallyValid: boolean) {
   const advisoryDiagnostics = reviewTopicPlan(input)
   return {
     advisoryDiagnostics,
+    planVersion: topicPlanVersion(input),
     experienceReadiness: {
       status: !structurallyValid ? 'unverified' : advisoryDiagnostics.length ? 'review-needed' : 'no-advisories',
       teachingQuality: 'not-evaluated',
       next: !structurallyValid ? 'Repair structural plan diagnostics with validate_topic_plan before claiming representation readiness.' : advisoryDiagnostics.length ? 'Resolve relevant warnings or record why proceeding is appropriate; validate OUI/narration and preview Read/Present before delivery.' : 'Validate OUI/narration and preview Read/Present; absence of advisories does not establish teaching quality.',
     },
   }
+}
+
+/** Change hint binding explicit advisory resolutions to the normalized plan. */
+export function topicPlanVersion(input: unknown): string | undefined {
+  const parsed = TopicPlanSchema.safeParse(input)
+  return parsed.success ? `plan-v1:${textHash(JSON.stringify(parsed.data))}` : undefined
 }

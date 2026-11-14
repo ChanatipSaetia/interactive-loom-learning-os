@@ -20,7 +20,7 @@ const ROUTES: Record<AuthoringHost, Partial<Record<typeof AUTHORING_WORKFLOW_STA
     references: 'Use read_reference for contracts/page.md, contracts/topic.md, contracts/narration.md and selected components/<Name>.md. Unknown paths return diagnostics; correct the path rather than silently substituting an easier composition.',
     generate: 'For reuse or edits, use get_topic_context with authorized current files and an available plan to preserve the selected action/rationale/presentation constraints; omit unnecessary lookups for a new topic.',
     verify: 'Use validate_topic({oui, plan}) / validate_section when available. Pass plan to show_topic for browser review. Hosted MCP leaves full compilation/layout to the player/browser; never report them as already checked by the Worker.',
-    deliver: 'Call show_topic and follow storage references for saving. Use edit_topic for targeted changes when available.',
+    deliver: 'For new topics call show_topic({oui, plan}) after resolving plan diagnostics. Delivery rechecks reachable source components against the exact plan. Repair mismatches and missing fields; design-only exceptions require advisoryResolutions with the current planVersion and a specific explanation. Use intent: reopen only for existing exact source. Read storage references and save only accepted source; showing is not saving.',
   },
   studio: {
     discover: 'Call get_loom_capabilities.',

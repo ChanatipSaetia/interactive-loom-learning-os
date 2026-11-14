@@ -1,7 +1,7 @@
 /** Compare explicit plan claims with compiled artifacts; never grade pedagogy. */
 import { TopicPlanSchema, validateTopicPlan } from './topic-plan'
 import { textHash } from '../../../supporting/authoring-editor/assistant/statements'
-import { fileStatements } from '../../../supporting/authoring-editor/assistant/statements'
+import { inspectComposition } from './source-composition'
 
 export interface CompiledPlanArtifact {
   topicId: string
@@ -58,21 +58,13 @@ export function reviewPlanArtifact(artifact: CompiledPlanArtifact, input?: unkno
     const compiled = actual.get(section.id)
     if (!compiled) add('MISSING_SECTION', 'This planned section is absent from the compiled topic outline.', section.id)
     else if (!compiled.config) add('UNCOMPILED_ARTIFACT', 'This section did not compile; its representation cannot be verified.', section.id)
-    const statements = fileStatements(artifact.files[`sections/${section.id}.oui`] ?? '')
+    const composition = inspectComposition(artifact.files[`sections/${section.id}.oui`] ?? '')
+    const statements = composition.statements
     const names = new Set(statements.map((statement) => statement.name))
     // Compare only explicit component claims, not arbitrary educational prose.
     // Follow root dependencies so unused declarations cannot satisfy the claim.
     if (section.components.length && compiled?.config) {
-      const byName = new Map(statements.map((statement) => [statement.name, statement]))
-      const visited = new Set<string>(), calls = new Set<string>()
-      const visit = (name: string): void => {
-        if (visited.has(name)) return
-        visited.add(name)
-        const statement = byName.get(name)
-        for (const call of statement?.calls ?? []) calls.add(call)
-        for (const ref of statement?.refs ?? []) visit(ref)
-      }
-      visit('root')
+      const { calls } = composition
       for (const name of section.components ?? []) if (!calls.has(name)) add('COMPOSITION_MISMATCH', `Planned component ${name} is absent from this page and its dependencies.`, section.id)
       const strategy = `${section.rationale ?? ''} ${section.presentation?.strategy ?? ''}`
       const claims = [...strategy.matchAll(/\bcomposition\s*[:=]\s*["'`]?([A-Z][A-Za-z0-9]*)/g)].map((match) => match[1])

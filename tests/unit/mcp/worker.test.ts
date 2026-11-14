@@ -26,7 +26,7 @@ describe('hosted Loom MCP endpoint (slice 5)', () => {
   })
 
   it('leaves the Viewer link out unless asked, since it cannot know whether the chat shows apps', async () => {
-    const show = (args: object) => call({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'show_topic', arguments: { oui: '// @loom-topic t', ...args } } })
+    const show = (args: object) => call({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'show_topic', arguments: { intent: 'reopen', oui: '// @loom-topic t', ...args } } })
     const plain = (await show({})).result.content[0].text
     expect(plain).toContain('viewerLink: true')
     expect(plain).not.toContain('viewer.html')
