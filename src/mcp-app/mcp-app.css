@@ -325,6 +325,13 @@ body {
   overflow: visible;
 }
 
+/* A content-height reader can be many screens tall. Do not put that entire
+   document into the clipping/containment surface used by the slide player. */
+.mcp-player:not(.mcp-full):has(> .mcp-read-natural:not([hidden])) {
+  container-type: normal;
+  overflow: visible;
+}
+
 /* Open in Viewer's link, to copy when the chat does not open it */
 .mcp-link {
   display: flex;

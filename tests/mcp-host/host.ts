@@ -167,12 +167,15 @@ async function main() {
       chat.appendChild(confirm)
     })
   }
+  const sizeChanges: number[] = []
   bridge.onsizechange = ({ height }) => {
-    if (height && !document.body.classList.contains('fullscreen')) frame.style.height = `${Math.min(height, 900)}px`
+    if (height) sizeChanges.push(height)
+    if (height && !document.body.classList.contains('fullscreen')) frame.style.height = `${params.has('natural-height') ? height : Math.min(height, 900)}px`
   }
   await bridge.connect(new PostMessageTransport(frame.contentWindow!, frame.contentWindow!))
   frame.srcdoc = html
   Object.assign(window, {
+    hostSizeChanges: sizeChanges,
     shownOui: args.oui,
     setHostTheme: (t: 'light' | 'dark') => { document.body.classList.toggle('light', t === 'light'); void bridge.sendHostContextChange({ theme: t }) },
     // The chat's own control for leaving fullscreen

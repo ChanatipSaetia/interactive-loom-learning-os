@@ -468,6 +468,11 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     uses a bounded scroll panel. The mounted reader explicitly respects `hidden`
     during Present, so its flex styling cannot expose the reading page or squeeze
     the presentation stage underneath the navigation.
+    Natural-height inline Read also drops the slide player's clipping and container
+    containment, so a tall lesson is not enclosed by the presentation surface.
+    Rendered viewport diagnostics run in Present and full-screen Read only: an
+    inline document has no app-owned viewport, and host height updates should not
+    trigger repeated geometry scans of the growing lesson.
   - **Asking about part of a topic:** Pick from Viewer now works in the app's Read (⌖ in the bar at the
     foot of the frame). Its Send posts the learner's question into the chat as their message, with each
     picked place's pointer (`<topic>/<file> #<anchor>`, so the model finds the statement it wrote) and the

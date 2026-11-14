@@ -293,7 +293,9 @@ export function McpApp({ app }: { app: App }) {
   // host context only; it never sends a user message or starts an agent turn.
   const layoutReports = useRef(new Set<string>())
   useEffect(() => {
-    if (!loaded?.topic || (view !== 'read' && view !== 'present')) return
+    // A natural-height document has no app-owned reading viewport to diagnose.
+    // Host auto-resizing can otherwise repeatedly scan the entire growing page.
+    if (!loaded?.topic || (view !== 'read' && view !== 'present') || (view === 'read' && !full)) return
     const topic = loaded.topic
     let cancelled = false
     let timer: ReturnType<typeof setTimeout> | undefined
@@ -317,7 +319,7 @@ export function McpApp({ app }: { app: App }) {
     void (document.fonts?.ready ?? Promise.resolve()).then(schedule)
     window.addEventListener('resize', schedule)
     return () => { cancelled = true; observer?.disconnect(); if (timer) clearTimeout(timer); window.removeEventListener('resize', schedule) }
-  }, [app, loaded, view])
+  }, [app, loaded, view, full])
 
   const topic = loaded?.topic ?? null
   const presentSections = useMemo(() => (topic ? presentSectionsOf(topic) : []), [topic])
