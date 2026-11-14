@@ -461,6 +461,9 @@ Links longer than 32,000 characters are not made; the learner is told to paste t
     title over the top of a full-screen app (about 110px) and its message bar over the bottom (about 100px).
     Full screen now pads the app by the chat's `safeAreaInsets` plus 12px, never less than 112px at the top
     and 104px at the bottom on touch screens (56px and 88px elsewhere).
+    The outer player alone owns these insets: its Read panel fills the remaining
+    height without repeating full-screen padding. Full-screen frames use the dynamic
+    viewport height so mobile viewport changes do not reduce the reading area.
   - **Asking about part of a topic:** Pick from Viewer now works in the app's Read (⌖ in the bar at the
     foot of the frame). Its Send posts the learner's question into the chat as their message, with each
     picked place's pointer (`<topic>/<file> #<anchor>`, so the model finds the statement it wrote) and the

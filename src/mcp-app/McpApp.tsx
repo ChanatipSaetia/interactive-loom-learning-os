@@ -602,7 +602,7 @@ export function McpApp({ app }: { app: App }) {
               <PresentMode sections={presentSections} onExit={(sectionIndex) => readAt(sectionIndex, false)} onSectionChange={recordSeen} fillParent />
             </div>
           </HUDProvider></ProgressProvider>}
-          <div hidden={presenting} className={`mcp-read${full ? ' mcp-full' : ''}`}>
+          <div hidden={presenting} className="mcp-read">
             <main className="main-content mcp-read-scroll" data-testid="mcp-read-scroll">
               <LearnerMemoryProvider port={memory} device={DEVICE}>
                 {readTopic.current === topic && <TopicView key={`${topic.topicId}:${topicSourceVersion(topic)}`} topic={topic} />}
