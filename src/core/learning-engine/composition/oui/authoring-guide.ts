@@ -1,3 +1,4 @@
+import { IMAGE_SOURCE_COMPONENTS, IMAGE_DELIVERY_GUIDE } from './image-delivery-guide'
 import { componentTeachingGuide } from './component-teaching'
 import { COMPONENT_PURPOSES } from './component-purpose'
 import { getUnifiedOUISpec } from './library'
@@ -38,6 +39,7 @@ export function getAuthoringGuide(sections: string[] = [], components?: string[]
     '## Component Signatures',
     componentEntries(componentClosure([...known, ...(components === undefined ? ['Page', 'Topic', 'Narration'] : [])], undefined, genericChildren)),
     ...known.map(componentTeachingGuide),
+    ...(known.some((name) => IMAGE_SOURCE_COMPONENTS.has(name)) ? [IMAGE_DELIVERY_GUIDE] : []),
     ...known.flatMap((name) => guidance[name] ? [guidance[name]] : []),
     ...(components === undefined && sections.includes('openui') ? [getLoomAuthoringPrompt().split('## Page Composition')[1]?.split('## Narration Files')[0] ?? ''] : []),
     ...(!known.every((name) => name === 'Topic') ? ['## Narration Files', 'Present is hands-free. Use root = Narration([NarrationStep(beat, caption, effects)]). Effects: Highlight, NarrationCallout, Spotlight. Keep Read and Present content shared and state separate.'] : []),

@@ -106,6 +106,9 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
   const { store, check: checkTopic } = options
   const measured = <T>(tool: string, stage: AuthoringStage, input: unknown, run: () => Promise<T>) => measureTool(tool, stage, input, run, options.onMeasurement)
   const appOrigin = new URL(appUrl).origin
+  const appCsp = options.appHtml
+    ? { resourceDomains: ['data:'], connectDomains: [] as string[] }
+    : { resourceDomains: [appOrigin, ...FONT_ORIGINS], connectDomains: [appOrigin] }
   // The routine reaches every chat that connects, with or without the loom-tutor-app skill (decision 218)
   const server = new McpServer({ name: 'loom', version: '0.1.0' }, { capabilities: { tools: {}, resources: {} }, instructions: LOOM_SERVER_INSTRUCTIONS })
 
@@ -116,13 +119,11 @@ export function createLoomServer(options: LoomServerOptions = {}): McpServer {
       uri: APP_URI,
       mimeType: RESOURCE_MIME_TYPE,
       text: options.appHtml ?? appShell(appUrl),
-      _meta: { ui: { csp: options.appHtml
-        ? { resourceDomains: ['data:'], connectDomains: [] }
-        : { resourceDomains: [appOrigin, ...FONT_ORIGINS], connectDomains: [appOrigin] }, prefersBorder: true } },
+      _meta: { ui: { csp: appCsp, prefersBorder: true } },
     }],
   }))
 
-  const read = (path: string) => ({ ...readReference(path), deployment: { storageAvailable: Boolean(store || options.repository), serverValidationAvailable: Boolean(checkTopic), sectionValidationAvailable: Boolean(options.checkSection) } })
+  const read = (path: string) => ({ ...readReference(path), deployment: { storageAvailable: Boolean(store || options.repository), serverValidationAvailable: Boolean(checkTopic), sectionValidationAvailable: Boolean(options.checkSection), imagePolicy: { mode: options.appHtml ? 'bundled' : 'hosted-assets', resourceDomains: appCsp.resourceDomains, connectDomains: appCsp.connectDomains, enforcement: 'host-controlled', imageUploadAvailable: false } } })
 
   server.registerResource('loom-authoring-entry', `${REFERENCE_ROOT}index.md`, { mimeType: 'application/json', description: 'Start progressive authoring navigation here; read linked references only as needed.' }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(read('index.md')) }] }))
   server.registerResource('loom-authoring-reference', new ResourceTemplate(`${REFERENCE_ROOT}{+path}`, { list: undefined }), { description: 'One linked authoring reference; no recursive expansion.' }, async (uri) => {
