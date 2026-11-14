@@ -1,9 +1,10 @@
 .breakdown-section { display:flex; flex-direction:column; gap:14px; color:var(--foreground); }
 .breakdown-description,.breakdown-legend,.breakdown-hint { margin:0; color:var(--muted-foreground); line-height:1.5; }
 .breakdown-legend,.breakdown-hint { font-size:14px; }
-.breakdown-scroll { overflow-x:auto; padding:5px; }
-/* Keep cards at their authored size; extra canvas width should add space, not enlarge the tree. */
-.breakdown-diagram { width:100%; min-width:var(--breakdown-board-width); max-width:var(--breakdown-board-width); margin-inline:auto; display:block; overflow:visible; font-family:var(--font-ui); }
+.breakdown-scroll { min-width:0; max-width:100%; box-sizing:border-box; overflow-x:auto; padding:5px; }
+/* Preserve readable scrollable cards; Read uses a compact 80% scale, independent of Present. */
+.breakdown-diagram { width:100%; height:auto; min-width:calc(var(--breakdown-board-width) * var(--breakdown-board-scale, 1)); max-width:calc(var(--breakdown-board-width) * var(--breakdown-board-scale, 1)); margin-inline:auto; display:block; overflow:visible; font-family:var(--font-ui); }
+.breakdown-section:not(.present-breakdown) .breakdown-diagram { --breakdown-board-scale:.8; }
 .breakdown-node { box-sizing:border-box; width:100%; height:100%; padding:12px 16px; display:flex; flex-direction:column; gap:5px; background:var(--ctp-base); border:1px solid color-mix(in srgb,var(--breakdown-accent) 35%,var(--border)); border-left:4px solid var(--breakdown-accent); border-radius:var(--radius-md); color:var(--foreground); }
 .breakdown-node[role=button] { cursor:pointer; }
 .breakdown-node.is-active,.breakdown-node:focus-visible { border-color:var(--breakdown-accent); background:color-mix(in srgb,var(--breakdown-accent) 6%,var(--ctp-base)); outline:none; }

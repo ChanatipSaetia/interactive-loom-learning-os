@@ -13,21 +13,21 @@
 .sandbox-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 16px;
 }
 
 @media (min-width: 992px) {
   .sandbox-layout {
     grid-template-columns: 1.2fr 1fr;
-    gap: 28px;
+    gap: 20px;
   }
 }
 
 .controls-panel {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 24px;
+  gap: 12px;
+  padding: 12px;
   border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
   background-color: color-mix(in srgb, var(--card) 85%, transparent);
@@ -38,7 +38,7 @@
 .slider-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
 }
 
 .slider-header {
@@ -124,19 +124,13 @@
 .sandbox-metrics {
   background-color: color-mix(in srgb, var(--card) 85%, transparent);
   border-radius: 1rem;
-  padding: 24px;
+  padding: 12px;
   border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
   backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 12px;
   box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.2);
-}
-
-@media (min-width: 768px) {
-  .sandbox-metrics {
-    padding: 26px;
-  }
 }
 
 .sim-metric-row {
