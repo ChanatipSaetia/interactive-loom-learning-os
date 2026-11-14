@@ -1,3 +1,4 @@
+import { MEDIA_COMPOSITION_GUIDE } from './media-composition-guide'
 import { LEARNER_REFERENCE_GUIDE } from './learner-reference-guide'
 import { IMAGE_DELIVERY_GUIDE } from './image-delivery-guide'
 import { getAuthoringGuide } from './authoring-guide'
@@ -36,6 +37,7 @@ export function getWriterSkillReferences(): Record<string, string> {
   const files: Record<string, string> = {}
   const put = (path: string, ...text: string[]) => { files[`references/${path}.md`] = text.join('\n\n').trim() + '\n' }
 
+  put('planning/media-composition', MEDIA_COMPOSITION_GUIDE)
   put('core/learner-references', LEARNER_REFERENCE_GUIDE)
   put('core/images', IMAGE_DELIVERY_GUIDE)
   put('planning/component-purposes', '# Choose components by learning purpose', 'Ask what each candidate introduces, lets the learner explore, can demonstrate through a response, and cannot establish. Follow only relevant component links; each focused reference includes its exact contracts and required dependencies.', ...COMPONENT_PURPOSES.map((group) => `## ${group.name}\n\n${group.purpose}\n\n` + group.components.map((name) => `[${name}](../components/${name}.md)`).join(', ')))

@@ -1,3 +1,4 @@
+import { MEDIA_COMPOSITION_GUIDE } from './media-composition-guide'
 import { LEARNER_REFERENCE_GUIDE } from './learner-reference-guide'
 import { IMAGE_DELIVERY_GUIDE, IMAGE_SOURCE_COMPONENTS } from './image-delivery-guide'
 import { componentTeachingGuide } from './component-teaching'
@@ -19,7 +20,7 @@ const link = (path: string, label: string) => `[${label}](${referenceUri(path)})
 export function referencePaths(): string[] {
   return ['index.md', 'workflow/edit.md', 'display/library.md', 'display/domain.md', 'runtime.md', 'tutoring/index.md', 'storage/index.md', 'capabilities/selection.md', ...Object.keys(guideReferences()), ...AUTHORING_WORKFLOW_STAGES.map((stage) => `workflow/${stage.id}.md`),
     'capabilities/index.md', ...Object.keys(getUnifiedOUISpec().components).map((name) => `capabilities/${name}.md`),
-    'contracts/topic-plan.schema.json', 'contracts/learner-references.md', 'contracts/images.md', 'contracts/delivery.md', 'contracts/syntax.md', 'contracts/page.md', 'contracts/topic.md', 'contracts/narration.md', 'components/index.md',
+    'contracts/topic-plan.schema.json', 'contracts/media-composition.md', 'contracts/learner-references.md', 'contracts/images.md', 'contracts/delivery.md', 'contracts/syntax.md', 'contracts/page.md', 'contracts/topic.md', 'contracts/narration.md', 'components/index.md',
     ...Object.keys(getUnifiedOUISpec().components).map((name) => `components/${name}.md`)]
 }
 export function readReference(input = 'index.md') {
@@ -68,7 +69,7 @@ export function readReference(input = 'index.md') {
     next = ['capabilities/selection.md', 'workflow/plan.md']
     content = '# Choose components by learning purpose\n\nOne catalog: text, layouts, charts and prebuilt activities are peers. Start with the learner’s task; inspect plausible alternatives without reading every contract. Prebuilt activities package useful interactions and presentation scenes; their origin does not give them priority. These are candidates, not page types or a required mix.\n\n' + COMPONENT_PURPOSES.map((group) => `## ${group.name}\n\n${group.purpose}\n\n` + group.components.filter((name) => !!getUnifiedOUISpec().components[name]).map((name) => link(`capabilities/${name}.md`, name)).join(', ')).join('\n\n') + '\n\nNext:\n' + next.map((p) => '- ' + link(p, p === 'workflow/plan.md' ? 'Plan pages' : 'Selection criteria')).join('\n')
   } else if (path === 'capabilities/selection.md') {
-    next = ['workflow/plan.md']
+    next = ['workflow/plan.md', 'contracts/media-composition.md']
     content = REPRESENTATION_SELECTION_GUIDE.replace(/Retrieve selected section rules[\s\S]*$/, 'Read selected component references through read_reference. If unavailable, correct the path or explicitly revise and revalidate the plan; do not silently substitute prose.') + '\n\n' + COMPOSITION_DECISION_GUIDE
   } else if (path.startsWith('capabilities/')) {
     const name = /^capabilities\/([A-Za-z][A-Za-z0-9]*)\.md$/.exec(path)?.[1]
@@ -81,11 +82,14 @@ export function readReference(input = 'index.md') {
     const alternatives = purpose?.components.filter((candidate) => candidate !== name).map((candidate) => link(`capabilities/${candidate}.md`, candidate)).join(', ')
     const details = [purpose?.purpose, componentTeachingGuide(name), alternatives ? `Compare when relevant: ${alternatives}. These are alternatives, not dependencies.` : '', model?.model, model?.question, behavior?.learnerAction, behavior?.presentationConstraint, behavior?.evidenceBoundary, item.component === 'Flowchart' ? FLOWCHART_MODELS.map(([id, purpose]) => `${id}: ${purpose}`).join('\n') : ''].filter(Boolean).join('\n\n')
     content = `# ${item.component}\n\n${item.summary}\n\n${details}\n\nRead when: considering this capability for a learner action. Combine it with supporting components; it does not determine a page type.\n\nBefore authoring, ${link(next[0], 'plan the composition')}. Then read ${link(next[1], 'the exact component contract')}.`
+  } else if (path === 'contracts/media-composition.md') {
+    next = ['contracts/page.md', 'contracts/images.md', 'contracts/learner-references.md', 'components/Card.md', 'components/Stack.md', 'components/TextContent.md', 'workflow/plan.md']
+    content = MEDIA_COMPOSITION_GUIDE + '\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
   } else if (path === 'contracts/learner-references.md') {
-    next = ['components/TextContent.md', 'contracts/images.md', 'workflow/verify.md']
+    next = ['contracts/media-composition.md', 'components/TextContent.md', 'contracts/images.md', 'workflow/verify.md']
     content = LEARNER_REFERENCE_GUIDE + '\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
   } else if (path === 'contracts/images.md') {
-    next = ['runtime.md', 'contracts/learner-references.md', 'components/Image.md', 'components/ImageGallery.md', 'components/LearningGallery.md', 'components/Svg.md']
+    next = ['runtime.md', 'contracts/media-composition.md', 'contracts/learner-references.md', 'components/Image.md', 'components/ImageGallery.md', 'components/LearningGallery.md', 'components/Svg.md']
     content = IMAGE_DELIVERY_GUIDE + '\n\nRelated:\n' + next.map((p) => '- ' + link(p, p)).join('\n')
   } else if (path === 'contracts/delivery.md') {
     next = ['workflow/validate-plan.md', 'workflow/verify.md', 'storage/index.md']

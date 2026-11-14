@@ -1,10 +1,11 @@
+import { MEDIA_COMPOSITION_GUIDE } from './media-composition-guide'
 import { LEARNER_REFERENCE_GUIDE } from './learner-reference-guide'
 /** Shared selection policy for one purpose-based component catalog. */
 export const REPRESENTATION_SELECTION_GUIDE = `Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Text, layouts, visuals and prebuilt activities share one catalog; there is no section ranking, visual quota or mandatory sequence.
 
 Compare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.
 
-Bullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. Compare compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.
+Bullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. For visual subjects, proactively compose informative images with cards and text, and include learner-visible references beside researched or time-sensitive claims. Images and links support the same learning unit; they are not separate page types. Read contracts/media-composition.md (installed skills: references/planning/media-composition.md) for composition examples. Compare compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.
 
 Flashcards introduce definitions and meanings as well as practise recall. Cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox explains comparisons as well as contextual decisions; Formula Sandbox explores parameter sensitivity. Select other prebuilt activities by their learning purpose below.
 
@@ -161,6 +162,8 @@ ${FLOWCHART_MODELS.map(([view, model]) => `| ${view} | ${model} |`).join('\n')}
 ${OPENUI_MODELS.map(([model, visual]) => `| ${model} | ${visual} |`).join('\n')}
 
 ### Applying the selection
+
+${MEDIA_COMPOSITION_GUIDE}
 
 ${LEARNER_REFERENCE_GUIDE}
 

@@ -26,6 +26,9 @@ SwitchGroup(name: string, items: SwitchItem[], variant?: "clear" | "card" | "sun
 Form(name: string, buttons: Buttons, fields?: FormControl[]) — Form container with fields and explicit action buttons
 Button(label: string, action?: ActionExpression, variant?: "primary" | "secondary" | "tertiary", type?: "normal" | "destructive", size?: "extra-small" | "small" | "medium" | "large") — Clickable button
 Image(alt: string, src?: string) — Image with alt text and optional URL
+ImageBlock(src: string, alt?: string) — Image block with loading state
+ImageText(src: string, alt?: string, title: string, subtitle?: string, bold?: boolean, layout?: "horizontal" | "vertical", imageSize?: number) — A small square image (thumbnail/avatar) with a title and optional subtitle. src must be a real image URL.
+ImageTextLarge(src: string, alt?: string, title: string, subtitle?: string, bold?: boolean) — A full-width banner image above a bold title and optional subtitle. src must be a real image URL.
 ImageGallery(images: {src: string, alt?: string, details?: string}[]) — Gallery grid of images with modal preview
 Accordion(items: AccordionItem[]) — Collapsible sections
 AccordionItem(value: string, trigger: string, content: (TextContent | MarkDownRenderer | CardHeader | Callout | TextCallout | CodeBlock | Image | Svg | ImageBlock | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | InlineHeader | EntityList | EditableTable | SnippetCardBlock | OverviewCardBlock | ContextCardBlock | CompositeCardBlock | VisualCardBlock)[]) — value is unique id, trigger is section title
@@ -49,9 +52,6 @@ FormControl(label: string, input: Input | TextArea | Select | DatePicker | Slide
 Icon(name: string, category?: string) — A lucide icon by kebab-case name (e.g. 'circle-check'). Optional category picks a topical fallback when the name doesn't resolve.
 IconButton(name: string, icon: Icon, action?: ActionExpression, variant?: "primary" | "secondary" | "tertiary", size?: "extra-small" | "small" | "medium" | "large", shape?: "square" | "circle") — Icon-only button. name is the accessible label and the action label; icon is an Icon; action fires on click.
 IconText(icon: Icon, iconVariant?: "neutral" | "info" | "success" | "warning" | "danger" | "inverted" | "filled" | "soft", iconSize?: "xs" | "s" | "m" | "l" | "xl" | "sm" | "md" | "lg", title: string, subtitle?: string, bold?: boolean, layout?: "horizontal" | "vertical") — An icon badge with a title and optional subtitle, laid out horizontally or vertically. iconVariant sets the badge color.
-ImageBlock(src: string, alt?: string) — Image block with loading state
-ImageText(src: string, alt?: string, title: string, subtitle?: string, bold?: boolean, layout?: "horizontal" | "vertical", imageSize?: number) — A small square image (thumbnail/avatar) with a title and optional subtitle. src must be a real image URL.
-ImageTextLarge(src: string, alt?: string, title: string, subtitle?: string, bold?: boolean) — A full-width banner image above a bold title and optional subtitle. src must be a real image URL.
 InlineHeader(heading: string, description?: string) — Compact section heading with an optional one-line description, for use inside cards.
 Label(text: string) — Text label
 ListBlock(items: ListItem[], variant?: "number" | "image", size?: "default" | "small") — A list of items with number or image indicators. Each item can optionally have an action. size small renders a compact list.

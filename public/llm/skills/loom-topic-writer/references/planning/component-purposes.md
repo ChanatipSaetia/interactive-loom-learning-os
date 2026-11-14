@@ -48,7 +48,7 @@ Bind controls to an authored visual or model without another AI call. Explain wh
 
 Recognize and compare labelled visual examples.
 
-[Image](../components/Image.md), [ImageGallery](../components/ImageGallery.md), [LearningGallery](../components/LearningGallery.md)
+[Image](../components/Image.md), [ImageBlock](../components/ImageBlock.md), [ImageText](../components/ImageText.md), [ImageTextLarge](../components/ImageTextLarge.md), [ImageGallery](../components/ImageGallery.md), [LearningGallery](../components/LearningGallery.md)
 
 ## Recall, apply and explain
 

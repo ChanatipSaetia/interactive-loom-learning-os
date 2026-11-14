@@ -243,3 +243,26 @@ destination, with an Open reference action. External destinations have an
 external-link indicator and open in a new tab when the host permits it. The
 preview does not fetch website metadata or images. Keep essential teaching
 visible in the page; preview text is optional further detail.
+
+### Compose visual examples and sources
+
+Proactively include informative images for visual subjects and visible references
+for researched or current claims. Images and links belong alongside cards, text,
+charts and activities in the same learning unit. For example, a framework card
+can combine an image, a short explanation of what to notice and an official
+documentation link with a hover description. Place a chart's dated source and
+measurement caveat next to the chart. Read the actual child component contracts;
+do not invent image, reference or styling props on Card.
+
+For a 2026 UI-framework comparison, distinguish frameworks from component
+libraries and aesthetics such as glassmorphism or flat design. Compose verified
+visual examples, practical comparisons and documentation links. Chart popularity
+only with comparable measured data: identify the metric, source, observation
+date, sample/window and units. Stars, downloads and survey usage measure different
+things. Do not invent rankings or treat a style mockup as product/adoption evidence.
+The player controls its theme; use supported layout options and labelled visual
+mockups rather than unsupported per-topic CSS or blur fields.
+
+The focused MCP reference is `contracts/media-composition.md`; installed skills
+provide `references/planning/media-composition.md`. Follow image delivery policy
+and learner-reference contracts only when relevant; keep progressive navigation.

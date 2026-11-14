@@ -92,6 +92,9 @@
       "name": "Inspect visual references",
       "components": [
         "Image",
+        "ImageBlock",
+        "ImageText",
+        "ImageTextLarge",
         "ImageGallery",
         "LearningGallery"
       ]
@@ -151,9 +154,6 @@
         "Icon",
         "IconButton",
         "IconText",
-        "ImageBlock",
-        "ImageText",
-        "ImageTextLarge",
         "InlineHeader",
         "IntroWhat",
         "IntroWhy",
@@ -492,7 +492,7 @@
       "deliver"
     ]
   },
-  "selectionGuidance": "Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Text, layouts, visuals and prebuilt activities share one catalog; there is no section ranking, visual quota or mandatory sequence.\n\nCompare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.\n\nBullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. Compare compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.\n\nFlashcards introduce definitions and meanings as well as practise recall. Cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox explains comparisons as well as contextual decisions; Formula Sandbox explores parameter sensitivity. Select other prebuilt activities by their learning purpose below.\n\nFor a 3D web research lesson, compare matched capabilities in a Table, inspect annotated use-case cards, and explain camera/geometry with a labelled Svg when each serves an objective. Bullets can guide real initialization steps; Flowchart can trace system messages. These are candidates, not a required section mix.\n\nFor full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.\n\nRead only plausible capability summaries, then the exact contracts and required model dependencies of the selected components. Prebuilt activities package reusable interactions and presentation scenes; select them by fit, just like tables, text or controls. If a contract is unavailable, correct the path or explicitly revise and revalidate the plan; never silently downgrade to prose or invent signatures. Generic child alternatives are choices, not dependencies.",
+  "selectionGuidance": "Learning-first, representation-aware authoring: learning objective → knowledge structure → learner action → candidate section capabilities → representation and configuration → focused contracts → OUI and narration → validation/repair → delivery. Choose the simplest representation or complementary combination that fully supports the intended learning experience. Text, layouts, visuals and prebuilt activities share one catalog; there is no section ranking, visual quota or mandatory sequence.\n\nCompare candidates by knowledge fidelity (preserve information and relationships), learner action (what the learner does), perspective coverage (what additional views reveal), cognitive clarity (avoid unnecessary complexity), assessment suitability (what response demonstrates the outcome) and authoring feasibility (what the evidence can actually model). Record the choice in TopicPlan activity, rationale and presentation.strategy before retrieving exact signatures. Resolve relevant advisory warnings or explicitly justify proceeding; structural validity alone is not experience readiness.\n\nBullets teach numbered linear procedures, checklists, prerequisites, key points, supporting details and concise summaries. The knowledge itself should fit a list; moving paragraphs into bullet items is not a representation decision. For visual subjects, proactively compose informative images with cards and text, and include learner-visible references beside researched or time-sensitive claims. Images and links support the same learning unit; they are not separate page types. Read contracts/media-composition.md (installed skills: references/planning/media-composition.md) for composition examples. Compare compositions proactively: matched attributes in a table, verified use-case examples in cards, spatial mechanisms in labelled Svg, and measured quantities in charts. Simplest means clearest for the learner, not fewest component types or easiest syntax. Steps add visual stage guidance; Flowchart teaches interactions, responsibilities, messages, data or states, even in a linear process when perspectives add understanding. Reflection Sequence practises order; User Journey follows a person's experience. Text is appropriate for connected prose, nuanced explanation and argument; consider alternatives when they clarify the objective, without forcing interactivity.\n\nFlashcards introduce definitions and meanings as well as practise recall. Cards/stacks compare examples, tables compare factual attributes, labelled Svg diagrams explain spatial structure, and charts explain quantities or trends. Empirical charts require supplied or verified data; clearly label illustrative data and never invent benchmark results. Tradeoff Sandbox explains comparisons as well as contextual decisions; Formula Sandbox explores parameter sensitivity. Select other prebuilt activities by their learning purpose below.\n\nFor a 3D web research lesson, compare matched capabilities in a Table, inspect annotated use-case cards, and explain camera/geometry with a labelled Svg when each serves an objective. Bullets can guide real initialization steps; Flowchart can trace system messages. These are candidates, not a required section mix.\n\nFor full lessons, combine sections only when each adds a distinct contribution: e.g. Flowchart explains RAG tool execution, Bullets guides implementation, Scenario explores retrieval failures and Quiz assesses application. Distinguish presentation, exploration and assessment. Viewing, clicking, switching views and flipping cards are engagement, not demonstrated mastery.\n\nRead only plausible capability summaries, then the exact contracts and required model dependencies of the selected components. Prebuilt activities package reusable interactions and presentation scenes; select them by fit, just like tables, text or controls. If a contract is unavailable, correct the path or explicitly revise and revalidate the plan; never silently downgrade to prose or invent signatures. Generic child alternatives are choices, not dependencies.",
   "visualChoices": [
     {
       "learningGoal": "Compare concrete examples or evidence layouts side by side",
@@ -1275,6 +1275,57 @@
     {
       "component": "Image",
       "summary": "Image with alt text and optional URL",
+      "teaching": {
+        "introduces": "Teach visual recognition and concrete examples by showing relevant features, variations and distinctions.",
+        "exploration": "Inspect and compare images with explanatory labels or captions; use the selected gallery’s actual preview and presentation behavior.",
+        "evidence": "Viewing, zooming or switching images is engagement. Recognition evidence requires a response that identifies or explains a feature.",
+        "limits": "Check the MCP runtime image policy: a reachable HTTPS URL may still be blocked. Images must contribute to the learning goal, remain legible and use supported accessibility/attribution fields. Do not infer hidden mechanisms from a photograph or claim a gallery provides a classification test."
+      },
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "ImageBlock",
+      "summary": "Image block with loading state",
+      "teaching": {
+        "introduces": "Teach visual recognition and concrete examples by showing relevant features, variations and distinctions.",
+        "exploration": "Inspect and compare images with explanatory labels or captions; use the selected gallery’s actual preview and presentation behavior.",
+        "evidence": "Viewing, zooming or switching images is engagement. Recognition evidence requires a response that identifies or explains a feature.",
+        "limits": "Check the MCP runtime image policy: a reachable HTTPS URL may still be blocked. Images must contribute to the learning goal, remain legible and use supported accessibility/attribution fields. Do not infer hidden mechanisms from a photograph or claim a gallery provides a classification test."
+      },
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "ImageText",
+      "summary": "A small square image (thumbnail/avatar) with a title and optional subtitle. src must be a real image URL.",
+      "teaching": {
+        "introduces": "Teach visual recognition and concrete examples by showing relevant features, variations and distinctions.",
+        "exploration": "Inspect and compare images with explanatory labels or captions; use the selected gallery’s actual preview and presentation behavior.",
+        "evidence": "Viewing, zooming or switching images is engagement. Recognition evidence requires a response that identifies or explains a feature.",
+        "limits": "Check the MCP runtime image policy: a reachable HTTPS URL may still be blocked. Images must contribute to the learning goal, remain legible and use supported accessibility/attribution fields. Do not infer hidden mechanisms from a photograph or claim a gallery provides a classification test."
+      },
+      "mentalModel": "Factual comparisons, visual examples, spatial diagrams and data",
+      "selectionQuestion": "Would a chart, table, simple procedure, drawing, analogy or mixed composition express this idea best? See the visual choices below.",
+      "learningBehavior": {
+        "learnerAction": "Inspect or interact with an authored composition of cards, diagrams, tables or charts.",
+        "presentationConstraint": "Use supported child beats and narration targets; measure dense tables/charts at phone width.",
+        "evidenceBoundary": "Component presence is not proof of meaningful interaction. Use verified or labelled illustrative chart data; static tables are valid for factual comparison."
+      }
+    },
+    {
+      "component": "ImageTextLarge",
+      "summary": "A full-width banner image above a bold title and optional subtitle. src must be a real image URL.",
       "teaching": {
         "introduces": "Teach visual recognition and concrete examples by showing relevant features, variations and distinctions.",
         "exploration": "Inspect and compare images with explanatory labels or captions; use the selected gallery’s actual preview and presentation behavior.",

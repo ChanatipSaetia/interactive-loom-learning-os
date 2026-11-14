@@ -3,6 +3,7 @@ import { LOOM_PAGES_URL } from './llm-guide'
 
 export const WRITER_VISUAL_PLANNING = `# Plan how to show the concept
 
+- For visual topics, proactively plan informative images alongside cards, text and comparisons. For researched or current claims, include learner-visible sources next to the related example/chart. These belong to the same learning unit; see references/planning/media-composition.md, then read only selected image/link/component contracts.
 - Before writing, identify what the learner should be able to picture or explain. When a spatial relationship, mechanism, structure or abstract idea is easier to understand visually, include a labelled concept drawing with \`Svg\`; do not wait for the learner to ask for a picture.
 - Choose the visual that teaches the idea: a schematic or before/after drawing for a mechanism, a Flowchart for a process with actors, a chart for quantities, or a ConceptMap for relationships. A useful drawing can be the main section of a short topic; do not add decorative pictures or force a diagram into every topic.
 - Pair the drawing with a short explanation of what to notice and why it matters. Name important shapes with IDs and use narration to highlight them one at a time, connecting each visible part to the concept. Clearly label analogies and simplifications; never imply that a schematic is to scale.
