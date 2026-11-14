@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { chromium, expect } from '@playwright/test'
 
-test('Read scrolls natively over the intro with a wheel and a finger, inline and fullscreen', async () => {
+test('Read grows inline and scrolls natively with a wheel and a finger in fullscreen', async () => {
   const browser = await chromium.launch(process.env.CHROMIUM_PATH
     ? { executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox'] }
     : {})
@@ -18,6 +18,12 @@ test('Read scrolls natively over the intro with a wheel and a finger, inline and
       try {
         const page = await context.newPage()
         await page.goto('http://localhost:8090/')
+        await page.evaluate(() => {
+          const meta = document.createElement('meta')
+          meta.name = 'viewport'
+          meta.content = 'width=device-width,initial-scale=1'
+          document.head.append(meta)
+        })
         await page.frameLocator('#app').getByTestId('mcp-other-mode').click({ timeout: 30000 })
         const reader = page.frameLocator('#app').getByTestId('mcp-read-scroll')
         await expect(reader).toBeVisible({ timeout: 30000 })
@@ -25,7 +31,11 @@ test('Read scrolls natively over the intro with a wheel and a finger, inline and
         for (const mode of ['inline', 'fullscreen']) {
           await page.evaluate((mode) => window.setHostDisplayMode(mode), mode)
           await expect(page.frameLocator('#app').getByTestId('mcp-read'))
-            .toHaveClass(mode === 'fullscreen' ? /mcp-full/ : /^mcp-read$/)
+            .toHaveClass(mode === 'fullscreen' ? /mcp-full/ : /^mcp-player$/)
+          if (mode === 'inline') {
+            await expect.poll(() => reader.evaluate(el => Math.abs(el.scrollHeight - el.clientHeight))).toBeLessThan(2)
+            continue
+          }
           await reader.evaluate((el) => {
             el.scrollTop = 0
             window.cancelledReadingGesture = false
