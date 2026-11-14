@@ -1,3 +1,4 @@
+import { ReferenceLinks } from '../../../../../ui-system/primitives/reference-links'
 import PresentText from '../text/PresentText'
 import { proseAnchors, proseBlocks, proseRootAlias } from '../../../../composition/oui/page-prose'
 import { parseOUIElements } from '../../../../composition/oui/compile'
@@ -105,6 +106,7 @@ export default function PresentOpenUI({ data, beats, beat, sectionIndex, active 
   const whole = !parts
   return (
     <div className="openui-section present-openui">
+      <ReferenceLinks scope={scope} contentKey={data.source} />
       {data.heading && <h4 className="openui-section-heading" {...mark(0, { motion: 'fade' })}>{data.heading}</h4>}
       <div ref={scope} className="loom-openui-scope openui-section-body" {...(whole && mark(0, { motion: 'children' }))}>
         <Renderer response={data.source} library={library} onAction={handleAction} publishObservability={false} />

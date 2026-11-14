@@ -228,3 +228,18 @@ from credit/detail pages, and place links outside sanitized Svg markup. Verify
 external navigation in the target host and do not open references automatically
 during Present. See the focused `contracts/learner-references.md` reference or
 installed `references/core/learner-references.md`.
+
+### Reference previews
+
+Markdown links in lesson text have a hover and keyboard-focus preview in Read
+and Present. Add a concise description using the standard Markdown title:
+
+```markdown
+[MDN HTTP overview](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview "Requests, responses, headers and status codes explained in depth.")
+```
+
+The preview shows the link label, authored description, website domain and
+destination, with an Open reference action. External destinations have an
+external-link indicator and open in a new tab when the host permits it. The
+preview does not fetch website metadata or images. Keep essential teaching
+visible in the page; preview text is optional further detail.

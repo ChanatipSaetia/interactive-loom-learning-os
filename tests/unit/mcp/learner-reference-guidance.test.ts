@@ -22,3 +22,10 @@ it('uses the existing content contract rather than inventing link fields or comp
   expect(LEARNER_REFERENCE_GUIDE).toContain('outside the SVG markup')
   expect(LEARNER_REFERENCE_GUIDE).toContain('Do not open links automatically')
 })
+
+it('supports preview descriptions through the existing Markdown title contract', () => {
+  const markdown = '[MDN HTTP overview](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview "Requests, responses and headers.")'
+  const source = `root = Page("HTTP", TextContent(${JSON.stringify(markdown)}))`
+  expect(validateOUISection(source).diagnostics).toEqual([])
+  expect(LEARNER_REFERENCE_GUIDE).toContain('does not fetch external page metadata')
+})
