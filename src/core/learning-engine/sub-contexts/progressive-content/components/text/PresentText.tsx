@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { ReferenceLinks } from '../../../../../ui-system/primitives/reference-links'
+import { useMemo, useRef } from 'react'
 import { marked } from 'marked'
 import { usePickAnchors, usePickAnchorScope } from '../../../../../ui-system/pick-anchor'
 import { PresentAgenda } from '../../../PresentAgenda'
@@ -26,6 +27,7 @@ export { leadTerm } from '../../text-scenes'
  */
 export default function PresentText({ data, beat, paragraphAnchors }: PresentRendererProps<TextPresentData> & { paragraphAnchors?: string[] }) {
   const mark = beatMarks(beat)
+  const referenceScope = useRef<HTMLDivElement>(null)
   const pick = usePickAnchors()
   const pickScope = usePickAnchorScope()
   const paragraphs = data.paragraphs
@@ -67,7 +69,8 @@ export default function PresentText({ data, beat, paragraphAnchors }: PresentRen
   )
 
   return (
-    <div className="text-section present-text" data-testid="present-text">
+    <div ref={referenceScope} className="text-section present-text" data-testid="present-text">
+      <ReferenceLinks scope={referenceScope} contentKey={data.paragraphs} />
       {heading && <h4 className="text-section-heading" {...mark(0, { motion: 'words' })}><PresentWords text={heading} /></h4>}
       {agenda
         ? <div className="present-with-agenda"><PresentAgenda items={terms.map((p) => p.term)} current={parts[beat]?.paragraph ?? -1} label="Parts" />{scenes}</div>

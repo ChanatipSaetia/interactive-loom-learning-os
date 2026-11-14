@@ -1,3 +1,4 @@
+import { ReferenceLinks } from '../../../../../ui-system/primitives/reference-links'
 import { parseOUIElements } from '../../../../composition/oui/compile'
 import { proseAnchors, proseBlocks, proseRootAlias } from '../../../../composition/oui/page-prose'
 import { usePickAnchorScope } from '../../../../../ui-system/pick-anchor'
@@ -94,6 +95,7 @@ function OpenUISection({ title, heading, source, animate = false, sectionIndex =
 
   return (
     <div className="openui-section" data-testid="openui-section">
+      <ReferenceLinks scope={contentRef} contentKey={source} />
       {animate ? <ScrollReveal>{content}</ScrollReveal> : content}
     </div>
   )

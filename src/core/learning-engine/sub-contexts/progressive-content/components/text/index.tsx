@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { ReferenceLinks } from '../../../../../ui-system/primitives/reference-links'
+import { useMemo, useRef } from 'react'
 import { marked } from 'marked'
 import { ScrollReveal } from '../../../../../ui-system/motion/scroll-reveal'
 import { SectionTitleBar } from '../../../../../delivery/web-app-shell/SectionTitleBar'
@@ -28,6 +29,7 @@ function TextSection({
   sectionId = 'text',
   onResultChange,
 }: TextSectionProps) {
+  const referenceScope = useRef<HTMLDivElement>(null)
   const pick = usePickAnchors()
   const renderedParagraphs = useMemo(
     () =>
@@ -88,7 +90,8 @@ function TextSection({
   )
 
   return (
-    <div className="text-section" data-testid="text-section">
+    <div ref={referenceScope} className="text-section" data-testid="text-section">
+      <ReferenceLinks scope={referenceScope} contentKey={paragraphs} />
       {animate ? (
         <ScrollReveal>{content}</ScrollReveal>
       ) : (
