@@ -1,3 +1,4 @@
+import { componentTeachingGuide } from './component-teaching'
 import { COMPONENT_PURPOSES } from './component-purpose'
 import { DOCUMENT_SYNTAX_GUIDE } from './document-contract'
 import { guideReferences } from './reference-guides'
@@ -75,7 +76,7 @@ export function readReference(input = 'index.md') {
     const model = SECTION_MENTAL_MODELS.find((entry) => entry.type === item.type)
     const purpose = COMPONENT_PURPOSES.find((group) => (group.components as readonly string[]).includes(name))
     const alternatives = purpose?.components.filter((candidate) => candidate !== name).map((candidate) => link(`capabilities/${candidate}.md`, candidate)).join(', ')
-    const details = [purpose?.purpose, alternatives ? `Compare when relevant: ${alternatives}. These are alternatives, not dependencies.` : '', model?.model, model?.question, behavior?.learnerAction, behavior?.presentationConstraint, behavior?.evidenceBoundary, item.component === 'Flowchart' ? FLOWCHART_MODELS.map(([id, purpose]) => `${id}: ${purpose}`).join('\n') : ''].filter(Boolean).join('\n\n')
+    const details = [purpose?.purpose, componentTeachingGuide(name), alternatives ? `Compare when relevant: ${alternatives}. These are alternatives, not dependencies.` : '', model?.model, model?.question, behavior?.learnerAction, behavior?.presentationConstraint, behavior?.evidenceBoundary, item.component === 'Flowchart' ? FLOWCHART_MODELS.map(([id, purpose]) => `${id}: ${purpose}`).join('\n') : ''].filter(Boolean).join('\n\n')
     content = `# ${item.component}\n\n${item.summary}\n\n${details}\n\nRead when: considering this capability for a learner action. Combine it with supporting components; it does not determine a page type.\n\nBefore authoring, ${link(next[0], 'plan the composition')}. Then read ${link(next[1], 'the exact component contract')}.`
   } else if (path === 'contracts/delivery.md') {
     next = ['workflow/validate-plan.md', 'workflow/verify.md', 'storage/index.md']

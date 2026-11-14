@@ -4,7 +4,7 @@ Use a table or chart in a composed page when the figures or the side-by-side com
 
 - **Table**: several items compared on the same attributes, or reference values the learner looks up (settings, limits, specs).
 - **Chart**: the shape of real numbers: a comparison, a trend, a share of a whole or a correlation. Pick the chart type from the question it answers (see the list below).
-- Not a table or chart: a trade-off the learner should explore by moving sliders (TradeoffSandbox), a formula (FormulaSandbox), categories or a hierarchy (TaxonomyBrowser), a few points with explanation (Bullets).
+- Not a table or chart: an explained comparison of alternatives and consequences (TradeoffSandbox; scores and recommendations are optional), a formula (FormulaSandbox), meaningful categories with examples and distinctions (TaxonomyBrowser), a few points with explanation (Bullets).
 
 How to write them:
 

@@ -105,7 +105,7 @@ Text, layouts, visuals, controls and prebuilt activities are peers in one compon
 - The body uses components from the unified catalog: text, layouts, media, data components and prebuilt activities. The components to use are listed with their signatures under Tables and Charts, Layouts for Other Content and Drawings below.
 - Component reference: ${OPENUI_REACT_UI_DOCS_URL}. Language specification: ${OPENUI_LANG_DOCS_URL}.
 - Page-local reactive inputs and state actions work without another model call. Query/Mutation tool connections are deferred.
-- List it in topic.oui with \`SectionRef\` like any other section. Compare all relevant candidates by fit: Table for factual attributes, TradeoffSandbox for contextual choices, Steps for instructions, Flowchart for interactions, and TextContent for connected prose. Compose supporting components around the main learning activity.
+- List it in topic.oui with \`SectionRef\` like any other section. Compare all relevant candidates by fit: Table for factual attributes, TradeoffSandbox for explained comparisons and optional contextual choices, Steps for instructions, Flowchart for interactions, and TextContent for connected prose. Compose supporting components around the main learning activity.
 
 Shape each section to its content and learner action. Reuse a consistent table or card layout when it makes comparisons easier; vary the composition when the learning purpose changes. Visual novelty and layout variety are not learning objectives.
 
@@ -162,7 +162,7 @@ Use a table or chart in a composed page when the figures or the side-by-side com
 
 - **Table**: several items compared on the same attributes, or reference values the learner looks up (settings, limits, specs).
 - **Chart**: the shape of real numbers: a comparison, a trend, a share of a whole or a correlation. Pick the chart type from the question it answers (see the list below).
-- Not a table or chart: a trade-off the learner should explore by moving sliders (TradeoffSandbox), a formula (FormulaSandbox), categories or a hierarchy (TaxonomyBrowser), a few points with explanation (Bullets).
+- Not a table or chart: an explained comparison of alternatives and consequences (TradeoffSandbox; scores and recommendations are optional), a formula (FormulaSandbox), meaningful categories with examples and distinctions (TaxonomyBrowser), a few points with explanation (Bullets).
 
 How to write them:
 
@@ -299,7 +299,7 @@ why = NarrationStep("part3", "So two leaves and a bud is a recipe for flavour.",
 
 const DRAWINGS = `### Drawings
 
-When a picture explains it better than words or boxes and arrows, draw it with \`Svg\` in a composed page: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Match the representation to what it teaches: use Flowchart for a process with actors, a chart for measured quantities, TaxonomyBrowser for categories, and Svg for a spatial or annotated explanation. Combine them when each adds something useful.
+When a picture explains it better than words or boxes and arrows, draw it with \`Svg\` in a composed page: the parts of an object (an engine, a cell, a leaf), where things sit (a floor plan, a network, a board), a shape or geometry (an angle, a curve, a wave), or a mechanism at one moment (a piston stroke, a cache hit). Match the representation to what it teaches: use Flowchart for procedure connections, responsibilities or system interactions, a chart for measured quantities, TaxonomyBrowser for categories, and Svg for a spatial or annotated explanation. Combine them when each adds something useful.
 
 Plan the picture before the prose: what should the learner be able to picture or explain afterward? Include a labelled concept drawing whenever it makes the idea clearer, without waiting for a request for a picture. For an abstract idea, use a concrete visual analogy and explicitly label where the analogy or schematic simplifies reality. A drawing should explain a relationship, structure or change, not decorate the page. Pair it with a short explanation of what to notice and why it matters, and use narration to connect its parts to the idea one at a time.
 

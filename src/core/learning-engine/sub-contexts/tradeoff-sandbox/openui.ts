@@ -70,7 +70,7 @@ export const TradeoffChoice = defineOUIComponent({
     id: 'Choice ID, unique within the step; `recommended` refers to it.',
     label: 'Option name shown on the choice card.',
     description: 'What picking this option means.',
-    metrics: 'Delta per metric ID when picked, e.g. {performance: 10, cost: -5}.',
+    metrics: 'Delta per metric ID when picked; use {} for a qualitative comparison without scores.',
     pros: 'Advantages, as ProCon references.',
     cons: 'Drawbacks, as ProCon references.',
     whyThisFits: 'Optional reason this option fits the scenario.',
@@ -80,7 +80,7 @@ export const TradeoffChoice = defineOUIComponent({
 
 export const TradeoffStep = defineOUIComponent({
   name: 'TradeoffStep',
-  description: 'A decision point in a trade-off scenario. `recommended` is the ID of the recommended choice.',
+  description: 'One comparison criterion or decision point. Reuse alternatives across criteria; recommended is optional.',
   props: z.object({
     id: z.string(),
     title: z.string(),
@@ -90,16 +90,16 @@ export const TradeoffStep = defineOUIComponent({
   }),
   fields: {
     id: 'Step ID, unique within the scenario.',
-    title: 'The decision to make at this step.',
+    title: 'The shared comparison criterion or decision to explore at this step.',
     choices: 'The options, as TradeoffChoice references.',
-    description: 'Optional context for the decision.',
+    description: 'Optional explanation of the comparison criterion or decision context.',
     recommended: 'Optional ID of the recommended choice.',
   },
 })
 
 export const TradeoffScenario = defineOUIComponent({
   name: 'TradeoffScenario',
-  description: 'A trade-off scenario: metrics to watch and the sequence of decisions to make.',
+  description: 'A general comparison container or a contextual situation, with comparison criteria or decisions to explore.',
   props: z.object({
     id: z.string(),
     title: z.string(),
@@ -110,8 +110,8 @@ export const TradeoffScenario = defineOUIComponent({
   fields: {
     id: 'Scenario ID, unique within the sandbox.',
     title: 'Scenario name shown in the scenario picker.',
-    metrics: 'Metrics to watch, as TradeoffMetric references.',
-    steps: 'Decisions in order, as TradeoffStep references.',
+    metrics: 'Metrics to watch, as TradeoffMetric references; use [] for a qualitative comparison.',
+    steps: 'Comparison criteria or decisions in order, as TradeoffStep references.',
     description: 'Optional scenario summary.',
   },
 })
@@ -119,7 +119,7 @@ export const TradeoffScenario = defineOUIComponent({
 export const TradeoffSandbox: LoomOUIComponent = defineOUISection({
   name: 'TradeoffSandbox',
   sectionType: 'tradeoff-sandbox',
-  description: 'Interactive sandbox where learners compare choices across one or more situations, weigh gains and costs, and see how goals, constraints and priorities change which option fits. Several contrasting situations can teach when to choose each alternative; avoid a universal winner.',
+  description: 'Explained comparison of alternatives across shared criteria, strengths, limitations and consequences. Use for comparison even without a decision request; contextual situations and recommendations are optional. Qualitative comparisons use empty metrics; avoid invented scores or a universal winner.',
   props: z.object({
     title: z.string(),
     scenarios: z.array(TradeoffScenario.ref),

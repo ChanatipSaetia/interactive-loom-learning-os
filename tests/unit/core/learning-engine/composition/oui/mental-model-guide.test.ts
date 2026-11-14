@@ -1,3 +1,4 @@
+import { COMPONENT_PURPOSES } from '../../../../../../src/core/learning-engine/composition/oui/component-purpose'
 import { describe, expect, it } from 'vitest'
 import { MENTAL_MODEL_GUIDE, REPRESENTATION_SELECTION_OVERVIEW, SECTION_MENTAL_MODELS } from '../../../../../../src/core/learning-engine/composition/oui/mental-model-guide'
 import { getWriterSkillReferences } from '../../../../../../src/core/learning-engine/composition/oui/skill-references'
@@ -16,7 +17,7 @@ describe('mental model table of contents', () => {
 
   it('guides writers and both tutors from the same catalogue', () => {
     for (const skill of [getWriterSkillReferences()['references/planning/mental-models.md'], getTutorAppSkill(), getTutorViewerSkill()]) expect(skill).toContain(MENTAL_MODEL_GUIDE)
-    for (const { type } of SECTION_MENTAL_MODELS) expect(getLoomSkill()).toContain(`references/sections/${type}.md`)
+    for (const group of COMPONENT_PURPOSES) for (const name of group.components) expect(getLoomSkill()).toContain(`references/components/${name}.md`)
   })
 
   it('keeps the catalogue available before signatures in full and scoped authoring guides', () => {

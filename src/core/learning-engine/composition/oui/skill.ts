@@ -1,5 +1,4 @@
 import { COMPONENT_PURPOSES } from './component-purpose'
-import { OUI_SECTION_TYPES } from './library'
 /** Short entry point; detailed guidance is generated into references/ by skill-references.ts. */
 import { REPRESENTATION_SELECTION_OVERVIEW } from './mental-model-guide'
 import { LOOM_SKILL_NAME } from './llm-guide'
@@ -22,9 +21,9 @@ Write, extend or repair Interactive Loom lessons as OpenUI Lang (.oui) content. 
 Paths below are relative to this skill folder. Read the linked files, not only this entry point. Load only the references relevant to the task; do not read every section spec.
 
 1. Read the user's source material. Establish the learner and goal; ask at most two short questions only when needed.
-2. Follow the [shared authoring workflow](references/planning/workflow.md): identify the learner action, discover candidate formats, make and check a TopicPlan, then retrieve component-scoped contracts. Choose components by learner task from the references below. Prebuilt activities are conveniences within the same catalog. Read [mental models](references/planning/mental-models.md) for selection cues, flowchart views and chart choices, and [visual planning](references/planning/visuals.md) before planning a new lesson. Proactively illustrate time, quantities, structure or mechanisms when they teach the idea.
+2. Follow the [shared authoring workflow](references/planning/workflow.md): identify the learner action, discover candidate formats, make and check a TopicPlan, then retrieve component-scoped contracts. Start at the [component-purpose index](references/planning/component-purposes.md), follow plausible candidates, and retrieve only selected component contracts. Prebuilt activities are conveniences within the same catalog. Read [mental models](references/planning/mental-models.md) for selection cues, flowchart views and chart choices, and [visual planning](references/planning/visuals.md) before planning a new lesson. Proactively illustrate time, quantities, structure or mechanisms when they teach the idea.
 3. Before writing any OUI, read [syntax](references/core/syntax.md), [topic and shared components](references/core/components.md), [authoring rules](references/core/rules.md), [output location](references/workflow/output.md) and [file formats](references/core/formats.md). The workflow's folder default takes precedence over generic chat output examples. Use exact positional signatures; never invent arguments or write from memory.
-4. Read the reference for each selected section below. It contains the selected components, field descriptions and presentation beats. For Present, also read [narration](references/core/narration.md). Write a narration file for every section and cover every beat.
+4. Read the focused reference for each selected component below. It contains the selected components, field descriptions and presentation beats. For Present, also read [narration](references/core/narration.md). Write a narration file for every section and cover every beat.
 5. Write the files, then follow [validation and delivery](references/workflow/validation.md). A complete [topic example](references/examples/topic.md) is available when needed; adapt to the learner rather than copying its lesson structure.
 
 ## Choose the mental model
@@ -34,9 +33,7 @@ ${REPRESENTATION_SELECTION_OVERVIEW}
 | Learning goal | Focused reference |
 |---|---|
 ${COMPONENT_PURPOSES.map(({ name, components }) => `| ${name} | ${components.map((component) => {
-  const type = OUI_SECTION_TYPES.get(component) ?? (component === 'TextContent' ? 'text' : undefined)
-  const family = /Chart$/.test(component) || component === 'Table' ? 'charts' : component === 'Svg' ? 'drawings' : 'layouts'
-  return `[${component}](references/${type ? `sections/${type}` : `openui/${family}`}.md)`
+  return `[${component}](references/components/${component}.md)`
 }).join(', ')} |`).join('\n')}
 
 Flashcards teach definitions and meaning as well as recall. Tradeoff Sandbox presents options and compares their suitability as well as gains and costs. Select only what helps this topic; the table is not a mandatory sequence. Read [page composition and presentation](references/sections/openui.md) when combining components.
