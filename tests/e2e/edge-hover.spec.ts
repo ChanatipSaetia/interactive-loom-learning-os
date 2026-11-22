@@ -1,23 +1,18 @@
 import { test, expect } from '@playwright/test'
 
-test.describe('Flowchart Edge Hover & Tap Interaction', () => {
-  test('expands full edge label on hover and click', async ({ page }) => {
-    await page.goto('/#/demo/ai-agent')
-    const svg = page.getByTestId('flowchart-svg-EVENT_STORMING').first()
-    await expect(svg).toBeVisible()
-
-    // Locate the first edge element in the flowchart
-    const edge = page.locator('[data-testid^="flowchart-edge-EVENT_STORMING-"]').first()
-    await expect(edge).toBeAttached()
-
-    // Hover over the edge (using force: true since the 30px transparent hit-path overlays the visible stroke)
-    await edge.hover({ force: true })
-
-    // Verify edge is attached and visible
-    await expect(edge).toBeVisible()
-
-    // Click/tap the edge path to test mobile toggle
-    await edge.click({ force: true })
-    await expect(edge).toBeVisible()
-  })
+test('edge label highlights on hover and stays selected after a click', async ({ page }) => {
+  await page.goto('/#/demo/ai-agent')
+  const flowchart = page.getByTestId('flowchart-section').first()
+  await expect(flowchart).toBeVisible({ timeout: 20000 })
+  await flowchart.getByTestId('flowchart-fullscreen-toggle').click()
+  const svg = flowchart.getByTestId('flowchart-svg-EVENT_STORMING')
+  await expect(svg).toBeVisible({ timeout: 20000 })
+  const edge = svg.locator('.flowchart-edge-group').filter({ has: page.locator('.flowchart-edge-label-pill') }).first()
+  const label = edge.locator('.flowchart-edge-label-text')
+  await expect(label).toBeVisible()
+  await label.hover({ force: true })
+  await expect(edge).toHaveAttribute('opacity', '1')
+  await label.click({ force: true })
+  await page.mouse.move(0, 0)
+  await expect(edge).toHaveAttribute('opacity', '1')
 })

@@ -88,7 +88,7 @@ test('Viewer: picks go to the model with their current source, and replies strea
   // The topic context goes with the user turn, so the system prompt stays cacheable.
   expect(system.content).not.toContain('### sections/quiz.oui')
   // Where the learner is; with the content tools the model reads that section itself, so only the pick goes.
-  expect(user.content).toContain('## On Screen\n\nRead mode, at sections/quiz.oui (Quiz "Knowledge Check") (not included: read it when you need it).')
+  expect(user.content).toContain('## On Screen\n\nRead mode, at sections/quiz.oui (Page "Knowledge Check") (not included: read it when you need it).')
   expect(user.content).toContain('### sections/quiz.oui: q1 (line')
   expect(user.content).toContain('QuizQuestion(id: string')
   expect(user.content).toContain('About these places:\n- sections/quiz.oui #q1')

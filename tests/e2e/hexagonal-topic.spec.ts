@@ -17,15 +17,15 @@ test.describe('Hexagonal Architecture Topic E2E Test', () => {
     const titleHeader = page.locator('.topic-page-title')
     await expect(titleHeader).toBeVisible()
 
-    // 5. Wait for all 10 section wrappers to be rendered
+    // 5. Wait for all 11 section wrappers to be rendered
     const sectionWrappers = page.locator('.section-wrapper')
-    await expect(sectionWrappers).toHaveCount(10, { timeout: 10000 })
+    await expect(sectionWrappers).toHaveCount(11, { timeout: 10000 })
 
     // 6. Log all data-section-type attributes
     const types = await sectionWrappers.evaluateAll((els) => els.map((el) => el.getAttribute('data-section-type')))
     console.log('E2E RENDERED SECTION TYPES:', types)
 
-    expect(types).toHaveLength(10)
+    expect(types).toHaveLength(11)
     expect(types).toContain('intro')
     expect(types).toContain('flashcards')
     expect(types).toContain('concept-map')

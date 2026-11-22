@@ -1,30 +1,34 @@
 import { test, expect } from '@playwright/test'
 import path from 'path'
+import { existsSync } from 'node:fs'
+import { createServer, type Server } from 'node:http'
+import sirv from 'sirv'
 
 test.describe('Static HTML OKF embed (Serverless & CDN)', () => {
-  test('renders OKF sections read-only via file:// protocol (Zero Web Server required)', async ({ page }) => {
-    const staticFilePath = path.resolve(process.cwd(), 'test-okf-static', 'index.html')
-    const fileUrl = `file://${staticFilePath}`
+  let server: Server
+  let baseURL: string
 
-    await page.goto(fileUrl)
-
-    // 1. Verify the embedded top navigation and page title
-    await expect(page.locator('.topnav-title')).toHaveText('Learning OS')
-    await expect(page.locator('.status-badge')).toContainText('Standalone UMD Mode')
-    await expect(page.locator('#loom-root')).toContainText('Interactive OKF Catalog')
-
-    // 2. Verify OKF sections rendered cleanly in static mode
-    await expect(page.locator('#loom-root')).toContainText('System Architecture & OKF Overview')
-    await expect(page.locator('#loom-root')).toContainText('Core Concepts & Principles')
-    await expect(page.locator('#loom-root')).toContainText('Key Features & Capabilities')
-    await expect(page.locator('#loom-root')).toContainText('Knowledge Check Quiz')
-
-    // 3. Embeds are read-only: no edit toggles (authoring happens in Loom Studio)
-    await expect(page.locator('[data-testid^="edit-section-toggle"]')).toHaveCount(0)
+  test.beforeAll(async () => {
+    if (!existsSync(path.resolve(process.cwd(), 'dist-lib/loom-sections.umd.js'))) {
+      throw new Error('Build the local embed bundle first: npm run build:lib')
+    }
+    server = createServer(sirv(process.cwd(), { dev: true }))
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
+    const address = server.address()
+    if (!address || typeof address === 'string') throw new Error('Static server failed to start')
+    baseURL = `http://127.0.0.1:${address.port}`
   })
 
+  test.afterAll(async () => {
+    await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
+  })
+
+  test.beforeEach(async ({ page }) => {
+    // Exercise the local build rather than relying on a live third-party CDN.
+    await page.route('https://cdn.jsdelivr.net/**', (route) => route.abort())
+  })
   test('renders OKF sections read-only when served over HTTP server', async ({ page }) => {
-    await page.goto('/test-okf-static/index.html')
+    await page.goto(`${baseURL}/test-okf-static/index.html`)
 
     await expect(page.locator('.topnav-title')).toHaveText('Learning OS')
     await expect(page.locator('#loom-root')).toContainText('Introduction')

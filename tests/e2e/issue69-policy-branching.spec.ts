@@ -1,52 +1,52 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+const flowchart = (page: Page) => page.getByTestId('flowchart-section').first()
 
 test.describe('Issue #69: Policy only maps to Decision when branching (2+ outgoing)', () => {
   test('linear Policy nodes appear in EVENT_STORMING but not in SWIMLANES', async ({ page }) => {
-    await page.goto('/#/topics/ddd')
+    await page.goto('/#/demo/ai-agent')
     
     // Scroll to the flowchart section
-    const flowchartSection = page.getByTestId('flowchart-section')
+    const flowchartSection = flowchart(page)
     await expect(flowchartSection).toBeVisible({ timeout: 15000 })
 
     // Verify Policy node appears in EVENT_STORMING view
-    const polDefineEs = page.getByTestId('flowchart-node-EVENT_STORMING-pol_define')
+    const polDefineEs = flowchart(page).getByTestId('flowchart-node-EVENT_STORMING-pol_run_agent')
     await expect(polDefineEs).toBeVisible()
 
     // Switch to SWIMLANES view
-    const swimlanesTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Activity Swimlanes' })
+    const swimlanesTab = flowchart(page).locator('.flowchart-view-tab-trigger').filter({ hasText: 'Activity Swimlanes' })
     await swimlanesTab.click()
-    await page.waitForTimeout(500)
 
     // Linear Policy should NOT appear in SWIMLANES
-    const polDefineSwim = page.getByTestId('flowchart-node-SWIMLANES-pol_define')
+    const polDefineSwim = flowchart(page).getByTestId('flowchart-node-SWIMLANES-pol_run_agent')
     await expect(polDefineSwim).not.toBeVisible()
 
     // Verify the SWIMLANES view still renders other nodes
-    const swimNodes = page.locator('[data-testid^="flowchart-node-SWIMLANES-"]')
+    const swimNodes = flowchart(page).locator('[data-testid^="flowchart-node-SWIMLANES-"]')
     await expect.poll(() => swimNodes.count()).toBeGreaterThan(0)
   })
 
   test('linear Policy nodes appear in EVENT_STORMING but not in DATA_FLOW', async ({ page }) => {
-    await page.goto('/#/topics/ddd')
+    await page.goto('/#/demo/ai-agent')
 
-    const flowchartSection = page.getByTestId('flowchart-section')
+    const flowchartSection = flowchart(page)
     await expect(flowchartSection).toBeVisible({ timeout: 15000 })
 
     // Verify Policy node in EVENT_STORMING
-    const polPersistEs = page.getByTestId('flowchart-node-EVENT_STORMING-pol_persist')
+    const polPersistEs = flowchart(page).getByTestId('flowchart-node-EVENT_STORMING-pol_call_llm')
     await expect(polPersistEs).toBeVisible()
 
     // Switch to DATA_FLOW view
-    const dataFlowTab = page.locator('.flowchart-view-tab-trigger').filter({ hasText: 'Data Flow' })
+    const dataFlowTab = flowchart(page).locator('.flowchart-view-tab-trigger').filter({ hasText: 'Data Flow' })
     await dataFlowTab.click()
-    await page.waitForTimeout(500)
 
     // Linear Policy should NOT appear in DATA_FLOW
-    const polPersistDf = page.getByTestId('flowchart-node-DATA_FLOW-pol_persist')
+    const polPersistDf = flowchart(page).getByTestId('flowchart-node-DATA_FLOW-pol_call_llm')
     await expect(polPersistDf).not.toBeVisible()
 
     // Verify the DATA_FLOW view still renders other nodes
-    const dfNodes = page.locator('[data-testid^="flowchart-node-DATA_FLOW-"]')
+    const dfNodes = flowchart(page).locator('[data-testid^="flowchart-node-DATA_FLOW-"]')
     await expect.poll(() => dfNodes.count()).toBeGreaterThan(0)
   })
 })

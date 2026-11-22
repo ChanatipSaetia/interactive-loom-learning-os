@@ -1,42 +1,44 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+const flowchart = (page: Page) => page.getByTestId('flowchart-section').first()
 
 test.describe('Issue #63 US-20: Fullscreen Mode Layout and Toggle Control', () => {
   test('fullscreen toggle button is visible in dock', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    await expect(page.getByTestId('flowchart-fullscreen-toggle')).toBeVisible()
+    await expect(flowchart(page).getByTestId('flowchart-fullscreen-toggle')).toBeVisible()
   })
 
   test('clicking toggle enters fullscreen mode', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    const section = page.getByTestId('flowchart-section')
+    const section = flowchart(page)
     await expect(section).not.toHaveClass(/fullscreen/)
 
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
+    await flowchart(page).getByTestId('flowchart-fullscreen-toggle').click()
     await expect(section).toHaveClass(/fullscreen/)
   })
 
-  test('clicking toggle again exits fullscreen mode', async ({ page }) => {
+  test('exit button leaves fullscreen mode', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
-    await expect(page.getByTestId('flowchart-section')).toHaveClass(/fullscreen/)
+    await flowchart(page).getByTestId('flowchart-fullscreen-toggle').click()
+    await expect(flowchart(page)).toHaveClass(/fullscreen/)
 
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
-    await expect(page.getByTestId('flowchart-section')).not.toHaveClass(/fullscreen/)
+    await flowchart(page).getByTestId('flowchart-fullscreen-exit').click()
+    await expect(flowchart(page)).not.toHaveClass(/fullscreen/)
   })
 
   test('Escape key exits fullscreen mode', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
-    await expect(page.getByTestId('flowchart-section')).toHaveClass(/fullscreen/)
+    await flowchart(page).getByTestId('flowchart-fullscreen-toggle').click()
+    await expect(flowchart(page)).toHaveClass(/fullscreen/)
 
     await page.keyboard.press('Escape')
-    await expect(page.getByTestId('flowchart-section')).not.toHaveClass(/fullscreen/)
+    await expect(flowchart(page)).not.toHaveClass(/fullscreen/)
   })
 
   test('fullscreen overlay covers viewport with dark background', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
-    const section = page.getByTestId('flowchart-section')
+    await flowchart(page).getByTestId('flowchart-fullscreen-toggle').click()
+    const section = flowchart(page)
 
     const box = await section.boundingBox()
     expect(box).toBeTruthy()
@@ -57,13 +59,13 @@ test.describe('Issue #63 US-20: Fullscreen Mode Layout and Toggle Control', () =
 
   test('fullscreen toggle button toggles off and on repeatedly', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    const section = page.getByTestId('flowchart-section')
-    const toggle = page.getByTestId('flowchart-fullscreen-toggle')
+    const section = flowchart(page)
+    const toggle = flowchart(page).getByTestId('flowchart-fullscreen-toggle')
 
     await toggle.click()
     await expect(section).toHaveClass(/fullscreen/)
 
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
+    await flowchart(page).getByTestId('flowchart-fullscreen-exit').click()
     await expect(section).not.toHaveClass(/fullscreen/)
 
     await toggle.click()
@@ -72,8 +74,8 @@ test.describe('Issue #63 US-20: Fullscreen Mode Layout and Toggle Control', () =
 
   test('SVG fills available height in fullscreen mode', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
-    const svg = page.getByTestId('flowchart-svg-EVENT_STORMING')
+    await flowchart(page).getByTestId('flowchart-fullscreen-toggle').click()
+    const svg = flowchart(page).getByTestId('flowchart-svg-EVENT_STORMING')
     await expect(svg).toBeVisible()
 
     const svgBox = await svg.boundingBox()
@@ -83,29 +85,29 @@ test.describe('Issue #63 US-20: Fullscreen Mode Layout and Toggle Control', () =
 
   test('flowchart content remains visible in fullscreen mode', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
+    await flowchart(page).getByTestId('flowchart-fullscreen-toggle').click()
 
-    await expect(page.getByTestId('flowchart-title')).toBeVisible()
-    await expect(page.getByTestId('flowchart-svg-EVENT_STORMING')).toBeVisible()
-    await expect(page.getByTestId('flowchart-node-EVENT_STORMING-user')).toBeVisible()
+    await expect(flowchart(page).getByTestId('flowchart-title')).toBeVisible()
+    await expect(flowchart(page).getByTestId('flowchart-svg-EVENT_STORMING')).toBeVisible()
+    await expect(flowchart(page).getByTestId('flowchart-node-EVENT_STORMING-dev_user')).toBeVisible()
   })
 
   test('fullscreen toggle shows correct label based on state', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
     // In normal mode, the toggle should exist
-    await expect(page.getByTestId('flowchart-fullscreen-toggle')).toBeVisible()
+    await expect(flowchart(page).getByTestId('flowchart-fullscreen-toggle')).toBeVisible()
   })
 
   test('non-Escape keys do not exit fullscreen', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    await page.getByTestId('flowchart-fullscreen-toggle').click()
-    await expect(page.getByTestId('flowchart-section')).toHaveClass(/fullscreen/)
+    await flowchart(page).getByTestId('flowchart-fullscreen-toggle').click()
+    await expect(flowchart(page)).toHaveClass(/fullscreen/)
 
-    await page.getByTestId('flowchart-svg-EVENT_STORMING').click()
+    await flowchart(page).getByTestId('flowchart-svg-EVENT_STORMING').click()
     await page.keyboard.press('Enter')
-    await expect(page.getByTestId('flowchart-section')).toHaveClass(/fullscreen/)
+    await expect(flowchart(page)).toHaveClass(/fullscreen/)
 
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('flowchart-section')).toHaveClass(/fullscreen/)
+    await expect(flowchart(page)).toHaveClass(/fullscreen/)
   })
 })
