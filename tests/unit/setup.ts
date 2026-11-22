@@ -46,23 +46,26 @@ class MockIntersectionObserver implements IntersectionObserver {
   }
 }
 
-Object.defineProperty(window, 'IntersectionObserver', {
-  writable: true,
-  configurable: true,
-  value: MockIntersectionObserver,
-})
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: MockIntersectionObserver,
+  })
 
-Object.defineProperty(window, 'ResizeObserver', {
-  writable: true,
-  configurable: true,
-  value: class ResizeObserver {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    observe(_target: Element) {}
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    unobserve(_target: Element) {}
-    disconnect() {}
-  },
-})
+  Object.defineProperty(window, 'ResizeObserver', {
+    writable: true,
+    configurable: true,
+    value: class ResizeObserver {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      observe(_target: Element) {}
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      unobserve(_target: Element) {}
+      disconnect() {}
+    },
+  })
+
+}
 
 // Mock AnimatePresence to render children synchronously in unit tests
 vi.mock('motion/react', async (importOriginal) => {

@@ -22,10 +22,20 @@
   <!-- Container where Loom Sections will render -->
   <div id="loom-root"></div>
 
-  <!-- Loom Sections UMD Bundle (loads from public CDN first, falls back to local build) -->
-  <script src="https://cdn.jsdelivr.net/npm/loom-learning-sections@1.4.0/loom-sections.umd.js" onerror="this.onerror=null;this.src='../dist-lib/loom-sections.umd.js';"></script>
-
   <script>
+    // Wait for the fallback script as well as the CDN script before rendering.
+    function loadLoomLibrary() {
+      const load = (src) => new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+      return load('https://cdn.jsdelivr.net/npm/loom-learning-sections@1.4.0/loom-sections.umd.js')
+        .catch(() => load('../dist-lib/loom-sections.umd.js'));
+    }
+
     // Embedded sample OKF bundle for offline file:// static execution without local web server
     const SAMPLE_OKF_BUNDLE = [
       {
@@ -108,6 +118,7 @@
     ];
 
     async function initLoomSections() {
+      await loadLoomLibrary();
       const options = {
         title: "Interactive OKF Catalog",
         theme: "frappe",

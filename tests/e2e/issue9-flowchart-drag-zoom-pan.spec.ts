@@ -1,11 +1,13 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+const flowchart = (page: Page) => page.getByTestId('flowchart-section').first()
 
 test.describe('Issue #9: Drag nodes + mobile zoom/pan on flowchart', () => {
 
   test('SVG supports wheel zoom', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    const svg = page.getByTestId('flowchart-svg-EVENT_STORMING')
-    const canvas = page.getByTestId('flowchart-canvas-EVENT_STORMING')
+    const svg = flowchart(page).getByTestId('flowchart-svg-EVENT_STORMING')
+    const canvas = flowchart(page).getByTestId('flowchart-canvas-EVENT_STORMING')
 
     const beforeTransform = await canvas.getAttribute('transform')
 
@@ -20,10 +22,10 @@ test.describe('Issue #9: Drag nodes + mobile zoom/pan on flowchart', () => {
   test('zoom/pan works on mobile viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 })
     await page.goto('/#/demo/ai-agent')
-    const svg = page.getByTestId('flowchart-svg-EVENT_STORMING')
+    const svg = flowchart(page).getByTestId('flowchart-svg-EVENT_STORMING')
     await expect(svg).toBeVisible()
 
-    const canvas = page.getByTestId('flowchart-canvas-EVENT_STORMING')
+    const canvas = flowchart(page).getByTestId('flowchart-canvas-EVENT_STORMING')
 
     await svg.hover()
     await page.mouse.wheel(0, 150)
@@ -35,14 +37,13 @@ test.describe('Issue #9: Drag nodes + mobile zoom/pan on flowchart', () => {
 
   test('zoom preserves aspect ratio and edge rendering', async ({ page }) => {
     await page.goto('/#/demo/ai-agent')
-    const svg = page.getByTestId('flowchart-svg-EVENT_STORMING')
+    const svg = flowchart(page).getByTestId('flowchart-svg-EVENT_STORMING')
 
     await svg.hover()
     await page.mouse.wheel(0, 200)
     await page.waitForTimeout(100)
 
-    const edgeGroup = svg.getByTestId('flowchart-edge-EVENT_STORMING-0')
-    const path = edgeGroup.locator('path').first()
+    const path = svg.getByTestId('flowchart-edge-EVENT_STORMING-0')
     await expect(path).toBeAttached()
   })
 })
